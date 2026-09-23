@@ -268,10 +268,55 @@ func _run() -> void:
 	await _shot("7i_bank")
 	World.request_service_close(p.entity_id)
 
+	# guildmaster: a level 6 wizard learns the wizard spells; the warrior trainer refuses
+	p.level = 6
+	p.recalc_stats()
+	p.coin = 2000
+	var coyle: Npc = npcs["gm_coyle"]
+	p.global_position = coyle.global_position + (-coyle.global_transform.basis.z) * 2.5 + Vector3.UP * 0.5
+	p.face_toward(coyle.global_position)
+	World.request_set_target(p.entity_id, coyle.entity_id)
+	World.request_hail(p.entity_id)
+	World.request_interact(p.entity_id)
+	for spell_id in ["burning_embers", "minor_shielding", "root", "fire_bolt", "smite"]:
+		World.request_train(p.entity_id, spell_id)
+	print("trained: %s coin=%d" % [p.spells, p.coin])
+	await _wait(0.5)
+	await _shot("7j_guild")
+	World.request_service_close(p.entity_id)
+	World.request_set_target(p.entity_id, npcs["gm_brask"].entity_id)
+	p.global_position = npcs["gm_brask"].global_position + Vector3(0, 0.5, -2.5)
+	World.request_interact(p.entity_id)
+	World.request_set_target(p.entity_id, p.entity_id)
+	var ac0 := p.ac
+	World.request_cast(p.entity_id, "minor_shielding")
+	await _wait(2.4)
+	print("shielding: ac %d -> %d buffs=%s" % [ac0, p.ac, p.buffs.keys()])
+	await _shot("7k_buffed")
+
 	p.global_position = main.zone.ground(0, -97) + Vector3.UP
 	await _wait(2.5)
 	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])
 	await _shot("7g_back_in_greenmoor")
+
+	# root and burn a gnoll pup
+	var victim := _nearest_mob(p, "gnoll_pup")
+	victim.global_position = main.zone.ground(40, 100) + Vector3.UP
+	victim.home = victim.global_position
+	victim.max_hp = 200  # tough enough to watch it burn
+	victim.hp = 200
+	p.global_position = main.zone.ground(40, 88) + Vector3.UP
+	p.face_toward(victim.global_position)
+	p.mana = p.max_mana
+	World.request_set_target(p.entity_id, victim.entity_id)
+	World.request_cast(p.entity_id, "root")
+	await _wait(1.8)
+	var hp0 := victim.hp
+	World.request_cast(p.entity_id, "burning_embers")
+	await _wait(5.5)
+	print("root+dot: rooted=%s hp %d -> %s dots=%s" % [victim.root_left > 0.0 if is_instance_valid(victim) else "dead",
+			hp0, victim.hp if is_instance_valid(victim) else "dead", victim.dots.size() if is_instance_valid(victim) else "-"])
+	await _shot("7l_rooted")
 
 	# camp out to the character screen, then continue back in
 	GameData.config["camp_seconds"] = 2.0

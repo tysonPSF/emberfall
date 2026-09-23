@@ -50,6 +50,7 @@ func from_save(d: Dictionary) -> void:
 	bank_items = (d.get("bank_items", []) as Array).duplicate()
 	bank_coin = int(d.get("bank_coin", 0))
 	var cls: Dictionary = GameData.classes[char_class]
+	spells = (d.get("spells", cls["spells"]) as Array).filter(func(id: String) -> bool: return GameData.spells.has(id))
 	if d.has("equipment"):
 		equipment = (d["equipment"] as Dictionary).duplicate()
 	else:
@@ -67,7 +68,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "bank_items": bank_items, "bank_coin": bank_coin, "hp": maxi(hp, 1), "mana": mana,
+		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
@@ -94,9 +95,12 @@ func recalc_stats() -> void:
 	var skill := float(cls["melee_skill"])
 	dmg_min = 1 + level / 4
 	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill))
+	ac += buff_total("ac")
+	max_hp += buff_total("hp")
+	dmg_min += buff_total("dmg")
+	dmg_max += buff_total("dmg")
 	hp_regen = int(cls["hp_regen"]) + level / 4
 	mana_regen = int(cls["mana_regen"])
-	spells = (cls["spells"] as Array).duplicate()
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
 	if visual is CharacterModel:
@@ -120,6 +124,9 @@ func add_xp(amount: int) -> void:
 		level += 1
 		recalc_stats()
 		World.say(self, "You have gained a level! Welcome to level %d!" % level, World.C_XP)
+		for entry: Dictionary in World.class_spells(char_class):
+			if entry["level"] == level:
+				World.say(self, "Your guildmaster in Emberhold can now teach you %s." % GameData.spells[entry["spell"]]["name"], World.C_XP)
 		leveled_up.emit()
 	stats_changed.emit()
 
@@ -222,7 +229,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			World.request_set_target(entity_id, -1)
 	else:
-		for i in 4:
+		for i in 8:
 			if event.is_action_pressed("hotbar_%d" % (i + 1)) and i < spells.size():
 				World.request_cast(entity_id, spells[i])
 				break

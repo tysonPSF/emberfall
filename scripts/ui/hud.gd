@@ -7,7 +7,7 @@ extends CanvasLayer
 const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe while holding right mouse) · Space jump
 [b]Camera[/b]   Right-drag to look · Wheel to zoom (all the way in = first person)
 [b]Targeting[/b]   Left-click · Tab nearest enemy · F1 self · Esc clear / interrupt cast
-[b]Combat[/b]   Q auto attack · 1-4 abilities & spells · C consider (con colors!)
+[b]Combat[/b]   Q auto attack · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -19,6 +19,7 @@ H to hide this."""
 var player: Player
 var root: Control
 
+var _player_panel: PanelContainer
 var _name_label: Label
 var _hp_bar: ProgressBar
 var _hp_text: Label
@@ -27,6 +28,7 @@ var _mana_bar: ProgressBar
 var _mana_text: Label
 var _xp_bar: ProgressBar
 var _xp_text: Label
+var _buff_label: Label
 
 var _target_panel: PanelContainer
 var _target_name: Label
@@ -123,9 +125,6 @@ func bind_player(p: Player) -> void:
 	player.inventory_changed.connect(_refresh_inventory)
 	player.inventory_changed.connect(_refresh_quests)
 	player.quests_changed.connect(_refresh_quests)
-	for i in _spell_buttons.size():
-		var btn := _spell_buttons[i]
-		btn.visible = i < player.spells.size()
 	_refresh_inventory()
 	_refresh_quests()
 
@@ -141,6 +140,7 @@ func _build_player_window() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(0, 0), Vector2(12, 12))
 	root.add_child(p)
+	_player_panel = p
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
 	p.add_child(v)
@@ -159,6 +159,10 @@ func _build_player_window() -> void:
 	_xp_bar = xp[0]
 	_xp_text = xp[1]
 	v.add_child(xp[2])
+	_buff_label = UIKit.label("", 11, Color(0.6, 0.85, 1.0))
+	_buff_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_buff_label.custom_minimum_size.x = 290
+	v.add_child(_buff_label)
 
 
 func _bar_row(color: Color, height := 14.0) -> Array:
@@ -213,31 +217,40 @@ func _build_hotbar() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(1, 1), Vector2(-12, -12))
 	root.add_child(p)
-	var h := GridContainer.new()
-	h.columns = 4
-	h.add_theme_constant_override("h_separation", 6)
-	h.add_theme_constant_override("v_separation", 6)
-	p.add_child(h)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	p.add_child(v)
+	var spells_grid := GridContainer.new()
+	spells_grid.columns = 4
+	spells_grid.add_theme_constant_override("h_separation", 6)
+	spells_grid.add_theme_constant_override("v_separation", 6)
+	v.add_child(spells_grid)
 	var size := Vector2(128, 40)
-	_attack_button = UIKit.button("Q  Attack", size)
-	_attack_button.pressed.connect(func() -> void: World.request_toggle_attack(player.entity_id))
-	h.add_child(_attack_button)
-	for i in 4:
+	for i in 8:
 		var b := UIKit.button("", size)
+		b.clip_text = true
 		b.pressed.connect(func() -> void:
 			if i < player.spells.size():
 				World.request_cast(player.entity_id, player.spells[i]))
-		h.add_child(b)
+		b.visible = false
+		spells_grid.add_child(b)
 		_spell_buttons.append(b)
+	var actions := GridContainer.new()
+	actions.columns = 4
+	actions.add_theme_constant_override("h_separation", 6)
+	v.add_child(actions)
+	_attack_button = UIKit.button("Q  Attack", size)
+	_attack_button.pressed.connect(func() -> void: World.request_toggle_attack(player.entity_id))
+	actions.add_child(_attack_button)
 	_sit_button = UIKit.button("X  Sit", size)
 	_sit_button.pressed.connect(func() -> void: World.request_sit(player.entity_id, not player.sitting))
-	h.add_child(_sit_button)
+	actions.add_child(_sit_button)
 	var con := UIKit.button("C  Consider", size)
 	con.pressed.connect(func() -> void: World.request_consider(player.entity_id))
-	h.add_child(con)
+	actions.add_child(con)
 	var bags := UIKit.button("I  Inventory", size)
 	bags.pressed.connect(_toggle_inventory)
-	h.add_child(bags)
+	actions.add_child(bags)
 
 
 func _build_log() -> void:
@@ -378,10 +391,14 @@ func _build_service_window() -> void:
 
 func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_npc = npc
-	_service_title.text = npc.display_name if kind == "shop" else "%s  -  Hearthbank" % npc.display_name
-	_service_hint.text = "Click an item to buy it. Click items in your bags to sell them." if kind == "shop" \
-			else "Click items in your bags to deposit them; click a bank slot to take it back."
-	_shop_scroll.visible = kind == "shop"
+	var titles := {"shop": npc.display_name, "bank": "%s  -  Hearthbank" % npc.display_name,
+			"guild": "%s  -  %s training" % [npc.display_name, GameData.classes[player.char_class]["name"]]}
+	var hints := {"shop": "Click an item to buy it. Click items in your bags to sell them.",
+			"bank": "Click items in your bags to deposit them; click a bank slot to take it back.",
+			"guild": "Click a spell to learn it. New spells go on the next number key."}
+	_service_title.text = titles[kind]
+	_service_hint.text = hints[kind]
+	_shop_scroll.visible = kind != "bank"
 	_bank_box.visible = kind == "bank"
 	_service_panel.visible = true
 	_inv_panel.visible = true
@@ -393,7 +410,21 @@ func _on_service_opened(npc: Npc, kind: String) -> void:
 func _refresh_service() -> void:
 	if _service_npc == null or not is_instance_valid(_service_npc):
 		return
-	if player.service == "shop":
+	if player.service == "guild":
+		for child in _shop_list.get_children():
+			child.queue_free()
+		for entry: Dictionary in World.class_spells(player.char_class):
+			var spell_id: String = entry["spell"]
+			var why := World.train_block(player, spell_id)
+			var price := World.format_coin(int(entry["cost"])) if int(entry["cost"]) > 0 else "free"
+			var b := UIKit.button("Lv %d   %s   %s" % [entry["level"], GameData.spells[spell_id]["name"], "(known)" if why == "Known." else price])
+			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			b.add_theme_font_size_override("font_size", 12)
+			b.tooltip_text = spell_tooltip(spell_id) + ("\n" + why if why != "" else "")
+			b.disabled = why != ""
+			b.pressed.connect(func() -> void: World.request_train(player.entity_id, spell_id))
+			_shop_list.add_child(b)
+	elif player.service == "shop":
 		for child in _shop_list.get_children():
 			child.queue_free()
 		for ware: Dictionary in World.merchant_wares(_service_npc):
@@ -540,6 +571,13 @@ func _process(delta: float) -> void:
 	var pct := 100.0 * player.xp / player.xp_to_next()
 	_xp_bar.value = pct
 	_xp_text.text = " XP %.1f%%" % pct
+	var buffs: PackedStringArray = []
+	for spell_id: String in player.buffs:
+		var left := int(player.buffs[spell_id]["left"])
+		buffs.append("%s %d:%02d" % [GameData.spells[spell_id]["name"], left / 60, left % 60])
+	_buff_label.text = "  ·  ".join(buffs)
+	_buff_label.visible = not buffs.is_empty()
+	_quest_panel.position.y = _player_panel.position.y + _player_panel.size.y + 8.0  # tracker hangs below, however tall
 	_death_label.visible = player.dead
 
 	_update_target()
@@ -589,11 +627,16 @@ func _update_hotbar() -> void:
 	_attack_button.text = "Q  Attacking" if player.auto_attack else "Q  Attack"
 	_attack_button.modulate = Color(1, 0.35, 0.3) if player.auto_attack else Color.WHITE
 	_sit_button.text = "X  Stand" if player.sitting else "X  Sit"
-	for i in mini(_spell_buttons.size(), player.spells.size()):
+	for i in _spell_buttons.size():
+		var btn := _spell_buttons[i]
+		btn.visible = i < player.spells.size()
+		if not btn.visible:
+			continue
 		var spell_id: String = player.spells[i]
 		var s: Dictionary = GameData.spells[spell_id]
-		var btn := _spell_buttons[i]
-		btn.visible = true
+		if btn.get_meta("spell", "") != spell_id:
+			btn.set_meta("spell", spell_id)
+			btn.tooltip_text = spell_tooltip(spell_id)
 		var cd: float = player.cooldowns.get(spell_id, 0.0)
 		btn.text = "%d  %s" % [i + 1, s["name"]] if cd <= 0.0 else "%d  %.1f" % [i + 1, cd]
 		btn.disabled = cd > 0.0 or player.mana < int(s.get("mana", 0))
@@ -733,6 +776,22 @@ func _refresh_inventory() -> void:
 	elif player.service == "bank":
 		action = "bank it"
 	_bag_hint.text = "Bags  (click an item to %s)" % action
+
+
+func spell_tooltip(spell_id: String) -> String:
+	var s: Dictionary = GameData.spells.get(spell_id, {})
+	var lines: PackedStringArray = [str(s.get("name", spell_id))]
+	if s.has("desc"):
+		lines.append(str(s["desc"]))
+	var per := float(s.get("per_level", 0))
+	match str(s.get("type", "")):
+		"damage", "heal":
+			lines.append("%s %d-%d%s" % ["Heals" if s["type"] == "heal" else "Damage", int(s["min"]), int(s["max"]), "  (+%.1f per level)" % per if per > 0 else ""])
+		"dot":
+			lines.append("%d damage every 3s, %d times" % [int(s["tick"]), int(s["ticks"])])
+	var cost := "Mana %d" % int(s.get("mana", 0)) if int(s.get("mana", 0)) > 0 else "Ability"
+	lines.append("%s   Cast %.1fs   Recast %.0fs" % [cost, float(s.get("cast_time", 0)), float(s.get("recast", 0))])
+	return "\n".join(lines)
 
 
 func _item_tooltip(item_id: String) -> String:

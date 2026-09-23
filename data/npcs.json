@@ -117,5 +117,50 @@
       "fall": "Fall in the wilds and what you carry stays on your corpse. What's in my vault stays in my vault. Choose wisely what you carry.",
       "unknown": "I'm afraid I only keep accounts, {name}."
     }
+  },
+  "gm_brask": {
+    "name": "Sergeant Brask",
+    "level": 35,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "I train warriors, {name}. Soft hands like yours want Sister Anwen or the Magister."
+    },
+    "dialogue": {
+      "hail": "You there, {name}! Think you can hold a line? The Watch trains every [warrior] who can, and a few who can't.",
+      "warrior": "Steel, sweat and stubbornness. Come to me as you grow and I'll teach you to bandage yourself, to bash, and to roar. Press G to train.",
+      "unknown": "Less talking, more lifting."
+    }
+  },
+  "gm_anwen": {
+    "name": "Sister Anwen",
+    "level": 35,
+    "model": "knight",
+    "weapon": "staff",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "The hearth calls whom it calls, {name}. You're not one of mine. Try Sergeant Brask or Magister Coyle."
+    },
+    "dialogue": {
+      "hail": "Peace of the hearth to you, {name}. Those who [tend] it learn to mend what the wilds tear.",
+      "tend": "Clerics of the hearth heal, shield and, when we must, smite. As you grow, I'll teach you more. Press G to train.",
+      "unknown": "The Keeper knows more lore than I, {name}."
+    }
+  },
+  "gm_coyle": {
+    "name": "Magister Coyle",
+    "level": 35,
+    "model": "mage",
+    "weapon": "wand",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Hmm? Oh, no, no. I teach wizards. You want the Sergeant, or the Sister at the hearth."
+    },
+    "dialogue": {
+      "hail": "Ah, {name}. Careful, the ink's still wet. You've an interest in the [arcane]?",
+      "arcane": "Frost, fire, and the binding of limbs. I teach wizards who have survived long enough to be worth teaching. Press G to train.",
+      "unknown": "Fascinating. Irrelevant, but fascinating."
+    }
   }
 }

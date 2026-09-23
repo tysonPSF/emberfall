@@ -176,10 +176,31 @@ func _physics_process(delta: float) -> void:
 
 func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
+	e.root_left = maxf(0.0, e.root_left - delta)
 	for spell_id: String in e.cooldowns.keys():
 		e.cooldowns[spell_id] -= delta
 		if e.cooldowns[spell_id] <= 0.0:
 			e.cooldowns.erase(spell_id)
+	for spell_id: String in e.buffs.keys():
+		e.buffs[spell_id]["left"] -= delta
+		if e.buffs[spell_id]["left"] <= 0.0:
+			e.buffs.erase(spell_id)
+			say(e, str(GameData.spells[spell_id].get("fade_text", "Your %s spell has worn off." % GameData.spells[spell_id]["name"])), C_SPELL)
+			e.recalc_stats()
+	for dot: Dictionary in e.dots.duplicate():
+		dot["next"] -= delta
+		if dot["next"] > 0.0:
+			continue
+		dot["next"] = 3.0
+		dot["ticks"] -= 1
+		if dot["ticks"] <= 0:
+			e.dots.erase(dot)
+		var caster := get_object(dot["caster_id"]) as Entity
+		say(caster, "%s has taken %d damage from your %s." % [cap(e.display_name), dot["damage"], GameData.spells[dot["spell"]]["name"]], C_SPELL)
+		say(e, "You have taken %d points of damage." % dot["damage"], C_HIT_YOU)
+		damage(e, int(dot["damage"]), caster)
+		if e.dead:
+			return
 
 
 func _update_melee(e: Entity) -> void:
@@ -253,6 +274,9 @@ func _regen_tick() -> void:
 func kill(d: Entity, killer: Entity) -> void:
 	d.dead = true
 	d.hp = 0
+	d.dots.clear()
+	d.buffs.clear()
+	d.root_left = 0.0
 	d.auto_attack = false
 	d.cast = {}
 	d.sitting = false
@@ -499,6 +523,22 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity) -> void:
 			c.global_position = zone.bind_point + Vector3.UP
 			c.velocity = Vector3.ZERO
 			say(c, "You feel yourself pulled back to your bind point.", C_SPELL)
+		"buff":
+			t.buffs[spell_id] = {"left": float(s.get("duration", 60)), "stats": s.get("stats", {})}
+			t.recalc_stats()
+			say(t, str(s.get("land_text", "You feel the effects of %s." % s["name"])), C_SPELL)
+			if c != t:
+				say(c, "You cast %s on %s." % [s["name"], t.display_name], C_SPELL)
+		"dot":
+			var per_tick := int(s.get("tick", 1)) + int(float(s.get("per_level", 0)) * (c.level - 1))
+			t.dots = t.dots.filter(func(d: Dictionary) -> bool: return not (d["spell"] == spell_id and d["caster_id"] == c.entity_id))
+			t.dots.append({"spell": spell_id, "caster_id": c.entity_id, "damage": per_tick, "ticks": int(s.get("ticks", 3)), "next": 3.0})
+			say(c, "%s begins to smolder." % cap(t.display_name), C_SPELL)
+			t.add_hate(c, float(per_tick))
+		"root":
+			t.root_left = float(s.get("duration", 10))
+			say(c, "%s's feet adhere to the ground." % cap(t.display_name), C_SPELL)
+			t.add_hate(c, 5.0)
 		"taunt":
 			var top := 0.0
 			for v: float in t.hate.values():
@@ -652,6 +692,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
+	if key == "hail" and npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] == p.char_class:
+		say(p, "(Press G to train with %s.)" % npc.display_name, C_SYSTEM)
 	if key == "hail":
 		for quest_id: String in p.quests:
 			var q: Dictionary = GameData.quests.get(quest_id, {})
@@ -902,8 +944,13 @@ func request_interact(player_id: int) -> void:
 	if p == null or p.dead:
 		return
 	var npc := p.valid_target_entity() as Npc
-	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false)):
+	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false) or npc.data.has("guildmaster")):
 		request_trade_open(player_id)
+		return
+	if npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] != p.char_class:
+		if p.distance_to(npc) <= TALK_RANGE:
+			npc.greet(p)
+			_npc_say(p, npc, str(npc.data["guildmaster"].get("refuse", "I can't teach you, {name}.")))
 		return
 	if p.distance_to(npc) > TALK_RANGE:
 		say(p, "You are too far away from %s." % npc.display_name, C_WARN)
@@ -912,7 +959,7 @@ func request_interact(player_id: int) -> void:
 	request_loot_close(player_id)
 	request_service_close(player_id)
 	p.service_npc_id = npc.entity_id
-	p.service = "shop" if npc.data.has("merchant") else "bank"
+	p.service = "shop" if npc.data.has("merchant") else ("guild" if npc.data.has("guildmaster") else "bank")
 	npc.greet(p)
 	if p == local_player:
 		service_opened.emit(npc, p.service)
@@ -1062,5 +1109,56 @@ func request_bank_coin(player_id: int, amount: int) -> void:
 	p.bank_coin += moved
 	say(p, "You %s %s." % ["deposit" if moved > 0 else "withdraw", format_coin(absi(moved))], C_LOOT)
 	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()
+
+
+# --- guildmasters -----------------------------------------------------------
+
+## Spells a class can learn, cheapest first: [{spell, level, cost}].
+static func class_spells(class_id: String) -> Array:
+	var out: Array = []
+	for spell_id: String in GameData.spells:
+		var s: Dictionary = GameData.spells[spell_id]
+		if s.get("classes", {}).has(class_id):
+			out.append({"spell": spell_id, "level": int(s["classes"][class_id]), "cost": int(s.get("cost", 0))})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["level"] < b["level"])
+	return out
+
+
+## Why this player can't learn a spell right now, or "" if they can.
+func train_block(p: Player, spell_id: String) -> String:
+	var s: Dictionary = GameData.spells.get(spell_id, {})
+	var need: Variant = s.get("classes", {}).get(p.char_class)
+	if need == null:
+		return "Not for your class."
+	if spell_id in p.spells:
+		return "Known."
+	if p.level < int(need):
+		return "Requires level %d." % int(need)
+	if p.coin < int(s.get("cost", 0)):
+		return "You can't afford it."
+	if p.spells.size() >= int(cfg("max_spells", 8)):
+		return "You can't remember any more spells."
+	return ""
+
+
+func request_train(player_id: int, spell_id: String) -> void:
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var npc := _service_npc(p, "guild")
+	if npc == null:
+		return
+	var why := train_block(p, spell_id)
+	if why != "":
+		say(p, why, C_WARN)
+		return
+	var s: Dictionary = GameData.spells[spell_id]
+	p.coin -= int(s.get("cost", 0))
+	p.spells.append(spell_id)
+	say(p, "%s teaches you %s. (Key %d)" % [npc.display_name, s["name"], p.spells.size()], C_XP)
+	p.inventory_changed.emit()
+	p.stats_changed.emit()
 	if p == local_player:
 		service_changed.emit()

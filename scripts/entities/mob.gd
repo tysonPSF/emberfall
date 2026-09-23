@@ -156,6 +156,8 @@ func _physics_process(delta: float) -> void:
 				hp = max_hp
 				stats_changed.emit()
 
+	if root_left > 0.0:
+		move = Vector3.ZERO  # rooted: turns and swings, but can't walk
 	if move != Vector3.ZERO:
 		if state != State.COMBAT:
 			face_toward(global_position + move)

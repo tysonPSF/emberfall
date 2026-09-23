@@ -33,6 +33,9 @@ var swing_timer := 0.0
 var cast: Dictionary = {}
 var cooldowns: Dictionary = {}  # spell_id -> seconds left
 var hate: Dictionary = {}  # entity_id -> float (used by mobs)
+var buffs: Dictionary = {}  # spell_id -> {left, stats: {ac, hp, dmg}}
+var dots: Array = []  # [{spell, caster_id, damage, ticks, next}]
+var root_left := 0.0  # seconds this entity can't move
 
 var body_height := 1.8
 var visual: Node3D  # CharacterModel when the entity has a rigged model
@@ -68,6 +71,20 @@ func distance_to(other: Node3D) -> float:
 
 func add_hate(_src: Entity, _amount: float) -> void:
 	pass
+
+
+## Recomputes stats that buffs change. Players rebuild everything; others
+## have nothing buff-dependent yet.
+func recalc_stats() -> void:
+	pass
+
+
+## Sum of one stat across active buffs.
+func buff_total(stat: String) -> int:
+	var total := 0
+	for b: Dictionary in buffs.values():
+		total += int(b["stats"].get(stat, 0))
+	return total
 
 
 func face_toward(pos: Vector3) -> void:
