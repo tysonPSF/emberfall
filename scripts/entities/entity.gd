@@ -129,6 +129,7 @@ static func make_visual(look_: Dictionary) -> Node3D:
 	if str(look_.get("model", "")) != "":
 		var m := CharacterModel.new()
 		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale)
+		use_entity_layer(m)
 		return m
 	var shape := str(look_.get("shape", "humanoid"))
 	var color := Color.html(str(look_.get("color", "ffffff")))
@@ -154,7 +155,15 @@ static func make_visual(look_: Dictionary) -> Node3D:
 			_part(root, _sphere(0.24), mat, Vector3(0, 1.6, 0), Vector3.ONE)
 			_part(root, _box(Vector3(0.3, 0.08, 0.12)), dark, Vector3(0, 1.63, -0.2), Vector3.ONE)
 	root.scale = Vector3.ONE * body_scale
+	use_entity_layer(root)
 	return root
+
+
+## Moves every mesh under `node` to the entity render layer, so ground decals
+## (the target marker) don't paint characters' feet.
+static func use_entity_layer(node: Node) -> void:
+	for g in node.find_children("*", "GeometryInstance3D", true, false):
+		(g as GeometryInstance3D).layers = Layers.RENDER_ENTITIES
 
 
 static func _part(root: Node3D, mesh: Mesh, mat: Material, pos: Vector3, scl: Vector3) -> void:

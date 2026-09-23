@@ -47,6 +47,9 @@ func _start_game(save: Dictionary, title: CharCreate) -> void:
 	hud = Hud.new()
 	add_child(hud)
 	hud.bind_player(player)
+	var marker := TargetMarker.new()
+	marker.player = player
+	add_child(marker)
 	hud.show_banner("Entering %s" % zone.zone_name)
 	World.say(player, "Welcome to %s, %s. Press H for controls." % [zone.zone_name, player.display_name])
 	_save()

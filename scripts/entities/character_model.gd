@@ -117,6 +117,7 @@ func set_weapon(weapon_id: String) -> void:
 	_weapon_slot.bone_name = "handslot.r"
 	skeleton.add_child(_weapon_slot)
 	_weapon_slot.add_child((load(GameData.models["weapons"][weapon_id]) as PackedScene).instantiate())
+	Entity.use_entity_layer(_weapon_slot)
 
 
 ## Clip for an action, or a raw clip name (e.g. "Spawn_Ground"); "" if the rig lacks it.
