@@ -5,6 +5,8 @@ extends Node3D
 ## so the same zone file always produces the same world.
 
 const GRID := 128
+const CLUTTER_CHUNK := 32.0
+const CLUTTER_SHADER := preload("res://scripts/world/clutter.gdshader")
 
 var zone_id := ""
 var data: Dictionary = {}
@@ -62,6 +64,7 @@ func load_zone(id: String) -> void:
 	_build_terrain()
 	_build_landmarks()
 	_build_props()
+	_build_clutter()
 	_build_spawns()
 	_build_npcs()
 	_build_road_lamps()
@@ -586,6 +589,106 @@ func _build_props() -> void:
 		var id: String = rocks[_rng.randi() % rocks.size()]
 		var s := _rng.randf_range(0.6, 1.6) * (0.4 if id == "rubble_half" else 1.0)
 		_prop(id, ground(xz.x, xz.y) - Vector3.UP * 0.15 * s, _rng.randf() * TAU, s)
+
+
+## Grass, flowers, ferns, bushes and the like from the zone's "clutter" table:
+## {prop_id: {density (per m²), patch (0-1 clumping), sway, range, shadow,
+## tint ("ground" to match the terrain), scale [min, max], city (density
+## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk so
+## far chunks are skipped; nothing collides.
+func _build_clutter() -> void:
+	var table: Dictionary = data.get("clutter", {})
+	if table.is_empty():
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(data.get("seed", 1)) + 7919
+	var patches := FastNoiseLite.new()
+	patches.seed = int(data.get("seed", 1)) + 31
+	patches.frequency = 0.045
+	var chunks := ceili(size / CLUTTER_CHUNK)
+	for id: String in table:
+		var spec: Dictionary = table[id]
+		var source := _clutter_source(id, float(spec.get("sway", 0.0)))
+		if source.is_empty():
+			continue
+		var density := float(spec.get("density", 0.1))
+		var patch := float(spec.get("patch", 0.5))
+		var city := float(spec.get("city", 0.0))
+		var by_ground := str(spec.get("tint", "")) == "ground"
+		var scale_range: Array = spec.get("scale", [0.8, 1.2])
+		patches.seed += 1  # each type clumps in its own places
+		for cx in chunks:
+			for cz in chunks:
+				var x0 := -half + cx * CLUTTER_CHUNK
+				var z0 := -half + cz * CLUTTER_CHUNK
+				var xforms: Array[Transform3D] = []
+				var colors: Array[Color] = []
+				var tries := int(density * CLUTTER_CHUNK * CLUTTER_CHUNK) + (1 if rng.randf() < fmod(density * CLUTTER_CHUNK * CLUTTER_CHUNK, 1.0) else 0)
+				for k in tries:
+					var x := x0 + rng.randf() * CLUTTER_CHUNK
+					var z := z0 + rng.randf() * CLUTTER_CHUNK
+					var keep := lerpf(1.0, smoothstep(-0.15, 0.35, patches.get_noise_2d(x, z)) * 1.6, patch)
+					if Vector2(x, z).length() < _clear_radius:
+						keep *= city
+					if rng.randf() >= keep or not _clutter_spot_ok(x, z):
+						continue
+					var h := height_at(x, z)
+					var s := rng.randf_range(float(scale_range[0]), float(scale_range[1]))
+					var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s)
+					xforms.append(Transform3D(basis, Vector3(x, h - 0.02, z)))
+					if by_ground:
+						var g := _ground_color(x, z, h)
+						colors.append(Color(g.r * 1.45, g.g * 1.4, g.b * 1.3) * rng.randf_range(0.9, 1.1))
+					else:
+						colors.append(Color.WHITE * rng.randf_range(0.88, 1.08))
+				if xforms.is_empty():
+					continue
+				var mm := MultiMesh.new()
+				mm.transform_format = MultiMesh.TRANSFORM_3D
+				mm.use_colors = true
+				mm.mesh = source["mesh"]
+				mm.instance_count = xforms.size()
+				for i in xforms.size():
+					mm.set_instance_transform(i, xforms[i])
+					mm.set_instance_color(i, colors[i])
+				var mmi := MultiMeshInstance3D.new()
+				mmi.multimesh = mm
+				mmi.material_override = source["material"]
+				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if spec.get("shadow", false) else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				mmi.visibility_range_end = float(spec.get("range", 60.0))
+				mmi.visibility_range_end_margin = 10.0
+				mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+				add_child(mmi)
+
+
+## The mesh and a wind-aware material for one clutter prop.
+func _clutter_source(id: String, sway: float) -> Dictionary:
+	if not GameData.models["props"].has(id):
+		push_warning("clutter: unknown prop %s" % id)
+		return {}
+	var scene: Node = (load(GameData.models["props"][id]["path"]) as PackedScene).instantiate()
+	var mi := scene.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	var mesh := mi.mesh
+	var base := mesh.surface_get_material(0) as BaseMaterial3D
+	scene.free()
+	var mat := ShaderMaterial.new()
+	mat.shader = CLUTTER_SHADER
+	mat.set_shader_parameter("albedo_tex", base.albedo_texture if base != null else null)
+	mat.set_shader_parameter("sway", sway)
+	return {"mesh": mesh, "material": mat}
+
+
+## Clutter stays off roads, landmarks, the bind circle and mountainsides.
+func _clutter_spot_ok(x: float, z: float) -> bool:
+	var p := Vector2(x, z)
+	if p.distance_to(_bind_xz) < 9.0 or road_distance(x, z) < 0.6:
+		return false
+	if (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z) > 0.0:
+		return false
+	for spot in _flat_spots:
+		if p.distance_to(spot) < 12.5:
+			return false
+	return true
 
 
 func _build_spawns() -> void:

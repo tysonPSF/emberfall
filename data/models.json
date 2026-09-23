@@ -300,6 +300,42 @@
     },
     "signpost": {
       "path": "res://assets/props/signpost.glb"
+    },
+    "grass_a": {
+      "path": "res://assets/props/grass_a.glb"
+    },
+    "grass_b": {
+      "path": "res://assets/props/grass_b.glb"
+    },
+    "flowers_yellow": {
+      "path": "res://assets/props/flowers_yellow.glb"
+    },
+    "flowers_purple": {
+      "path": "res://assets/props/flowers_purple.glb"
+    },
+    "flowers_white": {
+      "path": "res://assets/props/flowers_white.glb"
+    },
+    "fern": {
+      "path": "res://assets/props/fern.glb"
+    },
+    "bush_a": {
+      "path": "res://assets/props/bush_a.glb"
+    },
+    "bush_b": {
+      "path": "res://assets/props/bush_b.glb"
+    },
+    "mushrooms": {
+      "path": "res://assets/props/mushrooms.glb"
+    },
+    "pebbles": {
+      "path": "res://assets/props/pebbles.glb"
+    },
+    "log_fallen": {
+      "path": "res://assets/props/log_fallen.glb"
+    },
+    "stump": {
+      "path": "res://assets/props/stump.glb"
     }
   }
 }

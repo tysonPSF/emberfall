@@ -44,6 +44,11 @@ WATER = (2, 3)
 CLOTH_RED = (3, 2)
 CLOTH_WHITE = (0, 1)
 IRON = (3, 0)
+SHADE = (6, 3)  # white-to-black gradient: clutter the game tints per instance
+PETAL_YELLOW = (7, 2)
+PETAL_PURPLE = (3, 1)
+PETAL_WHITE = (0, 1)
+MUSHROOM = (3, 2)
 
 
 def reset_scene():
@@ -476,6 +481,113 @@ def signpost():
 	return p.build()
 
 
+# ---------------------------------------------------------------- ground clutter
+# Scattered by the thousand (zone.gd, MultiMesh) and never collide. Grass uses the
+# neutral SHADE swatch so the game can tint each tuft to the ground beneath it.
+
+def grass(name, seed, blades, height):
+	p = Prop(name, seed)
+	for k in range(blades):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.22)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = height * p.rng.uniform(0.6, 1.1)
+		lean = p.rng.uniform(0.05, 0.22)
+		la = p.rng.uniform(0, math.tau)
+		w = p.rng.uniform(0.035, 0.06)
+		side = (math.cos(a + 1.57) * w, math.sin(a + 1.57) * w)
+		p.poly([(x - side[0], y - side[1], 0), (x + side[0], y + side[1], 0),
+				(x + math.cos(la) * lean, y + math.sin(la) * lean, h)], [(0, 1, 2)], SHADE, grad=(0.0, 0.62))
+	return p.build()
+
+
+def flowers(name, seed, petal):
+	p = Prop(name, seed)
+	for k in range(5):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.3)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(0.18, 0.34)
+		p.seg((x, y, 0), (x, y, h), 0.012, 0.01, LEAF, sides=3, grad=(0.3, 0.8))
+		p.blob((0.1, 0.1, 0.05), (x, y, h), petal, segs=(5, 3), grad=(0.0, 0.3))
+		p.blob((0.035, 0.035, 0.03), (x, y, h + 0.02), EMBER, segs=(4, 3))
+	for k in range(4):  # a few leaves at the base
+		a = k * 1.6
+		p.poly([(0, 0, 0), (math.cos(a) * 0.18, math.sin(a) * 0.18, 0.06), (math.cos(a + 0.4) * 0.12, math.sin(a + 0.4) * 0.12, 0.1)],
+			   [(0, 1, 2)], LEAF, grad=(0.3, 0.7))
+	return p.build()
+
+
+def fern():
+	p = Prop("fern", 51)
+	for k in range(7):
+		a = k * math.tau / 7 + p.rng.uniform(-0.2, 0.2)
+		length = p.rng.uniform(0.45, 0.65)
+		d = Vector((math.cos(a), math.sin(a), 0))
+		n = Vector((-math.sin(a), math.cos(a), 0))
+		tip = d * length + Vector((0, 0, 0.35))
+		mid = d * length * 0.5 + Vector((0, 0, 0.42))
+		p.poly([(0, 0, 0.02), tuple(mid + n * 0.1), tuple(tip), tuple(mid - n * 0.1)], [(0, 1, 2, 3)], PINE, grad=(0.1, 0.7))
+	return p.build()
+
+
+def bush(name, seed, lobes):
+	p = Prop(name, seed)
+	for k in range(lobes):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.45)
+		s = p.rng.uniform(0.6, 0.95)
+		p.rock((s, s, s * 0.8), (math.cos(a) * r, math.sin(a) * r, s * 0.35), LEAF, grad=(0.1, 0.85), jitter=0.06)
+	for k in range(3):
+		p.blob((0.08, 0.08, 0.08), (p.rng.uniform(-0.4, 0.4), p.rng.uniform(-0.4, 0.4), p.rng.uniform(0.5, 0.75)), CLOTH_RED, segs=(4, 3))
+	return p.build()
+
+
+def mushrooms():
+	p = Prop("mushrooms", 53)
+	for k in range(4):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.22)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(0.1, 0.22)
+		p.seg((x, y, 0), (x, y, h), 0.035, 0.03, BONE, sides=5, grad=(0.0, 0.5))
+		p.blob((0.16 * h / 0.2, 0.16 * h / 0.2, 0.09), (x, y, h), MUSHROOM, segs=(6, 4), grad=(0.0, 0.5))
+		for d in range(2):
+			p.blob((0.02, 0.02, 0.01), (x + p.rng.uniform(-0.04, 0.04), y + p.rng.uniform(-0.04, 0.04), h + 0.04), PETAL_WHITE, segs=(3, 2))
+	return p.build()
+
+
+def pebbles():
+	p = Prop("pebbles", 55)
+	for k in range(5):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.4)
+		s = p.rng.uniform(0.12, 0.3)
+		p.rock((s, s * 0.9, s * 0.6), (math.cos(a) * r, math.sin(a) * r, s * 0.15), STONE_DARK, jitter=0.1)
+	return p.build()
+
+
+def log_fallen():
+	p = Prop("log_fallen", 57)
+	p.seg((-1.6, 0, 0.3), (1.6, 0.1, 0.26), 0.32, 0.27, WOOD, sides=7, grad=(0.1, 1.0))
+	p.seg((1.6, 0.1, 0.26), (1.66, 0.1, 0.26), 0.25, 0.25, HIDE, sides=7)            # cut end
+	p.seg((0.2, 0, 0.5), (0.5, -0.35, 0.95), 0.07, 0.03, WOOD, sides=4)               # broken branch
+	for k in range(3):
+		p.blob((0.3, 0.2, 0.08), (p.rng.uniform(-1.2, 1.0), 0.05, 0.58), LEAF, grad=(0.2, 0.6))  # moss
+	return p.build()
+
+
+def stump():
+	p = Prop("stump", 59)
+	p.seg((0, 0, -0.1), (0, 0, 0.45), 0.36, 0.3, WOOD, sides=7, grad=(0.2, 1.0))
+	p.seg((0, 0, 0.45), (0, 0, 0.47), 0.29, 0.29, HIDE, sides=7)
+	for k in range(4):
+		a = k * math.tau / 4 + 0.4
+		p.seg((0, 0, 0.1), (math.cos(a) * 0.55, math.sin(a) * 0.55, -0.05), 0.1, 0.05, WOOD, sides=4)
+	p.blob((0.12, 0.12, 0.06), (0.25, 0.1, 0.3), MUSHROOM, segs=(5, 3))
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -500,6 +612,18 @@ PROPS = {
 	"market_stall": market_stall,
 	"well": well,
 	"signpost": signpost,
+	"grass_a": lambda: grass("grass_a", 61, 11, 0.42),
+	"grass_b": lambda: grass("grass_b", 62, 7, 0.28),
+	"flowers_yellow": lambda: flowers("flowers_yellow", 63, PETAL_YELLOW),
+	"flowers_purple": lambda: flowers("flowers_purple", 64, PETAL_PURPLE),
+	"flowers_white": lambda: flowers("flowers_white", 65, PETAL_WHITE),
+	"fern": fern,
+	"bush_a": lambda: bush("bush_a", 66, 4),
+	"bush_b": lambda: bush("bush_b", 67, 6),
+	"mushrooms": mushrooms,
+	"pebbles": pebbles,
+	"log_fallen": log_fallen,
+	"stump": stump,
 }
 
 

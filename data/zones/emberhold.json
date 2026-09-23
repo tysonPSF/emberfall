@@ -445,5 +445,132 @@
     "color": "#6b6a45",
     "radius": 58,
     "amount": 0.55
+  },
+  "clutter": {
+    "grass_a": {
+      "density": 0.55,
+      "patch": 0.55,
+      "sway": 0.16,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.35
+      ],
+      "city": 0.2
+    },
+    "grass_b": {
+      "density": 0.6,
+      "patch": 0.35,
+      "sway": 0.14,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ],
+      "city": 0.3
+    },
+    "flowers_yellow": {
+      "density": 0.012,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.2
+    },
+    "flowers_purple": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "flowers_white": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.1
+    },
+    "fern": {
+      "density": 0.007,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 65,
+      "scale": [
+        0.9,
+        1.5
+      ]
+    },
+    "bush_a": {
+      "density": 0.0025,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "bush_b": {
+      "density": 0.0018,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.5
+      ]
+    },
+    "mushrooms": {
+      "density": 0.0025,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "pebbles": {
+      "density": 0.005,
+      "patch": 0.4,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.6
+      ],
+      "city": 0.5
+    },
+    "log_fallen": {
+      "density": 0.00035,
+      "patch": 0.3,
+      "range": 120,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "stump": {
+      "density": 0.0005,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
   }
 }
