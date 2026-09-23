@@ -54,7 +54,9 @@ func _start_game(save: Dictionary, title: CharCreate) -> void:
 	add_child(marker)
 	hud.show_banner("Entering %s" % zone.zone_name)
 	World.say(player, "Welcome to %s, %s. Press H for controls." % [zone.zone_name, player.display_name])
-	World.zone_change.connect(_on_zone_change)
+	if not World.zone_change.is_connected(_on_zone_change):
+		World.zone_change.connect(_on_zone_change)
+		World.camped.connect(_on_camped)
 	_save()
 
 
@@ -70,6 +72,29 @@ func _enter_zone(zone_id: String, pos: Vector3, face := Vector2.INF) -> void:
 		var d := face - Vector2(pos.x, pos.z)
 		player.rotation.y = atan2(-d.x, -d.y)
 	zone.restore_corpses(_corpses_by_zone.get(zone_id, []))
+
+
+## Camping finished: save, leave the world, and go back to the character screen.
+func _on_camped(p: Player) -> void:
+	if p != player:
+		return
+	_save()
+	for node: Node in [hud, zone]:
+		node.queue_free()
+	for child in get_children():
+		if child is TargetMarker:
+			child.queue_free()
+	zone.remove_child(player)
+	player.queue_free()
+	player = null
+	zone = null
+	hud = null
+	World.local_player = null
+	World.zone = null
+	var title := CharCreate.new()
+	title.setup(_load_save())
+	title.confirmed.connect(_start_game.bind(title))
+	add_child(title)
 
 
 func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2) -> void:

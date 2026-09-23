@@ -14,6 +14,7 @@ signal player_died(player: Player)
 signal trade_opened(npc: Npc)
 signal trade_changed
 signal trade_closed
+signal camped(player: Player)
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
@@ -159,6 +160,8 @@ func _physics_process(delta: float) -> void:
 			_update_melee(obj)
 		if obj is Player and (obj as Player).trade_npc_id >= 0:
 			_check_trade(obj)
+		if obj is Player and (obj as Player).camp_left > 0.0:
+			_update_camp(obj, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -396,7 +399,7 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if not c.cast.is_empty():
 		return
 	if c.cooldowns.has(spell_id):
-		say(c, "You haven't recovered yet...", C_WARN)
+		say(c, "You haven't recovered yet. %s is ready in %ds." % [s["name"], ceili(float(c.cooldowns[spell_id]))], C_WARN)
 		return
 	if c.mana < int(s.get("mana", 0)):
 		say(c, "Insufficient Mana to cast this spell!", C_WARN)
@@ -847,3 +850,33 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 		request_interrupt(player_id)
 	var face: Array = zl.get("arrive_face", zl["arrive"])
 	zone_change.emit(p, str(zl["to"]), Vector2(zl["arrive"][0], zl["arrive"][1]), Vector2(face[0], face[1]))
+
+
+# --- camping (logging out) --------------------------------------------------
+
+## Starts camping: the player sits, and after camp_seconds without standing
+## up they leave the world (main saves and shows the character screen).
+func request_camp(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or p.camp_left > 0.0:
+		return
+	request_trade_cancel(player_id)
+	request_loot_close(player_id)
+	p.auto_attack = false
+	request_sit(player_id, true)
+	if not p.sitting:
+		say(p, "You can't camp right now.", C_WARN)
+		return
+	p.camp_left = float(cfg("camp_seconds", 20.0))
+	say(p, "It will take you about %d seconds to prepare your camp." % int(p.camp_left), C_SYSTEM)
+
+
+func _update_camp(p: Player, delta: float) -> void:
+	if p.dead or not p.sitting:
+		p.camp_left = 0.0
+		say(p, "You abandon your preparations to camp.", C_WARN)
+		return
+	p.camp_left -= delta
+	if p.camp_left <= 0.0:
+		p.camp_left = 0.0
+		camped.emit(p)

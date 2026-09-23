@@ -12,6 +12,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Trade[/b]   G to trade with your target · click bag items to offer them (quest turn-ins)
+[b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H to hide this."""
 
@@ -31,6 +32,9 @@ var _target_panel: PanelContainer
 var _target_name: Label
 var _target_bar: ProgressBar
 var _target_text: Label
+var _attack_tag: Label
+
+var _menu_panel: PanelContainer
 
 var _cast_panel: PanelContainer
 var _cast_bar: ProgressBar
@@ -86,6 +90,7 @@ func _ready() -> void:
 	_build_inventory()
 	_build_help()
 	_build_overlays()
+	_build_menu()
 	World.log_message.connect(add_log)
 	World.loot_opened.connect(_on_loot_opened)
 	World.loot_changed.connect(_on_loot_opened)
@@ -167,6 +172,9 @@ func _build_target_window() -> void:
 	row.add_child(_target_bar)
 	row.add_child(_target_text)
 	v.add_child(row)
+	_attack_tag = UIKit.label("AUTO ATTACK", 12, Color(1, 0.4, 0.35))
+	_attack_tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(_attack_tag)
 	_target_panel.visible = false
 
 
@@ -362,6 +370,35 @@ func _build_help() -> void:
 	_help_panel.add_child(t)
 
 
+## Esc menu: camp (log out), controls, back to the game.
+func _build_menu() -> void:
+	_menu_panel = UIKit.panel()
+	UIKit.place(_menu_panel, Vector2(0.5, 0.5), Vector2(0, 0))
+	root.add_child(_menu_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 240
+	v.add_theme_constant_override("separation", 8)
+	_menu_panel.add_child(v)
+	var title := UIKit.label("Emberfall", 18, UIKit.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(title)
+	var camp := UIKit.button("Camp  (log out)", Vector2(0, 38))
+	camp.pressed.connect(func() -> void:
+		_menu_panel.visible = false
+		World.request_camp(player.entity_id))
+	v.add_child(camp)
+	var controls := UIKit.button("Controls", Vector2(0, 38))
+	controls.pressed.connect(func() -> void:
+		_menu_panel.visible = false
+		_help_panel.visible = true
+		_inv_panel.visible = false)
+	v.add_child(controls)
+	var resume := UIKit.button("Back to the game", Vector2(0, 38))
+	resume.pressed.connect(func() -> void: _menu_panel.visible = false)
+	v.add_child(resume)
+	_menu_panel.visible = false
+
+
 func _build_overlays() -> void:
 	_banner = UIKit.label("", 30, UIKit.GOLD)
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -418,22 +455,29 @@ func _update_target() -> void:
 		var pct := 100.0 * maxf(e.hp, 0) / e.max_hp
 		_target_bar.value = pct
 		_target_text.text = " %d%%" % int(ceil(pct))
+		_attack_tag.visible = player.auto_attack
 	elif t is Corpse:
 		_target_name.text = (t as Corpse).display_name
 		_target_name.add_theme_color_override("font_color", UIKit.DIM)
 		_target_bar.value = 0
 		_target_text.text = ""
+		_attack_tag.visible = false
 
 
 func _update_cast() -> void:
-	_cast_panel.visible = not player.cast.is_empty()
-	if _cast_panel.visible:
+	_cast_panel.visible = not player.cast.is_empty() or player.camp_left > 0.0
+	if not player.cast.is_empty():
 		_cast_label.text = GameData.spells[player.cast["spell"]]["name"]
 		_cast_bar.value = 100.0 * player.cast["time"] / player.cast["total"]
+	elif player.camp_left > 0.0:
+		var total := float(World.cfg("camp_seconds", 20.0))
+		_cast_label.text = "Camping... %ds" % ceili(player.camp_left)
+		_cast_bar.value = 100.0 * (1.0 - player.camp_left / total)
 
 
 func _update_hotbar() -> void:
-	_attack_button.modulate = Color(1, 0.45, 0.4) if player.auto_attack else Color.WHITE
+	_attack_button.text = "Q  Attacking" if player.auto_attack else "Q  Attack"
+	_attack_button.modulate = Color(1, 0.35, 0.3) if player.auto_attack else Color.WHITE
 	_sit_button.text = "X  Stand" if player.sitting else "X  Sit"
 	for i in mini(_spell_buttons.size(), player.spells.size()):
 		var spell_id: String = player.spells[i]
@@ -599,4 +643,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif _inv_panel.visible:
 			_inv_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _menu_panel.visible:
+			_menu_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif player != null and player.cast.is_empty() and not is_instance_valid(player.target):
+			_menu_panel.visible = true  # nothing else to cancel: open the menu
 			get_viewport().set_input_as_handled()

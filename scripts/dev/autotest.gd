@@ -143,6 +143,9 @@ func _run() -> void:
 	p.global_position = skel.global_position + Vector3(0, 1, 5)
 	p.face_toward(skel.global_position)
 	World.request_set_target(p.entity_id, skel.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	World.request_cast(p.entity_id, "gate")
+	World.request_interrupt(p.entity_id)
 	p.camera_pivot.rotation.y = 2.4
 	p.zoom = 7.0
 	await _wait(1.6)
@@ -231,6 +234,24 @@ func _run() -> void:
 	await _wait(2.5)
 	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])
 	await _shot("7g_back_in_greenmoor")
+
+	# camp out to the character screen, then continue back in
+	GameData.config["camp_seconds"] = 2.0
+	World.request_camp(p.entity_id)
+	await _wait(1.0)
+	await _shot("8_camping")
+	await _wait(1.8)
+	var title: CharCreate = null
+	for c in main.get_children():
+		if c is CharCreate:
+			title = c
+	print("after camp: title=%s player=%s" % [title != null, World.local_player])
+	await _wait(0.3)
+	await _shot("8b_character_screen")
+	title.confirmed.emit(title.existing)
+	await _wait(2.0)
+	print("continued: zone=%s player=%s level=%d" % [main.zone.zone_id, World.local_player.display_name, World.local_player.level])
+	await _shot("8c_continued")
 	print("AUTOTEST DONE")
 	get_tree().quit()
 

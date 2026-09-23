@@ -23,6 +23,7 @@ var equipment: Dictionary = {}
 var quests: Dictionary = {}  # quest id -> {active, completions}
 var trade_npc_id := -1  # npc entity id while a trade window is open
 var trade_items: Array = []  # items offered in the open trade
+var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
 var body_color := Color.WHITE
 
 var camera_pivot: Node3D
