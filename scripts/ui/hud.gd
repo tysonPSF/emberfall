@@ -11,7 +11,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
-[b]Trade[/b]   G to trade with your target · click bag items to offer them (quest turn-ins)
+[b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H to hide this."""
@@ -53,6 +53,16 @@ var _trade_title: Label
 var _trade_slots: Array[Button] = []
 var _bag_hint: Label
 
+var _service_panel: PanelContainer
+var _service_title: Label
+var _service_hint: Label
+var _shop_list: VBoxContainer
+var _shop_scroll: ScrollContainer
+var _bank_box: VBoxContainer
+var _bank_grid: GridContainer
+var _bank_coin_label: Label
+var _service_npc: Npc
+
 var _quest_panel: PanelContainer
 var _quest_label: RichTextLabel
 
@@ -87,6 +97,7 @@ func _ready() -> void:
 	_build_quest_tracker()
 	_build_loot_window()
 	_build_trade_window()
+	_build_service_window()
 	_build_inventory()
 	_build_help()
 	_build_overlays()
@@ -96,6 +107,12 @@ func _ready() -> void:
 	World.loot_changed.connect(_on_loot_opened)
 	World.loot_closed.connect(_on_loot_closed)
 	World.player_died.connect(_on_player_died)
+	World.service_opened.connect(_on_service_opened)
+	World.service_changed.connect(_refresh_service)
+	World.service_closed.connect(func() -> void:
+		_service_panel.visible = false
+		_service_npc = null
+		_refresh_inventory())
 	World.trade_opened.connect(_on_trade_opened)
 	World.trade_changed.connect(_refresh_trade)
 	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
@@ -314,6 +331,99 @@ func _build_trade_window() -> void:
 	row.add_child(cancel)
 	v.add_child(row)
 	_trade_panel.visible = false
+
+
+## Merchant shop or bank, whichever the npc offers.
+func _build_service_window() -> void:
+	_service_panel = UIKit.panel()
+	UIKit.place(_service_panel, Vector2(0.5, 0.5), Vector2(-240, -60))
+	root.add_child(_service_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 330
+	v.add_theme_constant_override("separation", 6)
+	_service_panel.add_child(v)
+	_service_title = UIKit.label("", 15, UIKit.GOLD)
+	v.add_child(_service_title)
+	_service_hint = UIKit.label("", 12, UIKit.DIM)
+	v.add_child(_service_hint)
+	_shop_scroll = ScrollContainer.new()
+	_shop_scroll.custom_minimum_size = Vector2(330, 300)
+	_shop_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(_shop_scroll)
+	_shop_list = VBoxContainer.new()
+	_shop_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_shop_scroll.add_child(_shop_list)
+	_bank_box = VBoxContainer.new()
+	v.add_child(_bank_box)
+	_bank_grid = GridContainer.new()
+	_bank_grid.columns = 4
+	_bank_box.add_child(_bank_grid)
+	_bank_coin_label = UIKit.label("", 13, UIKit.GOLD)
+	_bank_box.add_child(_bank_coin_label)
+	var coin_row := HBoxContainer.new()
+	var dep := UIKit.button("Deposit all coin")
+	dep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	dep.pressed.connect(func() -> void: World.request_bank_coin(player.entity_id, player.coin))
+	var wd := UIKit.button("Withdraw all coin")
+	wd.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wd.pressed.connect(func() -> void: World.request_bank_coin(player.entity_id, -player.bank_coin))
+	coin_row.add_child(dep)
+	coin_row.add_child(wd)
+	_bank_box.add_child(coin_row)
+	var done := UIKit.button("Done")
+	done.pressed.connect(func() -> void: World.request_service_close(player.entity_id))
+	v.add_child(done)
+	_service_panel.visible = false
+
+
+func _on_service_opened(npc: Npc, kind: String) -> void:
+	_service_npc = npc
+	_service_title.text = npc.display_name if kind == "shop" else "%s  -  Hearthbank" % npc.display_name
+	_service_hint.text = "Click an item to buy it. Click items in your bags to sell them." if kind == "shop" \
+			else "Click items in your bags to deposit them; click a bank slot to take it back."
+	_shop_scroll.visible = kind == "shop"
+	_bank_box.visible = kind == "bank"
+	_service_panel.visible = true
+	_inv_panel.visible = true
+	_help_panel.visible = false
+	_refresh_service()
+	_refresh_inventory()
+
+
+func _refresh_service() -> void:
+	if _service_npc == null or not is_instance_valid(_service_npc):
+		return
+	if player.service == "shop":
+		for child in _shop_list.get_children():
+			child.queue_free()
+		for ware: Dictionary in World.merchant_wares(_service_npc):
+			var item_id: String = ware["item"]
+			var count := int(ware["count"])
+			var text := "%s   %s" % [GameData.item_name(item_id), World.format_coin(int(ware["price"]))]
+			if count > 0:
+				text += "   (%d)" % count
+			var b := UIKit.button(text)
+			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			b.add_theme_font_size_override("font_size", 12)
+			b.tooltip_text = _item_tooltip(item_id)
+			b.disabled = player.coin < int(ware["price"])
+			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id))
+			_shop_list.add_child(b)
+	else:
+		for child in _bank_grid.get_children():
+			child.queue_free()
+		for i in int(World.cfg("bank_slots", 16)):
+			var b := UIKit.button("", Vector2(78, 34))
+			b.clip_text = true
+			b.add_theme_font_size_override("font_size", 10)
+			if i < player.bank_items.size():
+				b.text = GameData.item_name(player.bank_items[i])
+				b.tooltip_text = _item_tooltip(player.bank_items[i]) + "\nClick to withdraw."
+				b.pressed.connect(func() -> void: World.request_bank_withdraw(player.entity_id, i))
+			else:
+				b.disabled = true
+			_bank_grid.add_child(b)
+		_bank_coin_label.text = "In the bank: %s" % World.format_coin(player.bank_coin)
 
 
 func _on_trade_opened(npc: Npc) -> void:
@@ -599,16 +709,30 @@ func _refresh_inventory() -> void:
 			var item_id: String = player.inventory[i]
 			b.text = GameData.item_name(item_id)
 			b.tooltip_text = _item_tooltip(item_id)
+			if player.service == "shop" and _service_npc != null:
+				var price := World.sell_price(_service_npc, item_id)
+				b.tooltip_text += "\n%s" % ("Sells for %s." % World.format_coin(price) if price > 0 else "The merchant won't buy this.")
 			b.pressed.connect(func() -> void:
 				if player.trade_npc_id >= 0:
 					World.request_trade_add(player.entity_id, i)
+				elif player.service == "shop":
+					World.request_sell(player.entity_id, i)
+				elif player.service == "bank":
+					World.request_bank_deposit(player.entity_id, i)
 				else:
 					World.request_equip(player.entity_id, i))
 		else:
 			b.disabled = true
 		_bag_grid.add_child(b)
 	_coin_label.text = World.format_coin(player.coin)
-	_bag_hint.text = "Bags  (click an item to %s)" % ("offer it" if player.trade_npc_id >= 0 else "equip it")
+	var action := "equip it"
+	if player.trade_npc_id >= 0:
+		action = "offer it"
+	elif player.service == "shop":
+		action = "sell it"
+	elif player.service == "bank":
+		action = "bank it"
+	_bag_hint.text = "Bags  (click an item to %s)" % action
 
 
 func _item_tooltip(item_id: String) -> String:
@@ -622,8 +746,8 @@ func _item_tooltip(item_id: String) -> String:
 		lines.append("AC %d" % int(it["ac"]))
 	if it.has("hp"):
 		lines.append("HP +%d" % int(it["hp"]))
-	if not it.has("slot"):
-		lines.append("(Trade goods — vendors will want these later.)")
+	if int(it.get("value", 0)) > 0:
+		lines.append("Value: %s" % World.format_coin(int(it["value"])))
 	return "\n".join(lines)
 
 
@@ -635,7 +759,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_help_panel.visible = not _help_panel.visible
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _trade_panel.visible:
+		if _service_panel.visible:
+			World.request_service_close(player.entity_id)
+			get_viewport().set_input_as_handled()
+		elif _trade_panel.visible:
 			World.request_trade_cancel(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _loot_panel.visible:

@@ -24,6 +24,10 @@ var quests: Dictionary = {}  # quest id -> {active, completions}
 var trade_npc_id := -1  # npc entity id while a trade window is open
 var trade_items: Array = []  # items offered in the open trade
 var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
+var service_npc_id := -1  # merchant or banker whose window is open
+var service := ""  # "shop" or "bank" while service_npc_id is set
+var bank_items: Array = []
+var bank_coin := 0
 var body_color := Color.WHITE
 
 var camera_pivot: Node3D
@@ -43,6 +47,8 @@ func from_save(d: Dictionary) -> void:
 	coin = int(d.get("coin", 0))
 	inventory = (d.get("inventory", []) as Array).duplicate()
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
+	bank_items = (d.get("bank_items", []) as Array).duplicate()
+	bank_coin = int(d.get("bank_coin", 0))
 	var cls: Dictionary = GameData.classes[char_class]
 	if d.has("equipment"):
 		equipment = (d["equipment"] as Dictionary).duplicate()
@@ -61,7 +67,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "hp": maxi(hp, 1), "mana": mana,
+		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "bank_items": bank_items, "bank_coin": bank_coin, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
@@ -206,7 +212,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("hail"):
 		World.request_hail(entity_id)
 	elif event.is_action_pressed("trade"):
-		World.request_trade_open(entity_id)
+		World.request_interact(entity_id)
 	elif event.is_action_pressed("loot"):
 		if is_instance_valid(target) and target is Corpse:
 			World.request_loot_open(entity_id, (target as Corpse).object_id)

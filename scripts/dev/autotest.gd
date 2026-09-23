@@ -230,6 +230,44 @@ func _run() -> void:
 			World.request_set_target(p.entity_id, (obj as Npc).entity_id)
 			World.request_hail(p.entity_id)
 			World.request_say(p.entity_id, "emberfall")
+	# merchants and the bank
+	p.coin = 1000
+	for item_id in ["gnoll_fang", "gnoll_fang", "gnoll_fang", "rat_whiskers"]:
+		p.inventory.append(item_id)
+	p.inventory_changed.emit()
+	var npcs := {}
+	for obj: Node3D in World.objects.values():
+		if obj is Npc:
+			npcs[(obj as Npc).npc_id] = obj
+	var tovin: Npc = npcs["merchant_tovin"]
+	p.global_position = tovin.global_position + (-tovin.global_transform.basis.z) * 2.5 + Vector3.UP * 0.5
+	p.face_toward(tovin.global_position)
+	p.zoom = 6.0
+	p.pitch = -0.3
+	World.request_set_target(p.entity_id, tovin.entity_id)
+	World.request_hail(p.entity_id)
+	World.request_interact(p.entity_id)
+	var coin0 := p.coin
+	World.request_sell(p.entity_id, p.inventory.find("gnoll_fang"))
+	World.request_sell(p.entity_id, p.inventory.find("gnoll_fang"))
+	World.request_buy(p.entity_id, "leather_cap")
+	World.request_buy(p.entity_id, "gnoll_fang")  # buy one back from his stock
+	print("shop: coin %d -> %d fangs=%d cap=%s stock=%s" % [coin0, p.coin, p.inventory.count("gnoll_fang"), "leather_cap" in p.inventory, World.merchant_stock])
+	await _wait(0.5)
+	await _shot("7h_shop")
+	var odile: Npc = npcs["banker_odile"]
+	p.global_position = odile.global_position + (-odile.global_transform.basis.z) * 2.5 + Vector3.UP * 0.5
+	World.request_set_target(p.entity_id, odile.entity_id)
+	World.request_interact(p.entity_id)
+	World.request_bank_deposit(p.entity_id, p.inventory.find("rat_whiskers"))
+	World.request_bank_deposit(p.entity_id, p.inventory.find("leather_cap"))
+	World.request_bank_coin(p.entity_id, 500)
+	World.request_bank_withdraw(p.entity_id, 1)
+	print("bank: items=%s coin=%d purse=%d cap_back=%s" % [p.bank_items, p.bank_coin, p.coin, "leather_cap" in p.inventory])
+	await _wait(0.5)
+	await _shot("7i_bank")
+	World.request_service_close(p.entity_id)
+
 	p.global_position = main.zone.ground(0, -97) + Vector3.UP
 	await _wait(2.5)
 	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])

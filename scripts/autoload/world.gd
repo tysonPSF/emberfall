@@ -15,6 +15,9 @@ signal trade_opened(npc: Npc)
 signal trade_changed
 signal trade_closed
 signal camped(player: Player)
+signal service_opened(npc: Npc, kind: String)  # kind: "shop" or "bank"
+signal service_changed
+signal service_closed
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
@@ -55,6 +58,7 @@ var local_player: Player = null
 var zone: Zone = null
 var tick_timer := 0.0
 var _range_warn_cooldown := 0.0
+var merchant_stock: Dictionary = {}  # merchant npc id -> {item id: count} bought from players
 
 
 # --- registry ---------------------------------------------------------------
@@ -160,6 +164,8 @@ func _physics_process(delta: float) -> void:
 			_update_melee(obj)
 		if obj is Player and (obj as Player).trade_npc_id >= 0:
 			_check_trade(obj)
+		if obj is Player and (obj as Player).service_npc_id >= 0:
+			_check_service(obj)
 		if obj is Player and (obj as Player).camp_left > 0.0:
 			_update_camp(obj, delta)
 	tick_timer += delta
@@ -298,6 +304,7 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 
 func _kill_player(p: Player, killer: Entity) -> void:
 	request_trade_cancel(p.entity_id)
+	request_service_close(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
 	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)))
 	if loss > 0 and p.xp > 0:
@@ -643,6 +650,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	say(p, "You say, '%s'" % ("Hail, %s" % npc.display_name if key == "hail" else cap(key)), C_SAY)
 	var lines: Dictionary = npc.data.get("dialogue", {})
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
+	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
+		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
 	if key == "hail":
 		for quest_id: String in p.quests:
 			var q: Dictionary = GameData.quests.get(quest_id, {})
@@ -842,6 +851,7 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 		return
 	var zl: Dictionary = zone.data["zone_lines"][line_index]
 	request_trade_cancel(player_id)
+	request_service_close(player_id)
 	request_loot_close(player_id)
 	p.auto_attack = false
 	p.target = null
@@ -861,6 +871,7 @@ func request_camp(player_id: int) -> void:
 	if p == null or p.dead or p.camp_left > 0.0:
 		return
 	request_trade_cancel(player_id)
+	request_service_close(player_id)
 	request_loot_close(player_id)
 	p.auto_attack = false
 	request_sit(player_id, true)
@@ -880,3 +891,176 @@ func _update_camp(p: Player, delta: float) -> void:
 	if p.camp_left <= 0.0:
 		p.camp_left = 0.0
 		camped.emit(p)
+
+
+# --- merchants & bank -------------------------------------------------------
+
+## G on an npc: a merchant opens their shop, a banker the bank, anyone else
+## the give window (quest turn-ins).
+func request_interact(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var npc := p.valid_target_entity() as Npc
+	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false)):
+		request_trade_open(player_id)
+		return
+	if p.distance_to(npc) > TALK_RANGE:
+		say(p, "You are too far away from %s." % npc.display_name, C_WARN)
+		return
+	request_trade_cancel(player_id)
+	request_loot_close(player_id)
+	request_service_close(player_id)
+	p.service_npc_id = npc.entity_id
+	p.service = "shop" if npc.data.has("merchant") else "bank"
+	npc.greet(p)
+	if p == local_player:
+		service_opened.emit(npc, p.service)
+
+
+func request_service_close(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.service_npc_id < 0:
+		return
+	p.service_npc_id = -1
+	p.service = ""
+	if p == local_player:
+		service_closed.emit()
+
+
+## The npc whose shop or bank this player has open, if still in reach.
+func _service_npc(p: Player, kind: String) -> Npc:
+	if p.service != kind:
+		return null
+	var npc := get_object(p.service_npc_id) as Npc
+	if npc == null or p.distance_to(npc) > TALK_RANGE:
+		request_service_close(p.entity_id)
+		return null
+	return npc
+
+
+func _check_service(p: Player) -> void:
+	var npc := get_object(p.service_npc_id)
+	if npc == null or p.distance_to(npc) > TALK_RANGE:
+		say(p, "You walk away from %s." % (npc.display_name if npc != null else "the counter"), C_SYSTEM)
+		request_service_close(p.entity_id)
+
+
+static func item_value(item_id: String) -> int:
+	return int(GameData.items.get(item_id, {}).get("value", 0))
+
+
+## What a merchant pays for one of these.
+static func sell_price(npc: Npc, item_id: String) -> int:
+	var value := item_value(item_id)
+	return 0 if value <= 0 else maxi(1, int(value * float(npc.data["merchant"].get("buy_rate", 0.25))))
+
+
+## Everything a merchant offers: their own goods (always in stock) plus what
+## players have sold them, as [{item, price, count (-1 = unlimited)}].
+func merchant_wares(npc: Npc) -> Array:
+	var out: Array = []
+	for item_id: String in npc.data["merchant"].get("sells", []):
+		out.append({"item": item_id, "price": item_value(item_id), "count": -1})
+	var extra: Dictionary = merchant_stock.get(npc.npc_id, {})
+	for item_id: String in extra:
+		if not item_id in npc.data["merchant"].get("sells", []):
+			out.append({"item": item_id, "price": item_value(item_id), "count": int(extra[item_id])})
+	return out
+
+
+func request_buy(player_id: int, item_id: String) -> void:
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var npc := _service_npc(p, "shop")
+	if npc == null:
+		return
+	var sold_back: Dictionary = merchant_stock.get(npc.npc_id, {})
+	var stocked: bool = item_id in npc.data["merchant"].get("sells", []) or int(sold_back.get(item_id, 0)) > 0
+	var price := item_value(item_id)
+	if not stocked or price <= 0:
+		return
+	if p.coin < price:
+		say(p, "You can't afford the %s." % GameData.item_name(item_id), C_WARN)
+		return
+	if p.inventory.size() >= int(cfg("inventory_slots", 24)):
+		say(p, "Your inventory is full.", C_WARN)
+		return
+	p.coin -= price
+	p.inventory.append(item_id)
+	if not item_id in npc.data["merchant"].get("sells", []):
+		sold_back[item_id] = int(sold_back[item_id]) - 1
+		if sold_back[item_id] <= 0:
+			sold_back.erase(item_id)
+	say(p, "You buy a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
+	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()
+
+
+func request_sell(player_id: int, inv_index: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or inv_index < 0 or inv_index >= p.inventory.size():
+		return
+	var npc := _service_npc(p, "shop")
+	if npc == null:
+		return
+	var item_id: String = p.inventory[inv_index]
+	var price := sell_price(npc, item_id)
+	if price <= 0:
+		say(p, "%s isn't interested in that." % npc.display_name, C_WARN)
+		return
+	p.inventory.remove_at(inv_index)
+	p.coin += price
+	var stock: Dictionary = merchant_stock.get_or_add(npc.npc_id, {})
+	if not item_id in npc.data["merchant"].get("sells", []):
+		stock[item_id] = int(stock.get(item_id, 0)) + 1
+	say(p, "You sell a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
+	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()
+
+
+func request_bank_deposit(player_id: int, inv_index: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or inv_index < 0 or inv_index >= p.inventory.size() or _service_npc(p, "bank") == null:
+		return
+	if p.bank_items.size() >= int(cfg("bank_slots", 16)):
+		say(p, "Your bank is full.", C_WARN)
+		return
+	p.bank_items.append(p.inventory[inv_index])
+	p.inventory.remove_at(inv_index)
+	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()
+
+
+func request_bank_withdraw(player_id: int, bank_index: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or bank_index < 0 or bank_index >= p.bank_items.size() or _service_npc(p, "bank") == null:
+		return
+	if p.inventory.size() >= int(cfg("inventory_slots", 24)):
+		say(p, "Your inventory is full.", C_WARN)
+		return
+	p.inventory.append(p.bank_items[bank_index])
+	p.bank_items.remove_at(bank_index)
+	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()
+
+
+## Moves coin between purse and bank; positive deposits, negative withdraws.
+func request_bank_coin(player_id: int, amount: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or _service_npc(p, "bank") == null:
+		return
+	var moved := clampi(amount, -p.bank_coin, p.coin)
+	if moved == 0:
+		return
+	p.coin -= moved
+	p.bank_coin += moved
+	say(p, "You %s %s." % ["deposit" if moved > 0 else "withdraw", format_coin(absi(moved))], C_LOOT)
+	p.inventory_changed.emit()
+	if p == local_player:
+		service_changed.emit()

@@ -61,5 +61,61 @@
       "bindstone": "The hearth here, and the old obelisk in Greenmoor. When you fall, you wake at the bindstone of the land you fell in. Your belongings, sadly, stay where you dropped.",
       "unknown": "Many things are forgotten, {name}, but not that one. I don't know it."
     }
+  },
+  "merchant_tovin": {
+    "name": "Tovin the Provisioner",
+    "level": 15,
+    "model": "rogue",
+    "weapon": "",
+    "merchant": {
+      "sells": [
+        "leather_cap",
+        "leather_tunic",
+        "leather_leggings",
+        "cloth_cap",
+        "patchwork_pants"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Welcome, welcome, {name}! Leathers for the road, and I'll take whatever you drag back from it. Fangs, eyes, [whiskers], it's all coin to me.",
+      "whiskers": "Rat whiskers! Brush-makers in the lower city can't get enough. Don't ask me why.",
+      "unknown": "I only know prices, {name}. Ask the Keeper for the rest."
+    }
+  },
+  "smith_garrow": {
+    "name": "Garrow the Smith",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "merchant": {
+      "sells": [
+        "iron_dagger",
+        "iron_short_sword",
+        "iron_hand_axe",
+        "oak_staff",
+        "iron_coif",
+        "iron_greaves",
+        "studded_tunic"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Hmph. Iron's good, steel's better, and I've only got iron this season. The [gnolls] keep hitting the ore carts.",
+      "gnolls": "Take your complaint to Warden Holt, not me. Or take a sword to them. I'll sell you one.",
+      "unknown": "I work metal, {name}, not riddles."
+    }
+  },
+  "banker_odile": {
+    "name": "Banker Odile",
+    "level": 15,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "banker": true,
+    "dialogue": {
+      "hail": "The Hearthbank of Emberhold, at your service, {name}. What you leave with me stays safe when you [fall].",
+      "fall": "Fall in the wilds and what you carry stays on your corpse. What's in my vault stays in my vault. Choose wisely what you carry.",
+      "unknown": "I'm afraid I only keep accounts, {name}."
+    }
   }
 }
