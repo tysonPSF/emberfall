@@ -745,7 +745,7 @@ func _close_trade(p: Player) -> void:
 func _check_trade(p: Player) -> void:
 	var npc := get_object(p.trade_npc_id)
 	if npc == null or p.distance_to(npc) > TALK_RANGE:
-		say(p, "You moved too far away and the trade was cancelled.", C_WARN)
+		say(p, "You moved too far away and the trade was canceled.", C_WARN)
 		request_trade_cancel(p.entity_id)
 
 

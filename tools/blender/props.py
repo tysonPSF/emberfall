@@ -32,7 +32,7 @@ CLAY = (2, 0)
 WOOD = (4, 0)
 STONE_WARM = (5, 0)
 EMBER = (6, 0)
-WOOD_GREY = (7, 0)
+WOOD_GRAY = (7, 0)
 HIDE = (1, 1)
 LEAF = (1, 2)
 FLAME = (7, 2)
@@ -245,7 +245,7 @@ def tent():
 		p.seg((half + 0.2, y, -0.1), (-0.35, y, h + 0.45), 0.07, 0.05, WOOD, sides=5)
 	p.seg((0, -d / 2 - 0.3, h + 0.02), (0, d / 2 + 0.3, h + 0.02), 0.06, 0.06, WOOD, sides=5)
 	# stitched patches and a bone charm on the ridge
-	p.box((0.5, 0.04, 0.45), (-half * 0.55, d / 2 + 0.05, h * 0.3), WOOD_GREY)
+	p.box((0.5, 0.04, 0.45), (-half * 0.55, d / 2 + 0.05, h * 0.3), WOOD_GRAY)
 	p.blob((0.14, 0.14, 0.3), (0, -d / 2 - 0.1, h - 0.35), BONE, grad=(0.0, 0.5))
 	for s in (-1, 1):
 		p.seg((0, -d / 2 - 0.1, h - 0.2), (0.15 * s, -d / 2 - 0.12, h - 0.02), 0.04, 0.02, BONE, sides=4)
@@ -274,9 +274,9 @@ def torch_post():
 	"""Post for a pack torch; the game sets torch_lit into the cup at 1.75 m."""
 	p = Prop("torch_post", 13)
 	p.seg((0, 0, -0.3), (0, 0, 1.7), 0.09, 0.07, WOOD, sides=6, grad=(0.2, 1.0))
-	p.seg((0, 0, 1.55), (0, 0, 1.78), 0.13, 0.15, WOOD_GREY, sides=6)
+	p.seg((0, 0, 1.55), (0, 0, 1.78), 0.13, 0.15, WOOD_GRAY, sides=6)
 	for s in (-1, 1):
-		p.seg((0, 0, 1.35), (0.09 * s, 0, 1.6), 0.025, 0.02, WOOD_GREY, sides=4)
+		p.seg((0, 0, 1.35), (0.09 * s, 0, 1.6), 0.025, 0.02, WOOD_GRAY, sides=4)
 	return p.build()
 
 
@@ -301,9 +301,9 @@ def palisade():
 		r = 0.2 + p.rng.uniform(-0.02, 0.03)
 		lean = p.rng.uniform(-0.05, 0.05)
 		p.seg((x, 0, -0.3), (x + lean, 0, top), r, r * 0.92, WOOD, sides=6, grad=(0.25, 1.0))
-		p.seg((x + lean, 0, top), (x + lean * 1.1, 0, top + 0.45), r * 0.92, 0.0, WOOD_GREY, sides=6, grad=(0.0, 0.6))
+		p.seg((x + lean, 0, top), (x + lean * 1.1, 0, top + 0.45), r * 0.92, 0.0, WOOD_GRAY, sides=6, grad=(0.0, 0.6))
 	for z in (0.6, 1.6):
-		p.seg((-2.0, 0.2, z), (2.0, 0.2, z + 0.05), 0.05, 0.05, WOOD_GREY, sides=4)
+		p.seg((-2.0, 0.2, z), (2.0, 0.2, z + 0.05), 0.05, 0.05, WOOD_GRAY, sides=4)
 	return p.build()
 
 
@@ -319,7 +319,7 @@ def roof_gable():
 	for s in (1, -1):
 		down = Vector((math.cos(ang) * s, 0, -math.sin(ang)))
 		out = Vector((math.sin(ang) * s, 0, math.cos(ang)))
-		p.box((slope, d, 0.16), Vector((0, 0, h)) + down * slope / 2, WOOD_GREY, rot=(0, math.degrees(ang) * s, 0))
+		p.box((slope, d, 0.16), Vector((0, 0, h)) + down * slope / 2, WOOD_GRAY, rot=(0, math.degrees(ang) * s, 0))
 		for i in range(rows):  # shingle courses, each its own gradient so they read as rows
 			c = Vector((0, 0, h)) + down * slope * (i + 0.55) / rows + out * 0.13
 			p.box((slope / rows * 1.12, d + 0.1, 0.12), c, CLAY, rot=(0, math.degrees(ang) * s, 0), grad=(0.0, 0.9))
@@ -436,7 +436,7 @@ def market_stall():
 		for y in (-0.8, 0.8):
 			p.seg((x, y, -0.1), (x, y, 2.4 if y > 0 else 2.0), 0.07, 0.06, WOOD, sides=5)
 	p.box((2.8, 1.0, 0.9), (0, -0.5, 0.45), WOOD, grad=(0.2, 1.0))
-	p.box((3.0, 1.2, 0.08), (0, -0.5, 0.93), WOOD_GREY)
+	p.box((3.0, 1.2, 0.08), (0, -0.5, 0.93), WOOD_GRAY)
 	stripes = 6
 	ang = math.degrees(math.atan2(0.4, 1.9))
 	for k in range(stripes):
@@ -457,8 +457,8 @@ def well():
 	p.seg((0, 0, 0.3), (0, 0, 0.62), 0.95, 0.95, WATER, sides=10, grad=(0.2, 0.5))
 	for s in (-1, 1):
 		p.seg((s * 1.15, 0, 0), (s * 1.15, 0, 2.3), 0.09, 0.08, WOOD, sides=5)
-	p.seg((-1.25, 0, 1.75), (1.25, 0, 1.75), 0.06, 0.06, WOOD_GREY, sides=5)
-	p.seg((0, 0, 1.75), (0, 0, 1.1), 0.015, 0.015, WOOD_GREY, sides=3)
+	p.seg((-1.25, 0, 1.75), (1.25, 0, 1.75), 0.06, 0.06, WOOD_GRAY, sides=5)
+	p.seg((0, 0, 1.75), (0, 0, 1.1), 0.015, 0.015, WOOD_GRAY, sides=3)
 	p.seg((0, 0, 1.1), (0, 0, 0.8), 0.16, 0.14, WOOD, sides=6)
 	p.box((3.0, 1.2, 0.08), (0, -0.5, 2.55), CLAY, rot=(-35, 0, 0))
 	p.box((3.0, 1.2, 0.08), (0, 0.5, 2.55), CLAY, rot=(35, 0, 0))
@@ -469,10 +469,10 @@ def signpost():
 	"""Two arrow boards; the game writes the destinations on them."""
 	p = Prop("signpost", 45)
 	p.seg((0, 0, -0.3), (0, 0, 2.7), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
-	p.box((1.5, 0.08, 0.34), (0.55, -0.06, 2.25), WOOD_GREY, grad=(0.1, 0.6))
-	p.seg((1.3, -0.06, 2.25), (1.55, -0.06, 2.25), 0.2, 0.0, WOOD_GREY, sides=4, twist=45)
-	p.box((1.3, 0.08, 0.32), (-0.45, 0.06, 1.75), WOOD_GREY, grad=(0.1, 0.6))
-	p.seg((-1.1, 0.06, 1.75), (-1.35, 0.06, 1.75), 0.19, 0.0, WOOD_GREY, sides=4, twist=45)
+	p.box((1.5, 0.08, 0.34), (0.55, -0.06, 2.25), WOOD_GRAY, grad=(0.1, 0.6))
+	p.seg((1.3, -0.06, 2.25), (1.55, -0.06, 2.25), 0.2, 0.0, WOOD_GRAY, sides=4, twist=45)
+	p.box((1.3, 0.08, 0.32), (-0.45, 0.06, 1.75), WOOD_GRAY, grad=(0.1, 0.6))
+	p.seg((-1.1, 0.06, 1.75), (-1.35, 0.06, 1.75), 0.19, 0.0, WOOD_GRAY, sides=4, twist=45)
 	return p.build()
 
 
