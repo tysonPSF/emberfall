@@ -113,9 +113,10 @@ func build_body(shape: String, color: Color, body_scale: float, model_id := "", 
 
 	nameplate = Label3D.new()
 	nameplate.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	nameplate.font_size = 40
-	nameplate.pixel_size = 0.006
-	nameplate.outline_size = 10
+	nameplate.fixed_size = true  # same on-screen size at any distance, like EQ
+	nameplate.font_size = 32
+	nameplate.pixel_size = 0.0009
+	nameplate.outline_size = 8
 	nameplate.position.y = body_height + 0.45
 	nameplate.visibility_range_end = 70.0
 	add_child(nameplate)
