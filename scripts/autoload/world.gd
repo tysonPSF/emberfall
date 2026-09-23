@@ -11,6 +11,9 @@ signal loot_opened(corpse: Corpse)
 signal loot_changed(corpse: Corpse)
 signal loot_closed(corpse: Corpse)  # null = close whatever is open
 signal player_died(player: Player)
+signal trade_opened(npc: Npc)
+signal trade_changed
+signal trade_closed
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
 
@@ -40,6 +43,7 @@ const C_NPC := Color(0.75, 0.9, 1.0)
 
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
+const TRADE_SLOTS := 4
 const CALL_FOR_HELP_RADIUS := 14.0
 const EQUIP_SLOTS: Array[String] = ["primary", "head", "chest", "legs"]
 
@@ -145,6 +149,8 @@ func _physics_process(delta: float) -> void:
 			_update_timers(obj, delta)
 			_update_cast(obj, delta)
 			_update_melee(obj)
+		if obj is Player and (obj as Player).trade_npc_id >= 0:
+			_check_trade(obj)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -276,6 +282,7 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 
 
 func _kill_player(p: Player, killer: Entity) -> void:
+	request_trade_cancel(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
 	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)))
 	if loss > 0 and p.xp > 0:
@@ -496,6 +503,7 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if p.global_position.distance_to(c.global_position) > LOOT_RANGE:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return
+	request_trade_cancel(player_id)
 	if c.owner_name != "" and c.owner_name != p.display_name:
 		say(p, "You may not loot this corpse.", C_WARN)
 		return
@@ -618,10 +626,14 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	var key := keyword.strip_edges().to_lower()
 	npc.greet(p)
 	say(p, "You say, '%s'" % ("Hail, %s" % npc.display_name if key == "hail" else cap(key)), C_SAY)
-	if key == "hail" and _try_turn_in(p, npc):
-		return
 	var lines: Dictionary = npc.data.get("dialogue", {})
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
+	if key == "hail":
+		for quest_id: String in p.quests:
+			var q: Dictionary = GameData.quests.get(quest_id, {})
+			if q.get("giver") == npc.npc_id and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+				_npc_say(p, npc, str(q.get("ready_text", "Hand those over, {name}.")))
+				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q["start_keyword"]):
@@ -642,47 +654,156 @@ func _accept_quest(p: Player, quest_id: String) -> void:
 	p.quests_changed.emit()
 
 
-## Completes the first active quest from this npc whose items the player has.
-func _try_turn_in(p: Player, npc: Npc) -> bool:
-	for quest_id: String in p.quests:
-		var q: Dictionary = GameData.quests.get(quest_id, {})
-		var state: Dictionary = p.quests[quest_id]
-		if q.get("giver") != npc.npc_id or not state.get("active", false) or not quest_items_ready(p, quest_id):
+## Trade window: the player offers up to TRADE_SLOTS items to an npc. Offered
+## items leave the inventory while the window is open, so they can't be spent
+## twice; whatever the npc doesn't take comes back.
+func request_trade_open(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or p.trade_npc_id >= 0:
+		return
+	var npc := p.valid_target_entity() as Npc
+	if npc == null:
+		say(p, "Target someone to trade with them.", C_WARN)
+		return
+	if p.distance_to(npc) > TALK_RANGE:
+		say(p, "You are too far away to trade with %s." % npc.display_name, C_WARN)
+		return
+	request_loot_close(player_id)
+	p.trade_npc_id = npc.entity_id
+	p.trade_items = []
+	npc.greet(p)
+	if p == local_player:
+		trade_opened.emit(npc)
+
+
+func request_trade_add(player_id: int, inv_index: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_npc_id < 0 or inv_index < 0 or inv_index >= p.inventory.size():
+		return
+	if p.trade_items.size() >= TRADE_SLOTS:
+		say(p, "The trade window is full.", C_WARN)
+		return
+	p.trade_items.append(p.inventory[inv_index])
+	p.inventory.remove_at(inv_index)
+	p.inventory_changed.emit()
+	if p == local_player:
+		trade_changed.emit()
+
+
+func request_trade_remove(player_id: int, slot: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_npc_id < 0 or slot < 0 or slot >= p.trade_items.size():
+		return
+	p.inventory.append(p.trade_items[slot])
+	p.trade_items.remove_at(slot)
+	p.inventory_changed.emit()
+	if p == local_player:
+		trade_changed.emit()
+
+
+func request_trade_give(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_npc_id < 0:
+		return
+	var npc := get_object(p.trade_npc_id) as Npc
+	if npc == null or p.distance_to(npc) > TALK_RANGE:
+		request_trade_cancel(player_id)
+		return
+	var offered: Array = p.trade_items
+	p.trade_items = []
+	var left := _npc_take_items(p, npc, offered)
+	if not left.is_empty():
+		var names := PackedStringArray()
+		for item_id: String in left:
+			var n := left.count(item_id)
+			var label := GameData.item_name(item_id) + (" x%d" % n if n > 1 else "")
+			if not label in names:
+				names.append(label)
+		say(p, "%s has no use for %s and hands %s back." % [npc.display_name, ", ".join(names), "it" if left.size() == 1 else "them"], C_SYSTEM)
+		p.inventory.append_array(left)
+	p.inventory_changed.emit()
+	_close_trade(p)
+
+
+func request_trade_cancel(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_npc_id < 0:
+		return
+	p.inventory.append_array(p.trade_items)
+	p.trade_items = []
+	p.inventory_changed.emit()
+	_close_trade(p)
+
+
+func _close_trade(p: Player) -> void:
+	p.trade_npc_id = -1
+	if p == local_player:
+		trade_closed.emit()
+
+
+func _check_trade(p: Player) -> void:
+	var npc := get_object(p.trade_npc_id)
+	if npc == null or p.distance_to(npc) > TALK_RANGE:
+		say(p, "You moved too far away and the trade was cancelled.", C_WARN)
+		request_trade_cancel(p.entity_id)
+
+
+## Hands offered items to an npc: each quest it runs takes every full set of
+## what it wants (a quest you never asked about still counts, as in EQ).
+## Returns the items nobody wanted.
+func _npc_take_items(p: Player, npc: Npc, offered: Array) -> Array:
+	var left := offered.duplicate()
+	for quest_id: String in GameData.quests:
+		var q: Dictionary = GameData.quests[quest_id]
+		if q["giver"] != npc.npc_id:
 			continue
 		var wants: Dictionary = q["wants"]
-		for item_id: String in wants:
-			for k in int(wants[item_id]):
-				p.inventory.erase(item_id)
-		state["completions"] = int(state.get("completions", 0)) + 1
-		state["active"] = bool(q.get("repeatable", false))
-		_npc_say(p, npc, str(q["complete_text"]))
-		var reward: Dictionary = q.get("reward", {})
-		if int(reward.get("coin", 0)) > 0:
-			p.coin += int(reward["coin"])
-			say(p, "You receive %s." % format_coin(int(reward["coin"])), C_LOOT)
-		var item_id := str(q.get("first_reward_item", ""))
-		if state["completions"] == 1 and item_id != "":
-			_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
-			if p.inventory.size() < int(cfg("inventory_slots", 24)):
-				p.inventory.append(item_id)
-				say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
-			else:
-				say(p, "Your inventory is full, so %s keeps the %s for you." % [npc.display_name, GameData.item_name(item_id)], C_WARN)
-				state["completions"] = 0  # offer the item again next time
-		if int(reward.get("xp", 0)) > 0:
-			p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
-		p.inventory_changed.emit()
-		p.quests_changed.emit()
-		return true
-	return false
+		while _has_all(left, wants):
+			var state: Dictionary = p.quests.get(quest_id, {})
+			if int(state.get("completions", 0)) > 0 and not q.get("repeatable", false):
+				break
+			for item_id: String in wants:
+				for k in int(wants[item_id]):
+					left.erase(item_id)
+			_complete_quest(p, npc, quest_id)
+	return left
 
 
-## How many of each wanted item the player carries, capped at what's wanted.
+static func _has_all(items: Array, wants: Dictionary) -> bool:
+	for item_id: String in wants:
+		if items.count(item_id) < int(wants[item_id]):
+			return false
+	return true
+
+
+func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
+	var q: Dictionary = GameData.quests[quest_id]
+	var state: Dictionary = p.quests.get(quest_id, {})
+	state["completions"] = int(state.get("completions", 0)) + 1
+	state["active"] = bool(q.get("repeatable", false))
+	p.quests[quest_id] = state
+	_npc_say(p, npc, str(q["complete_text"]))
+	var reward: Dictionary = q.get("reward", {})
+	if int(reward.get("coin", 0)) > 0:
+		p.coin += int(reward["coin"])
+		say(p, "You receive %s." % format_coin(int(reward["coin"])), C_LOOT)
+	var item_id := str(q.get("first_reward_item", ""))
+	if state["completions"] == 1 and item_id != "":
+		_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
+		p.inventory.append(item_id)  # the offered items just freed at least one slot
+		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
+	if int(reward.get("xp", 0)) > 0:
+		p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
+	p.quests_changed.emit()
+
+
+## How many of each wanted item the player carries (bags plus an open trade),
+## capped at what's wanted.
 func quest_progress(p: Player, quest_id: String) -> Dictionary:
 	var wants: Dictionary = GameData.quests[quest_id]["wants"]
 	var out := {}
 	for item_id: String in wants:
-		out[item_id] = mini(p.inventory.count(item_id), int(wants[item_id]))
+		out[item_id] = mini(p.inventory.count(item_id) + p.trade_items.count(item_id), int(wants[item_id]))
 	return out
 
 

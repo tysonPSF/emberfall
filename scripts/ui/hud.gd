@@ -10,7 +10,8 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 [b]Combat[/b]   Q auto attack · 1-4 abilities & spells · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
-[b]Talk[/b]   E or double-click to hail a townsperson · click the gold words in their reply to ask about them
+[b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
+[b]Trade[/b]   G to trade with your target · click bag items to offer them (quest turn-ins)
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H to hide this."""
 
@@ -42,6 +43,11 @@ var _spell_buttons: Array[Button] = []
 var _log: RichTextLabel
 var _log_lines := 0
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
+
+var _trade_panel: PanelContainer
+var _trade_title: Label
+var _trade_slots: Array[Button] = []
+var _bag_hint: Label
 
 var _quest_panel: PanelContainer
 var _quest_label: RichTextLabel
@@ -76,6 +82,7 @@ func _ready() -> void:
 	_build_log()
 	_build_quest_tracker()
 	_build_loot_window()
+	_build_trade_window()
 	_build_inventory()
 	_build_help()
 	_build_overlays()
@@ -84,6 +91,9 @@ func _ready() -> void:
 	World.loot_changed.connect(_on_loot_opened)
 	World.loot_closed.connect(_on_loot_closed)
 	World.player_died.connect(_on_player_died)
+	World.trade_opened.connect(_on_trade_opened)
+	World.trade_changed.connect(_refresh_trade)
+	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
 
 
 func bind_player(p: Player) -> void:
@@ -262,6 +272,60 @@ func _build_loot_window() -> void:
 	_loot_panel.visible = false
 
 
+
+## EQ-style give window: four slots filled by clicking bag items.
+func _build_trade_window() -> void:
+	_trade_panel = UIKit.panel()
+	UIKit.place(_trade_panel, Vector2(0.5, 0.5), Vector2(-260, -40))
+	root.add_child(_trade_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 260
+	v.add_theme_constant_override("separation", 6)
+	_trade_panel.add_child(v)
+	_trade_title = UIKit.label("", 15, UIKit.GOLD)
+	v.add_child(_trade_title)
+	v.add_child(UIKit.label("Click items in your bags to offer them.", 12, UIKit.DIM))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	v.add_child(grid)
+	for i in World.TRADE_SLOTS:
+		var b := UIKit.button("", Vector2(126, 34))
+		b.clip_text = true
+		b.add_theme_font_size_override("font_size", 11)
+		b.pressed.connect(func() -> void: World.request_trade_remove(player.entity_id, i))
+		grid.add_child(b)
+		_trade_slots.append(b)
+	var row := HBoxContainer.new()
+	var give := UIKit.button("Give")
+	give.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	give.pressed.connect(func() -> void: World.request_trade_give(player.entity_id))
+	var cancel := UIKit.button("Cancel")
+	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cancel.pressed.connect(func() -> void: World.request_trade_cancel(player.entity_id))
+	row.add_child(give)
+	row.add_child(cancel)
+	v.add_child(row)
+	_trade_panel.visible = false
+
+
+func _on_trade_opened(npc: Npc) -> void:
+	_trade_title.text = "Trading with %s" % npc.display_name
+	_trade_panel.visible = true
+	_inv_panel.visible = true
+	_help_panel.visible = false
+	_refresh_inventory()
+	_refresh_trade()
+
+
+func _refresh_trade() -> void:
+	for i in _trade_slots.size():
+		var b := _trade_slots[i]
+		var has := i < player.trade_items.size()
+		b.text = GameData.item_name(player.trade_items[i]) if has else "—"
+		b.disabled = not has
+		b.tooltip_text = "Click to take it back." if has else ""
+
+
 func _build_inventory() -> void:
 	_inv_panel = UIKit.panel()
 	UIKit.place(_inv_panel, Vector2(1, 0.5), Vector2(-12, -40))
@@ -274,7 +338,8 @@ func _build_inventory() -> void:
 	v.add_child(_stats_label)
 	_equip_box = VBoxContainer.new()
 	v.add_child(_equip_box)
-	v.add_child(UIKit.label("Bags  (click an item to equip it)", 12, UIKit.DIM))
+	_bag_hint = UIKit.label("", 12, UIKit.DIM)
+	v.add_child(_bag_hint)
 	_bag_grid = GridContainer.new()
 	_bag_grid.columns = 4
 	v.add_child(_bag_grid)
@@ -423,7 +488,7 @@ func _refresh_quests() -> void:
 			var done := int(have[item_id]) >= need
 			lines.append("[color=#%s]  %s  %d/%d[/color]" % ["8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
 		if World.quest_items_ready(player, quest_id):
-			lines.append("[color=#8fe08f]  Return to %s[/color]" % GameData.npcs[q["giver"]]["name"])
+			lines.append("[color=#8fe08f]  Trade them to %s (G)[/color]" % GameData.npcs[q["giver"]]["name"])
 	_quest_label.text = "\n".join(lines)
 	_quest_panel.visible = not lines.is_empty()
 
@@ -459,6 +524,8 @@ func _on_player_died(p: Player) -> void:
 
 func _toggle_inventory() -> void:
 	_inv_panel.visible = not _inv_panel.visible
+	if _inv_panel.visible:
+		_help_panel.visible = false  # they share the right side of the screen
 	_refresh_inventory()
 
 
@@ -488,11 +555,16 @@ func _refresh_inventory() -> void:
 			var item_id: String = player.inventory[i]
 			b.text = GameData.item_name(item_id)
 			b.tooltip_text = _item_tooltip(item_id)
-			b.pressed.connect(func() -> void: World.request_equip(player.entity_id, i))
+			b.pressed.connect(func() -> void:
+				if player.trade_npc_id >= 0:
+					World.request_trade_add(player.entity_id, i)
+				else:
+					World.request_equip(player.entity_id, i))
 		else:
 			b.disabled = true
 		_bag_grid.add_child(b)
 	_coin_label.text = World.format_coin(player.coin)
+	_bag_hint.text = "Bags  (click an item to %s)" % ("offer it" if player.trade_npc_id >= 0 else "equip it")
 
 
 func _item_tooltip(item_id: String) -> String:
@@ -519,7 +591,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_help_panel.visible = not _help_panel.visible
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _loot_panel.visible:
+		if _trade_panel.visible:
+			World.request_trade_cancel(player.entity_id)
+			get_viewport().set_input_as_handled()
+		elif _loot_panel.visible:
 			World.request_loot_close(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _inv_panel.visible:

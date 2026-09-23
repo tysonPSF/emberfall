@@ -3,12 +3,18 @@
     "name": "Fang Bounty",
     "giver": "warden_holt",
     "start_keyword": "gnoll fangs",
-    "wants": {"gnoll_fang": 4},
-    "reward": {"xp": 80, "coin": 50},
+    "wants": {
+      "gnoll_fang": 4
+    },
+    "reward": {
+      "xp": 80,
+      "coin": 50
+    },
     "first_reward_item": "wardens_short_sword",
     "repeatable": true,
-    "accept_text": "You have taken on a task: Fang Bounty. Bring Warden Holt four gnoll fangs.",
+    "accept_text": "You have taken on a task: Fang Bounty. Collect four gnoll fangs and trade them to Warden Holt.",
     "complete_text": "Four fangs, and not a bite on you. Good work, {name}. Here's your bounty. The watch pays for every four you bring.",
-    "first_complete_text": "Take this blade as well. It served me before I earned a better one. May it serve you as well."
+    "first_complete_text": "Take this blade as well. It served me before I earned a better one. May it serve you as well.",
+    "ready_text": "Those look like gnoll fangs you're carrying, {name}. Hand them over."
   }
 }

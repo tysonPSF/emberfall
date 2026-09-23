@@ -21,6 +21,8 @@ var coin := 0
 var inventory: Array = []
 var equipment: Dictionary = {}
 var quests: Dictionary = {}  # quest id -> {active, completions}
+var trade_npc_id := -1  # npc entity id while a trade window is open
+var trade_items: Array = []  # items offered in the open trade
 var body_color := Color.WHITE
 
 var camera_pivot: Node3D
@@ -58,7 +60,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory, "equipment": equipment, "quests": quests, "hp": maxi(hp, 1), "mana": mana,
+		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
@@ -202,6 +204,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_sit(entity_id, not sitting)
 	elif event.is_action_pressed("hail"):
 		World.request_hail(entity_id)
+	elif event.is_action_pressed("trade"):
+		World.request_trade_open(entity_id)
 	elif event.is_action_pressed("loot"):
 		if is_instance_valid(target) and target is Corpse:
 			World.request_loot_open(entity_id, (target as Corpse).object_id)

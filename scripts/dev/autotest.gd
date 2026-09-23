@@ -73,13 +73,30 @@ func _run() -> void:
 	await _shot("1e_quest_given")
 	for k in 4:
 		p.inventory.append("gnoll_fang")
+	p.inventory.append("rat_whiskers")
 	p.inventory_changed.emit()
-	await _wait(0.3)
-	await _shot("1f_quest_ready")
-	World.request_hail(p.entity_id)
-	print("quest after turn-in: %s coin=%d xp=%d has_sword=%s" % [p.quests, p.coin, p.xp, "wardens_short_sword" in p.inventory])
+	World.request_hail(p.entity_id)  # he notices the fangs
+	World.request_trade_open(p.entity_id)
+	for item_id in ["gnoll_fang", "gnoll_fang", "gnoll_fang", "gnoll_fang", "rat_whiskers"]:
+		World.request_trade_add(p.entity_id, p.inventory.find(item_id))  # the fifth is refused: 4 slots
+	World.request_trade_remove(p.entity_id, 0)
+	World.request_trade_add(p.entity_id, p.inventory.find("gnoll_fang"))
+	await _wait(0.4)
+	await _shot("1f_quest_trade")
+	World.request_trade_remove(p.entity_id, 3)  # swap a fang for the whiskers
+	World.request_trade_add(p.entity_id, p.inventory.find("rat_whiskers"))
+	World.request_trade_give(p.entity_id)  # 3 fangs + whiskers: not enough, all handed back
+	print("short give: fangs=%d whiskers=%d quests=%s" % [p.inventory.count("gnoll_fang"), p.inventory.count("rat_whiskers"), p.quests])
+	World.request_trade_open(p.entity_id)
+	for k in 4:
+		World.request_trade_add(p.entity_id, p.inventory.find("gnoll_fang"))
+	World.request_trade_give(p.entity_id)
+	print("quest after turn-in: %s coin=%d xp=%d has_sword=%s fangs=%d whiskers=%d" % [p.quests, p.coin, p.xp,
+			"wardens_short_sword" in p.inventory, p.inventory.count("gnoll_fang"), p.inventory.count("rat_whiskers")])
 	await _wait(0.5)
 	await _shot("1g_quest_done")
+	p.inventory.erase("rat_whiskers")
+	main.hud._toggle_inventory()
 	p.inventory.erase("wardens_short_sword")
 	p.camera_pivot.rotation.y = 0.0
 

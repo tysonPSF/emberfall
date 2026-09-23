@@ -29,12 +29,13 @@ Smoke test (plays itself, saves screenshots, quits):
 | X | Sit / stand (much faster regen) |
 | L / double-click | Loot corpse |
 | E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
+| G | Trade with your target: click bag items to offer them, then Give |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |
 
 ## What's in the slice
 
 - **Greenmoor**: one zone with a bind obelisk, rats and gnoll pups nearby, fire beetles to the southeast, aggressive skeletons at the ruins (west-northwest), and a gnoll camp (northeast) with a rare named mob, Grubnak the Mangy.
-- **Warden Holt** at the watch house by the obelisk: hail him, ask about [gnoll fangs], and bring four back for a repeatable bounty (a sword the first time). Quests are data in `data/quests.json`, NPC dialogue in `data/npcs.json`.
+- **Warden Holt** at the watch house by the obelisk: hail him, ask about [gnoll fangs], and trade him four for a repeatable bounty (a sword the first time). Quests are data in `data/quests.json`, NPC dialogue in `data/npcs.json`.
 - **3 classes**: Warrior (kick, taunt), Cleric (heal, strike), Wizard (nuke, gate).
 - **Mob AI**: wander, aggro radius, social assist (trains!), flee at low health, leash home.
 - **EQ-style rules**: 6-second regen ticks, sit to meditate, con colors, no XP from gray mobs, XP loss on death, **corpse runs** (your gear stays on your corpse).
