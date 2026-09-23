@@ -23,7 +23,7 @@
     ],
     "shape": "beetle",
     "color": "#6b5a4e",
-    "scale": 0.55,
+    "scale": 0.85,
     "coin": [
       0,
       0
@@ -33,7 +33,8 @@
         "item": "rat_whiskers",
         "chance": 0.5
       }
-    ]
+    ],
+    "model": "rat"
   },
   "gnoll_pup": {
     "name": "a gnoll pup",
@@ -111,7 +112,8 @@
         "item": "beetle_eye",
         "chance": 0.5
       }
-    ]
+    ],
+    "model": "fire_beetle"
   },
   "decaying_skeleton": {
     "name": "a decaying skeleton",

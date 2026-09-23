@@ -89,9 +89,9 @@ func animate(event: String) -> void:
 	var m := visual as CharacterModel
 	match event:
 		"attack":
-			m.play_once(CharacterModel.ATTACK_ANIM, 1.6)
+			m.play_once("attack", 1.6)
 		"hit":
-			m.play_once(CharacterModel.HIT_ANIM, 1.0, false)
+			m.play_once("hit", 1.0, false)
 		_:
 			m.play_once(event)
 

@@ -79,6 +79,20 @@ func _run() -> void:
 	await _shot("4b_skeleton_fight")
 	p.camera_pivot.rotation.y = 0.0
 
+	for creature in ["large_rat", "fire_beetle"]:
+		var c := _nearest_mob(p, creature)
+		p.global_position = c.global_position + Vector3(0, 1, 3)
+		p.face_toward(c.global_position)
+		World.request_set_target(p.entity_id, c.entity_id)
+		p.camera_pivot.rotation.y = 0.9
+		p.zoom = 4.5
+		await _wait(0.8)
+		await _shot("4c_%s" % creature)
+		World.damage(c, 9999, p)
+		await _wait(1.6)
+		await _shot("4d_%s_corpse" % creature)
+	p.camera_pivot.rotation.y = 0.0
+
 	World.damage(p, 9999, _nearest_mob(p))
 	await _wait(1.0)
 	await _shot("5_dead")

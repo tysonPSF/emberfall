@@ -9,7 +9,15 @@
     "skeleton_minion": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
     "skeleton_warrior": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
     "skeleton_rogue": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb",
-    "skeleton_mage": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb"
+    "skeleton_mage": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb",
+    "rat": {
+      "path": "res://assets/creatures/rat.glb",
+      "rig": "own"
+    },
+    "fire_beetle": {
+      "path": "res://assets/creatures/fire_beetle.glb",
+      "rig": "own"
+    }
   },
   "weapons": {
     "dagger": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/dagger.gltf",
