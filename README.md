@@ -2,19 +2,29 @@
 
 A classic-EverQuest-style RPG in Godot 4.7: slow, dangerous, group-oriented. This is the solo vertical slice.
 
-## Run it
+## Setup
 
-Open the folder in Godot (`/Applications/Godot.app`) and press F5, or:
+1. Install **Godot 4.7** (standard build, not .NET). **Blender 5.2** is only needed to regenerate the creatures and props in `tools/blender/`.
+2. Clone and open:
 
-```sh
-/Applications/Godot.app/Contents/MacOS/Godot --path ~/Desktop/Claudesploration/emberfall
-```
+   ```sh
+   git clone https://github.com/tysonPSF/emberfall.git
+   cd emberfall
+   godot --path . --import   # first run: imports the art into .godot/ (not in git)
+   godot --path .            # play; or open the folder in the Godot editor and press F5
+   ```
 
-Smoke test (plays itself, saves screenshots, quits):
+   On macOS, `godot` is `/Applications/Godot.app/Contents/MacOS/Godot`.
 
-```sh
-/Applications/Godot.app/Contents/MacOS/Godot --path . -- --autotest --shots=/tmp/shots
-```
+3. Check a change before pushing:
+
+   ```sh
+   godot --headless --path . --import                   # parse/compile check
+   godot --path . -- --autotest --shots=/tmp/shots      # plays itself, saves screenshots, quits
+   godot --path . -- --lineup=gnoll,rat --shots=/tmp/l  # art check: models side by side
+   ```
+
+Your character saves to Godot's `user://character.json` (per machine, not in git). `CLAUDE.md` has the architecture rules.
 
 ## Controls
 
