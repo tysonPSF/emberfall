@@ -17,6 +17,51 @@
     "fire_beetle": {
       "path": "res://assets/creatures/fire_beetle.glb",
       "rig": "own"
+    },
+    "gnoll": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb",
+      "hide": [
+        "RogueHooded_Head",
+        "RogueHooded_Mask"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/gnoll_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/gnoll_tail.glb"
+        }
+      ],
+      "tint": {
+        "RogueHooded_ArmLeft": "#d8b890",
+        "RogueHooded_ArmRight": "#d8b890"
+      }
+    },
+    "gnoll_brute": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/gnoll_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/gnoll_tail.glb"
+        }
+      ],
+      "tint": {
+        "Barbarian_Body": "#9c8a74",
+        "Barbarian_ArmLeft": "#9c8a74",
+        "Barbarian_ArmRight": "#9c8a74",
+        "Barbarian_LegLeft": "#9c8a74",
+        "Barbarian_LegRight": "#9c8a74"
+      }
     }
   },
   "weapons": {

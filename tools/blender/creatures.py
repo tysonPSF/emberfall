@@ -119,6 +119,18 @@ class Builder:
 		arm.animation_data_create()
 		return arm
 
+	def build_static(self):
+		"""Joins the parts into one unrigged mesh (for bone attachments)."""
+		bpy.ops.object.select_all(action="DESELECT")
+		for p in self.parts:
+			p.select_set(True)
+		bpy.context.view_layer.objects.active = self.parts[0]
+		bpy.ops.object.join()
+		obj = self.parts[0]
+		obj.name = self.name
+		obj.vertex_groups.clear()
+		return obj
+
 
 # ---------------------------------------------------------------- animation helpers
 
@@ -393,6 +405,54 @@ def build_beetle():
 
 # ---------------------------------------------------------------- export + preview
 
+# ---------------------------------------------------------------- gnoll parts
+# Bolt-ons for KayKit Rig_Medium bodies (see "attach" in data/models.json). They
+# are authored in the KayKit mesh space (feet at the origin, head bone at z 1.24,
+# chibi head about 1 unit wide) and CharacterModel pins them to a bone.
+
+def gnoll_materials():
+	return {
+		"fur": material("gnoll_fur", "9a7442"),
+		"muzzle": material("gnoll_muzzle", "c9a676"),
+		"dark": material("gnoll_dark", "3a2a1c"),
+		"mane": material("gnoll_mane", "5c4128", 0.95),
+		"nose": material("gnoll_nose", "181210", 0.3),
+		"eye": material("gnoll_eye", "f2c230", 0.3, emit=1.5),
+		"tooth": material("gnoll_tooth", "efe6d0", 0.4),
+	}
+
+
+def build_gnoll_head():
+	m = gnoll_materials()
+	b = Builder("gnoll_head")
+	b.blob((0.84, 0.8, 0.76), (0, 0.04, 1.6), m["fur"], "x", segs=(12, 8))            # skull
+	b.blob((0.74, 0.62, 0.36), (0, -0.02, 1.3), m["muzzle"], "x", segs=(10, 6))       # cheek ruff
+	b.seg((0, -0.22, 1.5), (0, -0.74, 1.44), 0.25, 0.16, m["muzzle"], "x", sides=8)  # snout
+	b.blob((0.34, 0.48, 0.16), (0, -0.5, 1.3), m["dark"], "x")                          # lower jaw
+	b.blob((0.2, 0.14, 0.14), (0, -0.77, 1.5), m["nose"], "x")
+	for s in (1, -1):
+		b.blob((0.14, 0.08, 0.11), (0.2 * s, -0.34, 1.7), m["eye"], "x", segs=(8, 5))
+		b.blob((0.2, 0.08, 0.06), (0.2 * s, -0.36, 1.79), m["dark"], "x", rot=(0, -15 * s, 0))   # brow
+		b.seg((0.3 * s, 0.06, 1.86), (0.46 * s, 0.12, 2.3), 0.16, 0.02, m["fur"], "x", sides=4)  # ear
+		b.seg((0.31 * s, 0.0, 1.9), (0.44 * s, 0.05, 2.22), 0.08, 0.01, m["dark"], "x", sides=4)
+		b.seg((0.1 * s, -0.62, 1.36), (0.1 * s, -0.63, 1.24), 0.035, 0.005, m["tooth"], "x", sides=4)
+		for y, z in ((0.1, 1.72), (0.25, 1.55), (-0.05, 1.5)):                               # spots
+			b.blob((0.06, 0.16, 0.14), (0.4 * s, y, z), m["dark"], "x", segs=(6, 4))
+	b.blob((0.24, 0.7, 0.26), (0, 0.16, 1.96), m["mane"], "x", rot=(-28, 0, 0), segs=(8, 6))  # mane
+	b.blob((0.34, 0.34, 0.62), (0, 0.36, 1.5), m["mane"], "x", rot=(12, 0, 0), segs=(8, 6))
+	return b.build_static()
+
+
+def build_gnoll_tail():
+	m = gnoll_materials()
+	b = Builder("gnoll_tail")
+	b.seg((0, 0.22, 0.58), (0, 0.5, 0.46), 0.07, 0.11, m["fur"], "x", sides=6)
+	b.blob((0.26, 0.5, 0.26), (0, 0.66, 0.36), m["fur"], "x", rot=(-20, 0, 0))
+	b.blob((0.2, 0.26, 0.2), (0, 0.88, 0.28), m["dark"], "x")
+	return b.build_static()
+
+
+ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail}
 CREATURES = {"rat": build_rat, "fire_beetle": build_beetle}
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
@@ -459,6 +519,16 @@ def main():
 			preview(arm, name, opts["--preview"])
 		path = os.path.abspath(os.path.join(opts["--out"], f"{name}.glb"))
 		export(arm, path)
+		print(f"exported {path}")
+	for name, build in ATTACHMENTS.items():
+		if opts["--only"] and name != opts["--only"]:
+			continue
+		reset_scene()
+		build()
+		path = os.path.abspath(os.path.join(opts["--out"], f"{name}.glb"))
+		bpy.ops.object.select_all(action="SELECT")
+		bpy.ops.export_scene.gltf(filepath=path, export_format="GLB", use_selection=True,
+								  export_animations=False, export_yup=True)
 		print(f"exported {path}")
 
 

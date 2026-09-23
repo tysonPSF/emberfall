@@ -79,8 +79,11 @@ func _run() -> void:
 	await _shot("4b_skeleton_fight")
 	p.camera_pivot.rotation.y = 0.0
 
-	for creature in ["large_rat", "fire_beetle"]:
+	for creature in ["large_rat", "fire_beetle", "gnoll_scout", "grubnak"]:
 		var c := _nearest_mob(p, creature)
+		if c == null:
+			print("no %s up, skipping its shots" % creature)
+			continue
 		p.global_position = c.global_position + Vector3(0, 1, 3)
 		p.face_toward(c.global_position)
 		World.request_set_target(p.entity_id, c.entity_id)

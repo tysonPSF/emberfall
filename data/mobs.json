@@ -75,7 +75,7 @@
         "chance": 0.05
       }
     ],
-    "model": "rogue_hooded",
+    "model": "gnoll",
     "weapon": ""
   },
   "fire_beetle": {
@@ -210,7 +210,7 @@
         "chance": 0.06
       }
     ],
-    "model": "rogue_hooded",
+    "model": "gnoll",
     "weapon": "dagger"
   },
   "grubnak": {
@@ -253,7 +253,7 @@
         "chance": 0.35
       }
     ],
-    "model": "barbarian",
+    "model": "gnoll_brute",
     "weapon": "axe_2handed"
   }
 }

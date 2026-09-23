@@ -14,6 +14,10 @@ var _save_timer := 0.0
 
 
 func _ready() -> void:
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--lineup="):
+			add_child(load("res://scripts/dev/lineup.gd").new())
+			return
 	var autotest := "--autotest" in OS.get_cmdline_user_args()
 	if autotest:
 		save_path = AUTOTEST_SAVE_PATH

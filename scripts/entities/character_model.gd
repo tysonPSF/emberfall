@@ -54,6 +54,7 @@ func setup(model_id: String, weapon_id: String, body_scale: float) -> void:
 	add_child(model)
 	scale = Vector3.ONE * float(spec.get("scale", 1.0 if own_rig else KAYKIT_SCALE)) * body_scale
 	skeleton = model.find_child("Skeleton3D", true, false) as Skeleton3D
+	_customize(model, spec)
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	if own_rig:
@@ -69,6 +70,36 @@ func setup(model_id: String, weapon_id: String, body_scale: float) -> void:
 		anim.add_animation_library("", library())
 		_clips = KAYKIT_ANIMS
 	set_weapon(weapon_id)
+
+
+## Reskins a stock body from its models.json entry: "hide" drops mesh parts,
+## "tint" multiplies a part's texture by a color (skin becomes fur, gear gets
+## grimier), and "attach" pins extra scenes to bones.
+## Attachments are authored in the model's mesh space, so each is offset by its
+## bone's inverse rest pose to land where it was modeled.
+func _customize(model: Node3D, spec: Dictionary) -> void:
+	for part: String in spec.get("hide", []):
+		var n := model.find_child(part, true, false)
+		if n != null:
+			n.queue_free()
+	var tint: Dictionary = spec.get("tint", {})
+	for part: String in tint:
+		var mi := model.find_child(part, true, false) as MeshInstance3D
+		var base := mi.get_active_material(0) as BaseMaterial3D if mi != null else null
+		if base != null:
+			var mat := base.duplicate() as BaseMaterial3D
+			mat.albedo_color = Color.html(tint[part])
+			mi.material_override = mat
+	for a: Dictionary in spec.get("attach", []):
+		var bone := skeleton.find_bone(a["bone"]) if skeleton != null else -1
+		if bone < 0:
+			continue
+		var slot := BoneAttachment3D.new()
+		slot.bone_name = a["bone"]
+		skeleton.add_child(slot)
+		var part: Node3D = (load(a["path"]) as PackedScene).instantiate()
+		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
+		slot.add_child(part)
 
 
 func set_weapon(weapon_id: String) -> void:
