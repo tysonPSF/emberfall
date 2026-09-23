@@ -20,6 +20,9 @@ var _detail := FastNoiseLite.new()
 var _rng := RandomNumberGenerator.new()
 var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
+var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
+var _roads: Array = []  # [{points: [Vector2...], width}]
+var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
 var _prop_tris: Dictionary = {}  # prop id -> unscaled collision faces
@@ -44,6 +47,14 @@ func load_zone(id: String) -> void:
 	_bind_xz = Vector2(bp[0], bp[1])
 	for lm: Dictionary in data.get("landmarks", []):
 		_flat_spots.append(Vector2(lm["pos"][0], lm["pos"][1]))
+	for ps: Array in data.get("passes", []):
+		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
+	for road: Dictionary in data.get("roads", []):
+		var pts: Array[Vector2] = []
+		for pt: Array in road["points"]:
+			pts.append(Vector2(pt[0], pt[1]))
+		_roads.append({"points": pts, "width": float(road.get("width", 3.0))})
+	_clear_radius = float(data.get("clear_radius", 0.0))
 	bind_point = ground(_bind_xz.x, _bind_xz.y + 4.0)  # just south of the obelisk
 	World.zone = self
 
@@ -53,6 +64,8 @@ func load_zone(id: String) -> void:
 	_build_props()
 	_build_spawns()
 	_build_npcs()
+	_build_road_lamps()
+	_build_zone_lines()
 
 
 func height_at(x: float, z: float) -> float:
@@ -65,8 +78,30 @@ func height_at(x: float, z: float) -> float:
 	# Mountains ring the zone so you can't walk off the edge.
 	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
 	if edge > 0.0:
-		h += edge * 1.3 + edge * edge * 0.08
+		h += (edge * 1.3 + edge * edge * 0.08) * _pass_factor(x, z)
 	return h
+
+
+## 0 inside a mountain pass, 1 where the ring of mountains stands. A pass on
+## the north or south edge is a gap in x; on the east or west edge, in z.
+func _pass_factor(x: float, z: float) -> float:
+	var f := 1.0
+	for ps: Array in _passes:
+		var across := absf(x - ps[0]) if absf(ps[1]) >= absf(ps[0]) else absf(z - ps[1])
+		f = minf(f, smoothstep(ps[2], ps[2] + 14.0, across))
+	return f
+
+
+## Distance from a point to the nearest road's centerline, minus its half width.
+func road_distance(x: float, z: float) -> float:
+	var best := INF
+	var p := Vector2(x, z)
+	for road: Dictionary in _roads:
+		var pts: Array[Vector2] = road["points"]
+		for i in pts.size() - 1:
+			var closest := Geometry2D.get_closest_point_to_segment(p, pts[i], pts[i + 1])
+			best = minf(best, p.distance_to(closest) - float(road["width"]) * 0.5)
+	return best
 
 
 func ground(x: float, z: float) -> Vector3:
@@ -184,7 +219,14 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	var d := Vector2(x, z).distance_to(_bind_xz)
 	if d < flat_radius:
 		c = c.lerp(Color(0.45, 0.38, 0.26), 0.55 * (1.0 - d / flat_radius))
-	var edge := maxf(absf(x), absf(z)) - (half - 30.0)
+	var tint: Dictionary = data.get("ground_tint", {})
+	if not tint.is_empty():
+		var inside := 1.0 - smoothstep(float(tint["radius"]) - 4.0, float(tint["radius"]) + 4.0, Vector2(x, z).length())
+		c = c.lerp(Color.html(tint["color"]), inside * float(tint.get("amount", 0.5)) * (0.75 + 0.5 * n))
+	var road := road_distance(x, z)
+	if road < 1.5:
+		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
+	var edge := (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z)
 	if edge > 0.0 or h > amp * 1.2:
 		c = c.lerp(Color(0.44, 0.42, 0.4), clampf(maxf(edge / 10.0, (h - amp * 1.2) / 4.0), 0.0, 1.0))
 	return c
@@ -202,6 +244,18 @@ func _build_landmarks() -> void:
 				_build_ruins(p)
 			"outpost":
 				_build_outpost(p)
+			"wall_ring":
+				_build_wall_ring(p, lm)
+			"hearth_plaza":
+				_build_hearth_plaza(p)
+			"house":
+				_build_house(p, _landmark_yaw(lm), int(lm.get("size", 2)), true)
+			"market":
+				_build_market(p, _landmark_yaw(lm))
+			"signpost":
+				_build_signpost(p, _landmark_yaw(lm), lm.get("labels", []))
+			"prop":
+				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
 
 
 ## The bind point: a rune-carved obelisk inside a ring of standing stones.
@@ -306,47 +360,212 @@ func _build_ruins(p: Vector3) -> void:
 	_prop("rubble_half", p + Vector3(2.0, 0, -8.0), PI, 0.7)
 
 
-## Watch house: a 2x2 room of Dungeon walls with a door facing the bind point,
-## a gable roof, and some watch clutter. Walls use mesh collision so the door
-## and windows are open.
+## Watch house: a house whose door faces the bind point, with supplies outside.
 func _build_outpost(p: Vector3) -> void:
 	var to_bind := _bind_xz - Vector2(p.x, p.z)
-	var yaw := atan2(to_bind.x, to_bind.y)  # local +Z (the door side) faces the bind point
+	var yaw := atan2(to_bind.x, to_bind.y)
+	var xf := _build_house(p, yaw, 2, false)
+	_prop("banner_shield_blue", xf * Vector3(-1.5, 0.1, 3.18), yaw, 1.0, "none")
+	_prop("table_medium", xf * Vector3(-1.2, 0.06, -1.3), yaw)
+	_prop("chair", xf * Vector3(-1.2, 0.06, -0.1), yaw + PI, 1.0, "none")
+	_prop("trunk_small_A", xf * Vector3(1.9, 0.06, -2.0), yaw)
+	_torch(xf * Vector3(3.6, 0, 3.9))
+	_prop("crates_stacked", xf * Vector3(-4.2, 0, -1.8), yaw + 0.4)
+	_prop("barrel_large", xf * Vector3(-4.1, 0, 0.6), yaw)
+	_prop("barrel_small_stack", xf * Vector3(0.8, 0, -4.1), yaw + PI)
+
+
+## A room of Dungeon walls (size x size segments of 3 m) under a gable roof,
+## door in the front (+Z) wall. Walls use mesh collision so the door is open.
+## Returns the house transform.
+func _build_house(p: Vector3, yaw: float, size: int, furnish: bool) -> Transform3D:
 	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	var half_w := size * 1.5
 	var put := func(id: String, local: Vector3, local_yaw := 0.0, collide := "box", scale_ := 1.0) -> void:
 		_prop(id, xf * local, yaw + local_yaw, scale_, collide)
-	for x: float in [-1.5, 1.5]:
-		for z: float in [-1.5, 1.5]:
-			put.call("floor_wood_large", Vector3(x, 0.06, z), 0.0, "none")
-	put.call("wall", Vector3(-1.5, 0, -3), 0.0, "mesh")
-	put.call("wall_window_closed", Vector3(1.5, 0, -3), 0.0, "mesh")
-	put.call("wall_window_open", Vector3(-3, 0, -1.5), PI / 2.0, "mesh")
-	put.call("wall", Vector3(-3, 0, 1.5), PI / 2.0, "mesh")
-	put.call("wall", Vector3(3, 0, -1.5), PI / 2.0, "mesh")
-	put.call("wall_window_open", Vector3(3, 0, 1.5), PI / 2.0, "mesh")
-	put.call("wall", Vector3(-1.5, 0, 3), 0.0, "mesh")
-	put.call("wall_doorway", Vector3(1.5, 0, 3), 0.0, "mesh")
-	for x: float in [-3.0, 3.0]:
-		for z: float in [-3.0, 3.0]:
+	var door := size / 2  # middle segment of the front wall
+	for i in size:
+		var c := -half_w + 1.5 + i * 3.0
+		for j in size:
+			put.call("floor_wood_large", Vector3(c, 0.06, -half_w + 1.5 + j * 3.0), 0.0, "none")
+		var back := "wall_window_closed" if _rng.randf() < 0.4 else "wall"
+		put.call(back, Vector3(c, 0, -half_w), 0.0, "mesh")
+		put.call("wall_doorway" if i == door else "wall", Vector3(c, 0, half_w), 0.0, "mesh")
+		for side: float in [-1.0, 1.0]:
+			var id := "wall_window_open" if _rng.randf() < 0.45 else "wall"
+			put.call(id, Vector3(side * half_w, 0, c), PI / 2.0, "mesh")
+	for x: float in [-half_w, half_w]:
+		for z: float in [-half_w, half_w]:
 			put.call("pillar", Vector3(x, 0, z))
-	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "none")
-	put.call("banner_shield_blue", Vector3(-1.5, 0.1, 3.18), 0.0, "none")
-	# inside: a table and chair by the window, a sea chest, supplies
-	put.call("table_medium", Vector3(-1.2, 0.06, -1.3))
-	put.call("chair", Vector3(-1.2, 0.06, -0.1), PI, "none")
-	put.call("trunk_small_A", Vector3(1.9, 0.06, -2.0), 0.0)
-	put.call("barrel_small", Vector3(-2.1, 0.06, 1.9))
-	# outside: a torch by the door, crates and barrels along the wall
-	_torch(xf * Vector3(3.6, 0, 3.9))
-	put.call("crates_stacked", Vector3(-4.2, 0, -1.8), 0.4)
-	put.call("barrel_large", Vector3(-4.1, 0, 0.6))
-	put.call("barrel_small_stack", Vector3(0.8, 0, -4.1), PI)
+	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "none", size / 2.0)
+	if furnish:
+		put.call("table_medium", Vector3(-half_w + 1.8, 0.06, -half_w + 1.8))
+		put.call("chair", Vector3(-half_w + 1.8, 0.06, -half_w + 3.0), PI, "none")
+		put.call(["barrel_small", "trunk_small_A", "box_small"][_rng.randi() % 3], Vector3(half_w - 1.2, 0.06, -half_w + 1.2))
+		if _rng.randf() < 0.5:
+			put.call("barrel_small_stack", Vector3(-half_w - 1.4, 0, _rng.randf_range(-1.5, 1.5)), PI / 2.0)
+	return xf
+
+
+## City wall: straight runs of wall between towers around a polygon, with a
+## gatehouse in the middle of each side named in "gates" (degrees; -90 = north).
+func _build_wall_ring(p: Vector3, lm: Dictionary) -> void:
+	var radius := float(lm.get("radius", 50))
+	var sides := int(lm.get("sides", 12))
+	var gates: Array = lm.get("gates", [])
+	var corners: Array[Vector2] = []
+	for k in sides:
+		var a := k * TAU / sides + PI / sides  # sides, not corners, face the cardinal directions
+		corners.append(Vector2(p.x, p.z) + Vector2(cos(a), sin(a)) * radius)
+	for k in sides:
+		var a0 := corners[k]
+		var a1 := corners[(k + 1) % sides]
+		_prop("city_tower", ground(a0.x, a0.y), 0.0)
+		var mid := (a0 + a1) * 0.5
+		var mid_angle := rad_to_deg(atan2(mid.y - p.z, mid.x - p.x))
+		var has_gate := false
+		for g: float in gates:
+			if absf(angle_difference(deg_to_rad(mid_angle), deg_to_rad(g))) < PI / sides:
+				has_gate = true
+		var dir := (a1 - a0).normalized()
+		if has_gate:
+			_wall_run(a0 + dir * 2.4, mid - dir * 6.0)
+			_prop("city_gate", ground(mid.x, mid.y), atan2(-dir.y, dir.x), 1.0, "mesh")
+			_wall_run(mid + dir * 6.0, a1 - dir * 2.4)
+		else:
+			_wall_run(a0 + dir * 2.4, a1 - dir * 2.4)
+
+
+## Fills a straight line with 6 m wall pieces (the last few overlap a little).
+func _wall_run(from: Vector2, to: Vector2) -> void:
+	var length := from.distance_to(to)
+	if length < 0.5:
+		return
+	var n := ceili(length / 6.0)
+	var dir := (to - from) / length
+	var yaw := atan2(-dir.y, dir.x)
+	for i in n:
+		var c := from + dir * minf(3.0 + i * 6.0, length - 3.0) if length >= 6.0 else (from + to) * 0.5
+		_prop("city_wall", ground(c.x, c.y), yaw)
+
+
+## Paved square around the eternal hearth, ringed by lamps.
+func _build_hearth_plaza(p: Vector3) -> void:
+	_prop("hearth", p, 0.0, 1.0, "mesh")
+	_light(p + Vector3(0, 3.5, 0), Color(1.0, 0.6, 0.25), 16.0, 1.6)
+	for i in 9:
+		for j in 9:
+			var off := Vector3(-12.0 + i * 3.0, 0.04, -12.0 + j * 3.0)
+			if Vector2(off.x, off.z).length() < 14.5:
+				_prop("floor_tile_large", p + off, _rng.randi() % 4 * PI / 2.0, 1.0, "none")
+	for k in 8:
+		var a := k * TAU / 8.0 + TAU / 16.0
+		_lamp(p + Vector3(cos(a) * 12.5, 0, sin(a) * 12.5), -a + PI / 2.0)
+
+
+## A row of market stalls with crates and barrels between them.
+func _build_market(p: Vector3, yaw: float) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	for i in 3:
+		_prop("market_stall", xf * Vector3(-4.5 + i * 4.5, 0, 0), yaw + PI)
+		if i < 2:
+			_prop(["barrel_small", "box_small", "crates_stacked"][_rng.randi() % 3], xf * Vector3(-2.25 + i * 4.5, 0, -1.2), _rng.randf() * TAU, 0.8)
+
+
+func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
+	var post := _prop("signpost", p, yaw, 1.0, "none")
+	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
+	for i in mini(labels.size(), boards.size()):
+		var l := Label3D.new()
+		l.text = str(labels[i])
+		l.font_size = 40
+		l.pixel_size = 0.0045
+		l.modulate = Color(0.2, 0.13, 0.08)
+		l.outline_size = 0
+		l.double_sided = false
+		l.position = boards[i][0]
+		l.rotation.y = boards[i][1]
+		post.add_child(l)
+
+
+## Lamp posts every so often along each road, alternating sides, skipping
+## plazas (which place their own) and the stretch outside the map edge.
+func _build_road_lamps() -> void:
+	var spacing := float(data.get("road_lamps", 0))
+	if spacing <= 0.0:
+		return
+	var plazas: Array[Vector2] = []
+	for lm: Dictionary in data.get("landmarks", []):
+		if lm["type"] == "hearth_plaza":
+			plazas.append(Vector2(lm["pos"][0], lm["pos"][1]))
+	var side := 1.0
+	for road: Dictionary in _roads:
+		var pts: Array[Vector2] = road["points"]
+		for i in pts.size() - 1:
+			var seg := pts[i + 1] - pts[i]
+			var dir := seg.normalized()
+			var normal := Vector2(-dir.y, dir.x)
+			var t := spacing * 0.5
+			while t < seg.length():
+				var at: Vector2 = pts[i] + dir * t + normal * side * (float(road["width"]) * 0.5 + 1.2)
+				var skip := maxf(absf(at.x), absf(at.y)) > half - 30.0
+				for pl in plazas:
+					skip = skip or at.distance_to(pl) < 16.0
+				if not skip:
+					_lamp(ground(at.x, at.y), atan2(normal.x * side, normal.y * side))
+				side = -side
+				t += spacing
+
+
+## A lamp post whose lantern arm points along `yaw`'s forward (+Z), with light.
+func _lamp(pos: Vector3, yaw: float) -> void:
+	_prop("lamp_post", pos, yaw, 1.0, "none")
+	var lantern := Transform3D(Basis(Vector3.UP, yaw), pos) * Vector3(0, 2.86, 0.62)
+	_light(lantern, Color(1.0, 0.72, 0.4), 8.0, 0.7)
+
+
+## Invisible triggers at the zone's edges that move a player to another zone.
+func _build_zone_lines() -> void:
+	var lines: Array = data.get("zone_lines", [])
+	for i in lines.size():
+		var zl: Dictionary = lines[i]
+		var area := Area3D.new()
+		area.collision_layer = 0
+		area.collision_mask = Layers.ENTITIES
+		area.position = ground(zl["pos"][0], zl["pos"][1]) + Vector3.UP * 2.0
+		var box := BoxShape3D.new()
+		box.size = Vector3(zl["size"][0], 6.0, zl["size"][1])
+		var cs := CollisionShape3D.new()
+		cs.shape = box
+		area.add_child(cs)
+		area.body_entered.connect(func(body: Node3D) -> void:
+			if body is Player:
+				World.request_zone_line((body as Player).entity_id, i))
+		add_child(area)
+
+
+## The zone line a position is standing in, or -1.
+func zone_line_at(pos: Vector3) -> int:
+	var lines: Array = data.get("zone_lines", [])
+	for i in lines.size():
+		var zl: Dictionary = lines[i]
+		if absf(pos.x - float(zl["pos"][0])) <= float(zl["size"][0]) * 0.5 + 1.0 \
+				and absf(pos.z - float(zl["pos"][1])) <= float(zl["size"][1]) * 0.5 + 1.0:
+			return i
+	return -1
+
+
+## Yaw for a landmark: "yaw" in degrees, or "face": [x, z] to turn its front (+Z) toward.
+func _landmark_yaw(lm: Dictionary) -> float:
+	if lm.has("face"):
+		return atan2(float(lm["face"][0]) - float(lm["pos"][0]), float(lm["face"][1]) - float(lm["pos"][1]))
+	return deg_to_rad(float(lm.get("yaw", 0.0)))
 
 
 func _build_npcs() -> void:
 	for entry: Dictionary in data.get("npcs", []):
 		var npc := Npc.new()
-		npc.setup(entry["id"])
+		npc.setup(entry["id"], str(entry.get("name", "")))
 		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * 0.1
 		if entry.has("face"):
 			var d := Vector2(entry["face"][0], entry["face"][1]) - Vector2(entry["pos"][0], entry["pos"][1])
@@ -385,7 +604,7 @@ func _build_spawns() -> void:
 func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
-		if xz.distance_to(_bind_xz) < flat_radius + 6.0:
+		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0:
 			continue
 		var clear := true
 		for spot in _flat_spots:

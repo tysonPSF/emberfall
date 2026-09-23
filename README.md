@@ -34,7 +34,8 @@ Smoke test (plays itself, saves screenshots, quits):
 
 ## What's in the slice
 
-- **Greenmoor**: one zone with a bind obelisk, rats and gnoll pups nearby, fire beetles to the southeast, aggressive skeletons at the ruins (west-northwest), and a gnoll camp (northeast) with a rare named mob, Grubnak the Mangy.
+- **Emberhold**: the first city, a walled town around an undying hearth-fire (the bind point). Guards, Keeper Maelin (ask about the [Emberfall]), a market, and a north gate whose pass leads to Greenmoor.
+- **Greenmoor**: one zone with a bind obelisk, rats and gnoll pups nearby, fire beetles to the southeast, aggressive skeletons at the ruins (west-northwest), and a gnoll camp (northeast) with a rare named mob, Grubnak the Mangy. The road south runs past Warden Holt's watch house to the pass to Emberhold.
 - **Warden Holt** at the watch house by the obelisk: hail him, ask about [gnoll fangs], and trade him four for a repeatable bounty (a sword the first time). Quests are data in `data/quests.json`, NPC dialogue in `data/npcs.json`.
 - **3 classes**: Warrior (kick, taunt), Cleric (heal, strike), Wizard (nuke, gate).
 - **Mob AI**: wander, aggro radius, social assist (trains!), flee at low health, leash home.

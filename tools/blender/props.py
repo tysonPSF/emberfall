@@ -40,6 +40,10 @@ GOLD = (5, 2)
 RUNE = (6, 2)
 PINE = (4, 3)
 BONE = (0, 3)
+WATER = (2, 3)
+CLOTH_RED = (3, 2)
+CLOTH_WHITE = (0, 1)
+IRON = (3, 0)
 
 
 def reset_scene():
@@ -330,6 +334,148 @@ def roof_gable():
 	return p.build()
 
 
+# ---------------------------------------------------------------- city (Emberhold)
+
+def hearth():
+	"""The eternal hearth of Emberhold: a stepped stone dais, an iron bowl and a tall fire."""
+	p = Prop("hearth", 31)
+	p.seg((0, 0, 0), (0, 0, 0.5), 3.4, 3.3, STONE_DARK, sides=8, grad=(0.3, 0.9), twist=22.5)
+	p.seg((0, 0, 0.5), (0, 0, 0.9), 2.5, 2.4, STONE_LIGHT, sides=8, grad=(0.1, 0.7), twist=22.5)
+	p.seg((0, 0, 0.9), (0, 0, 1.9), 0.55, 1.55, IRON, sides=10, grad=(0.3, 1.0))
+	p.seg((0, 0, 1.85), (0, 0, 2.0), 1.6, 1.6, IRON, sides=10, grad=(0.0, 0.4))
+	p.blob((2.6, 2.6, 0.35), (0, 0, 1.95), EMBER, grad=(0.5, 0.9), glow=1.0)
+	for k, (r, hgt) in enumerate(((0.9, 3.4), (0.6, 2.6), (0.55, 2.4), (0.5, 2.2), (0.45, 1.9))):
+		a = k * 1.9
+		off = 0.0 if k == 0 else 0.55
+		p.seg((math.cos(a) * off, math.sin(a) * off, 1.95), (math.cos(a) * off * 0.6, math.sin(a) * off * 0.6, 1.95 + hgt),
+			  r, 0.0, FLAME, sides=6, grad=(0.05, 0.95), glow=1.3, twist=a * 20)
+	for k in range(8):  # ring of short posts with ember caps
+		a = k * math.tau / 8 + math.tau / 16
+		x, y = math.cos(a) * 3.0, math.sin(a) * 3.0
+		p.seg((x, y, 0.5), (x, y, 1.5), 0.2, 0.17, STONE_LIGHT, sides=6)
+		p.blob((0.3, 0.3, 0.2), (x, y, 1.58), EMBER, glow=0.8)
+	return p.build()
+
+
+def city_wall():
+	"""6 m run of curtain wall along X, 5 m tall, crenellated on both faces."""
+	p = Prop("city_wall", 33)
+	p.box((6.1, 2.0, 0.9), (0, 0, 0.35), STONE_DARK, grad=(0.3, 1.0))
+	p.box((6.05, 1.6, 4.3), (0, 0, 2.95), STONE_LIGHT, grad=(0.05, 0.9))
+	for k in range(6):  # a few darker courses of stone for texture
+		x = -2.5 + k + p.rng.uniform(-0.2, 0.2)
+		z = 1.3 + p.rng.uniform(0, 2.8)
+		for side in (-1, 1):
+			p.box((0.8, 0.06, 0.35), (x, side * 0.81, z), STONE_DARK, grad=(0.3, 0.6))
+	for k in range(4):
+		x = -2.25 + k * 1.5
+		for side in (-1, 1):
+			p.box((0.8, 0.35, 0.8), (x, side * 0.62, 5.5), STONE_LIGHT, grad=(0.0, 0.6))
+	return p.build()
+
+
+def city_tower():
+	p = Prop("city_tower", 35)
+	p.seg((0, 0, -0.2), (0, 0, 1.0), 3.1, 3.0, STONE_DARK, sides=8, grad=(0.3, 1.0), twist=22.5)
+	p.seg((0, 0, 1.0), (0, 0, 7.4), 2.7, 2.5, STONE_LIGHT, sides=8, grad=(0.05, 0.9), twist=22.5)
+	p.seg((0, 0, 7.4), (0, 0, 8.0), 3.0, 3.0, STONE_LIGHT, sides=8, grad=(0.1, 0.6), twist=22.5)
+	p.seg((0, 0, 8.0), (0, 0, 11.6), 3.3, 0.0, CLAY, sides=8, grad=(0.0, 0.9), twist=22.5)
+	p.seg((0, 0, 11.4), (0, 0, 12.6), 0.05, 0.04, IRON, sides=4)
+	p.box((0.05, 0.9, 0.5), (0, 0.45, 12.3), CLOTH_RED, grad=(0.2, 0.6))
+	for k in range(4):  # arrow slits
+		a = k * math.pi / 2 + math.pi / 8
+		p.box((0.18, 0.1, 0.9), (math.cos(a) * 2.62, math.sin(a) * 2.62, 4.6), IRON, rot=(0, 0, math.degrees(a) + 90))
+	return p.build()
+
+
+def city_gate():
+	"""Gatehouse along X, 12 m wide: two towers and a 4.4 m passage with raised portcullis."""
+	p = Prop("city_gate", 37)
+	for s in (-1, 1):
+		x = s * 4.2
+		p.box((3.6, 5.0, 0.9), (x, 0, 0.35), STONE_DARK, grad=(0.3, 1.0))
+		p.box((3.4, 4.8, 7.8), (x, 0, 4.2), STONE_LIGHT, grad=(0.05, 0.9))
+		for k in range(3):
+			for side in (-1, 1):
+				p.box((0.75, 0.4, 0.8), (x - 1.2 + k * 1.2, side * 2.2, 8.5), STONE_LIGHT, grad=(0.0, 0.6))
+		p.box((0.14, 0.9, 1.4), (x, -2.42, 5.0), IRON)  # arrow slit
+		p.box((0.14, 0.9, 1.4), (x, 2.42, 5.0), IRON)
+	p.box((5.0, 4.8, 2.6), (0, 0, 6.8), STONE_LIGHT, grad=(0.05, 0.9))          # span over the passage
+	for s in (-1, 1):
+		p.box((0.9, 4.8, 0.9), (s * 2.0, 0, 5.3), STONE_LIGHT, rot=(0, s * 45, 0))  # corbels
+	for k in range(5):
+		p.box((5.0, 0.4, 0.8), (0, -2.2 + k * 1.1, 8.5) if k in (0, 4) else (0, -2.2 + k * 1.1, 8.15), STONE_LIGHT, grad=(0.0, 0.6))
+	for k in range(7):  # raised portcullis bars
+		p.box((0.1, 0.1, 1.6), (-1.8 + k * 0.6, 1.6, 6.2), IRON)
+	p.box((4.4, 0.12, 0.12), (0, 1.6, 5.5), IRON)
+	for s in (-1, 1):  # open gate leaves against the passage walls
+		p.box((0.2, 2.2, 4.6), (s * 2.3, -1.1, 2.3), WOOD, grad=(0.2, 1.0))
+		for z in (1.0, 3.6):
+			p.box((0.24, 2.25, 0.18), (s * 2.3, -1.1, z), IRON)
+	p.box((4.4, 5.0, 0.12), (0, 0, 0.02), STONE_DARK, grad=(0.5, 0.9))
+	return p.build()
+
+
+def lamp_post():
+	p = Prop("lamp_post", 39)
+	p.seg((0, 0, -0.2), (0, 0, 0.4), 0.22, 0.18, STONE_DARK, sides=6)
+	p.seg((0, 0, 0.4), (0, 0, 3.2), 0.08, 0.07, IRON, sides=6, grad=(0.2, 0.9))
+	p.seg((0, 0, 3.05), (0, -0.55, 3.15), 0.04, 0.04, IRON, sides=4)
+	p.box((0.34, 0.34, 0.08), (0, -0.62, 3.1), IRON)
+	p.box((0.26, 0.26, 0.38), (0, -0.62, 2.86), GOLD, grad=(0.1, 0.5), glow=1.6)
+	for dx in (-0.14, 0.14):
+		for dy in (-0.14, 0.14):
+			p.box((0.035, 0.035, 0.42), (dx, -0.62 + dy, 2.86), IRON)
+	p.seg((0, -0.62, 3.14), (0, -0.62, 3.34), 0.2, 0.02, IRON, sides=4, twist=45)
+	return p.build()
+
+
+def market_stall():
+	p = Prop("market_stall", 41)
+	for x in (-1.3, 1.3):
+		for y in (-0.8, 0.8):
+			p.seg((x, y, -0.1), (x, y, 2.4 if y > 0 else 2.0), 0.07, 0.06, WOOD, sides=5)
+	p.box((2.8, 1.0, 0.9), (0, -0.5, 0.45), WOOD, grad=(0.2, 1.0))
+	p.box((3.0, 1.2, 0.08), (0, -0.5, 0.93), WOOD_GREY)
+	stripes = 6
+	ang = math.degrees(math.atan2(0.4, 1.9))
+	for k in range(stripes):
+		x = -1.45 + (k + 0.5) * 2.9 / stripes
+		p.box((2.9 / stripes, 2.1, 0.06), (x, 0, 2.22), CLOTH_RED if k % 2 == 0 else CLOTH_WHITE, rot=(-ang, 0, 0), grad=(0.1, 0.5))
+	for k in range(7):  # goods on the counter
+		sw = (LEAF, GOLD, CLOTH_RED, EMBER)[k % 4]
+		p.blob((0.28, 0.28, 0.24), (-1.1 + k * 0.36, -0.55 + p.rng.uniform(-0.15, 0.15), 1.08), sw, grad=(0.1, 0.6))
+	return p.build()
+
+
+def well():
+	p = Prop("well", 43)
+	for k in range(10):
+		a = k * math.tau / 10
+		p.box((0.75, 0.35, 0.9), (math.cos(a) * 1.05, math.sin(a) * 1.05, 0.45), STONE_LIGHT,
+			  rot=(0, 0, math.degrees(a) + 90), grad=(0.1, 0.8), jitter=0.02)
+	p.seg((0, 0, 0.3), (0, 0, 0.62), 0.95, 0.95, WATER, sides=10, grad=(0.2, 0.5))
+	for s in (-1, 1):
+		p.seg((s * 1.15, 0, 0), (s * 1.15, 0, 2.3), 0.09, 0.08, WOOD, sides=5)
+	p.seg((-1.25, 0, 1.75), (1.25, 0, 1.75), 0.06, 0.06, WOOD_GREY, sides=5)
+	p.seg((0, 0, 1.75), (0, 0, 1.1), 0.015, 0.015, WOOD_GREY, sides=3)
+	p.seg((0, 0, 1.1), (0, 0, 0.8), 0.16, 0.14, WOOD, sides=6)
+	p.box((3.0, 1.2, 0.08), (0, -0.5, 2.55), CLAY, rot=(-35, 0, 0))
+	p.box((3.0, 1.2, 0.08), (0, 0.5, 2.55), CLAY, rot=(35, 0, 0))
+	return p.build()
+
+
+def signpost():
+	"""Two arrow boards; the game writes the destinations on them."""
+	p = Prop("signpost", 45)
+	p.seg((0, 0, -0.3), (0, 0, 2.7), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+	p.box((1.5, 0.08, 0.34), (0.55, -0.06, 2.25), WOOD_GREY, grad=(0.1, 0.6))
+	p.seg((1.3, -0.06, 2.25), (1.55, -0.06, 2.25), 0.2, 0.0, WOOD_GREY, sides=4, twist=45)
+	p.box((1.3, 0.08, 0.32), (-0.45, 0.06, 1.75), WOOD_GREY, grad=(0.1, 0.6))
+	p.seg((-1.1, 0.06, 1.75), (-1.35, 0.06, 1.75), 0.19, 0.0, WOOD_GREY, sides=4, twist=45)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -346,6 +492,14 @@ PROPS = {
 	"banner_pole": banner_pole,
 	"palisade": palisade,
 	"roof_gable": roof_gable,
+	"hearth": hearth,
+	"city_wall": city_wall,
+	"city_tower": city_tower,
+	"city_gate": city_gate,
+	"lamp_post": lamp_post,
+	"market_stall": market_stall,
+	"well": well,
+	"signpost": signpost,
 }
 
 

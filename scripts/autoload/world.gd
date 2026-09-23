@@ -14,6 +14,7 @@ signal player_died(player: Player)
 signal trade_opened(npc: Npc)
 signal trade_changed
 signal trade_closed
+signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
 
@@ -814,3 +815,24 @@ func quest_items_ready(p: Player, quest_id: String) -> bool:
 		if int(have[item_id]) < int(wants[item_id]):
 			return false
 	return true
+
+
+# --- zones ------------------------------------------------------------------
+
+## A player stepped into a zone line. Checks they really stand in it, closes
+## anything open, and asks whoever owns zones (main today, a zone server later)
+## to move them.
+func request_zone_line(player_id: int, line_index: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or zone == null or zone.zone_line_at(p.global_position) != line_index:
+		return
+	var zl: Dictionary = zone.data["zone_lines"][line_index]
+	request_trade_cancel(player_id)
+	request_loot_close(player_id)
+	p.auto_attack = false
+	p.target = null
+	p.sitting = false
+	if not p.cast.is_empty():
+		request_interrupt(player_id)
+	var face: Array = zl.get("arrive_face", zl["arrive"])
+	zone_change.emit(p, str(zl["to"]), Vector2(zl["arrive"][0], zl["arrive"][1]), Vector2(face[0], face[1]))

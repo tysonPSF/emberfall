@@ -20,7 +20,7 @@ func _run() -> void:
 	await _shot("0_title")
 	for c in main.get_children():
 		if c is CharCreate:
-			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard"})
+			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "zone": "greenmoor"})
 	await _wait(2.0)
 	var p := World.local_player
 	print("player at ", p.global_position, " on_floor=", p.is_on_floor(), " mobs=", World.get_mobs().size())
@@ -174,6 +174,38 @@ func _run() -> void:
 	p.zoom = 0.0
 	await _wait(0.6)
 	await _shot("6_first_person")
+
+	# zone trip: Greenmoor's south pass into Emberhold and back
+	p.zoom = 9.0
+	p.pitch = -0.3
+	p.global_position = main.zone.ground(0, 160) + Vector3.UP
+	p.face_toward(main.zone.ground(0, 190))
+	await _wait(0.8)
+	await _shot("7_greenmoor_pass")
+	p.global_position = main.zone.ground(0, 181) + Vector3.UP
+	await _wait(2.5)
+	print("zone after pass: %s at %s" % [main.zone.zone_id, p.global_position])
+	await _shot("7b_emberhold_arrival")
+	for view: Array in [[Vector2(-26, -30), Vector2(0, 0), 16.0, -0.55, "7c_emberhold_overview"],
+			[Vector2(9, -9), Vector2(0, 0), 7.0, -0.3, "7d_hearth"],
+			[Vector2(26, 30), Vector2(20, 21), 8.0, -0.35, "7e_market"],
+			[Vector2(0, -80), Vector2(0, -56), 10.0, -0.25, "7f_gate_outside"]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(view[1].x, view[1].y))
+		p.zoom = view[2]
+		p.pitch = view[3]
+		await _wait(0.8)
+		await _shot(view[4])
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).npc_id == "keeper_maelin":
+			p.global_position = obj.global_position + Vector3(3, 0.5, 3)
+			World.request_set_target(p.entity_id, (obj as Npc).entity_id)
+			World.request_hail(p.entity_id)
+			World.request_say(p.entity_id, "emberfall")
+	p.global_position = main.zone.ground(0, -97) + Vector3.UP
+	await _wait(2.5)
+	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])
+	await _shot("7g_back_in_greenmoor")
 	print("AUTOTEST DONE")
 	get_tree().quit()
 

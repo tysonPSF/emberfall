@@ -12,10 +12,10 @@ var _face_timer := 0.0
 var _post_yaw := 0.0
 
 
-func setup(id: String) -> void:
+func setup(id: String, name_override := "") -> void:
 	npc_id = id
 	data = GameData.npcs[id]
-	display_name = data["name"]
+	display_name = name_override if name_override != "" else str(data["name"])
 	level = int(data.get("level", 10))
 	faction = "town"
 	max_hp = 1000

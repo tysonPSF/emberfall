@@ -1,5 +1,5 @@
 {
-  "starting_zone": "greenmoor",
+  "starting_zone": "emberhold",
   "tick_seconds": 6.0,
   "regen_multiplier": 1.0,
   "melee_range": 3.4,
@@ -8,7 +8,7 @@
   "xp_per_level_sq": 100,
   "xp_base": 10,
   "xp_per_mob_level_sq": 5,
-  "death_xp_loss": 0.10,
+  "death_xp_loss": 0.1,
   "corpse_runs": true,
   "respawn_delay": 4.0,
   "player_corpse_decay_seconds": 3600,

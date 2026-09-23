@@ -11,6 +11,8 @@ var zone: Zone
 var player: Player
 var hud: Hud
 var _save_timer := 0.0
+var _corpses_by_zone: Dictionary = {}  # zone id -> saved player corpses left there
+var _changing_zone := false
 
 
 func _ready() -> void:
@@ -31,18 +33,18 @@ func _ready() -> void:
 
 func _start_game(save: Dictionary, title: CharCreate) -> void:
 	title.queue_free()
-	zone = Zone.new()
-	add_child(zone)
-	zone.load_zone(str(save.get("zone", World.cfg("starting_zone", "greenmoor"))))
+	_corpses_by_zone = (save.get("corpses_by_zone", {}) as Dictionary).duplicate(true)
+	var zone_id := str(save.get("zone", World.cfg("starting_zone", "greenmoor")))
+	if save.has("corpses"):  # older saves kept one list, for the zone they were in
+		_corpses_by_zone[zone_id] = save["corpses"]
 
 	player = Player.new()
 	player.from_save(save)
-	var pos := zone.bind_point + Vector3.UP
+	var pos := Vector3.INF
 	if save.has("position"):
 		var a: Array = save["position"]
 		pos = Vector3(a[0], float(a[1]) + 0.5, a[2])
-	zone.add_player(player, pos)
-	zone.restore_corpses(save.get("corpses", []))
+	_enter_zone(zone_id, pos)
 
 	hud = Hud.new()
 	add_child(hud)
@@ -52,11 +54,47 @@ func _start_game(save: Dictionary, title: CharCreate) -> void:
 	add_child(marker)
 	hud.show_banner("Entering %s" % zone.zone_name)
 	World.say(player, "Welcome to %s, %s. Press H for controls." % [zone.zone_name, player.display_name])
+	World.zone_change.connect(_on_zone_change)
+	_save()
+
+
+## Builds a zone and puts the player in it: at `pos`, or at its bind point.
+func _enter_zone(zone_id: String, pos: Vector3, face := Vector2.INF) -> void:
+	zone = Zone.new()
+	add_child(zone)
+	zone.load_zone(zone_id)
+	if pos == Vector3.INF:
+		pos = zone.bind_point + Vector3.UP
+	zone.add_player(player, pos)
+	if face != Vector2.INF:
+		var d := face - Vector2(pos.x, pos.z)
+		player.rotation.y = atan2(-d.x, -d.y)
+	zone.restore_corpses(_corpses_by_zone.get(zone_id, []))
+
+
+func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2) -> void:
+	if p != player or _changing_zone:
+		return
+	_changing_zone = true
+	hud.show_banner("Loading...")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_corpses_by_zone[zone.zone_id] = zone.player_corpses_for(player.display_name)
+	zone.remove_child(player)
+	zone.queue_free()
+	World.zone = null
+	await get_tree().process_frame
+	_enter_zone(zone_id, Vector3(arrive.x, 0, arrive.y), face)
+	player.global_position = zone.ground(arrive.x, arrive.y) + Vector3.UP
+	player.velocity = Vector3.ZERO
+	hud.show_banner("Entering %s" % zone.zone_name)
+	World.say(player, "You have entered %s." % zone.zone_name)
+	_changing_zone = false
 	_save()
 
 
 func _process(delta: float) -> void:
-	if player == null:
+	if player == null or _changing_zone:
 		return
 	_save_timer += delta
 	if _save_timer >= AUTOSAVE_SECONDS:
@@ -70,13 +108,14 @@ func _notification(what: int) -> void:
 
 
 func _save() -> void:
-	if player == null:
+	if player == null or zone == null or _changing_zone:
 		return
 	var d := player.to_save()
 	if player.dead:
 		d["position"] = [zone.bind_point.x, zone.bind_point.y, zone.bind_point.z]
 	d["zone"] = zone.zone_id
-	d["corpses"] = zone.player_corpses_for(player.display_name)
+	_corpses_by_zone[zone.zone_id] = zone.player_corpses_for(player.display_name)
+	d["corpses_by_zone"] = _corpses_by_zone
 	var f := FileAccess.open(save_path, FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(d, "  "))

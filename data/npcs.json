@@ -11,5 +11,30 @@
       "grubnak": "Grubnak the Mangy, their chief. Twice the size of his kin and meaner than a cornered badger. He shows his face at the camp now and then. Don't go alone.",
       "unknown": "I've no time for riddles, {name}."
     }
+  },
+  "emberhold_guard": {
+    "name": "a Watch guard",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "dialogue": {
+      "hail": "Move along, {name}. The [Watch] keeps the peace in Emberhold, and I'd like it kept.",
+      "watch": "We patrol the walls and the road to Greenmoor. Warden Holt holds the post at the pass. If you've a mind for honest work, he pays a bounty on [gnoll fangs].",
+      "gnoll fangs": "Not to me. Take them to Warden Holt, down the road past the gate.",
+      "unknown": "I'm on duty, {name}. Ask the Keeper at the hearth if you want stories."
+    }
+  },
+  "keeper_maelin": {
+    "name": "Keeper Maelin",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "dialogue": {
+      "hail": "Welcome to Emberhold, {name}. Warm your hands at the [hearth]. It has burned since the [Emberfall], and it will burn long after us.",
+      "hearth": "No wood feeds it and no rain drowns it. The Keepers tend it all the same. Those who fall in these lands wake beside a [bindstone], drawn back to warmth.",
+      "emberfall": "The night the sky burned, a star came down into this hollow and would not cool. The first settlers raised walls around its heat. That ember is the one before you.",
+      "bindstone": "The hearth here, and the old obelisk in Greenmoor. When you fall, you wake at the bindstone of the land you fell in. Your belongings, sadly, stay where you dropped.",
+      "unknown": "Many things are forgotten, {name}, but not that one. I don't know it."
+    }
   }
 }

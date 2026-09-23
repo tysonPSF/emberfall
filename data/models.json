@@ -276,6 +276,30 @@
     "trunk_small_A": {
       "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/trunk_small_A.gltf",
       "scale": 0.75
+    },
+    "hearth": {
+      "path": "res://assets/props/hearth.glb"
+    },
+    "city_wall": {
+      "path": "res://assets/props/city_wall.glb"
+    },
+    "city_tower": {
+      "path": "res://assets/props/city_tower.glb"
+    },
+    "city_gate": {
+      "path": "res://assets/props/city_gate.glb"
+    },
+    "lamp_post": {
+      "path": "res://assets/props/lamp_post.glb"
+    },
+    "market_stall": {
+      "path": "res://assets/props/market_stall.glb"
+    },
+    "well": {
+      "path": "res://assets/props/well.glb"
+    },
+    "signpost": {
+      "path": "res://assets/props/signpost.glb"
     }
   }
 }

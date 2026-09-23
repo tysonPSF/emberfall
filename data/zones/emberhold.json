@@ -1,0 +1,449 @@
+{
+  "name": "Emberhold",
+  "seed": 732,
+  "size": 224,
+  "height_amplitude": 1.2,
+  "bind_point": [
+    0,
+    4
+  ],
+  "flat_radius": 70,
+  "clear_radius": 64,
+  "trees": 60,
+  "rocks": 20,
+  "road_lamps": 13,
+  "landmarks": [
+    {
+      "type": "wall_ring",
+      "pos": [
+        0,
+        0
+      ],
+      "radius": 58,
+      "sides": 12,
+      "gates": [
+        -90
+      ]
+    },
+    {
+      "type": "hearth_plaza",
+      "pos": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "market",
+      "pos": [
+        20,
+        21
+      ],
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "id": "well",
+      "pos": [
+        -17,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "tree_round",
+      "pos": [
+        -17,
+        -18
+      ],
+      "scale": 1.1,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "id": "tree_round",
+      "pos": [
+        18,
+        -18
+      ],
+      "scale": 0.9,
+      "collide": "trunk"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -4.5,
+        -72
+      ],
+      "yaw": 90,
+      "labels": [
+        "Greenmoor",
+        "Emberhold"
+      ]
+    },
+    {
+      "type": "house",
+      "pos": [
+        -10,
+        -42
+      ],
+      "face": [
+        0,
+        -42
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        10,
+        -42
+      ],
+      "face": [
+        0,
+        -42
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -10,
+        -30
+      ],
+      "face": [
+        0,
+        -30
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        10,
+        -30
+      ],
+      "face": [
+        0,
+        -30
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        22,
+        -10
+      ],
+      "face": [
+        22,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -22,
+        -10
+      ],
+      "face": [
+        -22,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        22,
+        10
+      ],
+      "face": [
+        22,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        34,
+        -10
+      ],
+      "face": [
+        34,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -34,
+        -10
+      ],
+      "face": [
+        -34,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        34,
+        10
+      ],
+      "face": [
+        34,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        45,
+        -10
+      ],
+      "face": [
+        45,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -45,
+        -10
+      ],
+      "face": [
+        -45,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        45,
+        10
+      ],
+      "face": [
+        45,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -24,
+        12
+      ],
+      "face": [
+        -24,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -38,
+        12
+      ],
+      "face": [
+        -38,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        0,
+        32
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 3
+    },
+    {
+      "type": "house",
+      "pos": [
+        14,
+        42
+      ],
+      "face": [
+        0,
+        42
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -14,
+        42
+      ],
+      "face": [
+        0,
+        42
+      ],
+      "size": 2
+    }
+  ],
+  "passes": [
+    [
+      0,
+      -112,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          -112
+        ],
+        [
+          0,
+          -14
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          -52,
+          0
+        ],
+        [
+          -14,
+          0
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          14,
+          0
+        ],
+        [
+          52,
+          0
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          0,
+          14
+        ],
+        [
+          0,
+          50
+        ]
+      ],
+      "width": 4.5
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        -97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "greenmoor",
+      "arrive": [
+        0,
+        168
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "emberhold_guard",
+      "name": "Guard Aldric",
+      "pos": [
+        -4.5,
+        -50
+      ],
+      "face": [
+        0,
+        -50
+      ]
+    },
+    {
+      "id": "emberhold_guard",
+      "name": "Guard Wenna",
+      "pos": [
+        4.5,
+        -50
+      ],
+      "face": [
+        0,
+        -50
+      ]
+    },
+    {
+      "id": "emberhold_guard",
+      "name": "Guard Tobin",
+      "pos": [
+        -5.5,
+        -15.5
+      ],
+      "face": [
+        0,
+        -30
+      ]
+    },
+    {
+      "id": "emberhold_guard",
+      "name": "Guard Hesk",
+      "pos": [
+        15.5,
+        4.5
+      ],
+      "face": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "keeper_maelin",
+      "pos": [
+        4.2,
+        4.2
+      ],
+      "face": [
+        10,
+        10
+      ]
+    }
+  ],
+  "spawns": [],
+  "ground_tint": {
+    "color": "#6b6a45",
+    "radius": 58,
+    "amount": 0.55
+  }
+}
