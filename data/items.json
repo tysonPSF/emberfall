@@ -1,0 +1,15 @@
+{
+  "rusty_dagger": {"name": "Rusty Dagger", "slot": "primary", "dmg": 3, "delay": 2.4, "verb": ["pierce", "pierces"], "model": "dagger"},
+  "rusty_short_sword": {"name": "Rusty Short Sword", "slot": "primary", "dmg": 4, "delay": 2.8, "verb": ["slash", "slashes"], "model": "sword_1handed"},
+  "grubnaks_cleaver": {"name": "Grubnak's Cleaver", "slot": "primary", "dmg": 8, "delay": 3.0, "hp": 5, "verb": ["slash", "slashes"], "model": "axe_1handed"},
+  "cloth_cap": {"name": "Cloth Cap", "slot": "head", "ac": 1},
+  "patchwork_tunic": {"name": "Patchwork Tunic", "slot": "chest", "ac": 2},
+  "patchwork_pants": {"name": "Patchwork Pants", "slot": "legs", "ac": 2},
+  "mangy_hide_vest": {"name": "Mangy Hide Vest", "slot": "chest", "ac": 6, "hp": 10},
+  "bone_helm": {"name": "Cracked Bone Helm", "slot": "head", "ac": 3},
+  "gnoll_fang": {"name": "Gnoll Fang"},
+  "beetle_eye": {"name": "Fire Beetle Eye"},
+  "bone_chips": {"name": "Bone Chips"},
+  "rat_whiskers": {"name": "Rat Whiskers"},
+  "worn_staff": {"name": "Worn Staff", "slot": "primary", "dmg": 4, "delay": 3.0, "verb": ["crush", "crushes"], "model": "staff"}
+}

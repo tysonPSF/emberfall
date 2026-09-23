@@ -1,0 +1,50 @@
+{
+  "name": "Greenmoor",
+  "seed": 1999,
+  "size": 384,
+  "height_amplitude": 10,
+  "bind_point": [0, 0],
+  "flat_radius": 26,
+  "trees": 170,
+  "rocks": 60,
+  "landmarks": [
+    {"type": "obelisk", "pos": [0, 0]},
+    {"type": "camp", "pos": [115, -100]},
+    {"type": "ruins", "pos": [-100, -80]}
+  ],
+  "spawns": [
+    {"pos": [35, -20], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 45, "wander": 10},
+    {"pos": [-30, -35], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 45, "wander": 10},
+    {"pos": [20, 42], "pool": {"large_rat": 3, "gnoll_pup": 1}, "respawn": 45, "wander": 10},
+    {"pos": [-42, 25], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 45, "wander": 10},
+    {"pos": [52, 15], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 45, "wander": 10},
+    {"pos": [-15, 58], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 45, "wander": 10},
+    {"pos": [62, -48], "pool": {"gnoll_pup": 3, "fire_beetle": 1}, "respawn": 50, "wander": 10},
+    {"pos": [-58, -10], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 45, "wander": 10},
+    {"pos": [10, -62], "pool": {"gnoll_pup": 3, "large_rat": 1}, "respawn": 45, "wander": 10},
+    {"pos": [46, 58], "pool": {"fire_beetle": 2, "large_rat": 2}, "respawn": 50, "wander": 10},
+
+    {"pos": [82, 62], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [102, 92], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [72, 112], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [122, 52], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [132, 122], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [95, 142], "pool": {"fire_beetle": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-110, 60], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-130, 100], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 60, "wander": 12},
+
+    {"pos": [-95, -72], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-110, -90], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-86, -94], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-118, -68], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-102, -112], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-62, -122], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 20},
+
+    {"pos": [104, -88], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [126, -106], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [108, -114], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [128, -86], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [85, -75], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
+    {"pos": [115, -93], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
+  ]
+}

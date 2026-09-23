@@ -1,0 +1,30 @@
+{
+  "kick": {
+    "name": "Kick", "ability": true, "type": "damage", "target": "enemy",
+    "mana": 0, "cast_time": 0, "recast": 6, "range": 3.4,
+    "min": 1, "max": 4, "per_level": 0.6, "verb": ["kick", "kicks"]
+  },
+  "taunt": {
+    "name": "Taunt", "ability": true, "type": "taunt", "target": "enemy",
+    "mana": 0, "cast_time": 0, "recast": 8, "range": 3.4
+  },
+  "minor_healing": {
+    "name": "Minor Healing", "type": "heal", "target": "friendly",
+    "mana": 10, "cast_time": 1.5, "recast": 1.5, "range": 25,
+    "min": 10, "max": 14, "per_level": 2
+  },
+  "strike": {
+    "name": "Strike", "type": "damage", "target": "enemy",
+    "mana": 8, "cast_time": 1.5, "recast": 2, "range": 25,
+    "min": 5, "max": 8, "per_level": 1.2
+  },
+  "blast_of_frost": {
+    "name": "Blast of Frost", "type": "damage", "target": "enemy",
+    "mana": 8, "cast_time": 1.75, "recast": 2, "range": 30,
+    "min": 10, "max": 15, "per_level": 2
+  },
+  "gate": {
+    "name": "Gate", "type": "gate", "target": "self",
+    "mana": 10, "cast_time": 5, "recast": 10, "range": 0
+  }
+}

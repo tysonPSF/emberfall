@@ -1,0 +1,28 @@
+{
+  "characters": {
+    "barbarian": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+    "knight": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight.glb",
+    "mage": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage.glb",
+    "ranger": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
+    "rogue": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue.glb",
+    "rogue_hooded": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb",
+    "skeleton_minion": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
+    "skeleton_warrior": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
+    "skeleton_rogue": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb",
+    "skeleton_mage": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb"
+  },
+  "weapons": {
+    "dagger": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/dagger.gltf",
+    "sword_1handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/sword_1handed.gltf",
+    "axe_1handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/axe_1handed.gltf",
+    "axe_2handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/axe_2handed.gltf",
+    "staff": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/staff.gltf",
+    "wand": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/wand.gltf",
+    "skeleton_blade": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Blade.gltf",
+    "skeleton_axe": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Axe.gltf"
+  },
+  "animations": [
+    "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
+    "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb"
+  ]
+}

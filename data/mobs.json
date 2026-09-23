@@ -1,0 +1,257 @@
+{
+  "large_rat": {
+    "name": "a large rat",
+    "level": [
+      1,
+      1
+    ],
+    "hp_base": 6,
+    "hp_per_level": 5,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "attack_delay": 2.6,
+    "ac": 1,
+    "speed": 5.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": true,
+    "faction": "vermin",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6b5a4e",
+    "scale": 0.55,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rat_whiskers",
+        "chance": 0.5
+      }
+    ]
+  },
+  "gnoll_pup": {
+    "name": "a gnoll pup",
+    "level": [
+      1,
+      2
+    ],
+    "hp_base": 8,
+    "hp_per_level": 7,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "attack_delay": 2.8,
+    "ac": 2,
+    "speed": 5.5,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": true,
+    "faction": "gnolls",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#8a6a3c",
+    "scale": 0.8,
+    "coin": [
+      0,
+      6
+    ],
+    "loot": [
+      {
+        "item": "gnoll_fang",
+        "chance": 0.4
+      },
+      {
+        "item": "rusty_dagger",
+        "chance": 0.05
+      }
+    ],
+    "model": "rogue_hooded",
+    "weapon": ""
+  },
+  "fire_beetle": {
+    "name": "a fire beetle",
+    "level": [
+      1,
+      3
+    ],
+    "hp_base": 8,
+    "hp_per_level": 8,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "attack_delay": 3.0,
+    "ac": 4,
+    "speed": 4.5,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": true,
+    "faction": "beetles",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#c0442a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "beetle_eye",
+        "chance": 0.5
+      }
+    ]
+  },
+  "decaying_skeleton": {
+    "name": "a decaying skeleton",
+    "level": [
+      1,
+      3
+    ],
+    "hp_base": 10,
+    "hp_per_level": 8,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "attack_delay": 3.0,
+    "ac": 3,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "skeleton",
+    "color": "#e0dccb",
+    "scale": 0.95,
+    "coin": [
+      0,
+      8
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 0.6
+      },
+      {
+        "item": "rusty_short_sword",
+        "chance": 0.06
+      },
+      {
+        "item": "bone_helm",
+        "chance": 0.04
+      }
+    ],
+    "model": [
+      "skeleton_minion",
+      "skeleton_minion",
+      "skeleton_warrior",
+      "skeleton_rogue"
+    ],
+    "weapon": "skeleton_blade",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "gnoll_scout": {
+    "name": "a gnoll scout",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "gnolls",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#6e5230",
+    "scale": 1.0,
+    "coin": [
+      3,
+      25
+    ],
+    "loot": [
+      {
+        "item": "gnoll_fang",
+        "chance": 0.6
+      },
+      {
+        "item": "patchwork_pants",
+        "chance": 0.08
+      },
+      {
+        "item": "cloth_cap",
+        "chance": 0.06
+      }
+    ],
+    "model": "rogue_hooded",
+    "weapon": "dagger"
+  },
+  "grubnak": {
+    "name": "Grubnak the Mangy",
+    "level": [
+      7,
+      7
+    ],
+    "hp_base": 130,
+    "hp_per_level": 0,
+    "dmg_min": 4,
+    "dmg_max": 10,
+    "attack_delay": 2.4,
+    "ac": 16,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "gnolls",
+    "verb": [
+      "maul",
+      "mauls"
+    ],
+    "xp_bonus": 2.0,
+    "shape": "humanoid",
+    "color": "#4d3a22",
+    "scale": 1.3,
+    "coin": [
+      40,
+      120
+    ],
+    "loot": [
+      {
+        "item": "grubnaks_cleaver",
+        "chance": 0.5
+      },
+      {
+        "item": "mangy_hide_vest",
+        "chance": 0.35
+      }
+    ],
+    "model": "barbarian",
+    "weapon": "axe_2handed"
+  }
+}

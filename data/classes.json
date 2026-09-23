@@ -1,0 +1,68 @@
+{
+  "warrior": {
+    "name": "Warrior",
+    "description": "Heavy armor and the most hit points. No spells, but can kick and taunt. Rests to recover.",
+    "color": "#b04a3a",
+    "hp_base": 24,
+    "hp_per_level": 14,
+    "mana_base": 0,
+    "mana_per_level": 0,
+    "ac_base": 12,
+    "melee_skill": 1.0,
+    "hp_regen": 1,
+    "mana_regen": 0,
+    "spells": [
+      "kick",
+      "taunt"
+    ],
+    "starting_items": {
+      "primary": "rusty_short_sword",
+      "chest": "patchwork_tunic"
+    },
+    "model": "barbarian"
+  },
+  "cleric": {
+    "name": "Cleric",
+    "description": "Armored healer. Decent in melee, can heal themselves and anyone else. The glue of every group.",
+    "color": "#d8c86a",
+    "hp_base": 18,
+    "hp_per_level": 10,
+    "mana_base": 16,
+    "mana_per_level": 10,
+    "ac_base": 10,
+    "melee_skill": 0.8,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "minor_healing",
+      "strike"
+    ],
+    "starting_items": {
+      "primary": "worn_staff",
+      "chest": "patchwork_tunic"
+    },
+    "model": "knight"
+  },
+  "wizard": {
+    "name": "Wizard",
+    "description": "Fragile, but hits hard with spells from range. Sit and meditate to regain mana. Can gate home.",
+    "color": "#5a6ad0",
+    "hp_base": 12,
+    "hp_per_level": 6,
+    "mana_base": 24,
+    "mana_per_level": 14,
+    "ac_base": 4,
+    "melee_skill": 0.5,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "blast_of_frost",
+      "gate"
+    ],
+    "starting_items": {
+      "primary": "rusty_dagger",
+      "head": "cloth_cap"
+    },
+    "model": "mage"
+  }
+}
