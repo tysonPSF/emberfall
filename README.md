@@ -47,6 +47,7 @@ Your character saves to Godot's `user://character.json` (per machine, not in git
 - **Emberhold**: the first city, a walled town around an undying hearth-fire (the bind point). Guards, Keeper Maelin (ask about the [Emberfall]), a market with Tovin (provisions, buys your loot) and Garrow (weapons, armor), Banker Odile at the Watch hall, and class guildmasters (Sergeant Brask, Sister Anwen, Magister Coyle) who teach new spells as you level, and a north gate whose pass leads to Greenmoor.
 - **Greenmoor**: one zone with a bind obelisk, rats and gnoll pups nearby, fire beetles to the southeast, aggressive skeletons at the ruins (west-northwest), and a gnoll camp (northeast) with a rare named mob, Grubnak the Mangy. The road south runs past Warden Holt's watch house to the pass to Emberhold.
 - **Warden Holt** at the watch house by the obelisk: hail him, ask about [gnoll fangs], and trade him four for a repeatable bounty (a sword the first time). Quests are data in `data/quests.json`, NPC dialogue in `data/npcs.json`.
+- **Faction**: The Watch, Citizens of Emberhold, Blackpaw Gnolls, the Restless Dead (see the inventory window). Killing gnolls earns the Watch's favor; hated enough, even gnoll pups attack on sight. Townsfolk refuse you at Dubious or worse. You may attack NPCs (press Q twice), but they fight back, the guards come running, and your standing pays for it; at Scowls, guards attack on sight.
 - **3 classes**: Warrior (kick, taunt; later bind wound, bash, battle cry), Cleric (heal, strike; later courage, light healing, smite, hearthward), Wizard (nuke, gate; later burning embers, minor shielding, root, fire bolt). Spells in `data/spells.json` list which classes learn them at what level and cost.
 - **Mob AI**: wander, aggro radius, social assist (trains!), flee at low health, leash home.
 - **EQ-style rules**: 6-second regen ticks, sit to meditate, con colors, no XP from gray mobs, XP loss on death, **corpse runs** (your gear stays on your corpse).
@@ -65,7 +66,7 @@ scripts/ui        HUD, title screen, shared UI styling
 ## Roadmap
 
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
-2. Faction, more quest givers, night and darkness.
+2. Night and darkness, more quest givers, mob pathfinding.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
 4. **Grouping + multiplayer**: headless Godot server that runs `World`; `request_*` calls become RPCs; group XP split, heal and taunt aggro already work.
 5. Persistence server (Postgres), accounts, more classes and zones.

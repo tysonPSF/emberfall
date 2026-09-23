@@ -1,12 +1,14 @@
 class_name Npc
 extends Entity
 ## A townsperson from data/npcs.json: stands at its post, can be hailed, and
-## answers keywords. Townsfolk can't be attacked; what they say and the quests
-## they run are rules in the World autoload.
+## answers keywords. What they say, the quests they run, and whether a player
+## may attack them (only after choosing to, at a faction cost) are rules in the
+## World autoload.
 ##
-## NPCs with a "guard" block also keep the peace: when a mob is chasing a
-## player near their post they shout, run it down and fight it with the same
-## melee rules as everyone else, then walk back to their post.
+## Anyone attacked fights back, chasing a little way from their post. NPCs with
+## a "guard" block also keep the peace: they run down mobs chasing players,
+## players who attack townsfolk, and players their faction wants dead (KOS),
+## using the same melee rules as everyone else, then walk back to their post.
 
 const NAME_COLOR := Color(0.55, 0.85, 1.0)
 const SCAN_SECONDS := 0.5
@@ -26,7 +28,7 @@ func setup(id: String, name_override := "") -> void:
 	data = GameData.npcs[id]
 	display_name = name_override if name_override != "" else str(data["name"])
 	level = int(data.get("level", 10))
-	faction = "town"
+	faction = str(data.get("faction", "town"))
 	guard = data.get("guard", {})
 	var combat: Dictionary = data.get("combat", {})
 	max_hp = int(combat.get("hp", 1000))
@@ -57,9 +59,9 @@ func greet(who: Entity) -> void:
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
 	var move := Vector3.ZERO
-	if not dead and not guard.is_empty():
-		move = _guard_think(delta)
-	var speed := float(guard.get("speed", 6.5))
+	if not dead:
+		move = _think(delta)
+	var speed := float(guard.get("speed", 5.5))
 	velocity.x = move.x * speed
 	velocity.z = move.z * speed
 	move_and_slide()
@@ -72,10 +74,10 @@ func _physics_process(delta: float) -> void:
 
 
 ## Returns the direction to walk this frame (zero to stand still).
-func _guard_think(delta: float) -> Vector3:
+func _think(delta: float) -> Vector3:
 	if auto_attack:
 		var t := valid_target_entity()
-		if t == null or _flat(t.global_position, _post) > float(guard.get("leash", 35.0)):
+		if t == null or _flat(t.global_position, _post) > float(guard.get("leash", 20.0)):
 			auto_attack = false
 			target = null
 			return Vector3.ZERO
@@ -87,10 +89,32 @@ func _guard_think(delta: float) -> Vector3:
 			rotation.y = _post_yaw
 		return dir
 	_scan_timer -= delta
-	if _scan_timer <= 0.0:
+	if _scan_timer <= 0.0 and not guard.is_empty():
 		_scan_timer = SCAN_SECONDS
 		_look_for_trouble()
 	return Vector3.ZERO
+
+
+## Hit by someone: fight back (and a townsperson calls the guards).
+func add_hate(src: Entity, _amount: float) -> void:
+	if dead or src == null or src.dead or (auto_attack and valid_target_entity() != null):
+		return
+	if src is Player:
+		(src as Player).hostile_npcs[entity_id] = true
+	fight(src)
+	World.call_guards(self, src)
+
+
+## Turns on someone: targets and swings at them until they fall, flee past the
+## leash, or it's knocked out.
+func fight(who: Entity, shout := false) -> void:
+	target = who
+	auto_attack = true
+	sitting = false
+	_face_timer = 0.0
+	if shout and who is Player:
+		var lines: Array = guard.get("shouts_player", ["Stop right there, {name}!"])
+		World.shout(self, "%s shouts, '%s'" % [display_name, str(lines[randi() % lines.size()]).format({"name": who.display_name})])
 
 
 ## Engages the nearest mob within reach that is chasing or fighting a player.
@@ -106,6 +130,12 @@ func _look_for_trouble() -> void:
 			best = m
 			victim = t
 	if best == null:
+		for p in World.get_players():  # players this faction wants dead, or who attacked townsfolk
+			if p.dead or distance_to(p) > radius:
+				continue
+			if World.npc_kos(p, faction) or not p.hostile_npcs.is_empty():
+				fight(p, true)
+				return
 		return
 	target = best
 	auto_attack = true

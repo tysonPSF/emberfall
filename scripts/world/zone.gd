@@ -400,7 +400,7 @@ func _build_house(p: Vector3, yaw: float, size: int, furnish: bool) -> Transform
 	for x: float in [-half_w, half_w]:
 		for z: float in [-half_w, half_w]:
 			put.call("pillar", Vector3(x, 0, z))
-	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "none", size / 2.0)
+	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "mesh", size / 2.0)  # solid so the camera can't slip inside
 	if furnish:
 		put.call("table_medium", Vector3(-half_w + 1.8, 0.06, -half_w + 1.8))
 		put.call("chair", Vector3(-half_w + 1.8, 0.06, -half_w + 3.0), PI, "none")

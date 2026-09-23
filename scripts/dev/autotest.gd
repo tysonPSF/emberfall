@@ -240,7 +240,7 @@ func _run() -> void:
 		if obj is Npc:
 			npcs[(obj as Npc).npc_id] = obj
 	var tovin: Npc = npcs["merchant_tovin"]
-	p.global_position = tovin.global_position + (-tovin.global_transform.basis.z) * 2.5 + Vector3.UP * 0.5
+	p.global_position = tovin.global_position + (-tovin.global_transform.basis.z) * 4.5 + Vector3.UP * 0.5
 	p.face_toward(tovin.global_position)
 	p.zoom = 6.0
 	p.pitch = -0.3
@@ -294,10 +294,56 @@ func _run() -> void:
 	print("shielding: ac %d -> %d buffs=%s" % [ac0, p.ac, p.buffs.keys()])
 	await _shot("7k_buffed")
 
+	# faction: a disliked customer is refused; attacking a merchant needs two Qs and brings the guards
+	print("standings: %s" % [GameData.factions.keys().map(func(f: String) -> String: return "%s=%d" % [f, World.standing(p, f)])])
+	var tv: Npc = npcs["merchant_tovin"]
+	p.global_position = tv.global_position + (-tv.global_transform.basis.z) * 4.5 + Vector3.UP * 0.5
+	p.face_toward(tv.global_position)
+	World.request_set_target(p.entity_id, tv.entity_id)
+	p.factions["emberhold"] = -600
+	World.request_interact(p.entity_id)
+	print("refused shop: service=%s" % p.service)
+	p.factions["emberhold"] = 100
+	World.request_toggle_attack(p.entity_id)
+	print("after one Q: attacking=%s" % p.auto_attack)
+	World.request_toggle_attack(p.entity_id)
+	print("after two Qs: attacking=%s hostile=%s watch=%d emberhold=%d" % [p.auto_attack, p.hostile_npcs.has(tv.entity_id), World.standing(p, "watch"), World.standing(p, "emberhold")])
+	p.camera_pivot.rotation.y = PI  # look back past Tovin toward the plaza
+	p.zoom = 11.0
+	p.pitch = -0.45
+	await _wait(1.0)
+	var fighting := 0
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).auto_attack:
+			fighting += 1
+	print("npcs fighting the player: %d" % fighting)
+	await _shot("7m_attack_npc")
+	for k in 30:
+		if p.dead:
+			break
+		await _wait(0.5)
+	print("player dead after attacking a merchant: %s" % p.dead)
+	await _wait(5.0)
+	p.camera_pivot.rotation.y = 0.0
+
 	p.global_position = main.zone.ground(0, -97) + Vector3.UP
 	await _wait(2.5)
 	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])
 	await _shot("7g_back_in_greenmoor")
+
+	# gnolls who hate you attack on sight, even pups
+	var gp := _nearest_mob(p, "gnoll_pup")
+	gp.global_position = main.zone.ground(-40, 100) + Vector3.UP
+	gp.home = gp.global_position
+	gp.level = p.level  # gray mobs never aggro, so make it a fair fight
+	p.global_position = main.zone.ground(-40, 108) + Vector3.UP
+	p.factions["gnolls"] = -800
+	World.request_set_target(p.entity_id, gp.entity_id)
+	World.request_consider(p.entity_id)
+	await _wait(1.5)
+	print("kos pup: state=%s hates player=%s" % [Mob.State.keys()[gp.state], gp.top_hated() == p])
+	World.damage(gp, 9999, p)
+	p.factions["gnolls"] = -200
 
 	# root and burn a gnoll pup
 	var victim := _nearest_mob(p, "gnoll_pup")

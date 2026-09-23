@@ -11,6 +11,7 @@ var items: Dictionary = {}
 var models: Dictionary = {}
 var npcs: Dictionary = {}
 var quests: Dictionary = {}
+var factions: Dictionary = {}
 
 
 func _ready() -> void:
@@ -22,6 +23,7 @@ func _ready() -> void:
 	models = _load("res://data/models.json")
 	npcs = _load("res://data/npcs.json")
 	quests = _load("res://data/quests.json")
+	factions = _load("res://data/factions.json")
 
 
 func load_zone(zone_id: String) -> Dictionary:

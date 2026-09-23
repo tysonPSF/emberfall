@@ -171,13 +171,15 @@ func _physics_process(delta: float) -> void:
 
 func _scan_for_aggro(delta: float) -> void:
 	_scan_timer -= delta
-	if _scan_timer > 0.0 or not aggressive or aggro_radius <= 0.0:
+	if _scan_timer > 0.0:
 		return
 	_scan_timer = 0.5
 	for p in World.get_players():
 		if p.dead or World.con_of(p.level, level) == World.Con.GRAY:
 			continue
-		if distance_to(p) <= aggro_radius:
+		# aggressive mobs attack anyone close; others only those their faction hates
+		var radius := aggro_radius if aggressive else (12.0 if World.mob_kos(p, faction) else 0.0)
+		if radius > 0.0 and distance_to(p) <= radius:
 			add_hate(p, 1.0)
 			return
 

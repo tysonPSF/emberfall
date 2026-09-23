@@ -1,0 +1,44 @@
+{
+  "watch": {
+    "name": "The Watch",
+    "default": 0,
+    "on_kill": {
+      "watch": -250,
+      "emberhold": -100,
+      "gnolls": 25
+    },
+    "on_attack": {
+      "watch": -60,
+      "emberhold": -20
+    }
+  },
+  "emberhold": {
+    "name": "Citizens of Emberhold",
+    "default": 100,
+    "on_kill": {
+      "emberhold": -200,
+      "watch": -120
+    },
+    "on_attack": {
+      "emberhold": -50,
+      "watch": -40
+    }
+  },
+  "gnolls": {
+    "name": "Blackpaw Gnolls",
+    "default": -200,
+    "kos_at": -750,
+    "on_kill": {
+      "gnolls": -10,
+      "watch": 5,
+      "emberhold": 2
+    }
+  },
+  "undead": {
+    "name": "The Restless Dead",
+    "default": -1500,
+    "on_kill": {
+      "watch": 2
+    }
+  }
+}

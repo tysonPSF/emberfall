@@ -15,6 +15,11 @@
     "accept_text": "You have taken on a task: Fang Bounty. Collect four gnoll fangs and trade them to Warden Holt.",
     "complete_text": "Four fangs, and not a bite on you. Good work, {name}. Here's your bounty. The watch pays for every four you bring.",
     "first_complete_text": "Take this blade as well. It served me before I earned a better one. May it serve you as well.",
-    "ready_text": "Those look like gnoll fangs you're carrying, {name}. Hand them over."
+    "ready_text": "Those look like gnoll fangs you're carrying, {name}. Hand them over.",
+    "faction": {
+      "watch": 15,
+      "emberhold": 5,
+      "gnolls": -5
+    }
   }
 }

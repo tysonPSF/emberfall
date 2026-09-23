@@ -10,6 +10,17 @@
       "gnoll fangs": "Bring me four gnoll fangs, pulled from pups or scouts, it matters not. Hand them to me when you have them and I'll pay you from the watch's purse. And if you go near their camp, beware [Grubnak].",
       "grubnak": "Grubnak the Mangy, their chief. Twice the size of his kin and meaner than a cornered badger. He shows his face at the camp now and then. Don't go alone.",
       "unknown": "I've no time for riddles, {name}."
+    },
+    "faction": "watch",
+    "combat": {
+      "hp": 1800,
+      "hp_regen": 30,
+      "ac": 70,
+      "dmg": [
+        10,
+        22
+      ],
+      "delay": 2.4
     }
   },
   "emberhold_guard": {
@@ -32,6 +43,11 @@
         "Get behind me, {name}!",
         "Not on my road, you mangy cur!",
         "For Emberhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}! In the name of the Watch!",
+        "Traitor! Cut them down!",
+        "You'll answer for that, {name}!"
       ]
     },
     "combat": {
@@ -47,7 +63,8 @@
         "slash",
         "slashes"
       ]
-    }
+    },
+    "faction": "watch"
   },
   "keeper_maelin": {
     "name": "Keeper Maelin",
@@ -60,7 +77,8 @@
       "emberfall": "The night the sky burned, a star came down into this hollow and would not cool. The first settlers raised walls around its heat. That ember is the one before you.",
       "bindstone": "The hearth here, and the old obelisk in Greenmoor. When you fall, you wake at the bindstone of the land you fell in. Your belongings, sadly, stay where you dropped.",
       "unknown": "Many things are forgotten, {name}, but not that one. I don't know it."
-    }
+    },
+    "faction": "emberhold"
   },
   "merchant_tovin": {
     "name": "Tovin the Provisioner",
@@ -81,7 +99,8 @@
       "hail": "Welcome, welcome, {name}! Leathers for the road, and I'll take whatever you drag back from it. Fangs, eyes, [whiskers], it's all coin to me.",
       "whiskers": "Rat whiskers! Brush-makers in the lower city can't get enough. Don't ask me why.",
       "unknown": "I only know prices, {name}. Ask the Keeper for the rest."
-    }
+    },
+    "faction": "emberhold"
   },
   "smith_garrow": {
     "name": "Garrow the Smith",
@@ -104,7 +123,8 @@
       "hail": "Hmph. Iron's good, steel's better, and I've only got iron this season. The [gnolls] keep hitting the ore carts.",
       "gnolls": "Take your complaint to Warden Holt, not me. Or take a sword to them. I'll sell you one.",
       "unknown": "I work metal, {name}, not riddles."
-    }
+    },
+    "faction": "emberhold"
   },
   "banker_odile": {
     "name": "Banker Odile",
@@ -116,7 +136,8 @@
       "hail": "The Hearthbank of Emberhold, at your service, {name}. What you leave with me stays safe when you [fall].",
       "fall": "Fall in the wilds and what you carry stays on your corpse. What's in my vault stays in my vault. Choose wisely what you carry.",
       "unknown": "I'm afraid I only keep accounts, {name}."
-    }
+    },
+    "faction": "emberhold"
   },
   "gm_brask": {
     "name": "Sergeant Brask",
@@ -131,7 +152,8 @@
       "hail": "You there, {name}! Think you can hold a line? The Watch trains every [warrior] who can, and a few who can't.",
       "warrior": "Steel, sweat and stubbornness. Come to me as you grow and I'll teach you to bandage yourself, to bash, and to roar. Press G to train.",
       "unknown": "Less talking, more lifting."
-    }
+    },
+    "faction": "watch"
   },
   "gm_anwen": {
     "name": "Sister Anwen",
@@ -146,7 +168,8 @@
       "hail": "Peace of the hearth to you, {name}. Those who [tend] it learn to mend what the wilds tear.",
       "tend": "Clerics of the hearth heal, shield and, when we must, smite. As you grow, I'll teach you more. Press G to train.",
       "unknown": "The Keeper knows more lore than I, {name}."
-    }
+    },
+    "faction": "emberhold"
   },
   "gm_coyle": {
     "name": "Magister Coyle",
@@ -161,6 +184,7 @@
       "hail": "Ah, {name}. Careful, the ink's still wet. You've an interest in the [arcane]?",
       "arcane": "Frost, fire, and the binding of limbs. I teach wizards who have survived long enough to be worth teaching. Press G to train.",
       "unknown": "Fascinating. Irrelevant, but fascinating."
-    }
+    },
+    "faction": "emberhold"
   }
 }

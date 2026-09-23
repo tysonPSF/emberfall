@@ -78,6 +78,7 @@ var _equip_box: VBoxContainer
 var _bag_grid: GridContainer
 var _coin_label: Label
 var _stats_label: Label
+var _faction_label: Label
 
 var _help_panel: PanelContainer
 var _banner: Label
@@ -494,6 +495,9 @@ func _build_inventory() -> void:
 	v.add_child(_bag_grid)
 	_coin_label = UIKit.label("", 13, UIKit.GOLD)
 	v.add_child(_coin_label)
+	v.add_child(UIKit.label("Faction", 13, UIKit.GOLD))
+	_faction_label = UIKit.label("", 12, UIKit.DIM)
+	v.add_child(_faction_label)
 	_inv_panel.visible = false
 
 
@@ -584,6 +588,10 @@ func _process(delta: float) -> void:
 	_update_cast()
 	_update_hotbar()
 	if _inv_panel.visible:
+		var lines: PackedStringArray = []
+		for faction_id: String in GameData.factions:
+			lines.append("%s:  %s" % [World.faction_name(faction_id), World.standing_tier(World.standing(player, faction_id))[1]])
+		_faction_label.text = "\n".join(lines)
 		_stats_label.text = "AC %d   Damage %d-%d   Delay %.1fs" % [player.ac, player.dmg_min, player.dmg_max, player.attack_delay]
 
 

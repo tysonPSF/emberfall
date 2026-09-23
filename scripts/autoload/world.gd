@@ -49,6 +49,18 @@ const C_NPC := Color(0.75, 0.9, 1.0)
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
 const TRADE_SLOTS := 4
+## EQ faction tiers: lowest standing for each, and how that NPC regards you.
+const STANDING_TIERS: Array = [
+	[1100, "Ally", "regards you as an ally"], [750, "Warmly", "looks upon you warmly"],
+	[500, "Kindly", "kindly considers you"], [100, "Amiable", "judges you amiably"],
+	[-100, "Indifferent", "regards you indifferently"], [-500, "Apprehensive", "looks your way apprehensively"],
+	[-750, "Dubious", "glowers at you dubiously"], [-1100, "Threatening", "glares at you threateningly"],
+	[-99999, "Scowls", "scowls at you, ready to attack"],
+]
+const FACTION_MAX := 2000
+const REFUSE_BELOW := -500  # Dubious or worse: townsfolk won't deal with you
+const KOS_BELOW := -1100  # Scowls: guards attack on sight
+const ATTACK_CONFIRM_MS := 5000
 const CALL_FOR_HELP_RADIUS := 14.0
 const EQUIP_SLOTS: Array[String] = ["primary", "head", "chest", "legs"]
 
@@ -207,7 +219,7 @@ func _update_melee(e: Entity) -> void:
 	if not e.auto_attack:
 		return
 	var t := e.valid_target_entity()
-	if t == null or t == e or t.faction == e.faction:
+	if not can_attack(e, t):
 		return
 	if e.distance_to(t) > melee_range():
 		if e == local_player and _range_warn_cooldown <= 0.0:
@@ -283,6 +295,11 @@ func kill(d: Entity, killer: Entity) -> void:
 	for obj: Node3D in objects.values():
 		if obj is Entity:
 			obj.hate.erase(d.entity_id)
+	if killer is Player and GameData.factions.has(d.faction):
+		apply_faction(killer, GameData.factions[d.faction].get("on_kill", {}))
+	if d is Npc:
+		for pl in get_players():
+			pl.hostile_npcs.erase(d.entity_id)
 	if d is Mob:
 		_kill_mob(d, killer)
 	elif d is Player:
@@ -327,6 +344,7 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 
 
 func _kill_player(p: Player, killer: Entity) -> void:
+	p.hostile_npcs.clear()
 	request_trade_cancel(p.entity_id)
 	request_service_close(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
@@ -366,9 +384,19 @@ func award_xp(p: Player, mob: Mob) -> void:
 
 # --- requests (the future network boundary) ---------------------------------
 
-## Whether `a` may fight `t`: never itself, its own faction, or townsfolk.
+## Whether `a` may fight `t`. Townsfolk never fight each other; a player may
+## fight an NPC only after choosing to (see request_toggle_attack), while mobs
+## and NPCs may always fight back.
 func can_attack(a: Entity, t: Entity) -> bool:
-	return t != null and t != a and t.faction != a.faction and not (t is Npc)
+	if t == null or t == a or t.dead:
+		return false
+	if a is Npc and t is Npc:
+		return false
+	if t is Npc:
+		return a is Mob or (a is Player and (a as Player).hostile_npcs.has(t.entity_id))
+	if a is Npc:
+		return true
+	return t.faction != a.faction
 
 
 func request_set_target(entity_id: int, target_id: int) -> void:
@@ -386,6 +414,16 @@ func request_toggle_attack(entity_id: int) -> void:
 		say(e, "Auto attack is off.")
 		return
 	var t := e.valid_target_entity()
+	if e is Player and t is Npc and not can_attack(e, t):
+		var p := e as Player
+		if p.attack_confirm_id == t.entity_id and Time.get_ticks_msec() - p.attack_confirm_at < ATTACK_CONFIRM_MS:
+			declare_hostile(p, t as Npc)
+		else:
+			p.attack_confirm_id = t.entity_id
+			p.attack_confirm_at = Time.get_ticks_msec()
+			var fname := faction_name(t.faction)
+			say(e, "Attacking %s will anger %s. Press Q again to attack." % [t.display_name, fname], C_WARN)
+			return
 	if not can_attack(e, t):
 		say(e, "You need to target something you can attack.", C_WARN)
 		return
@@ -414,11 +452,15 @@ func request_consider(entity_id: int) -> void:
 	if t == null or t == e:
 		say(e, "You must first select a target.", C_WARN)
 		return
-	if t is Player or t is Npc:
+	if t is Player:
 		say(e, "%s regards you as an ally." % t.display_name, C_SPELL)
 		return
 	var con := con_of(e.level, t.level)
-	var attitude := "scowls at you, ready to attack" if (t as Mob).aggressive else "regards you indifferently"
+	var attitude := "regards you indifferently"
+	if e is Player and GameData.factions.has(t.faction):
+		attitude = standing_tier(standing(e as Player, t.faction))[2]
+	if t is Mob and ((t as Mob).aggressive or (e is Player and mob_kos(e as Player, t.faction))):
+		attitude = "scowls at you, ready to attack"
 	say(e, "%s %s -- %s" % [cap(t.display_name), attitude, CON_TEXT[con]], CON_COLORS[con])
 
 
@@ -688,6 +730,9 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	var key := keyword.strip_edges().to_lower()
 	npc.greet(p)
 	say(p, "You say, '%s'" % ("Hail, %s" % npc.display_name if key == "hail" else cap(key)), C_SAY)
+	if refuses(p, npc):
+		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
+		return
 	var lines: Dictionary = npc.data.get("dialogue", {})
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
@@ -733,6 +778,9 @@ func request_trade_open(player_id: int) -> void:
 		return
 	if p.distance_to(npc) > TALK_RANGE:
 		say(p, "You are too far away to trade with %s." % npc.display_name, C_WARN)
+		return
+	if refuses(p, npc):
+		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
 		return
 	request_loot_close(player_id)
 	p.trade_npc_id = npc.entity_id
@@ -860,6 +908,7 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
 	if int(reward.get("xp", 0)) > 0:
 		p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
+	apply_faction(p, q.get("faction", {}))
 	p.quests_changed.emit()
 
 
@@ -898,6 +947,7 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 	p.auto_attack = false
 	p.target = null
 	p.sitting = false
+	p.hostile_npcs.clear()
 	if not p.cast.is_empty():
 		request_interrupt(player_id)
 	var face: Array = zl.get("arrive_face", zl["arrive"])
@@ -954,6 +1004,9 @@ func request_interact(player_id: int) -> void:
 		return
 	if p.distance_to(npc) > TALK_RANGE:
 		say(p, "You are too far away from %s." % npc.display_name, C_WARN)
+		return
+	if refuses(p, npc):
+		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
 		return
 	request_trade_cancel(player_id)
 	request_loot_close(player_id)
@@ -1162,3 +1215,75 @@ func request_train(player_id: int, spell_id: String) -> void:
 	p.stats_changed.emit()
 	if p == local_player:
 		service_changed.emit()
+
+
+# --- faction ----------------------------------------------------------------
+
+func faction_name(faction_id: String) -> String:
+	return str(GameData.factions.get(faction_id, {}).get("name", faction_id))
+
+
+## A player's standing with a faction (its default until it changes).
+func standing(p: Player, faction_id: String) -> int:
+	if not GameData.factions.has(faction_id):
+		return 0
+	return int(p.factions.get(faction_id, GameData.factions[faction_id].get("default", 0)))
+
+
+## [min standing, label, how an NPC of that faction regards you]
+static func standing_tier(value: int) -> Array:
+	for tier: Array in STANDING_TIERS:
+		if value >= tier[0]:
+			return tier
+	return STANDING_TIERS[-1]
+
+
+## Shifts standings, e.g. {"watch": 5, "gnolls": -10}, with EQ's messages.
+func apply_faction(p: Player, hits: Dictionary) -> void:
+	for faction_id: String in hits:
+		if not GameData.factions.has(faction_id):
+			continue
+		var before := standing(p, faction_id)
+		var after := clampi(before + int(hits[faction_id]), -FACTION_MAX, FACTION_MAX)
+		var name := faction_name(faction_id)
+		if after == before:
+			say(p, "Your faction standing with %s could not possibly get any %s." % [name, "better" if int(hits[faction_id]) > 0 else "worse"], C_SYSTEM)
+			continue
+		p.factions[faction_id] = after
+		say(p, "Your faction standing with %s has gotten %s." % [name, "better" if after > before else "worse"], C_SYSTEM)
+	p.stats_changed.emit()
+
+
+## Townsfolk won't talk, trade or train with someone they think Dubious or worse.
+func refuses(p: Player, npc: Npc) -> bool:
+	return GameData.factions.has(npc.faction) and standing(p, npc.faction) < REFUSE_BELOW
+
+
+## Whether mobs of this faction attack the player on sight (their "kos_at").
+func mob_kos(p: Player, faction_id: String) -> bool:
+	var f: Dictionary = GameData.factions.get(faction_id, {})
+	return f.has("kos_at") and standing(p, faction_id) <= int(f["kos_at"])
+
+
+## Whether an NPC faction's guards attack the player on sight.
+func npc_kos(p: Player, faction_id: String) -> bool:
+	return GameData.factions.has(faction_id) and standing(p, faction_id) < KOS_BELOW
+
+
+## The player chose to attack an NPC: it fights back, guards come running,
+## and the NPC's faction (and its friends) think less of them.
+func declare_hostile(p: Player, npc: Npc) -> void:
+	p.hostile_npcs[npc.entity_id] = true
+	p.attack_confirm_id = -1
+	apply_faction(p, GameData.factions.get(npc.faction, {}).get("on_attack", {}))
+	npc.fight(p)
+	call_guards(npc, p)
+
+
+## Guards near a townsperson under attack join the fight.
+func call_guards(victim: Npc, attacker: Entity) -> void:
+	for obj: Node3D in objects.values():
+		var n := obj as Npc
+		if n != null and n != victim and not n.dead and not n.guard.is_empty() and not n.auto_attack \
+				and n.distance_to(victim) < 45.0:
+			n.fight(attacker, true)

@@ -28,6 +28,10 @@ var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
 var bank_items: Array = []
 var bank_coin := 0
+var factions: Dictionary = {}  # faction id -> standing, once it moves off the default
+var hostile_npcs: Dictionary = {}  # npc entity ids this player chose to fight
+var attack_confirm_id := -1  # npc awaiting a second Q before attacking
+var attack_confirm_at := 0
 var body_color := Color.WHITE
 
 var camera_pivot: Node3D
@@ -49,6 +53,9 @@ func from_save(d: Dictionary) -> void:
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
 	bank_items = (d.get("bank_items", []) as Array).duplicate()
 	bank_coin = int(d.get("bank_coin", 0))
+	factions = (d.get("factions", {}) as Dictionary).duplicate()
+	for k: String in factions:
+		factions[k] = int(factions[k])
 	var cls: Dictionary = GameData.classes[char_class]
 	spells = (d.get("spells", cls["spells"]) as Array).filter(func(id: String) -> bool: return GameData.spells.has(id))
 	if d.has("equipment"):
@@ -68,7 +75,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "hp": maxi(hp, 1), "mana": mana,
+		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
