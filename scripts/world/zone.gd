@@ -20,6 +20,8 @@ var _detail := FastNoiseLite.new()
 var _rng := RandomNumberGenerator.new()
 var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
+var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
+var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
 
 
 func load_zone(id: String) -> void:
@@ -191,77 +193,128 @@ func _build_landmarks() -> void:
 		var p := ground(lm["pos"][0], lm["pos"][1])
 		match str(lm["type"]):
 			"obelisk":
-				_box(p + Vector3(0, 3.0, 0), Vector3(1.2, 6.0, 1.2), Color(0.55, 0.55, 0.6))
-				for k in 8:
-					var a := k * TAU / 8.0
-					_box(p + Vector3(cos(a) * 7.0, 0.5, sin(a) * 7.0), Vector3(0.9, 1.4, 0.9), Color(0.5, 0.5, 0.52), a)
-				_light(p + Vector3(0, 6.8, 0), Color(0.6, 0.8, 1.0), 14.0)
+				_build_obelisk(p)
 			"camp":
-				for k in 4:
-					var a := k * TAU / 4.0 + 0.4
-					_tent(p + Vector3(cos(a) * 9.0, 0, sin(a) * 9.0), -a)
-				_box(p + Vector3(0, 0.2, 0), Vector3(1.6, 0.4, 1.6), Color(0.2, 0.15, 0.1))
-				_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 16.0)
+				_build_camp(p)
 			"ruins":
-				_box(p + Vector3(0, 0.1, 0), Vector3(22, 0.4, 16), Color(0.45, 0.44, 0.42))
-				for k in 10:
-					var side := -1.0 if k % 2 == 0 else 1.0
-					var h := _rng.randf_range(1.0, 5.0)
-					_box(p + Vector3(-9.0 + (k / 2) * 4.5, h * 0.5, side * 7.0), Vector3(1.1, h, 1.1), Color(0.52, 0.5, 0.47))
-				for k in 4:
-					_box(p + Vector3(_rng.randf_range(-8, 8), 0.5, _rng.randf_range(-5, 5)),
-							Vector3(1.0, 1.0, 3.0), Color(0.5, 0.48, 0.45), _rng.randf() * TAU)
+				_build_ruins(p)
+
+
+## The bind point: a rune-carved obelisk inside a ring of standing stones.
+func _build_obelisk(p: Vector3) -> void:
+	_prop("obelisk", p)
+	for k in 8:
+		var a := k * TAU / 8.0
+		_prop("standing_stone", p + Vector3(cos(a) * 7.0, 0, sin(a) * 7.0), _rng.randf() * TAU)
+	_light(p + Vector3(0, 7.3, 0), Color(0.6, 0.8, 1.0), 14.0)
+
+
+## Gnoll camp: hide tents around a fire, clutter, torches, and a palisade with
+## its gate facing the bind point.
+func _build_camp(p: Vector3) -> void:
+	var center := Vector2(p.x, p.z)
+	var gate := center.direction_to(_bind_xz).angle()
+	_prop("campfire", p, 0.0, 1.0, "none")
+	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 12.0, 1.2)
+	for k in 4:
+		var a := gate + PI / 4.0 + k * TAU / 4.0
+		_prop("tent", _ring(p, a, 9.0), _face_center(a))
+
+	# palisade ring, open at the gate and at a back gap
+	var segments := 22
+	for k in segments:
+		var a := k * TAU / segments
+		if absf(angle_difference(a, gate)) < 0.3 or absf(angle_difference(a, gate + PI)) < 0.15:
+			continue
+		_prop("palisade", _ring(p, a, 14.0), _face_center(a) + _rng.randf_range(-0.04, 0.04))
+	for s: float in [-1.0, 1.0]:
+		var a := gate + s * 0.36
+		_torch(_ring(p, a, 14.2))
+		_prop("banner_pole", _ring(p, a + s * 0.08, 15.5), _face_center(a), 1.0, "none")
+		_prop("banner_brown", _ring(p, a + s * 0.08, 15.5) + Vector3(0, 0.32, 0), _face_center(a) + PI, 1.0, "none")
+	for k in 3:
+		_torch(_ring(p, gate + PI / 2.0 + k * TAU / 3.0, 4.2))
+
+	# clutter between the tents
+	var clutter := [["barrel_large", 1.0], ["barrel_small_stack", 1.0], ["crates_stacked", 1.0], ["box_large", 0.9],
+			["keg_decorated", 1.0], ["barrel_small", 1.0], ["box_small", 1.0], ["trunk_medium_A", 1.0]]
+	for k in clutter.size():
+		var a := gate + (k + 0.5) * TAU / clutter.size() + _rng.randf_range(-0.12, 0.12)
+		if absf(angle_difference(a, gate)) < 0.35:
+			a += 0.5
+		_prop(clutter[k][0], _ring(p, a, _rng.randf_range(10.5, 12.0)), _rng.randf() * TAU, clutter[k][1])
+	var table_a := gate + PI
+	_prop("table_long_decorated_A", _ring(p, table_a, 5.5), _face_center(table_a) + PI / 2.0)
+	for s: float in [-1.0, 1.0]:
+		_prop("stool", _ring(p, table_a + s * 0.18, 4.4), 0.0, 1.0, "none")
+		_prop("stool", _ring(p, table_a + s * 0.18, 6.6), 0.0, 1.0, "none")
+	_prop("chest", _ring(p, gate + PI + 0.9, 7.0), _face_center(gate + PI + 0.9))
+
+
+## Crumbling hall: a cracked tile floor inside broken walls, pillars and rubble.
+func _build_ruins(p: Vector3) -> void:
+	const TILE := 3.0  # dungeon pieces are 4 m at scale 0.75
+	var cols := 6
+	var rows := 4
+	var origin := p + Vector3(-TILE * cols / 2.0, 0.03, -TILE * rows / 2.0)
+	var smalls := ["floor_tile_small", "floor_tile_small_broken_A", "floor_tile_small_broken_B",
+			"floor_tile_small_weeds_A", "floor_tile_small_weeds_B"]
+	for cx in cols:
+		for cz in rows:
+			var c := origin + Vector3((cx + 0.5) * TILE, 0, (cz + 0.5) * TILE)
+			var roll := _rng.randf()
+			if roll < 0.12:
+				continue  # grass shows through
+			elif roll < 0.35:
+				for q in 4:
+					if _rng.randf() < 0.85:
+						var off := Vector3((q % 2 - 0.5) * TILE * 0.5, 0, (q / 2 - 0.5) * TILE * 0.5)
+						_prop(smalls[_rng.randi() % smalls.size()], c + off, _rng.randi() % 4 * PI / 2.0, 1.0, "none")
+			else:
+				_prop("floor_tile_large" if roll < 0.8 else "floor_tile_large_rocks", c, _rng.randi() % 4 * PI / 2.0, 1.0, "none")
+
+	# walls: back wall mostly standing, sides patchy, front nearly gone
+	var back := ["wall", "wall_cracked", "wall_arched", "wall_broken", "wall", "wall_cracked"]
+	for k in cols:
+		if _rng.randf() < 0.15:
+			continue
+		var at := origin + Vector3((k + 0.5) * TILE, 0, 0)
+		_prop(back[k] if _rng.randf() < 0.75 else "wall_half", at, 0.0)
+	for side: float in [0.0, 1.0]:
+		for k in rows:
+			if _rng.randf() < 0.45:
+				continue
+			var at := origin + Vector3(side * cols * TILE, 0, (k + 0.5) * TILE)
+			_prop(["wall_broken", "wall_half", "wall_cracked"][_rng.randi() % 3], at, PI / 2.0)
+	for k in cols:
+		if _rng.randf() < 0.3:
+			_prop("wall_half", origin + Vector3((k + 0.5) * TILE, 0, rows * TILE), 0.0)
+	for corner: Vector3 in [Vector3.ZERO, Vector3(cols * TILE, 0, 0), Vector3(0, 0, rows * TILE), Vector3(cols * TILE, 0, rows * TILE)]:
+		_prop("pillar", origin + corner, 0.0, 1.0 if corner.z == 0.0 else 0.6)
+
+	# a colonnade down the middle, mostly toppled
+	for k in 4:
+		var at := p + Vector3(-6.0 + k * 4.0, 0, 0)
+		if _rng.randf() < 0.6:
+			_prop("column", at, _rng.randf() * TAU, _rng.randf_range(0.8, 1.2))
+	_prop("rubble_large", p + Vector3(5.0, 0, 7.5), 0.3)
+	_prop("rubble_half", p + Vector3(-10.5, 0, 2.0), 1.9, 0.8)
+	_prop("rubble_half", p + Vector3(2.0, 0, -8.0), PI, 0.7)
 
 
 func _build_props() -> void:
-	var bark := _mat(Color(0.35, 0.25, 0.16))
-	var leaves := _mat(Color(0.18, 0.34, 0.16))
-	var stone := _mat(Color(0.46, 0.45, 0.43))
-	var trunk_mesh := CylinderMesh.new()
-	trunk_mesh.top_radius = 0.22
-	trunk_mesh.bottom_radius = 0.35
-	trunk_mesh.height = 3.0
-	var leaf_mesh := CylinderMesh.new()
-	leaf_mesh.top_radius = 0.0
-	leaf_mesh.bottom_radius = 2.2
-	leaf_mesh.height = 4.5
-	leaf_mesh.radial_segments = 8
-	var rock_mesh := SphereMesh.new()
-	rock_mesh.radial_segments = 8
-	rock_mesh.rings = 5
-
+	var trees := ["pine_a", "pine_a", "pine_b", "pine_b", "tree_round"]
 	for k in int(data.get("trees", 150)):
 		var xz := _open_spot()
 		var s := _rng.randf_range(0.8, 1.5)
-		var tree := StaticBody3D.new()
-		tree.collision_layer = Layers.WORLD
-		tree.position = ground(xz.x, xz.y) - Vector3.UP * 0.2
-		_mesh(tree, trunk_mesh, bark, Vector3(0, 1.5 * s, 0), Vector3.ONE * s)
-		_mesh(tree, leaf_mesh, leaves, Vector3(0, 4.6 * s, 0), Vector3.ONE * s)
-		_mesh(tree, leaf_mesh, leaves, Vector3(0, 6.3 * s, 0), Vector3.ONE * s * 0.7)
-		var trunk_shape := CylinderShape3D.new()
-		trunk_shape.radius = 0.35 * s
-		trunk_shape.height = 3.0 * s
-		var cs := CollisionShape3D.new()
-		cs.shape = trunk_shape
-		cs.position.y = 1.5 * s
-		tree.add_child(cs)
-		add_child(tree)
+		_prop(trees[_rng.randi() % trees.size()], ground(xz.x, xz.y) - Vector3.UP * 0.1, _rng.randf() * TAU, s, "trunk")
 
+	var rocks := ["boulder_a", "boulder_b", "boulder_c", "rubble_half"]
 	for k in int(data.get("rocks", 50)):
 		var xz := _open_spot()
-		var s := _rng.randf_range(0.6, 2.2)
-		var rock := StaticBody3D.new()
-		rock.collision_layer = Layers.WORLD
-		rock.position = ground(xz.x, xz.y)
-		rock.rotation.y = _rng.randf() * TAU
-		_mesh(rock, rock_mesh, stone, Vector3.ZERO, Vector3(1.4, 0.8, 1.1) * s)
-		var sphere := SphereShape3D.new()
-		sphere.radius = 0.7 * s
-		var cs := CollisionShape3D.new()
-		cs.shape = sphere
-		rock.add_child(cs)
-		add_child(rock)
+		var id: String = rocks[_rng.randi() % rocks.size()]
+		var s := _rng.randf_range(0.6, 1.6) * (0.4 if id == "rubble_half" else 1.0)
+		_prop(id, ground(xz.x, xz.y) - Vector3.UP * 0.15 * s, _rng.randf() * TAU, s)
 
 
 func _build_spawns() -> void:
@@ -292,58 +345,80 @@ func _open_spot() -> Vector2:
 	return Vector2(half - 35.0, half - 35.0)
 
 
-func _mat(color: Color) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_color = color
-	m.roughness = 0.95
-	return m
+## Places a prop from data/models.json "props". `collide` is "box" (the model's
+## bounds), "trunk" (a thin post for trees) or "none".
+func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box") -> Node3D:
+	var spec: Dictionary = GameData.models["props"][id]
+	if not _prop_scenes.has(id):
+		_prop_scenes[id] = load(spec["path"])
+	var s := float(spec.get("scale", 1.0)) * scale_
+	var model: Node3D = (_prop_scenes[id] as PackedScene).instantiate()
+	model.scale = Vector3.ONE * s
+	for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	var root: Node3D = model if collide == "none" else StaticBody3D.new()
+	root.position = pos
+	root.rotation.y = yaw
+	if collide != "none":
+		(root as StaticBody3D).collision_layer = Layers.WORLD
+		root.add_child(model)
+		var cs := CollisionShape3D.new()
+		var raw := _prop_bounds(id, model)
+		var bounds := AABB(raw.position * s, raw.size * s)
+		if collide == "trunk":
+			var cyl := CylinderShape3D.new()
+			cyl.radius = 0.3 * s
+			cyl.height = 3.0 * s
+			cs.shape = cyl
+			cs.position.y = 1.5 * s
+		else:
+			var box := BoxShape3D.new()
+			box.size = bounds.size
+			cs.shape = box
+			cs.position = bounds.get_center()
+		root.add_child(cs)
+	add_child(root)
+	return root
 
 
-func _mesh(parent: Node3D, mesh: Mesh, mat: Material, pos: Vector3, scl: Vector3) -> void:
-	var mi := MeshInstance3D.new()
-	mi.mesh = mesh
-	mi.material_override = mat
-	mi.position = pos
-	mi.scale = scl
-	parent.add_child(mi)
+## Unscaled bounds of a prop's meshes, cached per id.
+func _prop_bounds(id: String, model: Node3D) -> AABB:
+	if not _prop_aabbs.has(id):
+		var box := AABB()
+		var first := true
+		for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			var xf := Transform3D.IDENTITY
+			var n: Node = mi
+			while n != model:
+				xf = (n as Node3D).transform * xf
+				n = n.get_parent()
+			var a := xf * mi.get_aabb()
+			box = a if first else box.merge(a)
+			first = false
+		_prop_aabbs[id] = box
+	return _prop_aabbs[id]
 
 
-func _box(center: Vector3, box_size: Vector3, color: Color, yaw := 0.0) -> void:
-	var body := StaticBody3D.new()
-	body.collision_layer = Layers.WORLD
-	body.position = center
-	body.rotation.y = yaw
-	var bm := BoxMesh.new()
-	bm.size = box_size
-	_mesh(body, bm, _mat(color), Vector3.ZERO, Vector3.ONE)
-	var shape := BoxShape3D.new()
-	shape.size = box_size
-	var cs := CollisionShape3D.new()
-	cs.shape = shape
-	body.add_child(cs)
-	add_child(body)
+## A standing torch: post, a pack torch in its cup, and a small light.
+func _torch(pos: Vector3) -> void:
+	_prop("torch_post", pos, 0.0, 1.0, "none")
+	_prop("torch_lit", pos + Vector3(0, 1.72, 0), 0.0, 1.0, "none")
+	_light(pos + Vector3(0, 2.3, 0), Color(1.0, 0.6, 0.25), 6.0, 0.8)
 
 
-func _tent(base: Vector3, yaw: float) -> void:
-	var body := StaticBody3D.new()
-	body.collision_layer = Layers.WORLD
-	body.position = base + Vector3(0, 1.5, 0)
-	body.rotation.y = yaw
-	var pm := PrismMesh.new()
-	pm.size = Vector3(4.0, 3.0, 4.5)
-	_mesh(body, pm, _mat(Color(0.5, 0.38, 0.24)), Vector3.ZERO, Vector3.ONE)
-	var shape := BoxShape3D.new()
-	shape.size = Vector3(3.0, 3.0, 4.5)
-	var cs := CollisionShape3D.new()
-	cs.shape = shape
-	body.add_child(cs)
-	add_child(body)
+func _ring(center: Vector3, angle: float, radius: float) -> Vector3:
+	return ground(center.x + cos(angle) * radius, center.z + sin(angle) * radius)
 
 
-func _light(pos: Vector3, color: Color, light_range: float) -> void:
+## Yaw that turns a prop's front (+Z) toward the center of a ring it sits on.
+func _face_center(angle: float) -> float:
+	return atan2(-cos(angle), -sin(angle))
+
+
+func _light(pos: Vector3, color: Color, light_range: float, energy := 2.0) -> void:
 	var l := OmniLight3D.new()
 	l.position = pos
 	l.light_color = color
 	l.omni_range = light_range
-	l.light_energy = 2.0
+	l.light_energy = energy
 	add_child(l)

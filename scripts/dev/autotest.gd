@@ -35,6 +35,31 @@ func _run() -> void:
 	World.request_sit(p.entity_id, false)
 	p.camera_pivot.rotation.y = 0.0
 
+	# landmark tour: overview of each, from the side facing the bind point
+	var home := p.global_position
+	for lm: Dictionary in main.zone.data.get("landmarks", []):
+		var at: Vector3 = main.zone.ground(lm["pos"][0], lm["pos"][1])
+		var away := Vector2(at.x, at.z).direction_to(Vector2(home.x, home.z)) * (16.0 if lm["type"] == "obelisk" else 26.0)
+		if away == Vector2.ZERO:
+			away = Vector2(0, 16)
+		p.global_position = main.zone.ground(at.x + away.x, at.z + away.y) + Vector3.UP
+		p.face_toward(at)
+		p.zoom = 10.0
+		p.pitch = -0.35
+		await _wait(0.7)
+		await _shot("1c_%s" % lm["type"])
+		var close := away.normalized() * 13.0
+		p.global_position = main.zone.ground(at.x + close.x, at.z + close.y) + Vector3.UP
+		p.face_toward(at)
+		p.pitch = -0.7
+		p.zoom = 12.0
+		await _wait(0.5)
+		await _shot("1d_%s_close" % lm["type"])
+	p.global_position = home
+	p.zoom = 6.0
+	p.pitch = -0.3
+	await _wait(0.5)
+
 	var mob := _nearest_mob(p, "gnoll_pup")
 	print("nearest mob: %s lvl %d hp %d" % [mob.display_name, mob.level, mob.hp])
 	p.global_position = mob.global_position + Vector3(0, 1, 7)
