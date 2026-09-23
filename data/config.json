@@ -14,5 +14,6 @@
   "player_corpse_decay_seconds": 3600,
   "mob_corpse_decay_seconds": 300,
   "empty_corpse_decay_seconds": 12,
-  "inventory_slots": 24
+  "inventory_slots": 24,
+  "mob_leash": 130
 }

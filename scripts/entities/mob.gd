@@ -6,7 +6,6 @@ extends Entity
 
 enum State { IDLE, WANDER, COMBAT, FLEE, RETURN }
 
-const LEASH_RADIUS := 80.0
 const FLEE_AT := 0.18
 const STOP_FLEE_AT := 0.35
 
@@ -129,7 +128,7 @@ func _physics_process(delta: float) -> void:
 			_scan_for_aggro(delta)
 		State.COMBAT:
 			var t := top_hated()
-			if t == null or _flat_dist(home) > LEASH_RADIUS:
+			if t == null or _flat_dist(home) > float(World.cfg("mob_leash", 130.0)):
 				_reset()
 			elif flees and hp < max_hp * FLEE_AT:
 				state = State.FLEE
@@ -142,7 +141,7 @@ func _physics_process(delta: float) -> void:
 					move = _dir_to(t.global_position)
 		State.FLEE:
 			var t := top_hated()
-			if t == null or _flat_dist(home) > LEASH_RADIUS:
+			if t == null or _flat_dist(home) > float(World.cfg("mob_leash", 130.0)):
 				_reset()
 			elif hp >= max_hp * STOP_FLEE_AT:
 				state = State.COMBAT

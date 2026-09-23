@@ -18,10 +18,35 @@
     "model": "knight",
     "weapon": "sword_1handed",
     "dialogue": {
-      "hail": "Move along, {name}. The [Watch] keeps the peace in Emberhold, and I'd like it kept.",
+      "hail": "Move along, {name}. The [Watch] keeps the peace here. If trouble follows you down this road, run to us.",
       "watch": "We patrol the walls and the road to Greenmoor. Warden Holt holds the post at the pass. If you've a mind for honest work, he pays a bounty on [gnoll fangs].",
       "gnoll fangs": "Not to me. Take them to Warden Holt, down the road past the gate.",
       "unknown": "I'm on duty, {name}. Ask the Keeper at the hearth if you want stories."
+    },
+    "guard": {
+      "radius": 26,
+      "leash": 35,
+      "speed": 6.8,
+      "shouts": [
+        "Stand fast, {name}! The Watch is here!",
+        "Get behind me, {name}!",
+        "Not on my road, you mangy cur!",
+        "For Emberhold!"
+      ]
+    },
+    "combat": {
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
+      "dmg": [
+        14,
+        28
+      ],
+      "delay": 2.2,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
     }
   },
   "keeper_maelin": {

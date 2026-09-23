@@ -20,7 +20,9 @@
     {"pos": [0, 181], "size": [18, 8], "to": "emberhold", "arrive": [0, -46], "arrive_face": [0, 0]}
   ],
   "npcs": [
-    {"id": "warden_holt", "pos": [-15.2, 135.8], "face": [0, 4]}
+    {"id": "warden_holt", "pos": [-15.2, 135.8], "face": [0, 4]},
+    {"id": "emberhold_guard", "name": "Guard Brenna", "pos": [-4.5, 164], "face": [0, 120]},
+    {"id": "emberhold_guard", "name": "Guard Osric", "pos": [4.8, 166.5], "face": [0, 120]}
   ],
   "spawns": [
     {"pos": [35, -20], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 45, "wander": 10},

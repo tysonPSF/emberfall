@@ -58,7 +58,7 @@ func _run() -> void:
 	# quest: hail the warden, ask about fangs, bring four, turn them in
 	var warden: Npc = null
 	for obj: Node3D in World.objects.values():
-		if obj is Npc:
+		if obj is Npc and (obj as Npc).npc_id == "warden_holt":
 			warden = obj
 	var front := -warden.global_transform.basis.z
 	p.global_position = warden.global_position + front * 3.5 + Vector3.UP * 0.5
@@ -174,6 +174,31 @@ func _run() -> void:
 	p.zoom = 0.0
 	await _wait(0.6)
 	await _shot("6_first_person")
+
+	# guards at the pass: a gnoll chasing the player gets cut down
+	var pup := _nearest_mob(p, "gnoll_pup")
+	p.global_position = main.zone.ground(0, 158) + Vector3.UP
+	pup.global_position = main.zone.ground(0, 146) + Vector3.UP
+	pup.home = pup.global_position
+	pup.add_hate(p, 5.0)
+	p.face_toward(pup.global_position)
+	p.zoom = 9.0
+	p.pitch = -0.35
+	p.camera_pivot.rotation.y = 2.6
+	await _wait(1.6)
+	await _shot("6b_guards_engage")
+	for k in 16:
+		if not is_instance_valid(pup) or pup.dead:
+			break
+		await _wait(0.5)
+	print("guards vs pup: pup dead=%s player hp=%d" % [not is_instance_valid(pup) or pup.dead, p.hp])
+	await _wait(3.0)
+	var guards_home := true
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).npc_id == "emberhold_guard":
+			guards_home = guards_home and not (obj as Npc).auto_attack
+	print("guards back on duty: %s" % guards_home)
+	p.camera_pivot.rotation.y = 0.0
 
 	# zone trip: Greenmoor's south pass into Emberhold and back
 	p.zoom = 9.0

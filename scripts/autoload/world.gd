@@ -109,6 +109,13 @@ func say(to: Entity, text: String, color: Color = C_SYSTEM) -> void:
 		log_message.emit(text, color)
 
 
+## Says something out loud: every player within earshot sees it.
+func shout(from: Node3D, text: String, color: Color = C_NPC, radius := 60.0) -> void:
+	for p in get_players():
+		if p.global_position.distance_to(from.global_position) <= radius:
+			say(p, text, color)
+
+
 static func cap(s: String) -> String:
 	return s.substr(0, 1).to_upper() + s.substr(1)
 
@@ -247,6 +254,10 @@ func kill(d: Entity, killer: Entity) -> void:
 		_kill_mob(d, killer)
 	elif d is Player:
 		_kill_player(d, killer)
+	elif d is Npc:
+		if local_player != null and local_player.distance_to(d) < 60.0:
+			log_message.emit("%s has been slain by %s!" % [d.display_name, killer.display_name if killer != null else "unknown forces"], C_WARN)
+		(d as Npc).on_killed()
 
 
 func _kill_mob(mob: Mob, killer: Entity) -> void:
