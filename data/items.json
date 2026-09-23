@@ -11,5 +11,6 @@
   "beetle_eye": {"name": "Fire Beetle Eye"},
   "bone_chips": {"name": "Bone Chips"},
   "rat_whiskers": {"name": "Rat Whiskers"},
-  "worn_staff": {"name": "Worn Staff", "slot": "primary", "dmg": 4, "delay": 3.0, "verb": ["crush", "crushes"], "model": "staff"}
+  "worn_staff": {"name": "Worn Staff", "slot": "primary", "dmg": 4, "delay": 3.0, "verb": ["crush", "crushes"], "model": "staff"},
+  "wardens_short_sword": {"name": "Warden's Short Sword", "slot": "primary", "dmg": 6, "delay": 2.6, "verb": ["slash", "slashes"], "model": "sword_1handed"}
 }

@@ -6,6 +6,7 @@ extends Entity
 
 signal inventory_changed
 signal leveled_up
+signal quests_changed
 
 const RUN_SPEED := 7.0
 const BACK_SPEED := 4.0
@@ -19,6 +20,7 @@ var xp := 0
 var coin := 0
 var inventory: Array = []
 var equipment: Dictionary = {}
+var quests: Dictionary = {}  # quest id -> {active, completions}
 var body_color := Color.WHITE
 
 var camera_pivot: Node3D
@@ -37,6 +39,7 @@ func from_save(d: Dictionary) -> void:
 	xp = int(d.get("xp", 0))
 	coin = int(d.get("coin", 0))
 	inventory = (d.get("inventory", []) as Array).duplicate()
+	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
 	var cls: Dictionary = GameData.classes[char_class]
 	if d.has("equipment"):
 		equipment = (d["equipment"] as Dictionary).duplicate()
@@ -55,7 +58,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory, "equipment": equipment, "hp": maxi(hp, 1), "mana": mana,
+		"inventory": inventory, "equipment": equipment, "quests": quests, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
@@ -197,6 +200,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_consider(entity_id)
 	elif event.is_action_pressed("sit"):
 		World.request_sit(entity_id, not sitting)
+	elif event.is_action_pressed("hail"):
+		World.request_hail(entity_id)
 	elif event.is_action_pressed("loot"):
 		if is_instance_valid(target) and target is Corpse:
 			World.request_loot_open(entity_id, (target as Corpse).object_id)
@@ -232,6 +237,8 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	var col: Object = hit["collider"]
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
+		if double_click and col is Npc:
+			World.request_hail(entity_id)
 	elif col is Corpse:
 		World.request_set_target(entity_id, (col as Corpse).object_id)
 		if double_click:

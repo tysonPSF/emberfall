@@ -303,6 +303,33 @@ def palisade():
 	return p.build()
 
 
+def roof_gable():
+	"""Gable roof for a 2x2 Dungeon-wall room (6 m square, walls 3 m tall).
+	Sits on the wall tops; the ridge runs front to back so the gables face the door."""
+	p = Prop("roof_gable", 23)
+	w, d, h = 7.6, 7.8, 2.3
+	half = w / 2
+	slope = math.hypot(half, h)
+	ang = math.atan2(h, half)
+	rows = 5
+	for s in (1, -1):
+		down = Vector((math.cos(ang) * s, 0, -math.sin(ang)))
+		out = Vector((math.sin(ang) * s, 0, math.cos(ang)))
+		p.box((slope, d, 0.16), Vector((0, 0, h)) + down * slope / 2, WOOD_GREY, rot=(0, math.degrees(ang) * s, 0))
+		for i in range(rows):  # shingle courses, each its own gradient so they read as rows
+			c = Vector((0, 0, h)) + down * slope * (i + 0.55) / rows + out * 0.13
+			p.box((slope / rows * 1.12, d + 0.1, 0.12), c, CLAY, rot=(0, math.degrees(ang) * s, 0), grad=(0.0, 0.9))
+	for y in (-d / 2 + 0.45, d / 2 - 0.45):  # gable ends: timber triangle
+		t = 0.14
+		tri = [(-half + 0.45, 0, 0), (half - 0.45, 0, 0), (0, 0, h - 0.2)]
+		verts = [(x, y - t / 2, z) for x, _, z in tri] + [(x, y + t / 2, z) for x, _, z in tri]
+		p.poly(verts, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], WOOD, grad=(0.3, 1.0))
+	p.seg((0, -d / 2 - 0.15, h + 0.12), (0, d / 2 + 0.15, h + 0.12), 0.13, 0.13, WOOD, sides=6)
+	p.box((0.8, 0.8, 2.0), (1.7, 1.6, 1.6), STONE_DARK, grad=(0.1, 0.9))                       # chimney
+	p.box((1.0, 1.0, 0.2), (1.7, 1.6, 2.65), STONE_LIGHT, grad=(0.2, 0.7))
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -318,6 +345,7 @@ PROPS = {
 	"torch_post": torch_post,
 	"banner_pole": banner_pole,
 	"palisade": palisade,
+	"roof_gable": roof_gable,
 }
 
 

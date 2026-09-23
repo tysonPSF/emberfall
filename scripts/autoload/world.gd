@@ -35,8 +35,11 @@ const C_XP := Color(1, 0.88, 0.35)
 const C_LOOT := Color(0.55, 1, 0.55)
 const C_WARN := Color(1, 0.62, 0.25)
 const C_SYSTEM := Color(0.85, 0.85, 0.8)
+const C_SAY := Color(0.9, 0.9, 0.9)
+const C_NPC := Color(0.75, 0.9, 1.0)
 
 const LOOT_RANGE := 6.0
+const TALK_RANGE := 10.0
 const CALL_FOR_HELP_RADIUS := 14.0
 const EQUIP_SLOTS: Array[String] = ["primary", "head", "chest", "legs"]
 
@@ -310,6 +313,11 @@ func award_xp(p: Player, mob: Mob) -> void:
 
 # --- requests (the future network boundary) ---------------------------------
 
+## Whether `a` may fight `t`: never itself, its own faction, or townsfolk.
+func can_attack(a: Entity, t: Entity) -> bool:
+	return t != null and t != a and t.faction != a.faction and not (t is Npc)
+
+
 func request_set_target(entity_id: int, target_id: int) -> void:
 	var e := get_object(entity_id) as Entity
 	if e != null:
@@ -325,7 +333,7 @@ func request_toggle_attack(entity_id: int) -> void:
 		say(e, "Auto attack is off.")
 		return
 	var t := e.valid_target_entity()
-	if t == null or t == e or t.faction == e.faction:
+	if not can_attack(e, t):
 		say(e, "You need to target something you can attack.", C_WARN)
 		return
 	e.auto_attack = true
@@ -353,7 +361,7 @@ func request_consider(entity_id: int) -> void:
 	if t == null or t == e:
 		say(e, "You must first select a target.", C_WARN)
 		return
-	if t is Player:
+	if t is Player or t is Npc:
 		say(e, "%s regards you as an ally." % t.display_name, C_SPELL)
 		return
 	var con := con_of(e.level, t.level)
@@ -405,7 +413,7 @@ func _resolve_spell_target(c: Entity, s: Dictionary) -> Entity:
 		"friendly":
 			return t if t != null and t.faction == c.faction else c
 		_:
-			return t if t != null and t != c and t.faction != c.faction else null
+			return t if can_attack(c, t) else null
 
 
 func _update_cast(c: Entity, delta: float) -> void:
@@ -577,3 +585,111 @@ func request_unequip(player_id: int, slot: String) -> void:
 	p.equipment.erase(slot)
 	p.recalc_stats()
 	p.inventory_changed.emit()
+
+
+# --- npcs & quests ----------------------------------------------------------
+
+## Hails the player's target, which also turns in any quest it is waiting on.
+func request_hail(player_id: int) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	if not (p.valid_target_entity() is Npc):
+		say(p, "Target someone to hail them.", C_WARN)
+		return
+	_talk(p, p.target as Npc, "hail")
+
+
+## Says a keyword to the player's target, EQ style ("gnoll fangs").
+func request_say(player_id: int, keyword: String) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	if not (p.valid_target_entity() is Npc):
+		say(p, "Target someone to talk to them.", C_WARN)
+		return
+	_talk(p, p.target as Npc, keyword)
+
+
+func _talk(p: Player, npc: Npc, keyword: String) -> void:
+	if p.distance_to(npc) > TALK_RANGE:
+		say(p, "You are too far away to talk to %s." % npc.display_name, C_WARN)
+		return
+	var key := keyword.strip_edges().to_lower()
+	npc.greet(p)
+	say(p, "You say, '%s'" % ("Hail, %s" % npc.display_name if key == "hail" else cap(key)), C_SAY)
+	if key == "hail" and _try_turn_in(p, npc):
+		return
+	var lines: Dictionary = npc.data.get("dialogue", {})
+	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
+	for quest_id: String in GameData.quests:
+		var q: Dictionary = GameData.quests[quest_id]
+		if q["giver"] == npc.npc_id and key == str(q["start_keyword"]):
+			_accept_quest(p, quest_id)
+
+
+func _npc_say(p: Player, npc: Npc, text: String) -> void:
+	say(p, "%s says, '%s'" % [npc.display_name, text.format({"name": p.display_name})], C_NPC)
+
+
+func _accept_quest(p: Player, quest_id: String) -> void:
+	var q: Dictionary = GameData.quests[quest_id]
+	var state: Dictionary = p.quests.get(quest_id, {})
+	if state.get("active", false) or (int(state.get("completions", 0)) > 0 and not q.get("repeatable", false)):
+		return
+	p.quests[quest_id] = {"active": true, "completions": int(state.get("completions", 0))}
+	say(p, str(q["accept_text"]), C_XP)
+	p.quests_changed.emit()
+
+
+## Completes the first active quest from this npc whose items the player has.
+func _try_turn_in(p: Player, npc: Npc) -> bool:
+	for quest_id: String in p.quests:
+		var q: Dictionary = GameData.quests.get(quest_id, {})
+		var state: Dictionary = p.quests[quest_id]
+		if q.get("giver") != npc.npc_id or not state.get("active", false) or not quest_items_ready(p, quest_id):
+			continue
+		var wants: Dictionary = q["wants"]
+		for item_id: String in wants:
+			for k in int(wants[item_id]):
+				p.inventory.erase(item_id)
+		state["completions"] = int(state.get("completions", 0)) + 1
+		state["active"] = bool(q.get("repeatable", false))
+		_npc_say(p, npc, str(q["complete_text"]))
+		var reward: Dictionary = q.get("reward", {})
+		if int(reward.get("coin", 0)) > 0:
+			p.coin += int(reward["coin"])
+			say(p, "You receive %s." % format_coin(int(reward["coin"])), C_LOOT)
+		var item_id := str(q.get("first_reward_item", ""))
+		if state["completions"] == 1 and item_id != "":
+			_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
+			if p.inventory.size() < int(cfg("inventory_slots", 24)):
+				p.inventory.append(item_id)
+				say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
+			else:
+				say(p, "Your inventory is full, so %s keeps the %s for you." % [npc.display_name, GameData.item_name(item_id)], C_WARN)
+				state["completions"] = 0  # offer the item again next time
+		if int(reward.get("xp", 0)) > 0:
+			p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
+		p.inventory_changed.emit()
+		p.quests_changed.emit()
+		return true
+	return false
+
+
+## How many of each wanted item the player carries, capped at what's wanted.
+func quest_progress(p: Player, quest_id: String) -> Dictionary:
+	var wants: Dictionary = GameData.quests[quest_id]["wants"]
+	var out := {}
+	for item_id: String in wants:
+		out[item_id] = mini(p.inventory.count(item_id), int(wants[item_id]))
+	return out
+
+
+func quest_items_ready(p: Player, quest_id: String) -> bool:
+	var wants: Dictionary = GameData.quests[quest_id]["wants"]
+	var have := quest_progress(p, quest_id)
+	for item_id: String in wants:
+		if int(have[item_id]) < int(wants[item_id]):
+			return false
+	return true

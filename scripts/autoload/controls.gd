@@ -13,6 +13,7 @@ const BINDINGS := {
 	"consider": [KEY_C],
 	"sit": [KEY_X],
 	"loot": [KEY_L],
+	"hail": [KEY_E],
 	"inventory": [KEY_I],
 	"help": [KEY_H],
 	"cancel": [KEY_ESCAPE],

@@ -241,6 +241,41 @@
     "trunk_medium_A": {
       "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/trunk_medium_A.gltf",
       "scale": 0.75
+    },
+    "roof_gable": {
+      "path": "res://assets/props/roof_gable.glb"
+    },
+    "floor_wood_large": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/floor_wood_large.gltf",
+      "scale": 0.75
+    },
+    "wall_doorway": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/wall_doorway.gltf",
+      "scale": 0.75
+    },
+    "wall_window_open": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/wall_window_open.gltf",
+      "scale": 0.75
+    },
+    "wall_window_closed": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/wall_window_closed.gltf",
+      "scale": 0.75
+    },
+    "table_medium": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/table_medium.gltf",
+      "scale": 0.75
+    },
+    "chair": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/chair.gltf",
+      "scale": 0.75
+    },
+    "banner_shield_blue": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/banner_shield_blue.gltf",
+      "scale": 0.75
+    },
+    "trunk_small_A": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/trunk_small_A.gltf",
+      "scale": 0.75
     }
   }
 }

@@ -10,6 +10,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 [b]Combat[/b]   Q auto attack · 1-4 abilities & spells · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
+[b]Talk[/b]   E or double-click to hail a townsperson · click the gold words in their reply to ask about them
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H to hide this."""
 
@@ -40,6 +41,10 @@ var _spell_buttons: Array[Button] = []
 
 var _log: RichTextLabel
 var _log_lines := 0
+var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
+
+var _quest_panel: PanelContainer
+var _quest_label: RichTextLabel
 
 var _loot_panel: PanelContainer
 var _loot_title: Label
@@ -69,6 +74,7 @@ func _ready() -> void:
 	_build_cast_bar()
 	_build_hotbar()
 	_build_log()
+	_build_quest_tracker()
 	_build_loot_window()
 	_build_inventory()
 	_build_help()
@@ -83,10 +89,13 @@ func _ready() -> void:
 func bind_player(p: Player) -> void:
 	player = p
 	player.inventory_changed.connect(_refresh_inventory)
+	player.inventory_changed.connect(_refresh_quests)
+	player.quests_changed.connect(_refresh_quests)
 	for i in _spell_buttons.size():
 		var btn := _spell_buttons[i]
 		btn.visible = i < player.spells.size()
 	_refresh_inventory()
+	_refresh_quests()
 
 
 func show_banner(text: String) -> void:
@@ -205,7 +214,26 @@ func _build_log() -> void:
 	_log.scroll_following = true
 	_log.selection_enabled = false
 	_log.add_theme_font_size_override("normal_font_size", 13)
+	_log.meta_underlined = false
+	_log.meta_clicked.connect(_on_log_keyword)
 	p.add_child(_log)
+
+
+## Active quests and what's still needed, under the player window.
+func _build_quest_tracker() -> void:
+	_quest_panel = UIKit.panel()
+	UIKit.place(_quest_panel, Vector2(0, 0), Vector2(12, 124))
+	root.add_child(_quest_panel)
+	_quest_label = RichTextLabel.new()
+	_quest_label.bbcode_enabled = true
+	_quest_label.fit_content = true
+	_quest_label.scroll_active = false
+	_quest_label.custom_minimum_size = Vector2(240, 0)
+	_quest_label.add_theme_font_size_override("normal_font_size", 13)
+	_quest_label.add_theme_font_size_override("bold_font_size", 13)
+	_quest_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_quest_panel.add_child(_quest_label)
+	_quest_panel.visible = false
 
 
 func _build_loot_window() -> void:
@@ -352,11 +380,22 @@ func _update_hotbar() -> void:
 		btn.disabled = cd > 0.0 or player.mana < int(s.get("mana", 0))
 
 
+## Appends a chat line. [Bracketed] words become gold links; clicking one says
+## that keyword to your target, like typing it in EverQuest.
 func add_log(text: String, color: Color) -> void:
 	if _log_lines > 0:
 		_log.newline()
 	_log.push_color(color)
-	_log.add_text(text)
+	var at := 0
+	for m in _keyword_re.search_all(text):
+		_log.add_text(text.substr(at, m.get_start() - at))
+		_log.push_meta(m.get_string(1))
+		_log.push_color(UIKit.GOLD)
+		_log.add_text(m.get_string())
+		_log.pop()
+		_log.pop()
+		at = m.get_end()
+	_log.add_text(text.substr(at))
 	_log.pop()
 	_log_lines += 1
 	if _log_lines > 300:
@@ -365,6 +404,29 @@ func add_log(text: String, color: Color) -> void:
 
 
 # --- windows ------------------------------------------------------------------
+
+func _on_log_keyword(meta: Variant) -> void:
+	if player != null:
+		World.request_say(player.entity_id, str(meta))
+
+
+func _refresh_quests() -> void:
+	var lines: PackedStringArray = []
+	for quest_id: String in player.quests:
+		if not player.quests[quest_id].get("active", false) or not GameData.quests.has(quest_id):
+			continue
+		var q: Dictionary = GameData.quests[quest_id]
+		lines.append("[b][color=#%s]%s[/color][/b]" % [UIKit.GOLD.to_html(false), q["name"]])
+		var have := World.quest_progress(player, quest_id)
+		for item_id: String in q["wants"]:
+			var need := int(q["wants"][item_id])
+			var done := int(have[item_id]) >= need
+			lines.append("[color=#%s]  %s  %d/%d[/color]" % ["8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
+		if World.quest_items_ready(player, quest_id):
+			lines.append("[color=#8fe08f]  Return to %s[/color]" % GameData.npcs[q["giver"]]["name"])
+	_quest_label.text = "\n".join(lines)
+	_quest_panel.visible = not lines.is_empty()
+
 
 func _on_loot_opened(c: Corpse) -> void:
 	_loot_corpse = c

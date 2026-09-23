@@ -55,6 +55,34 @@ func _run() -> void:
 		p.zoom = 12.0
 		await _wait(0.5)
 		await _shot("1d_%s_close" % lm["type"])
+	# quest: hail the warden, ask about fangs, bring four, turn them in
+	var warden: Npc = null
+	for obj: Node3D in World.objects.values():
+		if obj is Npc:
+			warden = obj
+	var front := -warden.global_transform.basis.z
+	p.global_position = warden.global_position + front * 3.5 + Vector3.UP * 0.5
+	p.face_toward(warden.global_position)
+	World.request_set_target(p.entity_id, warden.entity_id)
+	p.zoom = 5.0
+	p.pitch = -0.25
+	p.camera_pivot.rotation.y = 0.5
+	World.request_hail(p.entity_id)
+	World.request_say(p.entity_id, "gnoll fangs")
+	await _wait(0.8)
+	await _shot("1e_quest_given")
+	for k in 4:
+		p.inventory.append("gnoll_fang")
+	p.inventory_changed.emit()
+	await _wait(0.3)
+	await _shot("1f_quest_ready")
+	World.request_hail(p.entity_id)
+	print("quest after turn-in: %s coin=%d xp=%d has_sword=%s" % [p.quests, p.coin, p.xp, "wardens_short_sword" in p.inventory])
+	await _wait(0.5)
+	await _shot("1g_quest_done")
+	p.inventory.erase("wardens_short_sword")
+	p.camera_pivot.rotation.y = 0.0
+
 	p.global_position = home
 	p.zoom = 6.0
 	p.pitch = -0.3

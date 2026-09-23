@@ -28,11 +28,13 @@ Smoke test (plays itself, saves screenshots, quits):
 | C | Consider (con colors: gray, green, blue, white, yellow, red) |
 | X | Sit / stand (much faster regen) |
 | L / double-click | Loot corpse |
+| E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |
 
 ## What's in the slice
 
 - **Greenmoor**: one zone with a bind obelisk, rats and gnoll pups nearby, fire beetles to the southeast, aggressive skeletons at the ruins (west-northwest), and a gnoll camp (northeast) with a rare named mob, Grubnak the Mangy.
+- **Warden Holt** at the watch house by the obelisk: hail him, ask about [gnoll fangs], and bring four back for a repeatable bounty (a sword the first time). Quests are data in `data/quests.json`, NPC dialogue in `data/npcs.json`.
 - **3 classes**: Warrior (kick, taunt), Cleric (heal, strike), Wizard (nuke, gate).
 - **Mob AI**: wander, aggro radius, social assist (trains!), flee at low health, leash home.
 - **EQ-style rules**: 6-second regen ticks, sit to meditate, con colors, no XP from gray mobs, XP loss on death, **corpse runs** (your gear stays on your corpse).
@@ -51,7 +53,7 @@ scripts/ui        HUD, title screen, shared UI styling
 ## Roadmap
 
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
-2. Vendors (sell the fangs and eyes), a guard NPC or two, a second zone joined by a zone line.
+2. Vendors (sell the fangs and eyes), more quest givers, a second zone joined by a zone line.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
 4. **Grouping + multiplayer**: headless Godot server that runs `World`; `request_*` calls become RPCs; group XP split, heal and taunt aggro already work.
 5. Persistence server (Postgres), accounts, more classes and zones.

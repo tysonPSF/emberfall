@@ -1,0 +1,15 @@
+{
+  "warden_holt": {
+    "name": "Warden Holt",
+    "level": 12,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "dialogue": {
+      "hail": "Hail, {name}. Keep your wits about you out here. The [gnolls] have grown bold this season.",
+      "gnolls": "Mangy curs from the camp to the northeast. They raid the road and bite anyone who strays from the stones. The watch pays a bounty on [gnoll fangs].",
+      "gnoll fangs": "Bring me four gnoll fangs, pulled from pups or scouts, it matters not. Hail me when you have them and I'll pay you from the watch's purse. And if you go near their camp, beware [Grubnak].",
+      "grubnak": "Grubnak the Mangy, their chief. Twice the size of his kin and meaner than a cornered badger. He shows his face at the camp now and then. Don't go alone.",
+      "unknown": "I've no time for riddles, {name}."
+    }
+  }
+}

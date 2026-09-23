@@ -10,7 +10,11 @@
   "landmarks": [
     {"type": "obelisk", "pos": [0, 0]},
     {"type": "camp", "pos": [115, -100]},
-    {"type": "ruins", "pos": [-100, -80]}
+    {"type": "ruins", "pos": [-100, -80]},
+    {"type": "outpost", "pos": [-20, 14]}
+  ],
+  "npcs": [
+    {"id": "warden_holt", "pos": [-16.3, 11.8], "face": [0, 4]}
   ],
   "spawns": [
     {"pos": [35, -20], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 45, "wander": 10},

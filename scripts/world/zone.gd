@@ -22,6 +22,7 @@ var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
+var _prop_tris: Dictionary = {}  # prop id -> unscaled collision faces
 
 
 func load_zone(id: String) -> void:
@@ -51,6 +52,7 @@ func load_zone(id: String) -> void:
 	_build_landmarks()
 	_build_props()
 	_build_spawns()
+	_build_npcs()
 
 
 func height_at(x: float, z: float) -> float:
@@ -198,6 +200,8 @@ func _build_landmarks() -> void:
 				_build_camp(p)
 			"ruins":
 				_build_ruins(p)
+			"outpost":
+				_build_outpost(p)
 
 
 ## The bind point: a rune-carved obelisk inside a ring of standing stones.
@@ -302,6 +306,54 @@ func _build_ruins(p: Vector3) -> void:
 	_prop("rubble_half", p + Vector3(2.0, 0, -8.0), PI, 0.7)
 
 
+## Watch house: a 2x2 room of Dungeon walls with a door facing the bind point,
+## a gable roof, and some watch clutter. Walls use mesh collision so the door
+## and windows are open.
+func _build_outpost(p: Vector3) -> void:
+	var to_bind := _bind_xz - Vector2(p.x, p.z)
+	var yaw := atan2(to_bind.x, to_bind.y)  # local +Z (the door side) faces the bind point
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	var put := func(id: String, local: Vector3, local_yaw := 0.0, collide := "box", scale_ := 1.0) -> void:
+		_prop(id, xf * local, yaw + local_yaw, scale_, collide)
+	for x: float in [-1.5, 1.5]:
+		for z: float in [-1.5, 1.5]:
+			put.call("floor_wood_large", Vector3(x, 0.06, z), 0.0, "none")
+	put.call("wall", Vector3(-1.5, 0, -3), 0.0, "mesh")
+	put.call("wall_window_closed", Vector3(1.5, 0, -3), 0.0, "mesh")
+	put.call("wall_window_open", Vector3(-3, 0, -1.5), PI / 2.0, "mesh")
+	put.call("wall", Vector3(-3, 0, 1.5), PI / 2.0, "mesh")
+	put.call("wall", Vector3(3, 0, -1.5), PI / 2.0, "mesh")
+	put.call("wall_window_open", Vector3(3, 0, 1.5), PI / 2.0, "mesh")
+	put.call("wall", Vector3(-1.5, 0, 3), 0.0, "mesh")
+	put.call("wall_doorway", Vector3(1.5, 0, 3), 0.0, "mesh")
+	for x: float in [-3.0, 3.0]:
+		for z: float in [-3.0, 3.0]:
+			put.call("pillar", Vector3(x, 0, z))
+	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "none")
+	put.call("banner_shield_blue", Vector3(-1.5, 0.1, 3.18), 0.0, "none")
+	# inside: a table and chair by the window, a sea chest, supplies
+	put.call("table_medium", Vector3(-1.2, 0.06, -1.3))
+	put.call("chair", Vector3(-1.2, 0.06, -0.1), PI, "none")
+	put.call("trunk_small_A", Vector3(1.9, 0.06, -2.0), 0.0)
+	put.call("barrel_small", Vector3(-2.1, 0.06, 1.9))
+	# outside: a torch by the door, crates and barrels along the wall
+	_torch(xf * Vector3(3.6, 0, 3.9))
+	put.call("crates_stacked", Vector3(-4.2, 0, -1.8), 0.4)
+	put.call("barrel_large", Vector3(-4.1, 0, 0.6))
+	put.call("barrel_small_stack", Vector3(0.8, 0, -4.1), PI)
+
+
+func _build_npcs() -> void:
+	for entry: Dictionary in data.get("npcs", []):
+		var npc := Npc.new()
+		npc.setup(entry["id"])
+		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * 0.1
+		if entry.has("face"):
+			var d := Vector2(entry["face"][0], entry["face"][1]) - Vector2(entry["pos"][0], entry["pos"][1])
+			npc.rotation.y = atan2(-d.x, -d.y)
+		add_child(npc)
+
+
 func _build_props() -> void:
 	var trees := ["pine_a", "pine_a", "pine_b", "pine_b", "tree_round"]
 	for k in int(data.get("trees", 150)):
@@ -346,7 +398,8 @@ func _open_spot() -> Vector2:
 
 
 ## Places a prop from data/models.json "props". `collide` is "box" (the model's
-## bounds), "trunk" (a thin post for trees) or "none".
+## bounds), "mesh" (exact triangles, for walls with doors), "trunk" (a thin post
+## for trees) or "none".
 func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box") -> Node3D:
 	var spec: Dictionary = GameData.models["props"][id]
 	if not _prop_scenes.has(id):
@@ -365,7 +418,16 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 		var cs := CollisionShape3D.new()
 		var raw := _prop_bounds(id, model)
 		var bounds := AABB(raw.position * s, raw.size * s)
-		if collide == "trunk":
+		if collide == "mesh":
+			var faces := _prop_faces(id, model)
+			var scaled := PackedVector3Array()
+			scaled.resize(faces.size())
+			for i in faces.size():
+				scaled[i] = faces[i] * s
+			var tri := ConcavePolygonShape3D.new()
+			tri.set_faces(scaled)
+			cs.shape = tri
+		elif collide == "trunk":
 			var cyl := CylinderShape3D.new()
 			cyl.radius = 0.3 * s
 			cyl.height = 3.0 * s
@@ -381,18 +443,34 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 	return root
 
 
+## Unscaled triangles of a prop's meshes, cached per id.
+func _prop_faces(id: String, model: Node3D) -> PackedVector3Array:
+	if not _prop_tris.has(id):
+		var out := PackedVector3Array()
+		for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			var xf := _relative_xform(mi, model)
+			for v in mi.mesh.get_faces():
+				out.append(xf * v)
+		_prop_tris[id] = out
+	return _prop_tris[id]
+
+
+func _relative_xform(node: Node3D, ancestor: Node3D) -> Transform3D:
+	var xf := Transform3D.IDENTITY
+	var n: Node = node
+	while n != ancestor:
+		xf = (n as Node3D).transform * xf
+		n = n.get_parent()
+	return xf
+
+
 ## Unscaled bounds of a prop's meshes, cached per id.
 func _prop_bounds(id: String, model: Node3D) -> AABB:
 	if not _prop_aabbs.has(id):
 		var box := AABB()
 		var first := true
 		for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
-			var xf := Transform3D.IDENTITY
-			var n: Node = mi
-			while n != model:
-				xf = (n as Node3D).transform * xf
-				n = n.get_parent()
-			var a := xf * mi.get_aabb()
+			var a := _relative_xform(mi, model) * mi.get_aabb()
 			box = a if first else box.merge(a)
 			first = false
 		_prop_aabbs[id] = box

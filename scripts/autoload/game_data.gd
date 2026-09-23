@@ -9,6 +9,8 @@ var spells: Dictionary = {}
 var mobs: Dictionary = {}
 var items: Dictionary = {}
 var models: Dictionary = {}
+var npcs: Dictionary = {}
+var quests: Dictionary = {}
 
 
 func _ready() -> void:
@@ -18,6 +20,8 @@ func _ready() -> void:
 	mobs = _load("res://data/mobs.json")
 	items = _load("res://data/items.json")
 	models = _load("res://data/models.json")
+	npcs = _load("res://data/npcs.json")
+	quests = _load("res://data/quests.json")
 
 
 func load_zone(zone_id: String) -> Dictionary:
