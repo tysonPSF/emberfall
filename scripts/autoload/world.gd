@@ -298,13 +298,124 @@ func _update_melee(e: Entity) -> void:
 		return
 	e.swing_timer = e.attack_delay
 	e.sitting = false
-	var chance := clampf(0.72 + (e.level - t.level) * 0.04 - t.ac * 0.004, 0.12, 0.95)
-	var dmg := randi_range(e.dmg_min, e.dmg_max) if randf() < chance else 0
 	e.animate("attack")
+	if t is Player:
+		var avoided := _try_avoid(t as Player, e)
+		if avoided != "":
+			_avoid_msg(e, t as Player, avoided)
+			return
+	var chance := 0.72 + (e.level - t.level) * 0.04 - t.ac * 0.004
+	if e is Player:  # weapon skill and offense against 80% of cap
+		var p := e as Player
+		chance += 0.12 * ((skill_frac(p, weapon_skill(p)) + skill_frac(p, "offense")) * 0.5 - _neutral())
+		try_skill_up(p, weapon_skill(p), t)
+		try_skill_up(p, "offense", t, 0.5)
+	if t is Player:
+		chance -= 0.12 * (skill_frac(t as Player, "defense") - _neutral())
+		try_skill_up(t as Player, "defense", e, 0.5)
+	chance = clampf(chance, 0.12, 0.95)
+	var dmg := randi_range(e.dmg_min, e.dmg_max) if randf() < chance else 0
+	if dmg > 0 and e is Player:
+		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(e as Player, weapon_skill(e as Player)) - _neutral())))
 	_combat_msg(e, t, e.attack_verb, dmg)
 	if dmg > 0:
 		damage(t, dmg, e)
 		_try_proc(e, t)
+
+
+# --- skills -----------------------------------------------------------------
+
+func _neutral() -> float:
+	return float(GameData.skills["tuning"]["neutral"])
+
+
+func skill_cap(p: Player, id: String) -> int:
+	return GameData.skill_cap(p.char_class, id, p.level)
+
+
+func skill_value(p: Player, id: String) -> int:
+	return mini(int(p.skills.get(id, 0)), skill_cap(p, id))
+
+
+## A skill as a share of its cap (0 when the class can't learn it). Effects
+## are measured against the "neutral" share, where the base rules apply as is.
+func skill_frac(p: Player, id: String) -> float:
+	var cap := skill_cap(p, id)
+	return 0.0 if cap <= 0 else float(skill_value(p, id)) / cap
+
+
+## The skill a player's weapon trains (hand to hand when empty-handed).
+func weapon_skill(p: Player) -> String:
+	return str(GameData.item(p.equipment.get("primary", "")).get("skill", "hand_to_hand"))
+
+
+## Using a skill may raise it, less likely the closer it is to the cap. Gray
+## targets teach nothing, as in EQ; `rate` scales the chance for skills that
+## would otherwise rise on every swing (offense, defense, the avoidances).
+func try_skill_up(p: Player, id: String, against: Entity = null, rate := 1.0) -> void:
+	if p == null or p.dead:
+		return
+	if against != null and against != p and con_of(p.level, against.level) == Con.GRAY:
+		return
+	var cap := skill_cap(p, id)
+	var cur := skill_value(p, id)
+	if cap <= 0 or cur >= cap:
+		return
+	var t: Dictionary = GameData.skills["tuning"]
+	var chance := (float(t["up_base"]) * pow(1.0 - float(cur) / cap, float(t["up_curve"])) + float(t["up_floor"])) * rate
+	if randf() < chance:
+		p.skills[id] = cur + 1
+		say(p, "You have become better at %s! (%d)" % [GameData.skill_name(id), cur + 1], C_XP)
+
+
+## A spell from one of the schools can fizzle when the school skill is low:
+## part of the mana is lost and the skill may still improve.
+func _fizzles(p: Player, s: Dictionary) -> bool:
+	var school := str(s.get("skill", ""))
+	if s.get("ability", false) or not school in ["evocation", "alteration", "abjuration"]:
+		return false
+	var chance := maxf(0.0, 0.15 * (1.0 - skill_frac(p, school)))
+	if randf() >= chance:
+		return false
+	p.mana -= int(s.get("mana", 0)) / 3
+	say(p, "Your spell fizzles!", C_WARN)
+	try_skill_up(p, school)
+	p.stats_changed.emit()
+	return true
+
+
+## A caster who takes a hit may lose the spell; channeling holds it.
+func _channel(p: Player) -> void:
+	if skill_cap(p, "channeling") <= 0:
+		p.cast = {}
+		say(p, "Your spell is interrupted.", C_WARN)
+		return
+	try_skill_up(p, "channeling")
+	if randf() < clampf(0.4 - 0.35 * skill_frac(p, "channeling"), 0.05, 0.4):
+		p.cast = {}
+		say(p, "Your spell is interrupted.", C_WARN)
+	else:
+		say(p, "You regain your concentration and continue your casting.", C_SPELL)
+
+
+## Block (with a shield), parry (with a weapon) and dodge: a player's chance
+## to avoid a swing outright. Returns the skill that did it, or "".
+func _try_avoid(p: Player, attacker: Entity) -> String:
+	var options := [["block", 0.1, GameData.item(p.equipment.get("secondary", "")).get("slot", "") == "secondary"],
+			["parry", 0.08, p.equipment.has("primary")], ["dodge", 0.07, true]]
+	for o: Array in options:
+		if not o[2] or skill_cap(p, o[0]) <= 0:
+			continue
+		try_skill_up(p, o[0], attacker, 0.4)
+		if randf() < float(o[1]) * skill_frac(p, o[0]):
+			return o[0]
+	return ""
+
+
+func _avoid_msg(a: Entity, p: Player, how: String) -> void:
+	say(p, "%s tries to %s YOU, but YOU %s!" % [cap(a.display_name), a.attack_verb[0], how], C_MISS)
+	if a is Player:
+		say(a, "You try to %s %s, but %s %ss!" % [a.attack_verb[0], p.display_name, p.display_name, how], C_MISS)
 
 
 ## The weapon an entity swings: a player's primary, or what a mob spawned holding.
@@ -377,6 +488,8 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 		return
 	d.hp -= amount
 	d.sitting = false
+	if d is Player and not d.cast.is_empty() and amount > 0 and src != d:
+		_channel(d as Player)
 	if d is Mob and src is Player:  # kill credit goes to whoever did the most
 		var by: Dictionary = d.get_meta("damage_by", {})
 		by[src.entity_id] = int(by.get(src.entity_id, 0)) + amount
@@ -400,7 +513,12 @@ func _regen_tick() -> void:
 			hp_gain = maxi(hp_gain, e.max_hp / 8)
 		var mana_gain := 0
 		if e.max_mana > 0:
-			mana_gain = e.mana_regen + (2 + e.level / 2 if e.sitting else 0)
+			var rest := float(2 + e.level / 2) if e.sitting else 0.0
+			if e is Player and e.sitting and skill_cap(e as Player, "meditate") > 0:  # meditate: better rest
+				rest *= 0.5 + 0.625 * skill_frac(e as Player, "meditate")
+				if e.mana < e.max_mana:
+					try_skill_up(e as Player, "meditate")
+			mana_gain = e.mana_regen + int(round(rest))
 		e.hp = mini(e.max_hp, e.hp + int(ceil(hp_gain * mult)))
 		e.mana = mini(e.max_mana, e.mana + int(ceil(mana_gain * mult)))
 		e.stats_changed.emit()
@@ -707,6 +825,8 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 		say(c, "Your target is out of range, get closer!", C_WARN)
 		return
 	c.sitting = false
+	if c is Player and _fizzles(c as Player, s):
+		return
 	if float(s.get("cast_time", 0)) <= 0.0:
 		_finish_spell(c, spell_id, t)
 		return
@@ -767,6 +887,11 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		c.mana -= int(s.get("mana", 0))
 		c.cooldowns[spell_id] = float(s.get("recast", 0))
 	var power := randi_range(int(s.get("min", 0)), int(s.get("max", 0))) + int(float(s.get("per_level", 0)) * (c.level - 1))
+	if c is Player and not from_item and s.has("skill"):
+		var skill := str(s["skill"])
+		if s.get("ability", false) and skill != "taunt":  # kick, bash, bind wound grow with the skill
+			power = maxi(1, roundi(power * (0.6 + 0.5 * skill_frac(c as Player, skill))))
+		try_skill_up(c as Player, skill, t if s.get("ability", false) and t != c else null)
 	if str(s.get("target", "")) == "group" and c is Player:  # every member in range, the caster too
 		for m: Player in group_members(c as Player):
 			if not m.dead and (m == c or c.distance_to(m) <= float(s.get("range", 30))):
@@ -821,6 +946,9 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			say(c, "%s's feet adhere to the ground." % cap(t.display_name), C_SPELL)
 			t.add_hate(c, 5.0)
 		"taunt":
+			if c is Player and randf() > 0.5 + 0.5 * skill_frac(c as Player, "taunt"):
+				say(c, "Your taunt fails to get %s's attention." % t.display_name, C_WARN)
+				return
 			var top := 0.0
 			for v: float in t.hate.values():
 				top = maxf(top, v)

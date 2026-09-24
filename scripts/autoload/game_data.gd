@@ -14,6 +14,7 @@ var quests: Dictionary = {}
 var factions: Dictionary = {}
 var deities: Dictionary = {}
 var loot: Dictionary = {}
+var skills: Dictionary = {}
 
 
 func _ready() -> void:
@@ -28,6 +29,7 @@ func _ready() -> void:
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
 	loot = _load("res://data/loot.json")
+	skills = _load("res://data/skills.json")
 
 
 ## A deity's benefit, or 0 when the player has none or it grants something else.
@@ -46,6 +48,17 @@ func deity_portrait(deity_id: String) -> AtlasTexture:
 
 func load_zone(zone_id: String) -> Dictionary:
 	return _load("res://data/zones/%s.json" % zone_id)
+
+
+## How high a class can raise a skill at a level: per_level x (level + 1),
+## never above the table's max; 0 if the class can't learn it.
+func skill_cap(cls: String, skill_id: String, level: int) -> int:
+	var per := int(skills.get("skills", {}).get(skill_id, {}).get("caps", {}).get(cls, 0))
+	return mini(per * (level + 1), int(skills["tuning"]["max"]))
+
+
+func skill_name(skill_id: String) -> String:
+	return str(skills.get("skills", {}).get(skill_id, {}).get("name", skill_id))
 
 
 func item_name(item_id: String) -> String:

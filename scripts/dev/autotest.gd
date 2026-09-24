@@ -28,6 +28,7 @@ const SECTIONS := [
 	["groupui", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
+	["skills", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -790,6 +791,90 @@ func _t_itemwindow() -> void:
 	await _shot("9h_item_link")
 	hud._item_panel.visible = false
 	p.inventory.erase("leather_boots@superior")
+
+
+## Skills: starting values, skill-ups slowing toward the cap (and none from
+## gray mobs), dodge, fizzles, channeling, meditate, and kick growing with
+## skill. Rates are measured over many tries.
+func _t_skills() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	print("skills: wizard L%d starts with %s" % [p.level, p.skills])
+	var mob := _nearest_mob(p, "gnoll_pup")
+	mob.level = p.level + 1
+	var saved := p.skills.duplicate()
+	World.log_message.disconnect(World.log_message.get_connections()[0]["callable"])  # quiet the flood
+	p.skills["piercing"] = 0
+	var ups := []
+	for k in 400:
+		World.try_skill_up(p, "piercing", mob)
+		if k in [49, 99, 199, 399]:
+			ups.append("%d swings: %d" % [k + 1, p.skills["piercing"]])
+	print("skills: piercing from 0, cap %d -> %s" % [World.skill_cap(p, "piercing"), ", ".join(ups)])
+	mob.level = 1
+	p.level = 10
+	p.skills["piercing"] = 0
+	for k in 200:
+		World.try_skill_up(p, "piercing", mob)
+	print("skills: 200 swings on a gray mob raised piercing to %d" % p.skills["piercing"])
+	p.level = 1
+	mob.level = 2
+	p.skills["dodge"] = World.skill_cap(p, "dodge")
+	var dodged := 0
+	for k in 2000:
+		dodged += 1 if World._try_avoid(p, mob) == "dodge" else 0
+	print("skills: dodge at cap avoided %d of 2000 swings (7%% expected)" % dodged)
+	for level_evo: int in [0, World.skill_cap(p, "evocation")]:
+		p.skills["evocation"] = level_evo
+		var fizz := 0
+		for k in 1000:
+			p.mana = 1000
+			p.skills["evocation"] = level_evo  # each fizzle may raise it; keep it pinned
+			fizz += 1 if World._fizzles(p, GameData.spells["blast_of_frost"]) else 0
+		print("skills: evocation %d fizzled %d of 1000 casts" % [level_evo, fizz])
+	for ch: int in [0, World.skill_cap(p, "channeling")]:
+		p.skills["channeling"] = ch
+		var broken := 0
+		for k in 500:
+			p.skills["channeling"] = ch
+			p.cast = {"spell": "blast_of_frost", "target_id": mob.entity_id, "time": 0.0, "total": 2.0, "start_pos": p.global_position}
+			World._channel(p)
+			broken += 1 if p.cast.is_empty() else 0
+		print("skills: channeling %d lost %d of 500 spells to hits" % [ch, broken])
+	p.cast = {}
+	for med: int in [0, World.skill_cap(p, "meditate")]:
+		p.skills["meditate"] = med
+		p.sitting = true
+		p.mana = 0
+		World._regen_tick()
+		print("skills: meditate %d restores %d mana per rest tick" % [med, p.mana])
+	p.sitting = false
+	p.char_class = "warrior"
+	p.fill_skills()
+	var dummy := _nearest_mob(p, "large_rat")
+	dummy.max_hp = 99999
+	for kick: int in [0, World.skill_cap(p, "kick")]:
+		p.skills["kick"] = kick
+		var total := 0
+		for k in 300:
+			dummy.hp = 99999
+			p.skills["kick"] = kick
+			World._finish_spell(p, "kick", dummy)
+			p.cooldowns.clear()
+			total += 99999 - dummy.hp
+		print("skills: kick %d averages %.1f damage" % [kick, total / 300.0])
+	dummy.hp = 1
+	World.damage(dummy, 5, null)
+	p.char_class = "wizard"
+	p.skills = saved
+	if not World.log_message.is_connected(main.hud.add_log):
+		World.log_message.connect(main.hud.add_log)
+	World.log_message.connect(func(t: String, _c: Color) -> void: print("[log] ", t))
+	World.try_skill_up(p, "evocation", null, 100.0)
+	main.hud._skills_panel.visible = true
+	await _wait(0.8)
+	await _shot("9i_skills")
+	main.hud._skills_panel.visible = false
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:

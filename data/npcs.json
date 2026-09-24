@@ -1,6 +1,7 @@
 {
   "warden_holt": {
     "name": "Warden Holt",
+    "title": "Warden of the Watch",
     "level": 12,
     "model": "knight",
     "weapon": "sword_1handed",
@@ -69,6 +70,7 @@
   },
   "watch_patrol": {
     "name": "Guard Corwin",
+    "title": "Road Patrol",
     "level": 30,
     "model": "knight",
     "weapon": "sword_1handed",
@@ -119,6 +121,7 @@
   },
   "keeper_maelin": {
     "name": "Keeper Maelin",
+    "title": "Keeper of the Hearth",
     "level": 40,
     "model": "mage",
     "weapon": "staff",
@@ -133,6 +136,7 @@
   },
   "merchant_tovin": {
     "name": "Tovin the Provisioner",
+    "title": "Provisioner",
     "level": 15,
     "model": "rogue",
     "weapon": "",
@@ -159,6 +163,7 @@
   },
   "smith_garrow": {
     "name": "Garrow the Smith",
+    "title": "Blacksmith",
     "level": 20,
     "model": "barbarian",
     "weapon": "axe_1handed",
@@ -187,6 +192,7 @@
   },
   "banker_odile": {
     "name": "Banker Odile",
+    "title": "Hearthbank",
     "level": 15,
     "model": "rogue_hooded",
     "weapon": "",
@@ -200,6 +206,7 @@
   },
   "merrick": {
     "name": "Merrick",
+    "title": "Fishing Supplies",
     "level": 12,
     "model": "ranger",
     "weapon": "fishing_pole",
@@ -221,6 +228,7 @@
   },
   "gm_brask": {
     "name": "Sergeant Brask",
+    "title": "Warrior Guildmaster",
     "level": 35,
     "model": "barbarian",
     "weapon": "axe_2handed",
@@ -237,6 +245,7 @@
   },
   "gm_anwen": {
     "name": "Sister Anwen",
+    "title": "Cleric Guildmaster",
     "level": 35,
     "model": "knight",
     "weapon": "staff",
@@ -253,6 +262,7 @@
   },
   "gm_coyle": {
     "name": "Magister Coyle",
+    "title": "Wizard Guildmaster",
     "level": 35,
     "model": "mage",
     "weapon": "wand",

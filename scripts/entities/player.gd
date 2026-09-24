@@ -41,6 +41,7 @@ var attack_confirm_id := -1  # npc awaiting a second Q before attacking
 var attack_confirm_at := 0
 var body_color := Color.WHITE
 var is_local := true  # false for other people's players (a server's remote players, a client's mirrors)
+var skills: Dictionary = {}  # skill id -> value; see data/skills.json
 var group_id := 0  # server: the World.groups entry this player is in; 0 = none
 var group: Array = []  # [{id, name, level, class, hp, max_hp, mana, max_mana, leader, zone}] for the group window
 var follow_target: Node3D = null  # /follow: walk after this entity until you move yourself
@@ -63,6 +64,7 @@ var _autotest := "--autotest" in OS.get_cmdline_user_args() or Array(OS.get_cmdl
 func from_save(d: Dictionary) -> void:
 	display_name = str(d.get("name", "Adventurer"))
 	char_class = str(d.get("class", "warrior"))
+	skills = (d.get("skills", {}) as Dictionary).duplicate()
 	deity = str(d.get("deity", ""))
 	level = int(d.get("level", 1))
 	xp = int(d.get("xp", 0))
@@ -85,6 +87,7 @@ func from_save(d: Dictionary) -> void:
 	hp = 1 << 30
 	mana = 1 << 30
 	recalc_stats()
+	fill_skills()
 	hp = clampi(int(d.get("hp", max_hp)), 1, max_hp)
 	mana = clampi(int(d.get("mana", max_mana)), 0, max_mana)
 	stamina = float(max_stamina)  # you arrive rested; it is not worth saving
@@ -176,7 +179,7 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "inventory", "equipment", "spells", "quests", "factions",
 			"bank_items", "bank_coin", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting",
-			"group"]:
+			"group", "skills"]:
 		set(key, d[key])
 	if bool(d["dead"]) != dead:
 		dead = bool(d["dead"])
@@ -203,7 +206,7 @@ func apply_self(d: Dictionary) -> void:
 func to_save() -> Dictionary:
 	var p := global_position
 	return {
-		"name": display_name, "class": char_class, "deity": deity, "level": level, "xp": xp, "coin": coin,
+		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
@@ -319,6 +322,18 @@ func worn_gear_models() -> Dictionary:
 		if wear != "":
 			out[slot] = wear
 	return out
+
+
+## Any skill this class can learn but hasn't got yet starts partway to its cap
+## (new characters, and characters from before skills existed).
+func fill_skills() -> void:
+	var start := float(GameData.skills["tuning"]["start_fraction"])
+	for id: String in GameData.skills["skills"]:
+		var cap := GameData.skill_cap(char_class, id, level)
+		if cap > 0 and not skills.has(id):
+			skills[id] = int(cap * start)
+		elif skills.has(id):
+			skills[id] = int(skills[id])
 
 
 func xp_to_next() -> int:

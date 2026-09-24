@@ -57,6 +57,18 @@ func _ready() -> void:
 	build_body("humanoid", Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
 	nameplate.text = display_name
 	nameplate.modulate = NAME_COLOR
+	if data.has("title"):  # EQ-style second line: <Warrior Guildmaster>
+		var title := Label3D.new()
+		title.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		title.fixed_size = true
+		title.pixel_size = nameplate.pixel_size
+		title.font_size = 24
+		title.outline_size = 6
+		title.text = "<%s>" % data["title"]
+		title.modulate = Color(0.78, 0.82, 0.9)
+		title.offset = Vector2(0, -30)  # screen pixels below the name, at any distance
+		title.visibility_range_end = nameplate.visibility_range_end
+		nameplate.add_child(title)
 	_post = global_position
 	_post_yaw = rotation.y
 

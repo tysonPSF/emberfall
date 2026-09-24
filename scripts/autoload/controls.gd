@@ -31,6 +31,7 @@ const BINDINGS := {
 	"hail": [KEY_E],
 	"trade": [KEY_G],
 	"inventory": [KEY_I],
+	"skills": [KEY_K],
 	"help": [KEY_H],
 	"reload": [KEY_F9],  # F2-F6 target group members, as in EQ
 	"cancel": [KEY_ESCAPE],
