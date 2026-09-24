@@ -6,6 +6,10 @@ extends CanvasLayer
 
 signal confirmed(save: Dictionary)
 
+var server_address := ""  # "" plays offline; otherwise "host" or "host:port"
+var _server_edit: LineEdit
+var _status: Label
+
 var existing: Dictionary = {}
 var _name_edit: LineEdit
 var _desc: Label
@@ -41,6 +45,20 @@ func _ready() -> void:
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(sub)
 	v.add_child(HSeparator.new())
+
+	var srv := HBoxContainer.new()
+	srv.add_theme_constant_override("separation", 8)
+	srv.add_child(UIKit.label("Server", 14, UIKit.GOLD))
+	_server_edit = LineEdit.new()
+	_server_edit.placeholder_text = "address, or leave blank to play offline"
+	_server_edit.text = server_address
+	_server_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_server_edit.text_changed.connect(func(t: String) -> void: server_address = t.strip_edges())
+	srv.add_child(_server_edit)
+	v.add_child(srv)
+	_status = UIKit.label("", 13, UIKit.DIM)
+	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_status)
 
 	if not existing.is_empty():
 		var cls: Dictionary = GameData.classes.get(existing.get("class", ""), {})
@@ -147,6 +165,13 @@ func _deity_picker(parent: Container) -> void:
 		row.add_child(b)
 	parent.add_child(row)
 	parent.add_child(desc)
+
+
+## Connecting..., or why it failed.
+func set_status(text: String, is_error := false) -> void:
+	if _status != null:
+		_status.text = text
+		_status.add_theme_color_override("font_color", Color(1, 0.45, 0.35) if is_error else UIKit.DIM)
 
 
 func _select(class_id: String) -> void:

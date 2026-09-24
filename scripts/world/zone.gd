@@ -71,11 +71,13 @@ func load_zone(id: String) -> void:
 	_build_terrain()
 	_build_landmarks()
 	_build_props()
-	_build_clutter()
-	_build_spawns()
-	_build_npcs()
+	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
+		_build_clutter()
 	_build_road_lamps()
-	_build_zone_lines()
+	if Net.is_authority():  # a client's mobs and npcs come from the server
+		_build_spawns()
+		_build_npcs()
+		_build_zone_lines()
 
 
 func height_at(x: float, z: float) -> float:

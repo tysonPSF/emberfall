@@ -38,6 +38,7 @@ var hostile_npcs: Dictionary = {}  # npc entity ids this player chose to fight
 var attack_confirm_id := -1  # npc awaiting a second Q before attacking
 var attack_confirm_at := 0
 var body_color := Color.WHITE
+var is_local := true  # false for other people's players (a server's remote players, a client's mirrors)
 
 var camera_pivot: Node3D
 var spring_arm: SpringArm3D
@@ -76,6 +77,51 @@ func from_save(d: Dictionary) -> void:
 	recalc_stats()
 	hp = clampi(int(d.get("hp", max_hp)), 1, max_hp)
 	mana = clampi(int(d.get("mana", max_mana)), 0, max_mana)
+
+
+## Client: someone else's player, drawn as the server describes it.
+func setup_remote(info: Dictionary) -> void:
+	is_local = false
+	entity_id = int(info["id"])
+	display_name = str(info["name"])
+	level = int(info["level"])
+	char_class = str(info.get("class", "warrior"))
+	faction = "players"
+	max_hp = int(info["max_hp"])
+	hp = int(info["hp"])
+	look = info["look"]
+	body_color = Color.html(GameData.classes[char_class]["color"])
+
+
+## Client: our own player's state as the server holds it.
+func apply_self(d: Dictionary) -> void:
+	var bags_before := [inventory, equipment, coin, bank_items, bank_coin, trade_items]
+	var quests_before := quests
+	var level_before := level
+	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
+			"attack_delay", "attack_verb", "attributes", "inventory", "equipment", "spells", "quests", "factions",
+			"bank_items", "bank_coin", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
+			"trade_items", "service_npc_id", "service", "camp_left", "root_left"]:
+		set(key, d[key])
+	if bool(d["dead"]) != dead:
+		dead = bool(d["dead"])
+		if nameplate != null:
+			nameplate.visible = not dead
+	var t: Node3D = World.get_object(int(d["target"])) if int(d["target"]) >= 0 else null
+	if t != target:
+		target = t
+	var lk: Dictionary = d["look"]
+	if visual is CharacterModel and (lk.get("weapon") != look.get("weapon") or lk.get("offhand") != look.get("offhand")):
+		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
+		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
+	look = lk
+	if bags_before != [inventory, equipment, coin, bank_items, bank_coin, trade_items]:
+		inventory_changed.emit()
+	if quests_before != quests:
+		quests_changed.emit()
+	if level > level_before:
+		leveled_up.emit()
+	stats_changed.emit()
 
 
 func to_save() -> Dictionary:
@@ -165,6 +211,10 @@ func recalc_stats() -> void:
 	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0))
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
+	if visual is CharacterModel and (look.get("weapon") != weapon_model or look.get("offhand") != offhand_model):
+		look["weapon"] = weapon_model
+		look["offhand"] = offhand_model
+		Net.broadcast_look(self)
 	if visual is CharacterModel:
 		(visual as CharacterModel).set_weapon(weapon_model)
 		(visual as CharacterModel).set_offhand(offhand_model)
@@ -208,7 +258,8 @@ func respawn() -> void:
 	mana = max_mana
 	global_position = World.zone.bind_point + Vector3.UP
 	velocity = Vector3.ZERO
-	visual.visible = zoom > 0.6
+	Net.teleport(self, global_position)
+	visual.visible = zoom > 0.6 or not is_local
 	nameplate.visible = true
 	World.say(self, "You wake up at your bind point.", World.C_SYSTEM)
 	stats_changed.emit()
@@ -217,10 +268,18 @@ func respawn() -> void:
 # --- scene setup ------------------------------------------------------------
 
 func _ready() -> void:
+	var mirrored := look.duplicate()
 	var weapon: String = GameData.item(equipment.get("primary", "")).get("model", "")
+	if not mirrored.is_empty():
+		weapon = str(mirrored.get("weapon", ""))
 	build_body("humanoid", body_color, 1.0, GameData.classes[char_class].get("model", ""), weapon)
+	if not mirrored.is_empty() and visual is CharacterModel:
+		look = mirrored
+		(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
 	nameplate.text = display_name
 	nameplate.modulate = Color(0.7, 0.85, 1.0)
+	if not is_local:
+		return
 	World.local_player = self
 
 	camera_pivot = Node3D.new()
@@ -241,6 +300,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if not is_local:
+		return
 	_update_mouse_look()
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, zoom, minf(1.0, delta * 10.0))
 	camera_pivot.rotation.x = pitch
@@ -250,6 +311,8 @@ func _process(delta: float) -> void:
 # --- input ------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not is_local:
+		return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		match mb.button_index:
@@ -335,6 +398,8 @@ func _hud_wants_cursor() -> bool:
 ## _exit_tree unregisters us from World, so it has to run too.
 func _exit_tree() -> void:
 	super()
+	if not is_local:
+		return
 	mouse_looking = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
@@ -396,6 +461,10 @@ func _cycle_target() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not is_local:
+		if not Net.is_authority():
+			puppet(delta)
+		return  # a server's remote players move when their client says so
 	apply_gravity(delta)
 	if dead:
 		velocity.x = 0.0

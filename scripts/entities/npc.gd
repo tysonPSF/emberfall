@@ -68,6 +68,9 @@ func greet(who: Entity) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not Net.is_authority():
+		puppet(delta)
+		return
 	apply_gravity(delta)
 	var move := Vector3.ZERO
 	if not dead:

@@ -1,0 +1,21 @@
+# systemd unit for the Emberfall server. Install with:
+#   sudo cp tools/server/emberfall.service /etc/systemd/system/
+#   (edit User, WorkingDirectory and GODOT below)
+#   sudo systemctl enable --now emberfall
+# After a `git pull`: sudo systemctl restart emberfall
+# Logs: journalctl -u emberfall -f
+
+[Unit]
+Description=Emberfall game server
+After=network-online.target
+
+[Service]
+User=emberfall
+WorkingDirectory=/home/emberfall/emberfall
+Environment=GODOT=/usr/local/bin/godot
+Environment=PORT=7777
+ExecStart=/home/emberfall/emberfall/tools/server/run_server.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
