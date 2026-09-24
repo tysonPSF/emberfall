@@ -9,6 +9,12 @@ extends Entity
 ## a "guard" block also keep the peace: they run down mobs chasing players,
 ## players who attack townsfolk, and players their faction wants dead (KOS),
 ## using the same melee rules as everyone else, then walk back to their post.
+##
+## A guard given a patrol (waypoints from the zone file) walks it back and
+## forth at "walk_speed" instead of standing at a post, pausing at each end
+## and stopping to talk when hailed. Guard options: "assist_standing" (only
+## help players at least this well regarded by the guard's faction) and
+## "hunt_radius" (attack any monster that comes this close).
 
 const NAME_COLOR := Color(0.55, 0.85, 1.0)
 const SCAN_SECONDS := 0.5
@@ -21,6 +27,11 @@ var _face_timer := 0.0
 var _post := Vector3.ZERO
 var _post_yaw := 0.0
 var _scan_timer := 0.0
+var patrol: Array[Vector3] = []  # waypoints walked end to end and back; empty for a post
+var _leg := 1  # waypoint being walked to
+var _leg_step := 1
+var _pause := 0.0
+var _anchor := Vector3.ZERO  # where the current fight began; the leash is measured from here
 
 
 func setup(id: String, name_override := "") -> void:
@@ -62,6 +73,8 @@ func _physics_process(delta: float) -> void:
 	if not dead:
 		move = _think(delta)
 	var speed := float(guard.get("speed", 5.5))
+	if not patrol.is_empty() and not auto_attack:
+		speed = float(guard.get("walk_speed", 2.0))
 	velocity.x = move.x * speed
 	velocity.z = move.z * speed
 	move_and_slide()
@@ -77,22 +90,45 @@ func _physics_process(delta: float) -> void:
 func _think(delta: float) -> Vector3:
 	if auto_attack:
 		var t := valid_target_entity()
-		if t == null or _flat(t.global_position, _post) > float(guard.get("leash", 20.0)):
+		if t == null or _flat(t.global_position, _anchor) > float(guard.get("leash", 20.0)):
 			auto_attack = false
 			target = null
 			return Vector3.ZERO
 		face_toward(t.global_position)
 		return _dir_to(t.global_position) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
+	_scan_timer -= delta
+	if not patrol.is_empty():
+		if _scan_timer <= 0.0:
+			_scan_timer = SCAN_SECONDS
+			_look_for_trouble()
+		return _walk_patrol(delta)
 	if _flat(global_position, _post) > 0.8:
 		var dir := _dir_to(_post)
 		if _flat(global_position, _post) < 1.5:
 			rotation.y = _post_yaw
 		return dir
-	_scan_timer -= delta
 	if _scan_timer <= 0.0 and not guard.is_empty():
 		_scan_timer = SCAN_SECONDS
 		_look_for_trouble()
 	return Vector3.ZERO
+
+
+## Next step along the patrol: on to the next waypoint, turning back at either
+## end after a pause, and standing still while talking to someone.
+func _walk_patrol(delta: float) -> Vector3:
+	if _face_timer > 0.0 or patrol.size() < 2:
+		return Vector3.ZERO
+	if _pause > 0.0:
+		_pause -= delta
+		return Vector3.ZERO
+	var goal := patrol[_leg]
+	if _flat(global_position, goal) < 1.0:
+		if _leg + _leg_step < 0 or _leg + _leg_step >= patrol.size():
+			_leg_step = -_leg_step
+			_pause = float(guard.get("patrol_pause", 5.0))
+		_leg += _leg_step
+		return Vector3.ZERO
+	return _dir_to(goal)
 
 
 ## Hit by someone: fight back (and a townsperson calls the guards).
@@ -108,16 +144,23 @@ func add_hate(src: Entity, _amount: float) -> void:
 ## Turns on someone: targets and swings at them until they fall, flee past the
 ## leash, or it's knocked out.
 func fight(who: Entity, shout := false) -> void:
-	target = who
-	auto_attack = true
-	sitting = false
-	_face_timer = 0.0
+	_engage(who)
 	if shout and who is Player:
 		var lines: Array = guard.get("shouts_player", ["Stop right there, {name}!"])
 		World.shout(self, "%s shouts, '%s'" % [display_name, str(lines[randi() % lines.size()]).format({"name": who.display_name})])
 
 
-## Engages the nearest mob within reach that is chasing or fighting a player.
+func _engage(who: Entity) -> void:
+	target = who
+	auto_attack = true
+	sitting = false
+	_face_timer = 0.0
+	_anchor = global_position if not patrol.is_empty() else _post
+
+
+## Engages the nearest mob within reach that is chasing or fighting a player
+## the guard is willing to help; failing that, a player to arrest; failing
+## that, any monster inside the hunt radius.
 func _look_for_trouble() -> void:
 	var radius := float(guard.get("radius", 22.0))
 	var best: Mob = null
@@ -126,24 +169,36 @@ func _look_for_trouble() -> void:
 		if m.dead or distance_to(m) > radius or not (m.state in [Mob.State.COMBAT, Mob.State.FLEE]):
 			continue
 		var t := m.top_hated()
-		if t is Player and (best == null or distance_to(m) < distance_to(best)):
+		if t is Player and _will_assist(t as Player) and (best == null or distance_to(m) < distance_to(best)):
 			best = m
 			victim = t
-	if best == null:
-		for p in World.get_players():  # players this faction wants dead, or who attacked townsfolk
-			if p.dead or distance_to(p) > radius:
-				continue
-			if World.npc_kos(p, faction) or not p.hostile_npcs.is_empty():
-				fight(p, true)
-				return
+	if best != null:
+		_engage(best)
+		_shout("shouts", victim.display_name, best.display_name)
 		return
-	target = best
-	auto_attack = true
-	sitting = false
-	_face_timer = 0.0
-	var shouts: Array = guard.get("shouts", [])
-	if not shouts.is_empty():
-		var line := str(shouts[randi() % shouts.size()]).format({"name": victim.display_name, "mob": best.display_name})
+	for p in World.get_players():  # players this faction wants dead, or who attacked townsfolk
+		if p.dead or distance_to(p) > radius:
+			continue
+		if World.npc_kos(p, faction) or not p.hostile_npcs.is_empty():
+			fight(p, true)
+			return
+	var hunt := float(guard.get("hunt_radius", 0.0))
+	for m in World.get_mobs():
+		if not m.dead and distance_to(m) <= hunt and (best == null or distance_to(m) < distance_to(best)):
+			best = m
+	if best != null:
+		_engage(best)
+		_shout("hunt_shouts", "", best.display_name)
+
+
+func _will_assist(p: Player) -> bool:
+	return not guard.has("assist_standing") or World.standing(p, faction) >= int(guard["assist_standing"])
+
+
+func _shout(key: String, who: String, mob: String) -> void:
+	var lines: Array = guard.get(key, [])
+	if not lines.is_empty():
+		var line := str(lines[randi() % lines.size()]).format({"name": who, "mob": mob})
 		World.shout(self, "%s shouts, '%s'" % [display_name, line])
 
 
@@ -160,6 +215,8 @@ func _return_to_post() -> void:
 	hp = max_hp
 	global_position = _post
 	rotation.y = _post_yaw
+	_leg = 1
+	_leg_step = 1
 	visual.queue_free()
 	visual = make_visual(look)
 	add_child(visual)

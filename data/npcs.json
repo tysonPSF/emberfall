@@ -6,7 +6,7 @@
     "weapon": "sword_1handed",
     "dialogue": {
       "hail": "Hail, {name}. Keep your wits about you out here. The [gnolls] have grown bold this season.",
-      "gnolls": "Mangy curs from the camp to the northeast. They raid the road and bite anyone who strays from the stones. The watch pays a bounty on [gnoll fangs].",
+      "gnolls": "Mangy curs from the camp east of my post. They raid the road and bite anyone who strays from the stones. The watch pays a bounty on [gnoll fangs].",
       "gnoll fangs": "Bring me four gnoll fangs, pulled from pups or scouts, it matters not. Hand them to me when you have them and I'll pay you from the watch's purse. And if you go near their camp, beware [Grubnak].",
       "grubnak": "Grubnak the Mangy, their chief. Twice the size of his kin and meaner than a cornered badger. He shows his face at the camp now and then. Don't go alone.",
       "unknown": "I've no time for riddles, {name}."
@@ -31,8 +31,8 @@
     "weapon": "sword_1handed",
     "dialogue": {
       "hail": "Move along, {name}. The [Watch] keeps the peace here. If trouble follows you down this road, run to us.",
-      "watch": "We patrol the walls and the road to Greenmoor. Warden Holt holds the post at the pass. If you've a mind for honest work, he pays a bounty on [gnoll fangs].",
-      "gnoll fangs": "Not to me. Take them to Warden Holt, down the road past the gate.",
+      "watch": "We patrol the walls and the road to Greenmoor. Warden Holt keeps a watch house in the far north of Greenmoor, where he can keep an eye on the gnoll camp. If you've a mind for honest work, he pays a bounty on [gnoll fangs].",
+      "gnoll fangs": "Not to me. Take them to Warden Holt. His watch house is past the obelisk, up in the far north of Greenmoor.",
       "unknown": "I'm on duty, {name}. Ask the Keeper at the hearth if you want stories."
     },
     "guard": {
@@ -44,6 +44,56 @@
         "Get behind me, {name}!",
         "Not on my road, you mangy cur!",
         "For Emberhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}! In the name of the Watch!",
+        "Traitor! Cut them down!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
+      "dmg": [
+        14,
+        28
+      ],
+      "delay": 2.2,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "faction": "watch"
+  },
+  "watch_patrol": {
+    "name": "Guard Corwin",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "dialogue": {
+      "hail": "Hail, {name}. I walk this road from the Emberhold gate to the [obelisk] and back, sunup to sundown. Slow, aye, but I get there.",
+      "obelisk": "The old stone where the road ends. Past it is gnoll country. Anything with teeth that wanders onto my road gets a sword for its trouble. If you've earned the [Watch]'s trust, I'll come for you when you're in trouble.",
+      "watch": "Friends of the Watch get help on my road. Strangers get a good view. Thin out the gnolls and Warden Holt will see your name goes around.",
+      "unknown": "I'm walking, {name}, not talking. Keep up or step aside."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.8,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 100,
+      "hunt_radius": 9,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Leave {name} be, you mangy thing!",
+        "Friend of the Watch in trouble!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back to the wilds with you!"
       ],
       "shouts_player": [
         "Halt, {name}! In the name of the Watch!",
