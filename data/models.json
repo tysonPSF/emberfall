@@ -112,7 +112,10 @@
     "wand": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/wand.gltf",
     "skeleton_blade": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Blade.gltf",
     "skeleton_axe": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Axe.gltf",
-    "fishing_pole": "res://assets/props/fishing_pole.glb"
+    "fishing_pole": "res://assets/props/fishing_pole.glb",
+    "shield_round": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round.gltf",
+    "shield_round_barbarian": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round_barbarian.gltf",
+    "shield_badge": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_badge.gltf"
   },
   "animations": [
     "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",

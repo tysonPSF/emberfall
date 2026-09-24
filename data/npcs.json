@@ -142,7 +142,11 @@
         "leather_tunic",
         "leather_leggings",
         "cloth_cap",
-        "patchwork_pants"
+        "patchwork_pants",
+        "leather_gloves",
+        "leather_boots",
+        "leather_sleeves",
+        "leather_belt"
       ],
       "buy_rate": 0.5
     },
@@ -166,7 +170,11 @@
         "oak_staff",
         "iron_coif",
         "iron_greaves",
-        "studded_tunic"
+        "studded_tunic",
+        "round_shield",
+        "iron_kite_shield",
+        "iron_gauntlets",
+        "iron_boots"
       ],
       "buy_rate": 0.5
     },

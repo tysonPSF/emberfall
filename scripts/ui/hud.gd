@@ -10,13 +10,14 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
+[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H or the gear button to hide this."""
 
+const ATTR_NAMES := {"dmg": "Damage", "ac": "AC", "hp": "HP", "mana": "Mana", "str": "STR", "sta": "STA", "agi": "AGI", "wis": "WIS", "int": "INT", "haste": "Haste", "hp_regen": "HP Regen", "mana_regen": "Mana Regen"}
 const CROSSHAIR_SIZE := 30.0
 const CROSSHAIR_COLOR := Color(1, 0.93, 0.72)  # near-white: gold alone vanished against grass
 const CROSSHAIR_SHADOW := Color(0, 0, 0, 0.75)
@@ -82,7 +83,7 @@ var _loot_list: VBoxContainer
 var _loot_corpse: Corpse
 
 var _inv_panel: PanelContainer
-var _equip_box: VBoxContainer
+var _equip_box: GridContainer
 var _bag_grid: GridContainer
 var _coin_label: Label
 var _stats_label: Label
@@ -502,7 +503,8 @@ func _build_inventory() -> void:
 	v.add_child(UIKit.label("Inventory", 16, UIKit.GOLD))
 	_stats_label = UIKit.label("", 12, UIKit.DIM)
 	v.add_child(_stats_label)
-	_equip_box = VBoxContainer.new()
+	_equip_box = GridContainer.new()
+	_equip_box.columns = 2
 	v.add_child(_equip_box)
 	_bag_hint = UIKit.label("", 12, UIKit.DIM)
 	v.add_child(_bag_hint)
@@ -698,7 +700,12 @@ func _process(delta: float) -> void:
 		for faction_id: String in GameData.factions:
 			lines.append("%s:  %s" % [World.faction_name(faction_id), World.standing_tier(World.standing(player, faction_id))[1]])
 		_faction_label.text = "\n".join(lines)
-		_stats_label.text = "AC %d   Damage %d-%d   Delay %.1fs" % [player.ac, player.dmg_min, player.dmg_max, player.attack_delay]
+		var attr := PackedStringArray()
+		for stat: String in Player.ATTRIBUTES:
+			if int(player.attributes.get(stat, 0)) != 0:
+				attr.append("%s %+d%s" % [ATTR_NAMES[stat], int(player.attributes[stat]), "%" if stat == "haste" else ""])
+		_stats_label.text = "AC %d   Damage %d-%d   Delay %.1fs" % [player.ac, player.dmg_min, player.dmg_max, player.attack_delay] \
+				+ ("\n" + "   ".join(attr) if not attr.is_empty() else "")
 
 
 func _update_target() -> void:
@@ -847,6 +854,23 @@ func _toggle_inventory() -> void:
 	_refresh_inventory()
 
 
+## What each bag slot shows, as [inventory index, count]: stackable items
+## share a slot per full stack, and clicking one acts on a single item.
+func _bag_slots() -> Array:
+	var out: Array = []
+	var open_stack := {}  # item id -> index into out of its unfilled stack
+	for i in player.inventory.size():
+		var item_id: String = player.inventory[i]
+		var stack := int(GameData.item(item_id).get("stack", 1))
+		if stack > 1 and open_stack.has(item_id) and out[open_stack[item_id]][1] < stack:
+			out[open_stack[item_id]][1] += 1
+			continue
+		out.append([i, 1])
+		if stack > 1:
+			open_stack[item_id] = out.size() - 1
+	return out
+
+
 func _refresh_inventory() -> void:
 	if player == null:
 		return
@@ -854,25 +878,34 @@ func _refresh_inventory() -> void:
 		child.queue_free()
 	for slot in World.EQUIP_SLOTS:
 		var item_id: String = player.equipment.get(slot, "")
-		var text := "%s:  %s" % [slot.capitalize(), GameData.item_name(item_id) if item_id != "" else "—"]
-		var b := UIKit.button(text)
+		var text := "%s:  %s" % [slot.trim_suffix("1").trim_suffix("2").capitalize(), GameData.item_name(item_id) if item_id != "" else "—"]
+		var b := UIKit.button(text, Vector2(228, 28))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.clip_text = true
+		b.add_theme_font_size_override("font_size", 11)
 		b.disabled = item_id == ""
 		if item_id != "":
 			b.add_theme_color_override("font_color", GameData.item_color(item_id))
-			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip."
+			var has_click := GameData.item(item_id).has("click")
+			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip." + ("  Right-click to use." if has_click else "")
 			b.pressed.connect(func() -> void: World.request_unequip(player.entity_id, slot))
+			if has_click:
+				b.gui_input.connect(func(ev: InputEvent) -> void:
+					if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_RIGHT:
+						World.request_item_click(player.entity_id, slot))
 		_equip_box.add_child(b)
 	for child in _bag_grid.get_children():
 		child.queue_free()
 	var slots := int(World.cfg("inventory_slots", 24))
-	for i in slots:
+	var shown := _bag_slots()
+	for k in slots:
 		var b := UIKit.button("", Vector2(112, 34))
 		b.clip_text = true
 		b.add_theme_font_size_override("font_size", 11)
-		if i < player.inventory.size():
+		if k < shown.size():
+			var i: int = shown[k][0]
 			var item_id: String = player.inventory[i]
-			b.text = GameData.item_name(item_id)
+			b.text = GameData.item_name(item_id) + (" (%d)" % shown[k][1] if shown[k][1] > 1 else "")
 			b.add_theme_color_override("font_color", GameData.item_color(item_id))
 			b.tooltip_text = _item_tooltip(item_id)
 			if player.service == "shop" and _service_npc != null:
@@ -920,6 +953,13 @@ func spell_tooltip(spell_id: String) -> String:
 func _item_tooltip(item_id: String) -> String:
 	var it: Dictionary = GameData.item(item_id)
 	var lines: PackedStringArray = [str(it.get("name", item_id))]
+	var flags := PackedStringArray()
+	if it.get("lore", false):
+		flags.append("LORE ITEM")
+	if it.get("no_drop", false):
+		flags.append("NO DROP")
+	if not flags.is_empty():
+		lines.append("  ".join(flags))
 	if it.has("slot"):
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())
 	if it.has("dmg"):
@@ -928,9 +968,55 @@ func _item_tooltip(item_id: String) -> String:
 		lines.append("AC %d" % int(it["ac"]))
 	if it.has("hp"):
 		lines.append("HP +%d" % int(it["hp"]))
+	if it.has("mana"):
+		lines.append("Mana +%d" % int(it["mana"]))
+	var attr := PackedStringArray()
+	for stat: String in Player.ATTRIBUTES:
+		if int(it.get(stat, 0)) != 0:
+			attr.append("%s %+d%s" % [ATTR_NAMES[stat], int(it[stat]), "%" if stat == "haste" else ""])
+	if not attr.is_empty():
+		lines.append("   ".join(attr))
+	var proc: Dictionary = it.get("proc", {})
+	if not proc.is_empty():
+		lines.append("Effect: %s  (%d%% on hit)" % [GameData.spells[proc["spell"]]["name"], roundi(float(proc["chance"]) * 100)])
+	var click: Dictionary = it.get("click", {})
+	if not click.is_empty():
+		lines.append("Click effect: %s  (recharges in %ds)" % [GameData.spells[click["spell"]]["name"], int(click.get("recast", 60))])
+	var classes: Array = it.get("classes", [])
+	if not classes.is_empty():
+		lines.append("Class: %s" % " ".join(classes.map(func(c: String) -> String: return str(GameData.classes[c]["name"]))))
+	var deities: Array = it.get("deities", [])
+	if not deities.is_empty():
+		lines.append("Deity: %s" % " ".join(deities.map(func(d: String) -> String: return str(GameData.deities[d]["name"]))))
+	if it.has("rec_level"):
+		var weak := player != null and player.level < int(it["rec_level"])
+		lines.append("Recommended level: %d%s" % [int(it["rec_level"]), "  (weaker until then)" if weak else ""])
+	if player != null and it.has("slot"):
+		var why := World.equip_block(player, item_id)
+		if why != "":
+			lines.append(why)
 	if int(it.get("value", 0)) > 0:
 		lines.append("Value: %s" % World.format_coin(int(it["value"])))
+	lines.append_array(_compare_lines(item_id))
 	return "\n".join(lines)
+
+
+## "Compared to your Cloth Cap: AC +1, STA -1" for gear not being worn.
+func _compare_lines(item_id: String) -> PackedStringArray:
+	var it := GameData.item(item_id)
+	if player == null or not it.has("slot") or item_id in player.equipment.values():
+		return PackedStringArray()
+	var fits: Array = World.SLOT_FITS.get(str(it["slot"]), [str(it["slot"])])
+	var worn_id: String = player.equipment.get(fits[0], "")
+	var worn := GameData.item(worn_id) if worn_id != "" else {}
+	var diffs := PackedStringArray()
+	for stat: String in ["dmg", "ac", "hp", "mana"] + Array(Player.ATTRIBUTES):
+		var d := int(it.get(stat, 0)) - int(worn.get(stat, 0))
+		if d != 0:
+			diffs.append("%s %+d" % [ATTR_NAMES.get(stat, stat.to_upper()), d])
+	if diffs.is_empty():
+		return PackedStringArray()
+	return PackedStringArray(["", "Compared to %s:  %s" % ["your " + str(worn["name"]) if worn_id != "" else "nothing worn", ", ".join(diffs)]])
 
 
 func _unhandled_input(event: InputEvent) -> void:

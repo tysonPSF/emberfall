@@ -41,7 +41,8 @@
       "primary": "worn_staff",
       "chest": "patchwork_tunic"
     },
-    "model": "knight"
+    "model": "knight",
+    "caster_stat": "wis"
   },
   "wizard": {
     "name": "Wizard",
@@ -63,6 +64,7 @@
       "primary": "rusty_dagger",
       "head": "cloth_cap"
     },
-    "model": "mage"
+    "model": "mage",
+    "caster_stat": "int"
   }
 }

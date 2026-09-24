@@ -21,8 +21,7 @@ static var _library: AnimationLibrary
 var anim: AnimationPlayer
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
-var _weapon_slot: BoneAttachment3D
-var _weapon_id := ""
+var _held: Dictionary = {}  # hand bone -> [model id, BoneAttachment3D]
 var _one_shot_left := 0.0
 var _posed_dead := false
 
@@ -114,21 +113,30 @@ func _customize(model: Node3D, spec: Dictionary) -> void:
 
 
 func set_weapon(weapon_id: String) -> void:
-	if weapon_id == _weapon_id or skeleton == null:
+	_hold("handslot.r", weapon_id)
+
+
+## A shield (or other off-hand model) in the left hand.
+func set_offhand(model_id: String) -> void:
+	_hold("handslot.l", model_id)
+
+
+## Puts a models.json "weapons" entry in a hand, replacing what was there.
+func _hold(bone: String, model_id: String) -> void:
+	var cur: Array = _held.get(bone, ["", null])
+	if model_id == cur[0] or skeleton == null:
 		return
-	_weapon_id = weapon_id
-	if _weapon_slot != null:
-		_weapon_slot.queue_free()
-		_weapon_slot = null
-	if weapon_id == "" or not GameData.models["weapons"].has(weapon_id):
+	if cur[1] != null:
+		(cur[1] as Node).queue_free()
+	_held.erase(bone)
+	if model_id == "" or not GameData.models["weapons"].has(model_id) or skeleton.find_bone(bone) < 0:
 		return
-	if skeleton.find_bone("handslot.r") < 0:
-		return
-	_weapon_slot = BoneAttachment3D.new()
-	_weapon_slot.bone_name = "handslot.r"
-	skeleton.add_child(_weapon_slot)
-	_weapon_slot.add_child((load(GameData.models["weapons"][weapon_id]) as PackedScene).instantiate())
-	Entity.use_entity_layer(_weapon_slot)
+	var slot := BoneAttachment3D.new()
+	slot.bone_name = bone
+	skeleton.add_child(slot)
+	slot.add_child((load(GameData.models["weapons"][model_id]) as PackedScene).instantiate())
+	Entity.use_entity_layer(slot)
+	_held[bone] = [model_id, slot]
 
 
 ## Clip for an action, or a raw clip name (e.g. "Spawn_Ground"); "" if the rig lacks it.

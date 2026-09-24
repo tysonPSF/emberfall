@@ -87,6 +87,16 @@
         "slot": "chest",
         "chance": 0.08,
         "table": "crude_chest"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.05,
+        "table": "crude_hands"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.05,
+        "table": "crude_feet"
       }
     ]
   },
@@ -189,6 +199,26 @@
         "slot": "legs",
         "chance": 0.06,
         "table": "crude_legs"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.1,
+        "table": "crude_shield"
+      },
+      {
+        "slot": "arms",
+        "chance": 0.06,
+        "table": "crude_arms"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.05,
+        "table": "bone_neck"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
       }
     ]
   },
@@ -248,6 +278,36 @@
         "slot": "legs",
         "chance": 0.1,
         "table": "light_legs"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.12,
+        "table": "scout_shield"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.08,
+        "table": "light_hands"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.08,
+        "table": "light_feet"
+      },
+      {
+        "slot": "waist",
+        "chance": 0.06,
+        "table": "light_waist"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.04,
+        "table": "fang_neck"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.05,
+        "table": "rings"
       }
     ]
   },
@@ -294,7 +354,130 @@
         "slot": "chest",
         "chance": 0.4,
         "item": "mangy_hide_vest"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.3,
+        "table": "fang_neck"
       }
     ]
+  },
+  "magus_rotfinger": {
+    "name": "Magus Rotfinger",
+    "level": [
+      5,
+      5
+    ],
+    "hp_base": 70,
+    "hp_per_level": 0,
+    "dmg_min": 2,
+    "dmg_max": 7,
+    "attack_delay": 3.0,
+    "ac": 10,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "skeleton",
+    "color": "#e0dccb",
+    "scale": 1.05,
+    "coin": [
+      20,
+      60
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 1.0
+      }
+    ],
+    "model": "skeleton_mage",
+    "spawn_anim": "Spawn_Ground",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "rotfinger_weapon"
+      },
+      {
+        "slot": "head",
+        "chance": 1.0,
+        "item": "bone_helm"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.4,
+        "item": "bonecarved_talisman"
+      }
+    ],
+    "named": true,
+    "xp_bonus": 1.5
+  },
+  "rhagg": {
+    "name": "Rhagg the Scout Captain",
+    "level": [
+      6,
+      6
+    ],
+    "hp_base": 95,
+    "hp_per_level": 0,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.6,
+    "ac": 14,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "gnolls",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#6e5230",
+    "scale": 1.15,
+    "coin": [
+      25,
+      80
+    ],
+    "loot": [
+      {
+        "item": "gnoll_fang",
+        "chance": 1.0
+      }
+    ],
+    "model": "gnoll",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "rhagg_weapon"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.6,
+        "item": "round_shield"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.5,
+        "item": "studded_tunic"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.3,
+        "item": "fang_necklace"
+      }
+    ],
+    "named": true,
+    "xp_bonus": 1.5
   }
 }

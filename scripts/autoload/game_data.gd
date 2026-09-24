@@ -21,7 +21,7 @@ func _ready() -> void:
 	classes = _load("res://data/classes.json")
 	spells = _load("res://data/spells.json")
 	mobs = _load("res://data/mobs.json")
-	items = _load("res://data/items.json")
+	items = _load_dir("res://data/items")
 	models = _load("res://data/models.json")
 	npcs = _load("res://data/npcs.json")
 	quests = _load("res://data/quests.json")
@@ -66,7 +66,7 @@ func item(item_id: String) -> Dictionary:
 	var out := base.duplicate()
 	out["name"] = "%s %s" % [tier["name"], base["name"]]
 	var mult := float(tier["stat_mult"])
-	for stat: String in ["dmg", "ac", "hp", "mana"]:
+	for stat: String in ["dmg", "ac", "hp", "mana", "str", "sta", "agi", "wis", "int", "haste", "hp_regen", "mana_regen"]:
 		if out.has(stat):
 			var v := int(out[stat])
 			# every better tier adds at least one point, every worse one keeps at least one
@@ -93,6 +93,21 @@ func quality_tier(item_id: String) -> Dictionary:
 func item_color(item_id: String) -> Color:
 	var tier := quality_tier(item_id)
 	return Color.html(str(tier.get("color", "#e6e0d2")))
+
+
+## Merges every .json file in a folder, so content can be split by topic (and
+## by author) without merge conflicts. An id defined twice is an error.
+func _load_dir(dir: String) -> Dictionary:
+	var out := {}
+	var files := Array(DirAccess.get_files_at(dir)).filter(func(f: String) -> bool: return f.get_extension() == "json")
+	files.sort()
+	for f: String in files:
+		var part := _load(dir.path_join(f))
+		for id: String in part:
+			if out.has(id):
+				push_error("%s: %s is already defined in another file" % [f, id])
+			out[id] = part[id]
+	return out
 
 
 func _load(path: String) -> Dictionary:

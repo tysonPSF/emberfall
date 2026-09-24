@@ -17,7 +17,11 @@ const MAX_ZOOM := 18.0
 const AIM_HEIGHT := 2.6  # metres above your feet the reticle rides, clearing both hat and nameplate
 const AIM_CEILING := 0.2  # and never higher up the screen than this fraction of it
 
+## Stats gear can carry besides ac/hp/mana and weapon damage.
+const ATTRIBUTES: Array[String] = ["str", "sta", "agi", "wis", "int", "haste", "hp_regen", "mana_regen"]
+
 var char_class := "warrior"
+var attributes: Dictionary = {}  # totals from gear, for the character sheet
 var deity := ""  # data/deities.json id, chosen at creation; "" for none
 var xp := 0
 var coin := 0
@@ -90,6 +94,37 @@ func to_save() -> Dictionary:
 	}
 
 
+## Bag slots in use: one per item, except stackable items ("stack": n), which
+## share a slot per n of the same kind.
+func slots_used() -> int:
+	var used := 0
+	var counts := {}
+	for item_id: String in inventory:
+		var stack := int(GameData.item(item_id).get("stack", 1))
+		if stack <= 1:
+			used += 1
+		else:
+			counts[item_id] = [int(counts.get(item_id, [0])[0]) + 1, stack]
+	for id: String in counts:
+		used += ceili(float(counts[id][0]) / counts[id][1])
+	return used
+
+
+## Whether one more of this item fits in the bags.
+func room_for(item_id: String) -> bool:
+	var stack := int(GameData.item(item_id).get("stack", 1))
+	if stack > 1 and inventory.count(item_id) % stack != 0:
+		return true  # tops up a stack
+	return slots_used() < int(World.cfg("inventory_slots", 24))
+
+
+## Gear below its recommended level works at reduced strength, as in EQ:
+## level / rec_level, but never less than half.
+func item_effectiveness(item: Dictionary) -> float:
+	var rec := int(item.get("rec_level", 0))
+	return 1.0 if rec <= level else clampf(float(level) / rec, 0.5, 1.0)
+
+
 func recalc_stats() -> void:
 	var cls: Dictionary = GameData.classes[char_class]
 	max_hp = int(cls["hp_base"]) + int(cls["hp_per_level"]) * (level - 1)
@@ -98,22 +133,35 @@ func recalc_stats() -> void:
 	ac = int(cls["ac_base"]) + level
 	var weapon_dmg := 2
 	var weapon_model := ""
+	var offhand_model := ""
+	var attr := {}  # str, sta, agi, wis, int, haste, hp_regen, mana_regen from gear
 	attack_delay = 3.0
 	attack_verb = ["hit", "hits"]
 	for slot: String in equipment:
 		var item: Dictionary = GameData.item(equipment[slot])
-		ac += int(item.get("ac", 0))
-		max_hp += int(item.get("hp", 0))
-		max_mana += int(item.get("mana", 0))
-		max_stamina += int(item.get("stamina", 0))
+		var eff := item_effectiveness(item)
+		ac += roundi(int(item.get("ac", 0)) * eff)
+		max_hp += roundi(int(item.get("hp", 0)) * eff)
+		max_mana += roundi(int(item.get("mana", 0)) * eff)
+		for stat: String in ATTRIBUTES:
+			attr[stat] = int(attr.get(stat, 0)) + roundi(int(item.get(stat, 0)) * eff)
+		if slot == "secondary":
+			offhand_model = str(item.get("model", ""))
 		if slot == "primary":
-			weapon_dmg = int(item.get("dmg", 2))
+			weapon_dmg = maxi(1, roundi(int(item.get("dmg", 2)) * eff))
 			weapon_model = str(item.get("model", ""))
 			attack_delay = float(item.get("delay", 3.0))
 			attack_verb = item.get("verb", ["hit", "hits"])
 	var skill := float(cls["melee_skill"])
-	dmg_min = 1 + level / 4
-	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill))
+	dmg_min = 1 + level / 4 + int(attr.get("str", 0)) / 10
+	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill) + int(attr.get("str", 0)) / 5)
+	max_hp += int(attr.get("sta", 0))
+	ac += int(attr.get("agi", 0)) / 2
+	var caster_stat := str(cls.get("caster_stat", ""))
+	if max_mana > 0 and caster_stat != "":
+		max_mana += int(attr.get(caster_stat, 0))
+	attack_delay /= 1.0 + minf(int(attr.get("haste", 0)), 40) / 100.0
+	attributes = attr
 	ac += buff_total("ac")
 	max_hp += buff_total("hp")
 	dmg_min += buff_total("dmg")
@@ -121,10 +169,13 @@ func recalc_stats() -> void:
 	max_mana += int(max_mana * GameData.deity_bonus(deity, "mana_pct") / 100.0)
 	dmg_min += int(GameData.deity_bonus(deity, "dmg"))
 	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
-	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen"))
-	mana_regen = int(cls["mana_regen"])
-	# Every lever that could lengthen a run later - gear above, buffs, deities,
-	# levels - lands in max_stamina, so nothing else has to change to grant more.
+	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen")) + int(attr.get("hp_regen", 0))
+	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0))
+	# Every lever that could lengthen a run lands in max_stamina, so nothing else
+	# has to change to grant more. STA is the gear route: it is already the
+	# endurance stat, so a stamina-heavy set both toughens you and lets you run
+	# further, rather than gear carrying a second stat that means "wind".
+	max_stamina += int(attr.get("sta", 0))
 	max_stamina += buff_total("stamina")
 	max_stamina += int(max_stamina * GameData.deity_bonus(deity, "stamina_pct") / 100.0)
 	hp = mini(hp, max_hp)
@@ -132,7 +183,9 @@ func recalc_stats() -> void:
 	stamina = minf(stamina, float(max_stamina))
 	if visual is CharacterModel:
 		(visual as CharacterModel).set_weapon(weapon_model)
+		(visual as CharacterModel).set_offhand(offhand_model)
 		look["weapon"] = weapon_model
+		look["offhand"] = offhand_model
 	stats_changed.emit()
 
 
