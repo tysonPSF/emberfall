@@ -42,6 +42,7 @@ var zoom := 6.0
 var pitch := -0.3
 var mouse_looking := false
 var _cursor_hud: Node = null  # cached HUD, asked each frame whether a window needs the cursor
+var _autotest := "--autotest" in OS.get_cmdline_user_args()
 
 
 func from_save(d: Dictionary) -> void:
@@ -207,6 +208,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			MOUSE_BUTTON_WHEEL_DOWN:
 				if mb.pressed:
 					zoom = minf(MAX_ZOOM, zoom + 1.0)
+			MOUSE_BUTTON_RIGHT:
+				if mb.pressed and mouse_looking:
+					_crosshair_target()
 			MOUSE_BUTTON_LEFT:
 				if mb.pressed:
 					if mouse_looking:
@@ -252,11 +256,17 @@ func _unhandled_input(event: InputEvent) -> void:
 ## Mouselook is the normal state: the mouse turns you and the cursor stays hidden.
 ## The cursor comes back while a HUD window is open, while Alt is held, and when
 ## you are dead, so the menus and hotbar stay clickable.
+##
+## The autotest keeps the same logical state - crosshair, strafing, the lot - but
+## never takes the real cursor, so a test run cannot hold the mouse hostage while
+## someone is working.
 func _update_mouse_look() -> void:
 	var want := not dead and not Input.is_action_pressed("free_cursor") and not _hud_wants_cursor()
 	if want == mouse_looking:
 		return
 	mouse_looking = want
+	if _autotest:
+		return
 	if want:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	else:
@@ -278,15 +288,21 @@ func _exit_tree() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
-## Left click in mouselook: target whatever is under the crosshair, then swing.
-## Clicking never turns auto attack back off - that stays Q's job - so hammering
-## the button mid-fight cannot accidentally sheathe you.
-func _crosshair_attack() -> void:
+## Right click in mouselook: pick up whatever the crosshair is on as your target.
+## Aiming and committing are separate, so you can size something up with C before
+## you swing at it.
+func _crosshair_target() -> void:
 	var col := _pick(get_viewport().get_visible_rect().size * 0.5)
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
 	elif col is Corpse:
 		World.request_set_target(entity_id, (col as Corpse).object_id)
+
+
+## Left click in mouselook: start swinging at the target you already picked.
+## Clicking never turns auto attack back off - that stays Q's job - so hammering
+## the button mid-fight cannot accidentally sheathe you.
+func _crosshair_attack() -> void:
 	if not auto_attack:
 		World.request_toggle_attack(entity_id)
 
