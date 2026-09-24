@@ -176,7 +176,7 @@
     {"pos": [-130, 100], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 60, "wander": 12},
 
     {"pos": [-95, -72], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
-    {"pos": [-110, -90], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-110, -90], "pool": {"decaying_skeleton": 12, "magus_rotfinger": 1}, "respawn": 90, "wander": 4},
     {"pos": [-86, -94], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
     {"pos": [-118, -68], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
     {"pos": [-102, -112], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
@@ -185,7 +185,7 @@
     {"pos": [104, -88], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
     {"pos": [126, -106], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
     {"pos": [108, -114], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [128, -86], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [128, -86], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
     {"pos": [85, -75], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
     {"pos": [115, -93], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
   ]

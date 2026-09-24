@@ -58,6 +58,14 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 	color = Color.html(d["color"])
 	body_scale = float(d["scale"])
 	gear = World.roll_gear(d, level)
+	for slot: String in gear:  # what it wears protects it; what it holds hits harder
+		var it := GameData.item(gear[slot])
+		ac += int(it.get("ac", 0))
+		max_hp += int(it.get("hp", 0)) + int(it.get("sta", 0))
+		if slot == "primary":
+			dmg_max += int(it.get("dmg", 0)) / 2 + int(it.get("str", 0)) / 5
+			attack_verb = it.get("verb", attack_verb)
+	hp = max_hp
 	var model: Variant = d.get("model", "")
 	model_id = _pick_model(model if model is Array else [model])
 	weapon_id = str(GameData.item(gear["primary"]).get("model", "")) if gear.has("primary") else str(d.get("weapon", ""))
@@ -68,11 +76,16 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 
 ## A body variant that can show everything this mob is wearing, if any can.
 func _pick_model(choices: Array) -> String:
-	var fits := choices.filter(func(id: Variant) -> bool:
+	var parts_of := func(id: Variant) -> Dictionary:
 		var spec: Variant = GameData.models["characters"].get(str(id), "")
-		var parts: Dictionary = spec.get("gear_parts", {}) if spec is Dictionary else {}
+		return spec.get("gear_parts", {}) if spec is Dictionary else {}
+	var showable := {}  # slots at least one variant can show
+	for id: Variant in choices:
+		showable.merge(parts_of.call(id))
+	var fits := choices.filter(func(id: Variant) -> bool:
+		var parts: Dictionary = parts_of.call(id)
 		for slot: String in gear:
-			if slot != "primary" and slot != "legs" and not parts.has(slot):
+			if showable.has(slot) and not parts.has(slot):
 				return false
 		return true)
 	return str((fits if not fits.is_empty() else choices).pick_random())
@@ -80,6 +93,10 @@ func _pick_model(choices: Array) -> String:
 
 func _ready() -> void:
 	build_body(shape, color, body_scale, model_id, weapon_id)
+	if gear.has("secondary") and visual is CharacterModel:
+		var shield := str(GameData.item(gear["secondary"]).get("model", ""))
+		look["offhand"] = shield
+		(visual as CharacterModel).set_offhand(shield)
 	nameplate.text = display_name
 	if data.has("spawn_anim"):
 		animate(data["spawn_anim"])

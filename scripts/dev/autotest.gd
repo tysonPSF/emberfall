@@ -1,20 +1,57 @@
 extends Node
-## Scripted smoke test. Creates a throwaway wizard, fights, loots, dies,
-## respawns, and saves screenshots along the way. Run with:
+## Scripted smoke test. Creates a throwaway wizard, then runs each section
+## below in order, saving screenshots along the way. Run everything with:
 ##   godot --path . -- --autotest --shots=/some/dir
+## or only some sections (each moves to the zone it needs first):
+##   godot --path . -- --autotest --only=items,gear --shots=/some/dir
+
+## [name, zone it runs in]
+const SECTIONS := [
+	["landmarks", "greenmoor"],
+	["merrick", "greenmoor"],
+	["quest", "greenmoor"],
+	["combat", "greenmoor"],
+	["items", "greenmoor"],
+	["gear", "greenmoor"],
+	["patrol", "greenmoor"],
+	["creatures", "greenmoor"],
+	["death", "greenmoor"],
+	["guards", "greenmoor"],
+	["emberhold", "greenmoor"],
+	["merchants", "emberhold"],
+	["guild", "emberhold"],
+	["faction", "emberhold"],
+	["kos", "greenmoor"],
+	["root", "greenmoor"],
+	["camp", "greenmoor"],
+]
 
 var shots_dir := ""
+var only: PackedStringArray = []
 
 
 func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--shots="):
 			shots_dir = a.substr(8)
+		if a.begins_with("--only="):
+			only = a.substr(7).split(",")
 	World.log_message.connect(func(t: String, _c: Color) -> void: print("[log] ", t))
 	_run()
 
 
 func _run() -> void:
+	await _setup()
+	for s: Array in SECTIONS:
+		if only.is_empty() or s[0] in only:
+			await _ensure_zone(s[1])
+			print("--- section: %s" % s[0])
+			await call("_t_" + s[0])
+	print("AUTOTEST DONE")
+	get_tree().quit()
+
+
+func _setup() -> void:
 	var main := get_parent()
 	await _wait(0.6)
 	await _shot("0_title")
@@ -35,6 +72,10 @@ func _run() -> void:
 	World.request_sit(p.entity_id, false)
 	p.camera_pivot.rotation.y = 0.0
 
+
+func _t_landmarks() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# landmark tour: overview of each, from the side facing the bind point
 	var home := p.global_position
 	for lm: Dictionary in main.zone.data.get("landmarks", []):
@@ -55,6 +96,10 @@ func _run() -> void:
 		p.zoom = 12.0
 		await _wait(0.5)
 		await _shot("1d_%s_close" % lm["type"])
+
+
+func _t_merrick() -> void:
+	var p := World.local_player
 	# Merrick at the pond: hail, ask about the trout, then open his shop
 	for obj: Node3D in World.objects.values():
 		if obj is Npc and (obj as Npc).npc_id == "merrick":
@@ -72,6 +117,11 @@ func _run() -> void:
 			await _wait(0.4)
 			await _shot("1d_merrick_shop")
 			World.request_service_close(p.entity_id)
+
+
+func _t_quest() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# quest: hail the warden, ask about fangs, bring four, turn them in
 	var warden: Npc = null
 	for obj: Node3D in World.objects.values():
@@ -122,6 +172,11 @@ func _run() -> void:
 	p.inventory.erase("wardens_short_sword")
 	p.camera_pivot.rotation.y = 0.0
 
+
+func _t_combat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var home: Vector3 = main.zone.bind_point
 	p.global_position = home
 	p.zoom = 6.0
 	p.pitch = -0.3
@@ -156,10 +211,60 @@ func _run() -> void:
 	if is_instance_valid(p.target) and p.target is Corpse:
 		World.request_loot_all(p.entity_id, (p.target as Corpse).object_id)
 
+
+func _t_items() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	# item rules: class restrictions, two ring fingers, lore, recommended level, attributes
+	var bag_before := p.inventory.duplicate()
+	p.inventory.append_array(["rusty_short_sword", "tarnished_ring", "copper_band@fine", "leather_boots", "round_shield"])
+	World.request_equip(p.entity_id, p.inventory.find("rusty_short_sword"))
+	World.request_equip(p.entity_id, p.inventory.find("tarnished_ring"))
+	World.request_equip(p.entity_id, p.inventory.find("copper_band@fine"))
+	World.request_equip(p.entity_id, p.inventory.find("leather_boots"))
+	World.request_equip(p.entity_id, p.inventory.find("round_shield"))
+	print("items: wizard sword blocked=%s rings=%s/%s boots=%s shield blocked=%s attrs=%s mana=%d" % [
+			p.equipment.get("primary") != "rusty_short_sword", p.equipment.get("ring1"), p.equipment.get("ring2"),
+			p.equipment.get("feet"), not p.equipment.has("secondary"), p.attributes, p.max_mana])
+	var lore_free := World.can_receive(p, "wardens_short_sword", true)
+	p.bank_items.append("wardens_short_sword")
+	print("items: lore sword receivable without one=%s, with one banked=%s; cleaver effectiveness at level %d=%.2f" % [
+			lore_free, World.can_receive(p, "wardens_short_sword", true), p.level, p.item_effectiveness(GameData.item("grubnaks_cleaver"))])
+	p.bank_items.erase("wardens_short_sword")
+	for k in 25:
+		p.inventory.append("bone_chips")
+	print("items: 25 bone chips use %d slots; room for a 26th=%s" % [p.slots_used() - bag_before.size() - 2, p.room_for("bone_chips")])
+	p.inventory.append("bonecarved_talisman")
+	World.request_equip(p.entity_id, p.inventory.find("bonecarved_talisman"))
+	p.hp = 3
+	World.request_item_click(p.entity_id, "neck")
+	var healed_to := p.hp
+	World.request_item_click(p.entity_id, "neck")
+	print("items: talisman click healed 3 -> %d, recharging=%s" % [healed_to, p.cooldowns.has("item:bonecarved_talisman")])
+	p.equipment.erase("neck")
+	var procs := 0
+	var dummy := _nearest_mob(p, "large_rat")
+	var dummy_hp := dummy.max_hp
+	dummy.max_hp = 99999
+	p.equipment["primary"] = "frost_etched_wand"
+	for k in 200:
+		dummy.hp = dummy.max_hp
+		World._try_proc(p, dummy)
+		procs += 1 if dummy.hp < dummy.max_hp else 0
+	p.equipment["primary"] = "rusty_dagger"
+	p.recalc_stats()
+	dummy.max_hp = dummy_hp
+	dummy.hp = dummy.max_hp
+	dummy.hate.clear()
+	print("items: frost wand proc fired %d/200 (10%% expected)" % procs)
 	main.hud._toggle_inventory()
 	await _wait(0.4)
 	await _shot("4_inventory")
 	main.hud._toggle_inventory()
+	for slot: String in ["ring1", "ring2", "feet"]:
+		p.equipment.erase(slot)
+	p.inventory = bag_before
+	p.recalc_stats()
 
 	var skel := _nearest_mob(p, "decaying_skeleton")
 	p.global_position = skel.global_position + Vector3(0, 1, 5)
@@ -174,6 +279,11 @@ func _run() -> void:
 	await _shot("4b_skeleton_fight")
 	p.camera_pivot.rotation.y = 0.0
 
+
+
+func _t_gear() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# gear: mobs spawn wearing what they drop; line some up fully geared
 	for lvl: int in [1, 5]:
 		var counts := {}
@@ -182,7 +292,7 @@ func _run() -> void:
 			counts[q] = int(counts.get(q, 0)) + 1
 		print("quality at level %d: %s" % [lvl, counts])
 	var lineup: Array[Mob] = []
-	var ids := ["decaying_skeleton", "decaying_skeleton", "decaying_skeleton", "gnoll_scout", "gnoll_pup", "grubnak"]
+	var ids := ["decaying_skeleton", "decaying_skeleton", "decaying_skeleton", "gnoll_scout", "gnoll_pup", "grubnak", "magus_rotfinger", "rhagg"]
 	var here := p.global_position
 	for i in ids.size():
 		var d: Dictionary = (GameData.mobs[ids[i]] as Dictionary).duplicate(true)
@@ -191,11 +301,11 @@ func _run() -> void:
 		d["aggressive"] = false
 		var m := Mob.new()
 		m.setup(ids[i], d, null)
-		m.position = main.zone.ground(here.x - 7.5 + i * 3.0, here.z - 8.0) + Vector3.UP * 0.3
+		m.position = main.zone.ground(here.x - 10.5 + i * 3.0, here.z - 8.0) + Vector3.UP * 0.3
 		m.rotation.y = 0.0
 		main.zone.add_child(m)
 		lineup.append(m)
-		print("lineup %s wears %s as %s" % [ids[i], m.gear, m.model_id])
+		print("lineup %s wears %s as %s (ac %d, dmg %d-%d, %s)" % [ids[i], m.gear, m.model_id, m.ac, m.dmg_min, m.dmg_max, m.attack_verb[0]])
 	p.face_toward(main.zone.ground(here.x, here.z - 8.0))
 	p.camera_pivot.rotation.y = 0.0
 	p.zoom = 9.0
@@ -215,6 +325,10 @@ func _run() -> void:
 	for m in lineup.slice(1):
 		World.damage(m, 9999, p)
 
+
+
+func _t_patrol() -> void:
+	var p := World.local_player
 	# Guard Corwin walks the road, hunts monsters near him, and helps only friends of the Watch
 	var corwin: Npc = null
 	for obj: Node3D in World.objects.values():
@@ -253,6 +367,9 @@ func _run() -> void:
 		World.damage(chaser, 9999, p)
 	p.factions.erase("watch")
 
+
+func _t_creatures() -> void:
+	var p := World.local_player
 	for creature in ["large_rat", "fire_beetle", "gnoll_scout", "grubnak"]:
 		var c := _nearest_mob(p, creature)
 		if c == null:
@@ -270,6 +387,9 @@ func _run() -> void:
 		await _shot("4d_%s_corpse" % creature)
 	p.camera_pivot.rotation.y = 0.0
 
+
+func _t_death() -> void:
+	var p := World.local_player
 	World.damage(p, 9999, _nearest_mob(p))
 	await _wait(1.0)
 	await _shot("5_dead")
@@ -279,6 +399,10 @@ func _run() -> void:
 	await _wait(0.6)
 	await _shot("6_first_person")
 
+
+func _t_guards() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# guards at the pass: a gnoll chasing the player gets cut down
 	var pup := _nearest_mob(p, "gnoll_pup")
 	p.global_position = main.zone.ground(0, 158) + Vector3.UP
@@ -304,6 +428,10 @@ func _run() -> void:
 	print("guards back on duty: %s" % guards_home)
 	p.camera_pivot.rotation.y = 0.0
 
+
+func _t_emberhold() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# zone trip: Greenmoor's south pass into Emberhold and back
 	p.zoom = 9.0
 	p.pitch = -0.3
@@ -331,6 +459,10 @@ func _run() -> void:
 			World.request_set_target(p.entity_id, (obj as Npc).entity_id)
 			World.request_hail(p.entity_id)
 			World.request_say(p.entity_id, "emberfall")
+
+
+func _t_merchants() -> void:
+	var p := World.local_player
 	# merchants and the bank
 	p.coin = 1000
 	for item_id in ["gnoll_fang", "gnoll_fang", "gnoll_fang", "rat_whiskers"]:
@@ -369,6 +501,10 @@ func _run() -> void:
 	await _shot("7i_bank")
 	World.request_service_close(p.entity_id)
 
+
+func _t_guild() -> void:
+	var p := World.local_player
+	var npcs := _npcs()
 	# guildmaster: a level 6 wizard learns the wizard spells; the warrior trainer refuses
 	p.level = 6
 	p.recalc_stats()
@@ -395,6 +531,10 @@ func _run() -> void:
 	print("shielding: ac %d -> %d buffs=%s" % [ac0, p.ac, p.buffs.keys()])
 	await _shot("7k_buffed")
 
+
+func _t_faction() -> void:
+	var p := World.local_player
+	var npcs := _npcs()
 	# faction: a disliked customer is refused; attacking a merchant needs two Qs and brings the guards
 	print("standings: %s" % [GameData.factions.keys().map(func(f: String) -> String: return "%s=%d" % [f, World.standing(p, f)])])
 	var tv: Npc = npcs["merchant_tovin"]
@@ -427,11 +567,10 @@ func _run() -> void:
 	await _wait(5.0)
 	p.camera_pivot.rotation.y = 0.0
 
-	p.global_position = main.zone.ground(0, -97) + Vector3.UP
-	await _wait(2.5)
-	print("zone after return: %s at %s" % [main.zone.zone_id, p.global_position])
-	await _shot("7g_back_in_greenmoor")
 
+func _t_kos() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# gnolls who hate you attack on sight, even pups
 	var gp := _nearest_mob(p, "gnoll_pup")
 	gp.global_position = main.zone.ground(-40, 100) + Vector3.UP
@@ -446,6 +585,13 @@ func _run() -> void:
 	World.damage(gp, 9999, p)
 	p.factions["gnolls"] = -200
 
+
+func _t_root() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for spell_id in ["root", "burning_embers"]:
+		if not spell_id in p.spells:
+			p.spells.append(spell_id)
 	# root and burn a gnoll pup
 	var victim := _nearest_mob(p, "gnoll_pup")
 	victim.global_position = main.zone.ground(40, 100) + Vector3.UP
@@ -465,6 +611,10 @@ func _run() -> void:
 			hp0, victim.hp if is_instance_valid(victim) else "dead", victim.dots.size() if is_instance_valid(victim) else "-"])
 	await _shot("7l_rooted")
 
+
+func _t_camp() -> void:
+	var main := get_parent()
+	var p := World.local_player
 	# camp out to the character screen, then continue back in
 	GameData.config["camp_seconds"] = 2.0
 	World.request_camp(p.entity_id)
@@ -482,8 +632,27 @@ func _run() -> void:
 	await _wait(2.0)
 	print("continued: zone=%s player=%s level=%d" % [main.zone.zone_id, World.local_player.display_name, World.local_player.level])
 	await _shot("8c_continued")
-	print("AUTOTEST DONE")
-	get_tree().quit()
+
+
+## Moves the tester through the zone line into this zone if it isn't there.
+func _ensure_zone(zone_id: String) -> void:
+	var main := get_parent()
+	var p := World.local_player
+	if main.zone.zone_id == zone_id:
+		return
+	if p.dead:
+		await _wait(5.0)
+	p.global_position = main.zone.ground(0, 181 if zone_id == "emberhold" else -97) + Vector3.UP
+	await _wait(2.5)
+	print("zone: %s at %s" % [main.zone.zone_id, p.global_position])
+
+
+func _npcs() -> Dictionary:
+	var out := {}
+	for obj: Node3D in World.objects.values():
+		if obj is Npc:
+			out[(obj as Npc).npc_id] = obj
+	return out
 
 
 func _nearest_mob(p: Player, only_id := "") -> Mob:

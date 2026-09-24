@@ -62,7 +62,9 @@ const REFUSE_BELOW := -500  # Dubious or worse: townsfolk won't deal with you
 const KOS_BELOW := -1100  # Scowls: guards attack on sight
 const ATTACK_CONFIRM_MS := 5000
 const CALL_FOR_HELP_RADIUS := 14.0
-const EQUIP_SLOTS: Array[String] = ["primary", "head", "chest", "legs"]
+const EQUIP_SLOTS: Array[String] = ["primary", "secondary", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
+## Item "slot" values that fit more than one equipment slot.
+const SLOT_FITS := {"ring": ["ring1", "ring2"]}
 
 var objects: Dictionary = {}  # id -> Entity or Corpse
 var next_id := 1
@@ -236,6 +238,57 @@ func _update_melee(e: Entity) -> void:
 	_combat_msg(e, t, e.attack_verb, dmg)
 	if dmg > 0:
 		damage(t, dmg, e)
+		_try_proc(e, t)
+
+
+## The weapon an entity swings: a player's primary, or what a mob spawned holding.
+static func weapon_item(e: Entity) -> Dictionary:
+	if e is Player:
+		return GameData.item((e as Player).equipment.get("primary", ""))
+	if e is Mob:
+		return GameData.item((e as Mob).gear.get("primary", ""))
+	return {}
+
+
+## A weapon's "proc": {spell, chance} sometimes fires its spell on a hit, free.
+func _try_proc(e: Entity, t: Entity) -> void:
+	var proc: Dictionary = weapon_item(e).get("proc", {})
+	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)):
+		return
+	var spell_id := str(proc["spell"])
+	if not GameData.spells.has(spell_id):
+		return
+	say(e, "Your %s flares with power!" % weapon_item(e)["name"], C_SPELL)
+	_finish_spell(e, spell_id, t, true)
+
+
+## Right-clicking an equipped item with a "click": {spell, recast} casts that
+## spell for free, then the item needs recast seconds to recharge.
+func request_item_click(player_id: int, slot: String) -> void:
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or not p.equipment.has(slot):
+		return
+	var item_id: String = p.equipment[slot]
+	var it := GameData.item(item_id)
+	var click: Dictionary = it.get("click", {})
+	if click.is_empty() or not GameData.spells.has(str(click["spell"])):
+		say(p, "The %s has no effect you can use." % it["name"], C_WARN)
+		return
+	var key := "item:" + GameData.base_item(item_id)
+	if p.cooldowns.has(key):
+		say(p, "The %s is recharging. Ready in %ds." % [it["name"], ceili(float(p.cooldowns[key]))], C_WARN)
+		return
+	var s: Dictionary = GameData.spells[click["spell"]]
+	var t := _resolve_spell_target(p, s)
+	if t == null:
+		say(p, "You must first select a target for that.", C_WARN)
+		return
+	if t != p and p.distance_to(t) > float(s.get("range", 0)):
+		say(p, "Your target is out of range, get closer!", C_WARN)
+		return
+	p.cooldowns[key] = float(click.get("recast", 60))
+	say(p, "You activate your %s." % it["name"], C_SPELL)
+	_finish_spell(p, str(click["spell"]), t, true)
 
 
 func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
@@ -537,10 +590,13 @@ func _update_cast(c: Entity, delta: float) -> void:
 		_finish_spell(c, spell_id, t)
 
 
-func _finish_spell(c: Entity, spell_id: String, t: Entity) -> void:
+## Lands a spell. Spells from gear (procs, clicks) cost no mana and leave the
+## caster's own recast timer alone.
+func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -> void:
 	var s: Dictionary = GameData.spells[spell_id]
-	c.mana -= int(s.get("mana", 0))
-	c.cooldowns[spell_id] = float(s.get("recast", 0))
+	if not from_item:
+		c.mana -= int(s.get("mana", 0))
+		c.cooldowns[spell_id] = float(s.get("recast", 0))
 	var power := randi_range(int(s.get("min", 0)), int(s.get("max", 0))) + int(float(s.get("per_level", 0)) * (c.level - 1))
 	match str(s["type"]):
 		"damage":
@@ -635,11 +691,13 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return false
 	var entry: Dictionary = c.entries[index]
+	if c.owner_name == "" and not can_receive(p, entry["item"]):
+		return false
 	var slot: String = entry.get("slot", "")
 	if slot != "" and not p.equipment.has(slot):
 		p.equipment[slot] = entry["item"]
 		p.recalc_stats()
-	elif p.inventory.size() >= int(cfg("inventory_slots", 24)):
+	elif not p.room_for(entry["item"]):
 		say(p, "Your inventory is full.", C_WARN)
 		return false
 	else:
@@ -671,6 +729,32 @@ func remove_corpse(c: Corpse) -> void:
 	c.queue_free()
 
 
+## Whether a player may take one more of this item: LORE items are one to a
+## person, counting every quality of it anywhere they keep things.
+func can_receive(p: Player, item_id: String, quiet := false) -> bool:
+	if not GameData.item(item_id).get("lore", false):
+		return true
+	var base := GameData.base_item(item_id)
+	for held: String in p.inventory + p.equipment.values() + p.bank_items + p.trade_items:
+		if GameData.base_item(held) == base:
+			if not quiet:
+				say(p, "You already have a %s. It is a lore item: one to a person." % GameData.item_name(held), C_WARN)
+			return false
+	return true
+
+
+## Why this player can't wear an item (class or deity), or "" if they can.
+func equip_block(p: Player, item_id: String) -> String:
+	var it := GameData.item(item_id)
+	var classes: Array = it.get("classes", [])
+	if not classes.is_empty() and not p.char_class in classes:
+		return "Your class cannot use the %s." % it["name"]
+	var deities: Array = it.get("deities", [])
+	if not deities.is_empty() and not p.deity in deities:
+		return "Your deity forbids you to use the %s." % it["name"]
+	return ""
+
+
 func request_equip(player_id: int, inv_index: int) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or inv_index < 0 or inv_index >= p.inventory.size():
@@ -680,6 +764,16 @@ func request_equip(player_id: int, inv_index: int) -> void:
 	if slot == "":
 		say(p, "You cannot equip that.", C_WARN)
 		return
+	var why := equip_block(p, item_id)
+	if why != "":
+		say(p, why, C_WARN)
+		return
+	var fits: Array = SLOT_FITS.get(slot, [slot])
+	slot = fits[0]
+	for s: String in fits:  # a free finger if there is one
+		if not p.equipment.has(s):
+			slot = s
+			break
 	p.inventory.remove_at(inv_index)
 	if p.equipment.has(slot):
 		p.inventory.append(p.equipment[slot])
@@ -692,7 +786,7 @@ func request_unequip(player_id: int, slot: String) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or not p.equipment.has(slot):
 		return
-	if p.inventory.size() >= int(cfg("inventory_slots", 24)):
+	if not p.room_for(p.equipment[slot]):
 		say(p, "Your inventory is full.", C_WARN)
 		return
 	p.inventory.append(p.equipment[slot])
@@ -713,7 +807,8 @@ func roll_gear(mob_data: Dictionary, mob_level: int) -> Dictionary:
 			item_id = _pick_weighted(GameData.loot["tables"].get(entry["table"], {}))
 		if item_id == "" or not GameData.items.has(item_id):
 			continue
-		var quality := roll_quality(mob_level, bool(mob_data.get("named", false)))
+		# lore items are one of a kind: always exactly themselves
+		var quality := "" if GameData.item(item_id).get("lore", false) else roll_quality(mob_level, bool(mob_data.get("named", false)))
 		out[str(entry["slot"])] = item_id if quality == "" else "%s@%s" % [item_id, quality]
 	return out
 
@@ -968,7 +1063,7 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 		p.coin += int(reward["coin"])
 		say(p, "You receive %s." % format_coin(int(reward["coin"])), C_LOOT)
 	var item_id := str(q.get("first_reward_item", ""))
-	if state["completions"] == 1 and item_id != "":
+	if state["completions"] == 1 and item_id != "" and can_receive(p, item_id):
 		_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
 		p.inventory.append(item_id)  # the offered items just freed at least one slot
 		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
@@ -1150,7 +1245,9 @@ func request_buy(player_id: int, item_id: String) -> void:
 	if p.coin < price:
 		say(p, "You can't afford the %s." % GameData.item_name(item_id), C_WARN)
 		return
-	if p.inventory.size() >= int(cfg("inventory_slots", 24)):
+	if not can_receive(p, item_id):
+		return
+	if not p.room_for(item_id):
 		say(p, "Your inventory is full.", C_WARN)
 		return
 	p.coin -= price
@@ -1180,7 +1277,7 @@ func request_sell(player_id: int, inv_index: int) -> void:
 	p.inventory.remove_at(inv_index)
 	p.coin += price
 	var stock: Dictionary = merchant_stock.get_or_add(npc.npc_id, {})
-	if not item_id in npc.data["merchant"].get("sells", []):
+	if not item_id in npc.data["merchant"].get("sells", []) and not GameData.item(item_id).get("no_drop", false):
 		stock[item_id] = int(stock.get(item_id, 0)) + 1
 	say(p, "You sell a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
 	p.inventory_changed.emit()
@@ -1206,7 +1303,7 @@ func request_bank_withdraw(player_id: int, bank_index: int) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or bank_index < 0 or bank_index >= p.bank_items.size() or _service_npc(p, "bank") == null:
 		return
-	if p.inventory.size() >= int(cfg("inventory_slots", 24)):
+	if not p.room_for(p.bank_items[bank_index]):
 		say(p, "Your inventory is full.", C_WARN)
 		return
 	p.inventory.append(p.bank_items[bank_index])
