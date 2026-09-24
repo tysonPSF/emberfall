@@ -69,6 +69,10 @@
       {
         "item": "gnoll_fang",
         "chance": 0.4
+      },
+      {
+        "item": "blackpaw_pelt",
+        "chance": 0.15
       }
     ],
     "model": "gnoll",
@@ -255,6 +259,10 @@
       {
         "item": "gnoll_fang",
         "chance": 0.6
+      },
+      {
+        "item": "blackpaw_pelt",
+        "chance": 0.35
       },
       {
         "item": "gnollhide_satchel",

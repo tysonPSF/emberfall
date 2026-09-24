@@ -9,7 +9,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
-[b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
+[b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory: click picks up / puts down, Ctrl-click takes one, Shift-click equips · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -53,9 +53,11 @@ var _cast_panel: PanelContainer
 var _cast_bar: ProgressBar
 var _cast_label: Label
 
-var _attack_button: Button
-var _sit_button: Button
-var _spell_buttons: Array[Button] = []
+var _spell_slots: Array[HotSlot] = []
+var _attack_slot: HotSlot
+var _ranged_slot: HotSlot
+var _sit_slot: HotSlot
+var _slot_totals: Dictionary = {}  # cooldown key -> longest wait seen since it was last ready (the sweep's 100%)
 
 var _log: RichTextLabel
 var _group_panel: PanelContainer
@@ -78,6 +80,8 @@ var _item_shown := ""
 var _item_link_re := RegEx.create_from_string("\\{item:([A-Za-z0-9_@]+)\\}")
 var _invite_label: Label
 var _chat: LineEdit
+var _chat_channel := ""  # "" is say; else "/g", "/sh", "/ooc", "/t Name" or "/r": where plain lines go
+var _channel_label: Label
 var _log_lines := 0
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
@@ -148,6 +152,7 @@ func _ready() -> void:
 	_build_service_window()
 	_build_inventory()
 	_build_help()
+	_build_menu_icons()
 	_build_settings()
 	_build_overlays()
 	_build_menu()
@@ -266,44 +271,68 @@ func _build_cast_bar() -> void:
 	_cast_panel.visible = false
 
 
+## EQ-style hotbar: one row of square gems (spells and abilities, keys 1-8)
+## and the three combat toggles (Q attack, R ranged, X sit). Menus live in
+## the small icons by the gear, top right.
 func _build_hotbar() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(1, 1), Vector2(-12, -12))
 	root.add_child(p)
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 6)
-	p.add_child(v)
-	var spells_grid := GridContainer.new()
-	spells_grid.columns = 4
-	spells_grid.add_theme_constant_override("h_separation", 6)
-	spells_grid.add_theme_constant_override("v_separation", 6)
-	v.add_child(spells_grid)
-	var size := Vector2(128, 40)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 5)
+	p.add_child(row)
 	for i in 8:
-		var b := UIKit.button("", size)
-		b.clip_text = true
-		b.pressed.connect(func() -> void:
+		var slot := HotSlot.new()
+		slot.key_text = str(i + 1)
+		slot.pressed.connect(func() -> void:
 			if i < player.spells.size():
 				World.request_cast(player.entity_id, player.spells[i]))
-		b.visible = false
-		spells_grid.add_child(b)
-		_spell_buttons.append(b)
-	var actions := GridContainer.new()
-	actions.columns = 4
-	actions.add_theme_constant_override("h_separation", 6)
-	v.add_child(actions)
-	_attack_button = UIKit.button("Q  Attack", size)
-	_attack_button.pressed.connect(func() -> void: World.request_toggle_attack(player.entity_id))
-	actions.add_child(_attack_button)
-	_sit_button = UIKit.button("X  Sit", size)
-	_sit_button.pressed.connect(func() -> void: World.request_sit(player.entity_id, not player.sitting))
-	actions.add_child(_sit_button)
-	var con := UIKit.button("C  Consider", size)
-	con.pressed.connect(func() -> void: World.request_consider(player.entity_id))
-	actions.add_child(con)
-	var bags := UIKit.button("I  Inventory", size)
-	bags.pressed.connect(_toggle_inventory)
-	actions.add_child(bags)
+		slot.visible = false
+		row.add_child(slot)
+		_spell_slots.append(slot)
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(8, 0)
+	row.add_child(gap)
+	_attack_slot = _action_slot(row, "Q", "action_attack", "Attack (Q)\nTurns auto attack on or off. Glows red while you're swinging.",
+			func() -> void: World.request_toggle_attack(player.entity_id))
+	_ranged_slot = _action_slot(row, "R", "action_ranged", "Ranged (R)\nFires your bow or sling at your target: pull one mob to you.",
+			func() -> void: World.request_ranged(player.entity_id))
+	_sit_slot = _action_slot(row, "X", "action_sit", "Sit / Stand (X)\nRest to regain health and mana faster.",
+			func() -> void: World.request_sit(player.entity_id, not player.sitting))
+	_sit_slot.lit_color = Color(0.45, 0.75, 1.0)
+
+
+func _action_slot(row: Control, key: String, icon_name: String, tip: String, act: Callable) -> HotSlot:
+	var slot := HotSlot.new()
+	slot.key_text = key
+	slot.picture = GameData.icon(icon_name)
+	slot.tooltip_text = tip
+	slot.pressed.connect(act)
+	row.add_child(slot)
+	return slot
+
+
+## Inventory, skills and consider: small icons beside the gear, top right.
+func _build_menu_icons() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 5)
+	UIKit.place(row, Vector2(1, 0), Vector2(-54, 12))
+	root.add_child(row)
+	for m: Array in [["C", "action_consider", "Consider (C)\nHow tough is your target, and how do they regard you?", func() -> void: World.request_consider(player.entity_id)],
+			["K", "action_skills", "Skills (K)", func() -> void: _toggle_skills()],
+			["I", "leather_backpack", "Inventory (I)", func() -> void: _toggle_inventory()]]:
+		var slot := HotSlot.new()
+		slot.custom_minimum_size = Vector2(36, 36)
+		slot.key_text = m[0]
+		slot.picture = GameData.icon(m[1])
+		slot.tooltip_text = m[2]
+		slot.pressed.connect(m[3])
+		row.add_child(slot)
+
+
+func _toggle_skills() -> void:
+	_skills_panel.visible = not _skills_panel.visible
+	_skills_timer = 0.0
 
 
 func _build_log() -> void:
@@ -331,8 +360,10 @@ func _build_log() -> void:
 			player.start_follow()  # your own feet: handled on this machine
 		elif cmd == "/stopfollow":
 			player.stop_follow()
-		elif t.strip_edges() != "":
-			World.request_chat(player.entity_id, t)
+		else:
+			var line := _through_channel(t.strip_edges())
+			if line != "":
+				World.request_chat(player.entity_id, line)
 		_chat.clear()
 		_chat.release_focus())
 	_chat.gui_input.connect(func(ev: InputEvent) -> void:
@@ -340,7 +371,56 @@ func _build_log() -> void:
 			_chat.clear()
 			_chat.release_focus()
 			_chat.accept_event())
-	v.add_child(_chat)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_channel_label = UIKit.label("", 13, World.C_CHAT_SAY)
+	row.add_child(_channel_label)
+	_chat.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(_chat)
+	v.add_child(row)
+	_set_channel("")
+
+
+## Chat channels stick, as in EQ's chat windows: using /g (or /sh, /ooc,
+## /t Name, /r) makes plain lines go there until another channel (or /s) is
+## used. A channel command on its own just switches. Returns the line to
+## send, or "" when there is nothing to send.
+func _through_channel(line: String) -> String:
+	if line == "":
+		return ""
+	if not line.begins_with("/"):
+		return line if _chat_channel == "" else "%s %s" % [_chat_channel, line]
+	var cmd := line.get_slice(" ", 0).to_lower()
+	var rest := line.substr(cmd.length()).strip_edges()
+	match cmd:
+		"/say", "/s":
+			_set_channel("")
+		"/g", "/gsay", "/group":
+			_set_channel("/g")
+		"/shout", "/sh":
+			_set_channel("/sh")
+		"/ooc", "/o":
+			_set_channel("/ooc")
+		"/reply", "/r":
+			_set_channel("/r")
+		"/tell", "/t", "/msg":
+			if rest == "":
+				return line  # the server explains how to /tell
+			_set_channel("/t " + rest.get_slice(" ", 0))
+			rest = rest.substr(rest.get_slice(" ", 0).length()).strip_edges()
+		_:
+			return line  # other commands (/who, /loc, /invite...) don't change the channel
+	return "" if rest == "" else line
+
+
+func _set_channel(channel: String) -> void:
+	_chat_channel = channel
+	var names := {"": ["Say", World.C_CHAT_SAY], "/g": ["Group", World.C_CHAT_GROUP], "/sh": ["Shout", World.C_CHAT_SHOUT],
+			"/ooc": ["OOC", World.C_CHAT_OOC], "/r": ["Reply", World.C_CHAT_TELL]}
+	var shown: Array = names.get(channel, ["Tell " + channel.substr(3), World.C_CHAT_TELL])
+	_channel_label.text = "%s:" % shown[0]
+	_channel_label.add_theme_color_override("font_color", shown[1])
+	_chat.placeholder_text = "Enter to %s, / for commands (/help)" % ("say" if channel == "" else "chat in " + str(shown[0]).to_lower() if not channel.begins_with("/t") else "send a tell")
 
 
 ## True while the chat line has the keyboard: the player stops moving.
@@ -803,7 +883,10 @@ func _refresh_service() -> void:
 			b.tooltip_text = _item_tooltip(item_id) + "\nRight-click for details."
 			_inspectable(b, item_id)
 			b.disabled = player.coin < int(ware["price"])
-			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id))
+			var stack := Pack.stack_of(item_id)
+			if stack > 1:
+				b.tooltip_text += "\nShift-click to buy a stack of %d." % stack
+			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id, stack if Input.is_key_pressed(KEY_SHIFT) else 1))
 			_shop_list.add_child(b)
 	else:
 		if _bank_grid.get_child_count() == 0:
@@ -885,7 +968,7 @@ func _build_inventory() -> void:
 	var hands := HBoxContainer.new()
 	hands.alignment = BoxContainer.ALIGNMENT_CENTER
 	hands.add_theme_constant_override("separation", 4)
-	for slot in ["primary", "secondary"]:
+	for slot in ["primary", "secondary", "range"]:
 		hands.add_child(_make_slot("e:" + slot, _slot_label(slot)))
 	doll.add_child(hands)
 	# stats
@@ -932,7 +1015,7 @@ func _build_inventory() -> void:
 
 static func _slot_label(slot: String) -> String:
 	return {"head": "Head", "neck": "Neck", "arms": "Arms", "hands": "Hands", "ring1": "Ring", "ring2": "Ring",
-			"chest": "Chest", "waist": "Waist", "legs": "Legs", "feet": "Feet", "primary": "Primary", "secondary": "Second"}.get(slot, slot)
+			"chest": "Chest", "waist": "Waist", "legs": "Legs", "feet": "Feet", "primary": "Primary", "secondary": "Second", "range": "Range"}.get(slot, slot)
 
 
 ## An item slot: icon, stack count, a frame in the item's quality color.
@@ -1387,22 +1470,78 @@ func _update_cast() -> void:
 
 
 func _update_hotbar() -> void:
-	_attack_button.text = "Q  Attacking" if player.auto_attack else "Q  Attack"
-	_attack_button.modulate = Color(1, 0.35, 0.3) if player.auto_attack else Color.WHITE
-	_sit_button.text = "X  Stand" if player.sitting else "X  Sit"
-	for i in _spell_buttons.size():
-		var btn := _spell_buttons[i]
-		btn.visible = i < player.spells.size()
-		if not btn.visible:
+	var t := player.valid_target_entity()
+	_attack_slot.show_state(0.0, 0.0, not player.dead, player.auto_attack)
+	var weapon := GameData.item(str(player.equipment.get("range", "")))
+	var can_fire := not weapon.is_empty() and t != null and World.can_attack(player, t) \
+			and player.distance_to(t) <= float(weapon.get("range", 30.0)) and (not weapon.has("ammo") or _has_ammo(str(weapon["ammo"])))
+	var ranged_left := float(player.cooldowns.get("ranged", 0.0))
+	_ranged_slot.show_state(_sweep("ranged", ranged_left), ranged_left, can_fire, false)
+	_sit_slot.show_state(0.0, 0.0, not player.dead, player.sitting)
+	for i in _spell_slots.size():
+		var slot := _spell_slots[i]
+		slot.visible = i < player.spells.size()
+		if not slot.visible:
 			continue
 		var spell_id: String = player.spells[i]
 		var s: Dictionary = GameData.spells[spell_id]
-		if btn.get_meta("spell", "") != spell_id:
-			btn.set_meta("spell", spell_id)
-			btn.tooltip_text = spell_tooltip(spell_id)
-		var cd: float = player.cooldowns.get(spell_id, 0.0)
-		btn.text = "%d  %s" % [i + 1, s["name"]] if cd <= 0.0 else "%d  %.1f" % [i + 1, cd]
-		btn.disabled = cd > 0.0 or player.mana < int(s.get("mana", 0))
+		if slot.get_meta("spell", "") != spell_id:
+			slot.set_meta("spell", spell_id)
+			slot.tooltip_text = spell_tooltip(spell_id)
+			slot.picture = GameData.icon("spell_" + spell_id)
+			slot.fallback = "".join(Array(str(s["name"]).split(" ")).map(func(w: String) -> String: return w.left(1)))
+			slot.gem = HotSlot.GEMS[_gem_kind(s)]
+			slot.queue_redraw()
+		var cd := float(player.cooldowns.get(spell_id, 0.0))
+		slot.show_state(_sweep(spell_id, cd), cd, _spell_usable(s, t), false)
+
+
+## What kind of gem a spell sits on: damage red, heals green, buffs blue,
+## everything else (root, gate, taunt) violet, warrior abilities bronze.
+static func _gem_kind(s: Dictionary) -> String:
+	if s.get("ability", false):
+		return "ability"
+	match str(s.get("type", "")):
+		"damage", "dot":
+			return "damage"
+		"heal":
+			return "heal"
+		"buff":
+			return "buff"
+	return "utility"
+
+
+## A spell's gem lights up when it could be cast now: enough mana, not already
+## casting, and (for a spell aimed at someone) a fitting target within range.
+func _spell_usable(s: Dictionary, t: Entity) -> bool:
+	if player.dead or player.mana < int(s.get("mana", 0)) or not player.cast.is_empty():
+		return false
+	if s.get("requires", "") == "shield" and not World.has_shield(player):
+		return false
+	var reach := float(s.get("range", 0.0))
+	match str(s.get("target", "self")):
+		"enemy":
+			return t != null and World.can_attack(player, t) and (reach <= 0.0 or player.distance_to(t) <= reach)
+		"friendly":
+			return t == null or t == player or not (t is Player) or reach <= 0.0 or player.distance_to(t) <= reach
+	return true
+
+
+## How much of a cooldown is left, 0..1, measured against the longest wait seen
+## since it was last ready (so it works for spells, the bow and anything else).
+func _sweep(key: String, left: float) -> float:
+	if left <= 0.0:
+		_slot_totals.erase(key)
+		return 0.0
+	_slot_totals[key] = maxf(float(_slot_totals.get(key, 0.0)), left)
+	return clampf(left / float(_slot_totals[key]), 0.0, 1.0)
+
+
+func _has_ammo(kind: String) -> bool:
+	for e: Dictionary in player.pack.entries():
+		if str(GameData.item(e["item"]).get("ammo_type", "")) == kind:
+			return true
+	return false
 
 
 ## Appends a chat line. [Bracketed] words become gold links; clicking one says
@@ -1586,8 +1725,12 @@ func _item_tooltip(item_id: String) -> String:
 		lines.append("  ".join(flags))
 	if it.has("slot"):
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())
-	if it.has("dmg"):
+	if it.has("dmg") and it.has("delay"):
 		lines.append("Damage %d   Delay %.1fs" % [int(it["dmg"]), float(it["delay"])])
+	elif it.has("ammo_type"):
+		lines.append("Ammunition (%s)%s" % [it["ammo_type"], "   Damage +%d" % int(it["dmg"]) if int(it.get("dmg", 0)) > 0 else ""])
+	if it.has("range"):
+		lines.append("Range %dm   Skill: %s%s" % [int(it["range"]), GameData.skill_name(str(it.get("skill", ""))), "   Uses %s" % it["ammo_name"] if it.has("ammo_name") else ""])
 	if it.has("ac"):
 		lines.append("AC %d" % int(it["ac"]))
 	if it.has("hp"):
@@ -1654,8 +1797,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("skills"):
-		_skills_panel.visible = not _skills_panel.visible
-		_skills_timer = 0.0
+		_toggle_skills()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("help"):
 		_show_help(not _help_panel.visible)

@@ -10,7 +10,8 @@
       "gnolls": "Mangy curs from the camp east of my post. They raid the road and bite anyone who strays from the stones. The watch pays a bounty on [gnoll fangs].",
       "gnoll fangs": "Bring me four gnoll fangs, pulled from pups or scouts, it matters not. Hand them to me when you have them and I'll pay you from the watch's purse. And if you go near their camp, beware [Grubnak].",
       "grubnak": "Grubnak the Mangy, their chief. Twice the size of his kin and meaner than a cornered badger. He shows his face at the camp now and then. Don't go alone.",
-      "unknown": "I've no time for riddles, {name}."
+      "unknown": "I've no time for riddles, {name}.",
+      "tovin": "Tovin sent you? That old haggler. If he wants Blackpaw leather, bring me his cord and two Blackpaw pelts. The scouts carry the best of them. I'll cure and stitch the hide myself."
     },
     "faction": "watch",
     "outfitter": "Empty-handed, {name}? The wilds took your kit, I'd wager. Here, from the Watch's stores. Try to keep hold of it this time.",
@@ -151,15 +152,18 @@
         "leather_boots",
         "leather_sleeves",
         "leather_belt",
+        "leather_sling",
+        "sling_stone",
         "small_sack",
         "leather_backpack"
       ],
       "buy_rate": 0.5
     },
     "dialogue": {
-      "hail": "Welcome, welcome, {name}! Leathers for the road, and I'll take whatever you drag back from it. Fangs, eyes, [whiskers], it's all coin to me.",
+      "hail": "Welcome, welcome, {name}! Leathers for the road, and I'll take whatever you drag back from it. Fangs, eyes, [whiskers], it's all coin to me. And if you ever want a [proper pack], ask old Tovin.",
       "whiskers": "Rat whiskers! Brush-makers in the lower city can't get enough. Don't ask me why.",
-      "unknown": "I only know prices, {name}. Ask the Keeper for the rest."
+      "unknown": "I only know prices, {name}. Ask the Keeper for the rest.",
+      "proper pack": "Not a sack, not some scavenged gnoll bag. A proper pack, the kind I made before my hands got slow. I'm short of cord, though. Rat whiskers twist into cord stronger than wire. Bring me four and we'll begin."
     },
     "faction": "emberhold"
   },
@@ -175,6 +179,8 @@
         "iron_short_sword",
         "iron_hand_axe",
         "oak_staff",
+        "hunting_shortbow",
+        "crude_arrow",
         "iron_coif",
         "iron_greaves",
         "studded_tunic",

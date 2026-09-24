@@ -30,6 +30,11 @@ const SECTIONS := [
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
 	["bags", "greenmoor"],
+	["channels", "greenmoor"],
+	["packquest", "emberhold"],
+	["ranged", "greenmoor"],
+	["hotbar", "greenmoor"],
+	["reactions", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -745,7 +750,15 @@ func _t_wornlook() -> void:
 			p.camera_pivot.rotation.y = view[1]
 			await _wait(0.4)
 			await _shot("9g_outfit_%s_%s" % [outfit, view[0]])
-		print("wornlook: %s outfit -> %s" % [outfit, p.look.get("worn")])
+		var shown := (p.visual as Node).find_children("Worn_*", "MeshInstance3D", true, false).map(func(n: Node) -> String: return str(n.name).substr(5))
+		var hidden := (p.visual as Node).find_children("*", "MeshInstance3D", true, false).filter(func(n: Node) -> bool: return not (n as MeshInstance3D).visible).map(func(n: Node) -> String: return str(n.name))
+		print("wornlook: %s outfit -> %s; parts %s, hiding %s" % [outfit, p.look.get("worn"), shown, hidden])
+	p.equipment = {"primary": "rusty_dagger"}
+	p.recalc_stats()
+	await _wait(0.2)
+	var left := (p.visual as Node).find_children("Worn_*", "MeshInstance3D", true, false).size()
+	var still_hidden := (p.visual as Node).find_children("*", "MeshInstance3D", true, false).filter(func(n: Node) -> bool: return not (n as MeshInstance3D).visible).size()
+	print("wornlook: stripped -> %d swapped parts left, %d body parts hidden" % [left, still_hidden])
 	p.equipment = kit
 	p.recalc_stats()
 	p.camera_pivot.rotation.y = 0.0
@@ -941,6 +954,210 @@ func _t_bags() -> void:
 	print("bags: after looting: sack has %s; fangs %d; gloves worn=%s" % [(sack.get("contents", []) as Array).map(func(e: Dictionary) -> String: return e.get("item", "-")),
 			p.pack.count("gnoll_fang"), p.equipment.get("hands", "-")])
 	hud._toggle_inventory()
+
+## Chat channels stick: /ooc, /t and /g carry over to plain lines, other
+## commands leave the channel alone, /s goes back to say.
+func _t_channels() -> void:
+	var main := get_parent()
+	var hud: Hud = main.hud
+	for line in ["/ooc hello all", "still here", "/who", "/s", "back to say", "/t Nobody hi there", "are you there", "/g", "anyone?", "/say"]:
+		hud._open_chat("")
+		hud._chat.text = line
+		hud._chat.text_submitted.emit(line)
+		await _wait(0.1)
+		print("channels: typed %-20s -> channel '%s' (%s)" % ["'%s'" % line, hud._chat_channel, hud._channel_label.text])
+	hud._open_chat("/ooc ")
+	hud._chat.text_submitted.emit("/ooc ")
+	hud._open_chat("")
+	await _wait(0.3)
+	await _shot("9i_chat_channel")
+	hud._chat.text_submitted.emit("")
+	hud._set_channel("")
+
+
+## The trail pack quest line, all three steps: Tovin (whiskers), Warden Holt
+## in Greenmoor (cord + pelts), Tovin again (hide + beetle eyes).
+func _t_packquest() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var tovin: Npc = _npcs()["merchant_tovin"]
+	_stand_by(p, tovin)
+	World.request_say(p.entity_id, "proper pack")
+	print("packquest: step 1 active=%s" % p.quests.get("trail_pack_cord", {}).get("active", false))
+	# shift-click buying: a stack of sling stones and a sling, for the ranged section
+	World.request_interact(p.entity_id)
+	p.coin += 200
+	var coin := p.coin
+	World.request_buy(p.entity_id, "sling_stone", 20)
+	World.request_buy(p.entity_id, "leather_sling")
+	print("packquest: bought stones=%d sling=%d for %d copper" % [p.pack.count("sling_stone"), p.pack.count("leather_sling"), coin - p.coin])
+	World.request_service_close(p.entity_id)
+	p.pack.add("rat_whiskers", 4)
+	await _hand_in(p, tovin, ["rat_whiskers"])
+	print("packquest: after step 1 cord=%d step 2 active=%s" % [p.pack.count("braided_whisker_cord"), p.quests.get("trail_pack_hide", {}).get("active", false)])
+	await _wait(0.3)
+	await _shot("9j_packquest_log")
+	await _ensure_zone("greenmoor")
+	var holt: Npc = _npcs()["warden_holt"]
+	_stand_by(p, holt)
+	World.request_say(p.entity_id, "tovin")
+	p.pack.add("blackpaw_pelt", 2)
+	await _hand_in(p, holt, ["braided_whisker_cord", "blackpaw_pelt"])
+	print("packquest: after step 2 hide=%d step 3 active=%s" % [p.pack.count("stitched_blackpaw_hide"), p.quests.get("trail_pack_clasp", {}).get("active", false)])
+	await _ensure_zone("emberhold")
+	tovin = _npcs()["merchant_tovin"]
+	_stand_by(p, tovin)
+	p.pack.add("beetle_eye", 2)
+	await _hand_in(p, tovin, ["stitched_blackpaw_hide", "beetle_eye"])
+	var place := _where(p, "tovins_trail_pack")
+	print("packquest: done: pack at %s holds %d slots; quests %s" % [place, (p.pack.get_at(place).get("contents", []) as Array).size(),
+			["trail_pack_cord", "trail_pack_hide", "trail_pack_clasp"].map(func(q: String) -> String: return "%s=%s" % [q, p.quests.get(q, {})])])
+	main.hud._toggle_inventory()
+	main.hud._toggle_bag(int(place.get_slice(":", 1)))
+	await _wait(0.4)
+	await _shot("9k_trail_pack")
+	main.hud._toggle_bag(int(place.get_slice(":", 1)))
+	main.hud._toggle_inventory()
+
+
+func _stand_by(p: Player, npc: Npc) -> void:
+	p.global_position = npc.global_position + (-npc.global_transform.basis.z) * 3.0 + Vector3.UP * 0.5
+	p.face_toward(npc.global_position)
+	World.request_set_target(p.entity_id, npc.entity_id)
+
+
+## Hails, opens a trade, puts every stack of these items in, and gives.
+func _hand_in(p: Player, npc: Npc, items: Array) -> void:
+	World.request_hail(p.entity_id)
+	World.request_trade_open(p.entity_id)
+	for item_id: String in items:
+		World.request_trade_add(p.entity_id, _where(p, item_id))
+	await _wait(0.2)
+	World.request_trade_give(p.entity_id)
+
+
+## Ranged pulling: a sling (anyone may use one) fires at a gnoll pup out of
+## melee range; hit or miss, the pup comes. Then the refusals: out of range,
+## out of stones, a bow on a wizard.
+func _t_ranged() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	if p.pack.count("leather_sling") == 0:
+		p.pack.add("leather_sling")
+		p.pack.add("sling_stone", 20)
+	World.request_equip(p.entity_id, _where(p, "leather_sling"))
+	print("ranged: range slot=%s, stones=%d" % [p.equipment.get("range", "-"), p.pack.count("sling_stone")])
+	var mob := _nearest_mob(p, "gnoll_pup")
+	var away := Vector3(mob.global_position.x - p.global_position.x, 0, mob.global_position.z - p.global_position.z).normalized()
+	p.global_position = main.zone.ground(mob.global_position.x - away.x * 22.0, mob.global_position.z - away.z * 22.0) + Vector3.UP
+	p.face_toward(mob.global_position)
+	p.zoom = 7.0
+	p.pitch = -0.25
+	await _wait(0.5)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	var dist := p.distance_to(mob)
+	var skill := int(p.skills.get("throwing", 0))
+	World.request_ranged(p.entity_id)
+	await _wait(0.12)
+	await _shot("9l_ranged_flight")
+	World.request_ranged(p.entity_id)  # too soon: still reloading, nothing happens
+	print("ranged: fired from %.1f m (sight %s); stones left %d; pup hates me=%s" % [dist, World.in_sight(p, mob), p.pack.count("sling_stone"), mob.hate.has(p.entity_id)])
+	await _wait(2.5)
+	print("ranged: pup is now %.1f m away (pulled from %.1f)" % [p.distance_to(mob), dist])
+	await _shot("9m_ranged_pulled")
+	for k in 8:
+		if mob.dead:
+			break
+		World.request_ranged(p.entity_id)
+		await _wait(2.7)
+	print("ranged: after more shots: stones %d, throwing %d -> %d, pup dead=%s" % [p.pack.count("sling_stone"), skill, int(p.skills.get("throwing", 0)), mob.dead])
+	var far := _nearest_mob(p, "fire_beetle")
+	World.request_set_target(p.entity_id, far.entity_id)
+	print("ranged: a beetle at %.1f m:" % p.distance_to(far))
+	World.request_ranged(p.entity_id)
+	var near := _nearest_mob(p)
+	p.pack.remove("sling_stone", p.pack.count("sling_stone"))
+	World.request_set_target(p.entity_id, near.entity_id)
+	p.global_position = main.zone.ground(near.global_position.x + 12.0, near.global_position.z) + Vector3.UP
+	await _wait(2.7)
+	print("ranged: no stones left, %s at %.1f m:" % [near.display_name, p.distance_to(near)])
+	World.request_ranged(p.entity_id)
+	print("ranged: a bow on a wizard: '%s'" % World.equip_block(p, "hunting_shortbow"))
+	p.equipment.erase("range")
+	p.recalc_stats()
+
+
+## The hotbar: a full row of spells on their gems, one cooling down, one out
+## of mana's reach dimmed, auto attack glowing, the sling's reload sweeping.
+func _t_hotbar() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	var known := p.spells.duplicate()
+	p.spells = ["blast_of_frost", "gate", "burning_embers", "minor_shielding", "root", "fire_bolt", "hearthbond", "kick"]
+	p.pack.add("leather_sling")
+	p.pack.add("sling_stone", 20)
+	World.request_equip(p.entity_id, _where(p, "leather_sling"))
+	var mob := _nearest_mob(p, "gnoll_pup")
+	p.global_position = main.zone.ground(mob.global_position.x + 16.0, mob.global_position.z) + Vector3.UP
+	p.face_toward(mob.global_position)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	p.mana = p.max_mana
+	await _wait(0.3)
+	World.request_cast(p.entity_id, "root")
+	await _wait(2.5)
+	World.request_ranged(p.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	p.mana = 12  # enough for some spells, not all: the rest dim
+	await _wait(0.4)
+	print("hotbar: slots shown %d; usable %s; ranged sweep %.2f" % [hud._spell_slots.filter(func(x: HotSlot) -> bool: return x.visible).size(),
+			hud._spell_slots.map(func(x: HotSlot) -> String: return "%s=%s%s" % [x.get_meta("spell", "-"), "on" if x.usable else "dim", " (%.1fs)" % x.seconds if x.sweep > 0.0 else ""]), hud._ranged_slot.sweep])
+	await _shot("9n_hotbar")
+	World.request_toggle_attack(p.entity_id)
+	p.spells = known
+	if not mob.dead:
+		World.kill(mob, p)
+	p.equipment.erase("range")
+	p.recalc_stats()
+
+
+## Bash needs a shield; being hit targets the attacker unless you're already
+## fighting something else.
+func _t_reactions() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var known := p.spells.duplicate()
+	var kit := p.equipment.duplicate()
+	p.spells.append("bash")
+	var mob := _nearest_mob(p, "gnoll_pup")
+	p.global_position = main.zone.ground(mob.global_position.x + 2.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	p.equipment.erase("secondary")
+	p.recalc_stats()
+	World.request_cast(p.entity_id, "bash")
+	print("reactions: bash without a shield: on cooldown=%s usable on hotbar=%s" % [p.cooldowns.has("bash"), get_parent().hud._spell_usable(GameData.spells["bash"], mob)])
+	p.equipment["secondary"] = "round_shield"
+	p.recalc_stats()
+	World.request_cast(p.entity_id, "bash")
+	print("reactions: bash with a round shield: on cooldown=%s" % p.cooldowns.has("bash"))
+	# nothing targeted, a mob swings: it becomes the target
+	World.request_set_target(p.entity_id, -1)
+	var other := _nearest_mob(p, "large_rat")
+	p.global_position = main.zone.ground(other.global_position.x + 2.0, other.global_position.z) + Vector3.UP
+	other.add_hate(p, 5.0)
+	await _wait(4.0)
+	print("reactions: untargeted, hit by %s -> target is %s" % [other.display_name, p.target.display_name if p.target != null else "nothing"])
+	# already fighting the pup: a second attacker doesn't steal the target
+	World.request_set_target(p.entity_id, mob.entity_id)
+	await _wait(3.0)
+	print("reactions: fighting %s, also hit by %s -> target is still %s" % [mob.display_name, other.display_name, p.target.display_name if p.target != null else "nothing"])
+	for m: Mob in [mob, other]:
+		if not m.dead:
+			World.kill(m, p)
+	p.spells = known
+	p.equipment = kit
+	p.recalc_stats()
+
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:

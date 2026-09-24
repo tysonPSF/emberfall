@@ -1,0 +1,26 @@
+{
+  "braided_whisker_cord": {
+    "name": "Braided Whisker Cord",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "blackpaw_pelt": {
+    "name": "Blackpaw Pelt",
+    "value": 8,
+    "stack": 10
+  },
+  "stitched_blackpaw_hide": {
+    "name": "Stitched Blackpaw Hide",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "tovins_trail_pack": {
+    "name": "Tovin's Trail Pack",
+    "bag": 10,
+    "value": 60,
+    "lore": true,
+    "no_drop": true
+  }
+}

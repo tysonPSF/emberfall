@@ -20,6 +20,7 @@ signal service_changed
 signal service_closed
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
+signal shot_fired(from: Entity, to: Entity, projectile: String)  # a ranged attack, for the flight effect
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
 
@@ -75,7 +76,7 @@ const REFUSE_BELOW := -500  # Dubious or worse: townsfolk won't deal with you
 const KOS_BELOW := -1100  # Scowls: guards attack on sight
 const ATTACK_CONFIRM_MS := 5000
 const CALL_FOR_HELP_RADIUS := 14.0
-const EQUIP_SLOTS: Array[String] = ["primary", "secondary", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
+const EQUIP_SLOTS: Array[String] = ["primary", "secondary", "range", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
 ## Item "slot" values that fit more than one equipment slot.
 const SLOT_FITS := {"ring": ["ring1", "ring2"]}
 
@@ -299,6 +300,7 @@ func _update_melee(e: Entity) -> void:
 	e.swing_timer = e.attack_delay
 	e.sitting = false
 	e.animate("attack")
+	_notice_attacker(t, e)
 	if t is Player:
 		var avoided := _try_avoid(t as Player, e)
 		if avoided != "":
@@ -496,6 +498,7 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 		d.set_meta("damage_by", by)
 	if src != null:
 		d.add_hate(src, float(amount))
+		_notice_attacker(d, src)
 	d.animate("hit")
 	d.stats_changed.emit()
 	if d.hp <= 0:
@@ -734,6 +737,103 @@ func request_toggle_attack(entity_id: int) -> void:
 	say(e, "Auto attack is on.")
 
 
+## Fires the ranged weapon at the target, EQ style: a bow shoots arrows from
+## the pack, a sling throws stones. Hit or miss, the target notices who did it,
+## which is what pulling is: one mob comes to you from well outside melee range.
+func request_ranged(player_id: int) -> void:
+	if _remote(&"request_ranged", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var weapon := GameData.item(str(p.equipment.get("range", "")))
+	if weapon.is_empty():
+		say(p, "You have no ranged weapon equipped.", C_WARN)
+		return
+	var t := p.valid_target_entity()
+	if not can_attack(p, t):
+		say(p, "You need to target something you can attack.", C_WARN)
+		return
+	if not p.cast.is_empty():
+		say(p, "You can't do that while casting.", C_WARN)
+		return
+	if p.cooldowns.has("ranged"):
+		return  # still nocking the next arrow
+	if p.distance_to(t) > float(weapon.get("range", 30.0)):
+		say(p, "Your target is out of range.", C_WARN)
+		return
+	if not in_sight(p, t):
+		say(p, "You can't see your target from here.", C_WARN)
+		return
+	var ammo_id := ""
+	if weapon.has("ammo"):
+		ammo_id = _ammo_for(p, str(weapon["ammo"]))
+		if ammo_id == "":
+			say(p, "You are out of %s." % str(weapon.get("ammo_name", "ammunition")), C_WARN)
+			return
+		p.pack.remove(ammo_id, 1)
+		p.inventory_changed.emit()
+	var delay := float(weapon.get("delay", 3.0)) / (1.0 + minf(int(p.attributes.get("haste", 0)), 40) / 100.0)
+	p.cooldowns["ranged"] = delay
+	p.sitting = false
+	p.animate("attack")
+	var ammo := GameData.item(ammo_id)
+	shot_fired.emit(p, t, str(ammo.get("projectile", weapon.get("projectile", "stone"))))
+	Net.broadcast_shot(p, t, str(ammo.get("projectile", weapon.get("projectile", "stone"))))
+	var skill := str(weapon.get("skill", "archery"))
+	var chance := 0.72 + (p.level - t.level) * 0.04 - t.ac * 0.004
+	chance += 0.12 * ((skill_frac(p, skill) + skill_frac(p, "offense")) * 0.5 - _neutral())
+	try_skill_up(p, skill, t)
+	if t is Player:
+		chance -= 0.12 * (skill_frac(t as Player, "defense") - _neutral())
+	chance = clampf(chance, 0.12, 0.95)
+	var base := (int(weapon.get("dmg", 1)) + int(ammo.get("dmg", 0))) * p.item_effectiveness(weapon)
+	var lo := 1 + p.level / 4
+	var hi := maxi(lo + 1, int((base * 2.0 + p.level) * float(GameData.classes[p.char_class]["melee_skill"])) + int(p.attributes.get("str", 0)) / 5)
+	var dmg := randi_range(lo, hi) if randf() < chance else 0
+	if dmg > 0:
+		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
+	_combat_msg(p, t, weapon.get("verb", ["shoot", "shoots"]), dmg)
+	if dmg > 0:
+		damage(t, dmg, p)
+	else:
+		t.add_hate(p, 1.0)  # a miss still gets its attention
+		_notice_attacker(t, p)
+
+
+func has_shield(p: Player) -> bool:
+	return bool(GameData.item(str(p.equipment.get("secondary", ""))).get("shield", false))
+
+
+## Being attacked turns you toward it, so you can fight back at once: with
+## nothing hostile targeted (nothing, yourself, a friend, a corpse), whoever
+## swings, shoots or casts at you becomes your target. A fight you already
+## picked keeps its target.
+func _notice_attacker(d: Entity, a: Entity) -> void:
+	if not (d is Player) or a == null or a == d or a.dead or d.dead:
+		return
+	var cur := d.valid_target_entity()
+	if cur != null and cur != d and can_attack(d, cur):
+		return
+	d.target = a
+
+
+## The first ammunition of a kind ("arrow", "stone") carried anywhere in the pack.
+func _ammo_for(p: Player, kind: String) -> String:
+	for e: Dictionary in p.pack.entries():
+		if str(GameData.item(e["item"]).get("ammo_type", "")) == kind:
+			return str(e["item"])
+	return ""
+
+
+## Whether terrain, trees or buildings stand between two entities (chest height).
+func in_sight(a: Entity, b: Entity) -> bool:
+	if zone_of(a) != zone_of(b):
+		return false
+	var q := PhysicsRayQueryParameters3D.create(a.global_position + Vector3.UP * 1.3, b.global_position + Vector3.UP * 0.6, Layers.WORLD)
+	return a.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
+
 ## Sprinting is a held state rather than a toggle: input asks for it every frame
 ## it wants it, and anything here can refuse or end it.
 func request_sprint(entity_id: int, on: bool) -> void:
@@ -821,6 +921,9 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 		return
 	if c.mana < int(s.get("mana", 0)):
 		say(c, "Insufficient Mana to cast this spell!", C_WARN)
+		return
+	if s.get("requires", "") == "shield" and c is Player and not has_shield(c as Player):
+		say(c, "You need a shield equipped to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
 	var t := _resolve_spell_target(c, s)
 	if t == null:
@@ -1746,7 +1849,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
-		if q["giver"] == npc.npc_id and key == str(q["start_keyword"]):
+		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
 			_accept_quest(p, quest_id)
 
 
@@ -1963,6 +2066,8 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	if int(reward.get("xp", 0)) > 0:
 		p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
 	apply_faction(p, q.get("faction", {}))
+	if q.has("next"):  # a quest line: the next step starts as this one ends
+		_accept_quest(p, str(q["next"]))
 	p.quests_changed.emit()
 
 
@@ -2134,8 +2239,9 @@ func merchant_wares(npc: Npc) -> Array:
 	return out
 
 
-func request_buy(player_id: int, item_id: String) -> void:
-	if _remote(&"request_buy", [player_id, item_id]):
+## Buys one, or up to `count` of a stackable (shift-click buys a stack).
+func request_buy(player_id: int, item_id: String, count := 1) -> void:
+	if _remote(&"request_buy", [player_id, item_id, count]):
 		return
 	var p := get_object(player_id) as Player
 	if p == null:
@@ -2156,15 +2262,29 @@ func request_buy(player_id: int, item_id: String) -> void:
 	if not p.room_for(item_id):
 		say(p, "Your inventory is full.", C_WARN)
 		return
-	p.coin -= price
-	p.pack.add_entry(Pack.entry(item_id))
+	count = clampi(count, 1, Pack.stack_of(item_id))
+	count = mini(count, mini(p.coin / price, p.pack.room_for(item_id)))
 	if not item_id in npc.data["merchant"].get("sells", []):
-		sold_back[item_id] = int(sold_back[item_id]) - 1
+		count = mini(count, int(sold_back[item_id]))
+		sold_back[item_id] = int(sold_back[item_id]) - count
 		if sold_back[item_id] <= 0:
 			sold_back.erase(item_id)
-	say(p, "You buy a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
+	p.coin -= price * count
+	if bag_or_single(item_id):
+		p.pack.add_entry(Pack.entry(item_id))
+	else:
+		p.pack.add(item_id, count)
+	if count == 1:
+		say(p, "You buy a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
+	else:
+		var plural := GameData.item_name(item_id)
+		say(p, "You buy %d %s for %s." % [count, plural if plural.ends_with("s") else plural + "s", format_coin(price * count)], C_LOOT)
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
+
+
+static func bag_or_single(item_id: String) -> bool:
+	return Pack.bag_size_of(item_id) > 0 or Pack.stack_of(item_id) == 1
 
 
 ## Sells the entry at a pack place, the whole stack at once.

@@ -61,11 +61,16 @@ func skill_cap(cls: String, skill_id: String, level: int) -> int:
 ## An item's inventory icon (rendered by tools/blender/icons.py), shared by
 ## every quality of it; null if there is none.
 func item_icon(item_id: String) -> Texture2D:
-	var base := base_item(item_id)
-	if not _icons.has(base):
-		var path := "res://assets/icons/%s.png" % base
-		_icons[base] = load(path) if ResourceLoader.exists(path) else null
-	return _icons[base]
+	return icon(base_item(item_id))
+
+
+## Any rendered icon in assets/icons by name ("gnoll_fang", "spell_kick",
+## "action_attack"), or null. Loaded once.
+func icon(icon_name: String) -> Texture2D:
+	if not _icons.has(icon_name):
+		var path := "res://assets/icons/%s.png" % icon_name
+		_icons[icon_name] = load(path) if ResourceLoader.exists(path) else null
+	return _icons[icon_name]
 
 
 func skill_name(skill_id: String) -> String:

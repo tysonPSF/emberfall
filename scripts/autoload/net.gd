@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 3  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 4  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -451,6 +451,24 @@ func _s_anim(id: int, action: String) -> void:
 	var e := World.get_object(id) as Entity
 	if e != null:
 		e.animate(action)
+
+
+## A ranged attack, for everyone who can see the shooter or the target.
+func broadcast_shot(from: Entity, to: Entity, projectile: String) -> void:
+	if mode != "server":
+		return
+	for peer: int in _known:
+		var sees: Dictionary = _known[peer]
+		if sees.has(from.entity_id) or sees.has(to.entity_id) or _peer_player[peer] == from.entity_id:
+			_s_shot.rpc_id(peer, from.entity_id, to.entity_id, projectile)
+
+
+@rpc("authority", "reliable")
+func _s_shot(from_id: int, to_id: int, projectile: String) -> void:
+	var from := World.get_object(from_id) as Entity
+	var to := World.get_object(to_id) as Entity
+	if from != null and to != null:
+		World.shot_fired.emit(from, to, projectile)
 
 
 func broadcast_look(e: Entity) -> void:

@@ -49,6 +49,7 @@ func _ready() -> void:
 	Net.camp_done.connect(_on_client_camped)
 	Net.zone_moved.connect(_on_client_zone_moved)
 	Net.joined.connect(_start_client)
+	World.shot_fired.connect(Projectile.launch)
 	var save := {} if autotest else _load_save()
 	var title := _show_title(save)
 	if autotest:

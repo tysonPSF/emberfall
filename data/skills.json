@@ -8,6 +8,8 @@
     "2h_blunt":     {"name": "2H Blunt",     "group": "Weapons",   "caps": {"warrior": 5, "cleric": 5, "wizard": 3}},
     "piercing":     {"name": "Piercing",     "group": "Weapons",   "caps": {"warrior": 5, "wizard": 3}},
     "hand_to_hand": {"name": "Hand to Hand", "group": "Weapons",   "caps": {"warrior": 4, "cleric": 3, "wizard": 3}},
+    "archery":      {"name": "Archery",      "group": "Weapons",   "caps": {"warrior": 4}},
+    "throwing":     {"name": "Throwing",     "group": "Weapons",   "caps": {"warrior": 4, "cleric": 3, "wizard": 3}},
     "offense":      {"name": "Offense",      "group": "Combat",    "caps": {"warrior": 5, "cleric": 4, "wizard": 3}},
     "defense":      {"name": "Defense",      "group": "Combat",    "caps": {"warrior": 5, "cleric": 4, "wizard": 3}},
     "dodge":        {"name": "Dodge",        "group": "Defense",   "caps": {"warrior": 4, "cleric": 3, "wizard": 3}},

@@ -1,6 +1,11 @@
 extends Node3D
 ## Art check: stands models side by side and screenshots them from a few angles.
 ##   godot --path . -- --lineup=gnoll,gnoll_brute,rat [--action=idle] --shots=/some/dir
+## --worn=head:iron_coif,chest:studded_tunic dresses every model in that gear
+## (models.json "gear" ids), to compare how it sits on different bodies.
+## --offhand=shield_round puts a models.json "weapons" entry in the left hand;
+## --grip=x,y,z[,px,py,pz] tries a rotation (degrees) and offset for it before
+## writing them to "grips".
 ## Model ids are data/models.json character ids. Quits when done.
 
 const SPACING := 1.8
@@ -11,11 +16,24 @@ func _ready() -> void:
 	var ids: PackedStringArray = []
 	var action := "idle"
 	var shots_dir := ""
+	var worn := {}
+	var offhand := ""
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--lineup="):
 			ids = a.substr(9).split(",", false)
 		elif a.begins_with("--action="):
 			action = a.substr(9)
+		elif a.begins_with("--offhand="):
+			offhand = a.substr(10)
+		elif a.begins_with("--grip="):
+			var g := a.substr(7).split(",")
+			var grip := {"rot": [float(g[0]), float(g[1]), float(g[2])]}
+			if g.size() >= 6:
+				grip["pos"] = [float(g[3]), float(g[4]), float(g[5])]
+			GameData.models["grips"][offhand if offhand != "" else "shield_round"] = grip
+		elif a.begins_with("--worn="):
+			for pair in a.substr(7).split(",", false):
+				worn[pair.get_slice(":", 0)] = pair.get_slice(":", 1)
 		elif a.begins_with("--shots="):
 			shots_dir = a.substr(8)
 
@@ -46,6 +64,10 @@ func _ready() -> void:
 		m.setup(ids[i], "", 1.0)
 		m.position.x = -width / 2.0 + i * SPACING
 		m.rotation.y = PI  # face the camera
+		if not worn.is_empty():
+			m.set_worn(worn)
+		if offhand != "":
+			m.set_offhand(offhand)
 		var clip := m._clip(action)
 		if clip != "":
 			m.anim.play(clip)

@@ -21,5 +21,69 @@
       "emberhold": 5,
       "gnolls": -5
     }
+  },
+  "trail_pack_cord": {
+    "name": "A Proper Pack (1 of 3)",
+    "giver": "merchant_tovin",
+    "start_keyword": "proper pack",
+    "wants": {
+      "rat_whiskers": 4
+    },
+    "reward": {
+      "xp": 40,
+      "coin": 10
+    },
+    "first_reward_item": "braided_whisker_cord",
+    "next": "trail_pack_hide",
+    "accept_text": "You have taken on a task: A Proper Pack. Bring Tovin four rat whiskers.",
+    "ready_text": "Whiskers! Four of them? Hand them here, {name}.",
+    "complete_text": "Watch this. Twist, twist, and... there. Whisker cord, stronger than any thread in Emberhold.",
+    "first_complete_text": "Now the hide. Warden Holt's men have been culling the Blackpaw gnolls out past the gate, and a Blackpaw pelt cures into the best leather there is. Take this cord to Holt and ask him about [Tovin]. He'll know what to do.",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "trail_pack_hide": {
+    "name": "A Proper Pack (2 of 3)",
+    "giver": "warden_holt",
+    "wants": {
+      "braided_whisker_cord": 1,
+      "blackpaw_pelt": 2
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "first_reward_item": "stitched_blackpaw_hide",
+    "next": "trail_pack_clasp",
+    "accept_text": "You have taken on a task: A Proper Pack. Bring Warden Holt the whisker cord and two Blackpaw pelts.",
+    "ready_text": "That's Tovin's cord, and good pelts with it. Let's have them, {name}.",
+    "complete_text": "Hold still... there. Cured, cut and stitched with Tovin's cord. The watch owes that old haggler a favor anyway.",
+    "first_complete_text": "Take it back to Tovin. Tell him the watch wants a pack of its own next.",
+    "faction": {
+      "watch": 10,
+      "emberhold": 5,
+      "gnolls": -5
+    }
+  },
+  "trail_pack_clasp": {
+    "name": "A Proper Pack (3 of 3)",
+    "giver": "merchant_tovin",
+    "wants": {
+      "stitched_blackpaw_hide": 1,
+      "beetle_eye": 2
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 30
+    },
+    "first_reward_item": "tovins_trail_pack",
+    "accept_text": "You have taken on a task: A Proper Pack. Bring Tovin the stitched hide and two fire beetle eyes for the clasp.",
+    "ready_text": "Holt stitched it? And you've found the eyes! Give them over, {name}.",
+    "complete_text": "A fire beetle's eye stays warm long after the beetle doesn't. Set in the clasp, it keeps the damp out of everything you carry.",
+    "first_complete_text": "Here. A proper pack, the only one of its kind. Don't let the gnolls have it back.",
+    "faction": {
+      "emberhold": 10
+    }
   }
 }
