@@ -13,19 +13,22 @@ extends Node
 ## Everything travels as RPCs on this autoload, so both ends share the path
 ## /root/Net. Server-to-client calls are named _s_*, client-to-server _c_*.
 
-signal joined(player_id: int, zone_id: String, pos: Vector3, rot: float)  # client: we're in
-signal join_failed(reason: String)  # client
+signal connected_ok  # client: the connection is up; log in next
+signal characters_listed(list: Array)  # client: logged in; the account's characters
+signal server_message(text: String, is_error: bool)  # client: a note for the login screens
+signal joined(player_id: int, zone_id: String, pos: Vector3, rot: float, save: Dictionary)  # client: we're in the world
+signal join_failed(reason: String)  # client: could not connect
 signal left_server(reason: String)  # client: disconnected or kicked
 signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us to another zone
-signal camp_done(save: Dictionary)  # client: our camp finished; here is the final save
+signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 1  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 2  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
 const MOVE_HZ := 20.0
-const SAVE_SECONDS := 10.0
+const SAVE_SECONDS := 30.0  # server: everyone online is written to disk this often
 const KEYFRAME_SECONDS := 1.0  # every entity's state is resent this often, in case packets were lost
 const STATE_STRIDE := 9  # floats per entity in a snapshot
 const ROWS_PER_PACKET := 30  # keeps each snapshot packet under the network's ~1400 byte limit
@@ -34,14 +37,17 @@ const CH_MOVE := 2  # unreliable channel for client movement
 
 var mode := "offline"
 var my_player_id := -1  # client: our player's id on the server
-var last_save: Dictionary = {}  # client: the newest copy of our character from the server
+var address := ""  # client: the server we're connected to
 
 # server: set up by main
+var accounts: AccountStore
+var start_zone := ""
 var make_player: Callable  # (peer_id, save) -> Player, or null to refuse
 var save_of: Callable  # (Player) -> Dictionary
-var player_left: Callable  # (Player) -> void
+var remove_player: Callable  # (Player) -> void, takes it out of the world
 
-var _peer_player := {}  # peer id -> player entity id
+var _sessions := {}  # peer id -> account name, once logged in
+var _peer_player := {}  # peer id -> player entity id, while in the world
 var _known := {}  # peer id -> {object id: true} already spawned on that client
 var _sent := {}  # peer id -> {object id: PackedFloat32Array last sent}
 var _keyframe_timer := 0.0
@@ -76,9 +82,11 @@ func host(port := DEFAULT_PORT) -> Error:
 	return OK
 
 
-## "host", "host:port" or "" for localhost.
-func join(address: String, save: Dictionary) -> void:
-	var host_name := address.strip_edges()
+## Client: connect to "host", "host:port" or "" (this machine). Then log in.
+func connect_to(server: String) -> void:
+	leave()
+	address = server.strip_edges()
+	var host_name := address
 	var port := DEFAULT_PORT
 	if host_name.contains(":"):
 		port = int(host_name.get_slice(":", 1))
@@ -90,11 +98,28 @@ func join(address: String, save: Dictionary) -> void:
 		return
 	multiplayer.multiplayer_peer = peer
 	mode = "client"
-	last_save = save
-	_disconnect_signals()
-	multiplayer.connected_to_server.connect(func() -> void: _c_join.rpc_id(1, save, PROTOCOL), CONNECT_ONE_SHOT)
+	multiplayer.connected_to_server.connect(func() -> void: connected_ok.emit(), CONNECT_ONE_SHOT)
 	multiplayer.connection_failed.connect(func() -> void: _drop("No answer from %s." % address, true), CONNECT_ONE_SHOT)
 	multiplayer.server_disconnected.connect(func() -> void: _drop("The server closed the connection.", false), CONNECT_ONE_SHOT)
+
+
+## Client: the password never leaves this machine; the server gets a hash of it.
+func login(account: String, password: String, create := false) -> void:
+	var pw_hash := ("emberfall:%s:%s" % [account.to_lower(), password]).sha256_text()
+	_c_login.rpc_id(1, account.strip_edges(), pw_hash, PROTOCOL, create)
+
+
+func create_character(name: String, cls: String, deity: String) -> void:
+	_c_create_character.rpc_id(1, name, cls, deity)
+
+
+## Client: bring an offline character onto the server (once).
+func import_character(save: Dictionary) -> void:
+	_c_import.rpc_id(1, save)
+
+
+func enter_world(name: String) -> void:
+	_c_enter.rpc_id(1, name)
 
 
 ## Client: hang up and go back to offline.
@@ -108,10 +133,9 @@ func leave() -> void:
 	_pending_spawns = []
 
 
-func _drop(reason: String, during_join: bool) -> void:
-	var was_in := my_player_id >= 0
+func _drop(reason: String, during_connect: bool) -> void:
 	leave()
-	if during_join and not was_in:
+	if during_connect:
 		join_failed.emit(reason)
 	else:
 		left_server.emit(reason)
@@ -123,53 +147,117 @@ func _disconnect_signals() -> void:
 			s.disconnect(c["callable"])
 
 
+# --- accounts and characters (client -> server) ----------------------------------
+
 @rpc("any_peer", "reliable")
-func _c_join(save: Dictionary, protocol: int) -> void:
+func _c_login(account: String, pw_hash: String, protocol: int, create: bool) -> void:
 	if mode != "server":
 		return
 	var peer := multiplayer.get_remote_sender_id()
-	if _peer_player.has(peer):
-		return
 	if protocol != PROTOCOL:
-		_s_refused.rpc_id(peer, "This server runs a different version of Emberfall. Update your game and try again.")
+		_s_message.rpc_id(peer, "This server runs a different version of Emberfall. Update your game and try again.", true)
 		return
-	var name := str(save.get("name", ""))
-	for p in World.get_players():
-		if p.display_name == name:
-			_s_refused.rpc_id(peer, "%s is already in the world." % name)
+	var why := accounts.create_account(account, pw_hash) if create else accounts.check_login(account, pw_hash)
+	if why != "":
+		_s_message.rpc_id(peer, why, true)
+		return
+	for other: int in _sessions:
+		if str(_sessions[other]).to_lower() == account.to_lower() and other != peer:
+			_s_message.rpc_id(peer, "That account is already logged in.", true)
 			return
+	_sessions[peer] = account
+	print("%s logged in (peer %d)" % [account, peer])
+	_send_characters(peer)
+
+
+@rpc("any_peer", "reliable")
+func _c_create_character(name: String, cls: String, deity: String) -> void:
+	var peer := multiplayer.get_remote_sender_id()
+	if not _sessions.has(peer):
+		return
+	var why := accounts.create_character(_sessions[peer], name, cls, deity, start_zone)
+	if why != "":
+		_s_message.rpc_id(peer, why, true)
+		return
+	_send_characters(peer)
+
+
+@rpc("any_peer", "reliable")
+func _c_import(save: Dictionary) -> void:
+	var peer := multiplayer.get_remote_sender_id()
+	if not _sessions.has(peer):
+		return
+	var why := accounts.import_character(_sessions[peer], save)
+	if why != "":
+		_s_message.rpc_id(peer, why, true)
+		return
+	_s_message.rpc_id(peer, "%s is now on this server." % str(save.get("name", "")).to_lower().capitalize(), false)
+	_send_characters(peer)
+
+
+@rpc("any_peer", "reliable")
+func _c_enter(name: String) -> void:
+	var peer := multiplayer.get_remote_sender_id()
+	if not _sessions.has(peer) or _peer_player.has(peer) or not accounts.owns(_sessions[peer], name):
+		return
+	var save := accounts.load_character(name)
 	var p: Player = make_player.call(peer, save)
 	if p == null:
-		_s_refused.rpc_id(peer, "The server could not load that character.")
+		_s_message.rpc_id(peer, "The server could not load %s." % name, true)
 		return
 	_peer_player[peer] = p.entity_id
 	_known[peer] = {p.entity_id: true}  # the client builds its own player
+	_sent.erase(peer)
 	_teleport_seq[p.entity_id] = 0
 	_last_move[p.entity_id] = Time.get_ticks_msec()
-	_s_welcome.rpc_id(peer, p.entity_id, World.zone_of(p).zone_id, p.global_position, p.rotation.y)
+	_s_welcome.rpc_id(peer, p.entity_id, World.zone_of(p).zone_id, p.global_position, p.rotation.y, save_of.call(p))
 	_send_self(peer)
-	print("%s joined (peer %d)" % [p.display_name, peer])
+	print("%s entered the world (peer %d)" % [p.display_name, peer])
+
+
+func _send_characters(peer: int) -> void:
+	_s_characters.rpc_id(peer, accounts.characters(_sessions[peer]))
 
 
 @rpc("authority", "reliable")
-func _s_refused(reason: String) -> void:
-	_drop(reason, true)
+func _s_characters(list: Array) -> void:
+	characters_listed.emit(list)
 
 
 @rpc("authority", "reliable")
-func _s_welcome(player_id: int, zone_id: String, pos: Vector3, rot: float) -> void:
+func _s_message(text: String, is_error: bool) -> void:
+	server_message.emit(text, is_error)
+
+
+@rpc("authority", "reliable")
+func _s_welcome(player_id: int, zone_id: String, pos: Vector3, rot: float, save: Dictionary) -> void:
 	my_player_id = player_id
-	joined.emit(player_id, zone_id, pos, rot)
+	joined.emit(player_id, zone_id, pos, rot, save)
 
 
-func _on_peer_left(peer: int) -> void:
+## Server: writes a player's character to disk.
+func save_player(p: Player) -> void:
+	if accounts != null and is_instance_valid(p):
+		accounts.save_character(save_of.call(p))
+
+
+## Server: the player left the world (camp or disconnect): save, then remove.
+func _take_out(peer: int) -> void:
 	var p := player_of_peer(peer)
 	_peer_player.erase(peer)
 	_known.erase(peer)
 	_sent.erase(peer)
 	if p != null:
+		save_player(p)
+		remove_player.call(p)
+
+
+func _on_peer_left(peer: int) -> void:
+	var p := player_of_peer(peer)
+	if p != null:
 		print("%s left (peer %d)" % [p.display_name, peer])
-		player_left.call(p)
+	_take_out(peer)
+	_sessions.erase(peer)
 
 
 # --- lookups -------------------------------------------------------------------
@@ -313,17 +401,21 @@ func _s_ui(sig: StringName, packed: Array, extra: Dictionary) -> void:
 	World.emit_signal.callv([sig] + args)
 
 
-## Server: the player's camp finished; send the final save and let them go.
-func send_camped(p: Player, save: Dictionary) -> void:
+## Server: the player's camp finished: save, leave the world, and go back to
+## character select (still logged in).
+func camped_out(p: Player) -> void:
 	var peer := peer_of(p)
-	if peer != 0:
-		_s_camped.rpc_id(peer, save)
+	if peer == 0:
+		return
+	_take_out(peer)
+	_s_camped.rpc_id(peer)
+	_send_characters(peer)
 
 
 @rpc("authority", "reliable")
-func _s_camped(save: Dictionary) -> void:
-	last_save = save
-	camp_done.emit(save)
+func _s_camped() -> void:
+	my_player_id = -1
+	camp_done.emit()
 
 
 ## Server: everyone moved to another zone (until each zone can run on its own).
@@ -405,11 +497,12 @@ func _serve(delta: float) -> void:
 			_replicate(peer)
 	if _self_timer >= 1.0 / SELF_HZ:
 		_self_timer = 0.0
-		var with_save := _save_timer >= SAVE_SECONDS
-		if with_save:
-			_save_timer = 0.0
 		for peer: int in _peer_player:
-			_send_self(peer, with_save)
+			_send_self(peer)
+	if _save_timer >= SAVE_SECONDS:
+		_save_timer = 0.0
+		for peer: int in _peer_player:
+			save_player(player_of_peer(peer))
 
 
 ## Spawns what the client hasn't seen, despawns what's gone, then sends the
@@ -537,7 +630,7 @@ func _s_state(s: PackedFloat32Array) -> void:
 
 # --- the player's own state (server -> its client) ------------------------------
 
-func _send_self(peer: int, with_save := false) -> void:
+func _send_self(peer: int) -> void:
 	var p := player_of_peer(peer)
 	if p == null:
 		return
@@ -555,8 +648,6 @@ func _send_self(peer: int, with_save := false) -> void:
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
 		"root_left": p.root_left, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting,
 	}
-	if with_save:
-		d["save"] = save_of.call(p)
 	_s_self.rpc_id(peer, d)
 
 
@@ -565,6 +656,4 @@ func _s_self(d: Dictionary) -> void:
 	var p := World.local_player
 	if p == null:
 		return
-	if d.has("save"):
-		last_save = d["save"]
 	p.apply_self(d)

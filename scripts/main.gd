@@ -48,12 +48,15 @@ func _ready() -> void:
 	Net.left_server.connect(_on_left_server)
 	Net.camp_done.connect(_on_client_camped)
 	Net.zone_moved.connect(_on_client_zone_moved)
+	Net.joined.connect(_start_client)
 	var save := {} if autotest else _load_save()
 	var title := _show_title(save)
 	if autotest:
 		add_child(load("res://scripts/dev/autotest.gd").new())
 	elif save_path.begins_with("user://nettest_"):
 		add_child(load("res://scripts/dev/nettest.gd").new())
+	elif "--resume" in args and str(_settings().get("mode", "")) == "online":
+		_show_login()  # reloaded after an update: back to the server's login
 	elif "--resume" in args and GameData.deities.has(str(save.get("deity", ""))):
 		_play(save, title)  # reloaded after an update: straight back in (older saves stop to pick a deity)
 
@@ -63,24 +66,48 @@ func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreat
 	title.setup(save)
 	title.server_address = str(_settings().get("server", ""))
 	title.confirmed.connect(func(s: Dictionary) -> void: _play(s, title))
+	title.connect_pressed.connect(func() -> void:
+		var settings := _settings()
+		settings["server"] = title.server_address
+		_write_json(SETTINGS_PATH, settings)
+		title.queue_free()
+		_show_login())
 	add_child(title)
 	title.set_status(status, is_error)
 	return title
 
 
-## The title screen said go: offline, or join the server it names.
+## The title screen said go, offline.
 func _play(save: Dictionary, title: CharCreate) -> void:
 	var settings := _settings()
-	settings["server"] = title.server_address
+	settings["mode"] = "offline"
 	_write_json(SETTINGS_PATH, settings)
-	if title.server_address == "" or "--autotest" in OS.get_cmdline_user_args():
-		_start_game(save, title)
-		return
-	title.set_status("Connecting to %s..." % title.server_address)
-	Net.join_failed.connect(func(reason: String) -> void: title.set_status(reason, true), CONNECT_ONE_SHOT)
-	Net.joined.connect(func(pid: int, zone_id: String, pos: Vector3, rot: float) -> void:
-		_start_client(save, title, pid, zone_id, pos, rot), CONNECT_ONE_SHOT)
-	Net.join(title.server_address, save)
+	_start_game(save, title)
+
+
+## Playing online: connect and log in (or, after camping, straight to
+## character select on the connection we already have).
+func _show_login(logged_in := false) -> void:
+	var settings := _settings()
+	settings["mode"] = "online"
+	_write_json(SETTINGS_PATH, settings)
+	var login := LoginScreen.new()
+	login.address = str(settings.get("server", ""))
+	login.account = str(settings.get("account", ""))
+	login.offline_save = _load_save()
+	login.logged_in = logged_in
+	login.back.connect(func() -> void:
+		login.queue_free()
+		var s := _settings()
+		s["mode"] = "offline"
+		_write_json(SETTINGS_PATH, s)
+		_show_title(_load_save()))
+	login.tree_exiting.connect(func() -> void:
+		if login.account != "":
+			var s := _settings()
+			s["account"] = login.account
+			_write_json(SETTINGS_PATH, s))
+	add_child(login)
 
 
 func _start_game(save: Dictionary, title: CharCreate) -> void:
@@ -129,8 +156,13 @@ func _enter_zone(zone_id: String, pos: Vector3, face := Vector2.INF) -> void:
 		player.rotation.y = atan2(-d.x, -d.y)
 
 
-## Leaves the world (camp, disconnect) and goes back to the character screen.
+## Leaves the world (offline camp) and goes back to the character screen.
 func _leave_world(status := "", is_error := false) -> void:
+	_teardown_world()
+	_show_title(_load_save(), status, is_error)
+
+
+func _teardown_world() -> void:
 	for node: Node in [hud, zone]:
 		if node != null:
 			node.queue_free()
@@ -146,7 +178,6 @@ func _leave_world(status := "", is_error := false) -> void:
 	hud = null
 	World.local_player = null
 	World.zone = null
-	_show_title(_load_save(), status, is_error)
 
 
 ## Camping finished: save, leave the world, and go back to the character screen.
@@ -183,8 +214,10 @@ func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2)
 
 ## The server let us in: build its zone (scenery only; it sends the rest) and
 ## our player, under the id the server gave it.
-func _start_client(save: Dictionary, title: CharCreate, pid: int, zone_id: String, pos: Vector3, rot: float) -> void:
-	title.queue_free()
+func _start_client(pid: int, zone_id: String, pos: Vector3, rot: float, save: Dictionary) -> void:
+	for child in get_children():
+		if child is LoginScreen or child is CharCreate:
+			child.queue_free()
 	player = Player.new()
 	player.from_save(save)
 	player.entity_id = pid
@@ -215,17 +248,17 @@ func _on_client_zone_moved(zone_id: String, pos: Vector3) -> void:
 	_changing_zone = false
 
 
-func _on_client_camped(save: Dictionary) -> void:
-	_write_json(save_path, save)
-	Net.leave()
-	_leave_world()
+## Camped out on a server: back to character select, still logged in.
+func _on_client_camped() -> void:
+	_teardown_world()
+	_show_login(true)
 
 
 func _on_left_server(reason: String) -> void:
 	if player == null:
-		return
-	_save()
-	_leave_world(reason, true)
+		return  # the login screen shows it
+	_teardown_world()
+	_show_title(_load_save(), reason, true)
 
 
 # --- dedicated server ----------------------------------------------------------
@@ -242,11 +275,18 @@ func _start_server(args: PackedStringArray) -> void:
 		for mob: Dictionary in GameData.mobs.values():
 			for entry: Dictionary in mob.get("loot", []) + mob.get("gear", []):
 				entry["chance"] = 1.0
+	var data_dir := "user://server"
+	for a in args:
+		if a.begins_with("--data="):
+			data_dir = a.substr(7)
 	_start_zone = zone_id
 	_server_zone(zone_id)
+	Net.accounts = AccountStore.new(data_dir)
+	Net.start_zone = zone_id
 	Net.make_player = _make_remote_player
 	Net.save_of = _server_save_of
-	Net.player_left = _on_remote_left
+	Net.remove_player = _on_remote_left
+	print("Accounts and characters are kept in %s" % ProjectSettings.globalize_path(data_dir))
 	World.zone_change.connect(_on_server_zone_change)
 	World.camped.connect(_on_server_camped)
 	var err := Net.host(port)
@@ -325,8 +365,7 @@ func _on_remote_left(p: Player) -> void:
 
 
 func _on_server_camped(p: Player) -> void:
-	Net.send_camped(p, _server_save_of(p))
-	_on_remote_left(p)
+	Net.camped_out(p)
 
 
 ## One player walked through a zone line: only they move.
@@ -346,6 +385,7 @@ func _on_server_zone_change(p: Player, zone_id: String, arrive: Vector2, face: V
 	Net.send_zone(p, zone_id)
 	World.say(p, "You have entered %s." % to.zone_name)
 	p.remove_meta("zoning")
+	Net.save_player(p)
 
 
 # --- saving ------------------------------------------------------------------
@@ -366,9 +406,7 @@ func _notification(what: int) -> void:
 
 func _save() -> void:
 	if Net.mode == "client":
-		if not Net.last_save.is_empty():
-			_write_json(save_path, Net.last_save)  # the server's copy is the real one
-		return
+		return  # online characters live on the server
 	if player == null or zone == null or _changing_zone:
 		return
 	var d := player.to_save()

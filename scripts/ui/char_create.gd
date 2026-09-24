@@ -5,8 +5,11 @@ extends CanvasLayer
 ## benefit; a saved character from before deities existed pledges on Continue.
 
 signal confirmed(save: Dictionary)
+signal connect_pressed  # the Server box's Connect button: play online
+signal canceled  # server mode's Back button
 
-var server_address := ""  # "" plays offline; otherwise "host" or "host:port"
+var server_address := ""  # the Server box: "host" or "host:port"
+var server_mode := false  # making a character on a server: just the new-character form
 var _server_edit: LineEdit
 var _status: Label
 
@@ -41,24 +44,41 @@ func _ready() -> void:
 	var title := UIKit.label("EMBERFALL", 60, UIKit.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
-	var sub := UIKit.label("The world is dangerous. Bring friends.", 15, UIKit.DIM)
+	var sub := UIKit.label("A new character for %s" % (Net.address if Net.address != "" else "this server") if server_mode else "The world is dangerous. Bring friends.", 15, UIKit.DIM)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(sub)
 	v.add_child(HSeparator.new())
+	_status = UIKit.label("", 13, UIKit.DIM)
+	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if server_mode:
+		_build_new_character(v)
+		var cancel := UIKit.button("Back", Vector2(0, 36))
+		cancel.pressed.connect(func() -> void: canceled.emit())
+		v.add_child(cancel)
+		v.add_child(_status)
+		return
 
 	var srv := HBoxContainer.new()
 	srv.add_theme_constant_override("separation", 8)
 	srv.add_child(UIKit.label("Server", 14, UIKit.GOLD))
 	_server_edit = LineEdit.new()
-	_server_edit.placeholder_text = "address, or leave blank to play offline"
+	_server_edit.placeholder_text = "server address, to play online"
 	_server_edit.text = server_address
 	_server_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_server_edit.text_changed.connect(func(t: String) -> void: server_address = t.strip_edges())
+	_server_edit.text_submitted.connect(func(_t: String) -> void: connect_pressed.emit())
 	srv.add_child(_server_edit)
+	var go := UIKit.button("Connect", Vector2(110, 34))
+	go.pressed.connect(func() -> void:
+		if server_address == "":
+			set_status("Type the server's address first.", true)
+		else:
+			connect_pressed.emit())
+	srv.add_child(go)
 	v.add_child(srv)
-	_status = UIKit.label("", 13, UIKit.DIM)
-	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(_status)
+	v.add_child(HSeparator.new())
+	v.add_child(UIKit.label("Play offline", 18, UIKit.GOLD))
 
 	if not existing.is_empty():
 		var cls: Dictionary = GameData.classes.get(existing.get("class", ""), {})
@@ -73,6 +93,12 @@ func _ready() -> void:
 		v.add_child(UIKit.label("Creating a new character replaces this one.", 12, UIKit.DIM))
 		v.add_child(HSeparator.new())
 
+	_build_new_character(v)
+	_build_pledge(center)
+
+
+## Name, class and deity, then Enter World.
+func _build_new_character(v: VBoxContainer) -> void:
 	v.add_child(UIKit.label("New character", 18, UIKit.GOLD))
 	_name_edit = LineEdit.new()
 	_name_edit.placeholder_text = "Name (letters only)"
@@ -102,12 +128,11 @@ func _ready() -> void:
 	v.add_child(UIKit.label("Deity", 18, UIKit.GOLD))
 	_deity_picker(v)
 
-	var enter := UIKit.button("Enter World", Vector2(0, 44))
+	var enter := UIKit.button("Create character" if server_mode else "Enter World", Vector2(0, 44))
 	enter.pressed.connect(_create)
 	v.add_child(enter)
 	_error = UIKit.label("", 13, Color(1, 0.45, 0.35))
 	v.add_child(_error)
-	_build_pledge(center)
 
 
 ## Older characters choose a deity before they carry on.

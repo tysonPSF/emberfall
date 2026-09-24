@@ -8,6 +8,8 @@ extends Node
 var who := ""
 var port := Net.DEFAULT_PORT
 var shots_dir := ""
+var _list: Array = []
+var _listed_once := false
 
 
 func _ready() -> void:
@@ -25,13 +27,33 @@ func _ready() -> void:
 func _run() -> void:
 	var main := get_parent()
 	await _wait(0.5)
-	var title: CharCreate = null
 	for c in main.get_children():
 		if c is CharCreate:
-			title = c
-	title.server_address = "127.0.0.1:%d" % port
-	var cls := "warrior" if who == "Alpha" else "cleric"
-	main._play({"name": who, "class": cls, "deity": "fire", "zone": "greenmoor", "position": [4.0 if who == "Alpha" else -4.0, 1.0, 10.0]}, title)
+			c.queue_free()
+	# connect, make (or reuse) an account, make (or pick) the character, enter
+	Net.connect_to("127.0.0.1:%d" % port)
+	await Net.connected_ok
+	Net.characters_listed.connect(func(l: Array) -> void:
+		_list = l
+		_listed_once = true)
+	Net.server_message.connect(func(t: String, e: bool) -> void: print("[%s] server says: %s%s" % [who, t, " (error)" if e else ""]))
+	Net.login(who.to_lower(), "hunter2", true)
+	await _wait(1.0)
+	if not _listed_once:
+		Net.login(who.to_lower(), "hunter2", false)  # the account already existed
+		await _wait(1.0)
+	var names := _list.map(func(c: Dictionary) -> String: return str(c["name"]))
+	print("[%s] logged in; characters: %s" % [who, names])
+	if not who in names:
+		if who == "Importer":
+			Net.import_character({"name": "Importer", "class": "cleric", "deity": "water", "level": 4, "xp": 50,
+					"inventory": ["gnoll_fang", "not_a_real_item"], "equipment": {"primary": "worn_staff"}})
+		else:
+			var cls := "warrior" if who == "Alpha" else "cleric"
+			Net.create_character(who, cls, "fire")
+		await _wait(1.0)
+		print("[%s] after creating: %s" % [who, _list.map(func(c: Dictionary) -> String: return "%s L%d" % [c["name"], c["level"]])])
+	Net.enter_world(who)
 	for k in 40:
 		if World.local_player != null:
 			break
@@ -156,7 +178,17 @@ func _run() -> void:
 		if World.local_player == null:
 			break
 		await _wait(0.5)
-	print("[%s] camped: back at title = %s, save on disk level %s" % [who, World.local_player == null, main._load_save().get("level", "?")])
+	print("[%s] camped: back at character select = %s" % [who, World.local_player == null])
+	if "--reenter" in OS.get_cmdline_user_args() and World.local_player == null:
+		var had := [p.level, p.xp, p.inventory.duplicate()] if is_instance_valid(p) else []
+		Net.enter_world(who)
+		for k in 40:
+			if World.local_player != null:
+				break
+			await _wait(0.25)
+		await _wait(1.0)
+		var q := World.local_player
+		print("[%s] re-entered: level %d xp %d inventory %s" % [who, q.level, q.xp, q.inventory])
 	print("NETTEST DONE %s" % who)
 	get_tree().quit()
 

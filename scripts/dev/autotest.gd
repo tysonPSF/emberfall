@@ -23,6 +23,7 @@ const SECTIONS := [
 	["faction", "emberhold"],
 	["kos", "greenmoor"],
 	["root", "greenmoor"],
+	["screens", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -633,6 +634,32 @@ func _t_camp() -> void:
 	print("continued: zone=%s player=%s level=%d" % [main.zone.zone_id, World.local_player.display_name, World.local_player.level])
 	await _shot("8c_continued")
 
+
+
+## The online screens, drawn over the game: login, a character list, and the
+## server character creator. Nothing connects; the list is filled by hand.
+func _t_screens() -> void:
+	var login := LoginScreen.new()
+	login.address = "play.example.net"
+	login.account = "tyson"
+	login.offline_save = {"name": "Dragonchow", "class": "warrior", "level": 3}
+	login.logged_in = true  # don't try to connect
+	add_child(login)
+	login._show_login()
+	await _wait(0.3)
+	await _shot("9a_login")
+	login._on_characters([{"name": "Dragonchow", "class": "warrior", "level": 3, "zone": "greenmoor"},
+			{"name": "Emberwise", "class": "wizard", "level": 6, "zone": "emberhold"}])
+	login.offline_save = {"name": "Oldtimer", "class": "cleric", "level": 2}
+	login._on_characters([{"name": "Dragonchow", "class": "warrior", "level": 3, "zone": "greenmoor"},
+			{"name": "Emberwise", "class": "wizard", "level": 6, "zone": "emberhold"}])
+	await _wait(0.3)
+	await _shot("9b_characters")
+	login._open_creator()
+	await _wait(0.3)
+	await _shot("9c_create_on_server")
+	login.queue_free()
+	await _wait(0.2)
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:

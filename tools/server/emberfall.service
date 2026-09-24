@@ -14,6 +14,7 @@ User=emberfall
 WorkingDirectory=/home/emberfall/emberfall
 Environment=GODOT=/usr/local/bin/godot
 Environment=PORT=7777
+Environment=DATA=/home/emberfall/emberfall-data
 ExecStart=/home/emberfall/emberfall/tools/server/run_server.sh
 Restart=on-failure
 
