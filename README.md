@@ -65,6 +65,7 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 | C | Consider (con colors: gray, green, blue, white, yellow, red) |
 | X | Sit / stand (much faster regen) |
 | L / double-click | Loot corpse |
+| I | Inventory, EQ-style: your equipment around your character, stats, 8 general slots (bags go there; right-click a bag to open it) and coin. **Click** picks an item up onto the cursor and puts it down (or swaps); **Ctrl-click** takes one from a stack; **Shift-click** equips (or sells, banks, offers, depending on the open window) |
 | E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
 | G | Interact with your target: a merchant's shop, the bank, or a give window for quest turn-ins |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |

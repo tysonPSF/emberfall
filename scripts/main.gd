@@ -34,12 +34,12 @@ func _ready() -> void:
 		_start_server(args)
 		return
 	var autotest := "--autotest" in args
-	if autotest:
+	if autotest or "--flowtest" in args:
 		save_path = AUTOTEST_SAVE_PATH
 	for a in args:
 		if a.begins_with("--nettest="):
 			save_path = "user://nettest_%s.json" % a.substr(10)
-	if not autotest and not save_path.begins_with("user://nettest_") and not OS.has_feature("template"):
+	if not autotest and not "--flowtest" in args and not save_path.begins_with("user://nettest_") and not OS.has_feature("template"):
 		var reloader: Node = load("res://scripts/dev/reloader.gd").new()
 		reloader.save_game = func() -> bool:
 			_save()
@@ -55,6 +55,8 @@ func _ready() -> void:
 		add_child(load("res://scripts/dev/autotest.gd").new())
 	elif save_path.begins_with("user://nettest_"):
 		add_child(load("res://scripts/dev/nettest.gd").new())
+	elif "--flowtest" in args:
+		add_child(load("res://scripts/dev/flowtest.gd").new())
 	elif "--resume" in args and str(_settings().get("mode", "")) == "online":
 		_show_login()  # reloaded after an update: back to the server's login
 	elif "--resume" in args and GameData.deities.has(str(save.get("deity", ""))):
@@ -67,6 +69,8 @@ func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreat
 	title.server_address = str(_settings().get("server", ""))
 	title.confirmed.connect(func(s: Dictionary) -> void: _play(s, title))
 	title.connect_pressed.connect(func() -> void:
+		if title.is_queued_for_deletion():
+			return  # a double-click: the first one already left the title
 		var settings := _settings()
 		settings["server"] = title.server_address
 		_write_json(SETTINGS_PATH, settings)
@@ -79,6 +83,8 @@ func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreat
 
 ## The title screen said go, offline.
 func _play(save: Dictionary, title: CharCreate) -> void:
+	if title.is_queued_for_deletion() or player != null:
+		return  # a double-click lands both clicks before the title is gone; one world only
 	var settings := _settings()
 	settings["mode"] = "offline"
 	_write_json(SETTINGS_PATH, settings)

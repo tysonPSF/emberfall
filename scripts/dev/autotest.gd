@@ -29,6 +29,7 @@ const SECTIONS := [
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
+	["bags", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -149,33 +150,31 @@ func _t_quest() -> void:
 	World.request_say(p.entity_id, "gnoll fangs")
 	await _wait(0.8)
 	await _shot("1e_quest_given")
-	for k in 4:
-		p.inventory.append("gnoll_fang")
-	p.inventory.append("rat_whiskers")
+	p.pack.add("gnoll_fang", 4)  # one stack of four
+	p.pack.add("rat_whiskers")
 	p.inventory_changed.emit()
 	World.request_hail(p.entity_id)  # he notices the fangs
 	World.request_trade_open(p.entity_id)
-	for item_id in ["gnoll_fang", "gnoll_fang", "gnoll_fang", "gnoll_fang", "rat_whiskers"]:
-		World.request_trade_add(p.entity_id, p.inventory.find(item_id))  # the fifth is refused: 4 slots
-	World.request_trade_remove(p.entity_id, 0)
-	World.request_trade_add(p.entity_id, p.inventory.find("gnoll_fang"))
+	for k in 3:  # three fangs, one at a time off the stack, then into the trade
+		World.request_pick_one(p.entity_id, _where(p, "gnoll_fang"))
+	World.request_click(p.entity_id, "t:0")
+	World.request_click(p.entity_id, _where(p, "rat_whiskers"))
+	World.request_click(p.entity_id, "t:1")
 	await _wait(0.4)
 	await _shot("1f_quest_trade")
-	World.request_trade_remove(p.entity_id, 3)  # swap a fang for the whiskers
-	World.request_trade_add(p.entity_id, p.inventory.find("rat_whiskers"))
+	print("trade offered: %s" % [p.trade_items.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], e["count"]])])
 	World.request_trade_give(p.entity_id)  # 3 fangs + whiskers: not enough, all handed back
-	print("short give: fangs=%d whiskers=%d quests=%s" % [p.inventory.count("gnoll_fang"), p.inventory.count("rat_whiskers"), p.quests])
+	print("short give: fangs=%d whiskers=%d quests=%s" % [p.pack.count("gnoll_fang"), p.pack.count("rat_whiskers"), p.quests])
 	World.request_trade_open(p.entity_id)
-	for k in 4:
-		World.request_trade_add(p.entity_id, p.inventory.find("gnoll_fang"))
+	World.request_trade_add(p.entity_id, _where(p, "gnoll_fang"))  # the whole stack
 	World.request_trade_give(p.entity_id)
 	print("quest after turn-in: %s coin=%d xp=%d has_sword=%s fangs=%d whiskers=%d" % [p.quests, p.coin, p.xp,
-			"wardens_short_sword" in p.inventory, p.inventory.count("gnoll_fang"), p.inventory.count("rat_whiskers")])
+			p.pack.count("wardens_short_sword") > 0, p.pack.count("gnoll_fang"), p.pack.count("rat_whiskers")])
 	await _wait(0.5)
 	await _shot("1g_quest_done")
-	p.inventory.erase("rat_whiskers")
+	p.pack.remove("rat_whiskers")
 	main.hud._toggle_inventory()
-	p.inventory.erase("wardens_short_sword")
+	p.pack.remove("wardens_short_sword")
 	p.camera_pivot.rotation.y = 0.0
 
 
@@ -222,26 +221,24 @@ func _t_items() -> void:
 	var main := get_parent()
 	var p := World.local_player
 	# item rules: class restrictions, two ring fingers, lore, recommended level, attributes
-	var bag_before := p.inventory.duplicate()
-	p.inventory.append_array(["rusty_short_sword", "tarnished_ring", "copper_band@fine", "leather_boots", "round_shield"])
-	World.request_equip(p.entity_id, p.inventory.find("rusty_short_sword"))
-	World.request_equip(p.entity_id, p.inventory.find("tarnished_ring"))
-	World.request_equip(p.entity_id, p.inventory.find("copper_band@fine"))
-	World.request_equip(p.entity_id, p.inventory.find("leather_boots"))
-	World.request_equip(p.entity_id, p.inventory.find("round_shield"))
+	var bag_before := p.pack.to_save()
+	for id: String in ["rusty_short_sword", "tarnished_ring", "copper_band@fine", "leather_boots", "round_shield"]:
+		p.pack.add(id)
+	for id: String in ["rusty_short_sword", "tarnished_ring", "copper_band@fine", "leather_boots", "round_shield"]:
+		World.request_equip(p.entity_id, _where(p, id))
 	print("items: wizard sword blocked=%s rings=%s/%s boots=%s shield blocked=%s attrs=%s mana=%d" % [
 			p.equipment.get("primary") != "rusty_short_sword", p.equipment.get("ring1"), p.equipment.get("ring2"),
 			p.equipment.get("feet"), not p.equipment.has("secondary"), p.attributes, p.max_mana])
 	var lore_free := World.can_receive(p, "wardens_short_sword", true)
-	p.bank_items.append("wardens_short_sword")
+	p.bank[0] = Pack.entry("wardens_short_sword")
 	print("items: lore sword receivable without one=%s, with one banked=%s; cleaver effectiveness at level %d=%.2f" % [
 			lore_free, World.can_receive(p, "wardens_short_sword", true), p.level, p.item_effectiveness(GameData.item("grubnaks_cleaver"))])
-	p.bank_items.erase("wardens_short_sword")
-	for k in 25:
-		p.inventory.append("bone_chips")
-	print("items: 25 bone chips use %d slots; room for a 26th=%s" % [p.slots_used() - bag_before.size() - 2, p.room_for("bone_chips")])
-	p.inventory.append("bonecarved_talisman")
-	World.request_equip(p.entity_id, p.inventory.find("bonecarved_talisman"))
+	p.bank[0] = {}
+	var used_before := p.pack.entries().size()
+	p.pack.add("bone_chips", 25)
+	print("items: 25 bone chips use %d slots; room for a 26th=%s" % [p.pack.entries().size() - used_before, p.room_for("bone_chips")])
+	p.pack.add("bonecarved_talisman")
+	World.request_equip(p.entity_id, _where(p, "bonecarved_talisman"))
 	p.hp = 3
 	World.request_item_click(p.entity_id, "neck")
 	var healed_to := p.hp
@@ -269,7 +266,7 @@ func _t_items() -> void:
 	main.hud._toggle_inventory()
 	for slot: String in ["ring1", "ring2", "feet"]:
 		p.equipment.erase(slot)
-	p.inventory = bag_before
+	p.pack = Pack.from_save(bag_before)
 	p.recalc_stats()
 
 	var skel := _nearest_mob(p, "decaying_skeleton")
@@ -400,7 +397,7 @@ func _t_death() -> void:
 	await _wait(1.0)
 	await _shot("5_dead")
 	await _wait(4.5)
-	print("respawned: dead=%s pos=%s inventory=%s equipment=%s" % [p.dead, p.global_position, p.inventory, p.equipment])
+	print("respawned: dead=%s pos=%s carrying=%s equipment=%s" % [p.dead, p.global_position, p.pack.item_ids(), p.equipment])
 	p.zoom = 0.0
 	await _wait(0.6)
 	await _shot("6_first_person")
@@ -471,8 +468,8 @@ func _t_merchants() -> void:
 	var p := World.local_player
 	# merchants and the bank
 	p.coin = 1000
-	for item_id in ["gnoll_fang", "gnoll_fang", "gnoll_fang", "rat_whiskers"]:
-		p.inventory.append(item_id)
+	p.pack.add("gnoll_fang", 3)
+	p.pack.add("rat_whiskers")
 	p.inventory_changed.emit()
 	var npcs := {}
 	for obj: Node3D in World.objects.values():
@@ -487,22 +484,25 @@ func _t_merchants() -> void:
 	World.request_hail(p.entity_id)
 	World.request_interact(p.entity_id)
 	var coin0 := p.coin
-	World.request_sell(p.entity_id, p.inventory.find("gnoll_fang"))
-	World.request_sell(p.entity_id, p.inventory.find("gnoll_fang"))
+	World.request_pick_one(p.entity_id, _where(p, "gnoll_fang"))
+	World.request_sell(p.entity_id, "cursor")  # one fang off the stack, sold from the cursor
+	World.request_sell(p.entity_id, _where(p, "gnoll_fang"))  # then the rest of the stack
 	World.request_buy(p.entity_id, "leather_cap")
 	World.request_buy(p.entity_id, "gnoll_fang")  # buy one back from his stock
-	print("shop: coin %d -> %d fangs=%d cap=%s stock=%s" % [coin0, p.coin, p.inventory.count("gnoll_fang"), "leather_cap" in p.inventory, World.merchant_stock])
+	print("shop: coin %d -> %d fangs=%d cap=%s stock=%s" % [coin0, p.coin, p.pack.count("gnoll_fang"), p.pack.count("leather_cap") > 0, World.merchant_stock])
 	await _wait(0.5)
 	await _shot("7h_shop")
 	var odile: Npc = npcs["banker_odile"]
 	p.global_position = odile.global_position + (-odile.global_transform.basis.z) * 2.5 + Vector3.UP * 0.5
 	World.request_set_target(p.entity_id, odile.entity_id)
 	World.request_interact(p.entity_id)
-	World.request_bank_deposit(p.entity_id, p.inventory.find("rat_whiskers"))
-	World.request_bank_deposit(p.entity_id, p.inventory.find("leather_cap"))
+	World.request_bank_deposit(p.entity_id, _where(p, "rat_whiskers"))
+	World.request_click(p.entity_id, _where(p, "leather_cap"))  # by cursor: pick up, put in bank slot 5
+	World.request_click(p.entity_id, "k:5")
 	World.request_bank_coin(p.entity_id, 500)
-	World.request_bank_withdraw(p.entity_id, 1)
-	print("bank: items=%s coin=%d purse=%d cap_back=%s" % [p.bank_items, p.bank_coin, p.coin, "leather_cap" in p.inventory])
+	var banked := p.bank.filter(func(e: Dictionary) -> bool: return not e.is_empty()).map(func(e: Dictionary) -> String: return e["item"])
+	World.request_bank_withdraw(p.entity_id, 5)
+	print("bank: items=%s coin=%d purse=%d cap_back=%s" % [banked, p.bank_coin, p.coin, p.pack.count("leather_cap") > 0])
 	await _wait(0.5)
 	await _shot("7i_bank")
 	World.request_service_close(p.entity_id)
@@ -767,16 +767,14 @@ func _t_itemwindow() -> void:
 	p.equipment.erase("neck")
 	p.recalc_stats()
 	hud._item_panel.visible = false
-	p.inventory.append("leather_boots@superior")
+	p.pack.add("leather_boots@superior")
 	p.inventory_changed.emit()
 	hud._toggle_inventory()
 	await _wait(0.3)
 	var right := InputEventMouseButton.new()
 	right.button_index = MOUSE_BUTTON_RIGHT
 	right.pressed = true
-	for b in hud._bag_grid.get_children():
-		if (b as Button).text.begins_with("Superior Leather Boots"):
-			b.gui_input.emit(right)
+	hud._slot_buttons[_where(p, "leather_boots@superior")].gui_input.emit(right)
 	await _wait(0.4)
 	print("itemwindow: right-click in bags opened %s" % hud._item_title.text)
 	hud._item_link.pressed.emit()
@@ -790,7 +788,7 @@ func _t_itemwindow() -> void:
 	print("itemwindow: chat line %s; clicking the link opened %s" % [typed, hud._item_title.text])
 	await _shot("9h_item_link")
 	hud._item_panel.visible = false
-	p.inventory.erase("leather_boots@superior")
+	p.pack.remove("leather_boots@superior")
 
 
 ## Skills: starting values, skill-ups slowing toward the cap (and none from
@@ -876,6 +874,74 @@ func _t_skills() -> void:
 	await _shot("9i_skills")
 	main.hud._skills_panel.visible = false
 
+
+## EQ inventory: old saves move into bags, the cursor picks up and puts down,
+## bags hold items but not bags, equipping by cursor, stowing on close, and a
+## bag with its contents surviving a trip to your corpse.
+func _t_bags() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	var old := Pack.from_save(null, ["gnoll_fang", "rusty_dagger", "cloth_cap", "leather_cap", "patchwork_pants", "worn_sandals",
+			"cloth_gloves", "rope_belt", "bone_helm", "tarnished_ring", "iron_dagger", "oak_staff"])
+	print("bags: an old 12-item save becomes %s" % [old.slots.map(func(e: Dictionary) -> String: return e.get("item", "-"))])
+	print("bags: its backpack holds %s" % [(old.slots[7].get("contents", []) as Array).map(func(e: Dictionary) -> String: return e.get("item", "-"))])
+	p.pack = Pack.new()
+	p.pack.slots[0] = Pack.entry("small_sack")
+	p.pack.add("leather_backpack")
+	p.pack.add("iron_dagger")
+	p.pack.add("leather_gloves")
+	p.inventory_changed.emit()
+	hud._toggle_inventory()
+	await _wait(0.3)
+	# a dagger into the sack: pick up, put down
+	World.request_click(p.entity_id, _where(p, "iron_dagger"))
+	World.request_click(p.entity_id, "b:0:2")
+	print("bags: dagger now at %s, cursor empty=%s" % [_where(p, "iron_dagger"), p.cursor.is_empty()])
+	# a bag into a bag is refused
+	World.request_click(p.entity_id, _where(p, "leather_backpack"))
+	World.request_click(p.entity_id, "b:0:0")
+	print("bags: backpack into sack refused=%s (still held=%s)" % [p.pack.get_at("b:0:0").is_empty(), p.cursor.get("item", "")])
+	World.request_click(p.entity_id, "g:5")
+	# equip by cursor: gloves to the hands slot, and a bag won't go on your hands
+	World.request_click(p.entity_id, _where(p, "leather_gloves"))
+	World.request_click(p.entity_id, "e:hands")
+	World.request_click(p.entity_id, _where(p, "leather_backpack"))
+	World.request_click(p.entity_id, "e:hands")
+	print("bags: hands=%s, bag refused as gloves=%s" % [p.equipment.get("hands", "-"), p.cursor.get("item", "") == "leather_backpack"])
+	# closing the inventory with something held puts it away
+	hud._toggle_inventory()
+	await _wait(0.2)
+	print("bags: stowed on close: cursor empty=%s, backpack at %s" % [p.cursor.is_empty(), _where(p, "leather_backpack")])
+	hud._toggle_inventory()
+	hud._toggle_bag(0)
+	World.request_click(p.entity_id, "b:0:2")  # the dagger on the cursor, for the picture
+	await _wait(0.4)
+	await _shot("9j_inventory")
+	World.request_click(p.entity_id, "b:0:2")
+	# a bag and its contents go to the corpse and come back whole
+	p.pack.add("gnoll_fang", 5)
+	var npcs := _npcs()
+	var tovin: Npc = npcs.get("merchant_tovin")
+	if tovin != null:
+		print("bags: (in emberhold)")
+	World.damage(p, 9999, _nearest_mob(p))
+	await _wait(0.5)
+	var corpse: Corpse = null
+	for obj: Node3D in World.objects.values():
+		if obj is Corpse and (obj as Corpse).owner_name == p.display_name:
+			corpse = obj
+	print("bags: corpse holds %s" % [corpse.entries.map(func(e: Dictionary) -> String: return "%s%s" % [e["item"], " (%d inside)" % (e["contents"] as Array).filter(func(c: Dictionary) -> bool: return not c.is_empty()).size() if e.has("contents") else ""])])
+	await _wait(4.5)
+	p.global_position = corpse.global_position + Vector3(0, 1, 1)
+	await _wait(0.3)
+	World.request_loot_open(p.entity_id, corpse.object_id)
+	World.request_loot_all(p.entity_id, corpse.object_id)
+	var sack := p.pack.get_at(_where(p, "small_sack"))
+	print("bags: after looting: sack has %s; fangs %d; gloves worn=%s" % [(sack.get("contents", []) as Array).map(func(e: Dictionary) -> String: return e.get("item", "-")),
+			p.pack.count("gnoll_fang"), p.equipment.get("hands", "-")])
+	hud._toggle_inventory()
+
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
 	var main := get_parent()
@@ -887,6 +953,14 @@ func _ensure_zone(zone_id: String) -> void:
 	p.global_position = main.zone.ground(0, 181 if zone_id == "emberhold" else -97) + Vector3.UP
 	await _wait(2.5)
 	print("zone: %s at %s" % [main.zone.zone_id, p.global_position])
+
+
+## Where an item is in the pack ("g:2", "b:0:3"), or "".
+func _where(p: Player, item_id: String) -> String:
+	for place: String in p.pack.places():
+		if p.pack.get_at(place).get("item", "") == item_id:
+			return place
+	return ""
 
 
 func _npcs() -> Dictionary:
