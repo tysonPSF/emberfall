@@ -6,10 +6,44 @@
     "ranger": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
     "rogue": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue.glb",
     "rogue_hooded": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb",
-    "skeleton_minion": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
-    "skeleton_warrior": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
-    "skeleton_rogue": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb",
-    "skeleton_mage": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb",
+    "skeleton_minion": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
+      "gear_parts": {
+        "chest": [
+          "Skeleton_Minion_Cloak"
+        ]
+      }
+    },
+    "skeleton_warrior": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
+      "gear_parts": {
+        "head": [
+          "Skeleton_Warrior_Helmet"
+        ],
+        "chest": [
+          "Skeleton_Warrior_Cloak"
+        ]
+      }
+    },
+    "skeleton_rogue": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb",
+      "gear_parts": {
+        "head": [
+          "Skeleton_Rogue_Hood"
+        ],
+        "chest": [
+          "Skeleton_Rogue_Cape"
+        ]
+      }
+    },
+    "skeleton_mage": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb",
+      "gear_parts": {
+        "head": [
+          "Skeleton_Mage_Hat"
+        ]
+      }
+    },
     "rat": {
       "path": "res://assets/creatures/rat.glb",
       "rig": "own"
@@ -37,6 +71,11 @@
       "tint": {
         "RogueHooded_ArmLeft": "#d8b890",
         "RogueHooded_ArmRight": "#d8b890"
+      },
+      "gear_parts": {
+        "chest": [
+          "RogueHooded_Cape"
+        ]
       }
     },
     "gnoll_brute": {

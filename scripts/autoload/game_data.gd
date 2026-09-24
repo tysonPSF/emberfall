@@ -13,6 +13,7 @@ var npcs: Dictionary = {}
 var quests: Dictionary = {}
 var factions: Dictionary = {}
 var deities: Dictionary = {}
+var loot: Dictionary = {}
 
 
 func _ready() -> void:
@@ -26,6 +27,7 @@ func _ready() -> void:
 	quests = _load("res://data/quests.json")
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
+	loot = _load("res://data/loot.json")
 
 
 ## A deity's benefit, or 0 when the player has none or it grants something else.
@@ -47,7 +49,50 @@ func load_zone(zone_id: String) -> Dictionary:
 
 
 func item_name(item_id: String) -> String:
-	return str(items.get(item_id, {}).get("name", item_id))
+	return str(item(item_id).get("name", item_id))
+
+
+## An item's stats. Dropped gear carries a quality after an "@" in its id
+## ("iron_dagger@fine"), which renames it and scales its damage, armor, hit
+## points, mana and value by that tier in data/loot.json.
+func item(item_id: String) -> Dictionary:
+	var at := item_id.find("@")
+	if at < 0:
+		return items.get(item_id, {})
+	var base: Dictionary = items.get(item_id.left(at), {})
+	var tier := quality_tier(item_id)
+	if base.is_empty() or tier.is_empty():
+		return base
+	var out := base.duplicate()
+	out["name"] = "%s %s" % [tier["name"], base["name"]]
+	var mult := float(tier["stat_mult"])
+	for stat: String in ["dmg", "ac", "hp", "mana"]:
+		if out.has(stat):
+			var v := int(out[stat])
+			# every better tier adds at least one point, every worse one keeps at least one
+			out[stat] = maxi(v + 1, roundi(v * mult)) if mult > 1.0 else maxi(mini(v, 1), roundi(v * mult))
+	out["value"] = roundi(float(base.get("value", 0)) * float(tier["value_mult"]))
+	return out
+
+
+## The item id without its quality ("iron_dagger@fine" -> "iron_dagger").
+func base_item(item_id: String) -> String:
+	return item_id.get_slice("@", 0)
+
+
+## The quality tier of an item id, or {} for plain items.
+func quality_tier(item_id: String) -> Dictionary:
+	var q := item_id.get_slice("@", 1) if item_id.contains("@") else ""
+	for tier: Dictionary in loot.get("quality", {}).get("tiers", []):
+		if str(tier["id"]) == q:
+			return tier
+	return {}
+
+
+## Display color for an item's name, by quality.
+func item_color(item_id: String) -> Color:
+	var tier := quality_tier(item_id)
+	return Color.html(str(tier.get("color", "#e6e0d2")))
 
 
 func _load(path: String) -> Dictionary:

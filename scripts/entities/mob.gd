@@ -25,6 +25,7 @@ var color := Color.WHITE
 var body_scale := 1.0
 var model_id := ""
 var weapon_id := ""
+var gear: Dictionary = {}  # slot -> item id it spawned wearing; drops on death
 
 var _think_timer := 0.0
 var _scan_timer := 0.0
@@ -56,10 +57,25 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 	shape = d["shape"]
 	color = Color.html(d["color"])
 	body_scale = float(d["scale"])
+	gear = World.roll_gear(d, level)
 	var model: Variant = d.get("model", "")
-	model_id = str(model.pick_random()) if model is Array else str(model)
-	weapon_id = str(d.get("weapon", ""))
+	model_id = _pick_model(model if model is Array else [model])
+	weapon_id = str(GameData.item(gear["primary"]).get("model", "")) if gear.has("primary") else str(d.get("weapon", ""))
+	if d.has("gear"):
+		worn_gear = gear.keys()
 	wander_radius = sp.wander_radius if sp != null else 0.0
+
+
+## A body variant that can show everything this mob is wearing, if any can.
+func _pick_model(choices: Array) -> String:
+	var fits := choices.filter(func(id: Variant) -> bool:
+		var spec: Variant = GameData.models["characters"].get(str(id), "")
+		var parts: Dictionary = spec.get("gear_parts", {}) if spec is Dictionary else {}
+		for slot: String in gear:
+			if slot != "primary" and slot != "legs" and not parts.has(slot):
+				return false
+		return true)
+	return str((fits if not fits.is_empty() else choices).pick_random())
 
 
 func _ready() -> void:

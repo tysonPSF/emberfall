@@ -12,6 +12,7 @@
       "unknown": "I've no time for riddles, {name}."
     },
     "faction": "watch",
+    "outfitter": "Empty-handed, {name}? The wilds took your kit, I'd wager. Here, from the Watch's stores. Try to keep hold of it this time.",
     "combat": {
       "hp": 1800,
       "hp_regen": 30,

@@ -84,7 +84,12 @@ func _run() -> void:
 	p.zoom = 5.0
 	p.pitch = -0.25
 	p.camera_pivot.rotation.y = 0.5
+	var kit := p.equipment.duplicate()
+	p.equipment.clear()  # lost everything: the warden rearms you
 	World.request_hail(p.entity_id)
+	print("outfitted by warden: %s" % p.equipment)
+	p.equipment = kit
+	p.recalc_stats()
 	World.request_say(p.entity_id, "gnoll fangs")
 	await _wait(0.8)
 	await _shot("1e_quest_given")
@@ -168,6 +173,47 @@ func _run() -> void:
 	await _wait(1.6)
 	await _shot("4b_skeleton_fight")
 	p.camera_pivot.rotation.y = 0.0
+
+	# gear: mobs spawn wearing what they drop; line some up fully geared
+	for lvl: int in [1, 5]:
+		var counts := {}
+		for k in 1000:
+			var q := World.roll_quality(lvl, false)
+			counts[q] = int(counts.get(q, 0)) + 1
+		print("quality at level %d: %s" % [lvl, counts])
+	var lineup: Array[Mob] = []
+	var ids := ["decaying_skeleton", "decaying_skeleton", "decaying_skeleton", "gnoll_scout", "gnoll_pup", "grubnak"]
+	var here := p.global_position
+	for i in ids.size():
+		var d: Dictionary = (GameData.mobs[ids[i]] as Dictionary).duplicate(true)
+		for g: Dictionary in d.get("gear", []):
+			g["chance"] = 1.0 if i % 3 != 2 or g["slot"] == "primary" else 0.0
+		d["aggressive"] = false
+		var m := Mob.new()
+		m.setup(ids[i], d, null)
+		m.position = main.zone.ground(here.x - 7.5 + i * 3.0, here.z - 8.0) + Vector3.UP * 0.3
+		m.rotation.y = 0.0
+		main.zone.add_child(m)
+		lineup.append(m)
+		print("lineup %s wears %s as %s" % [ids[i], m.gear, m.model_id])
+	p.face_toward(main.zone.ground(here.x, here.z - 8.0))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 9.0
+	p.pitch = -0.2
+	await _wait(1.2)
+	await _shot("4e_gear_lineup")
+	var fell_at := lineup[0].global_position
+	World.damage(lineup[0], 9999, p)
+	await _wait(0.5)
+	p.global_position = fell_at + Vector3(0, 1, 2)
+	for c: Node in main.zone.get_children():
+		if c is Corpse and (c as Corpse).global_position.distance_to(fell_at) < 1.0:
+			World.request_loot_open(p.entity_id, (c as Corpse).object_id)
+	await _wait(0.4)
+	await _shot("4f_gear_loot")
+	World.request_loot_close(p.entity_id)
+	for m in lineup.slice(1):
+		World.damage(m, 9999, p)
 
 	for creature in ["large_rat", "fire_beetle", "gnoll_scout", "grubnak"]:
 		var c := _nearest_mob(p, creature)

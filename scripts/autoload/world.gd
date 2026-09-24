@@ -320,6 +320,8 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 		award_xp(killer, mob)
 
 	var entries: Array = []
+	for slot: String in mob.gear:  # what it was wearing comes off with it
+		entries.append({"item": mob.gear[slot], "slot": ""})
 	for entry: Dictionary in mob.data.get("loot", []):
 		if randf() < float(entry["chance"]):
 			entries.append({"item": entry["item"], "slot": ""})
@@ -674,7 +676,7 @@ func request_equip(player_id: int, inv_index: int) -> void:
 	if p == null or p.dead or inv_index < 0 or inv_index >= p.inventory.size():
 		return
 	var item_id: String = p.inventory[inv_index]
-	var slot: String = GameData.items.get(item_id, {}).get("slot", "")
+	var slot: String = GameData.item(item_id).get("slot", "")
 	if slot == "":
 		say(p, "You cannot equip that.", C_WARN)
 		return
@@ -697,6 +699,46 @@ func request_unequip(player_id: int, slot: String) -> void:
 	p.equipment.erase(slot)
 	p.recalc_stats()
 	p.inventory_changed.emit()
+
+
+## Gear a mob spawns wearing, from its "gear" list: [{slot, chance, table or
+## item}], as {slot: item id with quality}. Tougher mobs roll better quality.
+func roll_gear(mob_data: Dictionary, mob_level: int) -> Dictionary:
+	var out := {}
+	for entry: Dictionary in mob_data.get("gear", []):
+		if randf() >= float(entry.get("chance", 1.0)):
+			continue
+		var item_id := str(entry.get("item", ""))
+		if entry.has("table"):
+			item_id = _pick_weighted(GameData.loot["tables"].get(entry["table"], {}))
+		if item_id == "" or not GameData.items.has(item_id):
+			continue
+		var quality := roll_quality(mob_level, bool(mob_data.get("named", false)))
+		out[str(entry["slot"])] = item_id if quality == "" else "%s@%s" % [item_id, quality]
+	return out
+
+
+## A quality tier id ("" for plain): a roll of 0-100 plus a bonus for the mob's
+## level (and more for named mobs), read against the tiers' thresholds.
+func roll_quality(mob_level: int, named: bool) -> String:
+	var q: Dictionary = GameData.loot["quality"]
+	var score := randf() * 100.0 + mob_level * float(q["per_level"]) + (float(q["named_bonus"]) if named else 0.0)
+	for tier: Dictionary in q["tiers"]:
+		if score < float(tier["below"]):
+			return str(tier["id"])
+	return ""
+
+
+func _pick_weighted(table: Dictionary) -> String:
+	var total := 0.0
+	for id: String in table:
+		total += float(table[id])
+	var r := randf() * total
+	for id: String in table:
+		r -= float(table[id])
+		if r <= 0.0:
+			return id
+	return ""
 
 
 # --- npcs & quests ----------------------------------------------------------
@@ -739,6 +781,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
 	if key == "hail" and npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] == p.char_class:
 		say(p, "(Press G to train with %s.)" % npc.display_name, C_SYSTEM)
+	if key == "hail" and npc.data.has("outfitter"):
+		_outfit(p, npc)
 	if key == "hail":
 		for quest_id: String in p.quests:
 			var q: Dictionary = GameData.quests.get(quest_id, {})
@@ -749,6 +793,28 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q["start_keyword"]):
 			_accept_quest(p, quest_id)
+
+
+## An outfitter (Warden Holt) rearms anyone who comes to them with no weapon,
+## from their class's starting kit, filling only empty slots.
+func _outfit(p: Player, npc: Npc) -> void:
+	if p.equipment.has("primary"):
+		return
+	for item_id: String in p.inventory:
+		if GameData.item(item_id).get("slot", "") == "primary":
+			return
+	var given: Array = []
+	var kit: Dictionary = GameData.classes[p.char_class].get("starting_items", {})
+	for slot: String in kit:
+		if not p.equipment.has(slot):
+			p.equipment[slot] = kit[slot]
+			given.append(GameData.item_name(kit[slot]))
+	if given.is_empty():
+		return
+	_npc_say(p, npc, str(npc.data["outfitter"]))
+	say(p, "%s gives you: %s." % [npc.display_name, ", ".join(given)], C_LOOT)
+	p.recalc_stats()
+	p.inventory_changed.emit()
 
 
 func _npc_say(p: Player, npc: Npc, text: String) -> void:
@@ -1047,7 +1113,7 @@ func _check_service(p: Player) -> void:
 
 
 static func item_value(item_id: String) -> int:
-	return int(GameData.items.get(item_id, {}).get("value", 0))
+	return int(GameData.item(item_id).get("value", 0))
 
 
 ## What a merchant pays for one of these.
