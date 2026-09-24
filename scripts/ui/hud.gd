@@ -4,12 +4,13 @@ extends CanvasLayer
 ## loot and inventory windows. Reads state from the player; every action goes
 ## through World.request_*, the same as keyboard input.
 
-const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe while holding right mouse) · Space jump
-[b]Camera[/b]   Right-drag to look · Wheel to zoom (all the way in = first person)
-[b]Targeting[/b]   Left-click · Tab nearest enemy · F1 self · Esc clear / interrupt cast
-[b]Combat[/b]   Q auto attack · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
+const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump
+[b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
+[b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
+[b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
+[b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
+[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
@@ -17,6 +18,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 H or the gear button to hide this."""
 
 const ATTR_NAMES := {"dmg": "Damage", "ac": "AC", "hp": "HP", "mana": "Mana", "str": "STR", "sta": "STA", "agi": "AGI", "wis": "WIS", "int": "INT", "haste": "Haste", "hp_regen": "HP Regen", "mana_regen": "Mana Regen"}
+const CROSSHAIR_SIZE := 30.0
 
 var player: Player
 var root: Control
@@ -86,10 +88,13 @@ var _help_panel: PanelContainer
 var _banner: Label
 var _banner_time := 0.0
 var _death_label: Label
+var _crosshair: Control
+var _ring_drawn := false
 
 
 func _ready() -> void:
 	layer = 10
+	add_to_group("hud")  # the player asks us each frame whether a window needs the cursor
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -592,6 +597,39 @@ func _build_overlays() -> void:
 	_death_label.visible = false
 	root.add_child(_death_label)
 
+	_crosshair = Control.new()
+	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crosshair.custom_minimum_size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
+	_crosshair.size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
+	UIKit.place(_crosshair, Vector2(0.5, 0.5), Vector2(-CROSSHAIR_SIZE * 0.5, -CROSSHAIR_SIZE * 0.5))
+	_crosshair.draw.connect(_draw_crosshair)
+	root.add_child(_crosshair)
+
+
+## Crosshair, plus a ring that fills as the swing recharges while auto attacking.
+## The delay is the rules' to set; showing it just makes the rhythm legible
+## instead of looking like the game ignored the click.
+func _draw_crosshair() -> void:
+	var c := _crosshair.size * 0.5
+	for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+		_crosshair.draw_line(c + d * 3.0, c + d * 8.0, UIKit.GOLD, 1.0)
+	_crosshair.draw_circle(c, 1.2, UIKit.GOLD)
+	if player == null or not player.auto_attack:
+		return
+	var radius := CROSSHAIR_SIZE * 0.5 - 2.0
+	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, Color(0, 0, 0, 0.35), 2.0)
+	var delay := maxf(player.attack_delay, 0.01)
+	var charge := clampf(1.0 - player.swing_timer / delay, 0.0, 1.0)
+	var ready := charge >= 1.0
+	_crosshair.draw_arc(c, radius, -PI * 0.5, -PI * 0.5 + TAU * charge, 32,
+			Color(1, 0.45, 0.35) if ready else UIKit.GOLD, 2.0)
+
+
+## True while any window the player clicks in is open, which frees the cursor.
+func wants_cursor() -> bool:
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible
+			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible)
+
 
 # --- updates ----------------------------------------------------------------
 
@@ -599,7 +637,14 @@ func _process(delta: float) -> void:
 	_banner_time -= delta
 	_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
 	if player == null:
+		_crosshair.visible = false
 		return
+	_crosshair.visible = player.mouse_looking
+	# Redraw while the ring is advancing, plus once more after auto attack stops
+	# so the last frame with a ring on it gets cleared.
+	if _crosshair.visible and (player.auto_attack or _ring_drawn):
+		_crosshair.queue_redraw()
+	_ring_drawn = player.auto_attack
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]
 	_hp_bar.max_value = player.max_hp

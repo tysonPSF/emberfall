@@ -45,7 +45,8 @@ var camera: Camera3D
 var zoom := 6.0
 var pitch := -0.3
 var mouse_looking := false
-var _saved_mouse_pos := Vector2.ZERO
+var _cursor_hud: Node = null  # cached HUD, asked each frame whether a window needs the cursor
+var _autotest := "--autotest" in OS.get_cmdline_user_args()
 
 
 func from_save(d: Dictionary) -> void:
@@ -240,6 +241,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_update_mouse_look()
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, zoom, minf(1.0, delta * 10.0))
 	camera_pivot.rotation.x = pitch
 	visual.visible = not dead and zoom > 0.6
@@ -251,17 +253,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		match mb.button_index:
-			MOUSE_BUTTON_RIGHT:
-				_set_mouse_look(mb.pressed)
 			MOUSE_BUTTON_WHEEL_UP:
 				if mb.pressed:
 					zoom = maxf(0.0, zoom - 1.0)
 			MOUSE_BUTTON_WHEEL_DOWN:
 				if mb.pressed:
 					zoom = minf(MAX_ZOOM, zoom + 1.0)
+			MOUSE_BUTTON_RIGHT:
+				if mb.pressed and mouse_looking:
+					_crosshair_target()
 			MOUSE_BUTTON_LEFT:
 				if mb.pressed:
-					_click_select(mb.position, mb.double_click)
+					if mouse_looking:
+						_crosshair_attack()
+					else:
+						_click_select(mb.position, mb.double_click)
 		return
 	if event is InputEventMouseMotion and mouse_looking:
 		var mm := event as InputEventMouseMotion
@@ -298,24 +304,75 @@ func _unhandled_input(event: InputEvent) -> void:
 				break
 
 
-func _set_mouse_look(on: bool) -> void:
-	mouse_looking = on
-	if on:
-		_saved_mouse_pos = get_viewport().get_mouse_position()
+## Mouselook is the normal state: the mouse turns you and the cursor stays hidden.
+## The cursor comes back while a HUD window is open, while Alt is held, and when
+## you are dead, so the menus and hotbar stay clickable.
+##
+## The autotest keeps the same logical state - crosshair, strafing, the lot - but
+## never takes the real cursor, so a test run cannot hold the mouse hostage while
+## someone is working.
+func _update_mouse_look() -> void:
+	var want := not dead and not Input.is_action_pressed("free_cursor") and not _hud_wants_cursor()
+	if want == mouse_looking:
+		return
+	mouse_looking = want
+	if _autotest:
+		return
+	if want:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		Input.warp_mouse(_saved_mouse_pos)
+		Input.warp_mouse(get_viewport().get_visible_rect().size * 0.5)
 
 
-func _click_select(screen_pos: Vector2, double_click: bool) -> void:
+func _hud_wants_cursor() -> bool:
+	if not is_instance_valid(_cursor_hud):
+		_cursor_hud = get_tree().get_first_node_in_group("hud")
+	return _cursor_hud != null and _cursor_hud.wants_cursor()
+
+
+## Leaving the world (camp, quit) must not strand a hidden cursor. Entity's own
+## _exit_tree unregisters us from World, so it has to run too.
+func _exit_tree() -> void:
+	super()
+	mouse_looking = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
+## Right click in mouselook: pick up whatever the crosshair is on as your target.
+## Aiming and committing are separate, so you can size something up with C before
+## you swing at it.
+func _crosshair_target() -> void:
+	var col := _pick(get_viewport().get_visible_rect().size * 0.5)
+	if col is Entity:
+		World.request_set_target(entity_id, (col as Entity).entity_id)
+	elif col is Corpse:
+		World.request_set_target(entity_id, (col as Corpse).object_id)
+
+
+## Left click in mouselook: start swinging at the target you already picked.
+## Clicking never turns auto attack back off - that stays Q's job - so hammering
+## the button mid-fight cannot accidentally sheathe you.
+func _crosshair_attack() -> void:
+	if not auto_attack:
+		World.request_toggle_attack(entity_id)
+
+
+## Raycast into the scene from a screen point. Excludes the player's own body,
+## which otherwise sits under the crosshair in third person.
+func _pick(screen_pos: Vector2) -> Object:
 	var from := camera.project_ray_origin(screen_pos)
 	var to := from + camera.project_ray_normal(screen_pos) * 250.0
 	var query := PhysicsRayQueryParameters3D.create(from, to, Layers.WORLD | Layers.ENTITIES | Layers.CORPSES)
+	query.exclude = [get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	if hit.is_empty():
+	return hit["collider"] if not hit.is_empty() else null
+
+
+func _click_select(screen_pos: Vector2, double_click: bool) -> void:
+	var col := _pick(screen_pos)
+	if col == null:
 		return
-	var col: Object = hit["collider"]
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
 		if double_click and col is Npc:
@@ -346,12 +403,10 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	var fwd := Input.get_axis("move_back", "move_forward")
-	var side := Input.get_axis("turn_left", "turn_right")
-	var strafe := 0.0
-	if mouse_looking:
-		strafe = side
-	else:
-		rotate_y(-side * TURN_SPEED * delta)
+	var strafe := Input.get_axis("move_left", "move_right")
+	var turn := Input.get_axis("turn_left", "turn_right")  # arrow keys, for turning without the mouse
+	if turn != 0.0:
+		rotate_y(-turn * TURN_SPEED * delta)
 	var dir := -transform.basis.z * fwd + transform.basis.x * strafe
 	dir.y = 0.0
 	if dir.length() > 1.0:
