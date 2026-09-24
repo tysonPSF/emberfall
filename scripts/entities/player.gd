@@ -465,7 +465,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					_crosshair_target()
 			MOUSE_BUTTON_LEFT:
 				if mb.pressed:
-					if mouse_looking:
+					if mouse_looking and cursor.is_empty():
 						_crosshair_attack()
 					else:
 						_click_select(mb.position, mb.double_click)
@@ -563,6 +563,8 @@ func _crosshair_target() -> void:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
 	elif col is Corpse:
 		World.request_set_target(entity_id, (col as Corpse).object_id)
+	elif col is GroundItem:
+		World.request_pickup(entity_id, (col as GroundItem).object_id)
 
 
 ## Left click in mouselook: start swinging at the target you already picked.
@@ -602,7 +604,13 @@ func _pick(screen_pos: Vector2) -> Object:
 
 func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	var col := _pick(screen_pos)
+	if not cursor.is_empty():  # holding something: clicking the world drops it, as in EQ
+		World.request_drop(entity_id)
+		return
 	if col == null:
+		return
+	if col is GroundItem:
+		World.request_pickup(entity_id, (col as GroundItem).object_id)
 		return
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)

@@ -993,7 +993,7 @@ func _build_inventory() -> void:
 	v.add_child(general)
 	for g in Pack.GENERAL:
 		general.add_child(_make_slot("g:%d" % g, ""))
-	_bag_hint = UIKit.label("Click to pick up and put down; Ctrl-click takes one from a stack. Shift-click to equip (or sell, bank, offer). Right-click: details, or open a bag.", 11, UIKit.DIM)
+	_bag_hint = UIKit.label("Click to pick up and put down; Ctrl-click takes one from a stack. Shift-click to equip (or sell, bank, offer). Right-click: details, or open a bag. Click the ground to drop what you hold.", 11, UIKit.DIM)
 	_bag_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_bag_hint.custom_minimum_size.x = 380
 	v.add_child(_bag_hint)

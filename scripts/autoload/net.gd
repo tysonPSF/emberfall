@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 4  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 5  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -537,7 +537,7 @@ func _replicate(peer: int) -> void:
 	var states := PackedFloat32Array()
 	for id: int in World.objects:
 		var obj := World.get_object(id)
-		if obj == null or not obj.is_inside_tree() or not (obj is Entity or obj is Corpse) or World.zone_of(obj) != own_zone:
+		if obj == null or not obj.is_inside_tree() or not (obj is Entity or obj is Corpse or obj is GroundItem) or World.zone_of(obj) != own_zone:
 			continue  # only what's in this player's zone
 		seen[id] = true
 		if not known.has(id):
@@ -572,6 +572,9 @@ func _spawn_info(obj: Node3D) -> Dictionary:
 		var c := obj as Corpse
 		info.merge({"id": c.object_id, "kind": "corpse", "name": c.display_name, "look": c.look, "owner": c.owner_name}, true)
 		return info
+	if obj is GroundItem:
+		info.merge({"id": (obj as GroundItem).object_id, "kind": "ground", "entry": (obj as GroundItem).entry}, true)
+		return info
 	var e := obj as Entity
 	info.merge({"id": e.entity_id, "name": e.display_name, "level": e.level, "look": e.look, "hp": e.hp, "max_hp": e.max_hp}, true)
 	if e is Player:
@@ -599,6 +602,11 @@ func _s_spawn(list: Array) -> void:
 				c.display_name = str(info["name"])
 				c.object_id = int(info["id"])
 				node = c
+			"ground":
+				var g := GroundItem.new()
+				g.entry = info["entry"]
+				g.object_id = int(info["id"])
+				node = g
 			"player":
 				var p := Player.new()
 				p.setup_remote(info)
