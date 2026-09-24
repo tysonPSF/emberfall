@@ -275,6 +275,7 @@ func _start_server(args: PackedStringArray) -> void:
 		for mob: Dictionary in GameData.mobs.values():
 			for entry: Dictionary in mob.get("loot", []) + mob.get("gear", []):
 				entry["chance"] = 1.0
+			mob["coin"] = [maxi(7, int(mob.get("coin", [0, 0])[1])), maxi(7, int(mob.get("coin", [0, 0])[1]))]
 	var data_dir := "user://server"
 	for a in args:
 		if a.begins_with("--data="):
@@ -360,6 +361,7 @@ func _server_save_of(p: Player) -> Dictionary:
 
 
 func _on_remote_left(p: Player) -> void:
+	World.leave_group(p, "%s has left the group." % p.display_name)
 	World.request_trade_cancel(p.entity_id)
 	p.queue_free()
 

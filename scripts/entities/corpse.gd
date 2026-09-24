@@ -9,6 +9,8 @@ var owner_name := ""  # empty = anyone may loot
 var entries: Array = []  # [{item, slot}] — slot is set for gear a player was wearing
 var coin := 0
 var decay_left := 300.0
+var rights: Array = []  # names who may loot it for now (the group that earned the kill); empty = anyone
+var rights_until := 0  # msec when anyone may loot it
 
 var look: Dictionary = {}
 var _restored := false

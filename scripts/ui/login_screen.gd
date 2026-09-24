@@ -23,7 +23,7 @@ var _creator: CharCreate
 
 
 func _ready() -> void:
-	layer = 10  # above anything left of the world
+	layer = 20  # above anything left of the world
 	var bg := ColorRect.new()
 	bg.color = Color(0.05, 0.06, 0.07)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -155,7 +155,7 @@ func _on_characters(list: Array) -> void:
 func _open_creator() -> void:
 	_creator = CharCreate.new()
 	_creator.server_mode = true
-	_creator.layer = 11
+	_creator.layer = 21
 	_creator.confirmed.connect(func(s: Dictionary) -> void:
 		Net.create_character(str(s["name"]), str(s["class"]), str(s.get("deity", ""))))
 	_creator.canceled.connect(func() -> void:

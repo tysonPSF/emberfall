@@ -41,6 +41,9 @@ var attack_confirm_id := -1  # npc awaiting a second Q before attacking
 var attack_confirm_at := 0
 var body_color := Color.WHITE
 var is_local := true  # false for other people's players (a server's remote players, a client's mirrors)
+var group_id := 0  # server: the World.groups entry this player is in; 0 = none
+var group: Array = []  # [{id, name, level, class, hp, max_hp, mana, max_mana, leader, zone}] for the group window
+var follow_target: Node3D = null  # /follow: walk after this entity until you move yourself
 var _asked_at: Dictionary = {}  # request name -> msec before which it isn't asked again
 var stamina := 0.0  # drains while sprinting; World owns the rules
 var max_stamina := 0
@@ -54,7 +57,7 @@ var zoom := 6.0
 var pitch := -0.3
 var mouse_looking := false
 var _cursor_hud: Node = null  # cached HUD, asked each frame whether a window needs the cursor
-var _autotest := "--autotest" in OS.get_cmdline_user_args()
+var _autotest := "--autotest" in OS.get_cmdline_user_args() or Array(OS.get_cmdline_user_args()).any(func(a: String) -> bool: return a.begins_with("--nettest="))
 
 
 func from_save(d: Dictionary) -> void:
@@ -85,6 +88,57 @@ func from_save(d: Dictionary) -> void:
 	hp = clampi(int(d.get("hp", max_hp)), 1, max_hp)
 	mana = clampi(int(d.get("mana", max_mana)), 0, max_mana)
 	stamina = float(max_stamina)  # you arrive rested; it is not worth saving
+
+
+## F2-F6: the 1st-5th other member of your group, or -1 for any other key.
+func _group_key(event: InputEvent) -> int:
+	for i in 5:
+		if event.is_action_pressed("target_group_%d" % (i + 1)):
+			return i
+	return -1
+
+
+func target_group_member(index: int) -> void:
+	var others := group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != entity_id)
+	if index >= others.size():
+		return
+	var m: Dictionary = others[index]
+	if World.get_object(int(m["id"])) == null:
+		World.say(self, "%s is not in this zone." % m["name"], World.C_WARN)
+		return
+	World.request_set_target(entity_id, int(m["id"]))
+
+
+## /follow: walk after your target (a groupmate, usually) until you move
+## yourself, it leaves the zone, or it gets too far ahead.
+func start_follow() -> void:
+	var t := valid_target_entity()
+	if t == null or t == self:
+		World.say(self, "Target someone to follow.", World.C_WARN)
+		return
+	follow_target = t
+	World.say(self, "You start following %s." % t.display_name, World.C_SYSTEM)
+
+
+func stop_follow(why := "") -> void:
+	if follow_target == null:
+		return
+	var name := (follow_target as Entity).display_name if is_instance_valid(follow_target) else "your target"
+	follow_target = null
+	World.say(self, why if why != "" else "You stop following %s." % name, World.C_SYSTEM)
+
+
+func _follow_step() -> Vector3:
+	var t := follow_target as Entity
+	if not is_instance_valid(t) or t.dead or distance_to(t) > 100.0:
+		stop_follow("You lose sight of whoever you were following.")
+		return Vector3.ZERO
+	if distance_to(t) < 3.0:
+		return Vector3.ZERO
+	face_toward(t.global_position)
+	var d := t.global_position - global_position
+	d.y = 0.0
+	return d.normalized()
 
 
 ## Asks that repeat every frame until the rules answer (sprint, stand up) go
@@ -121,7 +175,8 @@ func apply_self(d: Dictionary) -> void:
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
 			"attack_delay", "attack_verb", "attributes", "inventory", "equipment", "spells", "quests", "factions",
 			"bank_items", "bank_coin", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
-			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting"]:
+			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting",
+			"group"]:
 		set(key, d[key])
 	if bool(d["dead"]) != dead:
 		dead = bool(d["dead"])
@@ -256,12 +311,12 @@ func xp_to_next() -> int:
 	return int(float(World.cfg("xp_per_level_sq", 100)) * level * level)
 
 
-func add_xp(amount: int) -> void:
+func add_xp(amount: int, party := false) -> void:
 	var max_level := int(World.cfg("max_level", 10))
 	if level >= max_level:
 		return
 	xp += amount
-	World.say(self, "You gain experience!!", World.C_XP)
+	World.say(self, "You gain party experience!!" if party else "You gain experience!!", World.C_XP)
 	while level < max_level and xp >= xp_to_next():
 		xp -= xp_to_next()
 		level += 1
@@ -377,6 +432,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_cycle_interact()
 	elif event.is_action_pressed("target_self"):
 		World.request_set_target(entity_id, entity_id)
+	elif _group_key(event) >= 0:
+		target_group_member(_group_key(event))
 	elif event.is_action_pressed("consider"):
 		World.request_consider(entity_id)
 	elif event.is_action_pressed("sit"):
@@ -561,6 +618,11 @@ func _physics_process(delta: float) -> void:
 	dir.y = 0.0
 	if dir.length() > 1.0:
 		dir = dir.normalized()
+	if follow_target != null:
+		if dir != Vector3.ZERO or turn != 0.0:
+			stop_follow()  # taking the controls back
+		else:
+			dir = _follow_step()
 	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + GameData.deity_bonus(deity, "run_speed_pct") / 100.0)
 	# Sprinting is forward-only, and asked for every frame rather than toggled:
 	# World decides whether it is allowed and ends it when the wind runs out.

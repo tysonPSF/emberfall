@@ -80,6 +80,12 @@ func import_character(account: String, save: Dictionary) -> String:
 	var known := func(id: Variant) -> bool: return GameData.items.has(GameData.base_item(str(id)))
 	d["inventory"] = (d.get("inventory", []) as Array).filter(known)
 	d["bank_items"] = (d.get("bank_items", []) as Array).filter(known)
+	var cls: Dictionary = GameData.classes[str(d["class"])]
+	var allowed: Array = (cls.get("spells", []) as Array).duplicate()
+	for entry: Dictionary in World.class_spells(str(d["class"])):
+		if int(entry["level"]) <= int(d["level"]):
+			allowed.append(entry["spell"])
+	d["spells"] = (d.get("spells", cls.get("spells", [])) as Array).filter(func(id: Variant) -> bool: return str(id) in allowed)
 	var eq: Dictionary = d.get("equipment", {})
 	for slot: String in eq.keys():
 		if not known.call(eq[slot]):

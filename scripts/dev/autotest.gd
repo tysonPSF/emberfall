@@ -25,6 +25,7 @@ const SECTIONS := [
 	["root", "greenmoor"],
 	["screens", "greenmoor"],
 	["chat", "greenmoor"],
+	["groupui", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -690,6 +691,23 @@ func _t_chat() -> void:
 	await _wait(0.3)
 	await _shot("9d_chat")
 	main.hud._chat.text_submitted.emit("/tell hello")
+
+
+## The group window and invite popup, drawn from sample data (a group needs
+## a second player; the network test covers the rules).
+func _t_groupui() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.group = [
+		{"id": 9001, "name": "Nick", "level": 6, "class": "cleric", "hp": 40, "max_hp": 70, "mana": 55, "max_mana": 80, "leader": true, "zone": "greenmoor", "dead": false},
+		{"id": p.entity_id, "name": p.display_name, "level": p.level, "class": p.char_class, "hp": p.hp, "max_hp": p.max_hp, "mana": p.mana, "max_mana": p.max_mana, "leader": false, "zone": "greenmoor", "dead": false},
+		{"id": 9002, "name": "Dragonchow", "level": 3, "class": "warrior", "hp": 12, "max_hp": 52, "mana": 0, "max_mana": 0, "leader": false, "zone": "emberhold", "dead": false},
+	]
+	main.hud._on_group_invited("Nick")
+	await _wait(0.4)
+	await _shot("9e_group")
+	main.hud._on_group_invited("")
+	p.group = []
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
