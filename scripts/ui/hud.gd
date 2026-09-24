@@ -13,6 +13,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
+[b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
@@ -57,6 +58,13 @@ var _sit_button: Button
 var _spell_buttons: Array[Button] = []
 
 var _log: RichTextLabel
+var _group_panel: PanelContainer
+var _group_rows: VBoxContainer
+var _group_shape := ""  # member ids and leader last drawn; the rows are rebuilt when it changes
+var _group_bars: Dictionary = {}  # member id -> [hp bar, mana bar, name label]
+var _invite_panel: PanelContainer
+var _invite_label: Label
+var _chat: LineEdit
 var _log_lines := 0
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
@@ -113,6 +121,8 @@ func _ready() -> void:
 	_build_hotbar()
 	_build_log()
 	_build_quest_tracker()
+	_build_group_window()
+	_build_invite()
 	_build_loot_window()
 	_build_trade_window()
 	_build_service_window()
@@ -132,6 +142,7 @@ func _ready() -> void:
 		_service_panel.visible = false
 		_service_npc = null
 		_refresh_inventory())
+	World.group_invited.connect(_on_group_invited)
 	World.trade_opened.connect(_on_trade_opened)
 	World.trade_changed.connect(_refresh_trade)
 	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
@@ -286,7 +297,132 @@ func _build_log() -> void:
 	_log.add_theme_font_size_override("normal_font_size", 13)
 	_log.meta_underlined = false
 	_log.meta_clicked.connect(_on_log_keyword)
-	p.add_child(_log)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	p.add_child(v)
+	v.add_child(_log)
+	_chat = LineEdit.new()
+	_chat.placeholder_text = "Enter to chat, / for commands (/help)"
+	_chat.max_length = World.CHAT_MAX
+	_chat.add_theme_font_size_override("font_size", 13)
+	_chat.text_submitted.connect(func(t: String) -> void:
+		var cmd := t.strip_edges().get_slice(" ", 0).to_lower()
+		if cmd == "/follow" or cmd == "/f":
+			player.start_follow()  # your own feet: handled on this machine
+		elif cmd == "/stopfollow":
+			player.stop_follow()
+		elif t.strip_edges() != "":
+			World.request_chat(player.entity_id, t)
+		_chat.clear()
+		_chat.release_focus())
+	_chat.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev.is_action_pressed("cancel"):
+			_chat.clear()
+			_chat.release_focus()
+			_chat.accept_event())
+	v.add_child(_chat)
+
+
+## True while the chat line has the keyboard: the player stops moving.
+func is_typing() -> bool:
+	return _chat != null and _chat.has_focus()
+
+
+func _open_chat(prefix: String) -> void:
+	_chat.grab_focus()
+	_chat.text = prefix
+	_chat.caret_column = prefix.length()
+
+
+## Your group: each member's name, health and mana. Click one to target them
+## (F2-F6 do the same, in this order).
+func _build_group_window() -> void:
+	_group_panel = UIKit.panel()
+	UIKit.place(_group_panel, Vector2(0, 0.5), Vector2(12, -40))
+	root.add_child(_group_panel)
+	_group_rows = VBoxContainer.new()
+	_group_rows.add_theme_constant_override("separation", 4)
+	_group_panel.add_child(_group_rows)
+	_group_panel.visible = false
+
+
+func _update_group() -> void:
+	var others := player.group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != player.entity_id)
+	_group_panel.visible = not player.group.is_empty()
+	var shape := str(player.group.map(func(m: Dictionary) -> String: return "%s:%s" % [m["id"], m["leader"]]))
+	if shape != _group_shape:
+		_group_shape = shape
+		for child in _group_rows.get_children():
+			child.queue_free()
+		_group_bars.clear()
+		_group_rows.add_child(UIKit.label("Group", 13, UIKit.GOLD))
+		var ordered := player.group.filter(func(x: Dictionary) -> bool: return int(x["id"]) == player.entity_id) + others  # you first
+		for i in ordered.size():
+			var m: Dictionary = ordered[i]
+			var row := Button.new()
+			row.flat = true
+			row.focus_mode = Control.FOCUS_NONE
+			row.custom_minimum_size = Vector2(210, 44)
+			var v := VBoxContainer.new()
+			v.add_theme_constant_override("separation", 2)
+			v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			v.set_anchors_preset(Control.PRESET_FULL_RECT)
+			row.add_child(v)
+			var name := UIKit.label("", 12, UIKit.TEXT)
+			name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			v.add_child(name)
+			var hp := UIKit.bar(Color(0.8, 0.22, 0.2), 200.0, 8.0)
+			var mana := UIKit.bar(Color(0.25, 0.4, 0.9), 200.0, 5.0)
+			v.add_child(hp)
+			v.add_child(mana)
+			var id := int(m["id"])
+			var key := i  # 0 is you (F1); others are F2 onward
+			row.pressed.connect(func() -> void:
+				if key == 0:
+					World.request_set_target(player.entity_id, player.entity_id)
+				else:
+					player.target_group_member(key - 1))
+			_group_rows.add_child(row)
+			_group_bars[id] = [hp, mana, name]
+	for m: Dictionary in player.group:
+		var parts: Array = _group_bars.get(int(m["id"]), [])
+		if parts.is_empty():
+			continue
+		var cls := str(GameData.classes.get(str(m["class"]), {}).get("name", "?"))
+		var away := "" if World.get_object(int(m["id"])) != null or int(m["id"]) == player.entity_id else "  (elsewhere)"
+		(parts[2] as Label).text = "%s%s  %d %s%s%s" % ["* " if m["leader"] else "", m["name"], int(m["level"]), cls.left(3),
+				"  (dead)" if m.get("dead", false) else "", away]
+		(parts[0] as ProgressBar).max_value = maxi(1, int(m["max_hp"]))
+		(parts[0] as ProgressBar).value = int(m["hp"])
+		(parts[1] as ProgressBar).max_value = maxi(1, int(m["max_mana"]))
+		(parts[1] as ProgressBar).value = int(m["mana"])
+		(parts[1] as ProgressBar).visible = int(m["max_mana"]) > 0
+
+
+func _build_invite() -> void:
+	_invite_panel = UIKit.panel()
+	UIKit.place(_invite_panel, Vector2(0.5, 0.3), Vector2.ZERO)
+	root.add_child(_invite_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	_invite_panel.add_child(v)
+	_invite_label = UIKit.label("", 15, UIKit.TEXT)
+	v.add_child(_invite_label)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var yes := UIKit.button("Accept", Vector2(120, 34))
+	yes.pressed.connect(func() -> void: World.request_group_accept(player.entity_id))
+	var no := UIKit.button("Decline", Vector2(120, 34))
+	no.pressed.connect(func() -> void: World.request_group_decline(player.entity_id))
+	row.add_child(yes)
+	row.add_child(no)
+	v.add_child(row)
+	_invite_panel.visible = false
+
+
+func _on_group_invited(from_name: String) -> void:
+	_invite_panel.visible = from_name != ""
+	_invite_label.text = "%s invites you to join a group." % from_name
 
 
 ## Active quests and what's still needed, under the player window.
@@ -645,7 +781,7 @@ func _build_menu() -> void:
 	v.add_child(settings)
 	var reloader := get_tree().get_first_node_in_group("reloader")
 	if reloader != null:  # dev builds only
-		var reload := UIKit.button("Reload game  (F5)", Vector2(0, 38))
+		var reload := UIKit.button("Reload game  (F9)", Vector2(0, 38))
 		reload.pressed.connect(func() -> void:
 			_menu_panel.visible = false
 			reloader.reload())
@@ -704,7 +840,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -753,6 +889,7 @@ func _process(delta: float) -> void:
 	_update_target()
 	_update_cast()
 	_update_hotbar()
+	_update_group()
 	if _inv_panel.visible:
 		var lines: PackedStringArray = []
 		if GameData.deities.has(player.deity):
@@ -831,7 +968,8 @@ func add_log(text: String, color: Color) -> void:
 		_log.newline()
 	_log.push_color(color)
 	var at := 0
-	for m in _keyword_re.search_all(text):
+	var links := color == World.C_NPC  # only NPCs' [keywords] are clickable, never players' chat
+	for m in (_keyword_re.search_all(text) if links else []):
 		_log.add_text(text.substr(at, m.get_start() - at))
 		_log.push_meta(m.get_string(1))
 		_log.push_color(UIKit.GOLD)
@@ -1081,6 +1219,12 @@ func _compare_lines(item_id: String) -> PackedStringArray:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		var key := (event as InputEventKey).keycode
+		if key == KEY_ENTER or key == KEY_KP_ENTER or key == KEY_SLASH:
+			_open_chat("/" if key == KEY_SLASH else "")
+			get_viewport().set_input_as_handled()
+			return
 	if event.is_action_pressed("inventory"):
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()

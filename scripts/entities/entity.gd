@@ -71,7 +71,10 @@ func valid_target_entity() -> Entity:
 	return null
 
 
+## Infinitely far when in another zone: coordinates overlap between zones.
 func distance_to(other: Node3D) -> float:
+	if World.zone_of(self) != World.zone_of(other):
+		return INF
 	return global_position.distance_to(other.global_position)
 
 

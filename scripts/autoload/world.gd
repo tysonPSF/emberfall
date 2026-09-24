@@ -19,6 +19,7 @@ signal service_opened(npc: Npc, kind: String)  # kind: "shop" or "bank"
 signal service_changed
 signal service_closed
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
+signal group_invited(from_name: String)  # "" closes the invite window
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
 
@@ -45,6 +46,18 @@ const C_WARN := Color(1, 0.62, 0.25)
 const C_SYSTEM := Color(0.85, 0.85, 0.8)
 const C_SAY := Color(0.9, 0.9, 0.9)
 const C_NPC := Color(0.75, 0.9, 1.0)
+const C_CHAT_SAY := Color(0.93, 0.93, 0.9)
+const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
+const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
+const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
+const C_CHAT_GROUP := Color(0.55, 0.78, 1.0)
+const SAY_RANGE := 45.0
+const CHAT_MAX := 240
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const GROUP_MAX := 6
+const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
+const LOOT_RIGHTS_SECONDS := 180.0
+const INVITE_SECONDS := 60.0
 
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
@@ -72,6 +85,9 @@ var local_player: Player = null
 var zone: Zone = null
 var tick_timer := 0.0
 var merchant_stock: Dictionary = {}  # merchant npc id -> {item id: count} bought from players
+var groups: Dictionary = {}  # group id -> {leader: player id, members: [player ids]}
+var _next_group := 1
+var _group_view_timer := 0.0
 
 
 # --- registry ---------------------------------------------------------------
@@ -108,6 +124,14 @@ func get_mobs() -> Array[Mob]:
 		if obj is Mob:
 			out.append(obj)
 	return out
+
+
+## The zone a node is in. A server runs several at once, each in its own
+## physics world, so "where" always means "in which zone" first.
+func zone_of(n: Node) -> Zone:
+	while n != null and not (n is Zone):
+		n = n.get_parent()
+	return n as Zone
 
 
 func cfg(key: String, default: Variant = null) -> Variant:
@@ -153,7 +177,7 @@ func _remote(method: StringName, args: Array) -> bool:
 ## Says something out loud: every player within earshot sees it.
 func shout(from: Node3D, text: String, color: Color = C_NPC, radius := 60.0) -> void:
 	for p in get_players():
-		if p.global_position.distance_to(from.global_position) <= radius:
+		if p.distance_to(from) <= radius:
 			say(p, text, color)
 
 
@@ -195,6 +219,10 @@ func _physics_process(delta: float) -> void:
 	if not Net.is_authority():
 		_client_timers(delta)
 		return
+	_group_view_timer += delta
+	if _group_view_timer >= 0.2:
+		_group_view_timer = 0.0
+		_update_group_views()
 	for obj: Node3D in objects.values():
 		if obj is Entity and is_instance_valid(obj) and not obj.dead:
 			_update_timers(obj, delta)
@@ -349,6 +377,10 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 		return
 	d.hp -= amount
 	d.sitting = false
+	if d is Mob and src is Player:  # kill credit goes to whoever did the most
+		var by: Dictionary = d.get_meta("damage_by", {})
+		by[src.entity_id] = int(by.get(src.entity_id, 0)) + amount
+		d.set_meta("damage_by", by)
 	if src != null:
 		d.add_hate(src, float(amount))
 	d.animate("hit")
@@ -388,8 +420,8 @@ func kill(d: Entity, killer: Entity) -> void:
 	for obj: Node3D in objects.values():
 		if obj is Entity:
 			obj.hate.erase(d.entity_id)
-	if killer is Player and GameData.factions.has(d.faction):
-		apply_faction(killer, GameData.factions[d.faction].get("on_kill", {}))
+	if killer is Player and GameData.factions.has(d.faction) and not (d is Mob):
+		apply_faction(killer, GameData.factions[d.faction].get("on_kill", {}))  # mobs: the credited group, in _kill_mob
 	if d is Npc:
 		for pl in get_players():
 			pl.hostile_npcs.erase(d.entity_id)
@@ -411,8 +443,8 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 		elif p.distance_to(mob) < 40.0:
 			var by := killer.display_name if killer != null else "unknown forces"
 			say(p, "%s has been slain by %s!" % [cap(mob.display_name), by], C_SYSTEM)
-	if killer is Player:
-		award_xp(killer, mob)
+	var credited := _kill_credit(mob, killer)
+	_award_group(credited, mob)
 
 	var entries: Array = []
 	for slot: String in mob.gear:  # what it was wearing comes off with it
@@ -429,7 +461,10 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	corpse.setup(mob.display_name, mob.look, entries, coin, decay)
 	corpse.position = mob.global_position
 	corpse.rotation.y = mob.rotation.y
-	zone.add_child(corpse)
+	if credited != null:
+		corpse.rights = group_members(credited).map(func(m: Player) -> String: return m.display_name)
+		corpse.rights_until = Time.get_ticks_msec() + int(LOOT_RIGHTS_SECONDS * 1000)
+	zone_of(mob).add_child(corpse)
 
 	for p in get_players():
 		if p.target == mob:
@@ -459,7 +494,7 @@ func _kill_player(p: Player, killer: Entity) -> void:
 		corpse.setup(p.display_name, p.look, entries, p.coin,
 				float(cfg("player_corpse_decay_seconds", 3600)), p.display_name)
 		corpse.position = p.global_position
-		zone.add_child(corpse)
+		zone_of(p).add_child(corpse)
 		p.equipment.clear()
 		p.inventory.clear()
 		p.coin = 0
@@ -469,6 +504,49 @@ func _kill_player(p: Player, killer: Entity) -> void:
 	p.on_death()
 	_ui(p, &"player_died", [p])
 	get_tree().create_timer(float(cfg("respawn_delay", 4.0))).timeout.connect(p.respawn)
+
+
+## The player whose group earned a kill: the one who did the most damage,
+## or the killer if no player hurt it at all.
+func _kill_credit(mob: Mob, killer: Entity) -> Player:
+	var best: Player = killer as Player
+	var most := 0
+	var by: Dictionary = mob.get_meta("damage_by", {})
+	for id: int in by:
+		var p := get_object(id) as Player
+		if p != null and int(by[id]) > most:
+			best = p
+			most = int(by[id])
+	return best
+
+
+## EQ group experience: members in the kill's zone who are within level range
+## of the group's highest share it, weighted by level, with a small bonus per
+## extra member; nothing if the mob is gray to the highest. They also take the
+## faction hits.
+func _award_group(credited: Player, mob: Mob) -> void:
+	if credited == null:
+		return
+	var here := zone_of(mob)
+	var members := group_members(credited).filter(func(m: Player) -> bool: return zone_of(m) == here and not m.dead)
+	if members.is_empty():
+		members = [credited]
+	var top := 0
+	for m: Player in members:
+		top = maxi(top, m.level)
+	var eligible := members.filter(func(m: Player) -> bool: return top - m.level <= maxi(3, top / 3))
+	if GameData.factions.has(mob.faction):
+		for m: Player in eligible:
+			apply_faction(m, GameData.factions[mob.faction].get("on_kill", {}))
+	if con_of(top, mob.level) == Con.GRAY:
+		return
+	var base := float(cfg("xp_base", 10)) + mob.level * mob.level * float(cfg("xp_per_mob_level_sq", 5))
+	var total := base * float(cfg("xp_rate", 1.0)) * float(mob.data.get("xp_bonus", 1.0)) * (1.0 + GROUP_XP_BONUS * (eligible.size() - 1))
+	var level_sum := 0
+	for m: Player in eligible:
+		level_sum += m.level
+	for m: Player in eligible:
+		m.add_xp(maxi(1, int(total * m.level / level_sum)), eligible.size() > 1)
 
 
 func award_xp(p: Player, mob: Mob) -> void:
@@ -649,7 +727,7 @@ func request_interrupt(entity_id: int) -> void:
 func _resolve_spell_target(c: Entity, s: Dictionary) -> Entity:
 	var t := c.valid_target_entity()
 	match str(s.get("target", "enemy")):
-		"self":
+		"self", "group":
 			return c
 		"friendly":
 			return t if t != null and t.faction == c.faction else c
@@ -689,6 +767,16 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		c.mana -= int(s.get("mana", 0))
 		c.cooldowns[spell_id] = float(s.get("recast", 0))
 	var power := randi_range(int(s.get("min", 0)), int(s.get("max", 0))) + int(float(s.get("per_level", 0)) * (c.level - 1))
+	if str(s.get("target", "")) == "group" and c is Player:  # every member in range, the caster too
+		for m: Player in group_members(c as Player):
+			if not m.dead and (m == c or c.distance_to(m) <= float(s.get("range", 30))):
+				_land(c, spell_id, m, s, power)
+		return
+	_land(c, spell_id, t, s, power)
+
+
+## One spell's effect on one target.
+func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) -> void:
 	match str(s["type"]):
 		"damage":
 			if s.get("ability", false):
@@ -711,7 +799,7 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		"gate":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
-			c.global_position = zone.bind_point + Vector3.UP
+			c.global_position = zone_of(c).bind_point + Vector3.UP
 			c.velocity = Vector3.ZERO
 			if c is Player:
 				Net.teleport(c as Player, c.global_position)
@@ -744,7 +832,7 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 func call_for_help(caller: Mob, enemy: Entity) -> void:
 	for m in get_mobs():
 		if m != caller and not m.dead and m.faction == caller.faction and m.hate.is_empty() \
-				and m.global_position.distance_to(caller.global_position) <= CALL_FOR_HELP_RADIUS:
+				and m.distance_to(caller) <= CALL_FOR_HELP_RADIUS:
 			m.add_hate(enemy, 1.0)
 
 
@@ -757,23 +845,42 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or p.dead:
 		return
-	if p.global_position.distance_to(c.global_position) > LOOT_RANGE:
+	if p.distance_to(c) > LOOT_RANGE:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return
 	request_trade_cancel(player_id)
 	if c.owner_name != "" and c.owner_name != p.display_name:
 		say(p, "You may not loot this corpse.", C_WARN)
 		return
+	if not c.rights.is_empty() and Time.get_ticks_msec() < c.rights_until and not p.display_name in c.rights:
+		say(p, "You may not loot this corpse yet.", C_WARN)
+		return
 	if c.coin > 0:
-		p.coin += c.coin
-		say(p, "You receive %s from the corpse." % format_coin(c.coin), C_LOOT)
+		_split_coin(p, c.coin)
 		c.coin = 0
-		p.inventory_changed.emit()
 	if c.entries.is_empty():
 		say(p, "The corpse is empty.")
 		remove_corpse(c)
 		return
 	_ui(p, &"loot_opened", [c])
+
+
+## Coin from a corpse is shared with the looter's group in the same zone; the
+## looter keeps whatever doesn't divide evenly.
+func _split_coin(p: Player, coin: int) -> void:
+	var here := zone_of(p)
+	var members := group_members(p).filter(func(m: Player) -> bool: return zone_of(m) == here)
+	var share := coin / members.size()
+	for m: Player in members:
+		var amount := share + (coin % members.size() if m == p else 0)
+		if amount <= 0:
+			continue
+		m.coin += amount
+		if m == p:
+			say(m, "You receive %s from the corpse%s." % [format_coin(amount), " (your split)" if members.size() > 1 else ""], C_LOOT)
+		else:
+			say(m, "You receive %s as your split." % format_coin(amount), C_LOOT)
+		m.inventory_changed.emit()
 
 
 func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
@@ -783,7 +890,7 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or index < 0 or index >= c.entries.size():
 		return false
-	if p.global_position.distance_to(c.global_position) > LOOT_RANGE:
+	if p.distance_to(c) > LOOT_RANGE:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return false
 	var entry: Dictionary = c.entries[index]
@@ -966,6 +1073,348 @@ func request_say(player_id: int, keyword: String) -> void:
 		say(p, "Target someone to talk to them.", C_WARN)
 		return
 	_talk(p, p.target as Npc, keyword)
+
+
+# --- groups -----------------------------------------------------------------
+
+## Everyone in p's group (p alone if ungrouped), online and anywhere.
+func group_members(p: Player) -> Array:
+	var g: Dictionary = groups.get(p.group_id, {})
+	if g.is_empty():
+		return [p]
+	var out: Array = []
+	for id: int in g["members"]:
+		var m := get_object(id) as Player
+		if m != null:
+			out.append(m)
+	return out
+
+
+func _group_say(p: Player, text: String, color := C_CHAT_GROUP) -> void:
+	for m: Player in group_members(p):
+		say(m, text, color)
+
+
+func _find_player(name: String) -> Player:
+	for q in get_players():
+		if q.display_name.to_lower() == name.to_lower():
+			return q
+	return null
+
+
+## /invite: by name, or whoever you have targeted. The leader invites; anyone
+## ungrouped may start a group this way.
+func request_group_invite(player_id: int, name: String) -> void:
+	if _remote(&"request_group_invite", [player_id, name]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var t: Player = _find_player(name) if name != "" else p.valid_target_entity() as Player
+	if t == null:
+		say(p, "%s is not online." % name.capitalize() if name != "" else "Target a player, or /invite <name>.", C_WARN)
+		return
+	if t == p:
+		say(p, "You can't invite yourself.", C_WARN)
+		return
+	var g: Dictionary = groups.get(p.group_id, {})
+	if not g.is_empty() and g["leader"] != p.entity_id:
+		say(p, "Only the group leader can invite.", C_WARN)
+		return
+	if not g.is_empty() and (g["members"] as Array).size() >= GROUP_MAX:
+		say(p, "Your group is full.", C_WARN)
+		return
+	if t.group_id != 0:
+		say(p, "%s is already in a group." % t.display_name, C_WARN)
+		return
+	t.set_meta("invite_from", p.entity_id)
+	t.set_meta("invite_at", Time.get_ticks_msec())
+	say(p, "You invite %s to join your group." % t.display_name, C_CHAT_GROUP)
+	say(t, "%s invites you to join a group. Type /accept or /decline." % p.display_name, C_CHAT_GROUP)
+	_ui(t, &"group_invited", [p.display_name])
+
+
+func request_group_accept(player_id: int) -> void:
+	if _remote(&"request_group_accept", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var inviter := get_object(int(p.get_meta("invite_from", -1))) as Player
+	var fresh := Time.get_ticks_msec() - int(p.get_meta("invite_at", 0)) < INVITE_SECONDS * 1000
+	if p.has_meta("invite_from"):
+		p.remove_meta("invite_from")
+	_ui(p, &"group_invited", [""])
+	if inviter == null or not fresh:
+		say(p, "You have no invitation to accept.", C_WARN)
+		return
+	if p.group_id != 0:
+		say(p, "You are already in a group.", C_WARN)
+		return
+	if inviter.group_id == 0:
+		var gid := _next_group
+		_next_group += 1
+		groups[gid] = {"leader": inviter.entity_id, "members": [inviter.entity_id]}
+		inviter.group_id = gid
+	var g: Dictionary = groups[inviter.group_id]
+	if (g["members"] as Array).size() >= GROUP_MAX:
+		say(p, "That group is full.", C_WARN)
+		return
+	(g["members"] as Array).append(p.entity_id)
+	p.group_id = inviter.group_id
+	_group_say(p, "%s has joined the group." % p.display_name)
+	_update_group_views()
+
+
+func request_group_decline(player_id: int) -> void:
+	if _remote(&"request_group_decline", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var inviter := get_object(int(p.get_meta("invite_from", -1))) as Player
+	if p.has_meta("invite_from"):
+		p.remove_meta("invite_from")
+	_ui(p, &"group_invited", [""])
+	if inviter != null:
+		say(inviter, "%s declines your invitation." % p.display_name, C_CHAT_GROUP)
+	say(p, "You decline the invitation.", C_CHAT_GROUP)
+
+
+## /disband: leave your group (it dissolves when one member is left).
+func request_group_leave(player_id: int) -> void:
+	if _remote(&"request_group_leave", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p != null:
+		if p.group_id == 0:
+			say(p, "You are not in a group.", C_WARN)
+			return
+		leave_group(p, "%s has left the group." % p.display_name)
+
+
+## /kick <name>: the leader removes a member.
+func request_group_kick(player_id: int, name: String) -> void:
+	if _remote(&"request_group_kick", [player_id, name]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var t := _find_player(name)
+	var g: Dictionary = groups.get(p.group_id, {})
+	if g.is_empty() or g["leader"] != p.entity_id:
+		say(p, "Only the group leader can remove members.", C_WARN)
+		return
+	if t == null or t.group_id != p.group_id or t == p:
+		say(p, "%s is not in your group." % name.capitalize(), C_WARN)
+		return
+	leave_group(t, "%s has been removed from the group." % t.display_name)
+
+
+## /makeleader <name>
+func request_group_leader(player_id: int, name: String) -> void:
+	if _remote(&"request_group_leader", [player_id, name]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var t := _find_player(name)
+	var g: Dictionary = groups.get(p.group_id, {})
+	if g.is_empty() or g["leader"] != p.entity_id:
+		say(p, "Only the group leader can pass on leadership.", C_WARN)
+		return
+	if t == null or t.group_id != p.group_id:
+		say(p, "%s is not in your group." % name.capitalize(), C_WARN)
+		return
+	g["leader"] = t.entity_id
+	_group_say(p, "%s is now the leader of the group." % t.display_name)
+	_update_group_views()
+
+
+## Takes a player out of their group (leaving, kicked, camping, disconnecting).
+func leave_group(p: Player, announce := "") -> void:
+	var g: Dictionary = groups.get(p.group_id, {})
+	if g.is_empty():
+		return
+	if announce != "":
+		_group_say(p, announce)
+	(g["members"] as Array).erase(p.entity_id)
+	var gid := p.group_id
+	p.group_id = 0
+	p.group = []
+	var left: Array = g["members"]
+	if left.size() <= 1:
+		for id: int in left:
+			var m := get_object(id) as Player
+			if m != null:
+				m.group_id = 0
+				m.group = []
+				say(m, "Your group has been disbanded.", C_CHAT_GROUP)
+		groups.erase(gid)
+	elif g["leader"] == p.entity_id:
+		g["leader"] = left[0]
+		var leader := get_object(int(left[0])) as Player
+		if leader != null:
+			_group_say(leader, "%s is now the leader of the group." % leader.display_name)
+	_update_group_views()
+
+
+## /assist: take the target of a groupmate (by name) or of your own target.
+func request_assist(player_id: int, name: String) -> void:
+	if _remote(&"request_assist", [player_id, name]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var helper: Entity = _find_player(name) if name != "" else p.valid_target_entity()
+	if helper == null or helper.distance_to(p) > 200.0:
+		say(p, "Assist whom? Target someone or /assist <name>.", C_WARN)
+		return
+	var t := helper.valid_target_entity()
+	if t == null:
+		say(p, "%s has no target." % helper.display_name, C_WARN)
+		return
+	p.target = t
+	say(p, "You are assisting %s: your target is now %s." % [helper.display_name, t.display_name], C_SYSTEM)
+
+
+## Each member's copy of the group window: names, levels, health and mana.
+func _update_group_views() -> void:
+	for gid: int in groups:
+		var g: Dictionary = groups[gid]
+		var view: Array = []
+		for id: int in g["members"]:
+			var m := get_object(id) as Player
+			if m == null:
+				continue
+			var z := zone_of(m)
+			view.append({"id": id, "name": m.display_name, "level": m.level, "class": m.char_class,
+					"hp": m.hp, "max_hp": m.max_hp, "mana": m.mana, "max_mana": m.max_mana,
+					"leader": g["leader"] == id, "zone": z.zone_id if z != null else "", "dead": m.dead})
+		for id: int in g["members"]:
+			var m := get_object(id) as Player
+			if m != null:
+				m.group = view
+
+
+# --- chat -------------------------------------------------------------------
+
+## A line typed into the chat box: plain text is /say, anything starting with
+## a slash is a command.
+func request_chat(player_id: int, text: String) -> void:
+	if _remote(&"request_chat", [player_id, text]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	text = text.strip_edges().left(CHAT_MAX)
+	if text == "":
+		return
+	if not text.begins_with("/"):
+		_chat_say(p, text)
+		return
+	var cmd := text.get_slice(" ", 0).to_lower()
+	var rest := text.substr(cmd.length()).strip_edges()
+	match cmd:
+		"/say", "/s":
+			_chat_say(p, rest)
+		"/shout", "/sh":
+			if rest != "":
+				for q in get_players():
+					if zone_of(q) == zone_of(p):
+						say(q, "You shout, '%s'" % rest if q == p else "%s shouts, '%s'" % [p.display_name, rest], C_CHAT_SHOUT)
+		"/ooc", "/o":
+			if rest != "":
+				for q in get_players():
+					say(q, "You say out of character, '%s'" % rest if q == p else "%s says out of character, '%s'" % [p.display_name, rest], C_CHAT_OOC)
+		"/tell", "/t", "/msg":
+			_chat_tell(p, rest.get_slice(" ", 0), rest.substr(rest.get_slice(" ", 0).length()).strip_edges())
+		"/reply", "/r":
+			_chat_tell(p, str(p.get_meta("last_tell_from", "")), rest)
+		"/who":
+			_chat_who(p, rest.to_lower() == "all")
+		"/lfg":
+			p.set_meta("lfg", not p.get_meta("lfg", false))
+			say(p, "You are now %s." % ("looking for a group" if p.get_meta("lfg") else "no longer looking for a group"), C_SYSTEM)
+		"/random", "/roll":
+			var top := maxi(1, int(rest)) if rest.is_valid_int() else 100
+			var roll := randi_range(0, top)
+			for q in get_players():
+				if q.distance_to(p) <= SAY_RANGE:
+					say(q, "**A Magic Die is rolled by %s. It could have been any number from 0 to %d, but this time it turned up a %d." % [p.display_name, top, roll], C_SYSTEM)
+		"/loc":
+			say(p, "Your location is %d, %d, %d in %s." % [roundi(p.global_position.x), roundi(p.global_position.y), roundi(p.global_position.z), zone_of(p).zone_name], C_SYSTEM)
+		"/camp":
+			request_camp(player_id)
+		"/g", "/gsay", "/group":
+			if p.group_id == 0:
+				say(p, "You are not in a group.", C_WARN)
+			elif rest != "":
+				for m: Player in group_members(p):
+					say(m, "You tell your party, '%s'" % rest if m == p else "%s tells the group, '%s'" % [p.display_name, rest], C_CHAT_GROUP)
+		"/invite", "/inv":
+			if rest == "" and p.has_meta("invite_from"):
+				request_group_accept(player_id)
+			else:
+				request_group_invite(player_id, rest)
+		"/accept", "/join":
+			request_group_accept(player_id)
+		"/decline":
+			request_group_decline(player_id)
+		"/disband", "/leave":
+			request_group_leave(player_id)
+		"/kick", "/remove":
+			request_group_kick(player_id, rest)
+		"/makeleader":
+			request_group_leader(player_id, rest)
+		"/assist", "/a":
+			request_assist(player_id, rest)
+		"/help", "/h":
+			say(p, CHAT_HELP, C_SYSTEM)
+		_:
+			say(p, "That is not a valid command. Type /help for the list.", C_WARN)
+
+
+## /say: everyone nearby hears it; a targeted NPC in range treats it as talk.
+func _chat_say(p: Player, text: String) -> void:
+	if text == "":
+		return
+	var npc := p.valid_target_entity() as Npc
+	if npc != null and p.distance_to(npc) <= TALK_RANGE:
+		_talk(p, npc, text)  # says it back to you, and the NPC answers
+	else:
+		say(p, "You say, '%s'" % text, C_CHAT_SAY)
+	for q in get_players():
+		if q != p and q.distance_to(p) <= SAY_RANGE:
+			say(q, "%s says, '%s'" % [p.display_name, text], C_CHAT_SAY)
+
+
+func _chat_tell(p: Player, to_name: String, text: String) -> void:
+	if to_name == "" or text == "":
+		say(p, "Tell whom what? /tell <name> <message>", C_WARN)
+		return
+	for q in get_players():
+		if q.display_name.to_lower() == to_name.to_lower():
+			say(q, "%s tells you, '%s'" % [p.display_name, text], C_CHAT_TELL)
+			q.set_meta("last_tell_from", p.display_name)
+			say(p, "You told %s, '%s'" % [q.display_name, text], C_CHAT_TELL)
+			return
+	say(p, "%s is not online at this time." % to_name.capitalize(), C_WARN)
+
+
+## /who: players in your zone, or everywhere with /who all.
+func _chat_who(p: Player, everywhere: bool) -> void:
+	var here := zone_of(p)
+	var lines: PackedStringArray = []
+	for q in get_players():
+		if everywhere or zone_of(q) == here:
+			var cls := str(GameData.classes[q.char_class]["name"])
+			lines.append("  [%d %s] %s (%s)%s" % [q.level, cls, q.display_name, zone_of(q).zone_name, "  LFG" if q.get_meta("lfg", false) else ""])
+	lines.sort()
+	say(p, "Players on %s:" % ("the server" if everywhere else here.zone_name), C_SYSTEM)
+	for line in lines:
+		say(p, line, C_SYSTEM)
+	say(p, "There %s %d player%s %s." % ["is" if lines.size() == 1 else "are", lines.size(), "" if lines.size() == 1 else "s", "online" if everywhere else "in " + here.zone_name], C_SYSTEM)
 
 
 func _talk(p: Player, npc: Npc, keyword: String) -> void:
@@ -1215,9 +1664,10 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 	if _remote(&"request_zone_line", [player_id, line_index]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.dead or zone == null or zone.zone_line_at(p.global_position) != line_index:
+	var z := zone_of(p)
+	if p == null or p.dead or z == null or z.zone_line_at(p.global_position) != line_index:
 		return
-	var zl: Dictionary = zone.data["zone_lines"][line_index]
+	var zl: Dictionary = z.data["zone_lines"][line_index]
 	request_trade_cancel(player_id)
 	request_service_close(player_id)
 	request_loot_close(player_id)

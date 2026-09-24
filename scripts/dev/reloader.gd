@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## Dev convenience: notices when scripts, data or art change on disk and
-## offers a reload. F5 saves, re-imports assets, and restarts the game with
+## offers a reload. F9 saves, re-imports assets, and restarts the game with
 ## --resume so you land back where you were, skipping the character screen.
 ## Only runs from the project folder, never in an exported build.
 
@@ -19,7 +19,7 @@ var _reloading := false
 func _ready() -> void:
 	add_to_group("reloader")  # the Esc menu offers a reload button when this exists
 	layer = 100
-	_notice = UIKit.label("Update ready  -  press F5 to reload", 16, UIKit.GOLD)
+	_notice = UIKit.label("Update ready  -  press F9 to reload", 16, UIKit.GOLD)
 	UIKit.place(_notice, Vector2(0.5, 0), Vector2(0, 14))
 	_notice.visible = false
 	add_child(_notice)

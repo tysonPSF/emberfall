@@ -20,7 +20,8 @@ var hud: Hud
 var _save_timer := 0.0
 var _corpses_by_zone: Dictionary = {}  # zone id -> saved player corpses left there
 var _changing_zone := false
-var _server_corpses: Dictionary = {}  # server: player name -> {zone id: corpses} for zones not loaded
+var _server_zones: Dictionary = {}  # server: zone id -> Zone, every zone that is running
+var _start_zone := ""  # server: where new characters (and unknown zones) land
 
 
 func _ready() -> void:
@@ -47,12 +48,15 @@ func _ready() -> void:
 	Net.left_server.connect(_on_left_server)
 	Net.camp_done.connect(_on_client_camped)
 	Net.zone_moved.connect(_on_client_zone_moved)
+	Net.joined.connect(_start_client)
 	var save := {} if autotest else _load_save()
 	var title := _show_title(save)
 	if autotest:
 		add_child(load("res://scripts/dev/autotest.gd").new())
 	elif save_path.begins_with("user://nettest_"):
 		add_child(load("res://scripts/dev/nettest.gd").new())
+	elif "--resume" in args and str(_settings().get("mode", "")) == "online":
+		_show_login()  # reloaded after an update: back to the server's login
 	elif "--resume" in args and GameData.deities.has(str(save.get("deity", ""))):
 		_play(save, title)  # reloaded after an update: straight back in (older saves stop to pick a deity)
 
@@ -62,24 +66,48 @@ func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreat
 	title.setup(save)
 	title.server_address = str(_settings().get("server", ""))
 	title.confirmed.connect(func(s: Dictionary) -> void: _play(s, title))
+	title.connect_pressed.connect(func() -> void:
+		var settings := _settings()
+		settings["server"] = title.server_address
+		_write_json(SETTINGS_PATH, settings)
+		title.queue_free()
+		_show_login())
 	add_child(title)
 	title.set_status(status, is_error)
 	return title
 
 
-## The title screen said go: offline, or join the server it names.
+## The title screen said go, offline.
 func _play(save: Dictionary, title: CharCreate) -> void:
 	var settings := _settings()
-	settings["server"] = title.server_address
+	settings["mode"] = "offline"
 	_write_json(SETTINGS_PATH, settings)
-	if title.server_address == "" or "--autotest" in OS.get_cmdline_user_args():
-		_start_game(save, title)
-		return
-	title.set_status("Connecting to %s..." % title.server_address)
-	Net.join_failed.connect(func(reason: String) -> void: title.set_status(reason, true), CONNECT_ONE_SHOT)
-	Net.joined.connect(func(pid: int, zone_id: String, pos: Vector3, rot: float) -> void:
-		_start_client(save, title, pid, zone_id, pos, rot), CONNECT_ONE_SHOT)
-	Net.join(title.server_address, save)
+	_start_game(save, title)
+
+
+## Playing online: connect and log in (or, after camping, straight to
+## character select on the connection we already have).
+func _show_login(logged_in := false) -> void:
+	var settings := _settings()
+	settings["mode"] = "online"
+	_write_json(SETTINGS_PATH, settings)
+	var login := LoginScreen.new()
+	login.address = str(settings.get("server", ""))
+	login.account = str(settings.get("account", ""))
+	login.offline_save = _load_save()
+	login.logged_in = logged_in
+	login.back.connect(func() -> void:
+		login.queue_free()
+		var s := _settings()
+		s["mode"] = "offline"
+		_write_json(SETTINGS_PATH, s)
+		_show_title(_load_save()))
+	login.tree_exiting.connect(func() -> void:
+		if login.account != "":
+			var s := _settings()
+			s["account"] = login.account
+			_write_json(SETTINGS_PATH, s))
+	add_child(login)
 
 
 func _start_game(save: Dictionary, title: CharCreate) -> void:
@@ -128,8 +156,13 @@ func _enter_zone(zone_id: String, pos: Vector3, face := Vector2.INF) -> void:
 		player.rotation.y = atan2(-d.x, -d.y)
 
 
-## Leaves the world (camp, disconnect) and goes back to the character screen.
+## Leaves the world (offline camp) and goes back to the character screen.
 func _leave_world(status := "", is_error := false) -> void:
+	_teardown_world()
+	_show_title(_load_save(), status, is_error)
+
+
+func _teardown_world() -> void:
 	for node: Node in [hud, zone]:
 		if node != null:
 			node.queue_free()
@@ -145,7 +178,6 @@ func _leave_world(status := "", is_error := false) -> void:
 	hud = null
 	World.local_player = null
 	World.zone = null
-	_show_title(_load_save(), status, is_error)
 
 
 ## Camping finished: save, leave the world, and go back to the character screen.
@@ -182,8 +214,10 @@ func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2)
 
 ## The server let us in: build its zone (scenery only; it sends the rest) and
 ## our player, under the id the server gave it.
-func _start_client(save: Dictionary, title: CharCreate, pid: int, zone_id: String, pos: Vector3, rot: float) -> void:
-	title.queue_free()
+func _start_client(pid: int, zone_id: String, pos: Vector3, rot: float, save: Dictionary) -> void:
+	for child in get_children():
+		if child is LoginScreen or child is CharCreate:
+			child.queue_free()
 	player = Player.new()
 	player.from_save(save)
 	player.entity_id = pid
@@ -214,17 +248,17 @@ func _on_client_zone_moved(zone_id: String, pos: Vector3) -> void:
 	_changing_zone = false
 
 
-func _on_client_camped(save: Dictionary) -> void:
-	_write_json(save_path, save)
-	Net.leave()
-	_leave_world()
+## Camped out on a server: back to character select, still logged in.
+func _on_client_camped() -> void:
+	_teardown_world()
+	_show_login(true)
 
 
 func _on_left_server(reason: String) -> void:
 	if player == null:
-		return
-	_save()
-	_leave_world(reason, true)
+		return  # the login screen shows it
+	_teardown_world()
+	_show_title(_load_save(), reason, true)
 
 
 # --- dedicated server ----------------------------------------------------------
@@ -241,18 +275,44 @@ func _start_server(args: PackedStringArray) -> void:
 		for mob: Dictionary in GameData.mobs.values():
 			for entry: Dictionary in mob.get("loot", []) + mob.get("gear", []):
 				entry["chance"] = 1.0
-	zone = Zone.new()
-	add_child(zone)
-	zone.load_zone(zone_id)
+			mob["coin"] = [maxi(7, int(mob.get("coin", [0, 0])[1])), maxi(7, int(mob.get("coin", [0, 0])[1]))]
+	var data_dir := "user://server"
+	for a in args:
+		if a.begins_with("--data="):
+			data_dir = a.substr(7)
+	_start_zone = zone_id
+	_server_zone(zone_id)
+	Net.accounts = AccountStore.new(data_dir)
+	Net.start_zone = zone_id
 	Net.make_player = _make_remote_player
 	Net.save_of = _server_save_of
-	Net.player_left = _on_remote_left
+	Net.remove_player = _on_remote_left
+	print("Accounts and characters are kept in %s" % ProjectSettings.globalize_path(data_dir))
 	World.zone_change.connect(_on_server_zone_change)
 	World.camped.connect(_on_server_camped)
 	var err := Net.host(port)
 	if err != OK:
 		push_error("Could not open UDP port %d: %s" % [port, error_string(err)])
 		get_tree().quit(1)
+
+
+## A server keeps every zone someone has visited running, each inside its own
+## SubViewport world so their physics (and overlapping coordinates) never meet.
+func _server_zone(zone_id: String) -> Zone:
+	if _server_zones.has(zone_id):
+		return _server_zones[zone_id]
+	var holder := SubViewport.new()
+	holder.name = "zone_" + zone_id
+	holder.own_world_3d = true
+	holder.size = Vector2i(2, 2)
+	holder.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	add_child(holder)
+	var z := Zone.new()
+	holder.add_child(z)
+	z.load_zone(zone_id)
+	_server_zones[zone_id] = z
+	print("zone up: %s" % zone_id)
+	return z
 
 
 ## A client joined with this character: put it in the world.
@@ -264,72 +324,70 @@ func _make_remote_player(_peer: int, save: Dictionary) -> Player:
 	var p := Player.new()
 	p.is_local = false
 	p.from_save(save)
-	_server_corpses[name] = (save.get("corpses_by_zone", {}) as Dictionary).duplicate(true)
-	var pos := zone.bind_point + Vector3.UP
-	if str(save.get("zone", "")) == zone.zone_id and save.has("position"):
+	var zone_id := str(save.get("zone", _start_zone))
+	if not FileAccess.file_exists("res://data/zones/%s.json" % zone_id):
+		zone_id = _start_zone
+	var z := _server_zone(zone_id)
+	var pos := z.bind_point + Vector3.UP
+	if str(save.get("zone", "")) == zone_id and save.has("position"):
 		var a: Array = save["position"]
 		pos = Vector3(a[0], float(a[1]) + 0.5, a[2])
-	zone.add_player(p, pos)
-	_restore_corpses_of(name)
-	World.say(p, "Welcome to %s, %s." % [zone.zone_name, name])
+	z.add_player(p, pos)
+	# their corpses come back wherever they fell, unless those are still lying there
+	var corpses: Dictionary = save.get("corpses_by_zone", {})
+	for cz: String in corpses:
+		if (corpses[cz] as Array).is_empty() or not FileAccess.file_exists("res://data/zones/%s.json" % cz):
+			continue
+		var holder := _server_zone(cz)
+		if holder.player_corpses_for(name).is_empty():
+			holder.restore_corpses(corpses[cz])
+	World.say(p, "Welcome to %s, %s." % [z.zone_name, name])
 	return p
 
 
-## Brings back a player's corpses in the current zone, unless they're already here.
-func _restore_corpses_of(name: String) -> void:
-	if not zone.player_corpses_for(name).is_empty():
-		return
-	zone.restore_corpses(_server_corpses.get(name, {}).get(zone.zone_id, []))
-
-
 func _server_save_of(p: Player) -> Dictionary:
+	var z := World.zone_of(p)
 	var d := p.to_save()
 	if p.dead:
-		d["position"] = [zone.bind_point.x, zone.bind_point.y, zone.bind_point.z]
-	d["zone"] = zone.zone_id
-	var corpses: Dictionary = _server_corpses.get(p.display_name, {}).duplicate(true)
-	corpses[zone.zone_id] = zone.player_corpses_for(p.display_name)
+		d["position"] = [z.bind_point.x, z.bind_point.y, z.bind_point.z]
+	d["zone"] = z.zone_id
+	var corpses := {}
+	for zone_id: String in _server_zones:
+		var list: Array = (_server_zones[zone_id] as Zone).player_corpses_for(p.display_name)
+		if not list.is_empty():
+			corpses[zone_id] = list
 	d["corpses_by_zone"] = corpses
 	return d
 
 
 func _on_remote_left(p: Player) -> void:
-	_server_corpses[p.display_name] = _server_save_of(p)["corpses_by_zone"]
+	World.leave_group(p, "%s has left the group." % p.display_name)
 	World.request_trade_cancel(p.entity_id)
 	p.queue_free()
 
 
 func _on_server_camped(p: Player) -> void:
-	Net.send_camped(p, _server_save_of(p))
-	_on_remote_left(p)
+	Net.camped_out(p)
 
 
-## Until each zone can run on its own, a zone line moves everyone on the server.
-func _on_server_zone_change(_p: Player, zone_id: String, arrive: Vector2, face: Vector2) -> void:
-	if _changing_zone:
+## One player walked through a zone line: only they move.
+func _on_server_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2) -> void:
+	if p.has_meta("zoning"):
 		return
-	_changing_zone = true
-	await get_tree().physics_frame
-	var players := World.get_players()
-	for p in players:
-		_server_corpses[p.display_name] = _server_save_of(p)["corpses_by_zone"]
-		zone.remove_child(p)
-	zone.queue_free()
-	World.zone = null
-	await get_tree().process_frame
-	zone = Zone.new()
-	add_child(zone)
-	zone.load_zone(zone_id)
-	for i in players.size():
-		var p := players[i]
-		var at := arrive + Vector2((i % 3 - 1) * 1.5, (i / 3) * 1.5)
-		zone.add_player(p, zone.ground(at.x, at.y) + Vector3.UP)
-		var d := face - at
-		p.rotation.y = atan2(-d.x, -d.y)
-		_restore_corpses_of(p.display_name)
-		Net.send_zone(p, zone_id)
-		World.say(p, "You have entered %s." % zone.zone_name)
-	_changing_zone = false
+	p.set_meta("zoning", true)
+	await get_tree().physics_frame  # not in the middle of the trigger's physics callback
+	if not is_instance_valid(p):
+		return
+	var from := World.zone_of(p)
+	var to := _server_zone(zone_id)
+	from.remove_child(p)
+	to.add_player(p, to.ground(arrive.x, arrive.y) + Vector3.UP)
+	var d := face - arrive
+	p.rotation.y = atan2(-d.x, -d.y)
+	Net.send_zone(p, zone_id)
+	World.say(p, "You have entered %s." % to.zone_name)
+	p.remove_meta("zoning")
+	Net.save_player(p)
 
 
 # --- saving ------------------------------------------------------------------
@@ -350,9 +408,7 @@ func _notification(what: int) -> void:
 
 func _save() -> void:
 	if Net.mode == "client":
-		if not Net.last_save.is_empty():
-			_write_json(save_path, Net.last_save)  # the server's copy is the real one
-		return
+		return  # online characters live on the server
 	if player == null or zone == null or _changing_zone:
 		return
 	var d := player.to_save()

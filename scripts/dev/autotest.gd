@@ -23,6 +23,9 @@ const SECTIONS := [
 	["faction", "emberhold"],
 	["kos", "greenmoor"],
 	["root", "greenmoor"],
+	["screens", "greenmoor"],
+	["chat", "greenmoor"],
+	["groupui", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -633,6 +636,78 @@ func _t_camp() -> void:
 	print("continued: zone=%s player=%s level=%d" % [main.zone.zone_id, World.local_player.display_name, World.local_player.level])
 	await _shot("8c_continued")
 
+
+
+## The online screens, drawn over the game: login, a character list, and the
+## server character creator. Nothing connects; the list is filled by hand.
+func _t_screens() -> void:
+	var login := LoginScreen.new()
+	login.address = "play.example.net"
+	login.account = "tyson"
+	login.offline_save = {"name": "Dragonchow", "class": "warrior", "level": 3}
+	login.logged_in = true  # don't try to connect
+	add_child(login)
+	login._show_login()
+	await _wait(0.3)
+	await _shot("9a_login")
+	login._on_characters([{"name": "Dragonchow", "class": "warrior", "level": 3, "zone": "greenmoor"},
+			{"name": "Emberwise", "class": "wizard", "level": 6, "zone": "emberhold"}])
+	login.offline_save = {"name": "Oldtimer", "class": "cleric", "level": 2}
+	login._on_characters([{"name": "Dragonchow", "class": "warrior", "level": 3, "zone": "greenmoor"},
+			{"name": "Emberwise", "class": "wizard", "level": 6, "zone": "emberhold"}])
+	await _wait(0.3)
+	await _shot("9b_characters")
+	login._open_creator()
+	await _wait(0.3)
+	await _shot("9c_create_on_server")
+	login.queue_free()
+	await _wait(0.2)
+
+
+## The chat line: typing doesn't walk you anywhere, plain text is /say, and
+## saying a keyword to a targeted NPC works like clicking it.
+func _t_chat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	main.hud._open_chat("")
+	var start := p.global_position
+	Input.action_press("move_forward")
+	await _wait(0.6)
+	Input.action_release("move_forward")
+	print("chat: typing=%s moved while typing %.2f m" % [main.hud.is_typing(), p.global_position.distance_to(start)])
+	main.hud._chat.text_submitted.emit("/who")
+	var warden: Npc = _npcs()["warden_holt"]
+	p.global_position = warden.global_position + (-warden.global_transform.basis.z) * 3.0 + Vector3.UP * 0.5
+	p.face_toward(warden.global_position)
+	World.request_set_target(p.entity_id, warden.entity_id)
+	p.quests.erase("fang_bounty")
+	main.hud._open_chat("")
+	main.hud._chat.text = "gnoll fangs"
+	main.hud._chat.text_submitted.emit("gnoll fangs")
+	await _wait(0.5)
+	print("chat: typing after send=%s quest from saying it=%s" % [main.hud.is_typing(), p.quests.has("fang_bounty")])
+	main.hud._open_chat("/")
+	main.hud._chat.text = "/tell hello"
+	await _wait(0.3)
+	await _shot("9d_chat")
+	main.hud._chat.text_submitted.emit("/tell hello")
+
+
+## The group window and invite popup, drawn from sample data (a group needs
+## a second player; the network test covers the rules).
+func _t_groupui() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.group = [
+		{"id": 9001, "name": "Nick", "level": 6, "class": "cleric", "hp": 40, "max_hp": 70, "mana": 55, "max_mana": 80, "leader": true, "zone": "greenmoor", "dead": false},
+		{"id": p.entity_id, "name": p.display_name, "level": p.level, "class": p.char_class, "hp": p.hp, "max_hp": p.max_hp, "mana": p.mana, "max_mana": p.max_mana, "leader": false, "zone": "greenmoor", "dead": false},
+		{"id": 9002, "name": "Dragonchow", "level": 3, "class": "warrior", "hp": 12, "max_hp": 52, "mana": 0, "max_mana": 0, "leader": false, "zone": "emberhold", "dead": false},
+	]
+	main.hud._on_group_invited("Nick")
+	await _wait(0.4)
+	await _shot("9e_group")
+	main.hud._on_group_invited("")
+	p.group = []
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
