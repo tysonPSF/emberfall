@@ -1,0 +1,11 @@
+# Godot on Windows rewrites these with CRLF line endings. Storing them as LF
+# text means git ignores the line-ending churn instead of showing hundreds of
+# unchanged files as modified.
+*.import      text eol=lf
+*.uid         text eol=lf
+*.tscn        text eol=lf
+*.tres        text eol=lf
+project.godot text eol=lf
+*.gd          text eol=lf
+*.gdshader    text eol=lf
+*.json        text eol=lf

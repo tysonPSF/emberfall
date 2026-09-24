@@ -1,10 +1,10 @@
 {
   "rusty_dagger": {"name": "Rusty Dagger", "slot": "primary", "dmg": 3, "delay": 2.4, "verb": ["pierce", "pierces"], "model": "dagger", "value": 12, "classes": ["warrior", "wizard"]},
   "rusty_short_sword": {"name": "Rusty Short Sword", "slot": "primary", "dmg": 4, "delay": 2.8, "verb": ["slash", "slashes"], "model": "sword_1handed", "value": 18, "classes": ["warrior"]},
-  "worn_staff": {"name": "Worn Staff", "slot": "primary", "dmg": 4, "delay": 3.0, "verb": ["crush", "crushes"], "model": "staff", "value": 15},
+  "worn_staff": {"name": "Worn Staff", "slot": "primary", "dmg": 4, "delay": 2.6, "verb": ["crush", "crushes"], "model": "staff", "value": 15},
   "iron_dagger": {"name": "Iron Dagger", "slot": "primary", "dmg": 4, "delay": 2.2, "verb": ["pierce", "pierces"], "model": "dagger", "value": 90, "classes": ["warrior", "wizard"]},
   "iron_short_sword": {"name": "Iron Short Sword", "slot": "primary", "dmg": 5, "delay": 2.6, "verb": ["slash", "slashes"], "model": "sword_1handed", "value": 140, "classes": ["warrior"]},
   "iron_hand_axe": {"name": "Iron Hand Axe", "slot": "primary", "dmg": 6, "delay": 3.0, "verb": ["hack", "hacks"], "model": "axe_1handed", "value": 150, "classes": ["warrior"]},
-  "oak_staff": {"name": "Oak Staff", "slot": "primary", "dmg": 5, "delay": 2.9, "verb": ["crush", "crushes"], "model": "staff", "value": 110},
+  "oak_staff": {"name": "Oak Staff", "slot": "primary", "dmg": 5, "delay": 2.5, "verb": ["crush", "crushes"], "model": "staff", "value": 110},
   "fishing_pole": {"name": "Fishing Pole", "slot": "primary", "dmg": 1, "delay": 4.0, "verb": ["whip", "whips"], "model": "fishing_pole", "value": 25}
 }
