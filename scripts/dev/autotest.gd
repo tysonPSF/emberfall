@@ -35,6 +35,7 @@ const SECTIONS := [
 	["ranged", "greenmoor"],
 	["hotbar", "greenmoor"],
 	["reactions", "greenmoor"],
+	["drop", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -1157,6 +1158,53 @@ func _t_reactions() -> void:
 	p.spells = known
 	p.equipment = kit
 	p.recalc_stats()
+
+
+## Dropping: a stack, a sword (its model on the ground) and a bag with things
+## in it go down and come back up; NO DROP stays on the cursor.
+func _t_drop() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.global_position = main.zone.bind_point + Vector3(6, 1, 6)
+	p.zoom = 5.0
+	p.pitch = -0.45
+	await _wait(0.4)
+	p.pack.add("gnoll_fang", 5)
+	p.pack.add("iron_short_sword")
+	var sack := Pack.entry("small_sack")
+	(sack["contents"] as Array)[0] = Pack.entry("rat_whiskers", 3)
+	p.pack.add_entry(sack)
+	var dropped: Array[GroundItem] = []
+	var sack_place := ""
+	for place: String in p.pack.places():
+		if (p.pack.get_at(place).get("contents", []) as Array).any(func(e: Dictionary) -> bool: return e.get("item", "") == "rat_whiskers"):
+			sack_place = place
+	for id: String in ["gnoll_fang", "iron_short_sword", "small_sack"]:
+		World.request_click(p.entity_id, sack_place if id == "small_sack" else _where(p, id))
+		p.rotate_y(0.9)
+		World.request_drop(p.entity_id)
+		await _wait(0.1)
+	for obj: Variant in World.objects.values():
+		if obj is GroundItem:
+			dropped.append(obj)
+	print("drop: on the ground %s; cursor now %s; fangs carried %d, whiskers carried %d" % [dropped.map(func(g: GroundItem) -> String: return g.label_text()), p.cursor, p.pack.count("gnoll_fang"), p.pack.count("rat_whiskers")])
+	await _wait(0.5)
+	await _shot("9o_dropped")
+	p.pack.add_entry(Pack.entry("braided_whisker_cord"))
+	World.request_click(p.entity_id, _where(p, "braided_whisker_cord"))
+	World.request_drop(p.entity_id)
+	print("drop: NO DROP cord still on cursor=%s" % (p.cursor.get("item", "") == "braided_whisker_cord"))
+	World.request_stow_cursor(p.entity_id)
+	p.pack.remove("braided_whisker_cord")
+	for g in dropped:
+		World.request_pickup(p.entity_id, g.object_id)
+		if not p.cursor.is_empty():
+			World.request_stow_cursor(p.entity_id)
+	await _wait(0.1)
+	print("drop: picked up: fangs %d, sword %d, whiskers back in the sack %d; left on ground %d" % [p.pack.count("gnoll_fang"), p.pack.count("iron_short_sword"),
+			p.pack.count("rat_whiskers"), World.objects.values().filter(func(o: Variant) -> bool: return o is GroundItem and not (o as Node).is_queued_for_deletion()).size()])
+	p.pack.remove("gnoll_fang", 5)
+	p.pack.remove("iron_short_sword")
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

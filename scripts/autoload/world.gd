@@ -1342,6 +1342,55 @@ func request_stow_cursor(player_id: int) -> void:
 		p.inventory_changed.emit()
 
 
+## Drops whatever is on the cursor at the player's feet, EQ style. NO DROP
+## items (or a bag holding one) stay on the cursor.
+func request_drop(player_id: int) -> void:
+	if _remote(&"request_drop", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	var z := zone_of(p)
+	if p == null or p.dead or p.cursor.is_empty() or z == null:
+		return
+	for e: Dictionary in [p.cursor] + (p.cursor.get("contents", []) as Array):
+		if not e.is_empty() and GameData.item(str(e["item"])).get("no_drop", false):
+			say(p, "You cannot drop %s: it is NO DROP." % GameData.item_name(str(e["item"])) if e == p.cursor
+					else "You cannot drop a bag holding %s: it is NO DROP." % GameData.item_name(str(e["item"])), C_WARN)
+			return
+	var g := GroundItem.new()
+	g.entry = p.cursor
+	var at := p.global_position - p.global_basis.z * 1.2
+	z.add_child(g)
+	g.global_position = z.ground(at.x, at.z)
+	g.rotation.y = randf() * TAU
+	say(p, "You drop %s." % g.label_text(), C_SYSTEM)
+	p.cursor = {}
+	p.inventory_changed.emit()
+
+
+## Picks a dropped item up: onto the cursor if it's free, else into the pack.
+func request_pickup(player_id: int, ground_id: int) -> void:
+	if _remote(&"request_pickup", [player_id, ground_id]):
+		return
+	var p := get_object(player_id) as Player
+	var g := get_object(ground_id) as GroundItem
+	if p == null or p.dead or g == null or g.is_queued_for_deletion():
+		return
+	if zone_of(g) != zone_of(p) or p.global_position.distance_to(g.global_position) > LOOT_RANGE:
+		say(p, "You are too far away to pick that up.", C_WARN)
+		return
+	for e: Dictionary in [g.entry] + (g.entry.get("contents", []) as Array):
+		if not e.is_empty() and not can_receive(p, str(e["item"])):
+			return
+	if p.cursor.is_empty():
+		p.cursor = g.entry
+	elif not p.pack.add_entry(g.entry):
+		say(p, "You have no room to pick that up.", C_WARN)
+		return
+	say(p, "You pick up %s." % g.label_text(), C_LOOT)
+	g.queue_free()
+	p.inventory_changed.emit()
+
+
 func _stow(p: Player) -> void:
 	if p.pack.add_entry(p.cursor):
 		p.cursor = {}
