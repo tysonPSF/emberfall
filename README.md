@@ -68,6 +68,7 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 | E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
 | G | Interact with your target: a merchant's shop, the bank, or a give window for quest turn-ins |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |
+| Right-click an item | Item window: full stats, a turning 3D look, **Use** for click effects, **Link in chat** (the link opens the same window for anyone who clicks it) |
 | F2–F6 | Target your groupmates (the group window on the left does the same) |
 | Enter, / | Chat. Plain text is `/say` (and talks to a targeted NPC). `/shout` (zone), `/ooc` (server), `/tell name msg`, `/r`, `/who`, `/who all`, `/lfg`, `/random`, `/loc`, `/camp`, `/help`. Groups: `/invite [name]`, `/accept`, `/decline`, `/g`, `/disband`, `/kick`, `/makeleader`, `/assist [name]`, `/follow` |
 

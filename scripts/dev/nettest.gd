@@ -54,7 +54,10 @@ func _run() -> void:
 					"inventory": ["gnoll_fang", "not_a_real_item"], "equipment": {"primary": "worn_staff"}})
 		else:
 			var cls := "warrior" if who == "Alpha" else "cleric"
-			Net.create_character(who, cls, "fire")
+			if "--wear" in OS.get_cmdline_user_args() and who == "Alpha":
+				Net.import_character({"name": "Alpha", "class": "warrior", "deity": "fire", "equipment": {"head": "cloth_cap", "primary": "rusty_short_sword"}})
+			else:
+				Net.create_character(who, cls, "fire")
 		await _wait(1.0)
 		print("[%s] after creating: %s" % [who, _list.map(func(c: Dictionary) -> String: return "%s L%d" % [c["name"], c["level"]])])
 	Net.enter_world(who)
@@ -76,7 +79,22 @@ func _run() -> void:
 	p.zoom = 9.0
 	p.pitch = -0.35
 
-	if "--group" in OS.get_cmdline_user_args():
+	if "--wear" in OS.get_cmdline_user_args():
+		if who == "Alpha":
+			p.inventory.append("cloth_cap")  # (server gives it below; this is just for the index)
+			await _wait(3.0)
+			World.request_unequip(p.entity_id, "head")
+			await _wait(3.0)
+			World.request_equip(p.entity_id, p.inventory.find("cloth_cap"))
+			await _wait(4.0)
+		else:
+			for k in 8:
+				await _wait(1.5)
+				for q in World.get_players():
+					if q != p:
+						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
+						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif "--group" in OS.get_cmdline_user_args():
 		await _group_test(p)
 	elif "--chat" in OS.get_cmdline_user_args():
 		await _wait(2.0)

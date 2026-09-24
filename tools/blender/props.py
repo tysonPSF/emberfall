@@ -758,4 +758,5 @@ def main():
 		print(f"exported {name}")
 
 
-main()
+if __name__ == "__main__":  # gear.py imports the helpers above without building props
+	main()

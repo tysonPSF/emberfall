@@ -11,7 +11,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip; right-click worn gear to use its effect)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip) · right-click any item for its details, a 3D look, Use and Link in chat
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
@@ -63,6 +63,16 @@ var _group_rows: VBoxContainer
 var _group_shape := ""  # member ids and leader last drawn; the rows are rebuilt when it changes
 var _group_bars: Dictionary = {}  # member id -> [hp bar, mana bar, name label]
 var _invite_panel: PanelContainer
+var _item_panel: PanelContainer
+var _item_title: Label
+var _item_text: RichTextLabel
+var _item_view_box: SubViewportContainer
+var _item_stage: Node3D  # the previewed model turns on this
+var _item_cam: Camera3D
+var _item_use: Button
+var _item_link: Button
+var _item_shown := ""
+var _item_link_re := RegEx.create_from_string("\\{item:([A-Za-z0-9_@]+)\\}")
 var _invite_label: Label
 var _chat: LineEdit
 var _log_lines := 0
@@ -123,6 +133,7 @@ func _ready() -> void:
 	_build_quest_tracker()
 	_build_group_window()
 	_build_invite()
+	_build_item_window()
 	_build_loot_window()
 	_build_trade_window()
 	_build_service_window()
@@ -399,6 +410,137 @@ func _update_group() -> void:
 		(parts[1] as ProgressBar).visible = int(m["max_mana"]) > 0
 
 
+## Right-click on an item button opens the item window. Buttons that are
+## reused (trade slots) keep the item they show in a meta, hooked up once.
+func _inspectable(b: Button, item_id: String) -> void:
+	b.set_meta("inspect_item", item_id)
+	if b.has_meta("inspect_hooked"):
+		return
+	b.set_meta("inspect_hooked", true)
+	b.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_RIGHT:
+			var id := str(b.get_meta("inspect_item", ""))
+			if id != "":
+				show_item(id))
+
+
+## The item window: everything about one item, with a turning 3D preview when
+## it has a model (worn gear, weapons, shields). It stays open until closed.
+func _build_item_window() -> void:
+	_item_panel = UIKit.panel()
+	UIKit.place(_item_panel, Vector2(0.5, 0.45), Vector2(-120, 0))
+	root.add_child(_item_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	v.custom_minimum_size.x = 300
+	_item_panel.add_child(v)
+	_item_title = UIKit.label("", 17, UIKit.GOLD)
+	_item_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_item_title)
+	_item_view_box = SubViewportContainer.new()
+	_item_view_box.stretch = true
+	_item_view_box.custom_minimum_size = Vector2(300, 190)
+	v.add_child(_item_view_box)
+	var view := SubViewport.new()
+	view.own_world_3d = true
+	view.transparent_bg = true
+	view.msaa_3d = Viewport.MSAA_2X
+	_item_view_box.add_child(view)
+	var env := WorldEnvironment.new()
+	env.environment = Environment.new()
+	env.environment.background_mode = Environment.BG_CLEAR_COLOR
+	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.environment.ambient_light_color = Color(0.75, 0.78, 0.85)
+	env.environment.ambient_light_energy = 0.9
+	view.add_child(env)
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-45, 30, 0)
+	sun.light_energy = 1.2
+	view.add_child(sun)
+	_item_stage = Node3D.new()
+	view.add_child(_item_stage)
+	_item_cam = Camera3D.new()
+	_item_cam.fov = 35.0
+	view.add_child(_item_cam)
+	_item_text = RichTextLabel.new()
+	_item_text.bbcode_enabled = true
+	_item_text.fit_content = true
+	_item_text.scroll_active = false
+	_item_text.custom_minimum_size.x = 300
+	_item_text.add_theme_font_size_override("normal_font_size", 13)
+	v.add_child(_item_text)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	_item_use = UIKit.button("Use", Vector2(90, 32))
+	_item_use.pressed.connect(func() -> void:
+		for slot: String in player.equipment:
+			if player.equipment[slot] == _item_shown:
+				World.request_item_click(player.entity_id, slot))
+	row.add_child(_item_use)
+	_item_link = UIKit.button("Link in chat", Vector2(0, 32))
+	_item_link.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_item_link.pressed.connect(func() -> void:
+		_open_chat(_chat.text + ("" if _chat.text == "" or _chat.text.ends_with(" ") else " ") + "{item:%s} " % _item_shown))
+	row.add_child(_item_link)
+	var close := UIKit.button("Close", Vector2(80, 32))
+	close.pressed.connect(func() -> void: _item_panel.visible = false)
+	row.add_child(close)
+	v.add_child(row)
+	_item_panel.visible = false
+
+
+func show_item(item_id: String) -> void:
+	var it := GameData.item(item_id)
+	if it.is_empty():
+		return
+	_item_shown = item_id
+	_item_title.text = str(it["name"])
+	_item_title.add_theme_color_override("font_color", GameData.item_color(item_id))
+	var lines := _item_tooltip(item_id).split("\n")
+	lines.remove_at(0)  # the name is the title
+	_item_text.text = "\n".join(lines)
+	var worn := item_id in player.equipment.values()
+	_item_use.visible = it.has("click") and worn
+	for child in _item_stage.get_children():
+		child.queue_free()
+	var paths: Array = []
+	var wear := str(it.get("wear", ""))
+	if wear != "":
+		for p: Dictionary in GameData.models.get("gear", {}).get(wear, {}).get("pieces", []):
+			if not str(p["path"]).ends_with("_r.glb"):  # one of a pair is enough to show
+				paths.append(p["path"])
+	elif it.has("model") and GameData.models["weapons"].has(str(it["model"])):
+		paths.append(GameData.models["weapons"][str(it["model"])])
+	_item_view_box.visible = not paths.is_empty()
+	if not paths.is_empty():
+		var holder := Node3D.new()
+		_item_stage.add_child(holder)
+		var box := AABB()
+		var first := true
+		for path: String in paths:
+			var model: Node3D = (load(path) as PackedScene).instantiate()
+			holder.add_child(model)
+			for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+				var b := _relative_aabb(mi, holder)
+				box = b if first else box.merge(b)
+				first = false
+		holder.position = -box.get_center()  # turn around the piece's middle
+		_item_stage.rotation = Vector3.ZERO
+		var radius := maxf(box.size.length() * 0.5, 0.2)
+		_item_cam.position = Vector3(0, radius * 0.45, radius * 3.0)
+		_item_cam.look_at(Vector3.ZERO)
+	_item_panel.visible = true
+
+
+static func _relative_aabb(mi: MeshInstance3D, ancestor: Node3D) -> AABB:
+	var xf := Transform3D.IDENTITY
+	var n: Node = mi
+	while n != ancestor and n != null:
+		xf = (n as Node3D).transform * xf
+		n = n.get_parent()
+	return xf * mi.get_aabb()
+
+
 func _build_invite() -> void:
 	_invite_panel = UIKit.panel()
 	UIKit.place(_invite_panel, Vector2(0.5, 0.3), Vector2.ZERO)
@@ -594,7 +736,8 @@ func _refresh_service() -> void:
 			var b := UIKit.button(text)
 			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			b.add_theme_font_size_override("font_size", 12)
-			b.tooltip_text = _item_tooltip(item_id)
+			b.tooltip_text = _item_tooltip(item_id) + "\nRight-click for details."
+			_inspectable(b, item_id)
 			b.disabled = player.coin < int(ware["price"])
 			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id))
 			_shop_list.add_child(b)
@@ -607,7 +750,8 @@ func _refresh_service() -> void:
 			b.add_theme_font_size_override("font_size", 10)
 			if i < player.bank_items.size():
 				b.text = GameData.item_name(player.bank_items[i])
-				b.tooltip_text = _item_tooltip(player.bank_items[i]) + "\nClick to withdraw."
+				b.tooltip_text = _item_tooltip(player.bank_items[i]) + "\nClick to withdraw. Right-click for details."
+				_inspectable(b, player.bank_items[i])
 				b.pressed.connect(func() -> void: World.request_bank_withdraw(player.entity_id, i))
 			else:
 				b.disabled = true
@@ -630,7 +774,8 @@ func _refresh_trade() -> void:
 		var has := i < player.trade_items.size()
 		b.text = GameData.item_name(player.trade_items[i]) if has else "—"
 		b.disabled = not has
-		b.tooltip_text = "Click to take it back." if has else ""
+		b.tooltip_text = "Click to take it back. Right-click for details." if has else ""
+		_inspectable(b, player.trade_items[i] if has else "")
 
 
 func _build_inventory() -> void:
@@ -840,7 +985,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible or _item_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -890,6 +1035,8 @@ func _process(delta: float) -> void:
 	_update_cast()
 	_update_hotbar()
 	_update_group()
+	if _item_panel.visible:
+		_item_stage.rotate_y(delta * 0.8)
 	if _inv_panel.visible:
 		var lines: PackedStringArray = []
 		if GameData.deities.has(player.deity):
@@ -969,14 +1116,28 @@ func add_log(text: String, color: Color) -> void:
 	_log.push_color(color)
 	var at := 0
 	var links := color == World.C_NPC  # only NPCs' [keywords] are clickable, never players' chat
+	var marks: Array = []  # [start, end, kind, value]
 	for m in (_keyword_re.search_all(text) if links else []):
-		_log.add_text(text.substr(at, m.get_start() - at))
-		_log.push_meta(m.get_string(1))
-		_log.push_color(UIKit.GOLD)
-		_log.add_text(m.get_string())
+		marks.append([m.get_start(), m.get_end(), "say", m.get_string(1)])
+	for m in _item_link_re.search_all(text):  # linked items: {item:<id>}
+		if GameData.items.has(GameData.base_item(m.get_string(1))):
+			marks.append([m.get_start(), m.get_end(), "item", m.get_string(1)])
+	marks.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+	for mk: Array in marks:
+		if mk[0] < at:
+			continue
+		_log.add_text(text.substr(at, mk[0] - at))
+		if mk[2] == "item":
+			_log.push_meta("item:" + str(mk[3]))
+			_log.push_color(GameData.item_color(mk[3]))
+			_log.add_text("[%s]" % GameData.item_name(mk[3]))
+		else:
+			_log.push_meta(mk[3])
+			_log.push_color(UIKit.GOLD)
+			_log.add_text(text.substr(mk[0], mk[1] - mk[0]))
 		_log.pop()
 		_log.pop()
-		at = m.get_end()
+		at = mk[1]
 	_log.add_text(text.substr(at))
 	_log.pop()
 	_log_lines += 1
@@ -988,7 +1149,9 @@ func add_log(text: String, color: Color) -> void:
 # --- windows ------------------------------------------------------------------
 
 func _on_log_keyword(meta: Variant) -> void:
-	if player != null:
+	if str(meta).begins_with("item:"):
+		show_item(str(meta).substr(5))
+	elif player != null:
 		World.request_say(player.entity_id, str(meta))
 
 
@@ -1024,7 +1187,8 @@ func _on_loot_opened(c: Corpse) -> void:
 		var b := UIKit.button(label)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.add_theme_color_override("font_color", GameData.item_color(entry["item"]))
-		b.tooltip_text = _item_tooltip(entry["item"])
+		b.tooltip_text = _item_tooltip(entry["item"]) + "\nRight-click for details."
+		_inspectable(b, entry["item"])
 		b.pressed.connect(func() -> void: World.request_loot_item(player.entity_id, c.object_id, i))
 		_loot_list.add_child(b)
 
@@ -1085,13 +1249,9 @@ func _refresh_inventory() -> void:
 		b.disabled = item_id == ""
 		if item_id != "":
 			b.add_theme_color_override("font_color", GameData.item_color(item_id))
-			var has_click := GameData.item(item_id).has("click")
-			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip." + ("  Right-click to use." if has_click else "")
+			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip. Right-click for details%s." % (" (and to use it)" if GameData.item(item_id).has("click") else "")
 			b.pressed.connect(func() -> void: World.request_unequip(player.entity_id, slot))
-			if has_click:
-				b.gui_input.connect(func(ev: InputEvent) -> void:
-					if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_RIGHT:
-						World.request_item_click(player.entity_id, slot))
+			_inspectable(b, item_id)
 		_equip_box.add_child(b)
 	for child in _bag_grid.get_children():
 		child.queue_free()
@@ -1106,7 +1266,8 @@ func _refresh_inventory() -> void:
 			var item_id: String = player.inventory[i]
 			b.text = GameData.item_name(item_id) + (" (%d)" % shown[k][1] if shown[k][1] > 1 else "")
 			b.add_theme_color_override("font_color", GameData.item_color(item_id))
-			b.tooltip_text = _item_tooltip(item_id)
+			b.tooltip_text = _item_tooltip(item_id) + "\nRight-click for details."
+			_inspectable(b, item_id)
 			if player.service == "shop" and _service_npc != null:
 				var price := World.sell_price(_service_npc, item_id)
 				b.tooltip_text += "\n%s" % ("Sells for %s." % World.format_coin(price) if price > 0 else "The merchant won't buy this.")
@@ -1242,7 +1403,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _settings_panel.visible:
+		if _item_panel.visible:
+			_item_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _settings_panel.visible:
 			_settings_panel.visible = false
 			get_viewport().set_input_as_handled()
 		elif _service_panel.visible:

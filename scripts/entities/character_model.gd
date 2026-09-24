@@ -22,6 +22,9 @@ var anim: AnimationPlayer
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
 var _held: Dictionary = {}  # hand bone -> [model id, BoneAttachment3D]
+var _worn: Dictionary = {}  # slot -> [gear id, [BoneAttachment3D per piece]]
+var _model: Node3D
+var _spec: Dictionary = {}
 var _one_shot_left := 0.0
 var _posed_dead := false
 
@@ -52,6 +55,8 @@ func setup(model_id: String, weapon_id: String, body_scale: float, gear: Variant
 	var spec: Dictionary = entry if entry is Dictionary else {"path": entry}
 	var own_rig := str(spec.get("rig", "")) == "own"
 	var model: Node3D = (load(spec["path"]) as PackedScene).instantiate()
+	_model = model
+	_spec = spec
 	model.rotation.y = PI  # glTF faces +Z; Godot's forward is -Z
 	add_child(model)
 	scale = Vector3.ONE * float(spec.get("scale", 1.0 if own_rig else KAYKIT_SCALE)) * body_scale
@@ -110,6 +115,44 @@ func _customize(model: Node3D, spec: Dictionary) -> void:
 		var part: Node3D = (load(a["path"]) as PackedScene).instantiate()
 		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
 		slot.add_child(part)
+
+
+## Gear a character is wearing, {slot: gear id} from models.json "gear". The
+## body's own headgear ("headgear_parts") comes off the first time this is
+## called, so a player shows exactly what they wear: bare-headed, or the cap.
+func set_worn(worn: Dictionary) -> void:
+	if skeleton == null:
+		return
+	for part: String in _spec.get("headgear_parts", []):
+		var n := _model.find_child(part, true, false)
+		if n != null:
+			n.queue_free()
+	for slot: String in _worn.keys():
+		if worn.get(slot, "") != _worn[slot][0]:
+			for holder: Node in _worn[slot][1]:
+				holder.queue_free()
+			_worn.erase(slot)
+	for slot: String in worn:
+		var gear_id := str(worn[slot])
+		var spec: Dictionary = GameData.models.get("gear", {}).get(gear_id, {})
+		if _worn.has(slot) or spec.is_empty():
+			continue
+		var holders: Array = []
+		for p: Dictionary in spec.get("pieces", [spec]):  # a wearable is one or more pieces, each on a bone
+			var bone := skeleton.find_bone(str(p.get("bone", "head")))
+			if bone < 0:
+				continue
+			var holder := BoneAttachment3D.new()
+			holder.bone_name = str(p.get("bone", "head"))
+			skeleton.add_child(holder)
+			var piece: Node3D = (load(p["path"]) as PackedScene).instantiate()
+			piece.transform = skeleton.get_bone_global_rest(bone).affine_inverse()  # authored in mesh space
+			holder.add_child(piece)
+			Entity.use_entity_layer(holder)
+			for mi in piece.find_children("*", "MeshInstance3D", true, false):
+				(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			holders.append(holder)
+		_worn[slot] = [gear_id, holders]
 
 
 func set_weapon(weapon_id: String) -> void:

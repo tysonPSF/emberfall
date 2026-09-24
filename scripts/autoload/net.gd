@@ -468,6 +468,8 @@ func _s_look(id: int, look: Dictionary) -> void:
 		e.look = look
 		(e.visual as CharacterModel).set_weapon(str(look.get("weapon", "")))
 		(e.visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
+		if look.has("worn"):
+			(e.visual as CharacterModel).set_worn(look["worn"])
 
 
 # --- replication (server -> clients) --------------------------------------------

@@ -1,8 +1,24 @@
 {
   "characters": {
-    "barbarian": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
-    "knight": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight.glb",
-    "mage": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage.glb",
+    "barbarian": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+      "headgear_parts": [
+        "Barbarian_BearHat"
+      ]
+    },
+    "knight": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight.glb",
+      "headgear_parts": [
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ]
+    },
+    "mage": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage.glb",
+      "headgear_parts": [
+        "Mage_Hat"
+      ]
+    },
     "ranger": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
     "rogue": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue.glb",
     "rogue_hooded": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb",
@@ -12,7 +28,14 @@
         "chest": [
           "Skeleton_Minion_Cloak"
         ]
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
     },
     "skeleton_warrior": {
       "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
@@ -23,7 +46,14 @@
         "chest": [
           "Skeleton_Warrior_Cloak"
         ]
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
     },
     "skeleton_rogue": {
       "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb",
@@ -34,7 +64,14 @@
         "chest": [
           "Skeleton_Rogue_Cape"
         ]
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
     },
     "skeleton_mage": {
       "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb",
@@ -42,7 +79,14 @@
         "head": [
           "Skeleton_Mage_Hat"
         ]
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
     },
     "rat": {
       "path": "res://assets/creatures/rat.glb",
@@ -76,7 +120,15 @@
         "chest": [
           "RogueHooded_Cape"
         ]
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
     },
     "gnoll_brute": {
       "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
@@ -100,7 +152,15 @@
         "Barbarian_ArmRight": "#9c8a74",
         "Barbarian_LegLeft": "#9c8a74",
         "Barbarian_LegRight": "#9c8a74"
-      }
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
     }
   },
   "weapons": {
@@ -388,6 +448,260 @@
     },
     "lily_pads": {
       "path": "res://assets/props/lily_pads.glb"
+    }
+  },
+  "gear": {
+    "cloth_cap": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/cloth_cap.glb",
+          "bone": "head"
+        }
+      ]
+    },
+    "leather_cap": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_cap.glb",
+          "bone": "head"
+        }
+      ]
+    },
+    "floppy_hat": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/floppy_hat.glb",
+          "bone": "head"
+        }
+      ]
+    },
+    "bone_helm": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/bone_helm.glb",
+          "bone": "head"
+        }
+      ]
+    },
+    "iron_coif": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/iron_coif.glb",
+          "bone": "head"
+        }
+      ]
+    },
+    "cloth_gloves": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/cloth_gloves.glb",
+          "bone": "hand.l"
+        },
+        {
+          "path": "res://assets/gear/cloth_gloves_r.glb",
+          "bone": "hand.r"
+        }
+      ]
+    },
+    "leather_gloves": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_gloves.glb",
+          "bone": "hand.l"
+        },
+        {
+          "path": "res://assets/gear/leather_gloves_r.glb",
+          "bone": "hand.r"
+        }
+      ]
+    },
+    "iron_gauntlets": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/iron_gauntlets.glb",
+          "bone": "hand.l"
+        },
+        {
+          "path": "res://assets/gear/iron_gauntlets_r.glb",
+          "bone": "hand.r"
+        }
+      ]
+    },
+    "cloth_sleeves": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/cloth_sleeves_lower.glb",
+          "bone": "lowerarm.l"
+        },
+        {
+          "path": "res://assets/gear/cloth_sleeves_lower_r.glb",
+          "bone": "lowerarm.r"
+        },
+        {
+          "path": "res://assets/gear/cloth_sleeves_upper.glb",
+          "bone": "upperarm.l"
+        },
+        {
+          "path": "res://assets/gear/cloth_sleeves_upper_r.glb",
+          "bone": "upperarm.r"
+        }
+      ]
+    },
+    "leather_sleeves": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_sleeves_lower.glb",
+          "bone": "lowerarm.l"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_lower_r.glb",
+          "bone": "lowerarm.r"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_upper.glb",
+          "bone": "upperarm.l"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_upper_r.glb",
+          "bone": "upperarm.r"
+        }
+      ]
+    },
+    "sandals": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/sandals.glb",
+          "bone": "foot.l"
+        },
+        {
+          "path": "res://assets/gear/sandals_r.glb",
+          "bone": "foot.r"
+        }
+      ]
+    },
+    "leather_boots": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_boots.glb",
+          "bone": "foot.l"
+        },
+        {
+          "path": "res://assets/gear/leather_boots_r.glb",
+          "bone": "foot.r"
+        }
+      ]
+    },
+    "iron_boots": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/iron_boots.glb",
+          "bone": "foot.l"
+        },
+        {
+          "path": "res://assets/gear/iron_boots_r.glb",
+          "bone": "foot.r"
+        }
+      ]
+    },
+    "patchwork_pants": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/patchwork_pants_thigh.glb",
+          "bone": "upperleg.l"
+        },
+        {
+          "path": "res://assets/gear/patchwork_pants_thigh_r.glb",
+          "bone": "upperleg.r"
+        },
+        {
+          "path": "res://assets/gear/patchwork_pants_shin.glb",
+          "bone": "lowerleg.l"
+        },
+        {
+          "path": "res://assets/gear/patchwork_pants_shin_r.glb",
+          "bone": "lowerleg.r"
+        }
+      ]
+    },
+    "leather_leggings": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_leggings_thigh.glb",
+          "bone": "upperleg.l"
+        },
+        {
+          "path": "res://assets/gear/leather_leggings_thigh_r.glb",
+          "bone": "upperleg.r"
+        },
+        {
+          "path": "res://assets/gear/leather_leggings_shin.glb",
+          "bone": "lowerleg.l"
+        },
+        {
+          "path": "res://assets/gear/leather_leggings_shin_r.glb",
+          "bone": "lowerleg.r"
+        }
+      ]
+    },
+    "iron_greaves": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/iron_greaves_shin.glb",
+          "bone": "lowerleg.l"
+        },
+        {
+          "path": "res://assets/gear/iron_greaves_shin_r.glb",
+          "bone": "lowerleg.r"
+        }
+      ]
+    },
+    "patchwork_tunic": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/patchwork_tunic.glb",
+          "bone": "chest"
+        }
+      ]
+    },
+    "leather_tunic": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_tunic.glb",
+          "bone": "chest"
+        }
+      ]
+    },
+    "studded_tunic": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/studded_tunic.glb",
+          "bone": "chest"
+        }
+      ]
+    },
+    "mangy_hide_vest": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/mangy_hide_vest.glb",
+          "bone": "chest"
+        }
+      ]
+    },
+    "rope_belt": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/rope_belt.glb",
+          "bone": "spine"
+        }
+      ]
+    },
+    "leather_belt": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_belt.glb",
+          "bone": "spine"
+        }
+      ]
     }
   }
 }
