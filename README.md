@@ -30,10 +30,11 @@ Your character saves to Godot's `user://character.json` (per machine, not in git
 
 | | |
 |---|---|
-| W/S, A/D | Forward/back, turn (A/D strafe while holding right mouse) |
-| Right-drag / wheel | Look / zoom (zoom all the way in for first person) |
-| Left-click, Tab, F1 | Target, nearest enemy, self |
-| Q | Auto attack |
+| W/S, A/D | Forward/back, strafe (arrow keys turn) |
+| Mouse / wheel | Look / zoom (zoom all the way in for first person) |
+| Alt | Hold for the mouse cursor; it also returns while any window is open |
+| Left-click, Tab, F1 | Attack what's under the crosshair, nearest enemy, self |
+| Q | Toggle auto attack off |
 | 1–8 | Abilities / spells (moving interrupts casting); learn more from your guildmaster |
 | C | Consider (con colors: gray, green, blue, white, yellow, red) |
 | X | Sit / stand (much faster regen) |

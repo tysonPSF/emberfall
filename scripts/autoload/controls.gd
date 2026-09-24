@@ -4,8 +4,11 @@ extends Node
 const BINDINGS := {
 	"move_forward": [KEY_W, KEY_UP],
 	"move_back": [KEY_S, KEY_DOWN],
-	"turn_left": [KEY_A, KEY_LEFT],
-	"turn_right": [KEY_D, KEY_RIGHT],
+	"move_left": [KEY_A],
+	"move_right": [KEY_D],
+	"turn_left": [KEY_LEFT],
+	"turn_right": [KEY_RIGHT],
+	"free_cursor": [KEY_ALT],
 	"jump": [KEY_SPACE],
 	"auto_attack": [KEY_Q],
 	"target_next": [KEY_TAB],

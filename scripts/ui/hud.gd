@@ -4,10 +4,11 @@ extends CanvasLayer
 ## loot and inventory windows. Reads state from the player; every action goes
 ## through World.request_*, the same as keyboard input.
 
-const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe while holding right mouse) · Space jump
-[b]Camera[/b]   Right-drag to look · Wheel to zoom (all the way in = first person)
-[b]Targeting[/b]   Left-click · Tab nearest enemy · F1 self · Esc clear / interrupt cast
-[b]Combat[/b]   Q auto attack · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
+const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump
+[b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
+[b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
+[b]Targeting[/b]   Left-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
+[b]Combat[/b]   Left-click to attack · Q toggles auto attack off · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -84,10 +85,12 @@ var _help_panel: PanelContainer
 var _banner: Label
 var _banner_time := 0.0
 var _death_label: Label
+var _crosshair: Control
 
 
 func _ready() -> void:
 	layer = 10
+	add_to_group("hud")  # the player asks us each frame whether a window needs the cursor
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -589,6 +592,24 @@ func _build_overlays() -> void:
 	_death_label.visible = false
 	root.add_child(_death_label)
 
+	_crosshair = Control.new()
+	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crosshair.custom_minimum_size = Vector2(18, 18)
+	_crosshair.size = Vector2(18, 18)
+	UIKit.place(_crosshair, Vector2(0.5, 0.5), Vector2(-9, -9))
+	_crosshair.draw.connect(func() -> void:
+		var c := _crosshair.size * 0.5
+		for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+			_crosshair.draw_line(c + d * 3.0, c + d * 8.0, UIKit.GOLD, 1.0)
+		_crosshair.draw_circle(c, 1.2, UIKit.GOLD))
+	root.add_child(_crosshair)
+
+
+## True while any window the player clicks in is open, which frees the cursor.
+func wants_cursor() -> bool:
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible
+			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible)
+
 
 # --- updates ----------------------------------------------------------------
 
@@ -596,7 +617,9 @@ func _process(delta: float) -> void:
 	_banner_time -= delta
 	_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
 	if player == null:
+		_crosshair.visible = false
 		return
+	_crosshair.visible = player.mouse_looking
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]
 	_hp_bar.max_value = player.max_hp
