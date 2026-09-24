@@ -588,6 +588,79 @@ def stump():
 	return p.build()
 
 
+# ---------------------------------------------------------------- pond
+
+def dock():
+	"""Plank pier on posts: the back edge sits on the bank at the origin and the
+	deck runs 7.5 m out over the water (-Y). Posts reach 2 m below the bank."""
+	p = Prop("dock", 71)
+	deck = 0.35
+	length, width = 7.5, 1.8
+	for x in (-0.6, 0.6):  # stringers under the planks
+		p.box((0.14, length, 0.16), (x, -length / 2 + 0.2, deck - 0.14), WOOD, grad=(0.3, 1.0))
+	n = 26
+	for k in range(n):
+		y = 0.2 - (k + 0.5) * length / n
+		sw = WOOD_GRAY if p.rng.random() < 0.3 else WOOD
+		p.box((width + p.rng.uniform(-0.1, 0.1), length / n - 0.035, 0.07), (p.rng.uniform(-0.04, 0.04), y, deck - 0.035),
+			  sw, rot=(0, 0, p.rng.uniform(-1.5, 1.5)), grad=(0.1, 0.6))
+	for y in (-0.3, -2.8, -5.3, -7.1):
+		for x in (-0.82, 0.82):
+			top = deck + (0.55 if y < -7 else 0.02)  # the far pair stands up as mooring posts
+			p.seg((x, y, -2.0), (x, y, top), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+	p.seg((0.82, -7.1, deck + 0.3), (0.82, -7.1, deck + 0.42), 0.13, 0.13, HIDE, sides=6)  # rope coil
+	return p.build()
+
+
+def reeds():
+	"""Cattails for the pond's edge: tall blades and a few brown heads."""
+	p = Prop("reeds", 73)
+	for k in range(10):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.35)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(0.9, 1.5)
+		la = p.rng.uniform(0, math.tau)
+		lean = p.rng.uniform(0.05, 0.25)
+		w = 0.04
+		p.poly([(x - w, y, 0), (x + w, y, 0), (x + math.cos(la) * lean, y + math.sin(la) * lean, h)], [(0, 1, 2)],
+			   PINE, grad=(0.1, 0.8))
+	for k in range(4):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.25)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(1.1, 1.6)
+		p.seg((x, y, 0), (x, y, h), 0.012, 0.01, LEAF, sides=3)
+		p.seg((x, y, h - 0.3), (x, y, h - 0.05), 0.035, 0.035, WOOD, sides=5, grad=(0.3, 0.9))
+	return p.build()
+
+
+def lily_pads():
+	p = Prop("lily_pads", 75)
+	for k in range(4):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.6)
+		s = p.rng.uniform(0.35, 0.6)
+		p.seg((math.cos(a) * r, math.sin(a) * r, 0), (math.cos(a) * r, math.sin(a) * r, 0.02), s, s, LEAF,
+					sides=9, grad=(0.2, 0.5))
+	p.blob((0.16, 0.16, 0.1), (0, 0, 0.06), PETAL_WHITE, segs=(6, 3), grad=(0.0, 0.3))
+	p.blob((0.06, 0.06, 0.05), (0, 0, 0.1), PETAL_YELLOW, segs=(4, 3))
+	return p.build()
+
+
+def fishing_pole():
+	"""Held item: authored like a KayKit weapon (grip at the origin, pointing
+	up +Z) in KayKit character units, which the game shows at 0.75 scale."""
+	p = Prop("fishing_pole", 77)
+	p.seg((0, 0, -0.35), (0, 0, 0.3), 0.045, 0.04, HIDE, sides=6, grad=(0.2, 0.9))  # cork grip
+	p.seg((0, 0, 0.3), (0, 0, 2.9), 0.03, 0.008, WOOD, sides=5, grad=(0.1, 0.8))
+	p.seg((-0.06, 0, 0.42), (0.06, 0, 0.42), 0.09, 0.09, IRON, sides=8)  # reel
+	p.seg((0, 0, 0.42), (0.1, 0, 0.42), 0.012, 0.012, IRON, sides=4)
+	for z in (0.9, 1.6, 2.3):
+		p.seg((0, 0, z), (0.05, 0, z), 0.012, 0.012, IRON, sides=4)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -624,6 +697,10 @@ PROPS = {
 	"pebbles": pebbles,
 	"log_fallen": log_fallen,
 	"stump": stump,
+	"dock": dock,
+	"reeds": reeds,
+	"lily_pads": lily_pads,
+	"fishing_pole": fishing_pole,
 }
 
 

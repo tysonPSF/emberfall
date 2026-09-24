@@ -55,6 +55,23 @@ func _run() -> void:
 		p.zoom = 12.0
 		await _wait(0.5)
 		await _shot("1d_%s_close" % lm["type"])
+	# Merrick at the pond: hail, ask about the trout, then open his shop
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).npc_id == "merrick":
+			var merrick := obj as Npc
+			p.global_position = merrick.global_position + (-merrick.global_transform.basis.z) * 4.0 + Vector3.UP * 0.5
+			p.face_toward(merrick.global_position)
+			p.zoom = 6.0
+			p.pitch = -0.25
+			World.request_set_target(p.entity_id, merrick.entity_id)
+			World.request_hail(p.entity_id)
+			World.request_say(p.entity_id, "trout")
+			await _wait(0.7)
+			await _shot("1d_merrick")
+			World.request_interact(p.entity_id)
+			await _wait(0.4)
+			await _shot("1d_merrick_shop")
+			World.request_service_close(p.entity_id)
 	# quest: hail the warden, ask about fangs, bring four, turn them in
 	var warden: Npc = null
 	for obj: Node3D in World.objects.values():

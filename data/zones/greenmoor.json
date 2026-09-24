@@ -139,6 +139,7 @@
     {"type": "camp", "pos": [115, -100]},
     {"type": "ruins", "pos": [-100, -80]},
     {"type": "outpost", "pos": [-16, 140]},
+    {"type": "pond", "pos": [-38, 96], "radius": 12, "depth": 1.6, "dock": 0},
     {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]}
   ],
   "passes": [[0, 192, 9]],
@@ -148,6 +149,7 @@
   ],
   "npcs": [
     {"id": "warden_holt", "pos": [-15.2, 135.8], "face": [0, 4]},
+    {"id": "merrick", "pos": [-24.8, 98.2], "face": [0, 92]},
     {"id": "emberhold_guard", "name": "Guard Brenna", "pos": [-4.5, 164], "face": [0, 120]},
     {"id": "emberhold_guard", "name": "Guard Osric", "pos": [4.8, 166.5], "face": [0, 120]}
   ],

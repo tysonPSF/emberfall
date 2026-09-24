@@ -7,6 +7,7 @@ extends Node3D
 const GRID := 128
 const CLUTTER_CHUNK := 32.0
 const CLUTTER_SHADER := preload("res://scripts/world/clutter.gdshader")
+const WATER_SHADER := preload("res://scripts/world/water.gdshader")
 
 var zone_id := ""
 var data: Dictionary = {}
@@ -24,6 +25,7 @@ var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _roads: Array = []  # [{points: [Vector2...], width}]
+var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
@@ -48,7 +50,12 @@ func load_zone(id: String) -> void:
 	var bp: Array = data.get("bind_point", [0, 0])
 	_bind_xz = Vector2(bp[0], bp[1])
 	for lm: Dictionary in data.get("landmarks", []):
-		_flat_spots.append(Vector2(lm["pos"][0], lm["pos"][1]))
+		var spot := Vector2(lm["pos"][0], lm["pos"][1])
+		_flat_spots.append(spot)
+		if lm["type"] == "pond":
+			# the landmark flattens the ground to this height; the water sits a little below it
+			var flat := _noise.get_noise_2d(spot.x, spot.y) * amp * 0.5
+			_ponds.append({"center": spot, "radius": float(lm.get("radius", 12)), "depth": float(lm.get("depth", 1.6)), "level": flat - 0.25})
 	for ps: Array in data.get("passes", []):
 		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
 	for road: Dictionary in data.get("roads", []):
@@ -78,6 +85,10 @@ func height_at(x: float, z: float) -> float:
 		var d := Vector2(x, z).distance_to(spot)
 		if d < 30.0:
 			h = lerpf(_noise.get_noise_2d(spot.x, spot.y) * amp * 0.5, h, smoothstep(14.0, 30.0, d))
+	for pond: Dictionary in _ponds:
+		var d := Vector2(x, z).distance_to(pond["center"])
+		var r: float = pond["radius"]
+		h -= float(pond["depth"]) * (1.0 - smoothstep(r * 0.25, r + 1.5, d))
 	# Mountains ring the zone so you can't walk off the edge.
 	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
 	if edge > 0.0:
@@ -226,6 +237,11 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	if not tint.is_empty():
 		var inside := 1.0 - smoothstep(float(tint["radius"]) - 4.0, float(tint["radius"]) + 4.0, Vector2(x, z).length())
 		c = c.lerp(Color.html(tint["color"]), inside * float(tint.get("amount", 0.5)) * (0.75 + 0.5 * n))
+	for pond: Dictionary in _ponds:
+		var pd := Vector2(x, z).distance_to(pond["center"])
+		var r: float = pond["radius"]
+		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(r - 1.5, r + 2.0, pd))  # muddy bank
+		c = c.lerp(Color(0.22, 0.21, 0.15), 1.0 - smoothstep(r * 0.4, r - 1.0, pd))  # silt on the bottom
 	var road := road_distance(x, z)
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
@@ -255,6 +271,8 @@ func _build_landmarks() -> void:
 				_build_house(p, _landmark_yaw(lm), int(lm.get("size", 2)), true)
 			"market":
 				_build_market(p, _landmark_yaw(lm))
+			"pond":
+				_build_pond(lm)
 			"signpost":
 				_build_signpost(p, _landmark_yaw(lm), lm.get("labels", []))
 			"prop":
@@ -475,6 +493,66 @@ func _build_market(p: Vector3, yaw: float) -> void:
 			_prop(["barrel_small", "box_small", "crates_stacked"][_rng.randi() % 3], xf * Vector3(-2.25 + i * 4.5, 0, -1.2), _rng.randf() * TAU, 0.8)
 
 
+## Water in a bowl carved by height_at, ringed by reeds, with lily pads and a
+## dock on the bank at angle "dock" (degrees; 0 = east, -90 = north) running
+## out toward the middle. Crates, a barrel and a torch stand at its foot.
+func _build_pond(lm: Dictionary) -> void:
+	var pond: Dictionary = {}
+	for pd: Dictionary in _ponds:
+		if pd["center"] == Vector2(lm["pos"][0], lm["pos"][1]):
+			pond = pd
+	var center: Vector2 = pond["center"]
+	var r: float = pond["radius"]
+	var level: float = pond["level"]
+
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_normal(Vector3.UP)
+	const SEGMENTS := 40
+	for k in SEGMENTS:
+		var a0 := k * TAU / SEGMENTS
+		var a1 := (k + 1) * TAU / SEGMENTS
+		st.add_vertex(Vector3.ZERO)
+		st.add_vertex(Vector3(cos(a1), 0, sin(a1)) * (r + 1.0))
+		st.add_vertex(Vector3(cos(a0), 0, sin(a0)) * (r + 1.0))
+	var water := MeshInstance3D.new()
+	water.mesh = st.commit()
+	var mat := ShaderMaterial.new()
+	mat.shader = WATER_SHADER
+	water.material_override = mat
+	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	water.position = Vector3(center.x, level, center.y)
+	add_child(water)
+
+	var dock_a := deg_to_rad(float(lm.get("dock", 0.0)))
+	var dir := Vector2(cos(dock_a), sin(dock_a))
+	var base := center + dir * (r - 0.5)
+	var yaw := atan2(-dir.x, -dir.y)
+	_prop("dock", ground(base.x, base.y), yaw, 1.0, "mesh")
+	var xf := Transform3D(Basis(Vector3.UP, yaw), ground(base.x, base.y))
+	var on_bank := func(local: Vector3) -> Vector3:
+		var w := xf * local
+		return ground(w.x, w.z)
+	_prop("barrel_small", on_bank.call(Vector3(3.1, 0, -1.0)), yaw + 0.4, 0.9)
+	_prop("box_small", on_bank.call(Vector3(2.9, 0, -2.7)), yaw - 0.3, 0.9)
+	_prop("crates_stacked", on_bank.call(Vector3(-2.3, 0, -1.8)), yaw + 0.2)
+	_prop("stool", xf * Vector3(0.4, 0.35, 6.6), 0.0, 1.0, "none")
+	_torch(on_bank.call(Vector3(-1.3, 0, -0.5)))
+
+	for k in 26:
+		var a := _rng.randf() * TAU
+		if absf(angle_difference(a, dock_a)) < 0.3:
+			continue
+		var at := center + Vector2(cos(a), sin(a)) * r * _rng.randf_range(0.84, 0.98)
+		_prop("reeds", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.2), "none")
+	for k in 7:
+		var a := _rng.randf() * TAU
+		if absf(angle_difference(a, dock_a)) < 0.4:
+			continue
+		var at := center + Vector2(cos(a), sin(a)) * r * _rng.randf_range(0.25, 0.7)
+		_prop("lily_pads", Vector3(at.x, level + 0.01, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+
+
 func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
 	var post := _prop("signpost", p, yaw, 1.0, "none")
 	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
@@ -685,6 +763,9 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 		return false
 	if (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z) > 0.0:
 		return false
+	for pond: Dictionary in _ponds:
+		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
+			return false
 	for spot in _flat_spots:
 		if p.distance_to(spot) < 12.5:
 			return false

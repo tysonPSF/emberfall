@@ -22,5 +22,8 @@
   "leather_leggings": {"name": "Leather Leggings", "slot": "legs", "ac": 3, "value": 70},
   "studded_tunic": {"name": "Studded Leather Tunic", "slot": "chest", "ac": 6, "hp": 4, "value": 260},
   "iron_coif": {"name": "Iron Coif", "slot": "head", "ac": 4, "value": 180},
-  "iron_greaves": {"name": "Iron Greaves", "slot": "legs", "ac": 5, "value": 220}
+  "iron_greaves": {"name": "Iron Greaves", "slot": "legs", "ac": 5, "value": 220},
+  "fishing_pole": {"name": "Fishing Pole", "slot": "primary", "dmg": 1, "delay": 4.0, "verb": ["whip", "whips"], "model": "fishing_pole", "value": 25},
+  "fishing_bait": {"name": "Can of Worms", "value": 2},
+  "floppy_hat": {"name": "Floppy Fishing Hat", "slot": "head", "ac": 1, "value": 20}
 }

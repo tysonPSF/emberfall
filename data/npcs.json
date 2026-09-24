@@ -139,6 +139,27 @@
     },
     "faction": "emberhold"
   },
+  "merrick": {
+    "name": "Merrick",
+    "level": 12,
+    "model": "ranger",
+    "weapon": "fishing_pole",
+    "merchant": {
+      "sells": [
+        "fishing_pole",
+        "fishing_bait",
+        "floppy_hat"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Shh! Easy, {name}, you'll spook the [trout]. Name's Merrick. I sell poles and bait to anyone with the patience to use them.",
+      "trout": "Greenmoor trout, fat as your fist. Most of them, anyway. There's one in this pond a good deal bigger. [Old Gulper], I call him.",
+      "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. One of these days, {name}. One of these days.",
+      "unknown": "Hm? Sorry, I was watching my line."
+    },
+    "faction": "emberhold"
+  },
   "gm_brask": {
     "name": "Sergeant Brask",
     "level": 35,

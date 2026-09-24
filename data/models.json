@@ -72,7 +72,8 @@
     "staff": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/staff.gltf",
     "wand": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/wand.gltf",
     "skeleton_blade": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Blade.gltf",
-    "skeleton_axe": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Axe.gltf"
+    "skeleton_axe": "res://assets/KayKit_Skeletons_1.1_FREE/assets/gltf/Skeleton_Axe.gltf",
+    "fishing_pole": "res://assets/props/fishing_pole.glb"
   },
   "animations": [
     "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
@@ -336,6 +337,15 @@
     },
     "stump": {
       "path": "res://assets/props/stump.glb"
+    },
+    "dock": {
+      "path": "res://assets/props/dock.glb"
+    },
+    "reeds": {
+      "path": "res://assets/props/reeds.glb"
+    },
+    "lily_pads": {
+      "path": "res://assets/props/lily_pads.glb"
     }
   }
 }
