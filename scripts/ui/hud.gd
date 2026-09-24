@@ -9,7 +9,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
-[b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
+[b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip) · right-click any item for its details, a 3D look, Use and Link in chat
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -63,6 +63,9 @@ var _group_rows: VBoxContainer
 var _group_shape := ""  # member ids and leader last drawn; the rows are rebuilt when it changes
 var _group_bars: Dictionary = {}  # member id -> [hp bar, mana bar, name label]
 var _invite_panel: PanelContainer
+var _skills_panel: PanelContainer
+var _skills_box: VBoxContainer
+var _skills_timer := 0.0
 var _item_panel: PanelContainer
 var _item_title: Label
 var _item_text: RichTextLabel
@@ -134,6 +137,7 @@ func _ready() -> void:
 	_build_group_window()
 	_build_invite()
 	_build_item_window()
+	_build_skills_window()
 	_build_loot_window()
 	_build_trade_window()
 	_build_service_window()
@@ -408,6 +412,55 @@ func _update_group() -> void:
 		(parts[1] as ProgressBar).max_value = maxi(1, int(m["max_mana"]))
 		(parts[1] as ProgressBar).value = int(m["mana"])
 		(parts[1] as ProgressBar).visible = int(m["max_mana"]) > 0
+
+
+## K: every skill your class can learn, by group, with its value, the cap at
+## your level, and a bar. Skills rise as you use them.
+func _build_skills_window() -> void:
+	_skills_panel = UIKit.panel()
+	UIKit.place(_skills_panel, Vector2(0.5, 0.5), Vector2(-260, -40))
+	root.add_child(_skills_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	_skills_panel.add_child(v)
+	v.add_child(UIKit.label("Skills", 16, UIKit.GOLD))
+	var note := UIKit.label("Skills rise as you use them, up to a cap that grows with your level. K or Esc to close.", 11, UIKit.DIM)
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.custom_minimum_size.x = 330
+	v.add_child(note)
+	_skills_box = VBoxContainer.new()
+	_skills_box.add_theme_constant_override("separation", 3)
+	v.add_child(_skills_box)
+	_skills_panel.visible = false
+
+
+func _refresh_skills() -> void:
+	for child in _skills_box.get_children():
+		child.queue_free()
+	var table: Dictionary = GameData.skills["skills"]
+	for group: String in GameData.skills["groups"]:
+		var rows: Array = []
+		for id: String in table:
+			var cap := GameData.skill_cap(player.char_class, id, player.level)
+			if table[id]["group"] == group and cap > 0:
+				rows.append([id, mini(int(player.skills.get(id, 0)), cap), cap])
+		if rows.is_empty():
+			continue
+		_skills_box.add_child(UIKit.label(group, 13, UIKit.GOLD))
+		for r: Array in rows:
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 8)
+			var name := UIKit.label(GameData.skill_name(r[0]), 12, UIKit.TEXT)
+			name.custom_minimum_size.x = 120
+			row.add_child(name)
+			var bar := UIKit.bar(Color(0.86, 0.72, 0.42), 130.0, 8.0)
+			bar.max_value = r[2]
+			bar.value = r[1]
+			bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			row.add_child(bar)
+			var nums := UIKit.label("%d / %d" % [r[1], r[2]], 12, UIKit.DIM if r[1] < r[2] else UIKit.GOLD)
+			row.add_child(nums)
+			_skills_box.add_child(row)
 
 
 ## Right-click on an item button opens the item window. Buttons that are
@@ -985,7 +1038,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible or _item_panel.visible
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -1037,6 +1090,11 @@ func _process(delta: float) -> void:
 	_update_group()
 	if _item_panel.visible:
 		_item_stage.rotate_y(delta * 0.8)
+	if _skills_panel.visible:
+		_skills_timer -= delta
+		if _skills_timer <= 0.0:
+			_skills_timer = 0.5
+			_refresh_skills()
 	if _inv_panel.visible:
 		var lines: PackedStringArray = []
 		if GameData.deities.has(player.deity):
@@ -1389,6 +1447,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("inventory"):
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("skills"):
+		_skills_panel.visible = not _skills_panel.visible
+		_skills_timer = 0.0
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("help"):
 		_show_help(not _help_panel.visible)
 		get_viewport().set_input_as_handled()
@@ -1403,7 +1465,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _item_panel.visible:
+		if _skills_panel.visible:
+			_skills_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _item_panel.visible:
 			_item_panel.visible = false
 			get_viewport().set_input_as_handled()
 		elif _settings_panel.visible:

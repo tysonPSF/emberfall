@@ -86,6 +86,13 @@ func import_character(account: String, save: Dictionary) -> String:
 		if int(entry["level"]) <= int(d["level"]):
 			allowed.append(entry["spell"])
 	d["spells"] = (d.get("spells", cls.get("spells", [])) as Array).filter(func(id: Variant) -> bool: return str(id) in allowed)
+	var skills := {}
+	var imported: Dictionary = d.get("skills", {})
+	for id: String in imported:
+		var cap := GameData.skill_cap(str(d["class"]), id, int(d["level"]))
+		if cap > 0:
+			skills[id] = clampi(int(imported[id]), 0, cap)
+	d["skills"] = skills
 	var eq: Dictionary = d.get("equipment", {})
 	for slot: String in eq.keys():
 		if not known.call(eq[slot]):
