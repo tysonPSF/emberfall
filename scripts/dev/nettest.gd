@@ -72,7 +72,20 @@ func _run() -> void:
 	p.zoom = 9.0
 	p.pitch = -0.35
 
-	if who == "Sprinter":
+	if "--chat" in OS.get_cmdline_user_args():
+		await _wait(2.0)
+		if who == "Alpha":
+			for line in ["hello there", "/tell bravo psst, over here", "/ooc anyone want to group?", "/who all", "/lfg", "/random 20", "/tell nobody hi", "/bogus"]:
+				World.request_chat(p.entity_id, line)
+				await _wait(0.4)
+			await _wait(3.0)
+		else:
+			await _wait(3.0)
+			for line in ["/r got it", "/shout the whole zone hears this"]:
+				World.request_chat(p.entity_id, line)
+				await _wait(0.4)
+			await _wait(2.0)
+	elif who == "Sprinter":
 		# hold forward and Shift like a player would; the server must accept the speed
 		var start := p.global_position
 		var stam0 := p.stamina

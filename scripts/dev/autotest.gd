@@ -24,6 +24,7 @@ const SECTIONS := [
 	["kos", "greenmoor"],
 	["root", "greenmoor"],
 	["screens", "greenmoor"],
+	["chat", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -660,6 +661,35 @@ func _t_screens() -> void:
 	await _shot("9c_create_on_server")
 	login.queue_free()
 	await _wait(0.2)
+
+
+## The chat line: typing doesn't walk you anywhere, plain text is /say, and
+## saying a keyword to a targeted NPC works like clicking it.
+func _t_chat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	main.hud._open_chat("")
+	var start := p.global_position
+	Input.action_press("move_forward")
+	await _wait(0.6)
+	Input.action_release("move_forward")
+	print("chat: typing=%s moved while typing %.2f m" % [main.hud.is_typing(), p.global_position.distance_to(start)])
+	main.hud._chat.text_submitted.emit("/who")
+	var warden: Npc = _npcs()["warden_holt"]
+	p.global_position = warden.global_position + (-warden.global_transform.basis.z) * 3.0 + Vector3.UP * 0.5
+	p.face_toward(warden.global_position)
+	World.request_set_target(p.entity_id, warden.entity_id)
+	p.quests.erase("fang_bounty")
+	main.hud._open_chat("")
+	main.hud._chat.text = "gnoll fangs"
+	main.hud._chat.text_submitted.emit("gnoll fangs")
+	await _wait(0.5)
+	print("chat: typing after send=%s quest from saying it=%s" % [main.hud.is_typing(), p.quests.has("fang_bounty")])
+	main.hud._open_chat("/")
+	main.hud._chat.text = "/tell hello"
+	await _wait(0.3)
+	await _shot("9d_chat")
+	main.hud._chat.text_submitted.emit("/tell hello")
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:

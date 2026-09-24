@@ -44,7 +44,7 @@ tools/server/run_server.sh                 # GODOT=/path/to/godot PORT=7777 to o
 - The server saves everyone every 30 seconds and whenever they camp, zone or disconnect.
 
 **What works so far** (multiplayer phases 1 and 2): everyone sees each other, fights the same mobs, loots, trades with NPCs, shops, banks, trains and camps, and each zone runs on its own, so players can be in different zones at once. For now:
-- No chat or grouping yet. Those are the next phases.
+- No grouping yet (`/g` answers that you're not in a group). That's the next phase.
 
 For testing on one machine: run the server (add `--data=/tmp/efdata` to keep test accounts out of the way), then `godot --path . -- --nettest=Alpha --port=7777` and `--nettest=Bravo` in two more terminals (`--dev-loot` on the server makes every mob drop everything).
 
@@ -68,6 +68,7 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 | E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
 | G | Interact with your target: a merchant's shop, the bank, or a give window for quest turn-ins |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |
+| Enter, / | Chat. Plain text is `/say` (and talks to a targeted NPC). `/shout` (zone), `/ooc` (server), `/tell name msg`, `/r`, `/who`, `/who all`, `/lfg`, `/random`, `/loc`, `/camp`, `/help` |
 
 ## What's in the slice
 
@@ -95,5 +96,5 @@ scripts/ui        HUD, title screen, shared UI styling
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
 2. Night and darkness, more quest givers, mob pathfinding.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
-4. **Multiplayer**: phases 1-3 done (dedicated server, zones side by side, accounts and characters on the server). Next: chat, then EQ grouping.
+4. **Multiplayer**: phases 1-4 done (dedicated server, zones side by side, accounts and characters on the server, chat). Next: EQ grouping.
 5. Persistence server (Postgres), accounts, more classes and zones.

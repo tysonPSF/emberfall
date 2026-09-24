@@ -45,6 +45,14 @@ const C_WARN := Color(1, 0.62, 0.25)
 const C_SYSTEM := Color(0.85, 0.85, 0.8)
 const C_SAY := Color(0.9, 0.9, 0.9)
 const C_NPC := Color(0.75, 0.9, 1.0)
+const C_CHAT_SAY := Color(0.93, 0.93, 0.9)
+const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
+const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
+const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
+const C_CHAT_GROUP := Color(0.55, 0.78, 1.0)
+const SAY_RANGE := 45.0
+const CHAT_MAX := 240
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /camp"
 
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
@@ -974,6 +982,105 @@ func request_say(player_id: int, keyword: String) -> void:
 		say(p, "Target someone to talk to them.", C_WARN)
 		return
 	_talk(p, p.target as Npc, keyword)
+
+
+# --- chat -------------------------------------------------------------------
+
+## A line typed into the chat box: plain text is /say, anything starting with
+## a slash is a command.
+func request_chat(player_id: int, text: String) -> void:
+	if _remote(&"request_chat", [player_id, text]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	text = text.strip_edges().left(CHAT_MAX)
+	if text == "":
+		return
+	if not text.begins_with("/"):
+		_chat_say(p, text)
+		return
+	var cmd := text.get_slice(" ", 0).to_lower()
+	var rest := text.substr(cmd.length()).strip_edges()
+	match cmd:
+		"/say", "/s":
+			_chat_say(p, rest)
+		"/shout", "/sh":
+			if rest != "":
+				for q in get_players():
+					if zone_of(q) == zone_of(p):
+						say(q, "You shout, '%s'" % rest if q == p else "%s shouts, '%s'" % [p.display_name, rest], C_CHAT_SHOUT)
+		"/ooc", "/o":
+			if rest != "":
+				for q in get_players():
+					say(q, "You say out of character, '%s'" % rest if q == p else "%s says out of character, '%s'" % [p.display_name, rest], C_CHAT_OOC)
+		"/tell", "/t", "/msg":
+			_chat_tell(p, rest.get_slice(" ", 0), rest.substr(rest.get_slice(" ", 0).length()).strip_edges())
+		"/reply", "/r":
+			_chat_tell(p, str(p.get_meta("last_tell_from", "")), rest)
+		"/who":
+			_chat_who(p, rest.to_lower() == "all")
+		"/lfg":
+			p.set_meta("lfg", not p.get_meta("lfg", false))
+			say(p, "You are now %s." % ("looking for a group" if p.get_meta("lfg") else "no longer looking for a group"), C_SYSTEM)
+		"/random", "/roll":
+			var top := maxi(1, int(rest)) if rest.is_valid_int() else 100
+			var roll := randi_range(0, top)
+			for q in get_players():
+				if q.distance_to(p) <= SAY_RANGE:
+					say(q, "**A Magic Die is rolled by %s. It could have been any number from 0 to %d, but this time it turned up a %d." % [p.display_name, top, roll], C_SYSTEM)
+		"/loc":
+			say(p, "Your location is %d, %d, %d in %s." % [roundi(p.global_position.x), roundi(p.global_position.y), roundi(p.global_position.z), zone_of(p).zone_name], C_SYSTEM)
+		"/camp":
+			request_camp(player_id)
+		"/g", "/gsay", "/group":
+			say(p, "You are not in a group.", C_WARN)
+		"/help", "/h":
+			say(p, CHAT_HELP, C_SYSTEM)
+		_:
+			say(p, "That is not a valid command. Type /help for the list.", C_WARN)
+
+
+## /say: everyone nearby hears it; a targeted NPC in range treats it as talk.
+func _chat_say(p: Player, text: String) -> void:
+	if text == "":
+		return
+	var npc := p.valid_target_entity() as Npc
+	if npc != null and p.distance_to(npc) <= TALK_RANGE:
+		_talk(p, npc, text)  # says it back to you, and the NPC answers
+	else:
+		say(p, "You say, '%s'" % text, C_CHAT_SAY)
+	for q in get_players():
+		if q != p and q.distance_to(p) <= SAY_RANGE:
+			say(q, "%s says, '%s'" % [p.display_name, text], C_CHAT_SAY)
+
+
+func _chat_tell(p: Player, to_name: String, text: String) -> void:
+	if to_name == "" or text == "":
+		say(p, "Tell whom what? /tell <name> <message>", C_WARN)
+		return
+	for q in get_players():
+		if q.display_name.to_lower() == to_name.to_lower():
+			say(q, "%s tells you, '%s'" % [p.display_name, text], C_CHAT_TELL)
+			q.set_meta("last_tell_from", p.display_name)
+			say(p, "You told %s, '%s'" % [q.display_name, text], C_CHAT_TELL)
+			return
+	say(p, "%s is not online at this time." % to_name.capitalize(), C_WARN)
+
+
+## /who: players in your zone, or everywhere with /who all.
+func _chat_who(p: Player, everywhere: bool) -> void:
+	var here := zone_of(p)
+	var lines: PackedStringArray = []
+	for q in get_players():
+		if everywhere or zone_of(q) == here:
+			var cls := str(GameData.classes[q.char_class]["name"])
+			lines.append("  [%d %s] %s (%s)%s" % [q.level, cls, q.display_name, zone_of(q).zone_name, "  LFG" if q.get_meta("lfg", false) else ""])
+	lines.sort()
+	say(p, "Players on %s:" % ("the server" if everywhere else here.zone_name), C_SYSTEM)
+	for line in lines:
+		say(p, line, C_SYSTEM)
+	say(p, "There %s %d player%s %s." % ["is" if lines.size() == 1 else "are", lines.size(), "" if lines.size() == 1 else "s", "online" if everywhere else "in " + here.zone_name], C_SYSTEM)
 
 
 func _talk(p: Player, npc: Npc, keyword: String) -> void:

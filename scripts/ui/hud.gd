@@ -13,6 +13,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
+[b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
@@ -57,6 +58,7 @@ var _sit_button: Button
 var _spell_buttons: Array[Button] = []
 
 var _log: RichTextLabel
+var _chat: LineEdit
 var _log_lines := 0
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
@@ -286,7 +288,36 @@ func _build_log() -> void:
 	_log.add_theme_font_size_override("normal_font_size", 13)
 	_log.meta_underlined = false
 	_log.meta_clicked.connect(_on_log_keyword)
-	p.add_child(_log)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	p.add_child(v)
+	v.add_child(_log)
+	_chat = LineEdit.new()
+	_chat.placeholder_text = "Enter to chat, / for commands (/help)"
+	_chat.max_length = World.CHAT_MAX
+	_chat.add_theme_font_size_override("font_size", 13)
+	_chat.text_submitted.connect(func(t: String) -> void:
+		if t.strip_edges() != "":
+			World.request_chat(player.entity_id, t)
+		_chat.clear()
+		_chat.release_focus())
+	_chat.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev.is_action_pressed("cancel"):
+			_chat.clear()
+			_chat.release_focus()
+			_chat.accept_event())
+	v.add_child(_chat)
+
+
+## True while the chat line has the keyboard: the player stops moving.
+func is_typing() -> bool:
+	return _chat != null and _chat.has_focus()
+
+
+func _open_chat(prefix: String) -> void:
+	_chat.grab_focus()
+	_chat.text = prefix
+	_chat.caret_column = prefix.length()
 
 
 ## Active quests and what's still needed, under the player window.
@@ -831,7 +862,8 @@ func add_log(text: String, color: Color) -> void:
 		_log.newline()
 	_log.push_color(color)
 	var at := 0
-	for m in _keyword_re.search_all(text):
+	var links := color == World.C_NPC  # only NPCs' [keywords] are clickable, never players' chat
+	for m in (_keyword_re.search_all(text) if links else []):
 		_log.add_text(text.substr(at, m.get_start() - at))
 		_log.push_meta(m.get_string(1))
 		_log.push_color(UIKit.GOLD)
@@ -1081,6 +1113,12 @@ func _compare_lines(item_id: String) -> PackedStringArray:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		var key := (event as InputEventKey).keycode
+		if key == KEY_ENTER or key == KEY_KP_ENTER or key == KEY_SLASH:
+			_open_chat("/" if key == KEY_SLASH else "")
+			get_viewport().set_input_as_handled()
+			return
 	if event.is_action_pressed("inventory"):
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()

@@ -421,6 +421,12 @@ func _update_mouse_look() -> void:
 		Input.warp_mouse(get_viewport().get_visible_rect().size * 0.5)
 
 
+func _hud_typing() -> bool:
+	if not is_instance_valid(_cursor_hud):
+		_cursor_hud = get_tree().get_first_node_in_group("hud")
+	return _cursor_hud != null and _cursor_hud.is_typing()
+
+
 func _hud_wants_cursor() -> bool:
 	if not is_instance_valid(_cursor_hud):
 		_cursor_hud = get_tree().get_first_node_in_group("hud")
@@ -542,9 +548,10 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 		move_and_slide()
 		return
-	var fwd := Input.get_axis("move_back", "move_forward")
-	var strafe := Input.get_axis("move_left", "move_right")
-	var turn := Input.get_axis("turn_left", "turn_right")  # arrow keys, for turning without the mouse
+	var typing := _hud_typing()  # keys typed into chat don't walk you around
+	var fwd := 0.0 if typing else Input.get_axis("move_back", "move_forward")
+	var strafe := 0.0 if typing else Input.get_axis("move_left", "move_right")
+	var turn := 0.0 if typing else Input.get_axis("turn_left", "turn_right")  # arrow keys, for turning without the mouse
 	if not Controls.mouse_look:
 		turn = clampf(turn + strafe, -1.0, 1.0)  # keyboard scheme: A/D turn, as they did before mouselook
 		strafe = 0.0
@@ -566,7 +573,7 @@ func _physics_process(delta: float) -> void:
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd
 	velocity.z = dir.z * spd
-	if is_on_floor() and Input.is_action_just_pressed("jump"):
+	if is_on_floor() and not typing and Input.is_action_just_pressed("jump"):
 		velocity.y = JUMP_VELOCITY
 	move_and_slide()
 	if global_position.y < -60.0:
