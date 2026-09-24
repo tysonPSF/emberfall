@@ -648,6 +648,8 @@ func _build_npcs() -> void:
 		var npc := Npc.new()
 		npc.setup(entry["id"], str(entry.get("name", "")))
 		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * 0.1
+		for pt: Array in entry.get("patrol", []):
+			npc.patrol.append(ground(pt[0], pt[1]))
 		if entry.has("face"):
 			var d := Vector2(entry["face"][0], entry["face"][1]) - Vector2(entry["pos"][0], entry["pos"][1])
 			npc.rotation.y = atan2(-d.x, -d.y)

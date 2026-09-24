@@ -215,6 +215,44 @@ func _run() -> void:
 	for m in lineup.slice(1):
 		World.damage(m, 9999, p)
 
+	# Guard Corwin walks the road, hunts monsters near him, and helps only friends of the Watch
+	var corwin: Npc = null
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).npc_id == "watch_patrol":
+			corwin = obj
+	var start := corwin.global_position
+	await _wait(3.0)
+	print("patrol: walked %.1f m in 3 s" % Npc._flat(start, corwin.global_position))
+	var stray := _nearest_mob(p, "gnoll_pup")
+	stray.global_position = corwin.global_position + Vector3(5, 0.5, 0)
+	stray.home = stray.global_position
+	await _wait(1.5)
+	print("patrol hunt: stray pup engaged or slain = %s" % (not is_instance_valid(stray) or stray.dead or corwin.target == stray))
+	if is_instance_valid(stray) and not stray.dead:
+		World.damage(stray, 9999, p)
+	await _wait(1.0)
+	var chaser := _nearest_mob(p, "gnoll_pup")
+	for standing: int in [0, 150]:
+		p.factions["watch"] = standing
+		corwin.auto_attack = false
+		corwin.target = null
+		p.global_position = corwin.global_position + Vector3(0, 1, 16)
+		chaser.global_position = corwin.global_position + Vector3(0, 0.5, 14)
+		chaser.home = chaser.global_position
+		chaser.level = p.level
+		chaser.add_hate(p, 10.0)
+		await _wait(1.5)
+		print("patrol assist at watch %d: %s" % [standing, is_instance_valid(chaser) and corwin.target == chaser])
+		if not is_instance_valid(chaser) or chaser.dead:
+			break
+	p.global_position = corwin.global_position + Vector3(3, 1, 3)
+	p.face_toward(corwin.global_position)
+	await _wait(1.0)
+	await _shot("4g_patrol")
+	if is_instance_valid(chaser) and not chaser.dead:
+		World.damage(chaser, 9999, p)
+	p.factions.erase("watch")
+
 	for creature in ["large_rat", "fire_beetle", "gnoll_scout", "grubnak"]:
 		var c := _nearest_mob(p, creature)
 		if c == null:
