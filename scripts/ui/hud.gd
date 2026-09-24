@@ -794,6 +794,7 @@ func _on_loot_opened(c: Corpse) -> void:
 			label += "  (worn)"
 		var b := UIKit.button(label)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_color_override("font_color", GameData.item_color(entry["item"]))
 		b.tooltip_text = _item_tooltip(entry["item"])
 		b.pressed.connect(func() -> void: World.request_loot_item(player.entity_id, c.object_id, i))
 		_loot_list.add_child(b)
@@ -835,6 +836,7 @@ func _refresh_inventory() -> void:
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.disabled = item_id == ""
 		if item_id != "":
+			b.add_theme_color_override("font_color", GameData.item_color(item_id))
 			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip."
 			b.pressed.connect(func() -> void: World.request_unequip(player.entity_id, slot))
 		_equip_box.add_child(b)
@@ -848,6 +850,7 @@ func _refresh_inventory() -> void:
 		if i < player.inventory.size():
 			var item_id: String = player.inventory[i]
 			b.text = GameData.item_name(item_id)
+			b.add_theme_color_override("font_color", GameData.item_color(item_id))
 			b.tooltip_text = _item_tooltip(item_id)
 			if player.service == "shop" and _service_npc != null:
 				var price := World.sell_price(_service_npc, item_id)
@@ -892,7 +895,7 @@ func spell_tooltip(spell_id: String) -> String:
 
 
 func _item_tooltip(item_id: String) -> String:
-	var it: Dictionary = GameData.items.get(item_id, {})
+	var it: Dictionary = GameData.item(item_id)
 	var lines: PackedStringArray = [str(it.get("name", item_id))]
 	if it.has("slot"):
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())

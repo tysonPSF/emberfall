@@ -40,6 +40,7 @@ var root_left := 0.0  # seconds this entity can't move
 var body_height := 1.8
 var visual: Node3D  # CharacterModel when the entity has a rigged model
 var look: Dictionary = {}  # how to draw this entity; corpses copy it
+var worn_gear: Variant = null  # slots whose gear parts show (mobs); null shows the model as authored
 var nameplate: Label3D
 
 
@@ -115,6 +116,8 @@ func animate(event: String) -> void:
 
 func build_body(shape: String, color: Color, body_scale: float, model_id := "", weapon_id := "") -> void:
 	look = {"shape": shape, "color": color.to_html(), "scale": body_scale, "model": model_id, "weapon": weapon_id}
+	if worn_gear != null:
+		look["gear"] = worn_gear
 	var is_beetle := shape == "beetle"
 	body_height = (0.95 if is_beetle else 1.85) * body_scale
 	var capsule := CapsuleShape3D.new()
@@ -145,7 +148,7 @@ static func make_visual(look_: Dictionary) -> Node3D:
 	var body_scale := float(look_.get("scale", 1.0))
 	if str(look_.get("model", "")) != "":
 		var m := CharacterModel.new()
-		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale)
+		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale, look_.get("gear"))
 		use_entity_layer(m)
 		return m
 	var shape := str(look_.get("shape", "humanoid"))

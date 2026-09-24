@@ -93,7 +93,7 @@ func recalc_stats() -> void:
 	attack_delay = 3.0
 	attack_verb = ["hit", "hits"]
 	for slot: String in equipment:
-		var item: Dictionary = GameData.items.get(equipment[slot], {})
+		var item: Dictionary = GameData.item(equipment[slot])
 		ac += int(item.get("ac", 0))
 		max_hp += int(item.get("hp", 0))
 		max_mana += int(item.get("mana", 0))
@@ -166,7 +166,7 @@ func respawn() -> void:
 # --- scene setup ------------------------------------------------------------
 
 func _ready() -> void:
-	var weapon: String = GameData.items.get(equipment.get("primary", ""), {}).get("model", "")
+	var weapon: String = GameData.item(equipment.get("primary", "")).get("model", "")
 	build_body("humanoid", body_color, 1.0, GameData.classes[char_class].get("model", ""), weapon)
 	nameplate.text = display_name
 	nameplate.modulate = Color(0.7, 0.85, 1.0)

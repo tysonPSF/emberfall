@@ -1,0 +1,25 @@
+{
+  "quality": {
+    "per_level": 2.0,
+    "named_bonus": 25,
+    "tiers": [
+      {"id": "crude", "name": "Crude", "below": 30, "stat_mult": 0.75, "value_mult": 0.5, "color": "#9a9a9a"},
+      {"id": "", "name": "", "below": 85, "stat_mult": 1.0, "value_mult": 1.0, "color": "#e6e0d2"},
+      {"id": "fine", "name": "Fine", "below": 100, "stat_mult": 1.25, "value_mult": 2.0, "color": "#6fd46f"},
+      {"id": "superior", "name": "Superior", "below": 115, "stat_mult": 1.5, "value_mult": 4.0, "color": "#5aa0ff"},
+      {"id": "masterwork", "name": "Masterwork", "below": 1000, "stat_mult": 1.8, "value_mult": 8.0, "color": "#c77dff"}
+    ]
+  },
+  "tables": {
+    "crude_weapons": {"rusty_dagger": 3, "rusty_short_sword": 3, "worn_staff": 2},
+    "crude_head": {"cloth_cap": 1},
+    "crude_chest": {"patchwork_tunic": 1},
+    "crude_legs": {"patchwork_pants": 1},
+    "bone_head": {"bone_helm": 3, "cloth_cap": 1},
+    "scout_weapons": {"rusty_dagger": 3, "rusty_short_sword": 3, "iron_dagger": 1, "iron_short_sword": 1, "iron_hand_axe": 1},
+    "light_head": {"cloth_cap": 2, "leather_cap": 1},
+    "light_chest": {"patchwork_tunic": 2, "leather_tunic": 1},
+    "light_legs": {"patchwork_pants": 2, "leather_leggings": 1},
+    "grubnak_weapon": {"grubnaks_cleaver": 3, "iron_hand_axe": 1}
+  }
+}

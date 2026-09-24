@@ -45,7 +45,10 @@ static func library() -> AnimationLibrary:
 	return _library
 
 
-func setup(model_id: String, weapon_id: String, body_scale: float) -> void:
+## `gear` lists the slots (head, chest...) the wearer has gear in; parts named
+## for other slots under "gear_parts" in models.json are hidden. Null leaves
+## the model as authored.
+func setup(model_id: String, weapon_id: String, body_scale: float, gear: Variant = null) -> void:
 	var entry: Variant = GameData.models["characters"][model_id]
 	var spec: Dictionary = entry if entry is Dictionary else {"path": entry}
 	var own_rig := str(spec.get("rig", "")) == "own"
@@ -55,6 +58,14 @@ func setup(model_id: String, weapon_id: String, body_scale: float) -> void:
 	scale = Vector3.ONE * float(spec.get("scale", 1.0 if own_rig else KAYKIT_SCALE)) * body_scale
 	skeleton = model.find_child("Skeleton3D", true, false) as Skeleton3D
 	_customize(model, spec)
+	if gear is Array:
+		var parts: Dictionary = spec.get("gear_parts", {})
+		for slot: String in parts:
+			if not slot in gear:
+				for part: String in parts[slot]:
+					var n := model.find_child(part, true, false)
+					if n != null:
+						n.queue_free()
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	if own_rig:

@@ -69,14 +69,26 @@
       {
         "item": "gnoll_fang",
         "chance": 0.4
-      },
-      {
-        "item": "rusty_dagger",
-        "chance": 0.05
       }
     ],
     "model": "gnoll",
-    "weapon": ""
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.3,
+        "table": "crude_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "crude_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "crude_chest"
+      }
+    ]
   },
   "fire_beetle": {
     "name": "a fire beetle",
@@ -148,14 +160,6 @@
       {
         "item": "bone_chips",
         "chance": 0.6
-      },
-      {
-        "item": "rusty_short_sword",
-        "chance": 0.06
-      },
-      {
-        "item": "bone_helm",
-        "chance": 0.04
       }
     ],
     "model": [
@@ -164,8 +168,29 @@
       "skeleton_warrior",
       "skeleton_rogue"
     ],
-    "weapon": "skeleton_blade",
-    "spawn_anim": "Spawn_Ground"
+    "spawn_anim": "Spawn_Ground",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.4,
+        "table": "crude_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.15,
+        "table": "bone_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.1,
+        "table": "crude_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.06,
+        "table": "crude_legs"
+      }
+    ]
   },
   "gnoll_scout": {
     "name": "a gnoll scout",
@@ -200,18 +225,31 @@
       {
         "item": "gnoll_fang",
         "chance": 0.6
-      },
-      {
-        "item": "patchwork_pants",
-        "chance": 0.08
-      },
-      {
-        "item": "cloth_cap",
-        "chance": 0.06
       }
     ],
     "model": "gnoll",
-    "weapon": "dagger"
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.45,
+        "table": "scout_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.12,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.12,
+        "table": "light_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.1,
+        "table": "light_legs"
+      }
+    ]
   },
   "grubnak": {
     "name": "Grubnak the Mangy",
@@ -243,17 +281,20 @@
       40,
       120
     ],
-    "loot": [
+    "loot": [],
+    "model": "gnoll_brute",
+    "named": true,
+    "gear": [
       {
-        "item": "grubnaks_cleaver",
-        "chance": 0.5
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "grubnak_weapon"
       },
       {
-        "item": "mangy_hide_vest",
-        "chance": 0.35
+        "slot": "chest",
+        "chance": 0.4,
+        "item": "mangy_hide_vest"
       }
-    ],
-    "model": "gnoll_brute",
-    "weapon": "axe_2handed"
+    ]
   }
 }
