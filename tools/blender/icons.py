@@ -4,7 +4,8 @@
         -P tools/blender/icons.py -- --out assets/icons [--only cloth_cap,gnoll_fang] [--size 128]
 
 Where the picture comes from, per item (data/items/*.json):
-  "wear"   the gear pieces from gear.py (one of a left/right pair is enough)
+  "wear"   the KayKit parts it swaps onto the body (models.json "body_parts"),
+           else the gear pieces from gear.py
   "model"  the weapon or shield scene named in data/models.json "weapons"
   else     a small model built here (drops, jewelry, bags), in the Dungeon
            palette like everything else
@@ -20,7 +21,7 @@ import os
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 sys.path.insert(0, os.path.dirname(__file__))
 import gear  # noqa: E402
@@ -168,9 +169,75 @@ def leather_backpack():
 	return p.build()
 
 
+def braided_whisker_cord():
+	p = Prop("braided_whisker_cord", 229)
+	for ring in range(3):                                                          # a coil of cord, three turns
+		for k in range(14):
+			a0, a1 = k * math.tau / 14, (k + 1) * math.tau / 14
+			r, z = 0.5 - ring * 0.04, 0.1 + ring * 0.09
+			p.seg((math.cos(a0) * r, math.sin(a0) * r, z), (math.cos(a1) * r, math.sin(a1) * r, z), 0.06, 0.06, WOOD_GRAY, sides=5, twist=30)
+	p.seg((0.5, 0, 0.3), (0.75, -0.2, 0.05), 0.05, 0.03, WOOD_GRAY, sides=5)       # loose end
+	return p.build()
+
+
+def blackpaw_pelt():
+	p = Prop("blackpaw_pelt", 231)
+	p.blob((1.1, 0.8, 0.12), (0, 0, 0.06), STONE_DARK, segs=(12, 6), grad=(0.0, 0.5), jitter=0.05)
+	for x in (-1, 1):                                                              # legs of the hide
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, 0.32, 0.05), STONE_DARK, segs=(6, 4), grad=(0.0, 0.5))
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, -0.32, 0.05), STONE_DARK, segs=(6, 4), grad=(0.0, 0.5))
+	p.blob((0.28, 0.22, 0.1), (0.52, 0, 0.1), WOOD, segs=(8, 5))                  # the paw
+	return p.build()
+
+
+def stitched_blackpaw_hide():
+	p = Prop("stitched_blackpaw_hide", 233)
+	p.box((0.9, 0.7, 0.14), (0, 0, 0.07), HIDE, grad=(0.1, 0.6))
+	p.box((0.9, 0.7, 0.12), (0.03, 0.02, 0.2), STONE_DARK, rot=(0, 0, 4), grad=(0.0, 0.5))   # folded over
+	for k in range(6):                                                             # stitches down the edge
+		x = -0.38 + k * 0.15
+		p.seg((x, -0.36, 0.3), (x + 0.06, -0.33, 0.1), 0.02, 0.02, WOOD_GRAY, sides=4)
+	return p.build()
+
+
+def tovins_trail_pack():
+	p = Prop("tovins_trail_pack", 235)
+	_bag(p, STONE_DARK, 0.85, 0.55, 1.0, strap=HIDE)
+	p.blob((0.1, 0.06, 0.1), (0, -0.34, 0.62), EMBER, segs=(8, 6), glow=1.2)       # the beetle-eye clasp
+	for x in (-0.3, 0.3):                                                          # side pouches
+		p.blob((0.25, 0.3, 0.36), (x * 1.3, -0.02, 0.36), WOOD, segs=(8, 6))
+	return p.build()
+
+
+def crude_arrow():
+	bpy.ops.import_scene.gltf(filepath=_res("res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/arrow_bow_bundle.gltf"))
+
+
+def sling_stone():
+	p = Prop("sling_stone", 237)
+	for k, (x, y) in enumerate([(0, 0), (0.42, 0.1), (-0.36, 0.18), (0.1, 0.4), (-0.05, -0.38)]):
+		p.rock((0.32, 0.28, 0.24), (x, y, 0.12 + (0.14 if k == 0 else 0)), STONE_LIGHT, jitter=0.1)
+	return p.build()
+
+
+def leather_sling():
+	p = Prop("leather_sling", 239)
+	p.blob((0.6, 0.4, 0.2), (0, 0, 0.1), WOOD, segs=(10, 6), grad=(0.1, 0.7))      # the pouch
+	p.rock((0.3, 0.26, 0.22), (0, 0, 0.24), STONE_LIGHT, jitter=0.05)
+	for side in (-1, 1):                                                           # two cords, one ending in a loop
+		pts = [(side * 0.3, 0, 0.12), (side * 0.6, 0.15, 0.1), (side * 0.85, 0.4, 0.08), (side * 0.95, 0.7, 0.06)]
+		for a0, a1 in zip(pts, pts[1:]):
+			p.seg(a0, a1, 0.05, 0.05, WOOD, sides=5)
+	for k in range(8):
+		a0, a1 = k * math.tau / 8, (k + 1) * math.tau / 8
+		p.seg((0.95 + math.cos(a0) * 0.1, 0.8 + math.sin(a0) * 0.1, 0.06), (0.95 + math.cos(a1) * 0.1, 0.8 + math.sin(a1) * 0.1, 0.06), 0.045, 0.045, WOOD, sides=5)
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
-								 worn_backpack, gnollhide_satchel, leather_backpack]}
+								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
+									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling]}
 
 
 # ---------------------------------------------------------------- rendering
@@ -182,9 +249,52 @@ def load_items():
 	return items
 
 
+def _body_parts(look, models):
+	"""Imports a KayKit character and keeps only the parts a wearable swaps in,
+	tinted as the game tints them."""
+	entry = models["characters"][look["model"]]
+	bpy.ops.import_scene.gltf(filepath=_res(entry["path"] if isinstance(entry, dict) else entry))
+	parts = look["parts"]
+	if all("Arm" in n for n in parts):
+		parts = [n for n in parts if n.endswith("ArmLeft")]  # one arm, hung straight down, reads better than a T-pose pair
+	for o in list(bpy.context.scene.objects):
+		if o.type == "MESH" and o.name not in parts:
+			bpy.data.objects.remove(o, do_unlink=True)
+	if parts != look["parts"]:
+		for o in [o for o in bpy.context.scene.objects if o.type == "MESH"]:
+			world = o.matrix_world.copy()
+			o.parent = None
+			for m in [m for m in o.modifiers if m.type == "ARMATURE"]:
+				o.modifiers.remove(m)
+			o.matrix_world = Matrix.Rotation(math.radians(90), 4, "Y") @ world
+	if "tint" not in look:
+		return
+	tint = [int(look["tint"][i:i + 2], 16) / 255.0 for i in (1, 3, 5)]
+	for o in bpy.context.scene.objects:
+		if o.type != "MESH":
+			continue
+		for slot in o.material_slots:
+			mat = slot.material.copy()
+			slot.material = mat
+			nodes, links = mat.node_tree.nodes, mat.node_tree.links
+			bsdf = next(n for n in nodes if n.type == "BSDF_PRINCIPLED")
+			src = bsdf.inputs["Base Color"].links[0].from_socket if bsdf.inputs["Base Color"].links else None
+			mix = nodes.new("ShaderNodeMix")
+			mix.data_type = "RGBA"
+			mix.blend_type = "MULTIPLY"
+			mix.inputs["Factor"].default_value = 1.0
+			if src:
+				links.new(src, mix.inputs["A"])
+			mix.inputs["B"].default_value = tint + [1.0]
+			links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+
+
 def build_subject(item_id, item, models):
 	"""Puts the item's model in the (empty) scene; False if there is none."""
 	wear = item.get("wear", "")
+	if wear in models.get("body_parts", {}):
+		_body_parts(models["body_parts"][wear], models)
+		return True
 	if wear:
 		for piece in gear.OUTFITS.get(wear, []):
 			gear._build_piece(piece)

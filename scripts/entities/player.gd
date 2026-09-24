@@ -478,6 +478,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("auto_attack"):
 		World.request_toggle_attack(entity_id)
+	elif event.is_action_pressed("ranged"):
+		World.request_ranged(entity_id)
 	elif event.is_action_pressed("target_next"):
 		_cycle_target()
 	elif event.is_action_pressed("target_interact"):

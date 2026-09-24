@@ -35,6 +35,11 @@
         "feet",
         "legs",
         "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
       ]
     },
     "skeleton_warrior": {
@@ -53,6 +58,11 @@
         "feet",
         "legs",
         "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
       ]
     },
     "skeleton_rogue": {
@@ -71,6 +81,11 @@
         "feet",
         "legs",
         "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
       ]
     },
     "skeleton_mage": {
@@ -86,6 +101,11 @@
         "feet",
         "legs",
         "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
       ]
     },
     "rat": {
@@ -175,7 +195,8 @@
     "fishing_pole": "res://assets/props/fishing_pole.glb",
     "shield_round": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round.gltf",
     "shield_round_barbarian": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round_barbarian.gltf",
-    "shield_badge": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_badge.gltf"
+    "shield_badge": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_badge.gltf",
+    "bow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/bow_withString.gltf"
   },
   "animations": [
     "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
@@ -701,6 +722,235 @@
           "path": "res://assets/gear/leather_belt.glb",
           "bone": "spine"
         }
+      ]
+    }
+  },
+  "body_parts": {
+    "cloth_cap": {
+      "model": "skeleton_rogue",
+      "parts": [
+        "Skeleton_Rogue_Hood"
+      ],
+      "covers": []
+    },
+    "leather_cap": {
+      "model": "skeleton_rogue",
+      "parts": [
+        "Skeleton_Rogue_Hood"
+      ],
+      "covers": [],
+      "tint": "#9a8070"
+    },
+    "floppy_hat": {
+      "model": "skeleton_mage",
+      "parts": [
+        "Skeleton_Mage_Hat"
+      ],
+      "covers": [],
+      "tint": "#c8a070"
+    },
+    "iron_coif": {
+      "model": "knight",
+      "parts": [
+        "Knight_Helmet"
+      ],
+      "covers": []
+    },
+    "bone_helm": {
+      "model": "skeleton_warrior",
+      "parts": [
+        "Skeleton_Warrior_Helmet"
+      ],
+      "covers": []
+    },
+    "patchwork_tunic": {
+      "model": "ranger",
+      "parts": [
+        "Ranger_Body"
+      ],
+      "covers": [
+        "Body"
+      ]
+    },
+    "leather_tunic": {
+      "model": "rogue",
+      "parts": [
+        "Rogue_Body"
+      ],
+      "covers": [
+        "Body"
+      ]
+    },
+    "studded_tunic": {
+      "model": "knight",
+      "parts": [
+        "Knight_Body"
+      ],
+      "covers": [
+        "Body"
+      ],
+      "tint": "#c49a6c"
+    },
+    "mangy_hide_vest": {
+      "model": "barbarian",
+      "parts": [
+        "Barbarian_Body"
+      ],
+      "covers": [
+        "Body"
+      ],
+      "tint": "#c8b49a"
+    },
+    "cloth_sleeves": {
+      "model": "ranger",
+      "parts": [
+        "Ranger_ArmLeft",
+        "Ranger_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "leather_sleeves": {
+      "model": "rogue",
+      "parts": [
+        "Rogue_ArmLeft",
+        "Rogue_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "cloth_gloves": {
+      "model": "ranger",
+      "parts": [
+        "Ranger_ArmLeft",
+        "Ranger_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "leather_gloves": {
+      "model": "rogue",
+      "parts": [
+        "Rogue_ArmLeft",
+        "Rogue_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "iron_gauntlets": {
+      "model": "knight",
+      "parts": [
+        "Knight_ArmLeft",
+        "Knight_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "patchwork_pants": {
+      "model": "ranger",
+      "parts": [
+        "Ranger_LegLeft",
+        "Ranger_LegRight"
+      ],
+      "covers": [
+        "LegLeft",
+        "LegRight"
+      ]
+    },
+    "leather_leggings": {
+      "model": "rogue",
+      "parts": [
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ],
+      "covers": [
+        "LegLeft",
+        "LegRight"
+      ]
+    },
+    "iron_greaves": {
+      "model": "knight",
+      "parts": [
+        "Knight_LegLeft",
+        "Knight_LegRight"
+      ],
+      "covers": [
+        "LegLeft",
+        "LegRight"
+      ]
+    },
+    "leather_boots": {
+      "model": "rogue",
+      "parts": [
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ],
+      "covers": [
+        "LegLeft",
+        "LegRight"
+      ]
+    },
+    "iron_boots": {
+      "model": "knight",
+      "parts": [
+        "Knight_LegLeft",
+        "Knight_LegRight"
+      ],
+      "covers": [
+        "LegLeft",
+        "LegRight"
+      ]
+    }
+  },
+  "projectiles": {
+    "arrow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/arrow_bow.gltf",
+    "stone": ""
+  },
+  "grips": {
+    "shield_round": {
+      "rot": [
+        -90,
+        0,
+        0
+      ],
+      "pos": [
+        0.12,
+        0.04,
+        0.04
+      ]
+    },
+    "shield_round_barbarian": {
+      "rot": [
+        -90,
+        0,
+        0
+      ],
+      "pos": [
+        0.12,
+        0.04,
+        0.04
+      ]
+    },
+    "shield_badge": {
+      "rot": [
+        -90,
+        0,
+        -90
+      ],
+      "pos": [
+        0.12,
+        0.04,
+        0.04
       ]
     }
   }

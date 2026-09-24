@@ -17,12 +17,13 @@ const KAYKIT_ANIMS := {
 }
 
 static var _library: AnimationLibrary
+static var _part_sources: Dictionary = {}  # model path -> an instance to copy body parts from
 
 var anim: AnimationPlayer
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
 var _held: Dictionary = {}  # hand bone -> [model id, BoneAttachment3D]
-var _worn: Dictionary = {}  # slot -> [gear id, [BoneAttachment3D per piece]]
+var _worn: Dictionary = {}  # slot -> [gear id, [nodes added for it], [body regions it covers], how shown]
 var _model: Node3D
 var _spec: Dictionary = {}
 var _one_shot_left := 0.0
@@ -117,9 +118,15 @@ func _customize(model: Node3D, spec: Dictionary) -> void:
 		slot.add_child(part)
 
 
-## Gear a character is wearing, {slot: gear id} from models.json "gear". The
-## body's own headgear ("headgear_parts") comes off the first time this is
-## called, so a player shows exactly what they wear: bare-headed, or the cap.
+## Gear a character is wearing, {slot: gear id}. The body's own headgear
+## ("headgear_parts") comes off the first time this is called, so a player
+## shows exactly what they wear: bare-headed, or the cap.
+## A wearable in models.json "body_parts" swaps in another KayKit model's
+## skinned parts (the knight's legs, the rogue's jerkin), hiding the body's own
+## parts in the regions it covers, the way EverQuest reskinned armor. Models
+## limit that to their "part_swaps" slots (a skeleton would grow flesh hands);
+## otherwise, and for wearables with no body parts, the rigid pieces from
+## gear.py ("gear") are pinned to bones instead.
 func set_worn(worn: Dictionary) -> void:
 	if skeleton == null:
 		return
@@ -127,32 +134,137 @@ func set_worn(worn: Dictionary) -> void:
 		var n := _model.find_child(part, true, false)
 		if n != null:
 			n.queue_free()
+	var swaps: Array = _spec.get("part_swaps", ["head", "chest", "arms", "hands", "legs", "feet", "waist"])
+	var looks: Dictionary = GameData.models.get("body_parts", {})
+	var how := {}  # slot -> "parts", "pieces" or "" (hidden under another slot's parts)
+	for slot: String in worn:
+		how[slot] = "parts" if looks.has(str(worn[slot])) and slot in swaps else "pieces"
+	# KayKit arms end in hands and legs in feet: sleeves and pants show, and
+	# gloves and boots only take over those parts when nothing covers them
+	for pair: Array in [["hands", "arms"], ["feet", "legs"]]:
+		if how.get(pair[0], "") == "parts" and how.get(pair[1], "") == "parts":
+			how[pair[0]] = ""
 	for slot: String in _worn.keys():
-		if worn.get(slot, "") != _worn[slot][0]:
-			for holder: Node in _worn[slot][1]:
-				holder.queue_free()
+		if str(worn.get(slot, "")) != _worn[slot][0] or how.get(slot, "") != _worn[slot][3]:
+			for node: Node in _worn[slot][1]:
+				node.queue_free()
 			_worn.erase(slot)
 	for slot: String in worn:
 		var gear_id := str(worn[slot])
-		var spec: Dictionary = GameData.models.get("gear", {}).get(gear_id, {})
-		if _worn.has(slot) or spec.is_empty():
+		if _worn.has(slot):
 			continue
-		var holders: Array = []
-		for p: Dictionary in spec.get("pieces", [spec]):  # a wearable is one or more pieces, each on a bone
-			var bone := skeleton.find_bone(str(p.get("bone", "head")))
-			if bone < 0:
-				continue
-			var holder := BoneAttachment3D.new()
-			holder.bone_name = str(p.get("bone", "head"))
-			skeleton.add_child(holder)
-			var piece: Node3D = (load(p["path"]) as PackedScene).instantiate()
-			piece.transform = skeleton.get_bone_global_rest(bone).affine_inverse()  # authored in mesh space
-			holder.add_child(piece)
-			Entity.use_entity_layer(holder)
-			for mi in piece.find_children("*", "MeshInstance3D", true, false):
-				(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-			holders.append(holder)
-		_worn[slot] = [gear_id, holders]
+		match how[slot]:
+			"parts":
+				_worn[slot] = [gear_id, _swap_parts(looks[gear_id]), looks[gear_id].get("covers", []), "parts"]
+			"pieces":
+				_worn[slot] = [gear_id, _pin_pieces(gear_id), [], "pieces"]
+			_:
+				_worn[slot] = [gear_id, [], [], ""]
+	_show_covered()
+
+
+## Copies a wearable's skinned parts from their KayKit model onto this skeleton.
+## A part replacing one of ours takes on our tint (a gnoll's fur-tinted arms
+## stay furry in a jerkin's sleeves).
+func _swap_parts(look: Dictionary) -> Array:
+	var entry: Variant = GameData.models["characters"][look["model"]]
+	var path: String = entry["path"] if entry is Dictionary else str(entry)
+	if not _part_sources.has(path):  # kept under GameData (no 3D world there, so never drawn) and freed with it
+		var src_model: Node = (load(path) as PackedScene).instantiate()
+		GameData.add_child(src_model)
+		_part_sources[path] = src_model
+	var source: Node = _part_sources[path]
+	var ours := _body_parts()
+	var tints: Dictionary = _spec.get("tint", {})
+	var added: Array = []
+	for part_name: String in look.get("parts", []):
+		var src := source.find_child(part_name, true, false) as MeshInstance3D
+		if src == null:
+			continue
+		var mi := src.duplicate() as MeshInstance3D
+		mi.name = "Worn_" + part_name
+		var node: Node3D = mi
+		if src.get_parent() is BoneAttachment3D:  # a rigid part (the Skeletons pack's hats) rides its bone
+			node = BoneAttachment3D.new()
+			(node as BoneAttachment3D).bone_name = (src.get_parent() as BoneAttachment3D).bone_name
+			node.add_child(mi)
+			skeleton.add_child(node)
+		else:
+			skeleton.add_child(mi)
+			mi.skeleton = NodePath("..")
+			mi.skin = _skin_by_name(src)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		var color := Color.html(str(look["tint"])) if look.has("tint") else Color.WHITE
+		var region := _region_of(part_name)
+		if ours.has(region) and tints.has(str(ours[region].name)):
+			color *= Color.html(tints[str(ours[region].name)])
+		if color != Color.WHITE:
+			var base := mi.get_active_material(0) as BaseMaterial3D
+			if base != null:
+				var mat := base.duplicate() as BaseMaterial3D
+				mat.albedo_color = color
+				mi.material_override = mat
+		Entity.use_entity_layer(node)
+		added.append(node)
+	return added
+
+
+## A part's skin, bound by bone name: the Skeletons pack numbers the shared
+## rig's bones in another order than the Adventurers pack does.
+static func _skin_by_name(src: MeshInstance3D) -> Skin:
+	var from := src.get_node_or_null(src.skeleton) as Skeleton3D
+	if src.skin == null or from == null:
+		return src.skin
+	var skin := src.skin.duplicate() as Skin
+	for i in skin.get_bind_count():
+		if skin.get_bind_name(i) == &"":
+			skin.set_bind_name(i, from.get_bone_name(skin.get_bind_bone(i)))
+	return skin
+
+
+## Pins a wearable's rigid gear.py pieces to their bones.
+func _pin_pieces(gear_id: String) -> Array:
+	var spec: Dictionary = GameData.models.get("gear", {}).get(gear_id, {})
+	var holders: Array = []
+	for p: Dictionary in spec.get("pieces", []):  # a wearable is one or more pieces, each on a bone
+		var bone := skeleton.find_bone(str(p.get("bone", "head")))
+		if bone < 0:
+			continue
+		var holder := BoneAttachment3D.new()
+		holder.bone_name = str(p.get("bone", "head"))
+		skeleton.add_child(holder)
+		var piece: Node3D = (load(p["path"]) as PackedScene).instantiate()
+		piece.transform = skeleton.get_bone_global_rest(bone).affine_inverse()  # authored in mesh space
+		holder.add_child(piece)
+		Entity.use_entity_layer(holder)
+		for mi in piece.find_children("*", "MeshInstance3D", true, false):
+			(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		holders.append(holder)
+	return holders
+
+
+## Hides the body's own parts under swapped-in gear, and shows them again when
+## it comes off.
+func _show_covered() -> void:
+	var covered: Array = []
+	for slot: String in _worn:
+		covered.append_array(_worn[slot][2])
+	var ours := _body_parts()
+	for region: String in ours:
+		(ours[region] as MeshInstance3D).visible = not region in covered
+
+
+## This model's own body meshes by region ("Body", "ArmLeft", "Cape"...).
+func _body_parts() -> Dictionary:
+	var out := {}
+	for mi in _model.find_children("*", "MeshInstance3D", true, false):
+		if not mi.name.begins_with("Worn_") and mi.get_parent() == skeleton:
+			out[_region_of(str(mi.name))] = mi
+	return out
+
+
+static func _region_of(part_name: String) -> String:
+	return part_name.get_slice("_", part_name.get_slice_count("_") - 1)
 
 
 func set_weapon(weapon_id: String) -> void:
@@ -177,7 +289,13 @@ func _hold(bone: String, model_id: String) -> void:
 	var slot := BoneAttachment3D.new()
 	slot.bone_name = bone
 	skeleton.add_child(slot)
-	slot.add_child((load(GameData.models["weapons"][model_id]) as PackedScene).instantiate())
+	var held: Node3D = (load(GameData.models["weapons"][model_id]) as PackedScene).instantiate()
+	var grip: Dictionary = GameData.models.get("grips", {}).get(model_id, {})  # how it sits in the hand, if not as modeled
+	var r: Array = grip.get("rot", [0, 0, 0])
+	var at: Array = grip.get("pos", [0, 0, 0])
+	held.rotation_degrees = Vector3(r[0], r[1], r[2])
+	held.position = Vector3(at[0], at[1], at[2])
+	slot.add_child(held)
 	Entity.use_entity_layer(slot)
 	_held[bone] = [model_id, slot]
 

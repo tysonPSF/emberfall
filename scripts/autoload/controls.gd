@@ -15,6 +15,7 @@ const BINDINGS := {
 	"sprint": [KEY_SHIFT],
 	"jump": [KEY_SPACE],
 	"auto_attack": [KEY_Q],
+	"ranged": [KEY_R],
 	"target_next": [KEY_TAB],
 	"target_interact": [KEY_T],
 	"target_self": [KEY_F1],

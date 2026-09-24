@@ -1,0 +1,52 @@
+{
+  "hunting_shortbow": {
+    "name": "Hunting Shortbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 4,
+    "delay": 3.2,
+    "range": 36,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 150,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "leather_sling": {
+    "name": "Leather Sling",
+    "slot": "range",
+    "skill": "throwing",
+    "dmg": 2,
+    "delay": 2.6,
+    "range": 28,
+    "ammo": "stone",
+    "ammo_name": "sling stones",
+    "verb": [
+      "sling a stone at",
+      "slings a stone at"
+    ],
+    "value": 40
+  },
+  "crude_arrow": {
+    "name": "Crude Arrow",
+    "ammo_type": "arrow",
+    "dmg": 1,
+    "projectile": "arrow",
+    "stack": 20,
+    "value": 1
+  },
+  "sling_stone": {
+    "name": "Sling Stone",
+    "ammo_type": "stone",
+    "dmg": 0,
+    "projectile": "stone",
+    "stack": 20,
+    "value": 1
+  }
+}
