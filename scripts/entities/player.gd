@@ -297,6 +297,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_toggle_attack(entity_id)
 	elif event.is_action_pressed("target_next"):
 		_cycle_target()
+	elif event.is_action_pressed("target_interact"):
+		_cycle_interact()
 	elif event.is_action_pressed("target_self"):
 		World.request_set_target(entity_id, entity_id)
 	elif event.is_action_pressed("consider"):
@@ -330,7 +332,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## never takes the real cursor, so a test run cannot hold the mouse hostage while
 ## someone is working.
 func _update_mouse_look() -> void:
-	var want := not dead and not Input.is_action_pressed("free_cursor") and not _hud_wants_cursor()
+	var want := Controls.mouse_look and not dead and not Input.is_action_pressed("free_cursor") and not _hud_wants_cursor()
 	if want == mouse_looking:
 		return
 	mouse_looking = want
@@ -429,6 +431,28 @@ func _cycle_target() -> void:
 	World.request_set_target(entity_id, candidates[idx % candidates.size()].entity_id)
 
 
+## Cycles what you interact with rather than fight: townsfolk and corpses. Tab
+## only ever walks the living mobs, so without this someone on the keyboard can
+## kill a gnoll and then neither loot it nor hand the fangs in.
+func _cycle_interact() -> void:
+	var candidates: Array[Node3D] = []
+	for obj: Variant in World.objects.values():
+		if not is_instance_valid(obj) or obj == self:
+			continue
+		var wanted := obj is Corpse or (obj is Npc and not (obj as Npc).dead)
+		if wanted and global_position.distance_to((obj as Node3D).global_position) < 45.0:
+			candidates.append(obj)
+	if candidates.is_empty():
+		World.say(self, "There is nobody to talk to and nothing to loot nearby.", World.C_WARN)
+		return
+	candidates.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+		return global_position.distance_to(a.global_position) < global_position.distance_to(b.global_position))
+	var idx := candidates.find(target) + 1 if target != null else 0
+	var pick := candidates[idx % candidates.size()]
+	var id: int = (pick as Corpse).object_id if pick is Corpse else (pick as Entity).entity_id
+	World.request_set_target(entity_id, id)
+
+
 func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
 	if dead:
@@ -439,6 +463,9 @@ func _physics_process(delta: float) -> void:
 	var fwd := Input.get_axis("move_back", "move_forward")
 	var strafe := Input.get_axis("move_left", "move_right")
 	var turn := Input.get_axis("turn_left", "turn_right")  # arrow keys, for turning without the mouse
+	if not Controls.mouse_look:
+		turn = clampf(turn + strafe, -1.0, 1.0)  # keyboard scheme: A/D turn, as they did before mouselook
+		strafe = 0.0
 	if turn != 0.0:
 		rotate_y(-turn * TURN_SPEED * delta)
 	var dir := -transform.basis.z * fwd + transform.basis.x * strafe

@@ -1,5 +1,8 @@
 extends Node
-## Registers default key bindings at startup so project.godot stays readable.
+## Registers default key bindings at startup so project.godot stays readable,
+## and holds the few settings that change how input itself behaves.
+
+const SETTINGS_PATH := "user://settings.json"
 
 const BINDINGS := {
 	"move_forward": [KEY_W, KEY_UP],
@@ -13,7 +16,10 @@ const BINDINGS := {
 	"jump": [KEY_SPACE],
 	"auto_attack": [KEY_Q],
 	"target_next": [KEY_TAB],
+	"target_interact": [KEY_T],
 	"target_self": [KEY_F1],
+	"settings": [KEY_O],
+	"settings_mouse_look": [KEY_M],
 	"consider": [KEY_C],
 	"sit": [KEY_X],
 	"loot": [KEY_L],
@@ -34,7 +40,29 @@ const BINDINGS := {
 }
 
 
+## Off puts the game back on the keyboard: the cursor stays out, A/D turn rather
+## than strafe, and you click to target instead of aiming. Saved per machine,
+## like the bindings, not per character.
+var mouse_look := true
+
+
+func set_mouse_look(on: bool) -> void:
+	mouse_look = on
+	var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	if f != null:
+		f.store_string(JSON.stringify({"mouse_look": mouse_look}, "  "))
+
+
+func _load_settings() -> void:
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
+	if typeof(parsed) == TYPE_DICTIONARY:
+		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
+
+
 func _ready() -> void:
+	_load_settings()
 	for action: String in BINDINGS:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)

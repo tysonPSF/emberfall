@@ -7,10 +7,11 @@ extends CanvasLayer
 const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
 [b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
-[b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
+[b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
+[b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip; right-click worn gear to use its effect)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
@@ -90,6 +91,8 @@ var _stats_label: Label
 var _faction_label: Label
 
 var _help_panel: PanelContainer
+var _settings_panel: PanelContainer
+var _settings_rows: VBoxContainer
 var _banner: Label
 var _banner_time := 0.0
 var _death_label: Label
@@ -115,6 +118,7 @@ func _ready() -> void:
 	_build_service_window()
 	_build_inventory()
 	_build_help()
+	_build_settings()
 	_build_overlays()
 	_build_menu()
 	World.log_message.connect(add_log)
@@ -561,6 +565,57 @@ func _build_help() -> void:
 	_help_panel.add_child(t)
 
 
+## Settings, reachable without a mouse: O opens it and each row toggles with the
+## letter shown on it, so someone playing on the keyboard can turn the mouse
+## scheme off without ever needing to click a button.
+func _build_settings() -> void:
+	_settings_panel = UIKit.panel()
+	UIKit.place(_settings_panel, Vector2(0.5, 0.5), Vector2(0, 0))
+	root.add_child(_settings_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 420
+	v.add_theme_constant_override("separation", 6)
+	_settings_panel.add_child(v)
+	var title := UIKit.label("Settings", 18, UIKit.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(title)
+	_settings_rows = VBoxContainer.new()
+	_settings_rows.add_theme_constant_override("separation", 4)
+	v.add_child(_settings_rows)
+	var hint := UIKit.label("Press the letter shown to change a setting  ·  O or Esc to close", 11, UIKit.DIM)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(hint)
+	_settings_panel.visible = false
+	_refresh_settings()
+
+
+func _refresh_settings() -> void:
+	for c in _settings_rows.get_children():
+		_settings_rows.remove_child(c)
+		c.queue_free()
+	var b := UIKit.button("[M]   Mouse controls:   %s" % ("On" if Controls.mouse_look else "Off"), Vector2(0, 34))
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.pressed.connect(_toggle_mouse_look)
+	_settings_rows.add_child(b)
+	var note := UIKit.label(
+			"On: the mouse looks around, right-click targets, left-click attacks.\n"
+			+ "Off: the cursor stays out, A/D turn, and you click to target.\n"
+			+ "Either way, Tab targets the nearest foe and T cycles townsfolk and corpses.",
+			11, UIKit.DIM)
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD
+	note.custom_minimum_size.x = 410
+	_settings_rows.add_child(note)
+
+
+func _toggle_mouse_look() -> void:
+	Controls.set_mouse_look(not Controls.mouse_look)
+	_refresh_settings()
+
+
+func _show_settings(on: bool) -> void:
+	_settings_panel.visible = on
+
+
 ## Esc menu: camp (log out), controls, back to the game.
 func _build_menu() -> void:
 	_menu_panel = UIKit.panel()
@@ -583,6 +638,11 @@ func _build_menu() -> void:
 		_menu_panel.visible = false
 		_show_help(true))
 	v.add_child(controls)
+	var settings := UIKit.button("Settings  (O)", Vector2(0, 38))
+	settings.pressed.connect(func() -> void:
+		_menu_panel.visible = false
+		_show_settings(true))
+	v.add_child(settings)
 	var reloader := get_tree().get_first_node_in_group("reloader")
 	if reloader != null:  # dev builds only
 		var reload := UIKit.button("Reload game  (F5)", Vector2(0, 38))
@@ -645,7 +705,8 @@ func _draw_crosshair() -> void:
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
 	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible
-			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible)
+			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
+			or _settings_panel.visible)
 
 
 # --- updates ----------------------------------------------------------------
@@ -1026,8 +1087,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("help"):
 		_show_help(not _help_panel.visible)
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("settings"):
+		_show_settings(not _settings_panel.visible)
+		get_viewport().set_input_as_handled()
+	elif _settings_panel.visible and event.is_action_pressed("settings_mouse_look"):
+		_toggle_mouse_look()
+		get_viewport().set_input_as_handled()
+	elif _loot_panel.visible and event.is_action_pressed("loot") and _loot_corpse != null:
+		# Second press takes the lot, so looting never needs the mouse.
+		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _service_panel.visible:
+		if _settings_panel.visible:
+			_settings_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _service_panel.visible:
 			World.request_service_close(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _trade_panel.visible:
