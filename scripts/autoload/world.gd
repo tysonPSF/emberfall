@@ -180,6 +180,8 @@ func _physics_process(delta: float) -> void:
 			_check_service(obj)
 		if obj is Player and (obj as Player).camp_left > 0.0:
 			_update_camp(obj, delta)
+		if obj is Player and is_instance_valid(obj):
+			_update_stamina(obj, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -432,6 +434,41 @@ func request_toggle_attack(entity_id: int) -> void:
 	e.auto_attack = true
 	e.sitting = false
 	say(e, "Auto attack is on.")
+
+
+## Sprinting is a held state rather than a toggle: input asks for it every frame
+## it wants it, and anything here can refuse or end it.
+func request_sprint(entity_id: int, on: bool) -> void:
+	var p := get_object(entity_id) as Player
+	if p == null or p.dead:
+		return
+	# You may run a burst down to nothing, but you cannot start again on fumes:
+	# without this, holding Shift while spent re-engages the moment a sliver of
+	# stamina returns, which stutters your speed and repeats the winded message.
+	if on and (p.sitting or p.stamina < float(cfg("sprint_resume_at", 25.0))):
+		return
+	p.sprinting = on
+
+
+## Drains while you run, and creeps back after you have been off it a moment.
+## How long a run lasts is `max_stamina`, which recalc_stats builds from config,
+## level, gear and deity - so lengthening it later is a data change, not a code
+## one. The numbers live in data/config.json.
+func _update_stamina(p: Player, delta: float) -> void:
+	if p.dead:
+		p.sprinting = false
+		return
+	if p.sprinting:
+		p.stamina_idle = float(cfg("stamina_regen_delay", 1.5))
+		p.stamina = maxf(0.0, p.stamina - float(cfg("sprint_drain", 20.0)) * delta)
+		if p.stamina <= 0.0:
+			p.sprinting = false
+			say(p, "You are too winded to keep running.", C_WARN)
+		return
+	p.stamina_idle = maxf(0.0, p.stamina_idle - delta)
+	if p.stamina_idle <= 0.0:
+		var regen := float(cfg("stamina_regen", 8.0)) * delta
+		p.stamina = minf(float(p.max_stamina), p.stamina + regen)
 
 
 func request_sit(entity_id: int, sit: bool) -> void:

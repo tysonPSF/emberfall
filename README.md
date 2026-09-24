@@ -31,6 +31,7 @@ Your character saves to Godot's `user://character.json` (per machine, not in git
 | | |
 |---|---|
 | W/S, A/D | Forward/back, strafe (arrow keys turn) |
+| Shift | Hold while moving forward to run; drains stamina (the green bar), which refills once you ease off |
 | Mouse / wheel | Look / zoom (zoom all the way in for first person) |
 | Alt | Hold for the mouse cursor; it also returns while any window is open |
 | Right-click, Tab, F1 | Target what's under the crosshair, nearest enemy, self |

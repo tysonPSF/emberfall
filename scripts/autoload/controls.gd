@@ -9,6 +9,7 @@ const BINDINGS := {
 	"turn_left": [KEY_LEFT],
 	"turn_right": [KEY_RIGHT],
 	"free_cursor": [KEY_ALT],
+	"sprint": [KEY_SHIFT],
 	"jump": [KEY_SPACE],
 	"auto_attack": [KEY_Q],
 	"target_next": [KEY_TAB],

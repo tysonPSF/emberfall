@@ -14,6 +14,8 @@ const TURN_SPEED := 2.6
 const JUMP_VELOCITY := 7.5
 const MOUSE_SENS := 0.004
 const MAX_ZOOM := 18.0
+const AIM_HEIGHT := 2.6  # metres above your feet the reticle rides, clearing both hat and nameplate
+const AIM_CEILING := 0.2  # and never higher up the screen than this fraction of it
 
 var char_class := "warrior"
 var deity := ""  # data/deities.json id, chosen at creation; "" for none
@@ -34,6 +36,10 @@ var hostile_npcs: Dictionary = {}  # npc entity ids this player chose to fight
 var attack_confirm_id := -1  # npc awaiting a second Q before attacking
 var attack_confirm_at := 0
 var body_color := Color.WHITE
+var stamina := 0.0  # drains while sprinting; World owns the rules
+var max_stamina := 0
+var sprinting := false
+var stamina_idle := 0.0  # seconds left before stamina starts coming back
 
 var camera_pivot: Node3D
 var spring_arm: SpringArm3D
@@ -72,6 +78,7 @@ func from_save(d: Dictionary) -> void:
 	recalc_stats()
 	hp = clampi(int(d.get("hp", max_hp)), 1, max_hp)
 	mana = clampi(int(d.get("mana", max_mana)), 0, max_mana)
+	stamina = float(max_stamina)  # you arrive rested; it is not worth saving
 
 
 func to_save() -> Dictionary:
@@ -87,6 +94,7 @@ func recalc_stats() -> void:
 	var cls: Dictionary = GameData.classes[char_class]
 	max_hp = int(cls["hp_base"]) + int(cls["hp_per_level"]) * (level - 1)
 	max_mana = int(cls["mana_base"]) + int(cls["mana_per_level"]) * (level - 1)
+	max_stamina = int(World.cfg("stamina_base", 100)) + int(World.cfg("stamina_per_level", 4)) * (level - 1)
 	ac = int(cls["ac_base"]) + level
 	var weapon_dmg := 2
 	var weapon_model := ""
@@ -97,6 +105,7 @@ func recalc_stats() -> void:
 		ac += int(item.get("ac", 0))
 		max_hp += int(item.get("hp", 0))
 		max_mana += int(item.get("mana", 0))
+		max_stamina += int(item.get("stamina", 0))
 		if slot == "primary":
 			weapon_dmg = int(item.get("dmg", 2))
 			weapon_model = str(item.get("model", ""))
@@ -114,8 +123,13 @@ func recalc_stats() -> void:
 	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
 	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen"))
 	mana_regen = int(cls["mana_regen"])
+	# Every lever that could lengthen a run later - gear above, buffs, deities,
+	# levels - lands in max_stamina, so nothing else has to change to grant more.
+	max_stamina += buff_total("stamina")
+	max_stamina += int(max_stamina * GameData.deity_bonus(deity, "stamina_pct") / 100.0)
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
+	stamina = minf(stamina, float(max_stamina))
 	if visual is CharacterModel:
 		(visual as CharacterModel).set_weapon(weapon_model)
 		look["weapon"] = weapon_model
@@ -146,6 +160,7 @@ func add_xp(amount: int) -> void:
 
 func on_death() -> void:
 	sitting = false
+	sprinting = false
 	target = null
 	visual.visible = false
 	nameplate.visible = false
@@ -155,6 +170,7 @@ func respawn() -> void:
 	dead = false
 	hp = max_hp
 	mana = max_mana
+	stamina = float(max_stamina)
 	global_position = World.zone.bind_point + Vector3.UP
 	velocity = Vector3.ZERO
 	visual.visible = zoom > 0.6
@@ -292,7 +308,7 @@ func _exit_tree() -> void:
 ## Aiming and committing are separate, so you can size something up with C before
 ## you swing at it.
 func _crosshair_target() -> void:
-	var col := _pick(get_viewport().get_visible_rect().size * 0.5)
+	var col := _pick(aim_point())
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
 	elif col is Corpse:
@@ -305,6 +321,22 @@ func _crosshair_target() -> void:
 func _crosshair_attack() -> void:
 	if not auto_attack:
 		World.request_toggle_attack(entity_id)
+
+
+## The screen point the reticle sits on and every click raycasts through. In
+## third person your own head is dead centre, so the reticle rides just above
+## it, tracking the head rather than a fixed offset - that keeps the clearance
+## right at every zoom and pitch. Zoomed into first person there is no body in
+## the way and it drops back to the middle of the screen.
+func aim_point() -> Vector2:
+	var vp := get_viewport().get_visible_rect().size
+	var centre := vp * 0.5
+	if camera == null or not visual.visible:
+		return centre
+	var head := global_position + Vector3.UP * AIM_HEIGHT
+	if camera.is_position_behind(head):
+		return centre
+	return Vector2(centre.x, clampf(camera.unproject_position(head).y, vp.y * AIM_CEILING, centre.y))
 
 
 ## Raycast into the scene from a screen point. Excludes the player's own body,
@@ -361,6 +393,13 @@ func _physics_process(delta: float) -> void:
 	if dir.length() > 1.0:
 		dir = dir.normalized()
 	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + GameData.deity_bonus(deity, "run_speed_pct") / 100.0)
+	# Sprinting is forward-only, and asked for every frame rather than toggled:
+	# World decides whether it is allowed and ends it when the wind runs out.
+	var want_sprint := Input.is_action_pressed("sprint") and fwd > 0.0
+	if want_sprint != sprinting:
+		World.request_sprint(entity_id, want_sprint)
+	if sprinting:
+		spd *= float(World.cfg("sprint_speed_mult", 1.55))
 	if dir != Vector3.ZERO and sitting:
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd

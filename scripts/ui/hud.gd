@@ -4,7 +4,7 @@ extends CanvasLayer
 ## loot and inventory windows. Reads state from the player; every action goes
 ## through World.request_*, the same as keyboard input.
 
-const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump
+const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
 [b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
@@ -18,6 +18,8 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 H or the gear button to hide this."""
 
 const CROSSHAIR_SIZE := 30.0
+const CROSSHAIR_COLOR := Color(1, 0.93, 0.72)  # near-white: gold alone vanished against grass
+const CROSSHAIR_SHADOW := Color(0, 0, 0, 0.75)
 
 var player: Player
 var root: Control
@@ -29,6 +31,9 @@ var _hp_text: Label
 var _mana_row: Control
 var _mana_bar: ProgressBar
 var _mana_text: Label
+var _stamina_row: Control
+var _stamina_bar: ProgressBar
+var _stamina_text: Label
 var _xp_bar: ProgressBar
 var _xp_text: Label
 var _buff_label: Label
@@ -162,6 +167,11 @@ func _build_player_window() -> void:
 	_mana_text = mana[1]
 	_mana_row = mana[2]
 	v.add_child(_mana_row)
+	var stam := _bar_row(Color(0.35, 0.72, 0.3), 10.0)
+	_stamina_bar = stam[0]
+	_stamina_text = stam[1]
+	_stamina_row = stam[2]
+	v.add_child(_stamina_row)
 	var xp := _bar_row(Color(0.85, 0.7, 0.25), 7.0)
 	_xp_bar = xp[0]
 	_xp_text = xp[1]
@@ -597,9 +607,9 @@ func _build_overlays() -> void:
 
 	_crosshair = Control.new()
 	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crosshair.set_anchors_preset(Control.PRESET_TOP_LEFT)  # positioned per frame from Player.aim_point()
 	_crosshair.custom_minimum_size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
 	_crosshair.size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
-	UIKit.place(_crosshair, Vector2(0.5, 0.5), Vector2(-CROSSHAIR_SIZE * 0.5, -CROSSHAIR_SIZE * 0.5))
 	_crosshair.draw.connect(_draw_crosshair)
 	root.add_child(_crosshair)
 
@@ -607,20 +617,27 @@ func _build_overlays() -> void:
 ## Crosshair, plus a ring that fills as the swing recharges while auto attacking.
 ## The delay is the rules' to set; showing it just makes the rhythm legible
 ## instead of looking like the game ignored the click.
+##
+## Everything is drawn twice, a dark outline under a bright core, because the
+## reticle has to stay readable against both a sunlit sky and a dark treeline.
 func _draw_crosshair() -> void:
 	var c := _crosshair.size * 0.5
-	for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-		_crosshair.draw_line(c + d * 3.0, c + d * 8.0, UIKit.GOLD, 1.0)
-	_crosshair.draw_circle(c, 1.2, UIKit.GOLD)
+	for outline in [true, false]:
+		var col: Color = CROSSHAIR_SHADOW if outline else CROSSHAIR_COLOR
+		var w: float = 4.0 if outline else 2.0
+		for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+			_crosshair.draw_line(c + d * 4.0, c + d * 11.0, col, w)
+	_crosshair.draw_circle(c, 2.8, CROSSHAIR_SHADOW)
+	_crosshair.draw_circle(c, 1.5, CROSSHAIR_COLOR)
 	if player == null or not player.auto_attack:
 		return
-	var radius := CROSSHAIR_SIZE * 0.5 - 2.0
-	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, Color(0, 0, 0, 0.35), 2.0)
+	var radius := CROSSHAIR_SIZE * 0.5 - 3.0
+	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, CROSSHAIR_SHADOW, 4.0)
 	var delay := maxf(player.attack_delay, 0.01)
 	var charge := clampf(1.0 - player.swing_timer / delay, 0.0, 1.0)
 	var ready := charge >= 1.0
 	_crosshair.draw_arc(c, radius, -PI * 0.5, -PI * 0.5 + TAU * charge, 32,
-			Color(1, 0.45, 0.35) if ready else UIKit.GOLD, 2.0)
+			Color(1, 0.5, 0.4) if ready else CROSSHAIR_COLOR, 2.5)
 
 
 ## True while any window the player clicks in is open, which frees the cursor.
@@ -638,6 +655,8 @@ func _process(delta: float) -> void:
 		_crosshair.visible = false
 		return
 	_crosshair.visible = player.mouse_looking
+	if _crosshair.visible:
+		_crosshair.position = player.aim_point() - _crosshair.size * 0.5
 	# Redraw while the ring is advancing, plus once more after auto attack stops
 	# so the last frame with a ring on it gets cleared.
 	if _crosshair.visible and (player.auto_attack or _ring_drawn):
@@ -652,6 +671,10 @@ func _process(delta: float) -> void:
 	_mana_bar.max_value = player.max_mana
 	_mana_bar.value = player.mana
 	_mana_text.text = " %d / %d" % [player.mana, player.max_mana]
+	_stamina_row.visible = player.max_stamina > 0
+	_stamina_bar.max_value = player.max_stamina
+	_stamina_bar.value = player.stamina
+	_stamina_text.text = " %d / %d%s" % [int(player.stamina), player.max_stamina, "  running" if player.sprinting else ""]
 	var pct := 100.0 * player.xp / player.xp_to_next()
 	_xp_bar.value = pct
 	_xp_text.text = " XP %.1f%%" % pct
