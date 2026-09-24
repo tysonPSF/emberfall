@@ -1,0 +1,263 @@
+"""Renders an inventory icon for every item into assets/icons/<item>.png.
+
+    /Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup \
+        -P tools/blender/icons.py -- --out assets/icons [--only cloth_cap,gnoll_fang] [--size 128]
+
+Where the picture comes from, per item (data/items/*.json):
+  "wear"   the gear pieces from gear.py (one of a left/right pair is enough)
+  "model"  the weapon or shield scene named in data/models.json "weapons"
+  else     a small model built here (drops, jewelry, bags), in the Dungeon
+           palette like everything else
+Icons are square, transparent, lit from the upper left and seen from a fixed
+three-quarter angle, so a row of them reads as one set. Quality variants
+(Fine, Superior...) share the base item's icon; the game tints the frame.
+"""
+
+import glob
+import json
+import math
+import os
+import sys
+
+import bpy
+from mathutils import Vector
+
+sys.path.insert(0, os.path.dirname(__file__))
+import gear  # noqa: E402
+import props  # noqa: E402
+from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK,  # noqa: E402
+				   STONE_LIGHT, WOOD, WOOD_GRAY)
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+def _res(path):
+	return os.path.join(ROOT, path.replace("res://", ""))
+
+
+# ---------------------------------------------------------------- small models
+
+def gnoll_fang():
+	p = Prop("gnoll_fang", 201)
+	p.seg((0, 0, 0), (0.05, 0, 0.9), 0.16, 0.0, BONE, sides=7, grad=(0.0, 0.7))
+	p.seg((0, 0, -0.05), (0, 0, 0.05), 0.17, 0.16, WOOD, sides=7)                 # root
+	return p.build()
+
+
+def beetle_eye():
+	p = Prop("beetle_eye", 203)
+	p.blob((0.7, 0.7, 0.7), (0, 0, 0.35), EMBER, segs=(14, 9), grad=(0.0, 0.6), glow=1.2)
+	p.blob((0.3, 0.2, 0.3), (0, -0.28, 0.42), STONE_DARK, segs=(8, 6))            # pupil
+	return p.build()
+
+
+def bone_chips():
+	p = Prop("bone_chips", 205)
+	for k in range(5):
+		a = k * 1.3
+		p.rock((0.34, 0.26, 0.16), (math.cos(a) * 0.28, math.sin(a) * 0.28, 0.08 + k * 0.03), BONE, jitter=0.12)
+	return p.build()
+
+
+def rat_whiskers():
+	p = Prop("rat_whiskers", 207)
+	for k in range(6):
+		a = math.radians(-35 + k * 14)
+		p.seg((0, 0, 0.1), (math.cos(a) * 0.9, math.sin(a) * 0.3, 0.1 + math.sin(a) * 0.2), 0.02, 0.006, WOOD_GRAY, sides=4)
+	p.blob((0.14, 0.14, 0.1), (0, 0, 0.1), HIDE, segs=(6, 4))
+	return p.build()
+
+
+def fishing_bait():
+	p = Prop("fishing_bait", 209)
+	p.seg((0, 0, 0), (0, 0, 0.55), 0.36, 0.36, IRON, sides=12, grad=(0.1, 0.6))
+	p.seg((0, 0, 0.55), (0, 0, 0.58), 0.33, 0.33, STONE_DARK, sides=12)
+	for k in range(3):                                                             # worms poking out
+		a = k * 2.1
+		p.seg((math.cos(a) * 0.15, math.sin(a) * 0.15, 0.55), (math.cos(a) * 0.3, math.sin(a) * 0.3, 0.85), 0.05, 0.04, CLOTH_RED, sides=5)
+	return p.build()
+
+
+def _cord(p, radius, z, swatch=WOOD_GRAY):
+	for k in range(16):
+		a0, a1 = k * math.tau / 16, (k + 1) * math.tau / 16
+		p.seg((math.cos(a0) * radius, math.sin(a0) * radius * 0.6, z + math.sin(a0) * 0.2),
+			  (math.cos(a1) * radius, math.sin(a1) * radius * 0.6, z + math.sin(a1) * 0.2), 0.025, 0.025, swatch, sides=4)
+
+
+def bone_charm():
+	p = Prop("bone_charm", 211)
+	_cord(p, 0.5, 0.6)
+	p.blob((0.3, 0.1, 0.4), (0, -0.3, 0.2), BONE, segs=(8, 6))
+	p.blob((0.1, 0.06, 0.1), (0, -0.36, 0.24), RUNE, segs=(6, 4), glow=0.8)
+	return p.build()
+
+
+def fang_necklace():
+	p = Prop("fang_necklace", 213)
+	_cord(p, 0.55, 0.6)
+	for k in range(5):
+		a = math.radians(-70 + k * 35)
+		x, y = math.sin(a) * 0.5, -math.cos(a) * 0.3
+		p.seg((x, y, 0.45), (x * 1.05, y * 1.05, 0.12), 0.07, 0.0, BONE, sides=5)
+	return p.build()
+
+
+def _ring(p, swatch, stone=None):
+	for k in range(14):
+		a0, a1 = k * math.tau / 14, (k + 1) * math.tau / 14
+		p.seg((math.cos(a0) * 0.4, 0, 0.4 + math.sin(a0) * 0.4), (math.cos(a1) * 0.4, 0, 0.4 + math.sin(a1) * 0.4),
+			  0.09, 0.09, swatch, sides=6)
+	if stone:
+		p.blob((0.22, 0.18, 0.2), (0, 0, 0.86), stone, segs=(8, 6), glow=0.6)
+
+
+def tarnished_ring():
+	p = Prop("tarnished_ring", 215)
+	_ring(p, WOOD_GRAY)
+	return p.build()
+
+
+def copper_band():
+	p = Prop("copper_band", 217)
+	_ring(p, EMBER, stone=LEAF)
+	return p.build()
+
+
+def bonecarved_talisman():
+	p = Prop("bonecarved_talisman", 219)
+	_cord(p, 0.5, 0.75, HIDE)
+	p.seg((0, -0.25, 0.0), (0, -0.25, 0.6), 0.28, 0.24, BONE, sides=6, grad=(0.0, 0.6))
+	p.blob((0.16, 0.06, 0.16), (0, -0.5, 0.32), RUNE, segs=(6, 4), glow=1.0)
+	return p.build()
+
+
+def _bag(p, swatch, w, d, h, strap=WOOD, flap=True):
+	p.blob((w, d, h), (0, 0, h * 0.5), swatch, segs=(12, 8), grad=(0.1, 0.9))
+	if flap:
+		p.box((w * 0.8, 0.05, h * 0.35), (0, -d * 0.5, h * 0.72), swatch, rot=(-12, 0, 0), grad=(0.0, 0.6))
+	p.seg((-w * 0.35, 0, h * 0.95), (w * 0.35, 0, h * 0.95), 0.04, 0.04, strap, sides=5)
+
+
+def small_sack():
+	p = Prop("small_sack", 221)
+	p.blob((0.8, 0.7, 0.75), (0, 0, 0.38), CLOTH_WHITE, segs=(12, 8), grad=(0.1, 0.9))
+	p.seg((0, 0, 0.72), (0, 0, 0.95), 0.1, 0.18, CLOTH_WHITE, sides=8)             # gathered neck
+	p.seg((0, 0, 0.78), (0, 0, 0.82), 0.13, 0.13, HIDE, sides=8)                   # tie
+	return p.build()
+
+
+def worn_backpack():
+	p = Prop("worn_backpack", 223)
+	_bag(p, HIDE, 0.8, 0.5, 0.9, strap=WOOD_GRAY)
+	return p.build()
+
+
+def gnollhide_satchel():
+	p = Prop("gnollhide_satchel", 225)
+	_bag(p, WOOD, 0.9, 0.4, 0.6)
+	for k in range(4):
+		p.rock((0.18, 0.1, 0.12), (-0.3 + k * 0.2, -0.2, 0.62), HIDE, jitter=0.1)      # fur trim
+	return p.build()
+
+
+def leather_backpack():
+	p = Prop("leather_backpack", 227)
+	_bag(p, HIDE, 0.85, 0.55, 1.0)
+	p.box((0.1, 0.06, 0.12), (0, -0.33, 0.62), GOLD)                              # buckle
+	return p.build()
+
+
+SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
+								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
+								 worn_backpack, gnollhide_satchel, leather_backpack]}
+
+
+# ---------------------------------------------------------------- rendering
+
+def load_items():
+	items = {}
+	for path in sorted(glob.glob(os.path.join(ROOT, "data/items/*.json"))):
+		items.update(json.load(open(path)))
+	return items
+
+
+def build_subject(item_id, item, models):
+	"""Puts the item's model in the (empty) scene; False if there is none."""
+	wear = item.get("wear", "")
+	if wear:
+		for piece in gear.OUTFITS.get(wear, []):
+			gear._build_piece(piece)
+		return True
+	if item.get("model") and item["model"] in models["weapons"]:
+		bpy.ops.import_scene.gltf(filepath=_res(models["weapons"][item["model"]]))
+		return True
+	if item_id in SMALL:
+		SMALL[item_id]()
+		return True
+	return False
+
+
+def render_icon(path, size):
+	scene = bpy.context.scene
+	meshes = [o for o in scene.objects if o.type == "MESH"]
+	lo = Vector((1e9, 1e9, 1e9))
+	hi = Vector((-1e9, -1e9, -1e9))
+	for o in meshes:
+		for c in o.bound_box:
+			w = o.matrix_world @ Vector(c)
+			lo = Vector((min(lo[i], w[i]) for i in range(3)))
+			hi = Vector((max(hi[i], w[i]) for i in range(3)))
+	center = (lo + hi) / 2
+	span = max((hi - lo).length, 0.01)
+	scene.render.engine = "BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in {e.identifier for e in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items} else "BLENDER_EEVEE"
+	scene.render.resolution_x = scene.render.resolution_y = size
+	scene.render.film_transparent = True
+	scene.view_settings.view_transform = "Standard"
+	world = bpy.data.worlds.new("w")
+	world.use_nodes = True
+	world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.8, 0.82, 0.88, 1)
+	world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.9
+	scene.world = world
+	sun = bpy.data.objects.new("sun", bpy.data.lights.new("sun", "SUN"))
+	sun.data.energy = 3.5
+	sun.rotation_euler = (math.radians(40), math.radians(-20), math.radians(-35))
+	bpy.context.collection.objects.link(sun)
+	cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam"))
+	cam.data.type = "ORTHO"
+	cam.data.ortho_scale = span * 0.95
+	bpy.context.collection.objects.link(cam)
+	direction = Vector((0.55, -1.0, 0.6)).normalized()
+	cam.location = center + direction * span * 3
+	cam.rotation_euler = (center - cam.location).to_track_quat("-Z", "Y").to_euler()
+	scene.camera = cam
+	scene.render.filepath = path
+	bpy.ops.render.render(write_still=True)
+
+
+def main():
+	argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+	opts = {"--out": "assets/icons", "--only": "", "--size": "128"}
+	for i, a in enumerate(argv):
+		if a in opts and i + 1 < len(argv):
+			opts[a] = argv[i + 1]
+	os.makedirs(opts["--out"], exist_ok=True)
+	only = set(opts["--only"].split(",")) if opts["--only"] else None
+	models = json.load(open(os.path.join(ROOT, "data/models.json")))
+	missing = []
+	for item_id, item in load_items().items():
+		if only and item_id not in only:
+			continue
+		props.reset_scene()
+		props._materials.clear()
+		if not build_subject(item_id, item, models):
+			missing.append(item_id)
+			continue
+		render_icon(os.path.abspath(os.path.join(opts["--out"], item_id + ".png")), int(opts["--size"]))
+		print("icon %s" % item_id)
+	if missing:
+		print("NO ICON (add a model): %s" % ", ".join(missing))
+
+
+if __name__ == "__main__":
+	main()

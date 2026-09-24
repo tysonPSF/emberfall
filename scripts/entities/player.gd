@@ -25,15 +25,16 @@ var attributes: Dictionary = {}  # totals from gear, for the character sheet
 var deity := ""  # data/deities.json id, chosen at creation; "" for none
 var xp := 0
 var coin := 0
-var inventory: Array = []
+var pack := Pack.new()  # 8 general slots and the bags in them
+var cursor: Dictionary = {}  # the entry picked up and being moved, EQ-style; {} when empty
 var equipment: Dictionary = {}
 var quests: Dictionary = {}  # quest id -> {active, completions}
 var trade_npc_id := -1  # npc entity id while a trade window is open
-var trade_items: Array = []  # items offered in the open trade
+var trade_items: Array = []  # entries offered in the open trade
 var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
 var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
-var bank_items: Array = []
+var bank: Array = []  # BANK_SLOTS entries ({} when empty); bags keep their contents
 var bank_coin := 0
 var factions: Dictionary = {}  # faction id -> standing, once it moves off the default
 var hostile_npcs: Dictionary = {}  # npc entity ids this player chose to fight
@@ -69,9 +70,28 @@ func from_save(d: Dictionary) -> void:
 	level = int(d.get("level", 1))
 	xp = int(d.get("xp", 0))
 	coin = int(d.get("coin", 0))
-	inventory = (d.get("inventory", []) as Array).duplicate()
+	pack = Pack.from_save(d.get("pack"), d.get("inventory", []))
+	if d.get("pack") == null:  # new characters, and those from before bags: a sack to start
+		for g in Pack.GENERAL:
+			if pack.slots[g].is_empty():
+				pack.slots[g] = Pack.entry("small_sack")
+				break
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
-	bank_items = (d.get("bank_items", []) as Array).duplicate()
+	bank = []
+	for i in int(World.cfg("bank_slots", 16)):
+		bank.append({})
+	var saved_bank: Variant = d.get("bank")
+	if saved_bank is Array:
+		for i in mini((saved_bank as Array).size(), bank.size()):
+			bank[i] = Pack.clean_entry(saved_bank[i])
+	else:
+		var old: Array = d.get("bank_items", [])
+		for i in mini(old.size(), bank.size()):
+			bank[i] = Pack.clean_entry({"item": old[i], "count": 1})
+	for e: Variant in (d.get("trade_items", []) as Array) + ([d["cursor"]] if d.get("cursor") is Dictionary else []):
+		var clean := Pack.clean_entry(e)  # a save mid-trade or mid-move: back in the pack
+		if not clean.is_empty() and not pack.add_entry(clean):
+			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
 	factions = (d.get("factions", {}) as Dictionary).duplicate()
 	for k: String in factions:
@@ -172,12 +192,12 @@ func setup_remote(info: Dictionary) -> void:
 
 ## Client: our own player's state as the server holds it.
 func apply_self(d: Dictionary) -> void:
-	var bags_before := [inventory, equipment, coin, bank_items, bank_coin, trade_items]
+	var bags_before := [pack.slots.duplicate(true), equipment, coin, bank, bank_coin, trade_items, cursor]
 	var quests_before := quests
 	var level_before := level
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
-			"attack_delay", "attack_verb", "attributes", "inventory", "equipment", "spells", "quests", "factions",
-			"bank_items", "bank_coin", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
+			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
+			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting",
 			"group", "skills"]:
 		set(key, d[key])
@@ -194,7 +214,8 @@ func apply_self(d: Dictionary) -> void:
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
 	look = lk
-	if bags_before != [inventory, equipment, coin, bank_items, bank_coin, trade_items]:
+	pack.slots = (d["pack"] as Array).duplicate(true)
+	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor]:
 		inventory_changed.emit()
 	if quests_before != quests:
 		quests_changed.emit()
@@ -207,33 +228,29 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
-		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
+		"pack": pack.to_save(), "trade_items": trade_items, "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
 
-## Bag slots in use: one per item, except stackable items ("stack": n), which
-## share a slot per n of the same kind.
-func slots_used() -> int:
-	var used := 0
-	var counts := {}
-	for item_id: String in inventory:
-		var stack := int(GameData.item(item_id).get("stack", 1))
-		if stack <= 1:
-			used += 1
-		else:
-			counts[item_id] = [int(counts.get(item_id, [0])[0]) + 1, stack]
-	for id: String in counts:
-		used += ceili(float(counts[id][0]) / counts[id][1])
-	return used
-
-
-## Whether one more of this item fits in the bags.
+## Whether one more of this item fits in the general slots and bags.
 func room_for(item_id: String) -> bool:
-	var stack := int(GameData.item(item_id).get("stack", 1))
-	if stack > 1 and inventory.count(item_id) % stack != 0:
-		return true  # tops up a stack
-	return slots_used() < int(World.cfg("inventory_slots", 24))
+	return pack.room_for(item_id) > 0
+
+
+## Every item this character owns right now, one id per unit: carried, on the
+## cursor, worn, banked and offered in a trade. (Lore checks, quest counts.)
+func owned_item_ids() -> Array:
+	var out: Array = pack.item_ids() + equipment.values()
+	for e: Dictionary in bank + trade_items + [cursor]:
+		if e.is_empty():
+			continue
+		for k in int(e.get("count", 1)):
+			out.append(e["item"])
+		for inner: Dictionary in e.get("contents", []):
+			if not inner.is_empty():
+				out.append(inner["item"])
+	return out
 
 
 ## Gear below its recommended level works at reduced strength, as in EQ:

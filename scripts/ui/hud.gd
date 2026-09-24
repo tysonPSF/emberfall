@@ -11,7 +11,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip) · right-click any item for its details, a 3D look, Use and Link in chat
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory: click picks up / puts down, Ctrl-click takes one, Shift-click equips · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
@@ -83,7 +83,6 @@ var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
 var _trade_panel: PanelContainer
 var _trade_title: Label
-var _trade_slots: Array[Button] = []
 var _bag_hint: Label
 
 var _service_panel: PanelContainer
@@ -105,8 +104,14 @@ var _loot_list: VBoxContainer
 var _loot_corpse: Corpse
 
 var _inv_panel: PanelContainer
-var _equip_box: GridContainer
-var _bag_grid: GridContainer
+var _slot_buttons: Dictionary = {}  # place ("g:3", "e:head", "k:2"...) -> slot Button
+var _bag_windows: Dictionary = {}  # general slot -> open bag window
+var _doll_view: SubViewport
+var _doll_stage: Node3D
+var _doll_key := ""
+var _cursor_icon: TextureRect
+var _cursor_count: Label
+var _sell_cursor: Button
 var _coin_label: Label
 var _stats_label: Label
 var _faction_label: Label
@@ -675,17 +680,16 @@ func _build_trade_window() -> void:
 	_trade_panel.add_child(v)
 	_trade_title = UIKit.label("", 15, UIKit.GOLD)
 	v.add_child(_trade_title)
-	v.add_child(UIKit.label("Click items in your bags to offer them.", 12, UIKit.DIM))
+	var hint := UIKit.label("Put items here from your cursor, or shift-click them in your bags. Click one to take it back.", 12, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size.x = 250
+	v.add_child(hint)
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = World.TRADE_SLOTS
+	grid.add_theme_constant_override("h_separation", 6)
 	v.add_child(grid)
 	for i in World.TRADE_SLOTS:
-		var b := UIKit.button("", Vector2(126, 34))
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 11)
-		b.pressed.connect(func() -> void: World.request_trade_remove(player.entity_id, i))
-		grid.add_child(b)
-		_trade_slots.append(b)
+		grid.add_child(_make_slot("t:%d" % i, ""))
 	var row := HBoxContainer.new()
 	var give := UIKit.button("Give")
 	give.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -719,6 +723,10 @@ func _build_service_window() -> void:
 	_shop_list = VBoxContainer.new()
 	_shop_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_shop_scroll.add_child(_shop_list)
+	_sell_cursor = UIKit.button("", Vector2(0, 36))
+	_sell_cursor.pressed.connect(func() -> void: World.request_sell(player.entity_id, "cursor"))
+	v.add_child(_sell_cursor)
+	_sell_cursor.visible = false
 	_bank_box = VBoxContainer.new()
 	v.add_child(_bank_box)
 	_bank_grid = GridContainer.new()
@@ -789,27 +797,20 @@ func _refresh_service() -> void:
 			var b := UIKit.button(text)
 			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			b.add_theme_font_size_override("font_size", 12)
+			b.icon = GameData.item_icon(item_id)
+			b.expand_icon = false
+			b.add_theme_constant_override("icon_max_width", 24)
 			b.tooltip_text = _item_tooltip(item_id) + "\nRight-click for details."
 			_inspectable(b, item_id)
 			b.disabled = player.coin < int(ware["price"])
 			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id))
 			_shop_list.add_child(b)
 	else:
-		for child in _bank_grid.get_children():
-			child.queue_free()
-		for i in int(World.cfg("bank_slots", 16)):
-			var b := UIKit.button("", Vector2(78, 34))
-			b.clip_text = true
-			b.add_theme_font_size_override("font_size", 10)
-			if i < player.bank_items.size():
-				b.text = GameData.item_name(player.bank_items[i])
-				b.tooltip_text = _item_tooltip(player.bank_items[i]) + "\nClick to withdraw. Right-click for details."
-				_inspectable(b, player.bank_items[i])
-				b.pressed.connect(func() -> void: World.request_bank_withdraw(player.entity_id, i))
-			else:
-				b.disabled = true
-			_bank_grid.add_child(b)
-		_bank_coin_label.text = "In the bank: %s" % World.format_coin(player.bank_coin)
+		if _bank_grid.get_child_count() == 0:
+			for i in player.bank.size():
+				_bank_grid.add_child(_make_slot("k:%d" % i, ""))
+		_refresh_inventory()
+		_bank_coin_label.text = "In the bank: %s" % _coin_text(player.bank_coin)
 
 
 func _on_trade_opened(npc: Npc) -> void:
@@ -822,15 +823,12 @@ func _on_trade_opened(npc: Npc) -> void:
 
 
 func _refresh_trade() -> void:
-	for i in _trade_slots.size():
-		var b := _trade_slots[i]
-		var has := i < player.trade_items.size()
-		b.text = GameData.item_name(player.trade_items[i]) if has else "—"
-		b.disabled = not has
-		b.tooltip_text = "Click to take it back. Right-click for details." if has else ""
-		_inspectable(b, player.trade_items[i] if has else "")
+	_refresh_inventory()  # the trade slots are item slots like the rest
 
 
+## EQ-style inventory: equipment slots around your character, your stats,
+## eight general slots (bags go here; right-click one to open it) and coin.
+## Items move with the cursor: click to pick up, click to put down.
 func _build_inventory() -> void:
 	_inv_panel = UIKit.panel()
 	UIKit.place(_inv_panel, Vector2(1, 0.5), Vector2(-12, -40))
@@ -839,23 +837,250 @@ func _build_inventory() -> void:
 	v.add_theme_constant_override("separation", 6)
 	_inv_panel.add_child(v)
 	v.add_child(UIKit.label("Inventory", 16, UIKit.GOLD))
-	_stats_label = UIKit.label("", 12, UIKit.DIM)
-	v.add_child(_stats_label)
-	_equip_box = GridContainer.new()
-	_equip_box.columns = 2
-	v.add_child(_equip_box)
-	_bag_hint = UIKit.label("", 12, UIKit.DIM)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 10)
+	v.add_child(top)
+	# the paper doll
+	var doll := VBoxContainer.new()
+	doll.add_theme_constant_override("separation", 4)
+	top.add_child(doll)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	doll.add_child(row)
+	var left := VBoxContainer.new()
+	left.add_theme_constant_override("separation", 4)
+	row.add_child(left)
+	for slot in ["head", "neck", "arms", "hands", "ring1"]:
+		left.add_child(_make_slot("e:" + slot, _slot_label(slot)))
+	var view_box := SubViewportContainer.new()
+	view_box.stretch = true
+	view_box.custom_minimum_size = Vector2(140, 236)
+	row.add_child(view_box)
+	_doll_view = SubViewport.new()
+	_doll_view.own_world_3d = true
+	_doll_view.transparent_bg = true
+	_doll_view.msaa_3d = Viewport.MSAA_2X
+	view_box.add_child(_doll_view)
+	var env := WorldEnvironment.new()
+	env.environment = Environment.new()
+	env.environment.background_mode = Environment.BG_CLEAR_COLOR
+	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.environment.ambient_light_color = Color(0.75, 0.78, 0.85)
+	_doll_view.add_child(env)
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-35, 150, 0)
+	_doll_view.add_child(sun)
+	_doll_stage = Node3D.new()
+	_doll_view.add_child(_doll_stage)
+	var cam := Camera3D.new()
+	cam.fov = 30.0
+	cam.position = Vector3(0, 0.95, -4.3)
+	_doll_view.add_child(cam)
+	cam.look_at_from_position(cam.position, Vector3(0, 0.82, 0))
+	var right := VBoxContainer.new()
+	right.add_theme_constant_override("separation", 4)
+	row.add_child(right)
+	for slot in ["chest", "waist", "legs", "feet", "ring2"]:
+		right.add_child(_make_slot("e:" + slot, _slot_label(slot)))
+	var hands := HBoxContainer.new()
+	hands.alignment = BoxContainer.ALIGNMENT_CENTER
+	hands.add_theme_constant_override("separation", 4)
+	for slot in ["primary", "secondary"]:
+		hands.add_child(_make_slot("e:" + slot, _slot_label(slot)))
+	doll.add_child(hands)
+	# stats
+	var stats := VBoxContainer.new()
+	stats.add_theme_constant_override("separation", 2)
+	stats.custom_minimum_size.x = 150
+	top.add_child(stats)
+	_stats_label = UIKit.label("", 12, UIKit.TEXT)
+	stats.add_child(_stats_label)
+	_coin_label = UIKit.label("", 12, UIKit.GOLD)
+	stats.add_child(_coin_label)
+	stats.add_child(UIKit.label("Faction", 12, UIKit.GOLD))
+	_faction_label = UIKit.label("", 11, UIKit.DIM)
+	_faction_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_faction_label.custom_minimum_size.x = 150
+	stats.add_child(_faction_label)
+	# the general slots
+	v.add_child(UIKit.label("General", 13, UIKit.GOLD))
+	var general := GridContainer.new()
+	general.columns = 8
+	general.add_theme_constant_override("h_separation", 4)
+	v.add_child(general)
+	for g in Pack.GENERAL:
+		general.add_child(_make_slot("g:%d" % g, ""))
+	_bag_hint = UIKit.label("Click to pick up and put down; Ctrl-click takes one from a stack. Shift-click to equip (or sell, bank, offer). Right-click: details, or open a bag.", 11, UIKit.DIM)
+	_bag_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_bag_hint.custom_minimum_size.x = 380
 	v.add_child(_bag_hint)
-	_bag_grid = GridContainer.new()
-	_bag_grid.columns = 4
-	v.add_child(_bag_grid)
-	_coin_label = UIKit.label("", 13, UIKit.GOLD)
-	v.add_child(_coin_label)
-	v.add_child(UIKit.label("Faction", 13, UIKit.GOLD))
-	_faction_label = UIKit.label("", 12, UIKit.DIM)
-	v.add_child(_faction_label)
 	_inv_panel.visible = false
+	# what the cursor holds, following the mouse
+	_cursor_icon = TextureRect.new()
+	_cursor_icon.custom_minimum_size = Vector2(40, 40)
+	_cursor_icon.size = Vector2(40, 40)
+	_cursor_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_cursor_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_cursor_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cursor_icon.z_index = 50
+	_cursor_count = UIKit.label("", 12, UIKit.TEXT)
+	_cursor_count.position = Vector2(24, 24)
+	_cursor_icon.add_child(_cursor_count)
+	root.add_child(_cursor_icon)
+	_cursor_icon.visible = false
 
+
+static func _slot_label(slot: String) -> String:
+	return {"head": "Head", "neck": "Neck", "arms": "Arms", "hands": "Hands", "ring1": "Ring", "ring2": "Ring",
+			"chest": "Chest", "waist": "Waist", "legs": "Legs", "feet": "Feet", "primary": "Primary", "secondary": "Second"}.get(slot, slot)
+
+
+## An item slot: icon, stack count, a frame in the item's quality color.
+## Left click moves via the cursor, shift-click is the quick action for the
+## place, right-click opens the item window (or a bag).
+func _make_slot(place: String, empty_text: String, size := 44) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
+	b.custom_minimum_size = Vector2(size, size)
+	b.clip_text = true
+	b.add_theme_font_size_override("font_size", 9)
+	b.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55))
+	b.set_meta("empty_text", empty_text)
+	var icon := TextureRect.new()
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.set_anchors_preset(Control.PRESET_FULL_RECT)
+	icon.offset_left = 3
+	icon.offset_top = 3
+	icon.offset_right = -3
+	icon.offset_bottom = -3
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(icon)
+	var count := UIKit.label("", 11, UIKit.TEXT)
+	count.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	count.offset_left = -22
+	count.offset_top = -17
+	count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(count)
+	b.gui_input.connect(func(ev: InputEvent) -> void:
+		if not (ev is InputEventMouseButton and ev.pressed):
+			return
+		var mb := ev as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.ctrl_pressed or mb.meta_pressed:
+				World.request_pick_one(player.entity_id, place)  # split a stack, one at a time
+			elif mb.shift_pressed and player.cursor.is_empty():
+				_quick_action(place)
+			else:
+				World.request_click(player.entity_id, place)
+			b.accept_event()
+		elif mb.button_index == MOUSE_BUTTON_RIGHT:
+			var e := World._entry_at(player, place)
+			if e.has("contents") and place.begins_with("g:"):
+				_toggle_bag(int(place.get_slice(":", 1)))
+			elif not e.is_empty():
+				show_item(e["item"])
+			b.accept_event())
+	_slot_buttons[place] = b
+	return b
+
+
+func _fill_slot(b: Button, e: Dictionary) -> void:
+	var icon := b.get_child(0) as TextureRect
+	var count := b.get_child(1) as Label
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.1, 0.1, 0.12, 0.9)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(3)
+	if e.is_empty():
+		icon.texture = null
+		count.text = ""
+		b.text = str(b.get_meta("empty_text", ""))
+		b.tooltip_text = ""
+		sb.border_color = Color(0.3, 0.3, 0.32)
+	else:
+		var id: String = e["item"]
+		icon.texture = GameData.item_icon(id)
+		b.text = "" if icon.texture != null else GameData.item_name(id)
+		count.text = str(e["count"]) if int(e.get("count", 1)) > 1 else ""
+		b.tooltip_text = _item_tooltip(id) + ("\nRight-click to open." if e.has("contents") else "\nRight-click for details.")
+		sb.border_color = GameData.item_color(id) if GameData.quality_tier(id).get("id", "") != "" else Color(0.55, 0.45, 0.25)
+		if player.service == "shop" and _service_npc != null:
+			var price := World.sell_price(_service_npc, id) * int(e.get("count", 1))
+			b.tooltip_text += "\n%s" % ("Shift-click to sell for %s." % World.format_coin(price) if price > 0 else "The merchant won't buy this.")
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		b.add_theme_stylebox_override(state, sb)
+
+
+## Shift-click: sell with a shop open, bank with the bank open, offer in a
+## trade, otherwise wear it (or take it off, from an equipment slot).
+func _quick_action(place: String) -> void:
+	var kind := place.get_slice(":", 0)
+	var id := player.entity_id
+	if kind == "e":
+		World.request_unequip(id, place.get_slice(":", 1))
+	elif kind == "k":
+		World.request_bank_withdraw(id, int(place.get_slice(":", 1)))
+	elif kind == "t":
+		World.request_click(id, place)
+	elif player.trade_npc_id >= 0:
+		World.request_trade_add(id, place)
+	elif player.service == "shop":
+		World.request_sell(id, place)
+	elif player.service == "bank":
+		World.request_bank_deposit(id, place)
+	else:
+		World.request_equip(id, place)
+
+
+## A bag's own window, its slots "b:<general slot>:<n>".
+func _toggle_bag(g: int) -> void:
+	if _bag_windows.has(g):
+		(_bag_windows[g] as Node).queue_free()
+		_bag_windows.erase(g)
+		return
+	var e: Dictionary = player.pack.slots[g]
+	var panel := UIKit.panel()
+	UIKit.place(panel, Vector2(1, 0.5), Vector2(-500 - 30 * _bag_windows.size(), -200 + 40 * _bag_windows.size()))
+	root.add_child(panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	panel.add_child(v)
+	var head := HBoxContainer.new()
+	var title := UIKit.label(GameData.item_name(e["item"]), 13, UIKit.GOLD)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var close := UIKit.button("x", Vector2(24, 22))
+	close.pressed.connect(func() -> void: _toggle_bag(g))
+	head.add_child(close)
+	v.add_child(head)
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 4)
+	v.add_child(grid)
+	for i in (e["contents"] as Array).size():
+		grid.add_child(_make_slot("b:%d:%d" % [g, i], ""))
+	panel.set_meta("bag_item", e["item"])
+	_bag_windows[g] = panel
+	_refresh_inventory()
+
+
+## The paper doll's character: rebuilt when what you wear changes.
+func _refresh_doll() -> void:
+	var key := JSON.stringify(player.look)
+	if key == _doll_key or player.look.is_empty():
+		return
+	_doll_key = key
+	for child in _doll_stage.get_children():
+		child.queue_free()
+	var model := Entity.make_visual(player.look)
+	_doll_stage.add_child(model)
+	if model is CharacterModel:
+		var m := model as CharacterModel
+		var idle := m._clip("idle")
+		if idle != "":
+			m.anim.play(idle)
 
 ## Controls sheet, hidden until the gear button in the top-right corner (or H) opens it.
 func _build_help() -> void:
@@ -1090,6 +1315,11 @@ func _process(delta: float) -> void:
 	_update_group()
 	if _item_panel.visible:
 		_item_stage.rotate_y(delta * 0.8)
+	_cursor_icon.visible = not player.cursor.is_empty()
+	if _cursor_icon.visible:
+		_cursor_icon.texture = GameData.item_icon(player.cursor["item"])
+		_cursor_count.text = str(player.cursor["count"]) if int(player.cursor.get("count", 1)) > 1 else ""
+		_cursor_icon.position = root.get_local_mouse_position() - Vector2(20, 20)
 	if _skills_panel.visible:
 		_skills_timer -= delta
 		if _skills_timer <= 0.0:
@@ -1107,8 +1337,17 @@ func _process(delta: float) -> void:
 		for stat: String in Player.ATTRIBUTES:
 			if int(player.attributes.get(stat, 0)) != 0:
 				attr.append("%s %+d%s" % [ATTR_NAMES[stat], int(player.attributes[stat]), "%" if stat == "haste" else ""])
-		_stats_label.text = "AC %d   Damage %d-%d   Delay %.1fs" % [player.ac, player.dmg_min, player.dmg_max, player.attack_delay] \
-				+ ("\n" + "   ".join(attr) if not attr.is_empty() else "")
+		var sheet := PackedStringArray([player.display_name, "Level %d %s" % [player.level, GameData.classes[player.char_class]["name"]],
+				"", "HP  %d / %d" % [maxi(player.hp, 0), player.max_hp]])
+		if player.max_mana > 0:
+			sheet.append("Mana  %d / %d" % [player.mana, player.max_mana])
+		sheet.append("Stamina  %d / %d" % [int(player.stamina), player.max_stamina])
+		sheet.append_array(["", "AC  %d" % player.ac, "Damage  %d-%d" % [player.dmg_min, player.dmg_max], "Delay  %.1fs" % player.attack_delay, ""])
+		for stat: String in ["str", "sta", "agi", "wis", "int"]:
+			sheet.append("%s  %+d" % [ATTR_NAMES[stat], int(player.attributes.get(stat, 0))])
+		if int(player.attributes.get("haste", 0)) != 0:
+			sheet.append("Haste  %d%%" % int(player.attributes["haste"]))
+		_stats_label.text = "\n".join(sheet)
 
 
 func _update_target() -> void:
@@ -1244,6 +1483,8 @@ func _on_loot_opened(c: Corpse) -> void:
 			label += "  (worn)"
 		var b := UIKit.button(label)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.icon = GameData.item_icon(entry["item"])
+		b.add_theme_constant_override("icon_max_width", 26)
 		b.add_theme_color_override("font_color", GameData.item_color(entry["item"]))
 		b.tooltip_text = _item_tooltip(entry["item"]) + "\nRight-click for details."
 		_inspectable(b, entry["item"])
@@ -1272,84 +1513,49 @@ func _toggle_inventory() -> void:
 	_inv_panel.visible = not _inv_panel.visible
 	if _inv_panel.visible:
 		_help_panel.visible = false  # they share the right side of the screen
+	else:
+		if not player.cursor.is_empty():
+			World.request_stow_cursor(player.entity_id)  # closing with something held puts it away
+		for g: int in _bag_windows.keys():
+			_toggle_bag(g)
 	_refresh_inventory()
-
-
-## What each bag slot shows, as [inventory index, count]: stackable items
-## share a slot per full stack, and clicking one acts on a single item.
-func _bag_slots() -> Array:
-	var out: Array = []
-	var open_stack := {}  # item id -> index into out of its unfilled stack
-	for i in player.inventory.size():
-		var item_id: String = player.inventory[i]
-		var stack := int(GameData.item(item_id).get("stack", 1))
-		if stack > 1 and open_stack.has(item_id) and out[open_stack[item_id]][1] < stack:
-			out[open_stack[item_id]][1] += 1
-			continue
-		out.append([i, 1])
-		if stack > 1:
-			open_stack[item_id] = out.size() - 1
-	return out
 
 
 func _refresh_inventory() -> void:
 	if player == null:
 		return
-	for child in _equip_box.get_children():
-		child.queue_free()
-	for slot in World.EQUIP_SLOTS:
-		var item_id: String = player.equipment.get(slot, "")
-		var text := "%s:  %s" % [slot.trim_suffix("1").trim_suffix("2").capitalize(), GameData.item_name(item_id) if item_id != "" else "—"]
-		var b := UIKit.button(text, Vector2(228, 28))
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 11)
-		b.disabled = item_id == ""
-		if item_id != "":
-			b.add_theme_color_override("font_color", GameData.item_color(item_id))
-			b.tooltip_text = _item_tooltip(item_id) + "\nClick to unequip. Right-click for details%s." % (" (and to use it)" if GameData.item(item_id).has("click") else "")
-			b.pressed.connect(func() -> void: World.request_unequip(player.entity_id, slot))
-			_inspectable(b, item_id)
-		_equip_box.add_child(b)
-	for child in _bag_grid.get_children():
-		child.queue_free()
-	var slots := int(World.cfg("inventory_slots", 24))
-	var shown := _bag_slots()
-	for k in slots:
-		var b := UIKit.button("", Vector2(112, 34))
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 11)
-		if k < shown.size():
-			var i: int = shown[k][0]
-			var item_id: String = player.inventory[i]
-			b.text = GameData.item_name(item_id) + (" (%d)" % shown[k][1] if shown[k][1] > 1 else "")
-			b.add_theme_color_override("font_color", GameData.item_color(item_id))
-			b.tooltip_text = _item_tooltip(item_id) + "\nRight-click for details."
-			_inspectable(b, item_id)
-			if player.service == "shop" and _service_npc != null:
-				var price := World.sell_price(_service_npc, item_id)
-				b.tooltip_text += "\n%s" % ("Sells for %s." % World.format_coin(price) if price > 0 else "The merchant won't buy this.")
-			b.pressed.connect(func() -> void:
-				if player.trade_npc_id >= 0:
-					World.request_trade_add(player.entity_id, i)
-				elif player.service == "shop":
-					World.request_sell(player.entity_id, i)
-				elif player.service == "bank":
-					World.request_bank_deposit(player.entity_id, i)
-				else:
-					World.request_equip(player.entity_id, i))
-		else:
-			b.disabled = true
-		_bag_grid.add_child(b)
-	_coin_label.text = World.format_coin(player.coin)
-	var action := "equip it"
-	if player.trade_npc_id >= 0:
-		action = "offer it"
-	elif player.service == "shop":
-		action = "sell it"
-	elif player.service == "bank":
-		action = "bank it"
-	_bag_hint.text = "Bags  (click an item to %s)" % action
+	for place: String in _slot_buttons.keys():
+		var slot: Variant = _slot_buttons[place]
+		if not is_instance_valid(slot) or (slot as Node).is_queued_for_deletion():
+			_slot_buttons.erase(place)  # a bag window closed
+			continue
+		_fill_slot(slot as Button, World._entry_at(player, place))
+	for g: int in _bag_windows.keys():  # a bag moved or emptied out of its slot closes its window
+		var e: Dictionary = player.pack.slots[g]
+		if e.get("item", "") != (_bag_windows[g] as Node).get_meta("bag_item"):
+			_toggle_bag(g)
+	if _inv_panel.visible:
+		_refresh_doll()
+	_coin_label.text = _coin_text(player.coin)
+	if _sell_cursor != null:
+		_refresh_sell_cursor()
+
+
+## With a shop open and an item on the cursor: "Sell <item> for <price>".
+func _refresh_sell_cursor() -> void:
+	var held := player.cursor
+	_sell_cursor.visible = player.service == "shop" and _service_npc != null and not held.is_empty()
+	if _sell_cursor.visible:
+		var price := World.sell_price(_service_npc, held["item"]) * int(held.get("count", 1))
+		_sell_cursor.text = "Sell %s for %s" % [GameData.item_name(held["item"]) + (" x%d" % int(held["count"]) if int(held.get("count", 1)) > 1 else ""),
+				World.format_coin(price)] if price > 0 else "%s won't buy that" % _service_npc.display_name
+		_sell_cursor.disabled = price <= 0
+
+
+## EQ shows coin as four piles: platinum, gold, silver, copper.
+static func _coin_text(copper: int) -> String:
+	return "%d pp   %d gp   %d sp   %d cp" % [copper / 1000, (copper / 100) % 10, (copper / 10) % 10, copper % 10]
+
 
 
 func spell_tooltip(spell_id: String) -> String:

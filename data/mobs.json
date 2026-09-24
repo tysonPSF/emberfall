@@ -255,6 +255,10 @@
       {
         "item": "gnoll_fang",
         "chance": 0.6
+      },
+      {
+        "item": "gnollhide_satchel",
+        "chance": 0.04
       }
     ],
     "model": "gnoll",

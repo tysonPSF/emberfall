@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 2  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 3  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -643,8 +643,8 @@ func _send_self(peer: int) -> void:
 		"level": p.level, "xp": p.xp, "coin": p.coin, "hp": p.hp, "max_hp": p.max_hp, "mana": p.mana,
 		"max_mana": p.max_mana, "ac": p.ac, "dmg_min": p.dmg_min, "dmg_max": p.dmg_max,
 		"attack_delay": p.attack_delay, "attack_verb": p.attack_verb, "attributes": p.attributes,
-		"inventory": p.inventory, "equipment": p.equipment, "spells": p.spells, "quests": p.quests,
-		"factions": p.factions, "bank_items": p.bank_items, "bank_coin": p.bank_coin,
+		"pack": p.pack.to_save(), "cursor": p.cursor, "equipment": p.equipment, "spells": p.spells, "quests": p.quests,
+		"factions": p.factions, "bank": p.bank, "bank_coin": p.bank_coin,
 		"cast": p.cast, "cooldowns": p.cooldowns, "buffs": p.buffs, "dead": p.dead, "sitting": p.sitting,
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,

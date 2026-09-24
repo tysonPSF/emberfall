@@ -150,7 +150,9 @@
         "leather_gloves",
         "leather_boots",
         "leather_sleeves",
-        "leather_belt"
+        "leather_belt",
+        "small_sack",
+        "leather_backpack"
       ],
       "buy_rate": 0.5
     },

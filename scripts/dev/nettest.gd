@@ -81,11 +81,14 @@ func _run() -> void:
 
 	if "--wear" in OS.get_cmdline_user_args():
 		if who == "Alpha":
-			p.inventory.append("cloth_cap")  # (server gives it below; this is just for the index)
 			await _wait(3.0)
 			World.request_unequip(p.entity_id, "head")
 			await _wait(3.0)
-			World.request_equip(p.entity_id, p.inventory.find("cloth_cap"))
+			var at := ""
+			for place: String in p.pack.places():
+				if p.pack.get_at(place).get("item", "") == "cloth_cap":
+					at = place
+			World.request_equip(p.entity_id, at)
 			await _wait(4.0)
 		else:
 			for k in 8:
@@ -185,7 +188,7 @@ func _run() -> void:
 			print("[Alpha] corpse %s holds %s" % [corpse.display_name, corpse.entries])
 			World.request_loot_all(p.entity_id, corpse.object_id)
 			await _wait(1.0)
-		print("[Alpha] inventory now %s coin %d" % [p.inventory, p.coin])
+		print("[Alpha] inventory now %s coin %d" % [p.pack.item_ids(), p.coin])
 	else:
 		await _wait(6.0)
 		var alpha: Player = null
@@ -217,7 +220,6 @@ func _run() -> void:
 		await _wait(0.5)
 	print("[%s] camped: back at character select = %s" % [who, World.local_player == null])
 	if "--reenter" in OS.get_cmdline_user_args() and World.local_player == null:
-		var had := [p.level, p.xp, p.inventory.duplicate()] if is_instance_valid(p) else []
 		Net.enter_world(who)
 		for k in 40:
 			if World.local_player != null:
@@ -225,7 +227,7 @@ func _run() -> void:
 			await _wait(0.25)
 		await _wait(1.0)
 		var q := World.local_player
-		print("[%s] re-entered: level %d xp %d inventory %s" % [who, q.level, q.xp, q.inventory])
+		print("[%s] re-entered: level %d xp %d inventory %s" % [who, q.level, q.xp, q.pack.item_ids()])
 	print("NETTEST DONE %s" % who)
 	get_tree().quit()
 

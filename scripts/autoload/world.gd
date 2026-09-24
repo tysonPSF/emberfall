@@ -602,19 +602,24 @@ func _kill_player(p: Player, killer: Entity) -> void:
 	if loss > 0 and p.xp > 0:
 		p.xp = maxi(0, p.xp - loss)
 		say(p, "You have lost experience.", C_WARN)
-	if cfg("corpse_runs", true) and (not p.inventory.is_empty() or not p.equipment.is_empty() or p.coin > 0):
+	if not p.cursor.is_empty():
+		_stow(p)
+	if cfg("corpse_runs", true) and (not p.pack.is_empty() or not p.equipment.is_empty() or p.coin > 0):
 		var entries: Array = []
 		for slot: String in p.equipment:
 			entries.append({"item": p.equipment[slot], "slot": slot})
-		for item_id: String in p.inventory:
-			entries.append({"item": item_id, "slot": ""})
+		for e: Dictionary in p.pack.slots:  # bags go on the corpse with their contents
+			if not e.is_empty():
+				var copy := e.duplicate(true)
+				copy["slot"] = ""
+				entries.append(copy)
 		var corpse := Corpse.new()
 		corpse.setup(p.display_name, p.look, entries, p.coin,
 				float(cfg("player_corpse_decay_seconds", 3600)), p.display_name)
 		corpse.position = p.global_position
 		zone_of(p).add_child(corpse)
 		p.equipment.clear()
-		p.inventory.clear()
+		p.pack.clear()
 		p.coin = 0
 		p.recalc_stats()
 		p.inventory_changed.emit()
@@ -1028,11 +1033,13 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	if slot != "" and not p.equipment.has(slot):
 		p.equipment[slot] = entry["item"]
 		p.recalc_stats()
-	elif not p.room_for(entry["item"]):
-		say(p, "Your inventory is full.", C_WARN)
-		return false
 	else:
-		p.inventory.append(entry["item"])
+		var loot := Pack.clean_entry(entry)
+		if loot.has("contents"):
+			loot["contents"] = (entry.get("contents", []) as Array).map(func(c: Variant) -> Dictionary: return Pack.clean_entry(c))
+		if not p.pack.add_entry(loot):
+			say(p, "Your inventory is full.", C_WARN)
+			return false
 	c.entries.remove_at(index)
 	say(p, "--You have looted a %s.--" % GameData.item_name(entry["item"]), C_LOOT)
 	p.inventory_changed.emit()
@@ -1070,7 +1077,7 @@ func can_receive(p: Player, item_id: String, quiet := false) -> bool:
 	if not GameData.item(item_id).get("lore", false):
 		return true
 	var base := GameData.base_item(item_id)
-	for held: String in p.inventory + p.equipment.values() + p.bank_items + p.trade_items:
+	for held: String in p.owned_item_ids():
 		if GameData.base_item(held) == base:
 			if not quiet:
 				say(p, "You already have a %s. It is a lore item: one to a person." % GameData.item_name(held), C_WARN)
@@ -1090,33 +1097,201 @@ func equip_block(p: Player, item_id: String) -> String:
 	return ""
 
 
-func request_equip(player_id: int, inv_index: int) -> void:
-	if _remote(&"request_equip", [player_id, inv_index]):
+## Shortcut (shift-click): wear the item at a place in the pack, swapping out
+## whatever was in its slot.
+func request_equip(player_id: int, place: String) -> void:
+	if _remote(&"request_equip", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.dead or inv_index < 0 or inv_index >= p.inventory.size():
+	if p == null or p.dead or not p.cursor.is_empty():
 		return
-	var item_id: String = p.inventory[inv_index]
-	var slot: String = GameData.item(item_id).get("slot", "")
+	var e := p.pack.get_at(place)
+	if e.is_empty():
+		return
+	var item_id: String = e["item"]
+	var slot := _equip_slot_for(p, item_id)
 	if slot == "":
-		say(p, "You cannot equip that.", C_WARN)
 		return
-	var why := equip_block(p, item_id)
-	if why != "":
-		say(p, why, C_WARN)
-		return
-	var fits: Array = SLOT_FITS.get(slot, [slot])
-	slot = fits[0]
-	for s: String in fits:  # a free finger if there is one
-		if not p.equipment.has(s):
-			slot = s
-			break
-	p.inventory.remove_at(inv_index)
+	p.pack.set_at(place, {})
 	if p.equipment.has(slot):
-		p.inventory.append(p.equipment[slot])
+		p.pack.set_at(place, Pack.entry(p.equipment[slot]))
 	p.equipment[slot] = item_id
 	p.recalc_stats()
 	p.inventory_changed.emit()
+
+
+## The equipment slot an item would go in (a free finger for a ring), or ""
+## with the reason said if it can't be worn.
+func _equip_slot_for(p: Player, item_id: String, wanted := "") -> String:
+	var slot: String = GameData.item(item_id).get("slot", "")
+	var fits: Array = SLOT_FITS.get(slot, [slot])
+	if slot == "" or (wanted != "" and not wanted in fits):
+		say(p, "That doesn't go there." if wanted != "" and slot != "" else "You cannot equip that.", C_WARN)
+		return ""
+	var why := equip_block(p, item_id)
+	if why != "":
+		say(p, why, C_WARN)
+		return ""
+	if wanted != "":
+		return wanted
+	for s: String in fits:  # a free finger if there is one
+		if not p.equipment.has(s):
+			return s
+	return fits[0]
+
+
+## EQ's cursor. With nothing held, clicking a place picks up what's there; with
+## something held, it puts it down there, swapping with (or topping up) what
+## was there. Places: "g:3" / "b:3:5" in the pack, "e:head" worn, "k:7" in the
+## bank (bank window open), "t:2" in an open trade.
+func request_click(player_id: int, place: String) -> void:
+	if _remote(&"request_click", [player_id, place]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var kind := place.get_slice(":", 0)
+	var here := _entry_at(p, place)
+	if kind == "k" and _service_npc(p, "bank") == null or kind == "t" and p.trade_npc_id < 0:
+		return
+	if p.cursor.is_empty():
+		if here.is_empty():
+			return
+		if kind == "t":
+			if not p.pack.add_entry(here):  # a trade slot hands the item straight back
+				p.cursor = here
+			_set_entry_at(p, place, {})
+			_compact_trade(p)
+		else:
+			p.cursor = here
+			_set_entry_at(p, place, {})
+		_after_move(p, place)
+		return
+	var held := p.cursor
+	if kind == "e":
+		if held.has("contents"):
+			say(p, "You cannot equip that.", C_WARN)
+			return
+		var slot := _equip_slot_for(p, held["item"], place.get_slice(":", 1))
+		if slot == "" or int(held["count"]) > 1:
+			return
+	elif kind == "g" or kind == "b":
+		if not p.pack.fits(place, held):
+			say(p, "A bag won't go inside another bag." if held.has("contents") else "That won't fit there.", C_WARN)
+			return
+	elif kind == "t":
+		if held.has("contents") and not Pack._bag_empty(held):
+			say(p, "Empty the bag first.", C_WARN)
+			return
+		if p.trade_items.size() >= TRADE_SLOTS:
+			say(p, "The trade window is full.", C_WARN)
+			return
+		p.trade_items.append(held)
+		p.cursor = {}
+		_after_move(p, place)
+		return
+	# same stackable item: top up the stack in place
+	var stack := Pack.stack_of(held["item"])
+	if not here.is_empty() and here["item"] == held["item"] and stack > 1:
+		var n := mini(int(held["count"]), stack - int(here["count"]))
+		here["count"] = int(here["count"]) + n
+		held["count"] = int(held["count"]) - n
+		p.cursor = held if int(held["count"]) > 0 else {}
+		_after_move(p, place)
+		return
+	_set_entry_at(p, place, held)
+	p.cursor = here
+	_after_move(p, place)
+
+
+## Ctrl-click on a stack: pick up just one of it (again to take another).
+func request_pick_one(player_id: int, place: String) -> void:
+	if _remote(&"request_pick_one", [player_id, place]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or not (place.begins_with("g:") or place.begins_with("b:") or place.begins_with("k:")):
+		return
+	if place.begins_with("k:") and _service_npc(p, "bank") == null:
+		return
+	var here := _entry_at(p, place)
+	if here.is_empty() or here.has("contents"):
+		return
+	if not p.cursor.is_empty() and (p.cursor["item"] != here["item"] or int(p.cursor["count"]) >= Pack.stack_of(here["item"])):
+		return
+	here["count"] = int(here["count"]) - 1
+	if int(here["count"]) <= 0:
+		_set_entry_at(p, place, {})
+	if p.cursor.is_empty():
+		p.cursor = Pack.entry(here["item"])
+	else:
+		p.cursor["count"] = int(p.cursor["count"]) + 1
+	_after_move(p, place)
+
+
+## Puts whatever is on the cursor back in the first free place (closing the
+## inventory with something held). If nothing is free it stays held.
+func request_stow_cursor(player_id: int) -> void:
+	if _remote(&"request_stow_cursor", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p != null and not p.cursor.is_empty():
+		_stow(p)
+		p.inventory_changed.emit()
+
+
+func _stow(p: Player) -> void:
+	if p.pack.add_entry(p.cursor):
+		p.cursor = {}
+	else:
+		say(p, "You have no room to put that away.", C_WARN)
+
+
+func _entry_at(p: Player, place: String) -> Dictionary:
+	var kind := place.get_slice(":", 0)
+	var arg := place.get_slice(":", 1)
+	match kind:
+		"g", "b":
+			return p.pack.get_at(place)
+		"e":
+			return Pack.entry(p.equipment[arg]) if p.equipment.has(arg) else {}
+		"k":
+			return p.bank[int(arg)] if int(arg) >= 0 and int(arg) < p.bank.size() else {}
+		"t":
+			return p.trade_items[int(arg)] if int(arg) >= 0 and int(arg) < p.trade_items.size() else {}
+	return {}
+
+
+func _set_entry_at(p: Player, place: String, e: Dictionary) -> void:
+	var kind := place.get_slice(":", 0)
+	var arg := place.get_slice(":", 1)
+	match kind:
+		"g", "b":
+			p.pack.set_at(place, e)
+		"e":
+			if e.is_empty():
+				p.equipment.erase(arg)
+			else:
+				p.equipment[arg] = e["item"]
+		"k":
+			if int(arg) >= 0 and int(arg) < p.bank.size():
+				p.bank[int(arg)] = e
+		"t":
+			if int(arg) >= 0 and int(arg) < p.trade_items.size():
+				p.trade_items[int(arg)] = e
+
+
+func _compact_trade(p: Player) -> void:
+	p.trade_items = p.trade_items.filter(func(e: Dictionary) -> bool: return not e.is_empty())
+
+
+func _after_move(p: Player, place: String) -> void:
+	if place.begins_with("e:"):
+		p.recalc_stats()
+	p.inventory_changed.emit()
+	if place.begins_with("k:"):
+		_ui(p, &"service_changed")
+	if place.begins_with("t:"):
+		_ui(p, &"trade_changed")
 
 
 func request_unequip(player_id: int, slot: String) -> void:
@@ -1128,7 +1303,7 @@ func request_unequip(player_id: int, slot: String) -> void:
 	if not p.room_for(p.equipment[slot]):
 		say(p, "Your inventory is full.", C_WARN)
 		return
-	p.inventory.append(p.equipment[slot])
+	p.pack.add(p.equipment[slot])
 	p.equipment.erase(slot)
 	p.recalc_stats()
 	p.inventory_changed.emit()
@@ -1580,7 +1755,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 func _outfit(p: Player, npc: Npc) -> void:
 	if p.equipment.has("primary"):
 		return
-	for item_id: String in p.inventory:
+	for item_id: String in p.pack.item_ids():
 		if GameData.item(item_id).get("slot", "") == "primary":
 			return
 	var given: Array = []
@@ -1637,17 +1812,24 @@ func request_trade_open(player_id: int) -> void:
 	_ui(p, &"trade_opened", [npc])
 
 
-func request_trade_add(player_id: int, inv_index: int) -> void:
-	if _remote(&"request_trade_add", [player_id, inv_index]):
+## Shortcut: offers the entry at a pack place (a whole stack) in the open trade.
+func request_trade_add(player_id: int, place: String) -> void:
+	if _remote(&"request_trade_add", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.trade_npc_id < 0 or inv_index < 0 or inv_index >= p.inventory.size():
+	if p == null or p.trade_npc_id < 0 or not p.cursor.is_empty():
+		return
+	var e := p.pack.get_at(place)
+	if e.is_empty():
+		return
+	if e.has("contents") and not Pack._bag_empty(e):
+		say(p, "Empty the bag first.", C_WARN)
 		return
 	if p.trade_items.size() >= TRADE_SLOTS:
 		say(p, "The trade window is full.", C_WARN)
 		return
-	p.trade_items.append(p.inventory[inv_index])
-	p.inventory.remove_at(inv_index)
+	p.trade_items.append(e)
+	p.pack.set_at(place, {})
 	p.inventory_changed.emit()
 	_ui(p, &"trade_changed")
 
@@ -1658,7 +1840,7 @@ func request_trade_remove(player_id: int, slot: int) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0 or slot < 0 or slot >= p.trade_items.size():
 		return
-	p.inventory.append(p.trade_items[slot])
+	_return_to_pack(p, [p.trade_items[slot]])
 	p.trade_items.remove_at(slot)
 	p.inventory_changed.emit()
 	_ui(p, &"trade_changed")
@@ -1674,7 +1856,10 @@ func request_trade_give(player_id: int) -> void:
 	if npc == null or p.distance_to(npc) > TALK_RANGE:
 		request_trade_cancel(player_id)
 		return
-	var offered: Array = p.trade_items
+	var offered: Array = []  # one id per unit: NPCs count items, not stacks
+	for e: Dictionary in p.trade_items:
+		for k in int(e.get("count", 1)):
+			offered.append(e["item"])
 	p.trade_items = []
 	var left := _npc_take_items(p, npc, offered)
 	if not left.is_empty():
@@ -1685,7 +1870,7 @@ func request_trade_give(player_id: int) -> void:
 			if not label in names:
 				names.append(label)
 		say(p, "%s has no use for %s and hands %s back." % [npc.display_name, ", ".join(names), "it" if left.size() == 1 else "them"], C_SYSTEM)
-		p.inventory.append_array(left)
+		_return_to_pack(p, left.map(func(id: String) -> Dictionary: return Pack.entry(id)))
 	p.inventory_changed.emit()
 	_close_trade(p)
 
@@ -1696,10 +1881,23 @@ func request_trade_cancel(player_id: int) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0:
 		return
-	p.inventory.append_array(p.trade_items)
+	_return_to_pack(p, p.trade_items)
 	p.trade_items = []
 	p.inventory_changed.emit()
 	_close_trade(p)
+
+
+## Puts entries back in the pack; anything with nowhere to go ends up on the
+## cursor (or, if that's taken, the first free bank slot is not an option: it
+## stays in the trade list so nothing is ever lost).
+func _return_to_pack(p: Player, back: Array) -> void:
+	for e: Dictionary in back:
+		if p.pack.add_entry(e):
+			continue
+		if p.cursor.is_empty():
+			p.cursor = e
+		else:
+			p.trade_items.append(e)
 
 
 func _close_trade(p: Player) -> void:
@@ -1756,7 +1954,11 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	var item_id := str(q.get("first_reward_item", ""))
 	if state["completions"] == 1 and item_id != "" and can_receive(p, item_id):
 		_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
-		p.inventory.append(item_id)  # the offered items just freed at least one slot
+		if not p.pack.add_entry(Pack.entry(item_id)):
+			if p.cursor.is_empty():
+				p.cursor = Pack.entry(item_id)  # no room: it comes to your hand, EQ-style
+			else:
+				p.trade_items.append(Pack.entry(item_id))  # held for you until there's room
 		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
 	if int(reward.get("xp", 0)) > 0:
 		p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
@@ -1770,7 +1972,11 @@ func quest_progress(p: Player, quest_id: String) -> Dictionary:
 	var wants: Dictionary = GameData.quests[quest_id]["wants"]
 	var out := {}
 	for item_id: String in wants:
-		out[item_id] = mini(p.inventory.count(item_id) + p.trade_items.count(item_id), int(wants[item_id]))
+		var in_trade := 0
+		for e: Dictionary in p.trade_items:
+			if e["item"] == item_id:
+				in_trade += int(e.get("count", 1))
+		out[item_id] = mini(p.pack.count(item_id) + in_trade, int(wants[item_id]))
 	return out
 
 
@@ -1951,7 +2157,7 @@ func request_buy(player_id: int, item_id: String) -> void:
 		say(p, "Your inventory is full.", C_WARN)
 		return
 	p.coin -= price
-	p.inventory.append(item_id)
+	p.pack.add_entry(Pack.entry(item_id))
 	if not item_id in npc.data["merchant"].get("sells", []):
 		sold_back[item_id] = int(sold_back[item_id]) - 1
 		if sold_back[item_id] <= 0:
@@ -1961,41 +2167,57 @@ func request_buy(player_id: int, item_id: String) -> void:
 	_ui(p, &"service_changed")
 
 
-func request_sell(player_id: int, inv_index: int) -> void:
-	if _remote(&"request_sell", [player_id, inv_index]):
+## Sells the entry at a pack place, the whole stack at once.
+func request_sell(player_id: int, place: String) -> void:
+	if _remote(&"request_sell", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or inv_index < 0 or inv_index >= p.inventory.size():
+	if p == null:
 		return
 	var npc := _service_npc(p, "shop")
 	if npc == null:
 		return
-	var item_id: String = p.inventory[inv_index]
-	var price := sell_price(npc, item_id)
+	var e := p.cursor if place == "cursor" else p.pack.get_at(place)  # "cursor": what you're holding
+	if e.is_empty():
+		return
+	if e.has("contents") and not Pack._bag_empty(e):
+		say(p, "Empty the bag before you sell it.", C_WARN)
+		return
+	var item_id: String = e["item"]
+	var count := int(e["count"])
+	var price := sell_price(npc, item_id) * count
 	if price <= 0:
 		say(p, "%s isn't interested in that." % npc.display_name, C_WARN)
 		return
-	p.inventory.remove_at(inv_index)
+	if place == "cursor":
+		p.cursor = {}
+	else:
+		p.pack.set_at(place, {})
 	p.coin += price
 	var stock: Dictionary = merchant_stock.get_or_add(npc.npc_id, {})
 	if not item_id in npc.data["merchant"].get("sells", []) and not GameData.item(item_id).get("no_drop", false):
-		stock[item_id] = int(stock.get(item_id, 0)) + 1
-	say(p, "You sell a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
+		stock[item_id] = int(stock.get(item_id, 0)) + count
+	say(p, "You sell %s for %s." % ["a " + GameData.item_name(item_id) if count == 1 else "%d %s" % [count, GameData.item_name(item_id)], format_coin(price)], C_LOOT)
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
 
 
-func request_bank_deposit(player_id: int, inv_index: int) -> void:
-	if _remote(&"request_bank_deposit", [player_id, inv_index]):
+## Shortcut: the entry at a pack place goes to the first empty bank slot.
+func request_bank_deposit(player_id: int, place: String) -> void:
+	if _remote(&"request_bank_deposit", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or inv_index < 0 or inv_index >= p.inventory.size() or _service_npc(p, "bank") == null:
+	if p == null or _service_npc(p, "bank") == null:
 		return
-	if p.bank_items.size() >= int(cfg("bank_slots", 16)):
+	var e := p.pack.get_at(place)
+	var free := p.bank.find({})
+	if e.is_empty():
+		return
+	if free < 0:
 		say(p, "Your bank is full.", C_WARN)
 		return
-	p.bank_items.append(p.inventory[inv_index])
-	p.inventory.remove_at(inv_index)
+	p.bank[free] = e
+	p.pack.set_at(place, {})
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
 
@@ -2004,13 +2226,15 @@ func request_bank_withdraw(player_id: int, bank_index: int) -> void:
 	if _remote(&"request_bank_withdraw", [player_id, bank_index]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or bank_index < 0 or bank_index >= p.bank_items.size() or _service_npc(p, "bank") == null:
+	if p == null or bank_index < 0 or bank_index >= p.bank.size() or _service_npc(p, "bank") == null:
 		return
-	if not p.room_for(p.bank_items[bank_index]):
+	var e: Dictionary = p.bank[bank_index]
+	if e.is_empty():
+		return
+	if not p.pack.add_entry(e):
 		say(p, "Your inventory is full.", C_WARN)
 		return
-	p.inventory.append(p.bank_items[bank_index])
-	p.bank_items.remove_at(bank_index)
+	p.bank[bank_index] = {}
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
 

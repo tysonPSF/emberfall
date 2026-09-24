@@ -15,6 +15,7 @@ var factions: Dictionary = {}
 var deities: Dictionary = {}
 var loot: Dictionary = {}
 var skills: Dictionary = {}
+var _icons: Dictionary = {}  # base item id -> Texture2D or null
 
 
 func _ready() -> void:
@@ -55,6 +56,16 @@ func load_zone(zone_id: String) -> Dictionary:
 func skill_cap(cls: String, skill_id: String, level: int) -> int:
 	var per := int(skills.get("skills", {}).get(skill_id, {}).get("caps", {}).get(cls, 0))
 	return mini(per * (level + 1), int(skills["tuning"]["max"]))
+
+
+## An item's inventory icon (rendered by tools/blender/icons.py), shared by
+## every quality of it; null if there is none.
+func item_icon(item_id: String) -> Texture2D:
+	var base := base_item(item_id)
+	if not _icons.has(base):
+		var path := "res://assets/icons/%s.png" % base
+		_icons[base] = load(path) if ResourceLoader.exists(path) else null
+	return _icons[base]
 
 
 func skill_name(skill_id: String) -> String:
