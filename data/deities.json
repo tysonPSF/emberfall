@@ -1,0 +1,42 @@
+{
+  "light": {
+    "name": "Prabhagaj",
+    "title": "the Dawn-Tusk",
+    "description": "The elephant of first light. Nothing is hidden from him for long, and what he shows you, you have to look at.",
+    "bonus": {"hp_regen": 1},
+    "bonus_text": "Wounds close faster: +1 hit point regeneration.",
+    "portrait": [261, 1]
+  },
+  "water": {
+    "name": "Jalendra",
+    "title": "the Tide-Trunked",
+    "description": "She keeps the rivers and the rain. The water has already made room for you; that is the only welcome she gives, and the only one she means.",
+    "bonus": {"mana_pct": 10},
+    "bonus_text": "A deeper well: +10% maximum mana.",
+    "portrait": [1, 131]
+  },
+  "fire": {
+    "name": "Agnavar",
+    "title": "the Ember-Tusked",
+    "description": "Keeper of every flame that will not go out. The Keepers of Emberhold do not say his name at the hearth, but they do not need to.",
+    "bonus": {"dmg": 1},
+    "bonus_text": "Burning strikes: +1 melee damage.",
+    "portrait": [131, 1]
+  },
+  "wind": {
+    "name": "Vayuketh",
+    "title": "He Who Breathes the Plains",
+    "description": "The grass bends when he exhales. He watches the horizon, and his faithful never stay in one place for long.",
+    "bonus": {"run_speed_pct": 8},
+    "bonus_text": "Light feet: run 8% faster.",
+    "portrait": [131, 131]
+  },
+  "dark": {
+    "name": "Timiraj",
+    "title": "the Unlit",
+    "description": "The place elephants go at the end. He remembers every one who falls, which is not the comfort it sounds like.",
+    "bonus": {"xp_loss_pct": -50},
+    "bonus_text": "Remembered: dying costs half the experience.",
+    "portrait": [1, 1]
+  }
+}

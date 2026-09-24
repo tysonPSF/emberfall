@@ -20,7 +20,7 @@ func _run() -> void:
 	await _shot("0_title")
 	for c in main.get_children():
 		if c is CharCreate:
-			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "zone": "greenmoor"})
+			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "deity": "wind", "zone": "greenmoor"})
 	await _wait(2.0)
 	var p := World.local_player
 	print("player at ", p.global_position, " on_floor=", p.is_on_floor(), " mobs=", World.get_mobs().size())

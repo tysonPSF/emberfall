@@ -623,6 +623,9 @@ func _process(delta: float) -> void:
 	_update_hotbar()
 	if _inv_panel.visible:
 		var lines: PackedStringArray = []
+		if GameData.deities.has(player.deity):
+			var d: Dictionary = GameData.deities[player.deity]
+			lines.append("Follower of %s, %s" % [d["name"], d["title"]])
 		for faction_id: String in GameData.factions:
 			lines.append("%s:  %s" % [World.faction_name(faction_id), World.standing_tier(World.standing(player, faction_id))[1]])
 		_faction_label.text = "\n".join(lines)

@@ -348,7 +348,7 @@ func _kill_player(p: Player, killer: Entity) -> void:
 	request_trade_cancel(p.entity_id)
 	request_service_close(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
-	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)))
+	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)) * (1.0 + GameData.deity_bonus(p.deity, "xp_loss_pct") / 100.0))
 	if loss > 0 and p.xp > 0:
 		p.xp = maxi(0, p.xp - loss)
 		say(p, "You have lost experience.", C_WARN)

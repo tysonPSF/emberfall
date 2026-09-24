@@ -36,8 +36,8 @@ func _ready() -> void:
 	add_child(title)
 	if autotest:
 		add_child(load("res://scripts/dev/autotest.gd").new())
-	elif "--resume" in OS.get_cmdline_user_args() and not save.is_empty():
-		_start_game(save, title)  # reloaded after an update: straight back in
+	elif "--resume" in OS.get_cmdline_user_args() and GameData.deities.has(str(save.get("deity", ""))):
+		_start_game(save, title)  # reloaded after an update: straight back in (older saves stop to pick a deity)
 
 
 func _start_game(save: Dictionary, title: CharCreate) -> void:

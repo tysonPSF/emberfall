@@ -16,6 +16,7 @@ const MOUSE_SENS := 0.004
 const MAX_ZOOM := 18.0
 
 var char_class := "warrior"
+var deity := ""  # data/deities.json id, chosen at creation; "" for none
 var xp := 0
 var coin := 0
 var inventory: Array = []
@@ -46,6 +47,7 @@ var _saved_mouse_pos := Vector2.ZERO
 func from_save(d: Dictionary) -> void:
 	display_name = str(d.get("name", "Adventurer"))
 	char_class = str(d.get("class", "warrior"))
+	deity = str(d.get("deity", ""))
 	level = int(d.get("level", 1))
 	xp = int(d.get("xp", 0))
 	coin = int(d.get("coin", 0))
@@ -74,7 +76,7 @@ func from_save(d: Dictionary) -> void:
 func to_save() -> Dictionary:
 	var p := global_position
 	return {
-		"name": display_name, "class": char_class, "level": level, "xp": xp, "coin": coin,
+		"name": display_name, "class": char_class, "deity": deity, "level": level, "xp": xp, "coin": coin,
 		"inventory": inventory + trade_items, "equipment": equipment, "quests": quests, "spells": spells, "bank_items": bank_items, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
@@ -106,7 +108,10 @@ func recalc_stats() -> void:
 	max_hp += buff_total("hp")
 	dmg_min += buff_total("dmg")
 	dmg_max += buff_total("dmg")
-	hp_regen = int(cls["hp_regen"]) + level / 4
+	max_mana += int(max_mana * GameData.deity_bonus(deity, "mana_pct") / 100.0)
+	dmg_min += int(GameData.deity_bonus(deity, "dmg"))
+	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
+	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen"))
 	mana_regen = int(cls["mana_regen"])
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
@@ -300,7 +305,7 @@ func _physics_process(delta: float) -> void:
 	dir.y = 0.0
 	if dir.length() > 1.0:
 		dir = dir.normalized()
-	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED
+	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + GameData.deity_bonus(deity, "run_speed_pct") / 100.0)
 	if dir != Vector3.ZERO and sitting:
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd

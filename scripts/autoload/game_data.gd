@@ -12,6 +12,7 @@ var models: Dictionary = {}
 var npcs: Dictionary = {}
 var quests: Dictionary = {}
 var factions: Dictionary = {}
+var deities: Dictionary = {}
 
 
 func _ready() -> void:
@@ -24,6 +25,21 @@ func _ready() -> void:
 	npcs = _load("res://data/npcs.json")
 	quests = _load("res://data/quests.json")
 	factions = _load("res://data/factions.json")
+	deities = _load("res://data/deities.json")
+
+
+## A deity's benefit, or 0 when the player has none or it grants something else.
+func deity_bonus(deity_id: String, key: String) -> float:
+	return float(deities.get(deity_id, {}).get("bonus", {}).get(key, 0))
+
+
+## A deity's portrait, cut from the shared atlas.
+func deity_portrait(deity_id: String) -> AtlasTexture:
+	var tex := AtlasTexture.new()
+	tex.atlas = load("res://assets/deities/deities_128.png")
+	var at: Array = deities[deity_id]["portrait"]
+	tex.region = Rect2(float(at[0]), float(at[1]), 128, 128)
+	return tex
 
 
 func load_zone(zone_id: String) -> Dictionary:
