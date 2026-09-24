@@ -232,7 +232,8 @@ func _c_move(pos: Vector3, rot: float, seq: int) -> void:
 	var dt := maxf(0.05, (now - int(_last_move.get(p.entity_id, now))) / 1000.0)
 	_last_move[p.entity_id] = now
 	var flat := Vector2(pos.x - p.global_position.x, pos.z - p.global_position.z).length()
-	var allowed := Player.RUN_SPEED * 1.6 * dt + 2.0
+	var top := Player.RUN_SPEED * (1.0 + GameData.deity_bonus(p.deity, "run_speed_pct") / 100.0) * float(World.cfg("sprint_speed_mult", 1.55))
+	var allowed := top * 1.3 * dt + 2.0
 	if flat > allowed:
 		teleport(p, p.global_position)  # too fast: put them back
 		return
@@ -551,7 +552,7 @@ func _send_self(peer: int, with_save := false) -> void:
 		"cast": p.cast, "cooldowns": p.cooldowns, "buffs": p.buffs, "dead": p.dead, "sitting": p.sitting,
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
-		"root_left": p.root_left,
+		"root_left": p.root_left, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting,
 	}
 	if with_save:
 		d["save"] = save_of.call(p)

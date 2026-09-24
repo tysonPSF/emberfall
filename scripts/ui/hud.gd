@@ -4,13 +4,14 @@ extends CanvasLayer
 ## loot and inventory windows. Reads state from the player; every action goes
 ## through World.request_*, the same as keyboard input.
 
-const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump
+const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
 [b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
-[b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · F1 self · Esc clear / interrupt cast
+[b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
+[b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse · I inventory (click to equip / unequip; right-click worn gear to use its effect)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (click to equip / unequip; right-click worn gear to use its effect)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
@@ -19,6 +20,8 @@ H or the gear button to hide this."""
 
 const ATTR_NAMES := {"dmg": "Damage", "ac": "AC", "hp": "HP", "mana": "Mana", "str": "STR", "sta": "STA", "agi": "AGI", "wis": "WIS", "int": "INT", "haste": "Haste", "hp_regen": "HP Regen", "mana_regen": "Mana Regen"}
 const CROSSHAIR_SIZE := 30.0
+const CROSSHAIR_COLOR := Color(1, 0.93, 0.72)  # near-white: gold alone vanished against grass
+const CROSSHAIR_SHADOW := Color(0, 0, 0, 0.75)
 
 var player: Player
 var root: Control
@@ -30,6 +33,9 @@ var _hp_text: Label
 var _mana_row: Control
 var _mana_bar: ProgressBar
 var _mana_text: Label
+var _stamina_row: Control
+var _stamina_bar: ProgressBar
+var _stamina_text: Label
 var _xp_bar: ProgressBar
 var _xp_text: Label
 var _buff_label: Label
@@ -85,6 +91,8 @@ var _stats_label: Label
 var _faction_label: Label
 
 var _help_panel: PanelContainer
+var _settings_panel: PanelContainer
+var _settings_rows: VBoxContainer
 var _banner: Label
 var _banner_time := 0.0
 var _death_label: Label
@@ -110,6 +118,7 @@ func _ready() -> void:
 	_build_service_window()
 	_build_inventory()
 	_build_help()
+	_build_settings()
 	_build_overlays()
 	_build_menu()
 	World.log_message.connect(add_log)
@@ -163,6 +172,11 @@ func _build_player_window() -> void:
 	_mana_text = mana[1]
 	_mana_row = mana[2]
 	v.add_child(_mana_row)
+	var stam := _bar_row(Color(0.35, 0.72, 0.3), 10.0)
+	_stamina_bar = stam[0]
+	_stamina_text = stam[1]
+	_stamina_row = stam[2]
+	v.add_child(_stamina_row)
 	var xp := _bar_row(Color(0.85, 0.7, 0.25), 7.0)
 	_xp_bar = xp[0]
 	_xp_text = xp[1]
@@ -551,6 +565,57 @@ func _build_help() -> void:
 	_help_panel.add_child(t)
 
 
+## Settings, reachable without a mouse: O opens it and each row toggles with the
+## letter shown on it, so someone playing on the keyboard can turn the mouse
+## scheme off without ever needing to click a button.
+func _build_settings() -> void:
+	_settings_panel = UIKit.panel()
+	UIKit.place(_settings_panel, Vector2(0.5, 0.5), Vector2(0, 0))
+	root.add_child(_settings_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 420
+	v.add_theme_constant_override("separation", 6)
+	_settings_panel.add_child(v)
+	var title := UIKit.label("Settings", 18, UIKit.GOLD)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(title)
+	_settings_rows = VBoxContainer.new()
+	_settings_rows.add_theme_constant_override("separation", 4)
+	v.add_child(_settings_rows)
+	var hint := UIKit.label("Press the letter shown to change a setting  ·  O or Esc to close", 11, UIKit.DIM)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(hint)
+	_settings_panel.visible = false
+	_refresh_settings()
+
+
+func _refresh_settings() -> void:
+	for c in _settings_rows.get_children():
+		_settings_rows.remove_child(c)
+		c.queue_free()
+	var b := UIKit.button("[M]   Mouse controls:   %s" % ("On" if Controls.mouse_look else "Off"), Vector2(0, 34))
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.pressed.connect(_toggle_mouse_look)
+	_settings_rows.add_child(b)
+	var note := UIKit.label(
+			"On: the mouse looks around, right-click targets, left-click attacks.\n"
+			+ "Off: the cursor stays out, A/D turn, and you click to target.\n"
+			+ "Either way, Tab targets the nearest foe and T cycles townsfolk and corpses.",
+			11, UIKit.DIM)
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD
+	note.custom_minimum_size.x = 410
+	_settings_rows.add_child(note)
+
+
+func _toggle_mouse_look() -> void:
+	Controls.set_mouse_look(not Controls.mouse_look)
+	_refresh_settings()
+
+
+func _show_settings(on: bool) -> void:
+	_settings_panel.visible = on
+
+
 ## Esc menu: camp (log out), controls, back to the game.
 func _build_menu() -> void:
 	_menu_panel = UIKit.panel()
@@ -573,6 +638,11 @@ func _build_menu() -> void:
 		_menu_panel.visible = false
 		_show_help(true))
 	v.add_child(controls)
+	var settings := UIKit.button("Settings  (O)", Vector2(0, 38))
+	settings.pressed.connect(func() -> void:
+		_menu_panel.visible = false
+		_show_settings(true))
+	v.add_child(settings)
 	var reloader := get_tree().get_first_node_in_group("reloader")
 	if reloader != null:  # dev builds only
 		var reload := UIKit.button("Reload game  (F5)", Vector2(0, 38))
@@ -599,9 +669,9 @@ func _build_overlays() -> void:
 
 	_crosshair = Control.new()
 	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crosshair.set_anchors_preset(Control.PRESET_TOP_LEFT)  # positioned per frame from Player.aim_point()
 	_crosshair.custom_minimum_size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
 	_crosshair.size = Vector2(CROSSHAIR_SIZE, CROSSHAIR_SIZE)
-	UIKit.place(_crosshair, Vector2(0.5, 0.5), Vector2(-CROSSHAIR_SIZE * 0.5, -CROSSHAIR_SIZE * 0.5))
 	_crosshair.draw.connect(_draw_crosshair)
 	root.add_child(_crosshair)
 
@@ -609,26 +679,34 @@ func _build_overlays() -> void:
 ## Crosshair, plus a ring that fills as the swing recharges while auto attacking.
 ## The delay is the rules' to set; showing it just makes the rhythm legible
 ## instead of looking like the game ignored the click.
+##
+## Everything is drawn twice, a dark outline under a bright core, because the
+## reticle has to stay readable against both a sunlit sky and a dark treeline.
 func _draw_crosshair() -> void:
 	var c := _crosshair.size * 0.5
-	for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-		_crosshair.draw_line(c + d * 3.0, c + d * 8.0, UIKit.GOLD, 1.0)
-	_crosshair.draw_circle(c, 1.2, UIKit.GOLD)
+	for outline in [true, false]:
+		var col: Color = CROSSHAIR_SHADOW if outline else CROSSHAIR_COLOR
+		var w: float = 4.0 if outline else 2.0
+		for d: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+			_crosshair.draw_line(c + d * 4.0, c + d * 11.0, col, w)
+	_crosshair.draw_circle(c, 2.8, CROSSHAIR_SHADOW)
+	_crosshair.draw_circle(c, 1.5, CROSSHAIR_COLOR)
 	if player == null or not player.auto_attack:
 		return
-	var radius := CROSSHAIR_SIZE * 0.5 - 2.0
-	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, Color(0, 0, 0, 0.35), 2.0)
+	var radius := CROSSHAIR_SIZE * 0.5 - 3.0
+	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, CROSSHAIR_SHADOW, 4.0)
 	var delay := maxf(player.attack_delay, 0.01)
 	var charge := clampf(1.0 - player.swing_timer / delay, 0.0, 1.0)
 	var ready := charge >= 1.0
 	_crosshair.draw_arc(c, radius, -PI * 0.5, -PI * 0.5 + TAU * charge, 32,
-			Color(1, 0.45, 0.35) if ready else UIKit.GOLD, 2.0)
+			Color(1, 0.5, 0.4) if ready else CROSSHAIR_COLOR, 2.5)
 
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
 	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible
-			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible)
+			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
+			or _settings_panel.visible)
 
 
 # --- updates ----------------------------------------------------------------
@@ -640,6 +718,8 @@ func _process(delta: float) -> void:
 		_crosshair.visible = false
 		return
 	_crosshair.visible = player.mouse_looking
+	if _crosshair.visible:
+		_crosshair.position = player.aim_point() - _crosshair.size * 0.5
 	# Redraw while the ring is advancing, plus once more after auto attack stops
 	# so the last frame with a ring on it gets cleared.
 	if _crosshair.visible and (player.auto_attack or _ring_drawn):
@@ -654,6 +734,10 @@ func _process(delta: float) -> void:
 	_mana_bar.max_value = player.max_mana
 	_mana_bar.value = player.mana
 	_mana_text.text = " %d / %d" % [player.mana, player.max_mana]
+	_stamina_row.visible = player.max_stamina > 0
+	_stamina_bar.max_value = player.max_stamina
+	_stamina_bar.value = player.stamina
+	_stamina_text.text = " %d / %d%s" % [int(player.stamina), player.max_stamina, "  running" if player.sprinting else ""]
 	var pct := 100.0 * player.xp / player.xp_to_next()
 	_xp_bar.value = pct
 	_xp_text.text = " XP %.1f%%" % pct
@@ -1003,8 +1087,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("help"):
 		_show_help(not _help_panel.visible)
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("settings"):
+		_show_settings(not _settings_panel.visible)
+		get_viewport().set_input_as_handled()
+	elif _settings_panel.visible and event.is_action_pressed("settings_mouse_look"):
+		_toggle_mouse_look()
+		get_viewport().set_input_as_handled()
+	elif _loot_panel.visible and event.is_action_pressed("loot") and _loot_corpse != null:
+		# Second press takes the lot, so looting never needs the mouse.
+		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _service_panel.visible:
+		if _settings_panel.visible:
+			_settings_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _service_panel.visible:
 			World.request_service_close(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _trade_panel.visible:

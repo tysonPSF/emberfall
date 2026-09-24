@@ -54,9 +54,12 @@ For testing on one machine: run the server, then `godot --path . -- --nettest=Al
 | | |
 |---|---|
 | W/S, A/D | Forward/back, strafe (arrow keys turn) |
+| Shift | Hold while moving forward to run; drains stamina (the green bar), which refills once you ease off |
 | Mouse / wheel | Look / zoom (zoom all the way in for first person) |
 | Alt | Hold for the mouse cursor; it also returns while any window is open |
 | Right-click, Tab, F1 | Target what's under the crosshair, nearest enemy, self |
+| T | Cycle townsfolk and corpses (Tab only walks the living mobs) |
+| O | Settings. Turning **Mouse controls** off keeps the cursor out and puts turning back on A/D, so the game plays without a mouse |
 | Left-click | Start attacking your target (the ring on the crosshair fills as the next swing comes up) |
 | Q | Auto attack on / off |
 | 1–8 | Abilities / spells (moving interrupts casting); learn more from your guildmaster |

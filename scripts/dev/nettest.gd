@@ -50,7 +50,22 @@ func _run() -> void:
 	p.zoom = 9.0
 	p.pitch = -0.35
 
-	if who == "Zoner":
+	if who == "Sprinter":
+		# hold forward and Shift like a player would; the server must accept the speed
+		var start := p.global_position
+		var stam0 := p.stamina
+		Input.action_press("move_forward")
+		Input.action_press("sprint")
+		await _wait(2.0)
+		var mid_sprinting := p.sprinting
+		var mid_stam := p.stamina
+		Input.action_release("sprint")
+		Input.action_release("move_forward")
+		await _wait(1.0)
+		print("[Sprinter] ran %.1f m in 2 s (walk would be 14); sprinting=%s stamina %.0f -> %.0f; snapped back=%s" % [
+				Vector2(p.global_position.x - start.x, p.global_position.z - start.z).length(), mid_sprinting, stam0, mid_stam,
+				Vector2(p.global_position.x - start.x, p.global_position.z - start.z).length() < 5.0])
+	elif who == "Zoner":
 		# walk into the pass to Emberhold; for now the whole server follows
 		await _walk_to(p, Vector3(0, 0, 150))
 		await _walk_to(p, Vector3(0, 0, 182))
