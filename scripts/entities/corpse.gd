@@ -28,6 +28,8 @@ func setup(name_: String, look_: Dictionary, contents: Array, coin_amount: int,
 func _enter_tree() -> void:
 	if object_id < 0:
 		object_id = World.register(self)
+	else:
+		World.objects[object_id] = self  # a client mirror, under the server's id
 
 
 func _exit_tree() -> void:
@@ -70,6 +72,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if not Net.is_authority():
+		return  # the server decides when it rots
 	decay_left -= delta
 	if decay_left <= 0.0:
 		World.remove_corpse(self)

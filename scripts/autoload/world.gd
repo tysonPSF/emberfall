@@ -3,8 +3,8 @@ extends Node
 ##
 ## Everything that changes game state goes through here. Player input only
 ## calls the request_* functions, passing ids rather than node references.
-## When multiplayer arrives, those same functions become server RPCs and the
-## rules below run only on the server; clients just render the results.
+## On a client (see the Net autoload) every request_* is sent to the server
+## instead, and the rules below run only there; clients render the results.
 
 signal log_message(text: String, color: Color)
 signal loot_opened(corpse: Corpse)
@@ -71,7 +71,6 @@ var next_id := 1
 var local_player: Player = null
 var zone: Zone = null
 var tick_timer := 0.0
-var _range_warn_cooldown := 0.0
 var merchant_stock: Dictionary = {}  # merchant npc id -> {item id: count} bought from players
 
 
@@ -121,11 +120,34 @@ func melee_range() -> float:
 
 # --- messages ---------------------------------------------------------------
 
-## Sends a chat-log line to one entity. Only the local player has a log today;
-## with networking this becomes "send to that player's connection".
+## Sends a chat-log line to one player: this machine's own log, or over the
+## network to theirs.
 func say(to: Entity, text: String, color: Color = C_SYSTEM) -> void:
-	if to != null and to == local_player:
+	if to == null:
+		return
+	if to == local_player:
 		log_message.emit(text, color)
+	elif to is Player:
+		Net.send_say(to as Player, text, color)
+
+
+## Fires one of the HUD signals above for one player's windows, here or on
+## their own machine.
+func _ui(p: Player, sig: StringName, args: Array = []) -> void:
+	if p == null:
+		return
+	if p == local_player:
+		emit_signal.callv([sig] + args)
+	else:
+		Net.send_ui(p, sig, args)
+
+
+## On a client, sends a request to the server instead of running it here.
+func _remote(method: StringName, args: Array) -> bool:
+	if Net.is_authority():
+		return false
+	Net.send_request(method, args)
+	return true
 
 
 ## Says something out loud: every player within earshot sees it.
@@ -170,7 +192,9 @@ func con_of(viewer_level: int, other_level: int) -> int:
 # --- simulation -------------------------------------------------------------
 
 func _physics_process(delta: float) -> void:
-	_range_warn_cooldown = maxf(0.0, _range_warn_cooldown - delta)
+	if not Net.is_authority():
+		_client_timers(delta)
+		return
 	for obj: Node3D in objects.values():
 		if obj is Entity and is_instance_valid(obj) and not obj.dead:
 			_update_timers(obj, delta)
@@ -182,10 +206,24 @@ func _physics_process(delta: float) -> void:
 			_check_service(obj)
 		if obj is Player and (obj as Player).camp_left > 0.0:
 			_update_camp(obj, delta)
+		if obj is Player and is_instance_valid(obj):
+			_update_stamina(obj, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
 		_regen_tick()
+
+
+## A client runs no rules, but counts down its own cast bar and recast timers
+## between the server's updates so they move smoothly.
+func _client_timers(delta: float) -> void:
+	var p := local_player
+	if p == null:
+		return
+	if not p.cast.is_empty():
+		p.cast["time"] = minf(float(p.cast["time"]) + delta, float(p.cast["total"]))
+	for key: String in p.cooldowns.keys():
+		p.cooldowns[key] = maxf(0.0, float(p.cooldowns[key]) - delta)
 
 
 func _update_timers(e: Entity, delta: float) -> void:
@@ -224,8 +262,8 @@ func _update_melee(e: Entity) -> void:
 	if not can_attack(e, t):
 		return
 	if e.distance_to(t) > melee_range():
-		if e == local_player and _range_warn_cooldown <= 0.0:
-			_range_warn_cooldown = 2.5
+		if e is Player and Time.get_ticks_msec() >= int(e.get_meta("range_warn_at", 0)):
+			e.set_meta("range_warn_at", Time.get_ticks_msec() + 2500)
 			say(e, "Your target is too far away, get closer!", C_WARN)
 		return
 	if e.swing_timer > 0.0:
@@ -265,6 +303,8 @@ func _try_proc(e: Entity, t: Entity) -> void:
 ## Right-clicking an equipped item with a "click": {spell, recast} casts that
 ## spell for free, then the item needs recast seconds to recharge.
 func request_item_click(player_id: int, slot: String) -> void:
+	if _remote(&"request_item_click", [player_id, slot]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or not p.equipment.has(slot):
 		return
@@ -292,12 +332,12 @@ func request_item_click(player_id: int, slot: String) -> void:
 
 
 func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
-	if a == local_player:
+	if a is Player:
 		if dmg > 0:
 			say(a, "You %s %s for %d points of damage." % [verb[0], d.display_name, dmg], C_YOU_HIT)
 		else:
 			say(a, "You try to %s %s, but miss!" % [verb[0], d.display_name], C_MISS)
-	elif d == local_player:
+	if d is Player:
 		if dmg > 0:
 			say(d, "%s %s YOU for %d points of damage." % [cap(a.display_name), verb[1], dmg], C_HIT_YOU)
 		else:
@@ -358,17 +398,19 @@ func kill(d: Entity, killer: Entity) -> void:
 	elif d is Player:
 		_kill_player(d, killer)
 	elif d is Npc:
-		if local_player != null and local_player.distance_to(d) < 60.0:
-			log_message.emit("%s has been slain by %s!" % [d.display_name, killer.display_name if killer != null else "unknown forces"], C_WARN)
+		for p in get_players():
+			if p.distance_to(d) < 60.0:
+				say(p, "%s has been slain by %s!" % [d.display_name, killer.display_name if killer != null else "unknown forces"], C_WARN)
 		(d as Npc).on_killed()
 
 
 func _kill_mob(mob: Mob, killer: Entity) -> void:
-	if killer != null and killer == local_player:
-		say(killer, "You have slain %s!" % mob.display_name, C_XP)
-	elif local_player != null and local_player.global_position.distance_to(mob.global_position) < 40.0:
-		var by := killer.display_name if killer != null else "unknown forces"
-		log_message.emit("%s has been slain by %s!" % [cap(mob.display_name), by], C_SYSTEM)
+	for p in get_players():
+		if p == killer:
+			say(p, "You have slain %s!" % mob.display_name, C_XP)
+		elif p.distance_to(mob) < 40.0:
+			var by := killer.display_name if killer != null else "unknown forces"
+			say(p, "%s has been slain by %s!" % [cap(mob.display_name), by], C_SYSTEM)
 	if killer is Player:
 		award_xp(killer, mob)
 
@@ -425,7 +467,7 @@ func _kill_player(p: Player, killer: Entity) -> void:
 		p.inventory_changed.emit()
 		say(p, "Your belongings remain on your corpse. Go back and loot it.", C_WARN)
 	p.on_death()
-	player_died.emit(p)
+	_ui(p, &"player_died", [p])
 	get_tree().create_timer(float(cfg("respawn_delay", 4.0))).timeout.connect(p.respawn)
 
 
@@ -455,12 +497,16 @@ func can_attack(a: Entity, t: Entity) -> bool:
 
 
 func request_set_target(entity_id: int, target_id: int) -> void:
+	if _remote(&"request_set_target", [entity_id, target_id]):
+		return
 	var e := get_object(entity_id) as Entity
 	if e != null:
 		e.target = get_object(target_id) if target_id >= 0 else null
 
 
 func request_toggle_attack(entity_id: int) -> void:
+	if _remote(&"request_toggle_attack", [entity_id]):
+		return
 	var e := get_object(entity_id) as Entity
 	if e == null or e.dead:
 		return
@@ -487,7 +533,46 @@ func request_toggle_attack(entity_id: int) -> void:
 	say(e, "Auto attack is on.")
 
 
+## Sprinting is a held state rather than a toggle: input asks for it every frame
+## it wants it, and anything here can refuse or end it.
+func request_sprint(entity_id: int, on: bool) -> void:
+	if _remote(&"request_sprint", [entity_id, on]):
+		return
+	var p := get_object(entity_id) as Player
+	if p == null or p.dead:
+		return
+	# You may run a burst down to nothing, but you cannot start again on fumes:
+	# without this, holding Shift while spent re-engages the moment a sliver of
+	# stamina returns, which stutters your speed and repeats the winded message.
+	if on and (p.sitting or p.stamina < float(cfg("sprint_resume_at", 25.0))):
+		return
+	p.sprinting = on
+
+
+## Drains while you run, and creeps back after you have been off it a moment.
+## How long a run lasts is `max_stamina`, which recalc_stats builds from config,
+## level, gear and deity - so lengthening it later is a data change, not a code
+## one. The numbers live in data/config.json.
+func _update_stamina(p: Player, delta: float) -> void:
+	if p.dead:
+		p.sprinting = false
+		return
+	if p.sprinting:
+		p.stamina_idle = float(cfg("stamina_regen_delay", 1.5))
+		p.stamina = maxf(0.0, p.stamina - float(cfg("sprint_drain", 20.0)) * delta)
+		if p.stamina <= 0.0:
+			p.sprinting = false
+			say(p, "You are too winded to keep running.", C_WARN)
+		return
+	p.stamina_idle = maxf(0.0, p.stamina_idle - delta)
+	if p.stamina_idle <= 0.0:
+		var regen := float(cfg("stamina_regen", 8.0)) * delta
+		p.stamina = minf(float(p.max_stamina), p.stamina + regen)
+
+
 func request_sit(entity_id: int, sit: bool) -> void:
+	if _remote(&"request_sit", [entity_id, sit]):
+		return
 	var e := get_object(entity_id) as Entity
 	if e == null or e.dead or e.sitting == sit:
 		return
@@ -500,6 +585,8 @@ func request_sit(entity_id: int, sit: bool) -> void:
 
 
 func request_consider(entity_id: int) -> void:
+	if _remote(&"request_consider", [entity_id]):
+		return
 	var e := get_object(entity_id) as Entity
 	if e == null:
 		return
@@ -520,6 +607,8 @@ func request_consider(entity_id: int) -> void:
 
 
 func request_cast(entity_id: int, spell_id: String) -> void:
+	if _remote(&"request_cast", [entity_id, spell_id]):
+		return
 	var c := get_object(entity_id) as Entity
 	if c == null or c.dead or not (spell_id in c.spells):
 		return
@@ -549,6 +638,8 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 
 
 func request_interrupt(entity_id: int) -> void:
+	if _remote(&"request_interrupt", [entity_id]):
+		return
 	var c := get_object(entity_id) as Entity
 	if c != null and not c.cast.is_empty():
 		c.cast = {}
@@ -622,6 +713,8 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 				m.hate.erase(c.entity_id)
 			c.global_position = zone.bind_point + Vector3.UP
 			c.velocity = Vector3.ZERO
+			if c is Player:
+				Net.teleport(c as Player, c.global_position)
 			say(c, "You feel yourself pulled back to your bind point.", C_SPELL)
 		"buff":
 			t.buffs[spell_id] = {"left": float(s.get("duration", 60)), "stats": s.get("stats", {})}
@@ -658,6 +751,8 @@ func call_for_help(caller: Mob, enemy: Entity) -> void:
 # --- loot & inventory -------------------------------------------------------
 
 func request_loot_open(player_id: int, corpse_id: int) -> void:
+	if _remote(&"request_loot_open", [player_id, corpse_id]):
+		return
 	var p := get_object(player_id) as Player
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or p.dead:
@@ -678,11 +773,12 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 		say(p, "The corpse is empty.")
 		remove_corpse(c)
 		return
-	if p == local_player:
-		loot_opened.emit(c)
+	_ui(p, &"loot_opened", [c])
 
 
 func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
+	if _remote(&"request_loot_item", [player_id, corpse_id, index]):
+		return false
 	var p := get_object(player_id) as Player
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or index < 0 or index >= c.entries.size():
@@ -707,12 +803,14 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	p.inventory_changed.emit()
 	if c.entries.is_empty():
 		remove_corpse(c)
-	elif p == local_player:
-		loot_changed.emit(c)
+	else:
+		_ui(p, &"loot_changed", [c])
 	return true
 
 
 func request_loot_all(player_id: int, corpse_id: int) -> void:
+	if _remote(&"request_loot_all", [player_id, corpse_id]):
+		return
 	var c := get_object(corpse_id) as Corpse
 	while c != null and not c.is_queued_for_deletion() and not c.entries.is_empty():
 		if not request_loot_item(player_id, corpse_id, 0):
@@ -720,12 +818,14 @@ func request_loot_all(player_id: int, corpse_id: int) -> void:
 
 
 func request_loot_close(player_id: int) -> void:
-	if get_object(player_id) == local_player:
-		loot_closed.emit(null)
+	if _remote(&"request_loot_close", [player_id]):
+		return
+	_ui(get_object(player_id) as Player, &"loot_closed", [null])
 
 
 func remove_corpse(c: Corpse) -> void:
-	loot_closed.emit(c)
+	for p in get_players():
+		_ui(p, &"loot_closed", [c])
 	c.queue_free()
 
 
@@ -756,6 +856,8 @@ func equip_block(p: Player, item_id: String) -> String:
 
 
 func request_equip(player_id: int, inv_index: int) -> void:
+	if _remote(&"request_equip", [player_id, inv_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or inv_index < 0 or inv_index >= p.inventory.size():
 		return
@@ -783,6 +885,8 @@ func request_equip(player_id: int, inv_index: int) -> void:
 
 
 func request_unequip(player_id: int, slot: String) -> void:
+	if _remote(&"request_unequip", [player_id, slot]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or not p.equipment.has(slot):
 		return
@@ -840,6 +944,8 @@ func _pick_weighted(table: Dictionary) -> String:
 
 ## Hails the player's target, which also turns in any quest it is waiting on.
 func request_hail(player_id: int) -> void:
+	if _remote(&"request_hail", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead:
 		return
@@ -851,6 +957,8 @@ func request_hail(player_id: int) -> void:
 
 ## Says a keyword to the player's target, EQ style ("gnoll fangs").
 func request_say(player_id: int, keyword: String) -> void:
+	if _remote(&"request_say", [player_id, keyword]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead:
 		return
@@ -930,6 +1038,8 @@ func _accept_quest(p: Player, quest_id: String) -> void:
 ## items leave the inventory while the window is open, so they can't be spent
 ## twice; whatever the npc doesn't take comes back.
 func request_trade_open(player_id: int) -> void:
+	if _remote(&"request_trade_open", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or p.trade_npc_id >= 0:
 		return
@@ -947,11 +1057,12 @@ func request_trade_open(player_id: int) -> void:
 	p.trade_npc_id = npc.entity_id
 	p.trade_items = []
 	npc.greet(p)
-	if p == local_player:
-		trade_opened.emit(npc)
+	_ui(p, &"trade_opened", [npc])
 
 
 func request_trade_add(player_id: int, inv_index: int) -> void:
+	if _remote(&"request_trade_add", [player_id, inv_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0 or inv_index < 0 or inv_index >= p.inventory.size():
 		return
@@ -961,22 +1072,24 @@ func request_trade_add(player_id: int, inv_index: int) -> void:
 	p.trade_items.append(p.inventory[inv_index])
 	p.inventory.remove_at(inv_index)
 	p.inventory_changed.emit()
-	if p == local_player:
-		trade_changed.emit()
+	_ui(p, &"trade_changed")
 
 
 func request_trade_remove(player_id: int, slot: int) -> void:
+	if _remote(&"request_trade_remove", [player_id, slot]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0 or slot < 0 or slot >= p.trade_items.size():
 		return
 	p.inventory.append(p.trade_items[slot])
 	p.trade_items.remove_at(slot)
 	p.inventory_changed.emit()
-	if p == local_player:
-		trade_changed.emit()
+	_ui(p, &"trade_changed")
 
 
 func request_trade_give(player_id: int) -> void:
+	if _remote(&"request_trade_give", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0:
 		return
@@ -1001,6 +1114,8 @@ func request_trade_give(player_id: int) -> void:
 
 
 func request_trade_cancel(player_id: int) -> void:
+	if _remote(&"request_trade_cancel", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.trade_npc_id < 0:
 		return
@@ -1012,8 +1127,7 @@ func request_trade_cancel(player_id: int) -> void:
 
 func _close_trade(p: Player) -> void:
 	p.trade_npc_id = -1
-	if p == local_player:
-		trade_closed.emit()
+	_ui(p, &"trade_closed")
 
 
 func _check_trade(p: Player) -> void:
@@ -1098,6 +1212,8 @@ func quest_items_ready(p: Player, quest_id: String) -> bool:
 ## anything open, and asks whoever owns zones (main today, a zone server later)
 ## to move them.
 func request_zone_line(player_id: int, line_index: int) -> void:
+	if _remote(&"request_zone_line", [player_id, line_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or zone == null or zone.zone_line_at(p.global_position) != line_index:
 		return
@@ -1120,6 +1236,8 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 ## Starts camping: the player sits, and after camp_seconds without standing
 ## up they leave the world (main saves and shows the character screen).
 func request_camp(player_id: int) -> void:
+	if _remote(&"request_camp", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead or p.camp_left > 0.0:
 		return
@@ -1151,6 +1269,8 @@ func _update_camp(p: Player, delta: float) -> void:
 ## G on an npc: a merchant opens their shop, a banker the bank, anyone else
 ## the give window (quest turn-ins).
 func request_interact(player_id: int) -> void:
+	if _remote(&"request_interact", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.dead:
 		return
@@ -1175,18 +1295,18 @@ func request_interact(player_id: int) -> void:
 	p.service_npc_id = npc.entity_id
 	p.service = "shop" if npc.data.has("merchant") else ("guild" if npc.data.has("guildmaster") else "bank")
 	npc.greet(p)
-	if p == local_player:
-		service_opened.emit(npc, p.service)
+	_ui(p, &"service_opened", [npc, p.service])
 
 
 func request_service_close(player_id: int) -> void:
+	if _remote(&"request_service_close", [player_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or p.service_npc_id < 0:
 		return
 	p.service_npc_id = -1
 	p.service = ""
-	if p == local_player:
-		service_closed.emit()
+	_ui(p, &"service_closed")
 
 
 ## The npc whose shop or bank this player has open, if still in reach.
@@ -1231,6 +1351,8 @@ func merchant_wares(npc: Npc) -> Array:
 
 
 func request_buy(player_id: int, item_id: String) -> void:
+	if _remote(&"request_buy", [player_id, item_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null:
 		return
@@ -1258,11 +1380,12 @@ func request_buy(player_id: int, item_id: String) -> void:
 			sold_back.erase(item_id)
 	say(p, "You buy a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
 	p.inventory_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 func request_sell(player_id: int, inv_index: int) -> void:
+	if _remote(&"request_sell", [player_id, inv_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or inv_index < 0 or inv_index >= p.inventory.size():
 		return
@@ -1281,11 +1404,12 @@ func request_sell(player_id: int, inv_index: int) -> void:
 		stock[item_id] = int(stock.get(item_id, 0)) + 1
 	say(p, "You sell a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
 	p.inventory_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 func request_bank_deposit(player_id: int, inv_index: int) -> void:
+	if _remote(&"request_bank_deposit", [player_id, inv_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or inv_index < 0 or inv_index >= p.inventory.size() or _service_npc(p, "bank") == null:
 		return
@@ -1295,11 +1419,12 @@ func request_bank_deposit(player_id: int, inv_index: int) -> void:
 	p.bank_items.append(p.inventory[inv_index])
 	p.inventory.remove_at(inv_index)
 	p.inventory_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 func request_bank_withdraw(player_id: int, bank_index: int) -> void:
+	if _remote(&"request_bank_withdraw", [player_id, bank_index]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or bank_index < 0 or bank_index >= p.bank_items.size() or _service_npc(p, "bank") == null:
 		return
@@ -1309,12 +1434,13 @@ func request_bank_withdraw(player_id: int, bank_index: int) -> void:
 	p.inventory.append(p.bank_items[bank_index])
 	p.bank_items.remove_at(bank_index)
 	p.inventory_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 ## Moves coin between purse and bank; positive deposits, negative withdraws.
 func request_bank_coin(player_id: int, amount: int) -> void:
+	if _remote(&"request_bank_coin", [player_id, amount]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null or _service_npc(p, "bank") == null:
 		return
@@ -1325,8 +1451,7 @@ func request_bank_coin(player_id: int, amount: int) -> void:
 	p.bank_coin += moved
 	say(p, "You %s %s." % ["deposit" if moved > 0 else "withdraw", format_coin(absi(moved))], C_LOOT)
 	p.inventory_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 # --- guildmasters -----------------------------------------------------------
@@ -1360,6 +1485,8 @@ func train_block(p: Player, spell_id: String) -> String:
 
 
 func request_train(player_id: int, spell_id: String) -> void:
+	if _remote(&"request_train", [player_id, spell_id]):
+		return
 	var p := get_object(player_id) as Player
 	if p == null:
 		return
@@ -1376,8 +1503,7 @@ func request_train(player_id: int, spell_id: String) -> void:
 	say(p, "%s teaches you %s. (Key %d)" % [npc.display_name, s["name"], p.spells.size()], C_XP)
 	p.inventory_changed.emit()
 	p.stats_changed.emit()
-	if p == local_player:
-		service_changed.emit()
+	_ui(p, &"service_changed")
 
 
 # --- faction ----------------------------------------------------------------

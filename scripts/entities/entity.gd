@@ -42,6 +42,8 @@ var visual: Node3D  # CharacterModel when the entity has a rigged model
 var look: Dictionary = {}  # how to draw this entity; corpses copy it
 var worn_gear: Variant = null  # slots whose gear parts show (mobs); null shows the model as authored
 var nameplate: Label3D
+var net_pos := Vector3.INF  # client: where the server last said this entity is
+var net_rot := 0.0
 
 
 func _init() -> void:
@@ -53,11 +55,14 @@ func _init() -> void:
 func _enter_tree() -> void:
 	if entity_id < 0:
 		entity_id = World.register(self)
+	else:
+		World.objects[entity_id] = self  # a client mirror, under the server's id
 
 
+## Keeps its id, so moving between zones (out of one tree branch, into
+## another) is still the same entity to the server and every client.
 func _exit_tree() -> void:
 	World.unregister(entity_id)
-	entity_id = -1
 
 
 func valid_target_entity() -> Entity:
@@ -100,8 +105,39 @@ func apply_gravity(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 
 
+## Client: glides toward the server's latest position for this entity, and
+## sets velocity from the motion so the walk and run animations follow.
+func puppet(delta: float) -> void:
+	if net_pos == Vector3.INF:
+		return
+	var before := global_position
+	if global_position.distance_to(net_pos) > 12.0:
+		global_position = net_pos
+	else:
+		global_position = global_position.lerp(net_pos, minf(1.0, delta * 10.0))
+	rotation.y = lerp_angle(rotation.y, net_rot, minf(1.0, delta * 10.0))
+	velocity = (global_position - before) / maxf(delta, 0.001)
+	velocity.y = 0.0
+
+
+## Client: dead, sitting and casting as the server reports them.
+func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool) -> void:
+	sitting = is_sitting
+	if is_casting and cast.is_empty():
+		cast = {"spell": "", "time": 0.0, "total": 1.0}
+	elif not is_casting:
+		cast = {}
+	if is_dead != dead:
+		dead = is_dead
+		if visual != null:
+			visual.visible = not dead
+		if nameplate != null:
+			nameplate.visible = not dead
+
+
 ## Visual events from the rules ("attack", "hit", "spawn"). No-op for primitive art.
 func animate(event: String) -> void:
+	Net.broadcast_anim(self, event)
 	if not (visual is CharacterModel):
 		return
 	var m := visual as CharacterModel

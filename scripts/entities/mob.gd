@@ -74,6 +74,26 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 	wander_radius = sp.wander_radius if sp != null else 0.0
 
 
+## Client: a mirror of a mob the server spawned. Nothing is rolled here; the
+## body is drawn exactly as the server describes it.
+func setup_remote(info: Dictionary) -> void:
+	mob_id = str(info["mob_id"])
+	data = GameData.mobs.get(mob_id, {})
+	entity_id = int(info["id"])
+	display_name = str(info["name"])
+	level = int(info["level"])
+	faction = str(data.get("faction", ""))
+	max_hp = int(info["max_hp"])
+	hp = int(info["hp"])
+	shape = str(data.get("shape", "humanoid"))
+	color = Color.html(str(data.get("color", "#ffffff")))
+	body_scale = float(data.get("scale", 1.0))
+	look = info["look"]
+	model_id = str(look.get("model", ""))
+	weapon_id = str(look.get("weapon", ""))
+	worn_gear = look.get("gear")
+
+
 ## A body variant that can show everything this mob is wearing, if any can.
 func _pick_model(choices: Array) -> String:
 	var parts_of := func(id: Variant) -> Dictionary:
@@ -92,7 +112,14 @@ func _pick_model(choices: Array) -> String:
 
 
 func _ready() -> void:
+	var mirrored := look.duplicate()
 	build_body(shape, color, body_scale, model_id, weapon_id)
+	if not Net.is_authority():
+		look = mirrored
+		if visual is CharacterModel:
+			(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
+		nameplate.text = display_name
+		return
 	if gear.has("secondary") and visual is CharacterModel:
 		var shield := str(GameData.item(gear["secondary"]).get("model", ""))
 		look["offhand"] = shield
@@ -136,6 +163,9 @@ func top_hated() -> Entity:
 
 
 func _physics_process(delta: float) -> void:
+	if not Net.is_authority():
+		puppet(delta)
+		return
 	apply_gravity(delta)
 	if dead:
 		return

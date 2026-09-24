@@ -26,14 +26,40 @@ A classic-EverQuest-style RPG in Godot 4.7: slow, dangerous, group-oriented. Thi
 
 Your character saves to Godot's `user://character.json` (per machine, not in git). `CLAUDE.md` has the architecture rules.
 
+## Playing together
+
+One machine runs the **server**, which holds the world and all the rules; everyone else plays a normal copy of the game and types the server's address into the **Server** box on the title screen (leave it blank to play offline).
+
+**Running the server** (Linux or macOS, no screen needed):
+
+```sh
+git pull
+tools/server/run_server.sh                 # GODOT=/path/to/godot PORT=7777 to override
+```
+
+- It listens on **UDP port 7777**. Open that port in the server's firewall and, if it's behind a router, forward it.
+- `tools/server/emberfall.service` is a systemd unit that keeps it running and restarts it on failure.
+- Players must run the same version as the server; after pulling on the server, restart it and have everyone pull too. An older client is turned away with a message.
+- Options: `--port=7777`, `--zone=greenmoor` (the zone it starts in; default is the starting city).
+
+**What works so far** (multiplayer phase 1): everyone sees each other, fights the same mobs, loots, trades with NPCs, shops, banks, trains and camps. For now:
+- The whole server shares one zone: when anyone walks through a zone line, everyone goes with them.
+- Characters still live on each player's own machine; the server plays the copy you bring and sends saves back.
+- No chat or grouping yet. Those are the next phases.
+
+For testing on one machine: run the server, then `godot --path . -- --nettest=Alpha --port=7777` and `--nettest=Bravo` in two more terminals (`--dev-loot` on the server makes every mob drop everything).
+
 ## Controls
 
 | | |
 |---|---|
 | W/S, A/D | Forward/back, strafe (arrow keys turn) |
+| Shift | Hold while moving forward to run; drains stamina (the green bar), which refills once you ease off |
 | Mouse / wheel | Look / zoom (zoom all the way in for first person) |
 | Alt | Hold for the mouse cursor; it also returns while any window is open |
 | Right-click, Tab, F1 | Target what's under the crosshair, nearest enemy, self |
+| T | Cycle townsfolk and corpses (Tab only walks the living mobs) |
+| O | Settings. Turning **Mouse controls** off keeps the cursor out and puts turning back on A/D, so the game plays without a mouse |
 | Left-click | Start attacking your target (the ring on the crosshair fills as the next swing comes up) |
 | Q | Auto attack on / off |
 | 1–8 | Abilities / spells (moving interrupts casting); learn more from your guildmaster |
@@ -59,7 +85,7 @@ Your character saves to Godot's `user://character.json` (per machine, not in git
 
 ```
 data/             all tunable content (JSON): classes, spells, mobs, items, zones, config
-scripts/autoload  GameData (content), Controls (key bindings), World (all game rules)
+scripts/autoload  GameData (content), Controls (key bindings), World (all game rules), Net (server/client)
 scripts/entities  Entity base, Player, Mob, Corpse
 scripts/world     Zone builder (terrain/props from seed), SpawnPoint
 scripts/ui        HUD, title screen, shared UI styling
@@ -70,5 +96,5 @@ scripts/ui        HUD, title screen, shared UI styling
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
 2. Night and darkness, more quest givers, mob pathfinding.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
-4. **Grouping + multiplayer**: headless Godot server that runs `World`; `request_*` calls become RPCs; group XP split, heal and taunt aggro already work.
+4. **Multiplayer**: phase 1 done (dedicated server, shared world). Next: each zone running on its own, characters stored on the server, chat, then EQ grouping.
 5. Persistence server (Postgres), accounts, more classes and zones.
