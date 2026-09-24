@@ -79,7 +79,15 @@ func _run() -> void:
 		for obj: Node3D in World.objects.values():
 			npcs += 1 if obj is Npc else 0
 		print("[Zoner] zone now %s at %s; mirrored %d mobs, %d npcs, %d players" % [World.zone.zone_id, p.global_position, mobs, npcs, World.get_players().size()])
-		await _shot("net_zoner_emberhold")
+		if "--round-trip" in OS.get_cmdline_user_args():
+			await _wait(4.0)
+			await _walk_to(p, Vector3(0, 0, -99))  # Emberhold's gate back out to Greenmoor
+			for k in 40:
+				if World.zone != null and World.zone.zone_id == "greenmoor":
+					break
+				await _wait(0.25)
+			await _wait(3.0)
+			print("[Zoner] back in %s; mirrored %d mobs, %d players" % [World.zone.zone_id, World.get_mobs().size(), World.get_players().size()])
 	elif who == "Alpha":
 		# walk a few steps; Bravo should see it
 		for k in 20:
@@ -126,6 +134,10 @@ func _run() -> void:
 			if q != p:
 				alpha = q
 		print("[Bravo] sees Alpha: %s at %s" % [alpha != null, alpha.global_position if alpha != null else "-"])
+		if "--stay" in OS.get_cmdline_user_args():
+			for k in 16:
+				await _wait(2.5)
+				print("[Bravo] t=%ds zone %s, players seen %d, mobs %d" % [(k + 1) * 5 / 2, World.zone.zone_id, World.get_players().size(), World.get_mobs().size()])
 		if "--wait-zone" in OS.get_cmdline_user_args():
 			for k in 120:
 				if World.zone != null and World.zone.zone_id == "emberhold":

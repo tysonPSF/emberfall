@@ -42,8 +42,7 @@ tools/server/run_server.sh                 # GODOT=/path/to/godot PORT=7777 to o
 - Players must run the same version as the server; after pulling on the server, restart it and have everyone pull too. An older client is turned away with a message.
 - Options: `--port=7777`, `--zone=greenmoor` (the zone it starts in; default is the starting city).
 
-**What works so far** (multiplayer phase 1): everyone sees each other, fights the same mobs, loots, trades with NPCs, shops, banks, trains and camps. For now:
-- The whole server shares one zone: when anyone walks through a zone line, everyone goes with them.
+**What works so far** (multiplayer phases 1 and 2): everyone sees each other, fights the same mobs, loots, trades with NPCs, shops, banks, trains and camps, and each zone runs on its own, so players can be in different zones at once. For now:
 - Characters still live on each player's own machine; the server plays the copy you bring and sends saves back.
 - No chat or grouping yet. Those are the next phases.
 
@@ -96,5 +95,5 @@ scripts/ui        HUD, title screen, shared UI styling
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
 2. Night and darkness, more quest givers, mob pathfinding.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
-4. **Multiplayer**: phase 1 done (dedicated server, shared world). Next: each zone running on its own, characters stored on the server, chat, then EQ grouping.
+4. **Multiplayer**: phases 1-2 done (dedicated server, zones running side by side). Next: characters stored on the server, chat, then EQ grouping.
 5. Persistence server (Postgres), accounts, more classes and zones.

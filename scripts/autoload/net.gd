@@ -146,7 +146,7 @@ func _c_join(save: Dictionary, protocol: int) -> void:
 	_known[peer] = {p.entity_id: true}  # the client builds its own player
 	_teleport_seq[p.entity_id] = 0
 	_last_move[p.entity_id] = Time.get_ticks_msec()
-	_s_welcome.rpc_id(peer, p.entity_id, World.zone.zone_id, p.global_position, p.rotation.y)
+	_s_welcome.rpc_id(peer, p.entity_id, World.zone_of(p).zone_id, p.global_position, p.rotation.y)
 	_send_self(peer)
 	print("%s joined (peer %d)" % [p.display_name, peer])
 
@@ -416,6 +416,7 @@ func _serve(delta: float) -> void:
 ## position and health of whatever changed (everything, once a second).
 func _replicate(peer: int) -> void:
 	var own := int(_peer_player[peer])
+	var own_zone := World.zone_of(World.get_object(own))
 	var known: Dictionary = _known[peer]
 	var sent: Dictionary = _sent.get_or_add(peer, {})
 	var seen := {}
@@ -423,8 +424,8 @@ func _replicate(peer: int) -> void:
 	var states := PackedFloat32Array()
 	for id: int in World.objects:
 		var obj := World.get_object(id)
-		if obj == null or not obj.is_inside_tree() or not (obj is Entity or obj is Corpse):
-			continue
+		if obj == null or not obj.is_inside_tree() or not (obj is Entity or obj is Corpse) or World.zone_of(obj) != own_zone:
+			continue  # only what's in this player's zone
 		seen[id] = true
 		if not known.has(id):
 			known[id] = true

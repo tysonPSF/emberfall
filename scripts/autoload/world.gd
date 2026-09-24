@@ -110,6 +110,14 @@ func get_mobs() -> Array[Mob]:
 	return out
 
 
+## The zone a node is in. A server runs several at once, each in its own
+## physics world, so "where" always means "in which zone" first.
+func zone_of(n: Node) -> Zone:
+	while n != null and not (n is Zone):
+		n = n.get_parent()
+	return n as Zone
+
+
 func cfg(key: String, default: Variant = null) -> Variant:
 	return GameData.config.get(key, default)
 
@@ -153,7 +161,7 @@ func _remote(method: StringName, args: Array) -> bool:
 ## Says something out loud: every player within earshot sees it.
 func shout(from: Node3D, text: String, color: Color = C_NPC, radius := 60.0) -> void:
 	for p in get_players():
-		if p.global_position.distance_to(from.global_position) <= radius:
+		if p.distance_to(from) <= radius:
 			say(p, text, color)
 
 
@@ -429,7 +437,7 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	corpse.setup(mob.display_name, mob.look, entries, coin, decay)
 	corpse.position = mob.global_position
 	corpse.rotation.y = mob.rotation.y
-	zone.add_child(corpse)
+	zone_of(mob).add_child(corpse)
 
 	for p in get_players():
 		if p.target == mob:
@@ -459,7 +467,7 @@ func _kill_player(p: Player, killer: Entity) -> void:
 		corpse.setup(p.display_name, p.look, entries, p.coin,
 				float(cfg("player_corpse_decay_seconds", 3600)), p.display_name)
 		corpse.position = p.global_position
-		zone.add_child(corpse)
+		zone_of(p).add_child(corpse)
 		p.equipment.clear()
 		p.inventory.clear()
 		p.coin = 0
@@ -711,7 +719,7 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		"gate":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
-			c.global_position = zone.bind_point + Vector3.UP
+			c.global_position = zone_of(c).bind_point + Vector3.UP
 			c.velocity = Vector3.ZERO
 			if c is Player:
 				Net.teleport(c as Player, c.global_position)
@@ -744,7 +752,7 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 func call_for_help(caller: Mob, enemy: Entity) -> void:
 	for m in get_mobs():
 		if m != caller and not m.dead and m.faction == caller.faction and m.hate.is_empty() \
-				and m.global_position.distance_to(caller.global_position) <= CALL_FOR_HELP_RADIUS:
+				and m.distance_to(caller) <= CALL_FOR_HELP_RADIUS:
 			m.add_hate(enemy, 1.0)
 
 
@@ -757,7 +765,7 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or p.dead:
 		return
-	if p.global_position.distance_to(c.global_position) > LOOT_RANGE:
+	if p.distance_to(c) > LOOT_RANGE:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return
 	request_trade_cancel(player_id)
@@ -783,7 +791,7 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	var c := get_object(corpse_id) as Corpse
 	if p == null or c == null or index < 0 or index >= c.entries.size():
 		return false
-	if p.global_position.distance_to(c.global_position) > LOOT_RANGE:
+	if p.distance_to(c) > LOOT_RANGE:
 		say(p, "You are too far away to loot that corpse.", C_WARN)
 		return false
 	var entry: Dictionary = c.entries[index]
@@ -1215,9 +1223,10 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 	if _remote(&"request_zone_line", [player_id, line_index]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.dead or zone == null or zone.zone_line_at(p.global_position) != line_index:
+	var z := zone_of(p)
+	if p == null or p.dead or z == null or z.zone_line_at(p.global_position) != line_index:
 		return
-	var zl: Dictionary = zone.data["zone_lines"][line_index]
+	var zl: Dictionary = z.data["zone_lines"][line_index]
 	request_trade_cancel(player_id)
 	request_service_close(player_id)
 	request_loot_close(player_id)

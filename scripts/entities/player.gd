@@ -287,7 +287,7 @@ func respawn() -> void:
 	hp = max_hp
 	mana = max_mana
 	stamina = float(max_stamina)
-	global_position = World.zone.bind_point + Vector3.UP
+	global_position = World.zone_of(self).bind_point + Vector3.UP
 	velocity = Vector3.ZERO
 	Net.teleport(self, global_position)
 	visual.visible = zoom > 0.6 or not is_local
@@ -570,5 +570,5 @@ func _physics_process(delta: float) -> void:
 		velocity.y = JUMP_VELOCITY
 	move_and_slide()
 	if global_position.y < -60.0:
-		global_position = World.zone.bind_point + Vector3.UP
+		global_position = World.zone_of(self).bind_point + Vector3.UP
 		velocity = Vector3.ZERO
