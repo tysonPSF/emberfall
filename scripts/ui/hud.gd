@@ -14,7 +14,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D turn (strafe whi
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
-H to hide this."""
+H or the gear button to hide this."""
 
 var player: Player
 var root: Control
@@ -501,9 +501,37 @@ func _build_inventory() -> void:
 	_inv_panel.visible = false
 
 
+## Controls sheet, hidden until the gear button in the top-right corner (or H) opens it.
 func _build_help() -> void:
+	var gear_button := UIKit.button("", Vector2(36, 36))
+	gear_button.tooltip_text = "Controls (H)"
+	for state in ["normal", "hover", "pressed"]:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.05, 0.05, 0.07, 0.82) if state == "normal" else Color(0.14, 0.12, 0.1, 0.9)
+		sb.border_color = Color(0.55, 0.45, 0.25, 0.9)
+		sb.set_border_width_all(1)
+		sb.set_corner_radius_all(4)
+		gear_button.add_theme_stylebox_override(state, sb)
+	UIKit.place(gear_button, Vector2(1, 0), Vector2(-12, 12))
+	var gear := Control.new()
+	gear.set_anchors_preset(Control.PRESET_FULL_RECT)
+	gear.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gear.draw.connect(func() -> void:
+		var c := gear.size * 0.5
+		for k in 8:
+			var dir := Vector2.from_angle(k * TAU / 8.0)
+			var side := dir.orthogonal()
+			gear.draw_colored_polygon(PackedVector2Array([c + dir * 6.0 - side * 2.8, c + dir * 12.0 - side * 2.0,
+					c + dir * 12.0 + side * 2.0, c + dir * 6.0 + side * 2.8]), UIKit.GOLD)
+		gear.draw_circle(c, 8.5, UIKit.GOLD)
+		gear.draw_circle(c, 3.5, Color(0.05, 0.05, 0.07)))
+	gear_button.add_child(gear)
+	gear_button.pressed.connect(func() -> void: _show_help(not _help_panel.visible))
+	root.add_child(gear_button)
+
 	_help_panel = UIKit.panel()
-	UIKit.place(_help_panel, Vector2(1, 0), Vector2(-12, 12))
+	UIKit.place(_help_panel, Vector2(1, 0), Vector2(-12, 56))
+	_help_panel.visible = false
 	root.add_child(_help_panel)
 	var t := RichTextLabel.new()
 	t.bbcode_enabled = true
@@ -535,9 +563,15 @@ func _build_menu() -> void:
 	var controls := UIKit.button("Controls", Vector2(0, 38))
 	controls.pressed.connect(func() -> void:
 		_menu_panel.visible = false
-		_help_panel.visible = true
-		_inv_panel.visible = false)
+		_show_help(true))
 	v.add_child(controls)
+	var reloader := get_tree().get_first_node_in_group("reloader")
+	if reloader != null:  # dev builds only
+		var reload := UIKit.button("Reload game  (F5)", Vector2(0, 38))
+		reload.pressed.connect(func() -> void:
+			_menu_panel.visible = false
+			reloader.reload())
+		v.add_child(reload)
 	var resume := UIKit.button("Back to the game", Vector2(0, 38))
 	resume.pressed.connect(func() -> void: _menu_panel.visible = false)
 	v.add_child(resume)
@@ -727,6 +761,12 @@ func _on_player_died(p: Player) -> void:
 		World.request_loot_close(player.entity_id)
 
 
+func _show_help(on: bool) -> void:
+	_help_panel.visible = on
+	if on:
+		_inv_panel.visible = false  # they share the right side of the screen
+
+
 func _toggle_inventory() -> void:
 	_inv_panel.visible = not _inv_panel.visible
 	if _inv_panel.visible:
@@ -823,7 +863,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("help"):
-		_help_panel.visible = not _help_panel.visible
+		_show_help(not _help_panel.visible)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
 		if _service_panel.visible:

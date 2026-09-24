@@ -17,6 +17,7 @@ const BINDINGS := {
 	"trade": [KEY_G],
 	"inventory": [KEY_I],
 	"help": [KEY_H],
+	"reload": [KEY_F5],
 	"cancel": [KEY_ESCAPE],
 	"hotbar_1": [KEY_1],
 	"hotbar_2": [KEY_2],

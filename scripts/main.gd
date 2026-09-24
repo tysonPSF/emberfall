@@ -23,12 +23,21 @@ func _ready() -> void:
 	var autotest := "--autotest" in OS.get_cmdline_user_args()
 	if autotest:
 		save_path = AUTOTEST_SAVE_PATH
+	if not autotest and not OS.has_feature("template"):
+		var reloader: Node = load("res://scripts/dev/reloader.gd").new()
+		reloader.save_game = func() -> bool:
+			_save()
+			return player != null
+		add_child(reloader)
+	var save := {} if autotest else _load_save()
 	var title := CharCreate.new()
-	title.setup({} if autotest else _load_save())
+	title.setup(save)
 	title.confirmed.connect(_start_game.bind(title))
 	add_child(title)
 	if autotest:
 		add_child(load("res://scripts/dev/autotest.gd").new())
+	elif "--resume" in OS.get_cmdline_user_args() and not save.is_empty():
+		_start_game(save, title)  # reloaded after an update: straight back in
 
 
 func _start_game(save: Dictionary, title: CharCreate) -> void:
@@ -53,7 +62,7 @@ func _start_game(save: Dictionary, title: CharCreate) -> void:
 	marker.player = player
 	add_child(marker)
 	hud.show_banner("Entering %s" % zone.zone_name)
-	World.say(player, "Welcome to %s, %s. Press H for controls." % [zone.zone_name, player.display_name])
+	World.say(player, "Welcome to %s, %s. Click the gear (top right) or press H for controls." % [zone.zone_name, player.display_name])
 	if not World.zone_change.is_connected(_on_zone_change):
 		World.zone_change.connect(_on_zone_change)
 		World.camped.connect(_on_camped)
