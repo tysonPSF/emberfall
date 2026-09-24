@@ -26,6 +26,8 @@ const SECTIONS := [
 	["screens", "greenmoor"],
 	["chat", "greenmoor"],
 	["groupui", "greenmoor"],
+	["wornlook", "greenmoor"],
+	["itemwindow", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -708,6 +710,86 @@ func _t_groupui() -> void:
 	await _shot("9e_group")
 	main.hud._on_group_invited("")
 	p.group = []
+
+
+## Headgear shows on the character: each head piece in turn, then bare.
+func _t_wornlook() -> void:
+	var p := World.local_player
+	var kit := p.equipment.duplicate()
+	p.camera_pivot.rotation.y = PI  # face the camera
+	p.zoom = 2.6
+	p.pitch = -0.1
+	for item: String in ["cloth_cap", "leather_cap@fine", "floppy_hat", "bone_helm", "iron_coif", ""]:
+		if item == "":
+			p.equipment.erase("head")
+		else:
+			p.equipment["head"] = item
+		p.recalc_stats()
+		await _wait(0.4)
+		print("wornlook: %s -> look.worn %s" % [item if item != "" else "(bare)", p.look.get("worn")])
+		await _shot("9f_worn_%s" % (item.get_slice("@", 0) if item != "" else "bare"))
+	# whole outfits, front and back
+	var outfits := {
+		"cloth": {"head": "cloth_cap", "hands": "cloth_gloves", "arms": "cloth_sleeves", "feet": "worn_sandals", "legs": "patchwork_pants", "chest": "patchwork_tunic", "waist": "rope_belt"},
+		"leather": {"head": "leather_cap", "hands": "leather_gloves", "arms": "leather_sleeves", "feet": "leather_boots", "legs": "leather_leggings", "chest": "studded_tunic", "waist": "leather_belt", "secondary": "round_shield"},
+		"iron": {"head": "iron_coif", "hands": "iron_gauntlets", "feet": "iron_boots", "legs": "iron_greaves", "chest": "mangy_hide_vest", "secondary": "iron_kite_shield"},
+	}
+	p.zoom = 7.5
+	p.pitch = -0.3
+	for outfit: String in outfits:
+		p.equipment = {"primary": "rusty_dagger"}
+		p.equipment.merge(outfits[outfit])
+		p.recalc_stats()
+		for view: Array in [["front", PI], ["back", 0.6]]:
+			p.camera_pivot.rotation.y = view[1]
+			await _wait(0.4)
+			await _shot("9g_outfit_%s_%s" % [outfit, view[0]])
+		print("wornlook: %s outfit -> %s" % [outfit, p.look.get("worn")])
+	p.equipment = kit
+	p.recalc_stats()
+	p.camera_pivot.rotation.y = 0.0
+
+
+## The item window: several kinds of item, right-click from the bags, and a
+## linked item in chat that opens the window again when clicked.
+func _t_itemwindow() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	p.equipment["neck"] = "bonecarved_talisman"
+	p.recalc_stats()
+	for id: String in ["cloth_cap", "studded_tunic", "iron_short_sword@fine", "round_shield", "gnoll_fang", "bonecarved_talisman"]:
+		hud.show_item(id)
+		await _wait(0.5)
+		print("itemwindow: %s title=%s preview=%s use=%s" % [id, hud._item_title.text, hud._item_view_box.visible, hud._item_use.visible])
+		await _shot("9h_item_%s" % id.replace("@", "_"))
+	p.equipment.erase("neck")
+	p.recalc_stats()
+	hud._item_panel.visible = false
+	p.inventory.append("leather_boots@superior")
+	p.inventory_changed.emit()
+	hud._toggle_inventory()
+	await _wait(0.3)
+	var right := InputEventMouseButton.new()
+	right.button_index = MOUSE_BUTTON_RIGHT
+	right.pressed = true
+	for b in hud._bag_grid.get_children():
+		if (b as Button).text.begins_with("Superior Leather Boots"):
+			b.gui_input.emit(right)
+	await _wait(0.4)
+	print("itemwindow: right-click in bags opened %s" % hud._item_title.text)
+	hud._item_link.pressed.emit()
+	var typed: String = hud._chat.text
+	hud._chat.text_submitted.emit(typed)
+	await _wait(0.3)
+	hud._item_panel.visible = false
+	hud._toggle_inventory()
+	hud._on_log_keyword("item:leather_boots@superior")
+	await _wait(0.4)
+	print("itemwindow: chat line %s; clicking the link opened %s" % [typed, hud._item_title.text])
+	await _shot("9h_item_link")
+	hud._item_panel.visible = false
+	p.inventory.erase("leather_boots@superior")
 
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:

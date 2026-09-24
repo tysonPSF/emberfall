@@ -94,6 +94,21 @@ func setup_remote(info: Dictionary) -> void:
 	worn_gear = look.get("gear")
 
 
+## Shows gear it spawned with on its body, for the slots its model can wear
+## ("wearable_slots" in models.json: a gnoll's head is its own, say).
+func _wear_gear() -> void:
+	var spec: Variant = GameData.models["characters"].get(model_id, "")
+	var slots: Array = spec.get("wearable_slots", []) if spec is Dictionary else []
+	var worn := {}
+	for slot: String in gear:
+		var wear := str(GameData.item(gear[slot]).get("wear", ""))
+		if wear != "" and slot in slots:
+			worn[slot] = wear
+	if not worn.is_empty() and visual is CharacterModel:
+		look["worn"] = worn
+		(visual as CharacterModel).set_worn(worn)
+
+
 ## A body variant that can show everything this mob is wearing, if any can.
 func _pick_model(choices: Array) -> String:
 	var parts_of := func(id: Variant) -> Dictionary:
@@ -118,8 +133,10 @@ func _ready() -> void:
 		look = mirrored
 		if visual is CharacterModel:
 			(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
+			(visual as CharacterModel).set_worn(look.get("worn", {}))
 		nameplate.text = display_name
 		return
+	_wear_gear()
 	if gear.has("secondary") and visual is CharacterModel:
 		var shield := str(GameData.item(gear["secondary"]).get("model", ""))
 		look["offhand"] = shield

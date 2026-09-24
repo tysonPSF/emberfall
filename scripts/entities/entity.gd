@@ -189,6 +189,8 @@ static func make_visual(look_: Dictionary) -> Node3D:
 		var m := CharacterModel.new()
 		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale, look_.get("gear"))
 		m.set_offhand(str(look_.get("offhand", "")))
+		if look_.has("worn"):
+			m.set_worn(look_["worn"])
 		use_entity_layer(m)
 		return m
 	var shape := str(look_.get("shape", "humanoid"))

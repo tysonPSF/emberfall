@@ -186,9 +186,10 @@ func apply_self(d: Dictionary) -> void:
 	if t != target:
 		target = t
 	var lk: Dictionary = d["look"]
-	if visual is CharacterModel and (lk.get("weapon") != look.get("weapon") or lk.get("offhand") != look.get("offhand")):
+	if visual is CharacterModel and (lk.get("weapon") != look.get("weapon") or lk.get("offhand") != look.get("offhand") or lk.get("worn") != look.get("worn")):
 		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
+		(visual as CharacterModel).set_worn(lk.get("worn", {}))
 	look = lk
 	if bags_before != [inventory, equipment, coin, bank_items, bank_coin, trade_items]:
 		inventory_changed.emit()
@@ -294,9 +295,12 @@ func recalc_stats() -> void:
 	max_stamina += int(max_stamina * GameData.deity_bonus(deity, "stamina_pct") / 100.0)
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
-	if visual is CharacterModel and (look.get("weapon") != weapon_model or look.get("offhand") != offhand_model):
+	var worn := worn_gear_models()
+	if visual is CharacterModel and (look.get("weapon") != weapon_model or look.get("offhand") != offhand_model or look.get("worn") != worn):
 		look["weapon"] = weapon_model
 		look["offhand"] = offhand_model
+		look["worn"] = worn
+		(visual as CharacterModel).set_worn(worn)
 		Net.broadcast_look(self)
 	stamina = minf(stamina, float(max_stamina))
 	if visual is CharacterModel:
@@ -305,6 +309,16 @@ func recalc_stats() -> void:
 		look["weapon"] = weapon_model
 		look["offhand"] = offhand_model
 	stats_changed.emit()
+
+
+## {slot: gear model} for everything equipped that shows on the body.
+func worn_gear_models() -> Dictionary:
+	var out := {}
+	for slot: String in equipment:
+		var wear := str(GameData.item(equipment[slot]).get("wear", ""))
+		if wear != "":
+			out[slot] = wear
+	return out
 
 
 func xp_to_next() -> int:
@@ -362,6 +376,12 @@ func _ready() -> void:
 	if not mirrored.is_empty() and visual is CharacterModel:
 		look = mirrored
 		(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
+	if visual is CharacterModel:
+		if mirrored.is_empty():
+			look["worn"] = worn_gear_models()
+			look["offhand"] = str(GameData.item(equipment.get("secondary", "")).get("model", ""))
+			(visual as CharacterModel).set_offhand(look["offhand"])
+		(visual as CharacterModel).set_worn(look.get("worn", {}))
 	nameplate.text = display_name
 	nameplate.modulate = Color(0.7, 0.85, 1.0)
 	if not is_local:
