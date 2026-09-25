@@ -364,10 +364,19 @@ func xp_to_next() -> int:
 	return int(float(World.cfg("xp_per_level_sq", 100)) * level * level)
 
 
+## Blessing of the Elders: every character is born with it and keeps it until
+## config "elders_blessing.until_level"; it adds xp_pct to all experience.
+func elders_blessing() -> bool:
+	var b: Dictionary = World.cfg("elders_blessing", {})
+	return not b.is_empty() and level < int(b.get("until_level", 10))
+
+
 func add_xp(amount: int, party := false) -> void:
 	var max_level := int(World.cfg("max_level", 10))
 	if level >= max_level:
 		return
+	if elders_blessing():
+		amount = int(round(amount * (1.0 + float(World.cfg("elders_blessing", {}).get("xp_pct", 15)) / 100.0)))
 	xp += amount
 	World.say(self, "You gain party experience!!" if party else "You gain experience!!", World.C_XP)
 	while level < max_level and xp >= xp_to_next():
@@ -375,6 +384,8 @@ func add_xp(amount: int, party := false) -> void:
 		level += 1
 		recalc_stats()
 		World.say(self, "You have gained a level! Welcome to level %d!" % level, World.C_XP)
+		if level == int(World.cfg("elders_blessing", {}).get("until_level", 10)):
+			World.say(self, "The Blessing of the Elders fades from you. The elders have seen you grown; the rest of the road is yours.", World.C_SPELL)
 		for entry: Dictionary in World.class_spells(char_class):
 			if entry["level"] == level:
 				World.say(self, "Your guildmaster in Emberhold can now teach you %s." % GameData.spells[entry["spell"]]["name"], World.C_XP)

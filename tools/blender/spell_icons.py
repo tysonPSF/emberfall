@@ -251,6 +251,17 @@ def hearthbond():
 	return p.build()
 
 
+def blessing_of_the_elders():
+	p = Prop("blessing_of_the_elders", 351)
+	for s in (-1, 1):                               # a pair of tusks curving up, like the elephant gods'
+		pts = [(s * 0.35, 0, 0.05), (s * 0.42, 0, 0.4), (s * 0.36, 0, 0.72), (s * 0.18, 0, 0.98)]
+		for i, (a, b) in enumerate(zip(pts, pts[1:])):
+			p.seg(a, b, 0.14 - i * 0.035, 0.1 - i * 0.03, GOLD, sides=8, glow=0.8)
+	p.blob((0.34, 0.34, 0.34), (0, 0, 0.5), FLAME, segs=(10, 8), glow=2.5)   # the light between them
+	_ring(p, 0.62, 0.45, 0.03, GOLD, glow=1.2, sides=20, tilt=math.pi / 2)
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -298,7 +309,7 @@ def action_skills():
 
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
-								  gate, root, minor_shielding, courage, hearthward, hearthbond]}
+								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

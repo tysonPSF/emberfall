@@ -28,6 +28,7 @@ const SECTIONS := [
 	["groupui", "greenmoor"],
 	["groupchat", "greenmoor"],
 	["bowdrops", "greenmoor"],
+	["blessing", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1688,6 +1689,50 @@ func _t_bowdrops() -> void:
 	World.request_loot_open(p.entity_id, body.object_id)
 	World.request_loot_all(p.entity_id, body.object_id)
 	print("bowdrops: looted -> bow %d, arrows %d" % [p.pack.count("hunting_shortbow@fine"), p.pack.count("crude_arrow")])
+
+
+## Blessing of the Elders: +15% experience below level 10, fading on reaching
+## it; the buff window lists it with a timed buff, and moves aside for the
+## inventory window.
+func _t_blessing() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	var keep := [p.level, p.xp]
+	p.level = 3
+	p.xp = 0
+	p.add_xp(100)
+	print("blessing: level 3 gains 100 -> %d xp (blessed %s)" % [p.xp, p.elders_blessing()])
+	p.spells.append("minor_shielding")
+	p.buffs["minor_shielding"] = {"left": 1500.0, "stats": GameData.spells["minor_shielding"].get("stats", {})}
+	p.buffs["courage"] = {"left": 42.0, "stats": GameData.spells["courage"].get("stats", {})}
+	await _wait(0.4)
+	var shown := hud._buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell")).map(func(c: Node) -> String:
+		return "%s (%s)" % [c.get_meta("spell"), (c.find_child("left", true, false) as Label).text])
+	print("blessing: buff window shows %s at %s" % [shown, hud._buff_panel.position])
+	await _shot("9y_buffs")
+	hud._toggle_inventory()
+	await _wait(0.3)
+	print("blessing: inventory open -> buff window right edge %.0f, inventory left edge %.0f" % [hud._buff_panel.position.x + hud._buff_panel.size.x, hud._inv_panel.position.x])
+	await _shot("9y_buffs_inventory")
+	hud._toggle_inventory()
+	p.level = 9
+	p.xp = 0
+	p.add_xp(p.xp_to_next() + 10)
+	await _wait(0.3)
+	var left := hud._buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell")).map(func(c: Node) -> String: return str(c.get_meta("spell")))
+	print("blessing: reached level %d -> blessed %s; buffs shown %s" % [p.level, p.elders_blessing(), left])
+	p.xp = 0
+	p.add_xp(100)
+	print("blessing: level 10 gains 100 -> %d xp (no blessing now; the cap is %d)" % [p.xp, int(World.cfg("max_level", 10))])
+	p.level = 14
+	p.xp = 0
+	p.add_xp(p.xp_to_next() * 3)
+	print("blessing: a level 14 with plenty of experience stops at level %d" % p.level)
+	p.buffs.clear()
+	p.level = keep[0]
+	p.xp = keep[1]
+	p.recalc_stats()
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.
