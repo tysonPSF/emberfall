@@ -32,6 +32,8 @@ const SECTIONS := [
 	["spells_1115", "greenmoor"],
 	["fx", "greenmoor"],
 	["holt", "greenmoor"],
+	["signface", "greenmoor"],
+	["vale_patrol", "thornwood"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1567,6 +1569,8 @@ func _t_signs() -> void:
 			var labels := post.find_children("*", "Label3D", false, false)
 			if labels.is_empty():
 				continue
+			if labels.size() > 2:
+				labels = labels.slice(0, labels.size(), 2)  # both faces of a board say the same thing
 			var out := PackedStringArray()
 			for l: Label3D in labels:
 				var dir := (post.global_transform * l.position - post.global_position)
@@ -1883,6 +1887,56 @@ func _t_holt() -> void:
 	print("holt: pup dead %s; rat still alive %s; Holt back at his post %s (%.1f m off)" % [not is_instance_valid(pup) or pup.dead, is_instance_valid(rat) and not rat.dead, holt.global_position.distance_to(post) < 1.5, holt.global_position.distance_to(post)])
 	if is_instance_valid(rat):
 		rat.set_physics_process(true)
+
+
+## The signpost by the Emberhold pass, from the road on each side.
+func _t_signface() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for side: Array in [[Vector2(-1.5, 161.5), "south"], [Vector2(-1.5, 150.5), "north"]]:
+		p.global_position = main.zone.ground(side[0].x, side[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(4.5, 156.0))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 0.0  # first person: nothing between the eye and the sign
+		p.pitch = 0.12
+		await _wait(0.5)
+		await _shot("9za_sign_from_%s" % side[1])
+
+
+## Sergeant Harlan walks Thornwood's south road over the bridge to the
+## crossroads and back; a wolf chasing the tester near him gets cut down.
+func _t_vale_patrol() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var harlan: Npc = _npcs()["vale_patrol"]
+	var lowest_on_bridge := INF
+	var reached := 0.0
+	for k in 110:  # most of a leg, watching him cross the bridge
+		await _wait(0.5)
+		var at := harlan.global_position
+		reached = minf(reached, at.z) if reached != 0.0 else at.z
+		if absf(at.z - 106.0) < 6.0:
+			lowest_on_bridge = minf(lowest_on_bridge, at.y)
+	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
+	print("vale_patrol: Harlan (level %d) walked from z 212 to z %.0f; on the bridge his lowest was %.2f (water %.2f)" % [harlan.level, reached, lowest_on_bridge, level])
+	for k in 60:  # off the bridge (its railings would keep him from a wolf in the river)
+		if harlan.global_position.z < 88.0:
+			break
+		await _wait(0.5)
+	var wolf := _nearest_mob(harlan, "timber_wolf")
+	var g: Vector3 = main.zone.ground(harlan.global_position.x + 6.0, harlan.global_position.z)
+	p.global_position = g + Vector3.UP
+	wolf.global_position = main.zone.ground(harlan.global_position.x + 12.0, harlan.global_position.z - 2.0) + Vector3.UP * 0.5
+	wolf.add_hate(p, 5.0)
+	p.hp = p.max_hp
+	await _wait(3.0)
+	print("vale_patrol: a wolf chasing me near him -> Harlan fighting it %s" % (harlan.target == wolf))
+	for k in 30:
+		await _wait(0.5)
+		p.hp = p.max_hp
+		if not is_instance_valid(wolf) or wolf.dead:
+			break
+	print("vale_patrol: wolf dead %s (hp %s); Harlan hp %d/%d" % [not is_instance_valid(wolf) or wolf.dead, str(wolf.hp) if is_instance_valid(wolf) else "-", harlan.hp, harlan.max_hp])
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

@@ -923,16 +923,18 @@ func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
 	var post := _prop("signpost", p, yaw, 1.0, "none")
 	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
 	for i in mini(labels.size(), boards.size()):
-		var l := Label3D.new()
-		l.text = str(labels[i])
-		l.font_size = 40
-		l.pixel_size = 0.0045
-		l.modulate = Color(0.2, 0.13, 0.08)
-		l.outline_size = 0
-		l.double_sided = false
-		l.position = boards[i][0]
-		l.rotation.y = boards[i][1]
-		post.add_child(l)
+		for face: int in [1, -1]:  # painted on both faces, so it reads from either side of the road
+			var at: Vector3 = boards[i][0]
+			var l := Label3D.new()
+			l.text = str(labels[i])
+			l.font_size = 40
+			l.pixel_size = 0.0045
+			l.modulate = Color(0.2, 0.13, 0.08)
+			l.outline_size = 0
+			l.double_sided = false
+			l.position = Vector3(at.x, at.y, at.z * face)
+			l.rotation.y = float(boards[i][1]) + (0.0 if face == 1 else PI)
+			post.add_child(l)
 
 
 ## Lamp posts every so often along each road, alternating sides, skipping
