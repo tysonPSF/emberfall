@@ -11,6 +11,8 @@ Clips:
   Sit_Floor_Idle  sitting, breathing (loops)
   Kick            a front kick with the right leg: chamber, snap, recover
   Shield_Bash     a lunge driving the left (shield) arm forward
+  Bow_Shoot       bow arm up (the bow is in the left hand), draw to the cheek,
+                  hold, release; the body turns side-on to the target
 
 Poses are built on the first frame of KayKit's Idle_A (so arms, hands and
 head start where the idle has them) plus rotations in each bone's own axes.
@@ -124,6 +126,26 @@ BASH = [
 	(20, {}, (0, 0, 0)),
 ]
 
+# The stance at full draw: the torso turns side-on (a negative spine twist
+# brings the left shoulder toward the target) and the head turns back to look
+# down the arrow. The arm angles were searched for in Blender (hand and elbow
+# positions: bow hand out at shoulder height, draw hand under the chin, elbow
+# high and back), since the arms' local axes don't map to simple swings.
+_DRAW = {"spine": (0, -35, 0), "chest": (0, -15, 0), "head": (0, 45, 0),
+		 "upperarm.l": (80, 0, 0),
+		 "upperarm.r": (140, -60, -40), "lowerarm.r": (120, 0, -140)}
+BOW = [
+	(0, {}, (0, 0, 0)),
+	(7, {"spine": (0, -25, 0), "chest": (0, -10, 0), "head": (0, 32, 0),  # bow up, fingers on the string
+		 "upperarm.l": (75, 0, 0),
+		 "upperarm.r": (-20, 60, 120), "lowerarm.r": (0, 0, -60)}, (0, 0, 0)),
+	(15, _DRAW, (0, 0, 0)),
+	(21, _DRAW, (0, 0, 0)),
+	(23, dict(_DRAW, **{"upperarm.r": (110, -90, -40), "lowerarm.r": (80, 0, -180)}), (0, 0, 0)),  # loose: the hand flies back
+	(28, dict(_DRAW, **{"upperarm.r": (115, -80, -40), "lowerarm.r": (90, 0, -170)}), (0, 0, 0)),
+	(38, {}, (0, 0, 0)),
+]
+
 
 def main():
 	opts = _args()
@@ -149,6 +171,7 @@ def main():
 		arm.animation_data.nla_tracks.remove(tr)
 	keep.append(_keys(arm, base, "Kick", KICK))
 	keep.append(_keys(arm, base, "Shield_Bash", BASH))
+	keep.append(_keys(arm, base, "Bow_Shoot", BOW))
 
 	for a in list(bpy.data.actions):
 		if a not in keep:
