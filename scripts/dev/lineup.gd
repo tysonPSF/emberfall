@@ -3,6 +3,7 @@ extends Node3D
 ##   godot --path . -- --lineup=gnoll,gnoll_brute,rat [--action=idle] --shots=/some/dir
 ## --worn=head:iron_coif,chest:studded_tunic dresses every model in that gear
 ## (models.json "gear" ids), to compare how it sits on different bodies.
+## --at=0.3 freezes the action that far in (seconds), to see a one-shot's peak.
 ## --tiers=crude,,fine,superior,masterwork gives each model in turn that
 ## quality's finish on everything it holds and wears; --weapon=sword_1handed
 ## puts a weapon in every right hand.
@@ -21,6 +22,7 @@ func _ready() -> void:
 	var action := "idle"
 	var shots_dir := ""
 	var worn := {}
+	var at := -1.0  # seconds into the clip to freeze at (one-shots end back at rest)
 	var offhand := ""
 	var tiers: PackedStringArray = []
 	var weapon := ""
@@ -33,6 +35,8 @@ func _ready() -> void:
 			tiers = a.substr(8).split(",")
 		elif a.begins_with("--weapon="):
 			weapon = a.substr(9)
+		elif a.begins_with("--at="):
+			at = float(a.substr(5))
 		elif a.begins_with("--offhand="):
 			offhand = a.substr(10)
 		elif a.begins_with("--grip="):
@@ -92,6 +96,9 @@ func _ready() -> void:
 		var clip := m._clip(action)
 		if clip != "":
 			m.anim.play(clip)
+			if at >= 0.0:
+				m.anim.seek(at, true)
+				m.anim.pause()
 		var label := Label3D.new()
 		label.text = ids[i] + (" (%s)" % tiers[i] if i < tiers.size() and tiers[i] != "" else "")
 		label.fixed_size = true

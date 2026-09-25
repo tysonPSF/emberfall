@@ -20,7 +20,8 @@ signal service_changed
 signal service_closed
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
-signal shot_fired(from: Entity, to: Entity, projectile: String)  # a ranged attack, for the flight effect
+signal shot_fired(from: Entity, to: Entity, projectile: String)
+signal spell_fx(caster: Entity, target: Entity, spell_id: String)  # a spell landed: for its look (SpellFx)  # a ranged attack, for the flight effect
 
 enum Con { GRAY, GREEN, BLUE, WHITE, YELLOW, RED }
 
@@ -1041,10 +1042,12 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 
 ## One spell's effect on one target.
 func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) -> void:
+	spell_fx.emit(c, t, spell_id)
+	Net.broadcast_fx(c, t, spell_id)
 	match str(s["type"]):
 		"damage":
 			if s.get("ability", false):
-				c.animate("attack")
+				c.animate(str(s.get("anim", "attack")))  # a kick, a bash, or a swing
 				_combat_msg(c, t, s.get("verb", ["hit", "hits"]), power)
 			else:
 				say(c, "%s was hit by non-melee for %d points of damage." % [cap(t.display_name), power], C_SPELL)

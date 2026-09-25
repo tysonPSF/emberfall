@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 8  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 9  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -451,6 +451,21 @@ func _s_anim(id: int, action: String) -> void:
 	var e := World.get_object(id) as Entity
 	if e != null:
 		e.animate(action)
+
+
+## A spell landing, for everyone who can see the caster or the target.
+func broadcast_fx(from: Entity, to: Entity, spell_id: String) -> void:
+	if mode != "server" or from == null or to == null:
+		return
+	for peer: int in _known:
+		var sees: Dictionary = _known[peer]
+		if sees.has(to.entity_id) or sees.has(from.entity_id) or _peer_player[peer] == to.entity_id or _peer_player[peer] == from.entity_id:
+			_s_fx.rpc_id(peer, from.entity_id, to.entity_id, spell_id)
+
+
+@rpc("authority", "reliable")
+func _s_fx(from_id: int, to_id: int, spell_id: String) -> void:
+	World.spell_fx.emit(World.get_object(from_id) as Entity, World.get_object(to_id) as Entity, spell_id)
 
 
 ## A ranged attack, for everyone who can see the shooter or the target.
