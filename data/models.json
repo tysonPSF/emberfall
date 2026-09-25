@@ -492,6 +492,9 @@
     },
     "lily_pads": {
       "path": "res://assets/props/lily_pads.glb"
+    },
+    "cave_entrance": {
+      "path": "res://assets/props/cave_entrance.glb"
     }
   },
   "gear": {

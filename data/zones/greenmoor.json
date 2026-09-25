@@ -141,6 +141,7 @@
     {"type": "ruins", "pos": [-100, -80]},
     {"type": "outpost", "pos": [40, -138]},
     {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50},
+    {"type": "cave", "pos": [-150, -30], "face": [0, -30]},
     {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]}
   ],
   "passes": [[0, 192, 9]],
