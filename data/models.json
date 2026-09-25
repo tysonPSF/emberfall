@@ -423,6 +423,28 @@
     "well": {
       "path": "res://assets/props/well.glb"
     },
+    "tavern": {
+      "path": "res://assets/props/tavern.glb"
+    },
+    "tavern_bar": {
+      "path": "res://assets/props/tavern_bar.glb"
+    },
+    "ceiling_tile": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/ceiling_tile.gltf",
+      "scale": 0.75
+    },
+    "candle_lit": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/candle_lit.gltf",
+      "scale": 0.75
+    },
+    "mug_full": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/mug_full.gltf",
+      "scale": 0.75
+    },
+    "shelf_small": {
+      "path": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/shelf_small.gltf",
+      "scale": 0.75
+    },
     "signpost": {
       "path": "res://assets/props/signpost.glb"
     },

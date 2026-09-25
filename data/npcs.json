@@ -284,5 +284,42 @@
       "unknown": "Fascinating. Irrelevant, but fascinating."
     },
     "faction": "emberhold"
+  },
+  "tavern_keeper": {
+    "name": "Hessa Byrne",
+    "title": "Keeper of the Ember and Anvil",
+    "level": 30,
+    "model": "barbarian",
+    "dialogue": {
+      "hail": "Evening, {name}. Sit where you like. There's [ale], there's [stew], and there's [talk] if you'd rather have that.",
+      "ale": "Brewed in the cellar, and better than anything the Watch drinks. First one's on the house if you've come up from Greenmoor.",
+      "stew": "Mutton and barley. It's been on the fire since dawn, which is either a recommendation or a warning.",
+      "talk": "People come through here on their way to somewhere worse. If you're after [work], sit a while and someone will find you.",
+      "work": "Not mine to hand out. But the tables fill up after dark, and the ones who need something always end up telling me first.",
+      "unknown": "Mm. Couldn't say."
+    },
+    "faction": "emberhold"
+  },
+  "tavern_regular": {
+    "name": "Old Danel",
+    "title": "a regular",
+    "level": 18,
+    "model": "ranger",
+    "dialogue": {
+      "hail": "Don't mind me, {name}. I've had this same seat for eleven years and I'll not be moved from it now.",
+      "unknown": "Hah. Ask Hessa, she knows everything worth knowing."
+    },
+    "faction": "emberhold"
+  },
+  "tavern_bard": {
+    "name": "Wren",
+    "title": "a travelling singer",
+    "level": 14,
+    "model": "rogue_hooded",
+    "dialogue": {
+      "hail": "Quiet night, isn't it? Give me a copper and I'll make it less so.",
+      "unknown": "I only know songs about it, and the songs lie."
+    },
+    "faction": "emberhold"
   }
 }
