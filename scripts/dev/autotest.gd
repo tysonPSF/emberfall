@@ -61,6 +61,7 @@ const SECTIONS := [
 	["guard_levels", "greenmoor"],
 	["bowshot", "greenmoor"],
 	["buy_bundle", "thornwood"],
+	["corwin_route", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2232,3 +2233,33 @@ func _t_buy_bundle() -> void:
 	print("buy_bundle: pressed %d bundle buttons -> arrows %d, stones %d, coin %d left of 1000" % [pressed, p.pack.count("crude_arrow"), p.pack.count("sling_stone"), p.coin])
 	await _shot("9zg_shop_bundle")
 	World.request_service_close(p.entity_id)
+
+
+## Guard Corwin walks the whole road: the Emberhold gate, around the obelisk's
+## stones, past the outpost to the Thornwood pass, and back.
+func _t_corwin_route() -> void:
+	var p := World.local_player
+	var corwin: Npc = _npcs()["watch_patrol"]
+	p.global_position = Vector3(-60, p.global_position.y, 150)  # out of his way
+	Engine.time_scale = 6.0
+	var north := INF
+	var closest_to_obelisk := INF
+	var stuck := 0.0
+	var last := corwin.global_position
+	var turned_back := false
+	for k in 400:
+		await get_tree().create_timer(0.5, true, false, true).timeout  # real seconds: 3 game seconds each
+		var at := corwin.global_position
+		north = minf(north, at.z)
+		if absf(at.z) < 15.0:
+			closest_to_obelisk = minf(closest_to_obelisk, Vector2(at.x, at.z).length())
+		stuck = stuck + 3.0 if at.distance_to(last) < 0.3 and corwin.target == null else 0.0
+		if stuck > 12.0:
+			print("corwin_route: STUCK at %s" % at)
+			break
+		last = at
+		if north < -165.0 and at.z > -120.0:
+			turned_back = true
+			break
+	Engine.time_scale = 1.0
+	print("corwin_route: reached z %.0f (road ends at -192, zone line -177), nearest the obelisk %.1f m (stones at 7), heading back %s" % [north, closest_to_obelisk, turned_back])

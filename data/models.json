@@ -1085,7 +1085,7 @@
     "stone": ""
   },
   "grips": {
-    "bow": {"rot": [0, 180, 0]},
+    "bow": {"rot": [0, 180, 0]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_2handed": {"rot": [0, 180, 0]},
     "shield_round": {
       "bone": "lowerarm.l",
       "orient": "chest",
