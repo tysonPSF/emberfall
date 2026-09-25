@@ -321,5 +321,34 @@
       "unknown": "I only know songs about it, and the songs lie."
     },
     "faction": "emberhold"
+  },
+  "elowen": {
+    "name": "Elowen",
+    "title": "Hermit of the Vale",
+    "level": 16,
+    "model": "ranger",
+    "weapon": "bow",
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "Well met, {name}. Few from Emberhold come this far up the vale. Mind the [wolves]; they've grown hungry and bold, and they are not the worst of what walks under these trees.",
+      "wolves": "Timber wolves, and the dire ones out of the deep woods, driven toward the road by something [worse]. Bring me four [wolf pelts] and I'll see you're paid for thinning the pack.",
+      "wolf pelts": "Four pelts, {name}. Hand them over when you have them. The first time, I'll throw in a pair of boots I've been stitching. After that it's coin, and my thanks.",
+      "worse": "Spiders, west of here, where the trees grow thick: [thornbacks]. Orcs to the east, the [Bloodtusk]. And in the north, the old [watchtower], where nothing living keeps the watch anymore.",
+      "thornbacks": "Their bite burns like nettle-fire. Their broodmother, Silkfang, nests in the deep woods west of the road. If you're brave enough to go near, bring me three lengths of [spider silk] and a venom sac.",
+      "spider silk": "Three lengths of thornback silk and one of their venom sacs. Silk that strong makes the finest gloves you'll ever wear, and the venom... well. A hermit has her uses for venom.",
+      "bloodtusk": "A clan of orcs camped east along the road. Raiders. Their warchief, Grolthar, wears the tusks of everything he's killed. Don't wander into that camp alone.",
+      "watchtower": "The Hollow Watch. Men of Emberhold once kept that tower. Now their bones keep it for them, and their captain, Veyl, still walks the walls. Something holds them there.",
+      "unknown": "The trees say many things, {name}. That isn't one of them."
+    },
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "hunting_shortbow",
+        "sling_stone",
+        "leather_sling",
+        "fishing_bait"
+      ],
+      "buy_rate": 0.5
+    }
   }
 }

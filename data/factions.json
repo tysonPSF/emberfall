@@ -40,5 +40,15 @@
     "on_kill": {
       "watch": 2
     }
+  },
+  "bloodtusk": {
+    "name": "Bloodtusk Clan",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "bloodtusk": -10,
+      "watch": 3,
+      "emberhold": 2
+    }
   }
 }

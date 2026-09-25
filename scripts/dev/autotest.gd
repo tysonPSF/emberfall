@@ -43,6 +43,9 @@ const SECTIONS := [
 	["tavern", "emberhold"],
 	["cave", "greenmoor"],
 	["edges", "greenmoor"],
+	["thornwood", "thornwood"],
+	["thornwood_mobs", "thornwood"],
+	["elowen", "thornwood"],
 	["camp", "greenmoor"],
 ]
 
@@ -1425,6 +1428,8 @@ func _t_edges() -> void:
 	var p := World.local_player
 	var half: float = main.zone.half
 	for dir: Vector2 in [Vector2(0, -1), Vector2(1, 0), Vector2(-1, 0), Vector2(0.7, -0.7), Vector2(-0.7, -0.7), Vector2(0.7, 0.7)]:
+		if main.zone._pass_factor(dir.x * (half - 10.0), dir.y * (half - 10.0)) < 0.5:
+			continue  # a real pass (a zone line or a rockslide there): tested on its own
 		p.global_position = main.zone.ground(dir.x * (half - 60.0), dir.y * (half - 60.0)) + Vector3.UP
 		p.velocity = Vector3.ZERO
 		await _wait(0.2)
@@ -1445,6 +1450,104 @@ func _t_edges() -> void:
 				p.global_position.y, main.zone.height_at(p.global_position.x, p.global_position.z), lowest])
 
 
+## Thornwood Vale: arrive from Greenmoor's north pass, look around the
+## obelisk, along the roads, at the closed passes; then every edge holds.
+func _t_thornwood() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	print("thornwood: arrived at %s, terrain %.1f; %d trees placed" % [p.global_position, main.zone.height_at(p.global_position.x, p.global_position.z),
+			main.zone.find_children("*", "StaticBody3D", true, false).size()])
+	for view: Array in [[Vector2(0, 222), Vector2(0, 190), "arrival"], [Vector2(20, 60), Vector2(-40, -40), "forest"],
+			[Vector2(0, -200), Vector2(0, -232), "north_pass"], [Vector2(118, -30), Vector2(150, -55), "camp"]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 6.0
+		p.pitch = -0.15
+		await _wait(0.7)
+		await _shot("9t_thornwood_%s" % view[2])
+	await _t_edges()
+	for pass_: Array in [[Vector2(-190, 40), Vector2(-1, 0)], [Vector2(190, -20), Vector2(1, 0)], [Vector2(0, -190), Vector2(0, -1)]]:
+		p.global_position = main.zone.ground(pass_[0].x, pass_[0].y) + Vector3.UP
+		for k in 900:
+			p.velocity = Vector3(pass_[1].x, 0, pass_[1].y) * 9.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			if k % 20 == 0 and p.is_on_floor():
+				p.velocity.y = 6.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("thornwood: into the pass toward %s -> stopped at %s (edge 256), height %.1f" % [pass_[1], Vector2(p.global_position.x, p.global_position.z), p.global_position.y])
+
+
+## Thornwood's monsters: what spawned, a spider's venom landing, an orc in
+## its gear, and a look at each part of the vale.
+func _t_thornwood_mobs() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("thornwood_mobs: %d monsters: %s" % [World.get_mobs().size(), counts])
+	var orc: Mob = _nearest_mob(p, "orc_raider")
+	print("thornwood_mobs: an orc raider lvl %d wears %s, look %s" % [orc.level, orc.gear, orc.look.get("worn", {})])
+	# stand a tough character by a spider and let it bite until the venom lands
+	p.level = 20
+	p.recalc_stats()
+	p.hp = p.max_hp
+	var spider: Mob = _nearest_mob(p, "thornback_spider")
+	p.global_position = main.zone.ground(spider.global_position.x + 2.0, spider.global_position.z) + Vector3.UP
+	spider.add_hate(p, 10.0)
+	var venom := false
+	for k in 60:
+		await _wait(0.5)
+		p.hp = p.max_hp
+		if p.dots.any(func(d: Dictionary) -> bool: return d["spell"] == "thornback_venom"):
+			venom = true
+			break
+	print("thornwood_mobs: spider venom landed on me: %s" % venom)
+	for m in World.get_mobs():
+		m.hate.erase(p.entity_id)
+	for view: Array in [["wolf", "timber_wolf"], ["bear", "black_bear"], ["spider", "thornback_spider"], ["orc", "orc_raider"], ["knight", "skeleton_knight"]]:
+		var m: Mob = _nearest_mob(p, view[1])
+		if m == null:
+			continue
+		m.hate.clear()
+		m.set_physics_process(false)  # hold still for the picture
+		var to := Vector3(5, 0, 5)
+		p.global_position = main.zone.ground(m.global_position.x + to.x, m.global_position.z + to.z) + Vector3.UP
+		p.face_toward(m.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 4.0
+		p.pitch = -0.15
+		await _wait(0.6)
+		await _shot("9u_mob_%s" % view[0])
+		m.set_physics_process(true)
+	p.level = 1
+	p.recalc_stats()
+
+
+## Elowen: her talk, both quests handed in (G at a merchant with the goods
+## opens a trade), the rewards.
+func _t_elowen() -> void:
+	var p := World.local_player
+	var elowen: Npc = _npcs()["elowen"]
+	_stand_by(p, elowen)
+	for word in ["hail", "wolves", "worse", "watchtower", "wolf pelts", "spider silk"]:
+		World.request_say(p.entity_id, word)
+	print("elowen: quests taken %s" % [["thinning_the_pack", "silk_and_venom"].map(func(q: String) -> bool: return p.quests.get(q, {}).get("active", false))])
+	p.pack.add("wolf_pelt", 4)
+	World.request_interact(p.entity_id)
+	print("elowen: G with 4 pelts -> trading %s" % (p.trade_npc_id == elowen.entity_id))
+	World.request_trade_cancel(p.entity_id)
+	await _hand_in(p, elowen, ["wolf_pelt"])
+	p.pack.add("spider_silk", 3)
+	p.pack.add("venom_sac", 1)
+	await _hand_in(p, elowen, ["spider_silk", "venom_sac"])
+	print("elowen: rewards: boots %d, gloves %d" % [p.pack.count("wolfhide_boots"), p.pack.count("silkweave_gloves")])
+	World.request_interact(p.entity_id)
+	print("elowen: G with nothing to give -> shop open %s" % (p.service_npc_id == elowen.entity_id and p.service == "shop"))
+	World.request_service_close(p.entity_id)
+
+
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
 	var main := get_parent()
@@ -1453,8 +1556,23 @@ func _ensure_zone(zone_id: String) -> void:
 		return
 	if p.dead:
 		await _wait(5.0)
-	p.global_position = main.zone.ground(0, 181 if zone_id == "emberhold" else -97) + Vector3.UP
-	await _wait(2.5)
+	# step into the zone line that leads there, or toward Greenmoor, which links them all
+	for hop in 3:
+		if main.zone.zone_id == zone_id:
+			break
+		var lines: Array = main.zone.data.get("zone_lines", [])
+		var line: Dictionary = {}
+		for zl: Dictionary in lines:
+			if zl["to"] == zone_id:
+				line = zl
+		if line.is_empty():
+			for zl: Dictionary in lines:
+				if zl["to"] == "greenmoor":
+					line = zl
+		if line.is_empty():
+			break
+		p.global_position = main.zone.ground(line["pos"][0], line["pos"][1]) + Vector3.UP
+		await _wait(2.5)
 	print("zone: %s at %s" % [main.zone.zone_id, p.global_position])
 
 

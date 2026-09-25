@@ -190,7 +190,9 @@ func _build_environment() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.7, 0.76, 0.82)
-	env.fog_density = 0.006
+	env.fog_density = float(data.get("fog_density", 0.006))
+	if data.has("fog_color"):
+		env.fog_light_color = Color.html(str(data["fog_color"]))
 	env.fog_sky_affect = 0.25
 	var world_env := WorldEnvironment.new()
 	world_env.environment = env
@@ -198,7 +200,7 @@ func _build_environment() -> void:
 
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-50.0, -35.0, 0.0)
-	sun.light_energy = 1.1
+	sun.light_energy = float(data.get("sun_energy", 1.1))
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 110.0
 	add_child(sun)
@@ -257,7 +259,8 @@ func _build_terrain() -> void:
 
 func _ground_color(x: float, z: float, h: float) -> Color:
 	var n := _detail.get_noise_2d(x * 0.6, z * 0.6) * 0.5 + 0.5
-	var c := Color(0.27, 0.4, 0.17).lerp(Color(0.4, 0.52, 0.22), n)
+	var greens: Array = data.get("grass_colors", ["#45662b", "#668538"])  # low and high patches
+	var c := Color.html(greens[0]).lerp(Color.html(greens[1]), n)
 	var d := Vector2(x, z).distance_to(_bind_xz)
 	if d < flat_radius:
 		c = c.lerp(Color(0.45, 0.38, 0.26), 0.55 * (1.0 - d / flat_radius))
@@ -307,6 +310,8 @@ func _build_landmarks() -> void:
 				_build_signpost(p, _landmark_yaw(lm), lm.get("labels", []))
 			"cave":
 				_build_cave(p, _landmark_yaw(lm))
+			"rockslide":
+				_build_rockslide(p, _landmark_yaw(lm), lm.get("labels", []))
 			"prop":
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
 
@@ -324,6 +329,25 @@ func _build_cave(p: Vector3, yaw: float) -> void:
 	for spot: Array in [[-7.5, 1.5, "boulder_c"], [8.0, 3.0, "boulder_a"], [-9.0, 7.0, "boulder_b"], [9.5, -1.0, "boulder_b"]]:
 		var at := xf * Vector3(spot[0], 0, spot[1])
 		_prop(spot[2], ground(at.x, at.z), _rng.randf() * TAU)
+
+
+## A pass closed by fallen rock: a wall of boulders across it, so nobody walks
+## out past the edge of the world, and a signpost saying where the road will
+## go. A future zone opens the pass by removing this and adding a zone line.
+## Faces along the road, toward the zone.
+func _build_rockslide(p: Vector3, yaw: float, labels: Array) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	for k in 7:
+		var across := -12.0 + k * 4.0
+		var at := xf * Vector3(across, 0, _rng.randf_range(-1.5, 1.5))
+		var id := "boulder_c" if k % 2 == 0 else "boulder_a"
+		_prop(id, ground(at.x, at.z) - Vector3.UP * 0.4, _rng.randf() * TAU, _rng.randf_range(2.4, 3.0))
+	for k in 5:
+		var at := xf * Vector3(_rng.randf_range(-9.0, 9.0), 0, _rng.randf_range(2.5, 5.0))
+		_prop("rubble_half", ground(at.x, at.z), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+	if not labels.is_empty():
+		var sign := xf * Vector3(4.5, 0, 8.0)
+		_build_signpost(ground(sign.x, sign.z), yaw + PI / 2.0, labels)
 
 
 ## The bind point: a rune-carved obelisk inside a ring of standing stones.
@@ -783,9 +807,17 @@ func _build_npcs() -> void:
 
 
 func _build_props() -> void:
-	var trees := ["pine_a", "pine_a", "pine_b", "pine_b", "tree_round"]
+	var trees: Array = data.get("tree_mix", ["pine_a", "pine_a", "pine_b", "pine_b", "tree_round"])
+	var groves := float(data.get("groves", 0.0))  # 0 = trees anywhere; toward 1, packed into woods with clearings between
+	var grove_noise := FastNoiseLite.new()
+	grove_noise.seed = _rng.seed + 7
+	grove_noise.frequency = 0.014
 	for k in int(data.get("trees", 150)):
 		var xz := _open_spot()
+		for tries in 8:  # keep looking until the spot falls in a wood (or give up and take it)
+			if groves <= 0.0 or grove_noise.get_noise_2d(xz.x, xz.y) * 0.5 + 0.5 > groves * 0.55:
+				break
+			xz = _open_spot()
 		var s := _rng.randf_range(0.8, 1.5)
 		_prop(trees[_rng.randi() % trees.size()], ground(xz.x, xz.y) - Vector3.UP * 0.1, _rng.randf() * TAU, s, "trunk")
 
