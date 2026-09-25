@@ -56,6 +56,7 @@ const SECTIONS := [
 	["edges", "greenmoor"],
 	["thornwood", "thornwood"],
 	["thornwood_mobs", "thornwood"],
+	["tw_density", "thornwood"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2100,3 +2101,24 @@ func _t_invwindow() -> void:
 	hud._bag_hint.visible = false
 	hud._faction_label.visible = false
 	hud._toggle_inventory()
+
+
+## Thornwood's fuller spawns: every monster up and standing on the ground,
+## and Sergeant Harlan finding something to fight along his road.
+func _t_tw_density() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var mobs := World.get_mobs()
+	var off := 0
+	for m in mobs:
+		if absf(m.global_position.y - main.zone.height_at(m.global_position.x, m.global_position.z)) > 1.5:
+			off += 1
+	print("tw_density: %d monsters (%d spawn points), %d off the ground" % [mobs.size(), main.zone.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n.get("respawn_time") != null).size(), off])
+	p.global_position = main.zone.ground(-60, 230) + Vector3.UP  # out of the way
+	var harlan: Npc = _npcs()["vale_patrol"]
+	var fought := {}
+	for k in 240:
+		await _wait(0.5)
+		if is_instance_valid(harlan.target) and harlan.target is Mob:
+			fought[(harlan.target as Mob).entity_id] = (harlan.target as Mob).mob_id
+	print("tw_density: in two minutes Harlan fought %s" % [fought.values()])
