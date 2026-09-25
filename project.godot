@@ -15,6 +15,7 @@ GameData="*res://scripts/autoload/game_data.gd"
 Controls="*res://scripts/autoload/controls.gd"
 World="*res://scripts/autoload/world.gd"
 Net="*res://scripts/autoload/net.gd"
+Music="*res://scripts/autoload/music.gd"
 
 [display]
 

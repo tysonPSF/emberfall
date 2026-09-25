@@ -22,6 +22,7 @@ var anim: AnimationPlayer
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
 var _held: Dictionary = {}  # hand bone -> [model id, holder node]
+var _tiers: Dictionary = {}  # slot -> quality tier id of what's there, for its finish
 var _followers: Array = []  # [holder, position bone, orientation bone, offset on the position bone, offset in the orientation bone's frame]
 var _worn: Dictionary = {}  # slot -> [gear id, [nodes added for it], [body regions it covers], how shown]
 var _model: Node3D
@@ -160,6 +161,8 @@ func set_worn(worn: Dictionary) -> void:
 				_worn[slot] = [gear_id, _pin_pieces(gear_id), [], "pieces"]
 			_:
 				_worn[slot] = [gear_id, [], [], ""]
+		for node: Node in _worn[slot][1]:
+			_finish(node, str(_tiers.get(slot, "")))
 	_show_covered()
 
 
@@ -169,8 +172,10 @@ func set_worn(worn: Dictionary) -> void:
 func _swap_parts(look: Dictionary) -> Array:
 	var entry: Variant = GameData.models["characters"][look["model"]]
 	var path: String = entry["path"] if entry is Dictionary else str(entry)
-	if not _part_sources.has(path):  # kept under GameData (no 3D world there, so never drawn) and freed with it
-		var src_model: Node = (load(path) as PackedScene).instantiate()
+	if not _part_sources.has(path):  # kept (hidden, idle) under GameData and freed with it
+		var src_model: Node3D = (load(path) as PackedScene).instantiate()
+		src_model.visible = false  # it sits in the main world's scene tree: never draw it
+		src_model.process_mode = Node.PROCESS_MODE_DISABLED
 		GameData.add_child(src_model)
 		_part_sources[path] = src_model
 	var source: Node = _part_sources[path]
@@ -267,6 +272,65 @@ static func _region_of(part_name: String) -> String:
 	return part_name.get_slice("_", part_name.get_slice_count("_") - 1)
 
 
+## The quality of what's held and worn ({slot: tier id}); better gear gets a
+## subtle finish (loot.json tier "finish"). Refinishes what's already on.
+func set_tiers(tiers: Dictionary) -> void:
+	if tiers == _tiers:
+		return
+	_tiers = tiers.duplicate()
+	for bone: String in _held:
+		_finish(_held[bone][1], str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
+	for slot: String in _worn:
+		for node: Node in _worn[slot][1]:
+			_finish(node, str(_tiers.get(slot, "")))
+
+
+const HAND_SLOTS := {"handslot.r": "primary", "handslot.l": "secondary"}
+
+
+## Gives every mesh under a node its tier's finish, or its own materials back.
+## The originals are remembered on each mesh, so finishes never stack up.
+func _finish(node: Node, tier_id: String) -> void:
+	if node == null or not is_instance_valid(node):
+		return
+	var f := GameData.tier_finish(tier_id)
+	for mi: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false) + ([node] if node is MeshInstance3D else []):
+		if not mi.has_meta("own_override"):
+			mi.set_meta("own_override", mi.material_override)
+		var own: Material = mi.get_meta("own_override")
+		if f.is_empty():
+			mi.material_override = own
+			for i in mi.get_surface_override_material_count():
+				mi.set_surface_override_material(i, null)
+			continue
+		if own != null:
+			mi.material_override = _finished(own, f)
+			continue
+		for i in mi.get_surface_override_material_count():
+			var base := mi.mesh.surface_get_material(i) if mi.mesh != null else null
+			mi.set_surface_override_material(i, _finished(base, f))
+
+
+static func _finished(base: Material, f: Dictionary) -> Material:
+	var m := base.duplicate() as BaseMaterial3D if base is BaseMaterial3D else StandardMaterial3D.new()
+	if f.has("tint"):
+		m.albedo_color *= Color.html(str(f["tint"]))
+	if f.has("metallic"):
+		m.metallic = float(f["metallic"])
+		m.metallic_specular = 0.6
+	if f.has("roughness"):
+		m.roughness = float(f["roughness"])
+	if f.has("rim"):
+		m.rim_enabled = true
+		m.rim = float(f["rim"])
+		m.rim_tint = 0.3
+	if f.has("glow"):
+		m.emission_enabled = true
+		m.emission = Color.html(str(f["glow"]))
+		m.emission_energy_multiplier = float(f.get("glow_energy", 0.2))
+	return m
+
+
 func set_weapon(weapon_id: String) -> void:
 	_hold("handslot.r", weapon_id)
 
@@ -312,6 +376,7 @@ func _hold(bone: String, model_id: String) -> void:
 	slot.add_child(held)
 	Entity.use_entity_layer(slot)
 	_held[bone] = [model_id, slot]
+	_finish(slot, str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
 
 
 func _follow() -> void:

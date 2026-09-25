@@ -35,6 +35,8 @@ var _prop_tris: Dictionary = {}  # prop id -> unscaled collision faces
 func load_zone(id: String) -> void:
 	zone_id = id
 	data = GameData.load_zone(id)
+	if Net.mode != "server":
+		Music.play_zone(data, id)
 	zone_name = data.get("name", id)
 	size = float(data.get("size", 384))
 	half = size * 0.5

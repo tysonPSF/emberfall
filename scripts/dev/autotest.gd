@@ -37,6 +37,9 @@ const SECTIONS := [
 	["reactions", "greenmoor"],
 	["drop", "greenmoor"],
 	["give", "emberhold"],
+	["flee", "greenmoor"],
+	["compare", "greenmoor"],
+	["music", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -734,7 +737,7 @@ func _t_wornlook() -> void:
 			p.equipment["head"] = item
 		p.recalc_stats()
 		await _wait(0.4)
-		print("wornlook: %s -> look.worn %s" % [item if item != "" else "(bare)", p.look.get("worn")])
+		print("wornlook: %s -> look.worn %s tiers %s" % [item if item != "" else "(bare)", p.look.get("worn"), p.look.get("tiers", {})])
 		await _shot("9f_worn_%s" % (item.get_slice("@", 0) if item != "" else "bare"))
 	# whole outfits, front and back
 	var outfits := {
@@ -1072,11 +1075,11 @@ func _t_ranged() -> void:
 	print("ranged: pup is now %.1f m away (pulled from %.1f)" % [p.distance_to(mob), dist])
 	await _shot("9m_ranged_pulled")
 	for k in 8:
-		if mob.dead:
+		if not is_instance_valid(mob) or mob.dead:
 			break
 		World.request_ranged(p.entity_id)
 		await _wait(2.7)
-	print("ranged: after more shots: stones %d, throwing %d -> %d, pup dead=%s" % [p.pack.count("sling_stone"), skill, int(p.skills.get("throwing", 0)), mob.dead])
+	print("ranged: after more shots: stones %d, throwing %d -> %d, pup dead=%s" % [p.pack.count("sling_stone"), skill, int(p.skills.get("throwing", 0)), not is_instance_valid(mob) or mob.dead])
 	var far := _nearest_mob(p, "fire_beetle")
 	World.request_set_target(p.entity_id, far.entity_id)
 	print("ranged: a beetle at %.1f m:" % p.distance_to(far))
@@ -1089,6 +1092,21 @@ func _t_ranged() -> void:
 	print("ranged: no stones left, %s at %.1f m:" % [near.display_name, p.distance_to(near)])
 	World.request_ranged(p.entity_id)
 	print("ranged: a bow on a wizard: '%s'" % World.equip_block(p, "hunting_shortbow"))
+	# ammo that hits can lodge in the mob and turn up on its corpse
+	var target := _nearest_mob(p, "large_rat")
+	target.set_meta("lodged_ammo", {"sling_stone": 3})
+	World.kill(target, p)
+	var body: Corpse = null
+	for obj: Variant in World.objects.values():
+		if obj is Corpse and not (obj as Node).is_queued_for_deletion() and (obj as Corpse).display_name.begins_with(target.display_name):
+			body = obj
+	print("ranged: a rat with 3 stones in it leaves %s" % [body.entries.filter(func(e: Dictionary) -> bool: return e["item"] == "sling_stone") if body != null else "no corpse"])
+	if body != null:
+		p.global_position = body.global_position + Vector3(0, 1, 1)
+		var before := p.pack.count("sling_stone")
+		World.request_loot_open(p.entity_id, body.object_id)
+		World.request_loot_all(p.entity_id, body.object_id)
+		print("ranged: looted the rat: stones %d -> %d" % [before, p.pack.count("sling_stone")])
 	p.equipment.erase("range")
 	p.recalc_stats()
 
@@ -1256,6 +1274,94 @@ func _t_give() -> void:
 	p.pack.remove("stitched_blackpaw_hide")
 	for q in ["trail_pack_cord", "trail_pack_hide", "trail_pack_clasp"]:
 		p.quests.erase(q)
+
+
+## Fleeing: a wounded gnoll with another gnoll nearby stands its ground; once
+## it's the last of its kind around, it runs.
+func _t_flee() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var pup := _nearest_mob(p, "gnoll_pup")
+	var kin: Array = World.get_mobs().filter(func(m: Mob) -> bool: return m != pup and not m.dead and m.faction == pup.faction and m.distance_to(pup) <= World.CALL_FOR_HELP_RADIUS)
+	if kin.is_empty():  # make sure it has company for the first half
+		for m in World.get_mobs():
+			if m != pup and not m.dead and m.faction == pup.faction:
+				m.global_position = pup.global_position + Vector3(3, 0, 0)
+				kin = [m]
+				break
+	p.global_position = main.zone.ground(pup.global_position.x + 3.0, pup.global_position.z) + Vector3.UP
+	pup.hp = int(pup.max_hp * 0.1)
+	pup.add_hate(p, 1.0)
+	await _wait(0.5)
+	print("flee: wounded pup with %d gnoll(s) nearby -> %s" % [kin.size(), Mob.State.keys()[pup.state]])
+	for m: Mob in World.get_mobs():
+		if m != pup and not m.dead and m.faction == pup.faction and m.distance_to(pup) <= World.CALL_FOR_HELP_RADIUS:
+			m.global_position = pup.global_position + Vector3(60, 0, 60)  # its pack wanders off
+	await _wait(0.5)
+	print("flee: last gnoll nearby -> %s" % Mob.State.keys()[pup.state])
+	World.kill(pup, p)
+
+
+## Comparing a carried item with what you wear: the item window lists the
+## changes (gains green, losses red), weapons compare delay too.
+func _t_compare() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	var kit := p.equipment.duplicate()
+	p.equipment["primary"] = "rusty_short_sword"
+	p.equipment["head"] = "cloth_cap"
+	p.recalc_stats()
+	for id: String in ["iron_short_sword@superior", "iron_coif", "cloth_cap@crude", "tarnished_ring"]:
+		print("compare: %s -> %s" % [id, " / ".join(hud._compare_lines(id)).strip_edges()])
+	hud._toggle_inventory()
+	hud.show_item("iron_short_sword@superior")
+	await _wait(0.4)
+	await _shot("9p_compare")
+	hud._item_panel.visible = false
+	hud._toggle_inventory()
+	p.equipment = kit
+	p.recalc_stats()
+
+
+## Zone music: Greenmoor's theme here, Emberhold's after zoning, looping; the
+## volume setting reaches the Music bus and keeps the rest of settings.json.
+func _t_music() -> void:
+	var main := get_parent()
+	var playing := func() -> String:
+		var p: AudioStreamPlayer = Music._players[Music._active]
+		return "%s (%.0fs, loop %s, playing %s)" % [Music._current, p.stream.get_length() if p.stream else 0.0, p.stream.loop if p.stream else false, p.playing]
+	print("music: in %s -> %s" % [main.zone.zone_id, playing.call()])
+	await _ensure_zone("emberhold")
+	await _wait(2.5)
+	print("music: in %s -> %s; the other player faded to %.0f dB" % [main.zone.zone_id, playing.call(), Music._players[1 - Music._active].volume_db])
+	var before := Controls.music_volume
+	var had: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Controls.SETTINGS_PATH)) if FileAccess.file_exists(Controls.SETTINGS_PATH) else {}
+	Controls.set_music_volume(0.3)
+	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Controls.SETTINGS_PATH))
+	var kept := had.keys().filter(func(k: String) -> bool: return k != "music_volume" and saved.get(k) == had[k]).size()
+	print("music: volume 30%% -> bus %.1f dB; other settings kept %d/%d" % [AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music")), kept, had.keys().filter(func(k: String) -> bool: return k != "music_volume").size()])
+	main.hud._show_settings(true)
+	await _wait(0.3)
+	await _shot("9q_settings_music")
+	main.hud._show_settings(false)
+	Controls.set_music_volume(before)
+	await _ensure_zone("greenmoor")
+	# combat music: a monster's hate brings it in, and it gives way a few calm seconds after
+	var p := World.local_player
+	var bus_db := func(bus: String) -> float: return AudioServer.get_bus_volume_db(AudioServer.get_bus_index(bus))
+	var rat := _nearest_mob(p, "large_rat")
+	p.global_position = main.zone.ground(rat.global_position.x + 3.0, rat.global_position.z) + Vector3.UP
+	rat.add_hate(p, 5.0)
+	await _wait(0.2 + Music.COMBAT_IN / 2.0)  # halfway through the fade in: both loud, no dip
+	print("music: mid-fade -> zone %.1f dB, combat %.1f dB (mix %.2f)" % [bus_db.call("MusicZone"), bus_db.call("MusicCombat"), Music._mix])
+	await _wait(1.4)
+	print("music: rat angry -> threatened %s, combat on %s, zone %.0f dB, combat %.0f dB" % [p.threatened, Music._in_combat, bus_db.call("MusicZone"), bus_db.call("MusicCombat")])
+	World.kill(rat, p)
+	await _wait(2.0)
+	print("music: rat dead 2 s -> threatened %s, combat still on %s" % [p.threatened, Music._in_combat])
+	await _wait(5.5)
+	print("music: calm 7.5 s -> combat on %s, zone %.0f dB, combat %.0f dB, zone theme %s" % [Music._in_combat, bus_db.call("MusicZone"), bus_db.call("MusicCombat"), Music._current])
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

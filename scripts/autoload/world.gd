@@ -182,6 +182,11 @@ func shout(from: Node3D, text: String, color: Color = C_NPC, radius := 60.0) -> 
 			say(p, text, color)
 
 
+## "Sling Stone" -> "Sling Stones" (names already plural, like Rat Whiskers, stay).
+static func plural(item_name: String) -> String:
+	return item_name if item_name.ends_with("s") else item_name + "s"
+
+
 static func cap(s: String) -> String:
 	return s.substr(0, 1).to_upper() + s.substr(1)
 
@@ -224,6 +229,7 @@ func _physics_process(delta: float) -> void:
 	if _group_view_timer >= 0.2:
 		_group_view_timer = 0.0
 		_update_group_views()
+		_update_threat()
 	for obj: Node3D in objects.values():
 		if obj is Entity and is_instance_valid(obj) and not obj.dead:
 			_update_timers(obj, delta)
@@ -323,6 +329,17 @@ func _update_melee(e: Entity) -> void:
 	if dmg > 0:
 		damage(t, dmg, e)
 		_try_proc(e, t)
+
+
+## Which players a living monster hates right now: the combat music follows it.
+func _update_threat() -> void:
+	var hated := {}
+	for m in get_mobs():
+		if not m.dead:
+			for id: int in m.hate:
+				hated[id] = true
+	for p in get_players():
+		p.threatened = hated.has(p.entity_id) and not p.dead
 
 
 # --- skills -----------------------------------------------------------------
@@ -575,6 +592,9 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 			entries.append({"item": entry["item"], "slot": ""})
 	var coin_range: Array = mob.data.get("coin", [0, 0])
 	var coin := randi_range(int(coin_range[0]), int(coin_range[1]))
+	var lodged: Dictionary = mob.get_meta("lodged_ammo", {})  # arrows and stones that hit and stayed in
+	for ammo_id: String in lodged:
+		entries.append({"item": ammo_id, "slot": "", "count": int(lodged[ammo_id])})
 	var empty := entries.is_empty() and coin == 0
 	var decay := float(cfg("empty_corpse_decay_seconds" if empty else "mob_corpse_decay_seconds", 60))
 
@@ -795,6 +815,10 @@ func request_ranged(player_id: int) -> void:
 		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
 	_combat_msg(p, t, weapon.get("verb", ["shoot", "shoots"]), dmg)
 	if dmg > 0:
+		if ammo_id != "" and t is Mob and randf() < float(cfg("ammo_recover_chance", 0.15)):
+			var lodged: Dictionary = t.get_meta("lodged_ammo", {})  # stays in the mob; found on its corpse
+			lodged[ammo_id] = int(lodged.get(ammo_id, 0)) + 1
+			t.set_meta("lodged_ammo", lodged)
 		damage(t, dmg, p)
 	else:
 		t.add_hate(p, 1.0)  # a miss still gets its attention
@@ -1144,7 +1168,8 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 			say(p, "Your inventory is full.", C_WARN)
 			return false
 	c.entries.remove_at(index)
-	say(p, "--You have looted a %s.--" % GameData.item_name(entry["item"]), C_LOOT)
+	var n := int(entry.get("count", 1))
+	say(p, "--You have looted %s.--" % ("a " + GameData.item_name(entry["item"]) if n <= 1 else "%d %s" % [n, plural(GameData.item_name(entry["item"]))]), C_LOOT)
 	p.inventory_changed.emit()
 	if c.entries.is_empty():
 		remove_corpse(c)
@@ -2361,8 +2386,7 @@ func request_buy(player_id: int, item_id: String, count := 1) -> void:
 	if count == 1:
 		say(p, "You buy a %s for %s." % [GameData.item_name(item_id), format_coin(price)], C_LOOT)
 	else:
-		var plural := GameData.item_name(item_id)
-		say(p, "You buy %d %s for %s." % [count, plural if plural.ends_with("s") else plural + "s", format_coin(price * count)], C_LOOT)
+		say(p, "You buy %d %s for %s." % [count, plural(GameData.item_name(item_id)), format_coin(price * count)], C_LOOT)
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
 

@@ -9,7 +9,11 @@
         "below": 30,
         "stat_mult": 0.75,
         "value_mult": 0.5,
-        "color": "#9a9a9a"
+        "color": "#9a9a9a",
+        "finish": {
+          "tint": "#b4ada2",
+          "roughness": 1.0
+        }
       },
       {
         "id": "",
@@ -25,7 +29,14 @@
         "below": 100,
         "stat_mult": 1.25,
         "value_mult": 2.0,
-        "color": "#6fd46f"
+        "color": "#6fd46f",
+        "finish": {
+          "metallic": 0.25,
+          "roughness": 0.5,
+          "rim": 0.25,
+          "glow": "#6fd46f",
+          "glow_energy": 0.035
+        }
       },
       {
         "id": "superior",
@@ -33,7 +44,14 @@
         "below": 115,
         "stat_mult": 1.5,
         "value_mult": 4.0,
-        "color": "#5aa0ff"
+        "color": "#5aa0ff",
+        "finish": {
+          "metallic": 0.35,
+          "roughness": 0.4,
+          "rim": 0.35,
+          "glow": "#5aa0ff",
+          "glow_energy": 0.05
+        }
       },
       {
         "id": "masterwork",
@@ -41,9 +59,17 @@
         "below": 1000,
         "stat_mult": 1.8,
         "value_mult": 8.0,
-        "color": "#c77dff"
+        "color": "#c77dff",
+        "finish": {
+          "metallic": 0.45,
+          "roughness": 0.3,
+          "rim": 0.5,
+          "glow": "#c77dff",
+          "glow_energy": 0.08
+        }
       }
-    ]
+    ],
+    "_finish": "How each tier looks on gear (held and worn): tint multiplies the color, metallic/roughness give a sheen, rim lights the edges, glow adds a faint inner light."
   },
   "tables": {
     "crude_weapons": {

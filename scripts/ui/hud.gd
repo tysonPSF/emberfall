@@ -635,7 +635,7 @@ func show_item(item_id: String) -> void:
 	_item_shown = item_id
 	_item_title.text = str(it["name"])
 	_item_title.add_theme_color_override("font_color", GameData.item_color(item_id))
-	var lines := _item_tooltip(item_id).split("\n")
+	var lines := _item_tooltip(item_id, true).split("\n")
 	lines.remove_at(0)  # the name is the title
 	_item_text.text = "\n".join(lines)
 	var worn := item_id in player.equipment.values()
@@ -1248,7 +1248,7 @@ func _build_settings() -> void:
 	_settings_rows = VBoxContainer.new()
 	_settings_rows.add_theme_constant_override("separation", 4)
 	v.add_child(_settings_rows)
-	var hint := UIKit.label("Press the letter shown to change a setting  ·  O or Esc to close", 11, UIKit.DIM)
+	var hint := UIKit.label("Press the key shown to change a setting  ·  O or Esc to close", 11, UIKit.DIM)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(hint)
 	_settings_panel.visible = false
@@ -1271,6 +1271,33 @@ func _refresh_settings() -> void:
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD
 	note.custom_minimum_size.x = 410
 	_settings_rows.add_child(note)
+	_settings_rows.add_child(_music_row("[ ]   Music"))
+
+
+## A music volume slider with its label: in Settings and the Esc menu.
+func _music_row(caption: String) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var label := UIKit.label("%s:   %s" % [caption, _volume_text()], 14, UIKit.TEXT)
+	label.custom_minimum_size.x = 150
+	row.add_child(label)
+	var slider := HSlider.new()
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.05
+	slider.value = Controls.music_volume
+	slider.custom_minimum_size.x = 120
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.focus_mode = Control.FOCUS_NONE
+	slider.value_changed.connect(func(v: float) -> void:
+		Controls.set_music_volume(v)
+		label.text = "%s:   %s" % [caption, _volume_text()])
+	row.add_child(slider)
+	return row
+
+
+func _volume_text() -> String:
+	return "Off" if Controls.music_volume <= 0.001 else "%d%%" % roundi(Controls.music_volume * 100)
 
 
 func _toggle_mouse_look() -> void:
@@ -1294,6 +1321,13 @@ func _build_menu() -> void:
 	var title := UIKit.label("Emberfall", 18, UIKit.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
+	var music_slot := VBoxContainer.new()  # rebuilt on open, so it matches Settings
+	v.add_child(music_slot)
+	_menu_panel.visibility_changed.connect(func() -> void:
+		if _menu_panel.visible:
+			for c in music_slot.get_children():
+				c.queue_free()
+			music_slot.add_child(_music_row("Music")))
 	var camp := UIKit.button("Camp  (log out)", Vector2(0, 38))
 	camp.pressed.connect(func() -> void:
 		_menu_panel.visible = false
@@ -1642,6 +1676,8 @@ func _on_loot_opened(c: Corpse) -> void:
 	for i in c.entries.size():
 		var entry: Dictionary = c.entries[i]
 		var label := GameData.item_name(entry["item"])
+		if int(entry.get("count", 1)) > 1:
+			label += " x%d" % int(entry["count"])
 		if str(entry.get("slot", "")) != "":
 			label += "  (worn)"
 		var b := UIKit.button(label)
@@ -1738,7 +1774,7 @@ func spell_tooltip(spell_id: String) -> String:
 	return "\n".join(lines)
 
 
-func _item_tooltip(item_id: String) -> String:
+func _item_tooltip(item_id: String, colored := false) -> String:
 	var it: Dictionary = GameData.item(item_id)
 	var lines: PackedStringArray = [str(it.get("name", item_id))]
 	var flags := PackedStringArray()
@@ -1789,26 +1825,58 @@ func _item_tooltip(item_id: String) -> String:
 			lines.append(why)
 	if int(it.get("value", 0)) > 0:
 		lines.append("Value: %s" % World.format_coin(int(it["value"])))
-	lines.append_array(_compare_lines(item_id))
+	lines.append_array(_compare_lines(item_id, colored))
 	return "\n".join(lines)
 
 
 ## "Compared to your Cloth Cap: AC +1, STA -1" for gear not being worn.
-func _compare_lines(item_id: String) -> PackedStringArray:
+const COMPARE_STATS := ["dmg", "delay", "ac", "hp", "mana", "str", "sta", "agi", "wis", "int", "haste", "hp_regen", "mana_regen"]
+
+
+## An item against what you wear in its slot: [what it's compared with,
+## [[change text, better?], ...]], or [] when there's nothing to compare (not
+## wearable, or it's what you're wearing). Rings compare with an empty ring
+## slot if you have one, else your first ring.
+func _comparison(item_id: String) -> Array:
 	var it := GameData.item(item_id)
-	if player == null or not it.has("slot") or item_id in player.equipment.values():
-		return PackedStringArray()
-	var fits: Array = World.SLOT_FITS.get(str(it["slot"]), [str(it["slot"])])
-	var worn_id: String = player.equipment.get(fits[0], "")
+	var slot := str(it.get("slot", ""))
+	if slot == "" or player == null or item_id in player.equipment.values():
+		return []
+	var slots: Array = World.SLOT_FITS.get(slot, [slot])
+	var worn_id := ""
+	for sl: String in slots:
+		if not player.equipment.has(sl):
+			worn_id = ""
+			break
+		if worn_id == "":
+			worn_id = str(player.equipment[sl])
 	var worn := GameData.item(worn_id) if worn_id != "" else {}
-	var diffs := PackedStringArray()
-	for stat: String in ["dmg", "ac", "hp", "mana"] + Array(Player.ATTRIBUTES):
-		var d := int(it.get(stat, 0)) - int(worn.get(stat, 0))
-		if d != 0:
-			diffs.append("%s %+d" % [ATTR_NAMES.get(stat, stat.to_upper()), d])
-	if diffs.is_empty():
+	var rows: Array = []
+	for stat: String in COMPARE_STATS:
+		var a := float(it.get(stat, 0))
+		var b := float(worn.get(stat, 0))
+		if stat == "delay" and (a == 0.0 or b == 0.0):
+			continue  # delay only means something weapon to weapon
+		var d := a - b
+		if absf(d) < 0.001:
+			continue
+		var text := "Delay %+.1fs" % d if stat == "delay" else "%s %+d%s" % [ATTR_NAMES.get(stat, stat.to_upper()), roundi(d), "%" if stat == "haste" else ""]
+		rows.append([text, d < 0.0 if stat == "delay" else d > 0.0])  # a shorter delay swings faster
+	var what := "your " + str(worn["name"]) if worn_id != "" else "an empty %s slot" % _slot_label(str(slots[0])).to_lower()
+	return [what, rows]
+
+
+## The comparison as tooltip lines (plain) or item-window text (gains green,
+## losses red).
+func _compare_lines(item_id: String, colored := false) -> PackedStringArray:
+	var c := _comparison(item_id)
+	if c.is_empty():
 		return PackedStringArray()
-	return PackedStringArray(["", "Compared to %s:  %s" % ["your " + str(worn["name"]) if worn_id != "" else "nothing worn", ", ".join(diffs)]])
+	var parts := PackedStringArray()
+	for row: Array in c[1]:
+		parts.append(("[color=#%s]%s[/color]" % ["8fe08f" if row[1] else "f07a6a", row[0]]) if colored else str(row[0]))
+	var head := ("[color=#%s]Compared to %s:[/color]" % [UIKit.GOLD.to_html(false), c[0]]) if colored else "Compared to %s:" % c[0]
+	return PackedStringArray(["", head, "  " + ("   ".join(parts) if not parts.is_empty() else "no change")])
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1832,6 +1900,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif _settings_panel.visible and event.is_action_pressed("settings_mouse_look"):
 		_toggle_mouse_look()
+		get_viewport().set_input_as_handled()
+	elif _settings_panel.visible and (event.is_action_pressed("settings_music_down", true) or event.is_action_pressed("settings_music_up", true)):
+		Controls.set_music_volume(Controls.music_volume + (0.05 if event.is_action("settings_music_up") else -0.05))
+		_refresh_settings()
 		get_viewport().set_input_as_handled()
 	elif _loot_panel.visible and event.is_action_pressed("loot") and _loot_corpse != null:
 		# Second press takes the lot, so looting never needs the mouse.

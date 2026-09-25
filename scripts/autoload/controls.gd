@@ -26,6 +26,8 @@ const BINDINGS := {
 	"target_group_5": [KEY_F6],
 	"settings": [KEY_O],
 	"settings_mouse_look": [KEY_M],
+	"settings_music_down": [KEY_BRACKETLEFT],
+	"settings_music_up": [KEY_BRACKETRIGHT],
 	"consider": [KEY_C],
 	"sit": [KEY_X],
 	"loot": [KEY_L],
@@ -53,11 +55,33 @@ const BINDINGS := {
 var mouse_look := true
 
 
+## Music loudness, 0..1 (0 is off). Saved per machine.
+var music_volume := 0.25
+
+
 func set_mouse_look(on: bool) -> void:
 	mouse_look = on
+	_save_setting("mouse_look", on)
+
+
+func set_music_volume(v: float) -> void:
+	music_volume = clampf(snappedf(v, 0.05), 0.0, 1.0)
+	_save_setting("music_volume", music_volume)
+	Music.apply_volume()
+
+
+## settings.json is shared (main keeps the server, account and mode there too),
+## so a change rewrites one key and keeps the rest.
+func _save_setting(key: String, value: Variant) -> void:
+	var d := {}
+	if FileAccess.file_exists(SETTINGS_PATH):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
+		if typeof(parsed) == TYPE_DICTIONARY:
+			d = parsed
+	d[key] = value
 	var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f != null:
-		f.store_string(JSON.stringify({"mouse_look": mouse_look}, "  "))
+		f.store_string(JSON.stringify(d, "  "))
 
 
 func _load_settings() -> void:
@@ -66,6 +90,7 @@ func _load_settings() -> void:
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
 	if typeof(parsed) == TYPE_DICTIONARY:
 		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
+		music_volume = clampf(float((parsed as Dictionary).get("music_volume", 0.25)), 0.0, 1.0)
 
 
 func _ready() -> void:
