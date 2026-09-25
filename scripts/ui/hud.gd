@@ -83,6 +83,9 @@ var _chat: LineEdit
 var _chat_channel := ""  # "" is say; else "/g", "/sh", "/ooc", "/t Name" or "/r": where plain lines go
 var _channel_label: Label
 var _log_lines := 0
+var _group_log_panel: PanelContainer  # group chat, its own window while you're in a group
+var _group_log: RichTextLabel
+var _group_log_lines := 0
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
 var _trade_panel: PanelContainer
@@ -380,6 +383,41 @@ func _build_log() -> void:
 	row.add_child(_chat)
 	v.add_child(row)
 	_set_channel("")
+	_build_group_log()
+
+
+## Group chat's own window, beside the main one: shown only while you're in a
+## group, so what your group says doesn't scroll away under the fight. The
+## lines still show in the main window too. The button talks to the group.
+func _build_group_log() -> void:
+	_group_log_panel = UIKit.panel()
+	UIKit.place(_group_log_panel, Vector2(0, 1), Vector2(530, -12))
+	root.add_child(_group_log_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	_group_log_panel.add_child(v)
+	var head := HBoxContainer.new()
+	var title := UIKit.label("Group", 13, World.C_CHAT_GROUP)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var talk := UIKit.button("Talk (/g)", Vector2(84, 24))
+	talk.add_theme_font_size_override("font_size", 11)
+	talk.focus_mode = Control.FOCUS_NONE
+	talk.tooltip_text = "Chat to your group: plain lines go to /g until you switch (/s for say)."
+	talk.pressed.connect(func() -> void:
+		_set_channel("/g")
+		_open_chat(""))
+	head.add_child(talk)
+	v.add_child(head)
+	_group_log = RichTextLabel.new()
+	_group_log.custom_minimum_size = Vector2(340, 150)
+	_group_log.scroll_following = true
+	_group_log.selection_enabled = false
+	_group_log.add_theme_font_size_override("normal_font_size", 13)
+	_group_log.meta_underlined = false
+	_group_log.meta_clicked.connect(_on_log_keyword)
+	v.add_child(_group_log)
+	_group_log_panel.visible = false
 
 
 ## Chat channels stick, as in EQ's chat windows: using /g (or /sh, /ooc,
@@ -450,6 +488,7 @@ func _build_group_window() -> void:
 func _update_group() -> void:
 	var others := player.group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != player.entity_id)
 	_group_panel.visible = not player.group.is_empty()
+	_group_log_panel.visible = not player.group.is_empty()
 	var shape := str(player.group.map(func(m: Dictionary) -> String: return "%s:%s" % [m["id"], m["leader"]]))
 	if shape != _group_shape:
 		_group_shape = shape
@@ -1605,9 +1644,16 @@ func _has_ammo(kind: String) -> bool:
 ## Appends a chat line. [Bracketed] words become gold links; clicking one says
 ## that keyword to your target, like typing it in EverQuest.
 func add_log(text: String, color: Color) -> void:
-	if _log_lines > 0:
-		_log.newline()
-	_log.push_color(color)
+	_log_lines = _write_line(_log, _log_lines, text, color)
+	if color == World.C_CHAT_GROUP and _group_log != null:  # group chat also gets its own window
+		_group_log_lines = _write_line(_group_log, _group_log_lines, text, color)
+
+
+## Writes one line into a chat window, links and all; returns its new line count.
+func _write_line(box: RichTextLabel, lines: int, text: String, color: Color) -> int:
+	if lines > 0:
+		box.newline()
+	box.push_color(color)
 	var at := 0
 	var links := color == World.C_NPC  # only NPCs' [keywords] are clickable, never players' chat
 	var marks: Array = []  # [start, end, kind, value]
@@ -1620,24 +1666,25 @@ func add_log(text: String, color: Color) -> void:
 	for mk: Array in marks:
 		if mk[0] < at:
 			continue
-		_log.add_text(text.substr(at, mk[0] - at))
+		box.add_text(text.substr(at, mk[0] - at))
 		if mk[2] == "item":
-			_log.push_meta("item:" + str(mk[3]))
-			_log.push_color(GameData.item_color(mk[3]))
-			_log.add_text("[%s]" % GameData.item_name(mk[3]))
+			box.push_meta("item:" + str(mk[3]))
+			box.push_color(GameData.item_color(mk[3]))
+			box.add_text("[%s]" % GameData.item_name(mk[3]))
 		else:
-			_log.push_meta(mk[3])
-			_log.push_color(UIKit.GOLD)
-			_log.add_text(text.substr(mk[0], mk[1] - mk[0]))
-		_log.pop()
-		_log.pop()
+			box.push_meta(mk[3])
+			box.push_color(UIKit.GOLD)
+			box.add_text(text.substr(mk[0], mk[1] - mk[0]))
+		box.pop()
+		box.pop()
 		at = mk[1]
-	_log.add_text(text.substr(at))
-	_log.pop()
-	_log_lines += 1
-	if _log_lines > 300:
-		_log.remove_paragraph(0)
-		_log_lines -= 1
+	box.add_text(text.substr(at))
+	box.pop()
+	lines += 1
+	if lines > 300:
+		box.remove_paragraph(0)
+		lines -= 1
+	return lines
 
 
 # --- windows ------------------------------------------------------------------

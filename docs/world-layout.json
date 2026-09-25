@@ -1,0 +1,1026 @@
+{
+ "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
+ "areas": {
+  "emberlands": {
+   "name": "The Emberlands",
+   "deity": null,
+   "accent": "#7a9a5b"
+  },
+  "dawnstair": {
+   "name": "The Dawnstair",
+   "deity": "light",
+   "accent": "#e8d49a"
+  },
+  "monsoon": {
+   "name": "The Long Monsoon",
+   "deity": "water",
+   "accent": "#4fa3b8"
+  },
+  "ashfall": {
+   "name": "The Ashfall",
+   "deity": "fire",
+   "accent": "#d4552f"
+  },
+  "standingsky": {
+   "name": "The Standing Sky",
+   "deity": "wind",
+   "accent": "#b8c4cc"
+  },
+  "boneyard": {
+   "name": "The Boneyard",
+   "deity": "dark",
+   "accent": "#6b5a9e"
+  }
+ },
+ "zones": [
+  {
+   "id": "emberhold",
+   "name": "Emberhold",
+   "area": "emberlands",
+   "levels": [
+    1,
+    1
+   ],
+   "size": 224,
+   "cell": [
+    0,
+    0
+   ],
+   "kind": "city",
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "greenmoor",
+   "name": "Greenmoor",
+   "area": "emberlands",
+   "levels": [
+    1,
+    7
+   ],
+   "size": 384,
+   "cell": [
+    0,
+    1
+   ],
+   "kind": "field",
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "the_grove",
+   "name": "The Grove",
+   "area": "emberlands",
+   "levels": [
+    1,
+    1
+   ],
+   "size": 256,
+   "cell": null,
+   "kind": "sanctuary",
+   "existing": false,
+   "reached": "teleport"
+  },
+  {
+   "id": "harrowfield",
+   "name": "Harrowfield",
+   "area": "emberlands",
+   "levels": [
+    3,
+    9
+   ],
+   "size": 384,
+   "cell": [
+    1,
+    1
+   ],
+   "kind": "field",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "thornwood",
+   "name": "Thornwood Vale",
+   "area": "emberlands",
+   "levels": [
+    6,
+    14
+   ],
+   "size": 512,
+   "cell": [
+    0,
+    2
+   ],
+   "kind": "wood",
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "hollowmere",
+   "name": "Hollowmere",
+   "area": "emberlands",
+   "levels": [
+    10,
+    15
+   ],
+   "size": 448,
+   "cell": [
+    1,
+    2
+   ],
+   "kind": "water",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "sunward_steps",
+   "name": "Sunward Steps",
+   "area": "dawnstair",
+   "levels": [
+    14,
+    18
+   ],
+   "size": 448,
+   "cell": [
+    2,
+    2
+   ],
+   "kind": "terrace",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "high_terrace",
+   "name": "High Terrace",
+   "area": "dawnstair",
+   "levels": [
+    18,
+    23
+   ],
+   "size": 512,
+   "cell": [
+    1,
+    3
+   ],
+   "kind": "terrace",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "the_bleach",
+   "name": "The Bleach",
+   "area": "dawnstair",
+   "levels": [
+    16,
+    21
+   ],
+   "size": 512,
+   "cell": [
+    2,
+    3
+   ],
+   "kind": "waste",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "dawnwatch",
+   "name": "Dawnwatch",
+   "area": "dawnstair",
+   "levels": [
+    22,
+    24
+   ],
+   "size": 448,
+   "cell": [
+    1,
+    4
+   ],
+   "kind": "outpost",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "mirror_flats",
+   "name": "Mirror Flats",
+   "area": "dawnstair",
+   "levels": [
+    20,
+    24
+   ],
+   "size": 512,
+   "cell": [
+    2,
+    4
+   ],
+   "kind": "waste",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "lanternhold",
+   "name": "Lanternhold",
+   "area": "dawnstair",
+   "levels": [
+    14,
+    24
+   ],
+   "size": 224,
+   "cell": [
+    3,
+    2
+   ],
+   "kind": "city",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "weeping_throat",
+   "name": "The Weeping Throat",
+   "area": "monsoon",
+   "levels": [
+    20,
+    24
+   ],
+   "size": 448,
+   "cell": [
+    -1,
+    2
+   ],
+   "kind": "water",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "reedmere",
+   "name": "Reedmere",
+   "area": "monsoon",
+   "levels": [
+    22,
+    26
+   ],
+   "size": 512,
+   "cell": [
+    -2,
+    2
+   ],
+   "kind": "water",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "drownfast",
+   "name": "Drownfast",
+   "area": "monsoon",
+   "levels": [
+    26,
+    30
+   ],
+   "size": 512,
+   "cell": [
+    -1,
+    3
+   ],
+   "kind": "water",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "silted_reach",
+   "name": "The Silted Reach",
+   "area": "monsoon",
+   "levels": [
+    24,
+    28
+   ],
+   "size": 512,
+   "cell": [
+    -2,
+    3
+   ],
+   "kind": "water",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "tidemouth",
+   "name": "Tidemouth",
+   "area": "monsoon",
+   "levels": [
+    28,
+    30
+   ],
+   "size": 448,
+   "cell": [
+    -2,
+    4
+   ],
+   "kind": "outpost",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "rainhold",
+   "name": "Rainhold",
+   "area": "monsoon",
+   "levels": [
+    20,
+    30
+   ],
+   "size": 224,
+   "cell": [
+    -1,
+    1
+   ],
+   "kind": "city",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "cinderpass",
+   "name": "Cinderpass",
+   "area": "ashfall",
+   "levels": [
+    26,
+    30
+   ],
+   "size": 448,
+   "cell": [
+    0,
+    3
+   ],
+   "kind": "burn",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "the_burn",
+   "name": "The Burn",
+   "area": "ashfall",
+   "levels": [
+    29,
+    33
+   ],
+   "size": 512,
+   "cell": [
+    0,
+    4
+   ],
+   "kind": "burn",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "blackglass",
+   "name": "Blackglass",
+   "area": "ashfall",
+   "levels": [
+    31,
+    35
+   ],
+   "size": 512,
+   "cell": [
+    0,
+    5
+   ],
+   "kind": "burn",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "smokewood",
+   "name": "Smokewood",
+   "area": "ashfall",
+   "levels": [
+    33,
+    37
+   ],
+   "size": 512,
+   "cell": [
+    1,
+    5
+   ],
+   "kind": "wood",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "agnavars_hearth",
+   "name": "Agnavar's Hearth",
+   "area": "ashfall",
+   "levels": [
+    35,
+    38
+   ],
+   "size": 512,
+   "cell": [
+    2,
+    5
+   ],
+   "kind": "burn",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "forgehold",
+   "name": "Forgehold",
+   "area": "ashfall",
+   "levels": [
+    26,
+    38
+   ],
+   "size": 224,
+   "cell": [
+    3,
+    5
+   ],
+   "kind": "city",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "windbreak",
+   "name": "Windbreak",
+   "area": "standingsky",
+   "levels": [
+    32,
+    36
+   ],
+   "size": 448,
+   "cell": [
+    -1,
+    4
+   ],
+   "kind": "plain",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "the_long_grass",
+   "name": "The Long Grass",
+   "area": "standingsky",
+   "levels": [
+    34,
+    38
+   ],
+   "size": 512,
+   "cell": [
+    -1,
+    5
+   ],
+   "kind": "plain",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "stonesail",
+   "name": "Stonesail",
+   "area": "standingsky",
+   "levels": [
+    37,
+    41
+   ],
+   "size": 512,
+   "cell": [
+    -2,
+    5
+   ],
+   "kind": "plain",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "hollow_air",
+   "name": "Hollow Air",
+   "area": "standingsky",
+   "levels": [
+    39,
+    43
+   ],
+   "size": 512,
+   "cell": [
+    -1,
+    6
+   ],
+   "kind": "plain",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "vayukeths_step",
+   "name": "Vayuketh's Step",
+   "area": "standingsky",
+   "levels": [
+    42,
+    44
+   ],
+   "size": 448,
+   "cell": [
+    -2,
+    6
+   ],
+   "kind": "outpost",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "galehold",
+   "name": "Galehold",
+   "area": "standingsky",
+   "levels": [
+    32,
+    44
+   ],
+   "size": 224,
+   "cell": [
+    -3,
+    5
+   ],
+   "kind": "city",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "fogfall",
+   "name": "Fogfall",
+   "area": "boneyard",
+   "levels": [
+    40,
+    43
+   ],
+   "size": 512,
+   "cell": [
+    0,
+    6
+   ],
+   "kind": "fog",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "ivory_field",
+   "name": "The Ivory Field",
+   "area": "boneyard",
+   "levels": [
+    42,
+    45
+   ],
+   "size": 512,
+   "cell": [
+    1,
+    6
+   ],
+   "kind": "fog",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "the_unlit",
+   "name": "The Unlit",
+   "area": "boneyard",
+   "levels": [
+    44,
+    47
+   ],
+   "size": 512,
+   "cell": [
+    2,
+    6
+   ],
+   "kind": "fog",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "lastwalk",
+   "name": "Lastwalk",
+   "area": "boneyard",
+   "levels": [
+    46,
+    49
+   ],
+   "size": 512,
+   "cell": [
+    0,
+    7
+   ],
+   "kind": "fog",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "timirajs_table",
+   "name": "Timiraj's Table",
+   "area": "boneyard",
+   "levels": [
+    48,
+    50
+   ],
+   "size": 512,
+   "cell": [
+    1,
+    7
+   ],
+   "kind": "fog",
+   "existing": false,
+   "reached": "foot"
+  },
+  {
+   "id": "barrowhold",
+   "name": "Barrowhold",
+   "area": "boneyard",
+   "levels": [
+    40,
+    50
+   ],
+   "size": 224,
+   "cell": [
+    2,
+    7
+   ],
+   "kind": "city",
+   "existing": false,
+   "reached": "foot"
+  }
+ ],
+ "links": [
+  {
+   "a": "emberhold",
+   "a_edge": "north",
+   "b": "greenmoor",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "greenmoor",
+   "a_edge": "north",
+   "b": "thornwood",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "greenmoor",
+   "a_edge": "east",
+   "b": "harrowfield",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "greenmoor",
+   "a_edge": "west",
+   "b": "rainhold",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "harrowfield",
+   "a_edge": "north",
+   "b": "hollowmere",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "thornwood",
+   "a_edge": "west",
+   "b": "weeping_throat",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "hollowmere",
+   "a_edge": "east",
+   "b": "sunward_steps",
+   "b_edge": "west",
+   "cross_area": true
+  },
+  {
+   "a": "hollowmere",
+   "a_edge": "west",
+   "b": "thornwood",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "sunward_steps",
+   "a_edge": "north",
+   "b": "the_bleach",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "high_terrace",
+   "a_edge": "south",
+   "b": "hollowmere",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "high_terrace",
+   "a_edge": "east",
+   "b": "the_bleach",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "dawnwatch",
+   "a_edge": "north",
+   "b": "smokewood",
+   "b_edge": "south",
+   "cross_area": true
+  },
+  {
+   "a": "dawnwatch",
+   "a_edge": "south",
+   "b": "high_terrace",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "dawnwatch",
+   "a_edge": "east",
+   "b": "mirror_flats",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "dawnwatch",
+   "a_edge": "west",
+   "b": "the_burn",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "mirror_flats",
+   "a_edge": "south",
+   "b": "the_bleach",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "lanternhold",
+   "a_edge": "west",
+   "b": "sunward_steps",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "reedmere",
+   "a_edge": "north",
+   "b": "silted_reach",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "reedmere",
+   "a_edge": "east",
+   "b": "weeping_throat",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "drownfast",
+   "a_edge": "north",
+   "b": "windbreak",
+   "b_edge": "south",
+   "cross_area": true
+  },
+  {
+   "a": "drownfast",
+   "a_edge": "south",
+   "b": "weeping_throat",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "drownfast",
+   "a_edge": "west",
+   "b": "silted_reach",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "silted_reach",
+   "a_edge": "north",
+   "b": "tidemouth",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "tidemouth",
+   "a_edge": "east",
+   "b": "windbreak",
+   "b_edge": "west",
+   "cross_area": true
+  },
+  {
+   "a": "rainhold",
+   "a_edge": "north",
+   "b": "weeping_throat",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "cinderpass",
+   "a_edge": "north",
+   "b": "the_burn",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "cinderpass",
+   "a_edge": "south",
+   "b": "thornwood",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "cinderpass",
+   "a_edge": "east",
+   "b": "high_terrace",
+   "b_edge": "west",
+   "cross_area": true
+  },
+  {
+   "a": "cinderpass",
+   "a_edge": "west",
+   "b": "drownfast",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "the_burn",
+   "a_edge": "west",
+   "b": "windbreak",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "blackglass",
+   "a_edge": "north",
+   "b": "fogfall",
+   "b_edge": "south",
+   "cross_area": true
+  },
+  {
+   "a": "blackglass",
+   "a_edge": "south",
+   "b": "the_burn",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "blackglass",
+   "a_edge": "east",
+   "b": "smokewood",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "blackglass",
+   "a_edge": "west",
+   "b": "the_long_grass",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "agnavars_hearth",
+   "a_edge": "north",
+   "b": "the_unlit",
+   "b_edge": "south",
+   "cross_area": true
+  },
+  {
+   "a": "agnavars_hearth",
+   "a_edge": "south",
+   "b": "mirror_flats",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "agnavars_hearth",
+   "a_edge": "east",
+   "b": "forgehold",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "agnavars_hearth",
+   "a_edge": "west",
+   "b": "smokewood",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "the_long_grass",
+   "a_edge": "south",
+   "b": "windbreak",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "stonesail",
+   "a_edge": "north",
+   "b": "vayukeths_step",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "stonesail",
+   "a_edge": "south",
+   "b": "tidemouth",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "stonesail",
+   "a_edge": "east",
+   "b": "the_long_grass",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "hollow_air",
+   "a_edge": "south",
+   "b": "the_long_grass",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "hollow_air",
+   "a_edge": "west",
+   "b": "vayukeths_step",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "galehold",
+   "a_edge": "east",
+   "b": "stonesail",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "fogfall",
+   "a_edge": "north",
+   "b": "lastwalk",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "fogfall",
+   "a_edge": "east",
+   "b": "ivory_field",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "fogfall",
+   "a_edge": "west",
+   "b": "hollow_air",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
+   "a": "ivory_field",
+   "a_edge": "north",
+   "b": "timirajs_table",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "ivory_field",
+   "a_edge": "south",
+   "b": "smokewood",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "ivory_field",
+   "a_edge": "east",
+   "b": "the_unlit",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "lastwalk",
+   "a_edge": "east",
+   "b": "timirajs_table",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "barrowhold",
+   "a_edge": "south",
+   "b": "the_unlit",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "barrowhold",
+   "a_edge": "west",
+   "b": "timirajs_table",
+   "b_edge": "east",
+   "cross_area": false
+  }
+ ]
+}
