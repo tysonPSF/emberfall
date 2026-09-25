@@ -27,6 +27,7 @@ const SECTIONS := [
 	["chat", "greenmoor"],
 	["groupui", "greenmoor"],
 	["groupchat", "greenmoor"],
+	["bowdrops", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1655,6 +1656,38 @@ func _t_groupchat() -> void:
 	p.group = []
 	hud._update_group()
 	print("groupchat: left the group -> window shown %s" % hud._group_log_panel.visible)
+
+
+## Bows drop: how often scouts and raiders roll one (2000 rolls each), and a
+## scout killed with a bow and arrows on it leaves both on its corpse.
+func _t_bowdrops() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for mob_id: String in ["gnoll_scout", "orc_raider", "grolthar"]:
+		var bows := {}
+		for k in 2000:
+			var g: Dictionary = World.roll_gear(GameData.mobs[mob_id], 10)
+			if g.has("range"):
+				var base := GameData.base_item(str(g["range"]))
+				bows[base] = int(bows.get(base, 0)) + 1
+		print("bowdrops: %s carries a bow %s in 2000 spawns" % [mob_id, bows])
+	var scout := _nearest_mob(p, "gnoll_scout")
+	scout.gear["range"] = "hunting_shortbow@fine"
+	var loot: Array = scout.data["loot"].duplicate(true)
+	for e: Dictionary in scout.data["loot"]:
+		if e["item"] == "crude_arrow":
+			e["chance"] = 1.0
+	World.kill(scout, p)
+	scout.data["loot"] = loot
+	var body: Corpse = null
+	for obj: Variant in World.objects.values():
+		if obj is Corpse and not (obj as Node).is_queued_for_deletion() and (obj as Corpse).display_name.begins_with(scout.display_name):
+			body = obj
+	print("bowdrops: the scout's corpse holds %s" % [body.entries.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], int(e.get("count", 1))])])
+	p.global_position = body.global_position + Vector3(0, 1, 1)
+	World.request_loot_open(p.entity_id, body.object_id)
+	World.request_loot_all(p.entity_id, body.object_id)
+	print("bowdrops: looted -> bow %d, arrows %d" % [p.pack.count("hunting_shortbow@fine"), p.pack.count("crude_arrow")])
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

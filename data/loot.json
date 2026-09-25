@@ -208,6 +208,13 @@
     },
     "grolthar_weapon": {
       "bloodtusk_warcleaver": 1
+    },
+    "scout_bows": {
+      "hunting_shortbow": 1
+    },
+    "raider_bows": {
+      "hunting_shortbow": 3,
+      "ashwood_recurve": 1
     }
   }
 }

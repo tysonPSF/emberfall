@@ -48,5 +48,52 @@
     "projectile": "stone",
     "stack": 100,
     "value": 1
+  },
+  "ashwood_recurve": {
+    "name": "Ashwood Recurve",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 6,
+    "delay": 3.0,
+    "range": 40,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "agi": 1,
+    "value": 480,
+    "rec_level": 8,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "silkstring_longbow": {
+    "name": "Silkstring Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 8,
+    "delay": 3.2,
+    "range": 44,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "agi": 2,
+    "str": 1,
+    "value": 1600,
+    "rec_level": 11,
+    "classes": [
+      "warrior"
+    ],
+    "proc": {
+      "spell": "thornback_venom",
+      "chance": 0.1
+    }
   }
 }
