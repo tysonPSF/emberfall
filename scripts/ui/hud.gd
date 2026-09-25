@@ -53,6 +53,9 @@ var _cast_panel: PanelContainer
 var _cast_bar: ProgressBar
 var _cast_label: Label
 
+var _buff_panel: PanelContainer
+var _buff_rows: VBoxContainer
+var _buff_shape := ""  # which buffs the rows show, so they're rebuilt only when that changes
 var _spell_slots: Array[HotSlot] = []
 var _attack_slot: HotSlot
 var _ranged_slot: HotSlot
@@ -157,6 +160,7 @@ func _ready() -> void:
 	_build_inventory()
 	_build_help()
 	_build_menu_icons()
+	_build_buffs()
 	_build_settings()
 	_build_overlays()
 	_build_menu()
@@ -332,6 +336,77 @@ func _build_menu_icons() -> void:
 		slot.tooltip_text = m[2]
 		slot.pressed.connect(m[3])
 		row.add_child(slot)
+
+
+## Your buffs, on the right: icon, name and time left (or "until level 10"),
+## the spell's description on hover. Stays clear of the inventory and help
+## windows, which share that side.
+func _build_buffs() -> void:
+	_buff_panel = UIKit.panel()
+	root.add_child(_buff_panel)
+	_buff_rows = VBoxContainer.new()
+	_buff_rows.add_theme_constant_override("separation", 4)
+	_buff_panel.add_child(_buff_rows)
+	_buff_panel.visible = false
+
+
+## [spell id, seconds left or -1 for "until a level"] for each buff on you.
+func _buff_list() -> Array:
+	var out: Array = []
+	if player.elders_blessing():
+		out.append(["blessing_of_the_elders", -1.0])
+	for spell_id: String in player.buffs:
+		out.append([spell_id, float(player.buffs[spell_id].get("left", 0.0))])
+	return out
+
+
+func _update_buffs() -> void:
+	var list := _buff_list()
+	_buff_panel.visible = not list.is_empty()
+	if list.is_empty():
+		return
+	var shape := str(list.map(func(b: Array) -> String: return b[0]))
+	if shape != _buff_shape:
+		_buff_shape = shape
+		for c in _buff_rows.get_children():
+			c.queue_free()
+		_buff_rows.add_child(UIKit.label("Buffs", 12, UIKit.GOLD))
+		for b: Array in list:
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 6)
+			row.mouse_filter = Control.MOUSE_FILTER_PASS
+			row.tooltip_text = spell_tooltip(b[0])
+			var slot := HotSlot.new()
+			slot.custom_minimum_size = Vector2(28, 28)
+			slot.picture = GameData.icon("spell_" + str(b[0]))
+			var s: Dictionary = GameData.spells.get(b[0], {})
+			slot.fallback = "".join(Array(str(s.get("name", "?")).split(" ")).map(func(w: String) -> String: return w.left(1)))
+			slot.gem = HotSlot.GEMS["buff"]
+			slot.tooltip_text = row.tooltip_text
+			row.add_child(slot)
+			var text := VBoxContainer.new()
+			text.add_theme_constant_override("separation", 0)
+			var name := UIKit.label(str(s.get("name", b[0])), 12, UIKit.TEXT)
+			var left := UIKit.label("", 11, UIKit.DIM)
+			left.name = "left"
+			text.add_child(name)
+			text.add_child(left)
+			row.add_child(text)
+			row.set_meta("spell", b[0])
+			_buff_rows.add_child(row)
+	var rows := _buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell"))
+	for i in mini(rows.size(), list.size()):
+		var secs: float = list[i][1]
+		var label := (rows[i] as Node).find_child("left", true, false) as Label
+		label.text = "until level %d" % int(World.cfg("elders_blessing", {}).get("until_level", 10)) if secs < 0.0 \
+				else ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs))
+	# right edge under the top icons, or left of whichever right-side window is open
+	var right := root.size.x - 12.0
+	for w: Control in [_inv_panel, _help_panel]:
+		if w.visible:
+			right = minf(right, w.position.x - 8.0)
+	_buff_panel.reset_size()
+	_buff_panel.position = Vector2(right - _buff_panel.size.x, 60.0)
 
 
 func _toggle_skills() -> void:
@@ -1464,6 +1539,7 @@ func _process(delta: float) -> void:
 	if _crosshair.visible and (player.auto_attack or _ring_drawn):
 		_crosshair.queue_redraw()
 	_ring_drawn = player.auto_attack
+	_update_buffs()
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]
 	_hp_bar.max_value = player.max_hp
