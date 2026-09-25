@@ -199,7 +199,7 @@ func apply_self(d: Dictionary) -> void:
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
-			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting",
+			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened"]:
 		set(key, d[key])
 	if bool(d["dead"]) != dead:
