@@ -375,7 +375,7 @@ func _update_buffs() -> void:
 			var row := HBoxContainer.new()
 			row.add_theme_constant_override("separation", 6)
 			row.mouse_filter = Control.MOUSE_FILTER_PASS
-			row.tooltip_text = spell_tooltip(b[0])
+			row.tooltip_text = _buff_tooltip(b[0])
 			var slot := HotSlot.new()
 			slot.custom_minimum_size = Vector2(28, 28)
 			slot.picture = GameData.icon("spell_" + str(b[0]))
@@ -397,6 +397,10 @@ func _update_buffs() -> void:
 	var rows := _buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell"))
 	for i in mini(rows.size(), list.size()):
 		var secs: float = list[i][1]
+		var tip := _buff_tooltip(list[i][0], secs)
+		(rows[i] as Control).tooltip_text = tip
+		for c: Control in (rows[i] as Node).find_children("*", "HotSlot", false, false):
+			c.tooltip_text = tip
 		var label := (rows[i] as Node).find_child("left", true, false) as Label
 		label.text = "until level %d" % int(World.cfg("elders_blessing", {}).get("until_level", 10)) if secs < 0.0 \
 				else ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs))
@@ -407,6 +411,30 @@ func _update_buffs() -> void:
 			right = minf(right, w.position.x - 8.0)
 	_buff_panel.reset_size()
 	_buff_panel.position = Vector2(right - _buff_panel.size.x, 60.0)
+
+
+## A buff's tooltip: what it does, its effects, and how long it has left (the
+## Blessing of the Elders: which level it fades at, and how far that is).
+func _buff_tooltip(spell_id: String, secs := 0.0) -> String:
+	var s: Dictionary = GameData.spells.get(spell_id, {})
+	var lines: PackedStringArray = [str(s.get("name", spell_id))]
+	if s.has("desc"):
+		lines.append(str(s["desc"]))
+	var stats: Dictionary = s.get("stats", {})
+	var fx := PackedStringArray()
+	for stat: String in stats:
+		fx.append("%s %+d" % [ATTR_NAMES.get(stat, stat.to_upper()), int(stats[stat])])
+	if spell_id == "blessing_of_the_elders":
+		fx.append("Experience +%d%%" % int(World.cfg("elders_blessing", {}).get("xp_pct", 15)))
+	if not fx.is_empty():
+		lines.append("   ".join(fx))
+	if spell_id == "blessing_of_the_elders":
+		var until := int(World.cfg("elders_blessing", {}).get("until_level", 10))
+		var togo := until - player.level
+		lines.append("Fades at level %d (you're level %d: %d to go)" % [until, player.level, togo])
+	elif secs > 0.0:
+		lines.append("Time left: %s" % ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs)))
+	return "\n".join(lines)
 
 
 func _toggle_skills() -> void:
