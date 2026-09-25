@@ -579,6 +579,12 @@ func _build_tavern_room(p: Vector3, yaw: float) -> void:
 	put.call("shelf_small", Vector3(-hw + 0.5, 0.06, 2.5), PI / 2.0)
 	put.call("barrel_small_stack", Vector3(hw - 0.7, 0.06, 3.6), -PI / 2.0)
 	put.call("chest", Vector3(-hw + 0.7, 0.06, -5.4), PI / 2.0)
+	# The long table down the middle, dishes and all. The door arrives to one
+	# side of it so walking in does not put it straight into your chest.
+	put.call("table_long_decorated_A", Vector3(0, 0.06, 2.0))
+	for i in 4:
+		put.call("stool", Vector3(-2.4 + i * 1.6, 0.06, 3.5), PI, "none")
+		put.call("stool", Vector3(-2.4 + i * 1.6, 0.06, 0.5), 0.0, "none")
 	lamp.call(Vector3(0, 3.0, 2.0), 1.8)
 	for side: float in [-1.0, 1.0]:
 		for z: float in [-2.5, 3.5]:
