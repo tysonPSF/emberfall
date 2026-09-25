@@ -1,12 +1,13 @@
 """Draw the layout as a map you can look at. Cells are drawn at their real
 `size` in metres, so a 512 m wild reads bigger than a 224 m city."""
-import json, matplotlib
+import json, os, matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Rectangle
 from matplotlib.lines import Line2D
 
-W = json.load(open('/mnt/user-data/outputs/emberfall_world_layout.json'))
+DOCS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs')
+W = json.load(open(os.path.join(DOCS, 'world-layout.json')))
 AREAS, ZONES, LINKS = W['areas'], {z['id']: z for z in W['zones']}, W['links']
 
 CELL = 1.0
@@ -117,6 +118,6 @@ lg = ax.legend(handles=leg, loc='lower left', bbox_to_anchor=(-0.02, -0.055),
                frameon=False, fontsize=10, labelcolor=INK, ncol=2,
                handletextpad=0.9, columnspacing=2.4, labelspacing=0.75)
 plt.tight_layout()
-plt.savefig('/mnt/user-data/outputs/emberfall_world_map.png', dpi=132,
+plt.savefig(os.path.join(DOCS, 'world-map.png'), dpi=132,
             facecolor=BG, bbox_inches='tight', pad_inches=0.35)
 print('ok')
