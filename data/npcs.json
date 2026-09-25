@@ -2,7 +2,7 @@
   "warden_holt": {
     "name": "Warden Holt",
     "title": "Warden of the Watch",
-    "level": 12,
+    "level": 30,
     "model": "knight",
     "weapon": "sword_1handed",
     "dialogue": {
@@ -16,12 +16,12 @@
     "faction": "watch",
     "outfitter": "Empty-handed, {name}? The wilds took your kit, I'd wager. Here, from the Watch's stores. Try to keep hold of it this time.",
     "combat": {
-      "hp": 1800,
-      "hp_regen": 30,
-      "ac": 70,
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
       "dmg": [
-        10,
-        22
+        14,
+        28
       ],
       "delay": 2.4
     },
@@ -366,7 +366,7 @@
   "vale_patrol": {
     "name": "Sergeant Harlan",
     "title": "Vale Patrol",
-    "level": 18,
+    "level": 30,
     "model": "knight",
     "weapon": "sword_1handed",
     "faction": "watch",
@@ -400,12 +400,12 @@
       ]
     },
     "combat": {
-      "hp": 1400,
-      "hp_regen": 20,
-      "ac": 55,
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
       "dmg": [
-        10,
-        20
+        14,
+        28
       ],
       "delay": 2.4,
       "verb": [

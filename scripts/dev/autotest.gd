@@ -58,6 +58,7 @@ const SECTIONS := [
 	["thornwood_mobs", "thornwood"],
 	["tw_density", "thornwood"],
 	["quest_repeat", "greenmoor"],
+	["guard_levels", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2141,3 +2142,12 @@ func _t_quest_repeat() -> void:
 		gains.append(p.xp - before)
 	print("quest_repeat: fang bounty xp for turn-ins 1, 2, 3: %s (quest reward %d)" % [gains, int(GameData.quests["fang_bounty"]["reward"]["xp"])])
 	p.quests.erase("fang_bounty")
+
+
+## Every guard stands 15 levels over the level cap.
+func _t_guard_levels() -> void:
+	var levels := {}
+	for npc: Npc in _npcs().values():
+		if not npc.guard.is_empty():
+			levels[npc.npc_id] = npc.level
+	print("guard_levels: cap %d -> %s" % [int(World.cfg("max_level", 10)), levels])

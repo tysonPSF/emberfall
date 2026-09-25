@@ -5,6 +5,7 @@
   "melee_range": 3.4,
   "ammo_recover_chance": 0.15,
   "quest_repeat_xp": 0.5,
+  "guard_levels_over_cap": 15,
   "stamina_base": 100,
   "stamina_per_level": 4,
   "sprint_speed_mult": 1.55,
