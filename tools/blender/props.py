@@ -703,23 +703,25 @@ def tavern_bar():
 	p.blob((0.3, 0.26, 0.16), (0.6, -0.12, 1.33), CLAY, grad=(0.1, 0.6))
 
 	# --- the back shelves -----------------------------------------------------
-	p.box((w, 0.32, 2.5), (0, 1.55, 1.25), WOOD, grad=(0.22, 0.95))
+	p.box((w, 0.32, 2.5), (0, 1.78, 1.25), WOOD, grad=(0.22, 0.95))
+	# A duckboard for whoever is working: without it the counter hides them.
+	p.box((w - 0.5, 1.1, 0.26), (0, 1.02, 0.13), WOOD_GRAY, grad=(0.3, 1.0))
 	for z in (0.88, 1.56, 2.2):
-		p.box((w - 0.3, 0.56, 0.11), (0, 1.3, z), WOOD_GRAY, grad=(0.18, 0.8))
+		p.box((w - 0.3, 0.56, 0.11), (0, 1.53, z), WOOD_GRAY, grad=(0.18, 0.8))
 		for k in range(11):        # bottles, jars and tankards
 			x = -hw + 0.4 + k * 0.52 + p.rng.uniform(-0.05, 0.05)
 			sw = (LEAF, WATER, GOLD, CLAY, BONE)[(k + int(z * 3)) % 5]
 			h = p.rng.uniform(0.2, 0.34)
-			p.seg((x, 1.3, z + 0.06), (x, 1.3, z + 0.06 + h), 0.075, 0.06, sw, sides=6, grad=(0.1, 0.65))
+			p.seg((x, 1.53, z + 0.06), (x, 1.53, z + 0.06 + h), 0.075, 0.06, sw, sides=6, grad=(0.1, 0.65))
 			if h > 0.3:
-				p.seg((x, 1.3, z + 0.06 + h), (x, 1.3, z + 0.14 + h), 0.03, 0.03, sw, sides=5, grad=(0.1, 0.5))
-	p.box((w + 0.3, 0.5, 0.16), (0, 1.4, 2.62), WOOD, grad=(0.2, 0.9))
+				p.seg((x, 1.53, z + 0.06 + h), (x, 1.53, z + 0.14 + h), 0.03, 0.03, sw, sides=5, grad=(0.1, 0.5))
+	p.box((w + 0.3, 0.5, 0.16), (0, 1.63, 2.62), WOOD, grad=(0.2, 0.9))
 
 	# --- barrels stacked at the ends ------------------------------------------
 	for s in (-1, 1):
-		p.seg((s * (hw + 0.55), 1.3, 0.0), (s * (hw + 0.55), 1.3, 0.92), 0.44, 0.41, WOOD, sides=8, grad=(0.25, 1.0))
-		p.seg((s * (hw + 0.55), 1.3, 0.28), (s * (hw + 0.55), 1.3, 0.4), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
-		p.seg((s * (hw + 0.55), 1.3, 0.62), (s * (hw + 0.55), 1.3, 0.74), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
+		p.seg((s * (hw + 0.55), 1.55, 0.0), (s * (hw + 0.55), 1.55, 0.92), 0.44, 0.41, WOOD, sides=8, grad=(0.25, 1.0))
+		p.seg((s * (hw + 0.55), 1.55, 0.28), (s * (hw + 0.55), 1.55, 0.4), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
+		p.seg((s * (hw + 0.55), 1.55, 0.62), (s * (hw + 0.55), 1.55, 0.74), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
 	return p.build()
 
 

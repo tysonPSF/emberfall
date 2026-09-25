@@ -515,49 +515,56 @@ func _build_market(p: Vector3, yaw: float) -> void:
 			_prop(["barrel_small", "box_small", "crates_stacked"][_rng.randi() % 3], xf * Vector3(-2.25 + i * 4.5, 0, -1.2), _rng.randf() * TAU, 0.8)
 
 
-## Water in a bowl carved by height_at, ringed by reeds, with lily pads and a
-## The taproom inside the Ember and Anvil: 15 x 12 m, bar across the back, the
-## door on the +Z side where the zone line out sits. Built from the same Dungeon
-## pieces the houses use, so it matches the rest of the city indoors as well as
-## out; the counter itself is our own prop.
+## The taproom inside the Ember and Anvil: 21 x 18 m and 6 m to the ceiling, bar
+## across the back, door on the +Z side where the zone line out sits. Built from
+## the same Dungeon pieces the houses use, so it matches the rest of the city
+## indoors as well as out; the counter itself is our own prop.
 func _build_tavern_room(p: Vector3, yaw: float) -> void:
 	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
 	var put := func(id: String, local: Vector3, local_yaw := 0.0, collide := "box", scale_ := 1.0) -> void:
 		_prop(id, xf * local, yaw + local_yaw, scale_, collide)
 	var lamp := func(local: Vector3, energy := 2.2) -> void:
-		_light(xf * local, Color(1.0, 0.78, 0.52), 9.5, energy)
-	var hw := 7.5
-	var hd := 6.0
+		_light(xf * local, Color(1.0, 0.78, 0.52), 11.0, energy)
+	var hw := 10.5
+	var hd := 9.0
 
 	# --- shell: floor, ceiling, walls -----------------------------------------
-	for i in 5:
-		var x := -6.0 + i * 3.0
-		for j in 4:
-			put.call("floor_wood_large", Vector3(x, 0.06, -4.5 + j * 3.0), 0.0, "none")
-			put.call("ceiling_tile", Vector3(x, 3.02, -4.5 + j * 3.0), 0.0, "none")
-		put.call("wall", Vector3(x, 0, -hd), 0.0, "mesh")
-		put.call("wall_doorway" if i == 2 else "wall", Vector3(x, 0, hd), 0.0, "mesh")
-	for j in 4:
-		var z := -4.5 + j * 3.0
+	# Two courses of wall, so the taproom is 6 m to the ceiling. One course left
+	# the third-person camera nothing to work with: it needs room to swing.
+	for i in 7:
+		var x := -9.0 + i * 3.0
+		for j in 6:
+			put.call("floor_wood_large", Vector3(x, 0.06, -7.5 + j * 3.0), 0.0, "none")
+			# The ceiling collides. Without that the camera rides straight up
+			# through it and you end up looking at the roof from outside.
+			put.call("ceiling_tile", Vector3(x, 6.02, -7.5 + j * 3.0), 0.0, "box")
+		for y: float in [0.0, 3.0]:
+			put.call("wall", Vector3(x, y, -hd), 0.0, "mesh")
+			put.call("wall_doorway" if i == 3 and y == 0.0 else "wall", Vector3(x, y, hd), 0.0, "mesh")
+	for j in 6:
+		var z := -7.5 + j * 3.0
 		for side: float in [-1.0, 1.0]:
-			var id := "wall_window_closed" if j == 1 or j == 2 else "wall"
+			var id := "wall_window_closed" if j == 2 or j == 3 else "wall"
 			put.call(id, Vector3(side * hw, 0, z), PI / 2.0, "mesh")
+			put.call("wall", Vector3(side * hw, 3.0, z), PI / 2.0, "mesh")
 	for x: float in [-hw, hw]:
 		for z: float in [-hd, hd]:
-			put.call("pillar", Vector3(x, 0, z))
-	for x: float in [-4.5, 4.5]:   # two posts holding the ceiling up mid-room
-		put.call("pillar", Vector3(x, 0, 0.5))
+			for y: float in [0.0, 3.0]:
+				put.call("pillar", Vector3(x, y, z))
+	for post: Array in [[-3.0, -2.0], [3.0, -2.0], [-3.0, 4.0], [3.0, 4.0]]:
+		for y: float in [0.0, 3.0]:   # posts holding the ceiling up mid-room
+			put.call("pillar", Vector3(post[0], y, post[1]))
 
 	# --- the bar --------------------------------------------------------------
-	put.call("tavern_bar", Vector3(0, 0.06, -4.3), 0.0, "mesh")
-	lamp.call(Vector3(0, 2.5, -3.4), 2.6)
-	for i in 4:                    # stools along the counter
-		put.call("stool", Vector3(-2.4 + i * 1.6, 0.06, -2.5), PI, "none")
-	put.call("barrel_large", Vector3(-6.6, 0.06, -4.6))
-	put.call("crates_stacked", Vector3(6.5, 0.06, -4.8), PI / 5.0)
+	put.call("tavern_bar", Vector3(0, 0.06, -6.8), 0.0, "mesh")
+	lamp.call(Vector3(0, 3.1, -5.6), 3.0)
+	for i in 5:                    # stools along the counter
+		put.call("stool", Vector3(-3.2 + i * 1.6, 0.06, -5.3), PI, "none")
+	put.call("barrel_large", Vector3(-9.4, 0.06, -7.4))
+	put.call("crates_stacked", Vector3(9.3, 0.06, -7.6), PI / 5.0)
 
 	# --- tables to sit at, for whoever the night brings in --------------------
-	for spot: Array in [[-4.6, 3.2], [4.6, 3.2], [-4.6, -0.8], [4.6, -0.8]]:
+	for spot: Array in [[-6.6, 5.6], [6.6, 5.6], [-6.6, 1.0], [6.6, 1.0], [-6.6, -3.6], [6.6, -3.6]]:
 		var t := Vector3(spot[0], 0.06, spot[1])
 		put.call("table_medium", t)
 		put.call("chair", t + Vector3(0, 0, 1.35), PI, "none")
@@ -566,19 +573,26 @@ func _build_tavern_room(p: Vector3, yaw: float) -> void:
 		put.call("stool", t + Vector3(-1.35, 0, 0), 0.0, "none")
 		put.call("candle_lit", t + Vector3(0.25, 0.86, 0.1), 0.0, "none")
 		put.call("mug_full", t + Vector3(-0.3, 0.86, -0.2), 0.0, "none")
-		lamp.call(t + Vector3(0, 2.6, 0), 1.5)
+		lamp.call(t + Vector3(0, 3.0, 0), 1.8)
 
 	# --- dressing -------------------------------------------------------------
-	put.call("shelf_small", Vector3(-hw + 0.5, 0.06, 1.5), PI / 2.0)
-	put.call("barrel_small_stack", Vector3(hw - 0.7, 0.06, 2.4), -PI / 2.0)
-	put.call("chest", Vector3(-hw + 0.7, 0.06, -3.4), PI / 2.0)
+	put.call("shelf_small", Vector3(-hw + 0.5, 0.06, 2.5), PI / 2.0)
+	put.call("barrel_small_stack", Vector3(hw - 0.7, 0.06, 3.6), -PI / 2.0)
+	put.call("chest", Vector3(-hw + 0.7, 0.06, -5.4), PI / 2.0)
+	put.call("table_long_decorated_A", Vector3(0, 0.06, 2.0))
+	for i in 4:
+		put.call("stool", Vector3(-2.4 + i * 1.6, 0.06, 3.5), PI, "none")
+		put.call("stool", Vector3(-2.4 + i * 1.6, 0.06, 0.5), 0.0, "none")
+	lamp.call(Vector3(0, 3.0, 2.0), 1.8)
 	for side: float in [-1.0, 1.0]:
-		put.call("torch_lit", Vector3(side * (hw - 0.35), 1.9, -1.5), side * PI / 2.0, "none")
-		_light(xf * Vector3(side * (hw - 0.9), 2.1, -1.5), Color(1.0, 0.62, 0.3), 7.0, 1.8)
-		put.call("banner_brown", Vector3(side * (hw - 0.3), 2.3, 4.0), side * PI / 2.0, "none")
-	lamp.call(Vector3(0, 2.6, 4.6), 1.4)
+		for z: float in [-2.5, 3.5]:
+			put.call("torch_lit", Vector3(side * (hw - 0.35), 1.9, z), side * PI / 2.0, "none")
+			_light(xf * Vector3(side * (hw - 0.9), 2.1, z), Color(1.0, 0.62, 0.3), 7.5, 1.8)
+		put.call("banner_brown", Vector3(side * (hw - 0.3), 2.3, 7.0), side * PI / 2.0, "none")
+	lamp.call(Vector3(0, 3.0, 7.4), 1.6)
 
 
+## Water in a bowl carved by height_at, ringed by reeds, with lily pads and a
 ## dock on the bank at angle "dock" (degrees; 0 = east, -90 = north) running
 ## out toward the middle. Crates, a barrel and a torch stand at its foot.
 func _build_pond(lm: Dictionary) -> void:
@@ -732,7 +746,7 @@ func _build_npcs() -> void:
 	for entry: Dictionary in data.get("npcs", []):
 		var npc := Npc.new()
 		npc.setup(entry["id"], str(entry.get("name", "")))
-		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * 0.1
+		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * float(entry.get("y", 0.1))
 		for pt: Array in entry.get("patrol", []):
 			npc.patrol.append(ground(pt[0], pt[1]))
 		if entry.has("face"):
