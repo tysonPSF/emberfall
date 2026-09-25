@@ -9,11 +9,16 @@ Clips:
   Sit_Floor_Down  from standing to sitting on the ground, legs out in front
                   (EverQuest's /sit; knees drawn up vanish into these chibi bodies)
   Sit_Floor_Idle  sitting, breathing (loops)
+  Kick            a front kick with the right leg: chamber, snap, recover
+  Shield_Bash     a lunge driving the left (shield) arm forward
 
 Poses are built on the first frame of KayKit's Idle_A (so arms, hands and
 head start where the idle has them) plus rotations in each bone's own axes.
 The rig is Z-up and faces -Y; leg bones point down with X as their hinge, so
 a negative X turn swings a thigh forward and a positive one folds a knee.
+Upper arms: +X raises the arm forward, +Z out to the side (-Z across the
+body); a forearm's -Z bends the elbow. The hips bone points up: its local -Y
+is down and +Z is forward.
 """
 
 import math
@@ -84,6 +89,42 @@ def _new_action(arm, name):
 	return act
 
 
+def _keys(arm, base, name, keys):
+	"""An action from [(frame, {bone: (x, y, z) degrees}, hips offset (x, y, z))],
+	each pose added onto the idle's first frame."""
+	act = _new_action(arm, name)
+	for frame, rots, hips in keys:
+		for pb in arm.pose.bones:
+			rot, loc = base[pb.name]
+			pb.rotation_mode = "QUATERNION"
+			pb.rotation_quaternion = rot @ Euler([math.radians(a) for a in rots.get(pb.name, (0, 0, 0))], "XYZ").to_quaternion()
+			pb.location = loc + (Vector(hips) if pb.name == "hips" else Vector())
+		_key(arm, frame)
+	return act
+
+
+KICK = [
+	(0, {}, (0, 0, 0)),
+	(6, {"upperleg.r": (-50, 0, 0), "lowerleg.r": (80, 0, 0), "foot.r": (-10, 0, 0), "spine": (-6, 0, 0),
+		 "upperleg.l": (6, 0, 0), "lowerleg.l": (12, 0, 0), "upperarm.l": (-10, 0, 25), "upperarm.r": (-10, 0, -25)}, (0, -0.04, 0)),
+	(10, {"upperleg.r": (-88, 0, 0), "lowerleg.r": (4, 0, 0), "foot.r": (-25, 0, 0), "spine": (-12, 0, 0),
+		  "upperleg.l": (8, 0, 0), "lowerleg.l": (14, 0, 0), "upperarm.l": (-20, 0, 35), "upperarm.r": (-20, 0, -35)}, (0, -0.05, -0.08)),
+	(14, {"upperleg.r": (-80, 0, 0), "lowerleg.r": (10, 0, 0), "foot.r": (-20, 0, 0), "spine": (-10, 0, 0),
+		  "upperleg.l": (8, 0, 0), "lowerleg.l": (14, 0, 0), "upperarm.l": (-15, 0, 30), "upperarm.r": (-15, 0, -30)}, (0, -0.05, -0.06)),
+	(21, {}, (0, 0, 0)),
+]
+BASH = [
+	(0, {}, (0, 0, 0)),
+	(6, {"upperarm.l": (35, 0, 15), "lowerarm.l": (0, 0, -55), "spine": (4, 22, 0), "chest": (0, 10, 0),
+		 "upperleg.r": (12, 0, 0), "lowerleg.r": (10, 0, 0)}, (0, 0, -0.08)),
+	(9, {"upperarm.l": (82, 0, -12), "lowerarm.l": (0, 0, -12), "spine": (10, -18, 0), "chest": (0, -8, 0),
+		 "upperleg.l": (-35, 0, 0), "lowerleg.l": (30, 0, 0), "upperleg.r": (18, 0, 0), "lowerleg.r": (6, 0, 0)}, (0, -0.05, 0.28)),
+	(13, {"upperarm.l": (78, 0, -10), "lowerarm.l": (0, 0, -15), "spine": (8, -14, 0), "chest": (0, -6, 0),
+		  "upperleg.l": (-32, 0, 0), "lowerleg.l": (28, 0, 0), "upperleg.r": (16, 0, 0), "lowerleg.r": (6, 0, 0)}, (0, -0.05, 0.25)),
+	(20, {}, (0, 0, 0)),
+]
+
+
 def main():
 	opts = _args()
 	bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -106,6 +147,9 @@ def main():
 
 	for tr in list(arm.animation_data.nla_tracks):  # the import's own tracks, one per KayKit clip
 		arm.animation_data.nla_tracks.remove(tr)
+	keep.append(_keys(arm, base, "Kick", KICK))
+	keep.append(_keys(arm, base, "Shield_Bash", BASH))
+
 	for a in list(bpy.data.actions):
 		if a not in keep:
 			bpy.data.actions.remove(a)

@@ -459,6 +459,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if Net.mode != "server":
+		SpellFx.update_cast(self)  # a glow in the hands while casting, for everyone watching
 	if not is_local:
 		return
 	_update_mouse_look()

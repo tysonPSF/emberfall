@@ -30,6 +30,7 @@ const SECTIONS := [
 	["bowdrops", "greenmoor"],
 	["blessing", "greenmoor"],
 	["spells_1115", "greenmoor"],
+	["fx", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1782,6 +1783,52 @@ func _t_spells_1115() -> void:
 	p.level = keep["level"]
 	p.spells = keep["spells"]
 	p.equipment = keep["equipment"]
+	p.recalc_stats()
+
+
+## Spell effects and ability moves, caught mid-flight: the casting glow, a
+## frost nuke, a burn, a heal, a buff, a root, a gate; a kick and a bash.
+func _t_fx() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := {"level": p.level, "spells": p.spells.duplicate(), "equipment": p.equipment.duplicate()}
+	p.level = 15
+	p.spells = ["blast_of_frost", "emberstorm", "healing", "blessed_armor", "root", "gate", "kick", "bash"]
+	p.equipment["secondary"] = "round_shield"
+	p.recalc_stats()
+	for id: String in p.spells:
+		p.skills[str(GameData.spells[id].get("skill", ""))] = 200
+	var mob := _nearest_mob(p, "gnoll_pup")
+	mob.set_physics_process(false)
+	mob.max_hp = 9999
+	mob.hp = 9999
+	for shot: Array in [["blast_of_frost", 0.35, "frost"], ["emberstorm", 0.5, "burn"], ["root", 0.4, "root"], ["kick", 0.33, "kick"], ["bash", 0.3, "bash"],
+			["healing", 0.5, "heal"], ["blessed_armor", 0.45, "buff"], ["gate", 0.35, "gate"]]:
+		var id: String = shot[0]
+		var s: Dictionary = GameData.spells[id]
+		p.global_position = main.zone.ground(mob.global_position.x + 2.2, mob.global_position.z + 1.0) + Vector3.UP
+		p.face_toward(mob.global_position)
+		p.camera_pivot.rotation.y = 0.9
+		p.zoom = 4.5
+		p.pitch = -0.2
+		World.request_set_target(p.entity_id, mob.entity_id if s["target"] == "enemy" else p.entity_id)
+		p.mana = p.max_mana
+		p.hp = p.max_hp / 2
+		p.cooldowns.clear()
+		World.request_cast(p.entity_id, id)
+		if float(s.get("cast_time", 0)) > 0.0:
+			await _wait(float(s["cast_time"]) * 0.5)
+			if id == "blast_of_frost":
+				await _shot("9z_fx_casting")
+			await _wait(float(s["cast_time"]) * 0.5)
+		await _wait(shot[1])
+		await _shot("9z_fx_%s" % shot[2])
+		await _wait(1.2)
+	mob.set_physics_process(true)
+	p.level = keep["level"]
+	p.spells = keep["spells"]
+	p.equipment = keep["equipment"]
+	p.buffs.clear()
 	p.recalc_stats()
 
 

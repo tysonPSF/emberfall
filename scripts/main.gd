@@ -50,6 +50,7 @@ func _ready() -> void:
 	Net.zone_moved.connect(_on_client_zone_moved)
 	Net.joined.connect(_start_client)
 	World.shot_fired.connect(Projectile.launch)
+	World.spell_fx.connect(SpellFx.play)
 	var save := {} if autotest else _load_save()
 	var title := _show_title(save)
 	if autotest:

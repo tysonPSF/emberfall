@@ -13,6 +13,7 @@ const KAYKIT_ANIMS := {
 	"idle": "Idle_A", "walk": "Walking_A", "run": "Running_A", "jump": "Jump_Idle",
 	"attack": "Throw", "hit": "Hit_A", "death": "Death_A", "dead": "Death_A_Pose",
 	"sit": "Sit_Floor_Idle", "sit_down": "Sit_Floor_Down", "cast": "Use_Item",  # the sits are ours (tools/blender/anims.py)
+	"kick": "Kick", "bash": "Shield_Bash",  # so are these
 }
 
 static var _library: AnimationLibrary
@@ -401,6 +402,8 @@ func _clip(action: String) -> String:
 ## Plays a non-looping action over the idle (attack swing, flinch, spawn).
 func play_once(action: String, speed := 1.0, interrupt := true) -> void:
 	var c := _clip(action)
+	if c == "" and action in ["kick", "bash"]:
+		c = _clip("attack")  # a rig without the move swings instead
 	if _posed_dead or c == "":
 		return
 	if not interrupt and _one_shot_left > 0.0:
