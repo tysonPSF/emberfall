@@ -1009,6 +1009,82 @@ def fishing_pole():
 	return p.build()
 
 
+def cave_entrance():
+	"""A cave mouth in a rocky hillside: the way into a dungeon. Built facing -Y
+	(+Z in game) like the other buildings, so a landmark "face" aims the mouth.
+
+	The tunnel is a lining seen from inside (an arch extruded 9 m back),
+	darkening in steps to black, with mine timbers at the mouth. Rocks pile
+	around it but never inside it, so the floor is walkable to the back wall,
+	where a dungeon's zone line can go. Mouth: 4.4 m wide, 3.8 m high.
+	"""
+	p = Prop("cave_entrance", 97)
+	half, wall_h, depth = 2.2, 1.6, 9.0
+
+	def profile(steps=10):
+		pts = [(-half, 0.0), (-half, wall_h)]
+		for k in range(1, steps):
+			a = math.pi - math.pi * k / steps
+			pts.append((math.cos(a) * half, wall_h + math.sin(a) * half))
+		pts += [(half, wall_h), (half, 0.0)]
+		return pts
+
+	def lining(y0, y1, swatch, grad):
+		"""One stretch of tunnel, faces turned inward."""
+		prof = profile()
+		bm = bmesh.new()
+		rings = []
+		for y in (y0, y1):
+			rings.append([bm.verts.new((x + p.rng.uniform(-0.08, 0.08) * (0 < i < len(prof) - 1), y, z))
+						  for i, (x, z) in enumerate(prof)])
+		for k in range(len(prof) - 1):
+			a, b = rings[0][k], rings[0][k + 1]
+			c, d = rings[1][k + 1], rings[1][k]
+			bm.faces.new([a, d, c, b])  # wound so the normal points into the tunnel
+		return p._add(bm, swatch, grad, 0.0, 0.0)
+
+	# the tunnel, darker every few meters, ending in black
+	stretches = [(-0.6, 2.4, STONE_DARK, (0.25, 0.85)), (2.4, 4.8, STONE_DARK, (0.6, 1.0)),
+				 (4.8, 7.0, SHADE, (0.75, 0.92)), (7.0, depth, SHADE, (0.92, 1.0))]
+	for y0, y1, sw, gr in stretches:
+		lining(y0, y1, sw, gr)
+		p.box((half * 2 + 0.2, y1 - y0, 0.2), (0, (y0 + y1) / 2, -0.1), sw, grad=(gr[1], gr[1]))  # floor, as dark as the walls get
+	p.box((half * 2 + 0.4, 0.3, wall_h + half + 0.3), (0, depth, (wall_h + half) / 2), SHADE, grad=(1.0, 1.0))  # the dark
+
+	# rocks along both sides and over the top, clear of the tunnel
+	for sx in (-1, 1):
+		for y, sz in ((-0.2, 3.4), (2.2, 3.0), (4.6, 3.2), (7.0, 3.0), (9.2, 3.2)):
+			w = p.rng.uniform(2.6, 3.4)
+			p.rock((w, sz, p.rng.uniform(3.6, 4.6)), (sx * (half + w / 2 + 0.05), y, 1.7), STONE_DARK, jitter=0.12)
+		for y in (0.8, 4.4, 8.2):                       # an outer shoulder
+			w = p.rng.uniform(3.2, 4.2)
+			p.rock((w, 4.0, p.rng.uniform(2.6, 3.4)), (sx * (half + 3.0 + w / 2), y, 1.0), STONE_DARK, jitter=0.12)
+			p.rock((w * 0.9, 3.6, 2.6), (sx * (half + 2.2), y + 0.8, 3.7), STONE_LIGHT, jitter=0.12)
+	for y in (0.3, 2.8, 5.4, 8.0):                      # the roof of the cave
+		h = p.rng.uniform(2.2, 2.8)
+		p.rock((6.8, 3.2, h), (p.rng.uniform(-0.3, 0.3), y, wall_h + half + h / 2 + 0.05), STONE_LIGHT, jitter=0.12)
+	for x, y, size in ((-2.2, 4.0, 4.2), (2.4, 6.0, 4.0), (0.0, 7.4, 3.6)):   # the hill's crown
+		p.rock((size, size, size * 0.7), (x, y, wall_h + half + 2.6), STONE_DARK, jitter=0.14)
+
+	# mine timbers: a braced frame at the mouth, and two more inside
+	for y, sw in ((-0.35, WOOD), (3.0, WOOD_GRAY), (6.0, WOOD_GRAY)):
+		for sx in (-1, 1):
+			p.box((0.32, 0.32, 3.1), (sx * (half - 0.3), y, 1.55), sw, grad=(0.25, 1.0))
+		p.box((half * 2 + 0.1, 0.36, 0.36), (0, y, 3.2), sw, grad=(0.2, 0.9))
+		for sx in (-1, 1):                              # corner braces
+			p.seg((sx * (half - 0.3), y, 2.5), (sx * (half - 1.0), y, 3.1), 0.08, 0.08, sw, sides=4)
+
+	# what lies at the mouth: rubble, and a warning
+	for x, y, size in ((-1.6, -1.4, 0.5), (1.9, -1.1, 0.4), (-0.4, -2.2, 0.3), (1.2, -2.6, 0.35), (-2.9, -2.0, 0.6)):
+		p.rock((size * 1.3, size, size * 0.7), (x, y, size * 0.25), STONE_DARK, jitter=0.06)
+	p.blob((0.34, 0.3, 0.3), (0.9, -1.8, 0.16), BONE, segs=(8, 6))                       # a skull
+	p.blob((0.12, 0.08, 0.06), (0.83, -1.95, 0.2), SHADE, segs=(6, 4), grad=(1.0, 1.0))
+	p.blob((0.12, 0.08, 0.06), (0.97, -1.95, 0.2), SHADE, segs=(6, 4), grad=(1.0, 1.0))
+	for a, b in (((0.2, -1.5, 0.05), (0.7, -1.2, 0.05)), ((-0.6, -1.0, 0.05), (-0.1, -1.3, 0.05))):
+		p.seg(a, b, 0.05, 0.05, BONE, sides=5)
+	return p.build(bevel=0.04)
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1022,6 +1098,7 @@ PROPS = {
 	"tent": tent,
 	"campfire": campfire,
 	"torch_post": torch_post,
+	"cave_entrance": cave_entrance,
 	"banner_pole": banner_pole,
 	"palisade": palisade,
 	"roof_gable": roof_gable,

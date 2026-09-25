@@ -105,7 +105,13 @@ func height_at(x: float, z: float) -> float:
 func _pass_factor(x: float, z: float) -> float:
 	var f := 1.0
 	for ps: Array in _passes:
-		var across := absf(x - ps[0]) if absf(ps[1]) >= absf(ps[0]) else absf(z - ps[1])
+		var north_south: bool = absf(ps[1]) >= absf(ps[0])
+		# only on the pass's own edge: a south pass must not open the north
+		# mountains at the same x (that gap led off the world)
+		var own_edge: bool = z * float(ps[1]) > 0.0 if north_south else x * float(ps[0]) > 0.0
+		if not own_edge:
+			continue
+		var across := absf(x - ps[0]) if north_south else absf(z - ps[1])
 		f = minf(f, smoothstep(ps[2], ps[2] + 14.0, across))
 	return f
 
@@ -299,8 +305,25 @@ func _build_landmarks() -> void:
 				_build_pond(lm)
 			"signpost":
 				_build_signpost(p, _landmark_yaw(lm), lm.get("labels", []))
+			"cave":
+				_build_cave(p, _landmark_yaw(lm))
 			"prop":
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
+
+
+## A cave mouth in a rocky hillside (the way into a dungeon), torches either
+## side and boulders tumbled around it. The tunnel is walkable 9 m back to the
+## dark; a dungeon's zone line goes there (about 8 m in along the landmark's
+## facing, 4 m wide).
+func _build_cave(p: Vector3, yaw: float) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	_prop("cave_entrance", p, yaw, 1.0, "mesh")
+	for side: float in [-1.0, 1.0]:
+		var at := xf * Vector3(side * 3.6, 0, 2.4)
+		_torch(ground(at.x, at.z))
+	for spot: Array in [[-7.5, 1.5, "boulder_c"], [8.0, 3.0, "boulder_a"], [-9.0, 7.0, "boulder_b"], [9.5, -1.0, "boulder_b"]]:
+		var at := xf * Vector3(spot[0], 0, spot[1])
+		_prop(spot[2], ground(at.x, at.z), _rng.randf() * TAU)
 
 
 ## The bind point: a rune-carved obelisk inside a ring of standing stones.

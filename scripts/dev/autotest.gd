@@ -41,6 +41,8 @@ const SECTIONS := [
 	["compare", "greenmoor"],
 	["music", "greenmoor"],
 	["tavern", "emberhold"],
+	["cave", "greenmoor"],
+	["edges", "greenmoor"],
 	["camp", "greenmoor"],
 ]
 
@@ -1388,6 +1390,59 @@ func _t_tavern() -> void:
 		await get_tree().physics_frame
 	await _wait(2.0)
 	print("tavern: walked to the door -> now in %s" % main.zone.zone_id)
+
+
+## The cave mouth at the foot of the western mountains: seen from the meadow,
+## then walked into, to the dark at the back.
+func _t_cave() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var mouth: Vector3 = main.zone.ground(-150, -30)
+	p.global_position = main.zone.ground(-132, -24) + Vector3.UP
+	p.face_toward(mouth)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 5.0
+	p.pitch = -0.1
+	await _wait(0.8)
+	await _shot("9s_cave_outside")
+	p.global_position = main.zone.ground(-147.5, -30) + Vector3.UP
+	var start := p.global_position
+	for k in 200:
+		p.velocity = Vector3(-4, 0, 0)
+		p.move_and_slide()
+		await get_tree().physics_frame
+	print("cave: walked in from x %.1f to x %.1f (tunnel back at about -159), floor y %.2f vs mouth %.2f" % [start.x, p.global_position.x, p.global_position.y, mouth.y])
+	p.face_toward(p.global_position + Vector3(-5, 0, 0))
+	p.zoom = 2.5
+	await _wait(0.5)
+	await _shot("9s_cave_inside")
+
+
+## Walks (and sprints, and jumps) into each edge of the zone: the mountains
+## should stop you well inside it, never let you fall off the world.
+func _t_edges() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var half: float = main.zone.half
+	for dir: Vector2 in [Vector2(0, -1), Vector2(1, 0), Vector2(-1, 0), Vector2(0.7, -0.7), Vector2(-0.7, -0.7), Vector2(0.7, 0.7)]:
+		p.global_position = main.zone.ground(dir.x * (half - 60.0), dir.y * (half - 60.0)) + Vector3.UP
+		p.velocity = Vector3.ZERO
+		await _wait(0.2)
+		var lowest := p.global_position.y
+		var furthest := 0.0
+		for k in 1200:
+			var move := Vector3(dir.x, 0, dir.y) * 9.0
+			p.velocity.x = move.x
+			p.velocity.z = move.z
+			if k % 20 == 0 and p.is_on_floor():
+				p.velocity.y = 6.0  # keep jumping
+			p.velocity.y -= 20.0 * get_physics_process_delta_time()
+			p.move_and_slide()
+			await get_tree().physics_frame
+			lowest = minf(lowest, p.global_position.y)
+			furthest = maxf(furthest, maxf(absf(p.global_position.x), absf(p.global_position.z)))
+		print("edges: toward %s -> got to %.1f of %.0f from the middle, height now %.1f (terrain there %.1f), lowest %.1f" % [dir, furthest, half,
+				p.global_position.y, main.zone.height_at(p.global_position.x, p.global_position.z), lowest])
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.
