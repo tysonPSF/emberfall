@@ -362,5 +362,56 @@
       ],
       "buy_rate": 0.5
     }
+  },
+  "vale_patrol": {
+    "name": "Sergeant Harlan",
+    "title": "Vale Patrol",
+    "level": 18,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "Keep moving, {name}, and keep your blade loose. I walk this road from the obelisk to the [crossroads] and back, as far as the Watch reaches up here. Anything chases you, run to me.",
+      "crossroads": "Where the road splits east and west, past the river. East is Bloodtusk country. West, the trees close in and the spiders hang their webs. North is the old watchtower, and I don't go north.",
+      "unknown": "Ask the hermit, {name}. I just walk the road."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 8,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!",
+        "Get off the road, you beast!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the trees with you!"
+      ],
+      "shouts_player": [
+        "Halt, {name}! In the name of the Watch!",
+        "Traitor! Cut them down!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 1400,
+      "hp_regen": 20,
+      "ac": 55,
+      "dmg": [
+        10,
+        20
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }
