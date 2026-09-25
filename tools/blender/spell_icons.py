@@ -376,6 +376,38 @@ def ice_comet():
 	return p.build()
 
 
+# ---------------------------------------------------------------- monsters' (shown as debuffs)
+
+def thornback_venom():
+	p = Prop("thornback_venom", 391)
+	p.seg((0, 0, 1.0), (0, 0, 0.35), 0.2, 0.05, STONE_DARK, sides=6)                  # a fang
+	for k in range(3):                                                            # dripping venom
+		z = 0.25 - k * 0.3
+		p.blob((0.16 - k * 0.02, 0.16 - k * 0.02, 0.24 - k * 0.03), (0.02 * k, 0, z), LEAF, segs=(8, 6), glow=1.8)
+	_ring(p, 0.55, 0.55, 0.03, LEAF, glow=1.0, sides=16, tilt=math.pi / 2)
+	return p.build()
+
+
+def grave_chill():
+	p = Prop("grave_chill", 393)
+	p.blob((0.55, 0.5, 0.55), (0, 0, 0.55), BONE, segs=(10, 8))                     # a skull
+	for s in (-1, 1):
+		p.blob((0.14, 0.08, 0.14), (s * 0.13, -0.24, 0.58), WATER, segs=(6, 4), glow=2.0)
+	for k in range(6):                                                            # frost around it
+		a = k * math.tau / 6
+		p.seg((math.cos(a) * 0.35, 0, 0.55 + math.sin(a) * 0.35), (math.cos(a) * 0.7, 0, 0.55 + math.sin(a) * 0.7), 0.06, 0.0, WATER, sides=4, glow=1.2)
+	return p.build()
+
+
+def spirit_bolt():
+	p = Prop("spirit_bolt", 395)
+	for k in range(3):
+		t = k / 3
+		p.blob((0.3 - k * 0.07, 0.3 - k * 0.07, 0.3 - k * 0.07), (0.4 - t * 0.9, 0, 0.55 + t * 0.2), LEAF, segs=(8, 6), glow=2.2 - k * 0.5)
+	p.seg((0.4, 0, 0.55), (-0.7, 0, 0.85), 0.14, 0.0, CLOTH_WHITE, sides=6, glow=1.4)
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -425,7 +457,8 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
 								  heroic_strike, rally, shield_wall, healing, blessed_armor, circle_of_renewal,
-								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet]}
+								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet,
+								  thornback_venom, grave_chill, spirit_bolt]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

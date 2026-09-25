@@ -260,6 +260,9 @@ func _client_timers(delta: float) -> void:
 		p.cast["time"] = minf(float(p.cast["time"]) + delta, float(p.cast["total"]))
 	for key: String in p.cooldowns.keys():
 		p.cooldowns[key] = maxf(0.0, float(p.cooldowns[key]) - delta)
+	for dot: Dictionary in p.dots:
+		dot["next"] = maxf(0.0, float(dot.get("next", 0.0)) - delta)
+	p.root_left = maxf(0.0, p.root_left - delta)
 
 
 func _update_timers(e: Entity, delta: float) -> void:
@@ -285,7 +288,7 @@ func _update_timers(e: Entity, delta: float) -> void:
 			e.dots.erase(dot)
 		var caster := get_object(dot["caster_id"]) as Entity
 		say(caster, "%s has taken %d damage from your %s." % [cap(e.display_name), dot["damage"], GameData.spells[dot["spell"]]["name"]], C_SPELL)
-		say(e, "You have taken %d points of damage." % dot["damage"], C_HIT_YOU)
+		say(e, "You take %d damage from %s." % [dot["damage"], GameData.spells[dot["spell"]]["name"]], C_HIT_YOU)
 		damage(e, int(dot["damage"]), caster)
 		if e.dead:
 			return

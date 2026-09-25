@@ -34,6 +34,9 @@ const SECTIONS := [
 	["holt", "greenmoor"],
 	["signface", "greenmoor"],
 	["vale_patrol", "thornwood"],
+	["bagbar", "greenmoor"],
+	["debuffs", "greenmoor"],
+	["invwindow", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -809,7 +812,7 @@ func _t_itemwindow() -> void:
 	var right := InputEventMouseButton.new()
 	right.button_index = MOUSE_BUTTON_RIGHT
 	right.pressed = true
-	hud._slot_buttons[_where(p, "leather_boots@superior")].gui_input.emit(right)
+	hud._slot_button(_where(p, "leather_boots@superior")).gui_input.emit(right)
 	await _wait(0.4)
 	print("itemwindow: right-click in bags opened %s" % hud._item_title.text)
 	hud._item_link.pressed.emit()
@@ -1939,6 +1942,81 @@ func _t_vale_patrol() -> void:
 	print("vale_patrol: wolf dead %s (hp %s); Harlan hp %d/%d" % [not is_instance_valid(wolf) or wolf.dead, str(wolf.hp) if is_instance_valid(wolf) else "-", harlan.hp, harlan.max_hp])
 
 
+## The bag bar over the hotbar: bags with fill counts, free slots, a quest
+## item marked, the sling's stones counted on the Ranged button, a loot note,
+## and a peek inside a bag.
+func _t_bagbar() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	p.pack.clear()
+	var sack := Pack.entry("small_sack")
+	for i in 4:
+		(sack["contents"] as Array)[i] = Pack.entry(["rat_whiskers", "bone_chips", "beetle_eye", "gnoll_fang"][i], 3 + i)
+	p.pack.slots[0] = sack
+	p.pack.slots[1] = Pack.entry("leather_backpack")
+	(p.pack.slots[1]["contents"] as Array)[0] = Pack.entry("iron_dagger")
+	p.pack.slots[2] = Pack.entry("gnoll_fang", 2)
+	p.pack.add("sling_stone", 42)
+	p.pack.add("leather_sling")
+	World.request_equip(p.entity_id, _where(p, "leather_sling"))
+	p.quests["fang_bounty"] = {"active": true, "completions": 0}
+	p.inventory_changed.emit()
+	await _wait(0.3)
+	var fills := []
+	for g in Pack.GENERAL:
+		var b := hud._bag_bar_slot(g)
+		fills.append((b.find_child("fill", false, false) as Label).text)
+	var fang := hud._slot_buttons["g:2"][1] as Button
+	print("bagbar: fills %s, %s; fang marked %s: %s; ranged count '%s'" % [fills, hud._bag_free.text, (fang.get_child(2) as Label).visible,
+			fang.tooltip_text.get_slice("Quest:", 1).strip_edges(), hud._ranged_slot.count_text])
+	p.pack.add("wolf_pelt", 3)
+	p.inventory_changed.emit()
+	World.request_click(p.entity_id, "g:2")  # picking up and putting back is not new loot
+	World.request_click(p.entity_id, "g:2")
+	await _wait(0.2)
+	print("bagbar: toasts now %s" % [hud._toasts.get_children().map(func(r: Node) -> String: return (r.get_child(1) as Label).text)])
+	hud._peek_bag(0, hud._bag_bar_slot(0))
+	await _wait(0.3)
+	await _shot("9zb_bagbar")
+	hud._peek_bag(-1, null)
+	hud._toggle_bag(1)
+	await _wait(0.3)
+	print("bagbar: backpack opened from the bar at %s (bar top %.0f)" % [hud._bag_windows[1].position, hud._bag_bar.position.y])
+	await _shot("9zb_bagbar_open")
+	hud._toggle_bag(1)
+	p.quests.erase("fang_bounty")
+	p.equipment.erase("range")
+	p.recalc_stats()
+
+
+## The debuff window: a spider's venom and a root on the tester, listed under
+## the buffs with time left; the venom's ticks name it in the log.
+func _t_debuffs() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	p.level = 12
+	p.recalc_stats()
+	p.hp = p.max_hp
+	var spider_data: Dictionary = GameData.mobs["thornback_spider"]
+	var mob := _nearest_mob(p, "gnoll_pup")
+	World._finish_spell(mob, "thornback_venom", p, true)  # as if a spider's bite landed it
+	p.root_left = 12.0
+	await _wait(3.5)
+	var rows := hud._debuff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell")).map(func(c: Node) -> String:
+		return "%s (%s)" % [c.get_meta("spell"), (c.find_child("left", true, false) as Label).text])
+	print("debuffs: window shown %s at %s under buffs at %s: %s" % [hud._debuff_panel.visible, hud._debuff_panel.position, hud._buff_panel.position, rows])
+	print("debuffs: tooltip:\n%s" % hud._buff_tooltip("thornback_venom", 9.0))
+	await _shot("9zc_debuffs")
+	p.dots.clear()
+	p.root_left = 0.0
+	await _wait(0.3)
+	print("debuffs: cured -> window shown %s" % hud._debuff_panel.visible)
+	p.level = 1
+	p.recalc_stats()
+
+
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
 	var main := get_parent()
@@ -2000,3 +2078,25 @@ func _shot(name_: String) -> void:
 		return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png("%s/%s.png" % [shots_dir, name_])
+
+
+## The character window stands on the bag bar (no General row of its own);
+## the item tips and faction list fold away behind buttons.
+func _t_invwindow() -> void:
+	var main := get_parent()
+	var hud: Hud = main.hud
+	hud._toggle_inventory()
+	await _wait(0.4)
+	var inv: Control = hud._inv_panel
+	print("invwindow: bottom %.0f, bag bar top %.0f; right %.0f, bar right %.0f; size %s" % [inv.position.y + inv.size.y, hud._bag_bar.position.y,
+			inv.position.x + inv.size.x, hud._bag_bar.position.x + hud._bag_bar.size.x, inv.size])
+	print("invwindow: tips shown %s, faction shown %s" % [hud._bag_hint.visible, hud._faction_label.visible])
+	await _shot("9zd_inventory")
+	hud._bag_hint.visible = true
+	hud._faction_label.visible = true
+	await _wait(0.3)
+	print("invwindow: expanded size %s, top %.0f" % [inv.size, inv.position.y])
+	await _shot("9zd_inventory_expanded")
+	hud._bag_hint.visible = false
+	hud._faction_label.visible = false
+	hud._toggle_inventory()

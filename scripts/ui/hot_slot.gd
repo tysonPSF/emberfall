@@ -13,6 +13,7 @@ const GEMS := {
 }
 
 var key_text := ""
+var count_text := ""  # a number in the bottom corner (arrows left, say)
 var picture: Texture2D
 var fallback := ""  # drawn when there's no picture: the name's initials
 var gem := GEMS["action"]
@@ -77,6 +78,9 @@ func _draw() -> void:
 			var t := ("%.1f" % seconds) if seconds < 10.0 else str(ceili(seconds))
 			draw_string_outline(font, Vector2(0, size.y * 0.62), t, HORIZONTAL_ALIGNMENT_CENTER, size.x, 15, 4, Color(0, 0, 0, 0.9))
 			draw_string(font, Vector2(0, size.y * 0.62), t, HORIZONTAL_ALIGNMENT_CENTER, size.x, 15, Color(1, 0.95, 0.8))
+	if count_text != "":
+		draw_string_outline(font, Vector2(0, size.y - 4), count_text, HORIZONTAL_ALIGNMENT_RIGHT, size.x - 4, 12, 3, Color(0, 0, 0, 0.9))
+		draw_string(font, Vector2(0, size.y - 4), count_text, HORIZONTAL_ALIGNMENT_RIGHT, size.x - 4, 12, Color(1, 1, 1))
 	if key_text != "":
 		draw_string_outline(font, Vector2(4, 13), key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9))
 		draw_string(font, Vector2(4, 13), key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UIKit.GOLD)

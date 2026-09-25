@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 9  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 10  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -690,7 +690,7 @@ func _send_self(peer: int) -> void:
 		"cast": p.cast, "cooldowns": p.cooldowns, "buffs": p.buffs, "dead": p.dead, "sitting": p.sitting,
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
-		"root_left": p.root_left, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened,
+		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened,
 		"group": p.group, "skills": p.skills,
 	}
 	_s_self.rpc_id(peer, d)

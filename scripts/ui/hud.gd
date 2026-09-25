@@ -11,13 +11,18 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory: click picks up / puts down, Ctrl-click takes one, Shift-click equips · right-click an item for details (or to open a bag)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H or the gear button to hide this."""
+
+const BAG_TIPS := """Click to pick up and put down · Ctrl-click takes one from a stack
+Shift-click equips (or sells, banks, offers in a trade)
+Right-click for details, or to open a bag · hover a bag to peek inside
+Click the ground to drop what you hold"""
 
 const ATTR_NAMES := {"dmg": "Damage", "ac": "AC", "hp": "HP", "mana": "Mana", "str": "STR", "sta": "STA", "agi": "AGI", "wis": "WIS", "int": "INT", "haste": "Haste", "hp_regen": "HP Regen", "mana_regen": "Mana Regen"}
 const CROSSHAIR_SIZE := 30.0
@@ -55,7 +60,10 @@ var _cast_label: Label
 
 var _buff_panel: PanelContainer
 var _buff_rows: VBoxContainer
-var _buff_shape := ""  # which buffs the rows show, so they're rebuilt only when that changes
+var _buff_shape := ""
+var _debuff_panel: PanelContainer
+var _debuff_rows: VBoxContainer
+var _debuff_shape := ""  # which buffs the rows show, so they're rebuilt only when that changes
 var _spell_slots: Array[HotSlot] = []
 var _attack_slot: HotSlot
 var _ranged_slot: HotSlot
@@ -114,7 +122,14 @@ var _loot_list: VBoxContainer
 var _loot_corpse: Corpse
 
 var _inv_panel: PanelContainer
-var _slot_buttons: Dictionary = {}  # place ("g:3", "e:head", "k:2"...) -> slot Button
+var _slot_buttons: Dictionary = {}  # place ("g:3", "e:head", "k:2"...) -> [slot Buttons] (the bag bar repeats the general slots)
+var _hotbar_panel: PanelContainer
+var _bag_bar: PanelContainer
+var _bag_free: Label
+var _bag_peek: PanelContainer  # a bag's contents while the mouse rests on it in the bag bar
+var _toasts: VBoxContainer  # "+3 Wolf Pelt" notes over the bag bar
+var _owned: Dictionary = {}  # item id -> how many you own, to notice what's new
+var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _doll_view: SubViewport
 var _doll_stage: Node3D
@@ -161,6 +176,7 @@ func _ready() -> void:
 	_build_help()
 	_build_menu_icons()
 	_build_buffs()
+	_build_bag_bar()
 	_build_settings()
 	_build_overlays()
 	_build_menu()
@@ -286,6 +302,7 @@ func _build_hotbar() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(1, 1), Vector2(-12, -12))
 	root.add_child(p)
+	_hotbar_panel = p
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 5)
 	p.add_child(row)
@@ -348,6 +365,23 @@ func _build_buffs() -> void:
 	_buff_rows.add_theme_constant_override("separation", 4)
 	_buff_panel.add_child(_buff_rows)
 	_buff_panel.visible = false
+	_debuff_panel = UIKit.panel()
+	root.add_child(_debuff_panel)
+	_debuff_rows = VBoxContainer.new()
+	_debuff_rows.add_theme_constant_override("separation", 4)
+	_debuff_panel.add_child(_debuff_rows)
+	_debuff_panel.visible = false
+
+
+## [spell id, seconds left] for what's hurting or holding you: damage over
+## time (poison, fire, frost) and roots.
+func _debuff_list() -> Array:
+	var out: Array = []
+	for dot: Dictionary in player.dots:
+		out.append([str(dot["spell"]), maxf(0.0, (int(dot.get("ticks", 1)) - 1) * 3.0 + float(dot.get("next", 0.0)))])
+	if player.root_left > 0.0:
+		out.append(["root", player.root_left])
+	return out
 
 
 ## [spell id, seconds left or -1 for "until a level"] for each buff on you.
@@ -361,16 +395,34 @@ func _buff_list() -> Array:
 
 
 func _update_buffs() -> void:
-	var list := _buff_list()
-	_buff_panel.visible = not list.is_empty()
+	_buff_shape = _fill_effects(_buff_panel, _buff_rows, _buff_shape, _buff_list(), "Buffs", UIKit.GOLD, HotSlot.GEMS["buff"])
+	_debuff_shape = _fill_effects(_debuff_panel, _debuff_rows, _debuff_shape, _debuff_list(), "Debuffs", Color(1.0, 0.45, 0.4), HotSlot.GEMS["damage"])
+	# right edge under the top icons, or left of whichever right-side window is open
+	var right := root.size.x - 12.0
+	for w: Control in [_inv_panel, _help_panel]:
+		if w.visible:
+			right = minf(right, w.position.x - 8.0)
+	var y := 60.0
+	for panel: PanelContainer in [_buff_panel, _debuff_panel]:
+		if not panel.visible:
+			continue
+		panel.reset_size()
+		panel.position = Vector2(right - panel.size.x, y)
+		y += panel.size.y + 6.0
+
+
+## Fills a buff-style window from [[spell id, seconds left (-1 for "until a
+## level")]]; rebuilds its rows only when the list of effects changes. Returns
+## the new shape.
+func _fill_effects(panel: PanelContainer, rows_box: VBoxContainer, shape_was: String, list: Array, title: String, title_color: Color, gem: Color) -> String:
+	panel.visible = not list.is_empty()
 	if list.is_empty():
-		return
+		return ""
 	var shape := str(list.map(func(b: Array) -> String: return b[0]))
-	if shape != _buff_shape:
-		_buff_shape = shape
-		for c in _buff_rows.get_children():
+	if shape != shape_was:
+		for c in rows_box.get_children():
 			c.queue_free()
-		_buff_rows.add_child(UIKit.label("Buffs", 12, UIKit.GOLD))
+		rows_box.add_child(UIKit.label(title, 12, title_color))
 		for b: Array in list:
 			var row := HBoxContainer.new()
 			row.add_theme_constant_override("separation", 6)
@@ -381,7 +433,7 @@ func _update_buffs() -> void:
 			slot.picture = GameData.icon("spell_" + str(b[0]))
 			var s: Dictionary = GameData.spells.get(b[0], {})
 			slot.fallback = "".join(Array(str(s.get("name", "?")).split(" ")).map(func(w: String) -> String: return w.left(1)))
-			slot.gem = HotSlot.GEMS["buff"]
+			slot.gem = gem
 			slot.tooltip_text = row.tooltip_text
 			row.add_child(slot)
 			var text := VBoxContainer.new()
@@ -393,8 +445,8 @@ func _update_buffs() -> void:
 			text.add_child(left)
 			row.add_child(text)
 			row.set_meta("spell", b[0])
-			_buff_rows.add_child(row)
-	var rows := _buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell"))
+			rows_box.add_child(row)
+	var rows := rows_box.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell"))
 	for i in mini(rows.size(), list.size()):
 		var secs: float = list[i][1]
 		var tip := _buff_tooltip(list[i][0], secs)
@@ -404,13 +456,7 @@ func _update_buffs() -> void:
 		var label := (rows[i] as Node).find_child("left", true, false) as Label
 		label.text = "until level %d" % int(World.cfg("elders_blessing", {}).get("until_level", 10)) if secs < 0.0 \
 				else ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs))
-	# right edge under the top icons, or left of whichever right-side window is open
-	var right := root.size.x - 12.0
-	for w: Control in [_inv_panel, _help_panel]:
-		if w.visible:
-			right = minf(right, w.position.x - 8.0)
-	_buff_panel.reset_size()
-	_buff_panel.position = Vector2(right - _buff_panel.size.x, 60.0)
+	return shape
 
 
 ## A buff's tooltip: what it does, its effects, and how long it has left (the
@@ -426,6 +472,13 @@ func _buff_tooltip(spell_id: String, secs := 0.0) -> String:
 		fx.append("%s %+d" % [ATTR_NAMES.get(stat, stat.to_upper()), int(stats[stat])])
 	if spell_id == "blessing_of_the_elders":
 		fx.append("Experience +%d%%" % int(World.cfg("elders_blessing", {}).get("xp_pct", 15)))
+	if str(s.get("type", "")) == "dot":
+		for dot: Dictionary in player.dots:
+			if dot["spell"] == spell_id:
+				fx.append("%d damage every 3 seconds" % int(dot["damage"]))
+				break
+	if spell_id == "root" and player.root_left > 0.0:
+		fx.append("You can't move")
 	if not fx.is_empty():
 		lines.append("   ".join(fx))
 	if spell_id == "blessing_of_the_elders":
@@ -435,6 +488,206 @@ func _buff_tooltip(spell_id: String, secs := 0.0) -> String:
 	elif secs > 0.0:
 		lines.append("Time left: %s" % ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs)))
 	return "\n".join(lines)
+
+
+## The bag bar: your eight general slots over the hotbar, always there. They
+## work like the inventory window's (click, ctrl-click, shift-click, right-click
+## a bag to open it); bags show how full they are, rest the mouse on one to peek
+## inside, and "+3 Wolf Pelt" notes float up when something new comes in.
+func _build_bag_bar() -> void:
+	_bag_bar = UIKit.panel()
+	root.add_child(_bag_bar)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_bag_bar.add_child(row)
+	for g in Pack.GENERAL:
+		var b := _make_slot("g:%d" % g, "", 40)
+		var fill := UIKit.label("", 10, Color(0.85, 0.85, 0.8))
+		fill.name = "fill"
+		fill.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		fill.offset_left = 3
+		fill.offset_top = 1
+		fill.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+		fill.add_theme_constant_override("outline_size", 4)
+		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(fill)
+		b.mouse_entered.connect(func() -> void: _peek_bag(g, b))
+		b.mouse_exited.connect(func() -> void: _peek_bag(-1, null))
+		row.add_child(b)
+	_bag_free = UIKit.label("", 12, UIKit.DIM)
+	_bag_free.custom_minimum_size.x = 34
+	_bag_free.size_flags_horizontal = Control.SIZE_EXPAND_FILL  # takes up any width the character window adds
+	_bag_free.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_bag_free.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_bag_free.tooltip_text = "Free slots, in your general slots and all your bags."
+	_bag_free.mouse_filter = Control.MOUSE_FILTER_PASS
+	row.add_child(_bag_free)
+	_toasts = VBoxContainer.new()
+	_toasts.add_theme_constant_override("separation", 2)
+	_toasts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_toasts)
+	_refresh_inventory()
+
+
+## Fill counts on the bags, and free slots in all.
+func _refresh_bag_bar() -> void:
+	if _bag_bar == null or player == null:
+		return
+	var free := 0
+	for place: String in player.pack.places():
+		if player.pack.get_at(place).is_empty():
+			free += 1
+	for g in Pack.GENERAL:
+		var b := _bag_bar_slot(g)
+		if b == null:
+			continue
+		var e: Dictionary = player.pack.slots[g]
+		var fill := b.find_child("fill", false, false) as Label
+		if e.has("contents"):
+			var inside: Array = e["contents"]
+			var used := inside.filter(func(c: Dictionary) -> bool: return not c.is_empty()).size()
+			fill.text = "%d/%d" % [used, inside.size()]
+			fill.add_theme_color_override("font_color", Color(1, 0.55, 0.45) if used >= inside.size() else Color(0.85, 0.85, 0.8))
+		else:
+			fill.text = ""
+	_bag_free.text = "%d\nfree" % free
+	_bag_free.add_theme_color_override("font_color", Color(1, 0.55, 0.45) if free == 0 else UIKit.DIM)
+
+
+func _bag_bar_slot(g: int) -> Button:
+	for b: Variant in _slot_buttons.get("g:%d" % g, []):
+		if is_instance_valid(b) and (b as Node).find_child("fill", false, false) != null:
+			return b
+	return null
+
+
+## Shows a bag's contents over its slot while the mouse rests there (unless
+## the bag is open anyway); g < 0 hides it.
+func _peek_bag(g: int, slot: Button) -> void:
+	if _bag_peek != null:
+		_bag_peek.queue_free()
+		_bag_peek = null
+	if g < 0 or _bag_windows.has(g):
+		return
+	var e: Dictionary = player.pack.slots[g]
+	if not e.has("contents"):
+		return
+	_bag_peek = UIKit.panel()
+	_bag_peek.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 3)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bag_peek.add_child(v)
+	v.add_child(UIKit.label(GameData.item_name(e["item"]), 12, UIKit.GOLD))
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 3)
+	grid.add_theme_constant_override("v_separation", 3)
+	v.add_child(grid)
+	for c: Dictionary in e["contents"]:
+		var cell := PanelContainer.new()
+		cell.custom_minimum_size = Vector2(32, 32)
+		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.1, 0.1, 0.12, 0.9)
+		sb.set_corner_radius_all(3)
+		cell.add_theme_stylebox_override("panel", sb)
+		if not c.is_empty():
+			var icon := TextureRect.new()
+			icon.texture = GameData.item_icon(c["item"])
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(icon)
+			if int(c.get("count", 1)) > 1:
+				var n := UIKit.label(str(c["count"]), 10, UIKit.TEXT)
+				n.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+				n.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+				n.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				cell.add_child(n)
+		grid.add_child(cell)
+	root.add_child(_bag_peek)
+	_bag_peek.reset_size()
+	var size := _bag_peek.get_combined_minimum_size()
+	_bag_peek.position = Vector2(clampf(slot.global_position.x + slot.size.x * 0.5 - size.x * 0.5, 12.0, root.size.x - size.x - 12.0),
+			_bag_bar.position.y - size.y - 6.0)
+
+
+## "Elowen wants 4 (you have 2)" for each active quest of yours that wants
+## this item.
+func _quest_wants(item_id: String) -> Array:
+	var out: Array = []
+	if item_id == "" or player == null:
+		return out
+	for quest_id: String in player.quests:
+		var q: Dictionary = GameData.quests.get(quest_id, {})
+		if not player.quests[quest_id].get("active", false) or not (q.get("wants", {}) as Dictionary).has(item_id):
+			continue
+		var need := int(q["wants"][item_id])
+		var have := int(World.quest_progress(player, quest_id).get(item_id, 0))
+		out.append("Quest: %s wants %d (you have %d)" % [GameData.npcs[q["giver"]]["name"], need, have])
+	return out
+
+
+## Notes over the bag bar for whatever you now own more of than before
+## (loot, a purchase, a reward); moving things between bags doesn't count.
+func _notice_new_items() -> void:
+	if player == null or _toasts == null:
+		return
+	var now := {}
+	for id: Variant in player.owned_item_ids():
+		now[id] = int(now.get(id, 0)) + 1
+	if _owned_known:
+		for id: String in now:
+			var gained := int(now[id]) - int(_owned.get(id, 0))
+			if gained > 0:
+				_toast(id, gained)
+	_owned = now
+	_owned_known = true
+
+
+func _toast(item_id: String, n: int) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var icon := TextureRect.new()
+	icon.texture = GameData.item_icon(item_id)
+	icon.custom_minimum_size = Vector2(26, 26)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row.add_child(icon)
+	var label := UIKit.label("+%d %s" % [n, GameData.item_name(item_id)] if n > 1 else "+ %s" % GameData.item_name(item_id), 14, GameData.item_color(item_id))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	label.add_theme_constant_override("outline_size", 5)
+	row.add_child(label)
+	_toasts.add_child(row)
+	while _toasts.get_child_count() > 5:
+		_toasts.get_child(0).free()
+	var tw := row.create_tween()
+	tw.tween_interval(2.5)
+	tw.tween_property(row, "modulate:a", 0.0, 1.0)
+	tw.tween_callback(row.queue_free)
+
+
+func _layout_bag_bar() -> void:
+	if _bag_bar == null or _hotbar_panel == null:
+		return
+	# with the character window open, it and the bar share one width
+	_bag_bar.custom_minimum_size.x = 0.0
+	_inv_panel.custom_minimum_size.x = 0.0
+	if _inv_panel.visible:
+		var width := maxf(_bag_bar.get_combined_minimum_size().x, _inv_panel.get_combined_minimum_size().x)
+		_bag_bar.custom_minimum_size.x = width
+		_inv_panel.custom_minimum_size.x = width
+	_bag_bar.reset_size()
+	_bag_bar.position = Vector2(_hotbar_panel.position.x + _hotbar_panel.size.x - _bag_bar.size.x, _hotbar_panel.position.y - _bag_bar.size.y - 6.0)
+	_toasts.reset_size()
+	_toasts.position = Vector2(_bag_bar.position.x, _bag_bar.position.y - _toasts.size.y - 8.0)
+	_toasts.visible = _bag_peek == null and not _inv_panel.visible  # the peek and the character window sit where the notes do
+	if _inv_panel.visible:  # the character window stands on the bag bar, right edges lined up
+		_inv_panel.reset_size()
+		var bottom := _bag_bar.position.y - 6.0
+		_inv_panel.position = Vector2(_bag_bar.position.x + _bag_bar.size.x - _inv_panel.size.x, maxf(bottom - _inv_panel.size.y, 12.0))
 
 
 func _toggle_skills() -> void:
@@ -1056,13 +1309,32 @@ func _refresh_trade() -> void:
 ## eight general slots (bags go here; right-click one to open it) and coin.
 ## Items move with the cursor: click to pick up, click to put down.
 func _build_inventory() -> void:
-	_inv_panel = UIKit.panel()
-	UIKit.place(_inv_panel, Vector2(1, 0.5), Vector2(-12, -40))
+	_inv_panel = UIKit.panel()  # placed over the bag bar by _layout_bag_bar
 	root.add_child(_inv_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 6)
 	_inv_panel.add_child(v)
-	v.add_child(UIKit.label("Inventory", 16, UIKit.GOLD))
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 4)
+	v.add_child(head)
+	var title := UIKit.label("Inventory", 16, UIKit.GOLD)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var tips := UIKit.button("?", Vector2(24, 22))
+	tips.tooltip_text = "How to move items"
+	tips.pressed.connect(func() -> void:
+		_bag_hint.visible = not _bag_hint.visible
+		_inv_panel.reset_size())
+	head.add_child(tips)
+	var close := UIKit.button("x", Vector2(24, 22))
+	close.tooltip_text = "Close (I)"
+	close.pressed.connect(_toggle_inventory)
+	head.add_child(close)
+	_bag_hint = UIKit.label(BAG_TIPS, 11, UIKit.DIM)
+	_bag_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_bag_hint.custom_minimum_size.x = 330
+	_bag_hint.visible = false
+	v.add_child(_bag_hint)
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 10)
 	v.add_child(top)
@@ -1123,23 +1395,24 @@ func _build_inventory() -> void:
 	stats.add_child(_stats_label)
 	_coin_label = UIKit.label("", 12, UIKit.GOLD)
 	stats.add_child(_coin_label)
-	stats.add_child(UIKit.label("Faction", 12, UIKit.GOLD))
+	# standing with each faction, folded away: it's long and rarely needed
+	var faction_button := UIKit.button("Faction  +", Vector2(0, 22))
+	faction_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	faction_button.flat = true
+	faction_button.add_theme_font_size_override("font_size", 12)
+	faction_button.add_theme_color_override("font_color", UIKit.GOLD)
+	faction_button.tooltip_text = "How each faction regards you"
+	stats.add_child(faction_button)
 	_faction_label = UIKit.label("", 11, UIKit.DIM)
 	_faction_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_faction_label.custom_minimum_size.x = 150
-	stats.add_child(_faction_label)
-	# the general slots
-	v.add_child(UIKit.label("General", 13, UIKit.GOLD))
-	var general := GridContainer.new()
-	general.columns = 8
-	general.add_theme_constant_override("h_separation", 4)
-	v.add_child(general)
-	for g in Pack.GENERAL:
-		general.add_child(_make_slot("g:%d" % g, ""))
-	_bag_hint = UIKit.label("Click to pick up and put down; Ctrl-click takes one from a stack. Shift-click to equip (or sell, bank, offer). Right-click: details, or open a bag. Click the ground to drop what you hold.", 11, UIKit.DIM)
-	_bag_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_bag_hint.custom_minimum_size.x = 380
-	v.add_child(_bag_hint)
+	_faction_label.visible = false
+	v.add_child(_faction_label)
+	faction_button.pressed.connect(func() -> void:
+		_faction_label.visible = not _faction_label.visible
+		faction_button.text = "Faction  -" if _faction_label.visible else "Faction  +"
+		_inv_panel.reset_size())
+	# the general slots are the bag bar, which the window sits on
 	_inv_panel.visible = false
 	# what the cursor holds, following the mouse
 	_cursor_icon = TextureRect.new()
@@ -1208,13 +1481,33 @@ func _make_slot(place: String, empty_text: String, size := 44) -> Button:
 			elif not e.is_empty():
 				show_item(e["item"])
 			b.accept_event())
-	_slot_buttons[place] = b
+	var quest := UIKit.label("!", 13, Color(1.0, 0.82, 0.3))  # a quest of yours wants this
+	quest.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	quest.offset_left = -12
+	quest.offset_top = -1
+	quest.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	quest.add_theme_constant_override("outline_size", 4)
+	quest.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	quest.visible = false
+	b.add_child(quest)
+	(_slot_buttons.get_or_add(place, []) as Array).append(b)
 	return b
+
+
+## The first live button showing a place (tests click it).
+func _slot_button(place: String) -> Button:
+	for b: Variant in _slot_buttons.get(place, []):
+		if is_instance_valid(b) and not (b as Node).is_queued_for_deletion():
+			return b
+	return null
 
 
 func _fill_slot(b: Button, e: Dictionary) -> void:
 	var icon := b.get_child(0) as TextureRect
 	var count := b.get_child(1) as Label
+	var quest := b.get_child(2) as Label
+	var wants := _quest_wants(str(e.get("item", "")))
+	quest.visible = not wants.is_empty()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.1, 0.1, 0.12, 0.9)
 	sb.set_border_width_all(1)
@@ -1231,6 +1524,8 @@ func _fill_slot(b: Button, e: Dictionary) -> void:
 		b.text = "" if icon.texture != null else GameData.item_name(id)
 		count.text = str(e["count"]) if int(e.get("count", 1)) > 1 else ""
 		b.tooltip_text = _item_tooltip(id) + ("\nRight-click to open." if e.has("contents") else "\nRight-click for details.")
+		for w: String in wants:
+			b.tooltip_text += "\n" + w
 		sb.border_color = GameData.item_color(id) if GameData.quality_tier(id).get("id", "") != "" else Color(0.55, 0.45, 0.25)
 		if player.service == "shop" and _service_npc != null:
 			var price := World.sell_price(_service_npc, id) * int(e.get("count", 1))
@@ -1299,6 +1594,8 @@ func _toggle_bag(g: int) -> void:
 ## same corner of the screen.
 func _layout_bags() -> void:
 	var edge := Vector2(root.size.x - 12.0, root.size.y - 160.0)
+	if _bag_bar != null and _bag_bar.visible:
+		edge = Vector2(_bag_bar.position.x + _bag_bar.size.x, _bag_bar.position.y - 6.0)
 	if _inv_panel.visible:
 		edge = Vector2(_inv_panel.position.x, _inv_panel.position.y + _inv_panel.size.y)
 	var x := edge.x - 6.0
@@ -1568,6 +1865,7 @@ func _process(delta: float) -> void:
 		_crosshair.queue_redraw()
 	_ring_drawn = player.auto_attack
 	_update_buffs()
+	_layout_bag_bar()
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]
 	_hp_bar.max_value = player.max_hp
@@ -1611,9 +1909,6 @@ func _process(delta: float) -> void:
 			_refresh_skills()
 	if _inv_panel.visible:
 		var lines: PackedStringArray = []
-		if GameData.deities.has(player.deity):
-			var d: Dictionary = GameData.deities[player.deity]
-			lines.append("Follower of %s, %s" % [d["name"], d["title"]])
 		for faction_id: String in GameData.factions:
 			lines.append("%s:  %s" % [World.faction_name(faction_id), World.standing_tier(World.standing(player, faction_id))[1]])
 		_faction_label.text = "\n".join(lines)
@@ -1621,8 +1916,10 @@ func _process(delta: float) -> void:
 		for stat: String in Player.ATTRIBUTES:
 			if int(player.attributes.get(stat, 0)) != 0:
 				attr.append("%s %+d%s" % [ATTR_NAMES[stat], int(player.attributes[stat]), "%" if stat == "haste" else ""])
-		var sheet := PackedStringArray([player.display_name, "Level %d %s" % [player.level, GameData.classes[player.char_class]["name"]],
-				"", "HP  %d / %d" % [maxi(player.hp, 0), player.max_hp]])
+		var sheet := PackedStringArray([player.display_name, "Level %d %s" % [player.level, GameData.classes[player.char_class]["name"]]])
+		if GameData.deities.has(player.deity):
+			sheet.append("Follower of %s" % GameData.deities[player.deity]["name"])
+		sheet.append_array(["", "HP  %d / %d" % [maxi(player.hp, 0), player.max_hp]])
 		if player.max_mana > 0:
 			sheet.append("Mana  %d / %d" % [player.mana, player.max_mana])
 		sheet.append("Stamina  %d / %d" % [int(player.stamina), player.max_stamina])
@@ -1676,6 +1973,16 @@ func _update_hotbar() -> void:
 	var weapon := GameData.item(str(player.equipment.get("range", "")))
 	var can_fire := not weapon.is_empty() and t != null and World.can_attack(player, t) \
 			and player.distance_to(t) <= float(weapon.get("range", 30.0)) and (not weapon.has("ammo") or _has_ammo(str(weapon["ammo"])))
+	var ammo_kind := str(weapon.get("ammo", ""))
+	var ammo_left := 0
+	if ammo_kind != "":
+		for e: Dictionary in player.pack.entries():
+			if str(GameData.item(e["item"]).get("ammo_type", "")) == ammo_kind:
+				ammo_left += int(e.get("count", 1))
+	var ammo_text := str(ammo_left) if ammo_kind != "" else ""
+	if ammo_text != _ranged_slot.count_text:
+		_ranged_slot.count_text = ammo_text
+		_ranged_slot.queue_redraw()
 	var ranged_left := float(player.cooldowns.get("ranged", 0.0))
 	_ranged_slot.show_state(_sweep("ranged", ranged_left), ranged_left, can_fire, false)
 	_sit_slot.show_state(0.0, 0.0, not player.dead, player.sitting)
@@ -1868,6 +2175,7 @@ func _toggle_inventory() -> void:
 			World.request_stow_cursor(player.entity_id)  # closing with something held puts it away
 		for g: int in _bag_windows.keys():
 			_toggle_bag(g)
+	_layout_bag_bar()
 	_refresh_inventory()
 
 
@@ -1876,11 +2184,17 @@ func _refresh_inventory() -> void:
 	if player == null:
 		return
 	for place: String in _slot_buttons.keys():
-		var slot: Variant = _slot_buttons[place]
-		if not is_instance_valid(slot) or (slot as Node).is_queued_for_deletion():
-			_slot_buttons.erase(place)  # a bag window closed
+		var live: Array = (_slot_buttons[place] as Array).filter(func(s: Variant) -> bool:
+			return is_instance_valid(s) and not (s as Node).is_queued_for_deletion())  # a bag window closed
+		if live.is_empty():
+			_slot_buttons.erase(place)
 			continue
-		_fill_slot(slot as Button, World._entry_at(player, place))
+		_slot_buttons[place] = live
+		var e := World._entry_at(player, place)
+		for slot: Button in live:
+			_fill_slot(slot, e)
+	_refresh_bag_bar()
+	_notice_new_items()
 	for g: int in _bag_windows.keys():  # a bag moved or emptied out of its slot closes its window
 		var e: Dictionary = player.pack.slots[g]
 		if e.get("item", "") != (_bag_windows[g] as Node).get_meta("bag_item"):
