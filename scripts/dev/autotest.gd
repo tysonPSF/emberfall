@@ -1719,7 +1719,7 @@ func _t_blessing() -> void:
 	print("blessing: inventory open -> buff window right edge %.0f, inventory left edge %.0f" % [hud._buff_panel.position.x + hud._buff_panel.size.x, hud._inv_panel.position.x])
 	await _shot("9y_buffs_inventory")
 	hud._toggle_inventory()
-	p.level = 9
+	p.level = int(World.cfg("elders_blessing", {}).get("until_level", 10)) - 1
 	p.xp = 0
 	p.add_xp(p.xp_to_next() + 10)
 	await _wait(0.3)
@@ -1727,7 +1727,7 @@ func _t_blessing() -> void:
 	print("blessing: reached level %d -> blessed %s; buffs shown %s" % [p.level, p.elders_blessing(), left])
 	p.xp = 0
 	p.add_xp(100)
-	print("blessing: level 10 gains 100 -> %d xp (no blessing now; the cap is %d)" % [p.xp, int(World.cfg("max_level", 10))])
+	print("blessing: at level %d, 100 more -> %d xp (no blessing now; the cap is %d)" % [p.level, p.xp, int(World.cfg("max_level", 10))])
 	p.level = 14
 	p.xp = 0
 	p.add_xp(p.xp_to_next() * 3)

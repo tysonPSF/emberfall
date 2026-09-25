@@ -12,7 +12,7 @@
   "stamina_regen_delay": 1.5,
   "sprint_resume_at": 25.0,
   "max_level": 15,
-  "elders_blessing": {"xp_pct": 15, "until_level": 10},
+  "elders_blessing": {"xp_pct": 15, "until_level": 15},
   "xp_rate": 1.0,
   "xp_per_level_sq": 100,
   "xp_base": 10,
