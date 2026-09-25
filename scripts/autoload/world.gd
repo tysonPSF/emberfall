@@ -1174,8 +1174,11 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 		p.recalc_stats()
 	else:
 		var loot := Pack.clean_entry(entry)
-		if loot.has("contents"):
-			loot["contents"] = (entry.get("contents", []) as Array).map(func(c: Variant) -> Dictionary: return Pack.clean_entry(c))
+		if loot.has("contents") and entry.has("contents"):  # a dead player's bag keeps what was in it; a dropped one starts empty
+			var inside: Array = loot["contents"]
+			var carried: Array = entry["contents"]
+			for i in mini(inside.size(), carried.size()):
+				inside[i] = Pack.clean_entry(carried[i])
 		if not p.pack.add_entry(loot):
 			say(p, "Your inventory is full.", C_WARN)
 			return false
