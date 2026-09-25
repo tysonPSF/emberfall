@@ -511,7 +511,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -523,7 +523,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -535,7 +535,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -547,7 +547,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -559,7 +559,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -571,7 +571,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -583,7 +583,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -595,7 +595,7 @@
         "timber_wolf": 3,
         "thornback_spiderling": 2
       },
-      "respawn": 60,
+      "respawn": 50,
       "wander": 10
     },
     {
@@ -608,7 +608,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -621,7 +621,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -634,7 +634,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -647,7 +647,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -660,7 +660,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -673,7 +673,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -686,7 +686,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -699,7 +699,7 @@
         "black_bear": 1,
         "timber_wolf": 1
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 12
     },
     {
@@ -711,7 +711,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -723,7 +723,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -735,7 +735,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -747,7 +747,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -759,7 +759,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -771,7 +771,7 @@
         "black_bear": 2,
         "thornback_spider": 3
       },
-      "respawn": 75,
+      "respawn": 60,
       "wander": 10
     },
     {
@@ -783,7 +783,7 @@
         "thornback_spider": 4,
         "thornback_spiderling": 2
       },
-      "respawn": 70,
+      "respawn": 60,
       "wander": 4
     },
     {
@@ -795,7 +795,7 @@
         "thornback_spider": 4,
         "thornback_spiderling": 2
       },
-      "respawn": 70,
+      "respawn": 60,
       "wander": 4
     },
     {
@@ -807,7 +807,7 @@
         "thornback_spider": 4,
         "thornback_spiderling": 2
       },
-      "respawn": 70,
+      "respawn": 60,
       "wander": 4
     },
     {
@@ -902,7 +902,7 @@
       "pool": {
         "dire_wolf": 1
       },
-      "respawn": 80,
+      "respawn": 60,
       "wander": 14
     },
     {
@@ -913,7 +913,7 @@
       "pool": {
         "dire_wolf": 1
       },
-      "respawn": 80,
+      "respawn": 60,
       "wander": 14
     },
     {
@@ -982,6 +982,296 @@
       },
       "respawn": 300,
       "wander": 0
+    },
+    {
+      "pos": [
+        16,
+        138
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -16,
+        128
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -40,
+        140
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        85,
+        150
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        160,
+        165
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        150
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -95,
+        215
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        40,
+        218
+      ],
+      "pool": {
+        "timber_wolf": 3,
+        "thornback_spiderling": 2
+      },
+      "respawn": 50,
+      "wander": 10
+    },
+    {
+      "pos": [
+        18,
+        40
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -14,
+        58
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -18,
+        5
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        45,
+        -60
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -35,
+        -95
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        110,
+        20
+      ],
+      "pool": {
+        "dire_wolf": 2,
+        "black_bear": 1,
+        "timber_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -130,
+        -55
+      ],
+      "pool": {
+        "black_bear": 2,
+        "thornback_spider": 3
+      },
+      "respawn": 60,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -100,
+        -140
+      ],
+      "pool": {
+        "black_bear": 2,
+        "thornback_spider": 3
+      },
+      "respawn": 60,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -170,
+        -30
+      ],
+      "pool": {
+        "black_bear": 2,
+        "thornback_spider": 3
+      },
+      "respawn": 60,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -200,
+        -165
+      ],
+      "pool": {
+        "black_bear": 2,
+        "thornback_spider": 3
+      },
+      "respawn": 60,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -145,
+        -90
+      ],
+      "pool": {
+        "thornback_spider": 4,
+        "thornback_spiderling": 2
+      },
+      "respawn": 60,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -185,
+        -95
+      ],
+      "pool": {
+        "thornback_spider": 4,
+        "thornback_spiderling": 2
+      },
+      "respawn": 60,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -60,
+        -172
+      ],
+      "pool": {
+        "skeleton_knight": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        10,
+        -165
+      ],
+      "pool": {
+        "skeleton_knight": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        160,
+        90
+      ],
+      "pool": {
+        "dire_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        100,
+        -130
+      ],
+      "pool": {
+        "dire_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 14
     }
   ],
   "groves": 0.85,

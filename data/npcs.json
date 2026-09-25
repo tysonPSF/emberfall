@@ -382,7 +382,7 @@
       "walk_speed": 1.9,
       "patrol_pause": 6,
       "assist_standing": 0,
-      "hunt_radius": 8,
+      "hunt_radius": 16,
       "hunt_aggressive_only": true,
       "shouts": [
         "Hold on, {name}! I'm coming!",
