@@ -403,6 +403,271 @@ def build_beetle():
 	return arm
 
 
+# ---------------------------------------------------------------- wolf
+
+def _quad_legs(t_wave, amp):
+	"""Diagonal pairs (trot): front-left with back-right."""
+	a = amp * t_wave
+	return {"leg_fl": {"rot": (a, 0, 0)}, "leg_br": {"rot": (a, 0, 0)},
+			"leg_fr": {"rot": (-a, 0, 0)}, "leg_bl": {"rot": (-a, 0, 0)}}
+
+
+def build_wolf(name="wolf", fur_hex="6f6a63", back_hex="4a4642", belly_hex="b8ae9f", eye_hex="e8c040"):
+	fur = material(f"{name}_fur", fur_hex, 0.9)
+	back = material(f"{name}_back", back_hex, 0.95)
+	belly = material(f"{name}_belly", belly_hex, 0.9)
+	dark = material(f"{name}_dark", "1c1a19", 0.5)
+	eye = material(f"{name}_eye", eye_hex, 0.3, emit=1.2)
+	b = Builder(name)
+	legs = {"leg_fl": (0.2, -0.52), "leg_fr": (-0.2, -0.52), "leg_bl": (0.2, 0.46), "leg_br": (-0.2, 0.46)}
+	b.bone("root", (0, 0, 0.72))
+	b.bone("body", (0, 0.0, 0.78), "root")
+	b.bone("head", (0, -0.78, 0.98), "body")
+	b.bone("jaw", (0, -0.95, 0.9), "head")
+	b.bone("tail1", (0, 0.72, 0.86), "body")
+	b.bone("tail2", (0, 1.05, 0.72), "tail1")
+
+	b.blob((0.62, 1.5, 0.62), (0, 0.0, 0.8), fur, "body", segs=(12, 8))
+	b.blob((0.5, 1.2, 0.3), (0, 0.02, 0.62), belly, "body")
+	b.blob((0.44, 1.1, 0.26), (0, 0.02, 1.07), back, "body")                           # darker saddle
+	b.blob((0.74, 0.6, 0.72), (0, -0.52, 0.9), fur, "body", segs=(10, 8))            # ruff
+	b.blob((0.46, 0.5, 0.44), (0, -0.84, 1.02), fur, "head")                          # skull
+	b.seg((0, -0.95, 0.99), (0, -1.36, 0.9), 0.16, 0.08, fur, "head", sides=8)       # muzzle
+	b.blob((0.1, 0.09, 0.08), (0, -1.38, 0.93), dark, "head")                         # nose
+	b.seg((0, -0.95, 0.88), (0, -1.3, 0.82), 0.1, 0.05, belly, "jaw", sides=6)        # lower jaw
+	for s in (1, -1):
+		b.blob((0.08, 0.06, 0.06), (0.13 * s, -1.03, 1.1), eye, "head", segs=(6, 4))
+		b.seg((0.15 * s, -0.78, 1.2), (0.19 * s, -0.74, 1.46), 0.09, 0.01, back, "head", sides=4)  # ears
+		b.seg((0.06 * s, -1.24, 0.84), (0.06 * s, -1.25, 0.77), 0.02, 0.004, material(f"{name}_tooth", "efe6d0"), "jaw", sides=4)
+	b.seg((0, 0.72, 0.9), (0, 1.1, 0.72), 0.11, 0.13, fur, "tail1", sides=7)
+	b.blob((0.24, 0.5, 0.24), (0, 1.3, 0.56), back, "tail2")
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.66), "root")
+		b.seg((x, y, 0.7), (x, y + 0.03, 0.3), 0.09, 0.07, fur, name_, sides=6)
+		b.seg((x, y + 0.03, 0.3), (x, y - 0.02, 0.06), 0.065, 0.055, back, name_, sides=6)
+		b.blob((0.13, 0.17, 0.08), (x, y - 0.05, 0.04), dark, name_)
+	arm = b.build()
+
+	def tail(t, amp):
+		return {"tail1": {"rot": (4 * wave(t, 1, 0.2), 0, amp * wave(t))}, "tail2": {"rot": (0, 0, amp * wave(t, 1, -0.15))}}
+
+	def idle(t):
+		return merge({"body": {"loc": (0, 0, 0.012 * wave(t, 2))}, "head": {"rot": (4 * wave(t, 1, 0.3), 0, 8 * wave(t, 0.5))}},
+					 tail(t, 8))
+
+	def walk(t):
+		return merge(_quad_legs(wave(t), 26), tail(t, 10), {"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))},
+															   "head": {"rot": (3 * wave(t, 2), 0, 0)}})
+
+	def run(t):  # a bounding gallop: fronts together, backs together
+		f, k = 42 * wave(t), 42 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.08 * max(0.0, wave(t, 1, 0.25))), "rot": (6 * wave(t, 1, 0.1), 0, 0)}},
+					 tail(t, 5))
+
+	def attack(t):
+		lunge = seq(t, [(0, 0), (0.3, -0.12), (0.5, 0.35), (1, 0)])
+		head = seq(t, [(0, 0), (0.3, 18), (0.5, -14), (1, 0)])
+		jaw = seq(t, [(0, 0), (0.3, -30), (0.5, 4), (0.7, 0)])
+		return merge({"root": {"loc": (0, lunge, 0.05 * max(0.0, lunge)), "rot": (seq(t, [(0, 0), (0.3, 8), (0.5, -8), (1, 0)]), 0, 0)},
+					  "head": {"rot": (head, 0, 0)}, "jaw": {"rot": (jaw, 0, 0)}}, tail(t, 16))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.16 * k, 0.03 * k), "rot": (10 * k, 0, 0)}, "head": {"rot": (16 * k, 0, 10 * k)},
+					  "jaw": {"rot": (-20 * k, 0, 0)}}, tail(t, 20 * k))
+
+	def death(t):
+		roll = seq(t, [(0.15, 0), (0.6, 86), (0.72, 80), (0.85, 88)])
+		drop = seq(t, [(0.15, 0), (0.6, -0.34)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.2, 10), (0.5, 0)]), roll, 0)},
+					  "head": {"rot": (-12 * curl, 0, 12 * curl)}, "jaw": {"rot": (-14 * curl, 0, 0)}},
+					 {"leg_fl": {"rot": (28 * curl, 0, 0)}, "leg_fr": {"rot": (14 * curl, 0, 0)},
+					  "leg_bl": {"rot": (-24 * curl, 0, 0)}, "leg_br": {"rot": (-12 * curl, 0, 0)}},
+					 {"tail1": {"rot": (-10 * curl, 0, 0)}})
+
+	clip(arm, "idle", 2.4, idle, True)
+	clip(arm, "walk", 0.8, walk, True)
+	clip(arm, "run", 0.45, run, True)
+	clip(arm, "attack", 0.6, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.1, death, False)
+	return arm
+
+
+def build_dire_wolf():
+	return build_wolf("dire_wolf", "403c39", "26221f", "7a7068", "ff6a2a")
+
+
+# ---------------------------------------------------------------- black bear
+
+def build_bear():
+	fur = material("bear_fur", "2f2622", 0.95)
+	dark = material("bear_dark", "1a1513", 0.9)
+	muzzle = material("bear_muzzle", "8a6a4e", 0.9)
+	claw = material("bear_claw", "d8cfbc", 0.5)
+	eye = material("bear_eye", "120c0a", 0.2)
+	b = Builder("bear")
+	legs = {"leg_fl": (0.36, -0.62), "leg_fr": (-0.36, -0.62), "leg_bl": (0.36, 0.62), "leg_br": (-0.36, 0.62)}
+	b.bone("root", (0, 0, 0.85))
+	b.bone("body", (0, 0.0, 0.95), "root")
+	b.bone("head", (0, -1.05, 1.15), "body")
+	b.blob((1.2, 2.1, 1.15), (0, 0.05, 1.0), fur, "body", segs=(14, 9))
+	b.blob((1.25, 0.9, 1.1), (0, -0.55, 1.15), fur, "body", segs=(12, 8))         # shoulder hump
+	b.blob((0.9, 0.9, 0.9), (0, 0.72, 0.95), fur, "body", segs=(12, 8))           # rump
+	b.blob((0.66, 0.66, 0.62), (0, -1.12, 1.2), fur, "head", segs=(12, 8))
+	b.seg((0, -1.3, 1.14), (0, -1.62, 1.06), 0.2, 0.13, muzzle, "head", sides=8)
+	b.blob((0.16, 0.12, 0.12), (0, -1.64, 1.11), dark, "head")
+	for s in (1, -1):
+		b.blob((0.2, 0.12, 0.2), (0.25 * s, -1.05, 1.5), fur, "head", segs=(8, 6))   # round ears
+		b.blob((0.07, 0.06, 0.07), (0.16 * s, -1.4, 1.28), eye, "head", segs=(6, 4))
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.8), "root")
+		b.seg((x, y, 0.85), (x, y, 0.1), 0.2, 0.16, fur, name_, sides=8)
+		b.blob((0.3, 0.36, 0.14), (x, y - 0.06, 0.07), dark, name_)
+		for k in (-1, 0, 1):
+			b.seg((x + 0.08 * k, y - 0.22, 0.06), (x + 0.08 * k, y - 0.3, 0.02), 0.025, 0.008, claw, name_, sides=4)
+	arm = b.build()
+
+	def idle(t):
+		return {"body": {"loc": (0, 0, 0.015 * wave(t))}, "head": {"rot": (-3 + 5 * wave(t, 1, 0.25), 0, 10 * wave(t, 0.5))}}
+
+	def walk(t):  # a heavy, rolling amble
+		return merge(_quad_legs(wave(t), 20), {"body": {"rot": (0, 4 * wave(t), 0)}, "root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))},
+											   "head": {"rot": (4 * wave(t, 2), 0, 3 * wave(t))}})
+
+	def run(t):
+		f, k = 34 * wave(t), 34 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.07 * max(0.0, wave(t, 1, 0.25))), "rot": (5 * wave(t, 1, 0.1), 0, 0)}})
+
+	def attack(t):  # rear up and swipe down with both forepaws
+		rear = seq(t, [(0, 0), (0.35, 38), (0.55, -6), (1, 0)])
+		paws = seq(t, [(0, 0), (0.35, 70), (0.55, -30), (1, 0)])
+		return {"root": {"rot": (rear, 0, 0), "loc": (0, seq(t, [(0, 0), (0.35, 0.2), (0.55, -0.15), (1, 0)]), 0)},
+				"leg_fl": {"rot": (paws, 0, 0)}, "leg_fr": {"rot": (paws * 0.9, 0, 0)},
+				"leg_bl": {"rot": (-rear, 0, 0)}, "leg_br": {"rot": (-rear, 0, 0)},
+				"head": {"rot": (seq(t, [(0, 0), (0.35, -20), (0.55, 10), (1, 0)]), 0, 0)}}
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return {"root": {"loc": (0, -0.12 * k, 0), "rot": (6 * k, 4 * k, 0)}, "head": {"rot": (14 * k, 0, -12 * k)}}
+
+	def death(t):
+		roll = seq(t, [(0.2, 0), (0.7, 84), (0.8, 80), (0.9, 86)])
+		drop = seq(t, [(0.2, 0), (0.7, -0.42)])
+		curl = seq(t, [(0.35, 0), (0.9, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (0, roll, 0)}, "head": {"rot": (-10 * curl, 0, 16 * curl)}},
+					 {"leg_fl": {"rot": (22 * curl, 0, 0)}, "leg_fr": {"rot": (12 * curl, 0, 0)},
+					  "leg_bl": {"rot": (-18 * curl, 0, 0)}, "leg_br": {"rot": (-8 * curl, 0, 0)}})
+
+	clip(arm, "idle", 3.0, idle, True)
+	clip(arm, "walk", 1.1, walk, True)
+	clip(arm, "run", 0.6, run, True)
+	clip(arm, "attack", 0.9, attack, False)
+	clip(arm, "hit", 0.45, hit, False)
+	clip(arm, "death", 1.4, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- thornback spider
+
+SPIDER_LEGS = {}
+for _i, _y in enumerate((-0.42, -0.24, -0.06, 0.12)):
+	SPIDER_LEGS[f"leg_l{_i + 1}"] = (0.26, _y)
+	SPIDER_LEGS[f"leg_r{_i + 1}"] = (-0.26, _y)
+SPIDER_SET_A = ("leg_l1", "leg_r2", "leg_l3", "leg_r4")
+
+
+def build_spider():
+	shell = material("spider_shell", "2e2724", 0.55)
+	mark = material("spider_mark", "9a3424", 0.5)
+	thorn = material("spider_thorn", "c9b58e", 0.5)
+	leg_m = material("spider_leg", "231d1b", 0.6)
+	glow = material("spider_eye", "ff3a22", 0.3, emit=3.0)
+	b = Builder("spider")
+	b.bone("root", (0, 0, 0.55))
+	b.bone("body", (0, -0.15, 0.55), "root")
+	b.bone("abdomen", (0, 0.25, 0.62), "body")
+	b.bone("fang_l", (0.08, -0.62, 0.48), "body")
+	b.bone("fang_r", (-0.08, -0.62, 0.48), "body")
+	b.blob((0.7, 0.78, 0.46), (0, -0.2, 0.55), shell, "body", segs=(12, 8))              # cephalothorax
+	b.blob((1.1, 1.25, 0.95), (0, 0.72, 0.78), shell, "abdomen", segs=(14, 10))          # abdomen
+	b.blob((0.5, 0.7, 0.2), (0, 0.72, 1.2), mark, "abdomen", rot=(-10, 0, 0), segs=(10, 6))  # the red mark
+	for k, (x, y, z) in enumerate(((0.28, 0.45, 1.12), (-0.28, 0.45, 1.12), (0.4, 0.8, 1.05), (-0.4, 0.8, 1.05), (0.0, 1.0, 1.2), (0.0, 0.55, 1.26))):
+		b.seg((x, y, z - 0.05), (x * 1.3, y + 0.05, z + 0.28), 0.07, 0.0, thorn, "abdomen", sides=4)   # thorns
+	for s in (1, -1):
+		for ex, ez in ((0.1, 0.72), (0.2, 0.68), (0.06, 0.64)):
+			b.blob((0.07, 0.06, 0.07), (ex * s, -0.55, ez), glow, "body", segs=(6, 4))
+		side = "fang_l" if s > 0 else "fang_r"
+		b.seg((0.08 * s, -0.58, 0.48), (0.06 * s, -0.7, 0.26), 0.06, 0.012, leg_m, side, sides=5)
+	for name_, (x, y) in SPIDER_LEGS.items():
+		s = 1 if x > 0 else -1
+		b.bone(name_, (x, y, 0.55), "body")
+		spread = (y + 0.15) * 1.6
+		knee = (x + 0.55 * s, y + spread * 0.5, 0.95)
+		foot = (x + 1.05 * s, y + spread, 0.0)
+		b.seg((x, y, 0.55), knee, 0.06, 0.05, leg_m, name_, sides=5)
+		b.blob((0.1, 0.1, 0.1), knee, mark, name_, segs=(6, 4))
+		b.seg(knee, foot, 0.05, 0.015, leg_m, name_, sides=5)
+	arm = b.build()
+
+	def leg(name_, swing, lift):
+		s = 1 if SPIDER_LEGS[name_][0] > 0 else -1
+		return {name_: {"rot": (0, lift * s, -swing * s)}}
+
+	def fangs(open_deg):
+		return {"fang_l": {"rot": (0, 0, open_deg)}, "fang_r": {"rot": (0, 0, -open_deg)}}
+
+	def gait(t, amp, lift):
+		out = {}
+		for name_ in SPIDER_LEGS:
+			ph = 0.0 if name_ in SPIDER_SET_A else 0.5
+			out.update(leg(name_, amp * wave(t, 1, ph), lift * max(0.0, wave(t, 1, ph + 0.25))))
+		return out
+
+	def idle(t):
+		return merge({"body": {"loc": (0, 0, 0.012 * wave(t))}, "abdomen": {"rot": (3 * wave(t, 1, 0.2), 0, 0)}},
+					 fangs(6 * max(0.0, wave(t, 2))), gait(t, 2, 0))
+
+	def walk(t):
+		return merge(gait(t, 18, 14), {"root": {"loc": (0, 0, 0.015 * abs(wave(t, 2)))}, "abdomen": {"rot": (0, 0, 3 * wave(t))}})
+
+	def run(t):
+		return merge(gait(t, 26, 20), {"root": {"loc": (0, 0, 0.03 * abs(wave(t, 2)))}, "abdomen": {"rot": (0, 0, 4 * wave(t))}})
+
+	def attack(t):  # rear the front legs, then strike down with the fangs
+		rear = seq(t, [(0, 0), (0.35, 1), (0.55, -0.4), (1, 0)])
+		out = merge({"root": {"rot": (14 * rear, 0, 0), "loc": (0, seq(t, [(0, 0), (0.35, -0.1), (0.55, 0.25), (1, 0)]), 0)}},
+					fangs(seq(t, [(0, 0), (0.35, 28), (0.55, -10), (1, 0)])))
+		for name_ in ("leg_l1", "leg_r1"):
+			out = merge(out, leg(name_, 0, 45 * rear))
+		return out
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.12 * k, 0.04 * k), "rot": (8 * k, 5 * k, 0)}}, fangs(18 * k), gait(t, 8 * k, 12 * k))
+
+	def death(t):  # legs curl up underneath, as spiders do
+		drop = seq(t, [(0.1, 0), (0.6, -0.3)])
+		curl = seq(t, [(0.2, 0), (0.8, 1)])
+		out = merge({"root": {"loc": (0, 0, drop), "rot": (0, seq(t, [(0.3, 0), (0.7, 18)]), 0)}}, fangs(20 * curl))
+		for i, name_ in enumerate(SPIDER_LEGS):
+			out = merge(out, leg(name_, 4 * wave(t, 5, i * 0.13) * (1 - curl), -65 * curl))  # folded under
+		return out
+
+	clip(arm, "idle", 2.0, idle, True)
+	clip(arm, "walk", 0.7, walk, True)
+	clip(arm, "run", 0.42, run, True)
+	clip(arm, "attack", 0.65, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.2, death, False)
+	return arm
+
+
 # ---------------------------------------------------------------- export + preview
 
 # ---------------------------------------------------------------- gnoll parts
@@ -452,8 +717,26 @@ def build_gnoll_tail():
 	return b.build_static()
 
 
-ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail}
-CREATURES = {"rat": build_rat, "fire_beetle": build_beetle}
+def build_orc_face():
+	"""Bolt-on for a KayKit head (green-tinted): heavy brow, pointed ears and
+	lower tusks. Authored in KayKit mesh space like the gnoll head."""
+	skin = material("orc_skin", "6f8f4a", 0.85)
+	dark = material("orc_dark", "3c4a28", 0.9)
+	tusk = material("orc_tusk", "ece2c8", 0.4)
+	eye = material("orc_eye", "f0d040", 0.3, emit=1.2)
+	b = Builder("orc_face")
+	b.blob((0.7, 0.22, 0.14), (0, -0.44, 1.78), dark, "x", segs=(10, 5))              # brow ridge
+	for s in (1, -1):
+		b.seg((0.46 * s, -0.02, 1.62), (0.8 * s, 0.1, 1.82), 0.13, 0.01, skin, "x", sides=5)   # ears
+		b.seg((0.16 * s, -0.46, 1.32), (0.19 * s, -0.5, 1.56), 0.05, 0.012, tusk, "x", sides=5)  # tusks
+		b.blob((0.1, 0.05, 0.07), (0.17 * s, -0.47, 1.68), eye, "x", segs=(6, 4))
+	b.blob((0.36, 0.2, 0.16), (0, -0.46, 1.34), skin, "x", segs=(8, 5))                # jutting jaw
+	return b.build_static()
+
+
+ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail, "orc_face": build_orc_face}
+CREATURES = {"rat": build_rat, "fire_beetle": build_beetle, "wolf": build_wolf, "dire_wolf": build_dire_wolf,
+			 "bear": build_bear, "spider": build_spider}
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

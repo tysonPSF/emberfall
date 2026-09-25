@@ -491,5 +491,584 @@
     ],
     "named": true,
     "xp_bonus": 1.5
+  },
+  "timber_wolf": {
+    "name": "a timber wolf",
+    "level": [
+      6,
+      8
+    ],
+    "hp_base": 30,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.4,
+    "ac": 10,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": true,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6f6a63",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wolf_pelt",
+        "chance": 0.55
+      }
+    ],
+    "model": "wolf"
+  },
+  "dire_wolf": {
+    "name": "a dire wolf",
+    "level": [
+      9,
+      11
+    ],
+    "hp_base": 45,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "attack_delay": 2.4,
+    "ac": 14,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": true,
+    "flees": true,
+    "faction": "wildlife",
+    "verb": [
+      "maul",
+      "mauls"
+    ],
+    "shape": "beetle",
+    "color": "#403c39",
+    "scale": 1.15,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wolf_pelt",
+        "chance": 0.6
+      },
+      {
+        "item": "dire_wolf_fang",
+        "chance": 0.3
+      }
+    ],
+    "model": "dire_wolf"
+  },
+  "black_bear": {
+    "name": "a black bear",
+    "level": [
+      8,
+      11
+    ],
+    "hp_base": 60,
+    "hp_per_level": 16,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 3.0,
+    "ac": 16,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#2f2622",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bear_claw",
+        "chance": 0.5
+      },
+      {
+        "item": "bear_hide",
+        "chance": 0.25
+      }
+    ],
+    "model": "bear"
+  },
+  "thornback_spiderling": {
+    "name": "a thornback spiderling",
+    "level": [
+      6,
+      7
+    ],
+    "hp_base": 20,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.2,
+    "ac": 8,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "spiders",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2e2724",
+    "scale": 0.55,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "spider_silk",
+        "chance": 0.4
+      }
+    ],
+    "model": "spider",
+    "proc": {
+      "spell": "thornback_venom",
+      "chance": 0.1,
+      "text": "%s's bite drips with %s!"
+    }
+  },
+  "thornback_spider": {
+    "name": "a thornback spider",
+    "level": [
+      8,
+      11
+    ],
+    "hp_base": 40,
+    "hp_per_level": 13,
+    "dmg_min": 4,
+    "dmg_max": 10,
+    "attack_delay": 2.4,
+    "ac": 13,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "spiders",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2e2724",
+    "scale": 0.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "spider_silk",
+        "chance": 0.55
+      },
+      {
+        "item": "venom_sac",
+        "chance": 0.2
+      }
+    ],
+    "model": "spider",
+    "proc": {
+      "spell": "thornback_venom",
+      "chance": 0.16,
+      "text": "%s's bite drips with %s!"
+    }
+  },
+  "broodmother_silkfang": {
+    "name": "Broodmother Silkfang",
+    "level": [
+      12,
+      12
+    ],
+    "hp_base": 520,
+    "hp_per_level": 0,
+    "dmg_min": 8,
+    "dmg_max": 18,
+    "attack_delay": 2.4,
+    "ac": 24,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "spiders",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2e2724",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "spider_silk",
+        "chance": 1.0
+      },
+      {
+        "item": "venom_sac",
+        "chance": 1.0
+      },
+      {
+        "item": "silkfangs_fang",
+        "chance": 0.5
+      }
+    ],
+    "model": "spider",
+    "named": true,
+    "xp_bonus": 2.0,
+    "proc": {
+      "spell": "thornback_venom",
+      "chance": 0.25,
+      "text": "%s's bite drips with %s!"
+    }
+  },
+  "orc_raider": {
+    "name": "a Bloodtusk raider",
+    "level": [
+      9,
+      12
+    ],
+    "hp_base": 45,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "attack_delay": 2.6,
+    "ac": 16,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "bloodtusk",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#6f8f4a",
+    "scale": 1.05,
+    "coin": [
+      10,
+      40
+    ],
+    "loot": [
+      {
+        "item": "orc_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "orc",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "orc_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.2,
+        "table": "orc_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.18,
+        "table": "orc_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.12,
+        "table": "orc_legs"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.12,
+        "table": "orc_feet"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.15,
+        "table": "knight_shield"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.05,
+        "table": "rings"
+      }
+    ]
+  },
+  "orc_shaman": {
+    "name": "a Bloodtusk shaman",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 38,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 3.0,
+    "ac": 12,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "bloodtusk",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#6f8f4a",
+    "scale": 1.0,
+    "coin": [
+      15,
+      50
+    ],
+    "loot": [
+      {
+        "item": "orc_tusk",
+        "chance": 0.4
+      }
+    ],
+    "model": "orc_shaman",
+    "proc": {
+      "spell": "spirit_bolt",
+      "chance": 0.3,
+      "text": "%s calls down a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.8,
+        "table": "shaman_weapons"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.08,
+        "table": "fang_neck"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.06,
+        "table": "rings"
+      }
+    ]
+  },
+  "grolthar": {
+    "name": "Warchief Grolthar Bloodtusk",
+    "level": [
+      14,
+      14
+    ],
+    "hp_base": 900,
+    "hp_per_level": 0,
+    "dmg_min": 10,
+    "dmg_max": 24,
+    "attack_delay": 2.8,
+    "ac": 30,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "bloodtusk",
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "shape": "humanoid",
+    "color": "#6f8f4a",
+    "scale": 1.35,
+    "coin": [
+      150,
+      400
+    ],
+    "loot": [
+      {
+        "item": "orc_tusk",
+        "chance": 1.0
+      }
+    ],
+    "model": "orc",
+    "named": true,
+    "xp_bonus": 2.5,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "grolthar_weapon"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.6,
+        "item": "bearhide_vest"
+      },
+      {
+        "slot": "head",
+        "chance": 0.5,
+        "table": "orc_head"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.5,
+        "table": "knight_shield"
+      }
+    ]
+  },
+  "skeleton_knight": {
+    "name": "a skeleton knight",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 50,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.8,
+    "ac": 20,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#e0dccb",
+    "scale": 1.05,
+    "coin": [
+      5,
+      30
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 0.6
+      }
+    ],
+    "model": "skeleton_knight",
+    "spawn_anim": "Spawn_Ground",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.85,
+        "table": "knight_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.3,
+        "table": "knight_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.15,
+        "table": "knight_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.15,
+        "table": "knight_legs"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.3,
+        "table": "knight_shield"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.05,
+        "table": "rings"
+      }
+    ]
+  },
+  "captain_veyl": {
+    "name": "Captain Veyl of the Hollow Watch",
+    "level": [
+      13,
+      13
+    ],
+    "hp_base": 700,
+    "hp_per_level": 0,
+    "dmg_min": 9,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 26,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#a8c0ff",
+    "scale": 1.2,
+    "coin": [
+      80,
+      250
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 1.0
+      },
+      {
+        "item": "hollow_watch_signet",
+        "chance": 0.5
+      }
+    ],
+    "model": "wraith",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.2,
+      "text": "%s's touch carries %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "knight_weapons"
+      }
+    ]
   }
 }

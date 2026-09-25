@@ -1,0 +1,133 @@
+{
+  "wolf_pelt": {
+    "name": "Wolf Pelt",
+    "value": 20,
+    "stack": 20
+  },
+  "dire_wolf_fang": {
+    "name": "Dire Wolf Fang",
+    "value": 35,
+    "stack": 100
+  },
+  "bear_claw": {
+    "name": "Bear Claw",
+    "value": 30,
+    "stack": 100
+  },
+  "bear_hide": {
+    "name": "Black Bear Hide",
+    "value": 45,
+    "stack": 10
+  },
+  "spider_silk": {
+    "name": "Spider Silk",
+    "value": 25,
+    "stack": 100
+  },
+  "venom_sac": {
+    "name": "Thornback Venom Sac",
+    "value": 40,
+    "stack": 100
+  },
+  "orc_tusk": {
+    "name": "Bloodtusk Tusk",
+    "value": 30,
+    "stack": 100
+  },
+  "orc_cleaver": {
+    "name": "Orcish Cleaver",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 3.0,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 260,
+    "rec_level": 8
+  },
+  "bearhide_vest": {
+    "name": "Bearhide Vest",
+    "slot": "chest",
+    "ac": 8,
+    "sta": 2,
+    "value": 420,
+    "rec_level": 8,
+    "wear": "mangy_hide_vest"
+  },
+  "wolfhide_boots": {
+    "name": "Wolfhide Boots",
+    "slot": "feet",
+    "ac": 4,
+    "agi": 1,
+    "value": 240,
+    "rec_level": 7,
+    "wear": "leather_boots"
+  },
+  "silkfangs_fang": {
+    "name": "Silkfang's Fang",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 2,
+    "value": 1200,
+    "rec_level": 10,
+    "proc": {
+      "spell": "thornback_venom",
+      "chance": 0.1
+    }
+  },
+  "bloodtusk_warcleaver": {
+    "name": "Bloodtusk Warcleaver",
+    "slot": "primary",
+    "dmg": 10,
+    "delay": 3.0,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "sta": 2,
+    "value": 2400,
+    "rec_level": 12,
+    "classes": [
+      "warrior"
+    ],
+    "proc": {
+      "spell": "spirit_bolt",
+      "chance": 0.08
+    }
+  },
+  "hollow_watch_signet": {
+    "name": "Signet of the Hollow Watch",
+    "slot": "ring",
+    "ac": 2,
+    "mana": 10,
+    "wis": 2,
+    "int": 2,
+    "value": 1500,
+    "lore": true
+  },
+  "silkweave_gloves": {
+    "name": "Silkweave Gloves",
+    "slot": "hands",
+    "ac": 4,
+    "agi": 2,
+    "int": 1,
+    "value": 600,
+    "rec_level": 8,
+    "no_drop": true,
+    "lore": true,
+    "wear": "cloth_gloves"
+  }
+}

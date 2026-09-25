@@ -85,5 +85,47 @@
     "faction": {
       "emberhold": 10
     }
+  },
+  "thinning_the_pack": {
+    "name": "Thinning the Pack",
+    "giver": "elowen",
+    "start_keyword": "wolf pelts",
+    "wants": {
+      "wolf_pelt": 4
+    },
+    "reward": {
+      "xp": 260,
+      "coin": 80
+    },
+    "first_reward_item": "wolfhide_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Thinning the Pack. Bring Elowen four wolf pelts.",
+    "ready_text": "Pelts! You've been busy, {name}. Hand them here.",
+    "complete_text": "Good, clean pelts. The pack will think twice before coming near the road. Here's your coin.",
+    "first_complete_text": "And these. Wolfhide, stitched with thornback silk. They'll keep your feet quiet in the woods.",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "silk_and_venom": {
+    "name": "Silk and Venom",
+    "giver": "elowen",
+    "start_keyword": "spider silk",
+    "wants": {
+      "spider_silk": 3,
+      "venom_sac": 1
+    },
+    "reward": {
+      "xp": 520,
+      "coin": 150
+    },
+    "first_reward_item": "silkweave_gloves",
+    "accept_text": "You have taken on a task: Silk and Venom. Bring Elowen three lengths of spider silk and a thornback venom sac.",
+    "ready_text": "Is that thornback silk? And a venom sac, still full. Give them here, {name}, carefully.",
+    "complete_text": "Carefully... there. You've a steady hand, and a strong stomach.",
+    "first_complete_text": "Take these. Silkweave, light as breath and tougher than leather. Wear them into the deep woods.",
+    "faction": {
+      "emberhold": 10
+    }
   }
 }

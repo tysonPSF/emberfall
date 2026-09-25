@@ -181,6 +181,130 @@
         "waist",
         "chest"
       ]
+    },
+    "wolf": {
+      "path": "res://assets/creatures/wolf.glb",
+      "rig": "own"
+    },
+    "dire_wolf": {
+      "path": "res://assets/creatures/dire_wolf.glb",
+      "rig": "own"
+    },
+    "bear": {
+      "path": "res://assets/creatures/bear.glb",
+      "rig": "own"
+    },
+    "spider": {
+      "path": "res://assets/creatures/spider.glb",
+      "rig": "own"
+    },
+    "orc": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+      "hide": [
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/orc_face.glb"
+        }
+      ],
+      "tint": {
+        "Barbarian_Head": "#8fb36a",
+        "Barbarian_ArmLeft": "#8fb36a",
+        "Barbarian_ArmRight": "#8fb36a"
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest",
+        "head"
+      ]
+    },
+    "orc_shaman": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb",
+      "hide": [
+        "RogueHooded_Mask"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/orc_face.glb"
+        }
+      ],
+      "tint": {
+        "RogueHooded_Head": "#8fb36a",
+        "RogueHooded_ArmLeft": "#8fb36a",
+        "RogueHooded_ArmRight": "#8fb36a",
+        "RogueHooded_Cape": "#7a5a3a",
+        "RogueHooded_Body": "#8a6e50"
+      },
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
+    "skeleton_knight": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
+      "gear_parts": {
+        "head": [
+          "Skeleton_Warrior_Helmet"
+        ],
+        "chest": [
+          "Skeleton_Warrior_Cloak"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ],
+      "tint": {
+        "Skeleton_Warrior_Helmet": "#8a8f9c",
+        "Skeleton_Warrior_Cloak": "#4a3a5a"
+      }
+    },
+    "wraith": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb",
+      "gear_parts": {
+        "head": [
+          "Skeleton_Mage_Hat"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ],
+      "tint": {
+        "Skeleton_Mage_Body": "#a8c0ff",
+        "Skeleton_Mage_ArmLeft": "#a8c0ff",
+        "Skeleton_Mage_ArmRight": "#a8c0ff",
+        "Skeleton_Mage_LegLeft": "#a8c0ff",
+        "Skeleton_Mage_LegRight": "#a8c0ff",
+        "Skeleton_Mage_Skull": "#a8c0ff",
+        "Skeleton_Mage_Jaw": "#a8c0ff",
+        "Skeleton_Mage_Hat": "#a8c0ff"
+      }
     }
   },
   "weapons": {

@@ -449,12 +449,18 @@ static func weapon_item(e: Entity) -> Dictionary:
 ## A weapon's "proc": {spell, chance} sometimes fires its spell on a hit, free.
 func _try_proc(e: Entity, t: Entity) -> void:
 	var proc: Dictionary = weapon_item(e).get("proc", {})
+	var natural := proc.is_empty() and e is Mob  # a monster's own: a spider's venom, a shaman's bolt
+	if natural:
+		proc = (e as Mob).data.get("proc", {})
 	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)):
 		return
 	var spell_id := str(proc["spell"])
 	if not GameData.spells.has(spell_id):
 		return
-	say(e, "Your %s flares with power!" % weapon_item(e)["name"], C_SPELL)
+	if natural:
+		say(t, str(proc.get("text", "%s's attack carries %s!")) % [cap(e.display_name), GameData.spells[spell_id]["name"]], C_HIT_YOU)
+	else:
+		say(e, "Your %s flares with power!" % weapon_item(e)["name"], C_SPELL)
 	_finish_spell(e, spell_id, t, true)
 
 
@@ -1071,7 +1077,9 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			var per_tick := int(s.get("tick", 1)) + int(float(s.get("per_level", 0)) * (c.level - 1))
 			t.dots = t.dots.filter(func(d: Dictionary) -> bool: return not (d["spell"] == spell_id and d["caster_id"] == c.entity_id))
 			t.dots.append({"spell": spell_id, "caster_id": c.entity_id, "damage": per_tick, "ticks": int(s.get("ticks", 3)), "next": 3.0})
-			say(c, "%s begins to smolder." % cap(t.display_name), C_SPELL)
+			say(c, str(s.get("dot_text", "%s begins to smolder.")) % cap(t.display_name), C_SPELL)
+			if s.has("land_text"):
+				say(t, str(s["land_text"]), C_HIT_YOU)
 			t.add_hate(c, float(per_tick))
 		"root":
 			t.root_left = float(s.get("duration", 10))

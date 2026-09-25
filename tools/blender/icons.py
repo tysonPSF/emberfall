@@ -28,7 +28,7 @@ from mathutils import Matrix, Vector
 sys.path.insert(0, os.path.dirname(__file__))
 import gear  # noqa: E402
 import props  # noqa: E402
-from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK,  # noqa: E402
+from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, WATER,  # noqa: E402
 				   STONE_LIGHT, WOOD, WOOD_GRAY)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -273,11 +273,81 @@ def iron_greaves():
 	return p.build()
 
 
+def wolf_pelt():
+	p = Prop("wolf_pelt", 251)
+	p.blob((1.1, 0.8, 0.12), (0, 0, 0.06), WOOD_GRAY, segs=(12, 6), grad=(0.0, 0.5), jitter=0.05)
+	for x in (-1, 1):
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, 0.32, 0.05), WOOD_GRAY, segs=(6, 4), grad=(0.0, 0.5))
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, -0.32, 0.05), WOOD_GRAY, segs=(6, 4), grad=(0.0, 0.5))
+	p.blob((0.34, 0.2, 0.12), (-0.55, 0, 0.1), STONE_LIGHT, segs=(8, 5))              # the head end
+	p.seg((0.5, 0, 0.08), (0.9, 0.1, 0.06), 0.1, 0.04, WOOD_GRAY, sides=6)           # tail
+	return p.build()
+
+
+def dire_wolf_fang():
+	p = Prop("dire_wolf_fang", 253)
+	p.seg((0, 0, 0), (0.12, 0, 1.0), 0.2, 0.0, BONE, sides=7, grad=(0.0, 0.7))
+	p.seg((0, 0, -0.05), (0, 0, 0.08), 0.21, 0.2, CLOTH_RED, sides=7)
+	return p.build()
+
+
+def bear_claw():
+	p = Prop("bear_claw", 255)
+	for k in range(3):
+		x = -0.3 + k * 0.3
+		p.seg((x, 0, 0.1), (x + 0.15, -0.1, 0.8), 0.1, 0.0, BONE, sides=6, grad=(0.0, 0.6))
+	p.blob((1.0, 0.5, 0.35), (0, 0.1, 0.1), STONE_DARK, segs=(10, 6))
+	return p.build()
+
+
+def bear_hide():
+	p = Prop("bear_hide", 257)
+	p.box((0.95, 0.7, 0.16), (0, 0, 0.08), STONE_DARK, grad=(0.1, 0.7))
+	p.box((0.9, 0.66, 0.14), (0.04, 0.03, 0.22), STONE_DARK, rot=(0, 0, 5), grad=(0.0, 0.6))
+	p.seg((-0.5, -0.3, 0.3), (0.5, -0.3, 0.3), 0.04, 0.04, HIDE, sides=5)             # a tie
+	return p.build()
+
+
+def spider_silk():
+	p = Prop("spider_silk", 259)
+	p.blob((0.8, 0.7, 0.75), (0, 0, 0.38), CLOTH_WHITE, segs=(12, 8), grad=(0.0, 0.5))
+	for k in range(5):                                                             # wound strands
+		z = 0.12 + k * 0.13
+		r = 0.42 - abs(k - 2) * 0.05
+		for j in range(10):
+			a0, a1 = j * math.tau / 10, (j + 1) * math.tau / 10
+			p.seg((math.cos(a0) * r, math.sin(a0) * r * 0.9, z), (math.cos(a1) * r, math.sin(a1) * r * 0.9, z + 0.02), 0.02, 0.02, STONE_LIGHT, sides=3)
+	return p.build()
+
+
+def venom_sac():
+	p = Prop("venom_sac", 261)
+	p.blob((0.7, 0.62, 0.7), (0, 0, 0.35), LEAF, segs=(12, 8), grad=(0.0, 0.5), glow=0.8)
+	p.seg((0, 0, 0.68), (0.1, -0.05, 0.95), 0.1, 0.05, CLOTH_RED, sides=6)
+	return p.build()
+
+
+def orc_tusk():
+	p = Prop("orc_tusk", 263)
+	pts = [(0, 0, 0), (0.1, 0, 0.35), (0.25, 0, 0.65), (0.48, 0, 0.85)]
+	for i, (a0, a1) in enumerate(zip(pts, pts[1:])):
+		p.seg(a0, a1, 0.2 - i * 0.06, 0.14 - i * 0.05, BONE, sides=7, grad=(0.0, 0.6))
+	p.seg((0, 0, -0.08), (0, 0, 0.06), 0.21, 0.2, HIDE, sides=7)
+	return p.build()
+
+
+def hollow_watch_signet():
+	p = Prop("hollow_watch_signet", 265)
+	_ring(p, IRON, stone=WATER)
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
 									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,
-									 patchwork_pants, leather_leggings, iron_greaves]}
+									 patchwork_pants, leather_leggings, iron_greaves, wolf_pelt, dire_wolf_fang, bear_claw,
+									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet]}
 
 
 # ---------------------------------------------------------------- rendering

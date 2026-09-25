@@ -230,6 +230,13 @@ TRACKS = {
 		"melody": "horn", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 1, 2, 3], "pad": True, "bass": True, "bass_eighths": True,
 		"drum": [0, 1, 1.5, 2, 3, 3.5], "drum_sections": ["A", "B", "C"], "reverb": 1.4, "sparse": 0.0,
 	},
+	"thornwood": {
+		"key": (52, "aeolian"), "bpm": 60, "beats": 3, "seed": 71,
+		"sections": {"A": [0, 5, 3, 4, 0, 5, 6, 0], "B": [5, 6, 0, 3, 5, 3, 4, 4]},
+		"form": ["A", "B", "A", "B"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, 2, 4], "pad": True, "bass": True,
+		"drum": [0], "drum_sections": ["B"], "reverb": 3.6, "sparse": 0.3, "bells": 0.2,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
