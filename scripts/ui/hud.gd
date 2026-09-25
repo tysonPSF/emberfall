@@ -137,6 +137,7 @@ func _ready() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	root.resized.connect(func() -> void: _layout_bags())
 	_build_player_window()
 	_build_target_window()
 	_build_cast_bar()
@@ -1122,10 +1123,10 @@ func _toggle_bag(g: int) -> void:
 	if _bag_windows.has(g):
 		(_bag_windows[g] as Node).queue_free()
 		_bag_windows.erase(g)
+		_layout_bags()
 		return
 	var e: Dictionary = player.pack.slots[g]
 	var panel := UIKit.panel()
-	UIKit.place(panel, Vector2(1, 0.5), Vector2(-500 - 30 * _bag_windows.size(), -200 + 40 * _bag_windows.size()))
 	root.add_child(panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
@@ -1147,6 +1148,29 @@ func _toggle_bag(g: int) -> void:
 	panel.set_meta("bag_item", e["item"])
 	_bag_windows[g] = panel
 	_refresh_inventory()
+	_layout_bags()
+
+
+## Open bags sit just left of the character window, their bottoms level with
+## its bottom (by the General slots they came from), lined up leftward in slot
+## order: close to the items, EQ style. With the window closed they keep to the
+## same corner of the screen.
+func _layout_bags() -> void:
+	var edge := Vector2(root.size.x - 12.0, root.size.y - 160.0)
+	if _inv_panel.visible:
+		edge = Vector2(_inv_panel.position.x, _inv_panel.position.y + _inv_panel.size.y)
+	var x := edge.x - 6.0
+	var keys := _bag_windows.keys()
+	keys.sort()
+	for g: int in keys:
+		var panel := _bag_windows[g] as Control
+		if not is_instance_valid(panel) or panel.is_queued_for_deletion():
+			continue
+		panel.reset_size()
+		var size := panel.get_combined_minimum_size()
+		x -= size.x
+		panel.position = Vector2(maxf(x, 12.0), maxf(edge.y - size.y, 12.0))
+		x -= 6.0
 
 
 ## The paper doll's character: rebuilt when what you wear changes.
@@ -1661,6 +1685,7 @@ func _toggle_inventory() -> void:
 
 
 func _refresh_inventory() -> void:
+	_layout_bags.call_deferred()  # the character window may have changed size
 	if player == null:
 		return
 	for place: String in _slot_buttons.keys():

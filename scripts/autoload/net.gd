@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 5  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 6  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
