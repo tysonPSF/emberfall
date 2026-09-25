@@ -1,7 +1,7 @@
 {
-  "gnoll_fang": {"name": "Gnoll Fang", "value": 12, "stack": 20},
-  "beetle_eye": {"name": "Fire Beetle Eye", "value": 15, "stack": 20},
-  "bone_chips": {"name": "Bone Chips", "value": 8, "stack": 20},
-  "rat_whiskers": {"name": "Rat Whiskers", "value": 4, "stack": 20},
-  "fishing_bait": {"name": "Can of Worms", "value": 2, "stack": 20}
+  "gnoll_fang": {"name": "Gnoll Fang", "value": 12, "stack": 100},
+  "beetle_eye": {"name": "Fire Beetle Eye", "value": 15, "stack": 100},
+  "bone_chips": {"name": "Bone Chips", "value": 8, "stack": 100},
+  "rat_whiskers": {"name": "Rat Whiskers", "value": 4, "stack": 100},
+  "fishing_bait": {"name": "Can of Worms", "value": 2, "stack": 100}
 }

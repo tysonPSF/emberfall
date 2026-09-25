@@ -4,8 +4,10 @@
         -P tools/blender/icons.py -- --out assets/icons [--only cloth_cap,gnoll_fang] [--size 128]
 
 Where the picture comes from, per item (data/items/*.json):
-  "wear"   the KayKit parts it swaps onto the body (models.json "body_parts"),
-           else the gear pieces from gear.py
+  "wear"   a small model built here if there is one (trousers: KayKit's leg
+           parts are mostly boots on these short legs), else the KayKit parts
+           it swaps onto the body (models.json "body_parts"), else the gear
+           pieces from gear.py
   "model"  the weapon or shield scene named in data/models.json "weapons"
   else     a small model built here (drops, jewelry, bags), in the Dungeon
            palette like everything else
@@ -234,10 +236,48 @@ def leather_sling():
 	return p.build()
 
 
+def _trousers(p, cloth, band, leg_r=0.2, flare=0.02):
+	"""A pair of trousers laid out flat, facing the camera: waistband, seat, two legs."""
+	p.box((0.72, 0.26, 0.14), (0, 0, 1.0), band, grad=(0.1, 0.6))                  # waistband
+	p.box((0.66, 0.24, 0.3), (0, 0, 0.8), cloth, grad=(0.1, 0.7))                   # seat
+	for x in (-1, 1):
+		p.seg((x * 0.17, 0, 0.72), (x * 0.24, 0, 0.0), leg_r, leg_r + flare, cloth, sides=10, grad=(0.1, 0.8))
+
+
+def patchwork_pants():
+	p = Prop("patchwork_pants", 241)
+	_trousers(p, WOOD, HIDE)
+	for (x, z, sw) in [(-0.2, 0.45, CLOTH_WHITE), (0.24, 0.25, CLOTH_RED), (-0.12, 0.85, CLOTH_WHITE)]:  # the patches
+		p.box((0.16, 0.05, 0.16), (x, -0.2, z), sw, rot=(0, 12, 0))
+	return p.build()
+
+
+def leather_leggings():
+	p = Prop("leather_leggings", 243)
+	_trousers(p, HIDE, WOOD)
+	for x in (-1, 1):                                                              # knee pads and a strap each
+		p.blob((0.2, 0.1, 0.16), (x * 0.2, -0.2, 0.38), WOOD, segs=(8, 5))
+		p.seg((x * 0.35, 0, 0.18), (x * 0.1, 0, 0.18), 0.03, 0.03, WOOD, sides=5)
+	p.box((0.1, 0.06, 0.08), (0, -0.15, 1.0), GOLD)                                 # buckle
+	return p.build()
+
+
+def iron_greaves():
+	p = Prop("iron_greaves", 245)
+	_trousers(p, STONE_LIGHT, HIDE, leg_r=0.21, flare=0.03)
+	for x in (-1, 1):
+		for z in (0.62, 0.42, 0.16):                                               # plate bands
+			p.seg((x * 0.2, 0, z), (x * 0.21, 0, z - 0.05), 0.235, 0.24, IRON, sides=10)
+		p.blob((0.22, 0.12, 0.2), (x * 0.21, -0.18, 0.38), STONE_LIGHT, segs=(8, 6))   # knee cop
+	p.box((0.74, 0.28, 0.08), (0, 0, 1.05), HIDE)                                   # leather belt under the plate
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
-									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling]}
+									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,
+									 patchwork_pants, leather_leggings, iron_greaves]}
 
 
 # ---------------------------------------------------------------- rendering
@@ -292,6 +332,9 @@ def _body_parts(look, models):
 def build_subject(item_id, item, models):
 	"""Puts the item's model in the (empty) scene; False if there is none."""
 	wear = item.get("wear", "")
+	if item_id in SMALL and wear != "":  # a drawn icon beats the body part (KayKit legs are mostly boots)
+		SMALL[item_id]()
+		return True
 	if wear in models.get("body_parts", {}):
 		_body_parts(models["body_parts"][wear], models)
 		return True

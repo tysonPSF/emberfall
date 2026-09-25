@@ -132,10 +132,14 @@ func _ready() -> void:
 	if not Net.is_authority():
 		look = mirrored
 		if visual is CharacterModel:
+			(visual as CharacterModel).set_tiers(look.get("tiers", {}))
 			(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
 			(visual as CharacterModel).set_worn(look.get("worn", {}))
 		nameplate.text = display_name
 		return
+	if visual is CharacterModel:
+		look["tiers"] = GameData.gear_tiers(gear)  # a Masterwork drop shows before the kill
+		(visual as CharacterModel).set_tiers(look["tiers"])
 	_wear_gear()
 	if gear.has("secondary") and visual is CharacterModel:
 		var shield := str(GameData.item(gear["secondary"]).get("model", ""))
@@ -164,6 +168,16 @@ func add_hate(src: Entity, amount: float) -> void:
 		state = State.COMBAT
 	if was_calm and social:
 		World.call_for_help(self, src)
+
+
+## Another living one of its kind (same faction: pups and scouts are both
+## gnolls) close by. Nobody runs while their pack still stands; the last one
+## left does.
+func _kin_nearby() -> bool:
+	for m in World.get_mobs():
+		if m != self and not m.dead and m.faction == faction and m.distance_to(self) <= World.CALL_FOR_HELP_RADIUS:
+			return true
+	return false
 
 
 func top_hated() -> Entity:
@@ -210,7 +224,7 @@ func _physics_process(delta: float) -> void:
 			var t := top_hated()
 			if t == null or _flat_dist(home) > float(World.cfg("mob_leash", 130.0)):
 				_reset()
-			elif flees and hp < max_hp * FLEE_AT:
+			elif flees and hp < max_hp * FLEE_AT and not _kin_nearby():
 				state = State.FLEE
 				auto_attack = false
 			else:

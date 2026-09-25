@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 6  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 8  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -484,6 +484,7 @@ func _s_look(id: int, look: Dictionary) -> void:
 	var e := World.get_object(id) as Entity
 	if e != null and e.visual is CharacterModel:
 		e.look = look
+		(e.visual as CharacterModel).set_tiers(look.get("tiers", {}))
 		(e.visual as CharacterModel).set_weapon(str(look.get("weapon", "")))
 		(e.visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
 		if look.has("worn"):
@@ -674,7 +675,7 @@ func _send_self(peer: int) -> void:
 		"cast": p.cast, "cooldowns": p.cooldowns, "buffs": p.buffs, "dead": p.dead, "sitting": p.sitting,
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
-		"root_left": p.root_left, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting,
+		"root_left": p.root_left, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened,
 		"group": p.group, "skills": p.skills,
 	}
 	_s_self.rpc_id(peer, d)

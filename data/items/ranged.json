@@ -38,7 +38,7 @@
     "ammo_type": "arrow",
     "dmg": 1,
     "projectile": "arrow",
-    "stack": 20,
+    "stack": 100,
     "value": 1
   },
   "sling_stone": {
@@ -46,7 +46,7 @@
     "ammo_type": "stone",
     "dmg": 0,
     "projectile": "stone",
-    "stack": 20,
+    "stack": 100,
     "value": 1
   }
 }

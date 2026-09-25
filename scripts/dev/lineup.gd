@@ -3,6 +3,9 @@ extends Node3D
 ##   godot --path . -- --lineup=gnoll,gnoll_brute,rat [--action=idle] --shots=/some/dir
 ## --worn=head:iron_coif,chest:studded_tunic dresses every model in that gear
 ## (models.json "gear" ids), to compare how it sits on different bodies.
+## --tiers=crude,,fine,superior,masterwork gives each model in turn that
+## quality's finish on everything it holds and wears; --weapon=sword_1handed
+## puts a weapon in every right hand.
 ## --offhand=shield_round puts a models.json "weapons" entry in the left hand;
 ## --grip=x,y,z[,px,py,pz[,bone[,orient[,ox,oy,oz]]]] tries a rotation
 ## (degrees), offset, bone, orientation bone and outward offset for it before
@@ -19,11 +22,17 @@ func _ready() -> void:
 	var shots_dir := ""
 	var worn := {}
 	var offhand := ""
+	var tiers: PackedStringArray = []
+	var weapon := ""
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--lineup="):
 			ids = a.substr(9).split(",", false)
 		elif a.begins_with("--action="):
 			action = a.substr(9)
+		elif a.begins_with("--tiers="):
+			tiers = a.substr(8).split(",")
+		elif a.begins_with("--weapon="):
+			weapon = a.substr(9)
 		elif a.begins_with("--offhand="):
 			offhand = a.substr(10)
 		elif a.begins_with("--grip="):
@@ -68,7 +77,12 @@ func _ready() -> void:
 	for i in ids.size():
 		var m := CharacterModel.new()
 		add_child(m)
-		m.setup(ids[i], "", 1.0)
+		m.setup(ids[i], weapon, 1.0)
+		if i < tiers.size():
+			var every := {}
+			for slot: String in ["primary", "secondary", "head", "chest", "arms", "hands", "legs", "feet", "waist"]:
+				every[slot] = tiers[i]
+			m.set_tiers(every)
 		m.position.x = -width / 2.0 + i * SPACING
 		m.rotation.y = PI  # face the camera
 		if not worn.is_empty():
@@ -79,7 +93,7 @@ func _ready() -> void:
 		if clip != "":
 			m.anim.play(clip)
 		var label := Label3D.new()
-		label.text = ids[i]
+		label.text = ids[i] + (" (%s)" % tiers[i] if i < tiers.size() and tiers[i] != "" else "")
 		label.fixed_size = true
 		label.pixel_size = 0.0008
 		label.font_size = 28

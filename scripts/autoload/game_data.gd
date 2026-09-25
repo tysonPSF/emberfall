@@ -118,6 +118,26 @@ func quality_tier(item_id: String) -> Dictionary:
 	return {}
 
 
+## {slot: tier id} for the equipped items that have a quality, for the look.
+func gear_tiers(equipped: Dictionary) -> Dictionary:
+	var out := {}
+	for slot: String in equipped:
+		var id := str(equipped[slot])
+		if id.contains("@"):
+			out[slot] = id.get_slice("@", 1)
+	return out
+
+
+## How a quality tier finishes gear on a character ({} for plain).
+func tier_finish(tier_id: String) -> Dictionary:
+	if tier_id == "":
+		return {}
+	for tier: Dictionary in loot.get("quality", {}).get("tiers", []):
+		if str(tier["id"]) == tier_id:
+			return tier.get("finish", {})
+	return {}
+
+
 ## Display color for an item's name, by quality.
 func item_color(item_id: String) -> Color:
 	var tier := quality_tier(item_id)

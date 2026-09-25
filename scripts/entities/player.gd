@@ -50,6 +50,7 @@ var _asked_at: Dictionary = {}  # request name -> msec before which it isn't ask
 var stamina := 0.0  # drains while sprinting; World owns the rules
 var max_stamina := 0
 var sprinting := false
+var threatened := false  # a monster has you on its hate list (the combat music follows this)
 var stamina_idle := 0.0  # seconds left before stamina starts coming back
 
 var camera_pivot: Node3D
@@ -199,7 +200,7 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "stamina", "max_stamina", "sprinting",
-			"group", "skills"]:
+			"group", "skills", "threatened"]:
 		set(key, d[key])
 	if bool(d["dead"]) != dead:
 		dead = bool(d["dead"])
@@ -209,7 +210,9 @@ func apply_self(d: Dictionary) -> void:
 	if t != target:
 		target = t
 	var lk: Dictionary = d["look"]
-	if visual is CharacterModel and (lk.get("weapon") != look.get("weapon") or lk.get("offhand") != look.get("offhand") or lk.get("worn") != look.get("worn")):
+	if visual is CharacterModel and (lk.get("weapon") != look.get("weapon") or lk.get("offhand") != look.get("offhand") or lk.get("worn") != look.get("worn") \
+			or lk.get("tiers") != look.get("tiers")):
+		(visual as CharacterModel).set_tiers(lk.get("tiers", {}))
 		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
@@ -316,10 +319,14 @@ func recalc_stats() -> void:
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
 	var worn := worn_gear_models()
-	if visual is CharacterModel and (look.get("weapon") != weapon_model or look.get("offhand") != offhand_model or look.get("worn") != worn):
+	var tiers := GameData.gear_tiers(equipment)
+	if visual is CharacterModel and (look.get("weapon") != weapon_model or look.get("offhand") != offhand_model or look.get("worn") != worn \
+			or look.get("tiers", {}) != tiers):
 		look["weapon"] = weapon_model
 		look["offhand"] = offhand_model
 		look["worn"] = worn
+		look["tiers"] = tiers
+		(visual as CharacterModel).set_tiers(tiers)
 		(visual as CharacterModel).set_worn(worn)
 		Net.broadcast_look(self)
 	stamina = minf(stamina, float(max_stamina))
@@ -407,9 +414,12 @@ func _ready() -> void:
 	build_body("humanoid", body_color, 1.0, GameData.classes[char_class].get("model", ""), weapon)
 	if not mirrored.is_empty() and visual is CharacterModel:
 		look = mirrored
+		(visual as CharacterModel).set_tiers(look.get("tiers", {}))
 		(visual as CharacterModel).set_offhand(str(look.get("offhand", "")))
 	if visual is CharacterModel:
 		if mirrored.is_empty():
+			look["tiers"] = GameData.gear_tiers(equipment)
+			(visual as CharacterModel).set_tiers(look["tiers"])
 			look["worn"] = worn_gear_models()
 			look["offhand"] = str(GameData.item(equipment.get("secondary", "")).get("model", ""))
 			(visual as CharacterModel).set_offhand(look["offhand"])

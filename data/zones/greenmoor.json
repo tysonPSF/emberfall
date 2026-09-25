@@ -1,5 +1,6 @@
 {
   "name": "Greenmoor",
+  "music": "greenmoor",
   "seed": 1999,
   "size": 384,
   "height_amplitude": 10,

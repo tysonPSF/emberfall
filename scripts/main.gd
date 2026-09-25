@@ -65,6 +65,7 @@ func _ready() -> void:
 
 
 func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreate:
+	Music.play("title")
 	var title := CharCreate.new()
 	title.setup(save)
 	title.server_address = str(_settings().get("server", ""))
