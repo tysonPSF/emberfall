@@ -4,6 +4,7 @@
   "regen_multiplier": 1.0,
   "melee_range": 3.4,
   "ammo_recover_chance": 0.15,
+  "quest_repeat_xp": 0.5,
   "stamina_base": 100,
   "stamina_per_level": 4,
   "sprint_speed_mult": 1.55,
