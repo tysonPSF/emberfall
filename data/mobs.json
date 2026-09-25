@@ -267,6 +267,14 @@
       {
         "item": "gnollhide_satchel",
         "chance": 0.04
+      },
+      {
+        "item": "crude_arrow",
+        "chance": 0.12,
+        "count": [
+          3,
+          8
+        ]
       }
     ],
     "model": "gnoll",
@@ -320,6 +328,11 @@
         "slot": "ring",
         "chance": 0.05,
         "table": "rings"
+      },
+      {
+        "slot": "range",
+        "chance": 0.05,
+        "table": "scout_bows"
       }
     ]
   },
@@ -487,6 +500,11 @@
         "slot": "neck",
         "chance": 0.3,
         "item": "fang_necklace"
+      },
+      {
+        "slot": "range",
+        "chance": 0.3,
+        "table": "scout_bows"
       }
     ],
     "named": true,
@@ -740,6 +758,10 @@
       {
         "item": "silkfangs_fang",
         "chance": 0.5
+      },
+      {
+        "item": "silkstring_longbow",
+        "chance": 0.25
       }
     ],
     "model": "spider",
@@ -784,6 +806,14 @@
       {
         "item": "orc_tusk",
         "chance": 0.5
+      },
+      {
+        "item": "crude_arrow",
+        "chance": 0.2,
+        "count": [
+          4,
+          12
+        ]
       }
     ],
     "model": "orc",
@@ -822,6 +852,11 @@
         "slot": "ring",
         "chance": 0.05,
         "table": "rings"
+      },
+      {
+        "slot": "range",
+        "chance": 0.07,
+        "table": "raider_bows"
       }
     ]
   },
@@ -942,6 +977,11 @@
         "slot": "secondary",
         "chance": 0.5,
         "table": "knight_shield"
+      },
+      {
+        "slot": "range",
+        "chance": 0.35,
+        "item": "ashwood_recurve"
       }
     ]
   },

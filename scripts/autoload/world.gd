@@ -595,7 +595,8 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 		entries.append({"item": mob.gear[slot], "slot": ""})
 	for entry: Dictionary in mob.data.get("loot", []):
 		if randf() < float(entry["chance"]):
-			entries.append({"item": entry["item"], "slot": ""})
+			var n: Array = entry.get("count", [1, 1])  # a stack: a quiver's worth of arrows, say
+			entries.append({"item": entry["item"], "slot": "", "count": randi_range(int(n[0]), int(n[1]))})
 	var coin_range: Array = mob.data.get("coin", [0, 0])
 	var coin := randi_range(int(coin_range[0]), int(coin_range[1]))
 	var lodged: Dictionary = mob.get_meta("lodged_ammo", {})  # arrows and stones that hit and stayed in
