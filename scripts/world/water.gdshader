@@ -1,5 +1,6 @@
 shader_type spatial;
-// Still water for ponds. Reads the depth behind the surface so it is clear
+// Water for ponds (still) and rivers (flow_speed > 0: ripples run along
+// UV.y, the ribbon's length in meters, so they follow every bend). Reads the depth behind the surface so it is clear
 // and pale where shallow, dark where deep, with a light rim where it meets
 // the shore. Small ripples bend the normal so the sky glints across it.
 
@@ -9,6 +10,7 @@ uniform vec3 shallow : source_color = vec3(0.22, 0.42, 0.46);
 uniform vec3 deep : source_color = vec3(0.05, 0.16, 0.24);
 uniform vec3 sky : source_color = vec3(0.62, 0.74, 0.86);
 uniform float murk = 0.9;  // meters of water until it looks fully deep
+uniform float flow_speed = 0.0;  // meters per second downstream
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
 
 void fragment() {
@@ -22,6 +24,10 @@ void fragment() {
 	vec2 ripple = vec2(
 		sin(world.x * 1.7 + TIME * 1.1) + sin(world.z * 2.3 - TIME * 0.8) * 0.6,
 		cos(world.z * 1.9 + TIME * 0.9) + cos(world.x * 2.6 + TIME * 1.3) * 0.6);
+	if (flow_speed > 0.0) {
+		float run = UV.y - TIME * flow_speed;
+		ripple += vec2(sin(run * 2.1 + UV.x * 3.0), cos(run * 1.7 - UV.x * 5.0)) * 1.2;
+	}
 	vec3 n = normalize(vec3(ripple.x * 0.05, 1.0, ripple.y * 0.05));
 	NORMAL = normalize((VIEW_MATRIX * vec4(n, 0.0)).xyz);
 
