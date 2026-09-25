@@ -1691,6 +1691,18 @@ func _t_bowdrops() -> void:
 	World.request_loot_open(p.entity_id, body.object_id)
 	World.request_loot_all(p.entity_id, body.object_id)
 	print("bowdrops: looted -> bow %d, arrows %d" % [p.pack.count("hunting_shortbow@fine"), p.pack.count("crude_arrow")])
+	# a bag that drops as loot (not a dead player's) comes with all its slots
+	var scout2 := _nearest_mob(p, "gnoll_scout")
+	scout2.data["loot"].append({"item": "gnollhide_satchel", "chance": 1.0})
+	World.kill(scout2, p)
+	scout2.data["loot"].pop_back()
+	for obj: Variant in World.objects.values():
+		if obj is Corpse and not (obj as Node).is_queued_for_deletion() and (obj as Corpse).display_name.begins_with(scout2.display_name):
+			p.global_position = (obj as Corpse).global_position + Vector3(0, 1, 1)
+			World.request_loot_open(p.entity_id, (obj as Corpse).object_id)
+			World.request_loot_all(p.entity_id, (obj as Corpse).object_id)
+	var bag := p.pack.get_at(_where(p, "gnollhide_satchel"))
+	print("bowdrops: looted satchel has %d slots (should be %d)" % [(bag.get("contents", []) as Array).size(), Pack.bag_size_of("gnollhide_satchel")])
 
 
 ## Blessing of the Elders: +15% experience below level 10, fading on reaching
