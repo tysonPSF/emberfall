@@ -470,6 +470,178 @@ def well():
 	return p.build()
 
 
+def tavern():
+	"""The Ember and Anvil: Emberhold's inn, and the largest building in the city.
+
+	Stone ground floor, a jettied timber-framed upper storey, a steep shingled
+	roof with a cross-gable over the door, and a wrought bracket carrying the
+	sign. Twice the footprint of a house and better than twice its height, so it
+	reads as the landmark on the plaza rather than one more cottage.
+
+	Built facing -Y, which export_yup turns into +Z in game - the same front the
+	houses use, so a landmark "face" aims the door wherever you point it.
+	"""
+	p = Prop("tavern", 71)
+	w, d = 15.0, 11.0
+	hw, hd = w / 2, d / 2
+	jut = 0.6                      # how far the upper storey oversails the stone
+	uhw, uhd = hw + jut, hd + jut
+	upper_top = 7.7
+
+	# --- stone ground floor ---------------------------------------------------
+	p.box((w + 0.7, d + 0.7, 1.5), (0, 0, 0.75), STONE_DARK, grad=(0.3, 1.0), jitter=0.015)
+	p.box((w, d, 3.1), (0, 0, 2.95), STONE_LIGHT, grad=(0.08, 0.72))
+	for s in (-1, 1):              # quoins: darker blocks stepping up the corners
+		for k in range(5):
+			p.box((1.3, 1.3, 0.52), (s * (hw - 0.5), -(hd - 0.5), 1.7 + k * 0.62), STONE_DARK, grad=(0.15, 0.85))
+
+	# --- jettied upper storey -------------------------------------------------
+	p.box((w + jut * 2, d + jut * 2, 3.2), (0, 0, 6.1), BONE, grad=(0.02, 0.45))
+	for x in (-5.6, -2.8, 0.0, 2.8, 5.6):   # brackets carrying the oversail
+		p.box((0.36, 1.0, 0.95), (x, -(hd + 0.3), 4.2), WOOD, rot=(34, 0, 0), grad=(0.3, 1.0))
+
+	# --- timber frame ---------------------------------------------------------
+	for y in (-uhd, uhd):          # sill and top plate, front and back
+		p.box((uhw * 2 + 0.12, 0.34, 0.34), (0, y, 4.62), WOOD, grad=(0.25, 0.95))
+		p.box((uhw * 2 + 0.12, 0.34, 0.34), (0, y, 7.52), WOOD, grad=(0.25, 0.95))
+	for x in (-uhw, uhw):          # and along the sides
+		p.box((0.34, uhd * 2, 0.34), (x, 0, 4.62), WOOD, grad=(0.25, 0.95))
+		p.box((0.34, uhd * 2, 0.34), (x, 0, 7.52), WOOD, grad=(0.25, 0.95))
+	for x in (-uhw, uhw):          # corner posts
+		for y in (-uhd, uhd):
+			p.box((0.42, 0.42, 3.3), (x, y, 6.07), WOOD, grad=(0.2, 0.9))
+	for x in (-5.0, -2.2, 2.2, 5.0):        # studs divide the facade into window bays
+		for y in (-uhd, uhd):
+			p.box((0.3, 0.26, 2.7), (x, y, 6.07), WOOD, grad=(0.3, 1.0))
+	for y in (-4.0, 4.0):          # studs on the side walls, clear of their windows
+		for x in (-uhw, uhw):
+			p.box((0.26, 0.3, 2.7), (x, y, 6.07), WOOD, grad=(0.3, 1.0))
+
+	# --- porch bay and its cross-gable ----------------------------------------
+	bay_y = -(uhd + 1.25)
+	bay_face = -(uhd + 2.45)
+	p.box((5.2, 2.5, 3.3), (0, bay_y, 6.05), BONE, grad=(0.02, 0.45))
+	p.box((5.4, 2.7, 3.4), (0, bay_y, 2.3), STONE_LIGHT, grad=(0.08, 0.72))
+	for x in (-2.6, 2.6):          # bay corner posts
+		p.box((0.4, 0.4, 3.4), (x, bay_y, 6.05), WOOD, grad=(0.2, 0.9))
+	bay_h, bay_half = 2.0, 2.75
+	bay_slope = math.hypot(bay_half, bay_h)
+	bay_ang = math.atan2(bay_h, bay_half)
+	for s in (1, -1):              # bay roof slopes toward +/-X
+		down = Vector((math.cos(bay_ang) * s, 0, -math.sin(bay_ang)))
+		out = Vector((math.sin(bay_ang) * s, 0, math.cos(bay_ang)))
+		base = Vector((0, bay_y - 0.08, 7.75))
+		p.box((bay_slope, 2.5, 0.16), base + down * bay_slope / 2, WOOD_GRAY,
+			  rot=(0, math.degrees(bay_ang) * s, 0), grad=(0.2, 0.8))
+		for i in range(4):
+			c = base + down * bay_slope * (i + 0.55) / 4 + out * 0.13
+			p.box((bay_slope / 4 * 1.15, 2.6, 0.12), c, CLAY,
+				  rot=(0, math.degrees(bay_ang) * s, 0), grad=(0.0, 0.9))
+	for y, t in ((bay_face, 0.16),):   # front gable only: the main roof closes the back
+		tri = [(-bay_half, 7.75), (bay_half, 7.75), (0, 7.75 + bay_h)]
+		verts = [(x, y - t / 2, z) for x, z in tri] + [(x, y + t / 2, z) for x, z in tri]
+		p.poly(verts, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], BONE, grad=(0.02, 0.5))
+	for s in (-1, 1):              # timber edging on the bay gable
+		p.seg((s * bay_half, bay_face, 7.75), (0, bay_face, 7.75 + bay_h), 0.13, 0.13, WOOD, sides=4)
+	p.box((bay_half * 2 + 0.4, 0.3, 0.3), (0, bay_face, 7.72), WOOD, grad=(0.25, 0.95))
+
+	# --- main roof: ridge along X, framed gables at the ends -------------------
+	ridge_h, span = 3.9, uhd + 0.75
+	slope = math.hypot(span, ridge_h)
+	ang = math.atan2(ridge_h, span)
+	ridge_z = upper_top + ridge_h
+	for s in (1, -1):              # slopes toward +/-Y
+		down = Vector((0, math.cos(ang) * s, -math.sin(ang)))
+		out = Vector((0, math.sin(ang) * s, math.cos(ang)))
+		base = Vector((0, 0, ridge_z))
+		p.box((w + 2.0, slope, 0.18), base + down * slope / 2, WOOD_GRAY,
+			  rot=(-math.degrees(ang) * s, 0, 0), grad=(0.2, 0.8))
+		for i in range(7):         # shingle courses, each its own gradient
+			c = base + down * slope * (i + 0.55) / 7 + out * 0.14
+			p.box((w + 2.1, slope / 7 * 1.14, 0.13), c, CLAY,
+				  rot=(-math.degrees(ang) * s, 0, 0), grad=(0.0, 0.9))
+	for x in (-(hw + 0.62), hw + 0.62):     # gable ends, framed and infilled
+		t = 0.3
+		tri = [(-span, upper_top), (span, upper_top), (0, ridge_z)]
+		verts = [(x - t / 2, y, z) for y, z in tri] + [(x + t / 2, y, z) for y, z in tri]
+		p.poly(verts, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], BONE, grad=(0.02, 0.5))
+		for s in (-1, 1):
+			p.seg((x, s * span, upper_top), (x, 0, ridge_z), 0.15, 0.15, WOOD, sides=4)
+		p.seg((x, 0, upper_top + 0.2), (x, 0, ridge_z - 0.3), 0.12, 0.12, WOOD, sides=4)
+	p.seg((-hw - 1.05, 0, ridge_z + 0.13), (hw + 1.05, 0, ridge_z + 0.13), 0.17, 0.17, WOOD, sides=6)
+
+	# --- chimneys: the tall one is the kitchen hearth --------------------------
+	p.box((2.0, 2.2, 11.4), (hw - 0.9, 2.6, 5.7), STONE_DARK, grad=(0.12, 0.88))
+	p.box((2.4, 2.6, 0.45), (hw - 0.9, 2.6, 11.5), STONE_LIGHT, grad=(0.2, 0.7))
+	p.box((1.3, 1.4, 9.6), (-hw + 1.0, -2.4, 4.8), STONE_DARK, grad=(0.12, 0.88))
+	p.box((1.6, 1.7, 0.36), (-hw + 1.0, -2.4, 9.7), STONE_LIGHT, grad=(0.2, 0.7))
+
+	# --- door, steps and lanterns ---------------------------------------------
+	p.box((3.4, 0.5, 3.7), (0, bay_face + 0.12, 1.85), STONE_DARK, grad=(0.18, 0.9))
+	for s in (-1, 1):              # double doors, banded
+		p.box((1.25, 0.26, 2.7), (s * 0.68, bay_face - 0.06, 1.42), WOOD, grad=(0.45, 1.0))
+		for z in (0.75, 2.05):
+			p.box((1.3, 0.2, 0.16), (s * 0.68, bay_face - 0.14, z), IRON, grad=(0.2, 0.7))
+		p.blob((0.2, 0.2, 0.2), (s * 1.18, bay_face - 0.2, 1.45), IRON, grad=(0.1, 0.6))
+	for k in range(5):             # stone arch over the doors
+		a = math.pi * (0.12 + 0.19 * k)
+		p.box((0.62, 0.46, 0.5), (math.cos(a) * 1.72, bay_face + 0.06, 2.78 + math.sin(a) * 0.62),
+			  STONE_LIGHT, rot=(0, -math.degrees(a) + 90, 0), grad=(0.15, 0.8))
+	p.box((5.0, 1.5, 0.32), (0, bay_face - 0.75, 0.16), STONE_LIGHT, grad=(0.25, 0.9))
+	p.box((6.0, 2.3, 0.18), (0, bay_face - 1.1, 0.06), STONE_DARK, grad=(0.3, 1.0))
+	for s in (-1, 1):              # lanterns either side of the door
+		p.seg((s * 2.3, bay_face + 0.1, 3.5), (s * 2.3, bay_face - 0.5, 3.5), 0.06, 0.05, IRON, sides=4)
+		p.box((0.34, 0.34, 0.44), (s * 2.3, bay_face - 0.52, 3.25), EMBER, glow=3.2, grad=(0.1, 0.4))
+		p.box((0.4, 0.4, 0.1), (s * 2.3, bay_face - 0.52, 3.5), IRON, grad=(0.2, 0.6))
+
+	# --- windows: lit, because a tavern is where the light is ------------------
+	def window(loc, size, glow):
+		# The thinnest axis is the one through the wall. Grow the frame in the
+		# other two and pull it back in that one, so the lit pane stands proud
+		# of its frame instead of being swallowed by it.
+		thin = min(range(3), key=lambda i: size[i])
+		frame = tuple(size[i] + (-0.14 if i == thin else 0.34) for i in range(3))
+		p.box(frame, loc, WOOD, grad=(0.3, 1.0))
+		p.box(size, loc, EMBER, glow=glow, grad=(0.08, 0.38))
+	for x in (-5.9, -3.5, 3.5, 5.9):        # ground floor, front
+		window((x, -hd - 0.06, 2.95), (1.35, 0.3, 1.7), 2.4)
+	for x in (-6.55, -3.6, 3.6, 6.55):      # upper storey, centred in each bay
+		window((x, -uhd - 0.06, 6.15), (1.2, 0.3, 1.35), 2.0)
+	for x in (-1.5, 1.5):                   # the bay's own windows
+		window((x, bay_face - 0.04, 6.15), (1.15, 0.3, 1.35), 2.0)
+	for y in (-2.6, 1.4):                   # side walls
+		for x in (-hw - 0.06, hw + 0.06):
+			window((x, y, 2.95), (0.3, 1.25, 1.6), 2.2)
+		window((-uhw - 0.06, y, 6.15), (0.3, 1.1, 1.3), 1.8)
+	for x in (-4.0, 0.0, 4.0):              # back, shuttered and dark
+		p.box((1.5, 0.3, 1.7), (x, hd + 0.05, 2.95), WOOD, grad=(0.35, 1.0))
+
+	# --- the sign, on a wrought bracket ---------------------------------------
+	sx = hw - 2.2
+	p.seg((sx, -hd - 0.05, 5.3), (sx, -hd - 2.5, 5.3), 0.09, 0.08, IRON, sides=5)
+	p.seg((sx, -hd - 0.08, 6.45), (sx, -hd - 2.05, 5.38), 0.06, 0.05, IRON, sides=4)
+	for y in (-hd - 1.0, -hd - 2.25):
+		p.seg((sx, y, 5.26), (sx, y, 4.82), 0.035, 0.035, IRON, sides=4)
+	p.box((0.18, 2.0, 1.5), (sx, -hd - 1.62, 4.05), WOOD, grad=(0.3, 1.0))
+	for z in (4.83, 3.27):
+		p.box((0.1, 2.16, 0.14), (sx, -hd - 1.62, z), IRON, grad=(0.2, 0.7))
+	for s in (-1, 1):              # an ember over an anvil, painted both sides
+		p.blob((0.16, 0.62, 0.5), (sx + s * 0.11, -hd - 1.35, 4.32), FLAME, glow=2.8, grad=(0.05, 0.5))
+		p.box((0.12, 0.8, 0.26), (sx + s * 0.11, -hd - 1.95, 3.82), IRON, grad=(0.15, 0.6))
+		p.box((0.12, 0.34, 0.2), (sx + s * 0.11, -hd - 1.95, 3.62), IRON, grad=(0.15, 0.6))
+
+	# --- the yard: barrels, a bench, a trough ----------------------------------
+	for x, y, r in ((-5.4, -hd - 1.0, 0.44), (-4.4, -hd - 1.7, 0.4), (6.0, -hd - 1.2, 0.46)):
+		p.seg((x, y, 0), (x, y, 0.95 if r > 0.42 else 0.85), r, r * 0.93, WOOD, sides=8, grad=(0.25, 1.0))
+		p.seg((x, y, 0.3), (x, y, 0.42), r + 0.03, r + 0.03, IRON, sides=8, grad=(0.2, 0.7))
+	p.box((3.0, 0.55, 0.2), (4.0, -hd - 1.9, 0.62), WOOD, grad=(0.3, 1.0))
+	for x in (2.8, 5.2):
+		p.box((0.24, 0.5, 0.62), (x, -hd - 1.9, 0.31), WOOD, grad=(0.35, 1.0))
+	p.box((2.4, 0.9, 0.62), (-6.6, -hd - 2.4, 0.31), STONE_LIGHT, grad=(0.2, 0.9))
+	p.box((2.0, 0.6, 0.2), (-6.6, -hd - 2.4, 0.5), WATER, grad=(0.25, 0.55))
+	return p.build()
+
+
 def signpost():
 	"""Two arrow boards; the game writes the destinations on them."""
 	p = Prop("signpost", 45)
@@ -684,6 +856,7 @@ PROPS = {
 	"lamp_post": lamp_post,
 	"market_stall": market_stall,
 	"well": well,
+	"tavern": tavern,
 	"signpost": signpost,
 	"grass_a": lambda: grass("grass_a", 61, 11, 0.42),
 	"grass_b": lambda: grass("grass_b", 62, 7, 0.28),

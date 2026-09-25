@@ -423,6 +423,9 @@
     "well": {
       "path": "res://assets/props/well.glb"
     },
+    "tavern": {
+      "path": "res://assets/props/tavern.glb"
+    },
     "signpost": {
       "path": "res://assets/props/signpost.glb"
     },

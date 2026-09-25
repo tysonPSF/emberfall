@@ -62,11 +62,24 @@
       "type": "prop",
       "id": "tree_round",
       "pos": [
-        18,
-        -18
+        29,
+        -24
       ],
       "scale": 0.9,
       "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "id": "tavern",
+      "pos": [
+        17,
+        -16
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
     },
     {
       "type": "signpost",
@@ -131,12 +144,12 @@
     {
       "type": "house",
       "pos": [
-        22,
-        -10
+        34,
+        -22
       ],
       "face": [
-        22,
-        0
+        34,
+        -12
       ],
       "size": 2
     },
