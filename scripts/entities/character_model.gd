@@ -169,9 +169,14 @@ func set_worn(worn: Dictionary) -> void:
 func _swap_parts(look: Dictionary) -> Array:
 	var entry: Variant = GameData.models["characters"][look["model"]]
 	var path: String = entry["path"] if entry is Dictionary else str(entry)
-	if not _part_sources.has(path):  # kept under GameData (no 3D world there, so never drawn) and freed with it
+	if not _part_sources.has(path):  # kept under GameData so it lives as long as the game does
 		var src_model: Node = (load(path) as PackedScene).instantiate()
 		GameData.add_child(src_model)
+		# GameData is an autoload under /root, and /root is a Viewport with the
+		# default World3D - so these sources DO draw, standing at the origin,
+		# unanimated and untargetable. Hide the root; the parts underneath keep
+		# visible = true, so the copies we take from them still show.
+		(src_model as Node3D).hide()
 		_part_sources[path] = src_model
 	var source: Node = _part_sources[path]
 	var ours := _body_parts()
