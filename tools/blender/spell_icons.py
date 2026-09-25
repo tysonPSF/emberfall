@@ -262,6 +262,120 @@ def blessing_of_the_elders():
 	return p.build()
 
 
+# ---------------------------------------------------------------- levels 11-15
+
+def _sword(p, glow=0.0, swatch=IRON):
+	p.seg((0, 0, 0.25), (0, 0, 1.15), 0.07, 0.015, swatch, sides=4, glow=glow)       # blade
+	p.box((0.46, 0.1, 0.08), (0, 0, 0.24), GOLD)                                     # guard
+	p.seg((0, 0, 0.22), (0, 0, -0.1), 0.045, 0.045, WOOD, sides=6)                   # grip
+	p.blob((0.1, 0.1, 0.1), (0, 0, -0.13), GOLD, segs=(6, 4))
+
+
+def heroic_strike():
+	p = Prop("heroic_strike", 361)
+	_sword(p, glow=0.4)
+	for k in range(7):                                                            # the swing's arc
+		a = math.radians(200 + k * 20)
+		p.seg((math.cos(a) * 0.7, -0.1, 0.65 + math.sin(a) * 0.7), (math.cos(a + 0.3) * 0.7, -0.1, 0.65 + math.sin(a + 0.3) * 0.7),
+			  0.05 - k * 0.005, 0.04 - k * 0.005, FLAME, sides=4, glow=1.6)
+	return p.build()
+
+
+def rally():
+	p = Prop("rally", 363)
+	p.seg((0, 0, 0), (0, 0, 1.2), 0.04, 0.035, WOOD, sides=6)                       # a war banner
+	p.box((0.62, 0.05, 0.62), (0.33, 0, 0.84), CLOTH_RED, grad=(0.1, 0.6))
+	p.poly([(0.02, 0, 0.53), (0.64, 0, 0.53), (0.33, 0, 0.3)], [(0, 1, 2)], CLOTH_RED)
+	p.box((0.18, 0.06, 0.18), (0.33, -0.03, 0.86), GOLD, glow=0.8)
+	for k in range(3):
+		_ring(p, 0.25 + k * 0.18, 0.2, 0.025, FLAME, glow=1.2, sides=12, tilt=math.pi / 2)
+	return p.build()
+
+
+def shield_wall():
+	p = Prop("shield_wall", 365)
+	for x, y in ((-0.28, 0.1), (0.28, 0.1), (0.0, -0.1)):                             # shields locked edge to edge
+		p.seg((x, y, 0.5), (x, y - 0.1, 0.5), 0.34, 0.34, WOOD, sides=14)
+		p.blob((0.14, 0.08, 0.14), (x, y - 0.13, 0.5), IRON, segs=(8, 5))
+	p.box((1.3, 0.05, 1.2), (0, 0.2, 0.55), RUNE, glow=0.6, grad=(0.3, 0.6))            # the ward behind
+	return p.build()
+
+
+def healing():
+	p = Prop("healing", 367)
+	_cross(p, 1.1, GOLD, 2.2)
+	for k in range(6):
+		a = k * math.tau / 6
+		p.blob((0.16, 0.16, 0.16), (math.cos(a) * 0.55, 0, 0.5 + math.sin(a) * 0.55), LEAF, segs=(6, 4), glow=1.8)
+	return p.build()
+
+
+def blessed_armor():
+	p = Prop("blessed_armor", 369)
+	p.blob((0.8, 0.45, 0.9), (0, 0, 0.45), GOLD, segs=(12, 8), glow=0.4)               # a breastplate
+	p.box((0.08, 0.05, 0.7), (0, -0.23, 0.48), STONE_LIGHT, glow=0.6)
+	for s in (-1, 1):
+		p.blob((0.34, 0.3, 0.2), (s * 0.44, 0, 0.85), GOLD, segs=(8, 5))              # pauldrons
+	_ring(p, 0.7, 0.45, 0.03, FLAME, glow=1.6, sides=20, tilt=math.pi / 2)
+	return p.build()
+
+
+def circle_of_renewal():
+	p = Prop("circle_of_renewal", 371)
+	_ring(p, 0.66, 0.12, 0.05, LEAF, glow=1.4, sides=22)
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.66, math.sin(a) * 0.66, 0.12), (math.cos(a) * 0.5, math.sin(a) * 0.5, 0.9), 0.05, 0.0, LEAF, sides=4, glow=1.8)
+	_cross(p, 0.5, GOLD, 2.0)
+	return p.build()
+
+
+def hallowed_strike():
+	p = Prop("hallowed_strike", 373)
+	p.seg((0, 0, 0), (0, 0, 0.8), 0.05, 0.05, WOOD, sides=6)                           # a hammer
+	p.box((0.62, 0.3, 0.3), (0, 0, 0.9), GOLD, glow=1.2)
+	for k in range(12):
+		a = k * math.tau / 12
+		p.seg((math.cos(a) * 0.35, -0.1, 0.9 + math.sin(a) * 0.35), (math.cos(a) * 0.8, -0.1, 0.9 + math.sin(a) * 0.8), 0.04, 0.0, CLOTH_WHITE, sides=4, glow=2.2)
+	return p.build()
+
+
+def frost_lance():
+	p = Prop("frost_lance", 375)
+	p.seg((-0.7, 0, 0.1), (0.75, 0, 1.0), 0.13, 0.0, WATER, sides=6, glow=1.4)
+	for k in range(4):
+		t = 0.15 + k * 0.2
+		x, z = -0.7 + t * 1.45, 0.1 + t * 0.9
+		p.seg((x, 0, z), (x - 0.18, 0.1 * (k % 2 * 2 - 1), z + 0.2), 0.05, 0.0, WATER, sides=4, glow=1.0)
+	return p.build()
+
+
+def emberstorm():
+	p = Prop("emberstorm", 377)
+	for k in range(26):                                                           # a spiral of embers
+		t = k / 26
+		a = t * math.tau * 2.2
+		r = 0.2 + t * 0.55
+		p.blob((0.12, 0.12, 0.12), (math.cos(a) * r, math.sin(a) * r, 0.1 + t * 0.9), EMBER if k % 3 else FLAME, segs=(6, 4), glow=2.6)
+	return p.build()
+
+
+def greater_shielding():
+	p = Prop("greater_shielding", 379)
+	p.blob((1.2, 1.2, 1.1), (0, 0, 0.0), RUNE, segs=(14, 8), glow=1.0, grad=(0.2, 0.5))   # a dome of force
+	p.box((0.12, 0.1, 0.8), (0, -0.62, 0.3), GOLD, glow=1.4)
+	p.box((0.55, 0.1, 0.12), (0, -0.62, 0.45), GOLD, glow=1.4)
+	return p.build()
+
+
+def ice_comet():
+	p = Prop("ice_comet", 381)
+	p.blob((0.55, 0.55, 0.55), (0.45, 0, 0.35), WATER, segs=(12, 8), glow=1.8)
+	for k, (dy, dz) in enumerate(((0, 0), (0.12, 0.1), (-0.1, -0.08))):
+		p.seg((0.45, dy, 0.35 + dz), (-0.8, dy * 2, 1.05 + dz), 0.22 - k * 0.05, 0.0, CLOTH_WHITE, sides=6, glow=1.2)
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -309,7 +423,9 @@ def action_skills():
 
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
-								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders]}
+								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
+								  heroic_strike, rally, shield_wall, healing, blessed_armor, circle_of_renewal,
+								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

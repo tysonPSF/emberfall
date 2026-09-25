@@ -29,6 +29,7 @@ const SECTIONS := [
 	["groupchat", "greenmoor"],
 	["bowdrops", "greenmoor"],
 	["blessing", "greenmoor"],
+	["spells_1115", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1710,6 +1711,7 @@ func _t_blessing() -> void:
 	var shown := hud._buff_rows.get_children().filter(func(c: Node) -> bool: return c.has_meta("spell")).map(func(c: Node) -> String:
 		return "%s (%s)" % [c.get_meta("spell"), (c.find_child("left", true, false) as Label).text])
 	print("blessing: buff window shows %s at %s" % [shown, hud._buff_panel.position])
+	print("blessing: tooltips:\n%s\n--\n%s" % [hud._buff_tooltip("blessing_of_the_elders", -1.0), hud._buff_tooltip("courage", 42.0)])
 	await _shot("9y_buffs")
 	hud._toggle_inventory()
 	await _wait(0.3)
@@ -1732,6 +1734,54 @@ func _t_blessing() -> void:
 	p.buffs.clear()
 	p.level = keep[0]
 	p.xp = keep[1]
+	p.recalc_stats()
+
+
+## The level 11-15 spells: each is taught at its level, then cast (on a mob,
+## on the tester or the group) and checked for its effect.
+func _t_spells_1115() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := {"level": p.level, "spells": p.spells.duplicate(), "equipment": p.equipment.duplicate(), "class": p.char_class}
+	var ids := ["heroic_strike", "rally", "shield_wall", "healing", "blessed_armor", "circle_of_renewal", "hallowed_strike", "frost_lance", "emberstorm", "greater_shielding", "ice_comet"]
+	for cls: String in ["warrior", "cleric", "wizard"]:
+		var taught := World.class_spells(cls).filter(func(e: Dictionary) -> bool: return int(e["level"]) >= 11).map(func(e: Dictionary) -> String: return "%s@%d" % [e["spell"], e["level"]])
+		print("spells_1115: %s learns %s" % [cls, taught])
+	p.level = 15
+	p.recalc_stats()
+	p.spells = ids.duplicate()
+	p.equipment["secondary"] = "round_shield"
+	p.recalc_stats()
+	for id: String in ids:
+		p.skills[str(GameData.spells[id].get("skill", ""))] = 200  # never fizzle for the test
+		var s: Dictionary = GameData.spells[id]
+		var mob := _nearest_mob(p, "gnoll_pup")
+		mob.hp = mob.max_hp
+		p.global_position = main.zone.ground(mob.global_position.x + 2.0, mob.global_position.z) + Vector3.UP
+		World.request_set_target(p.entity_id, mob.entity_id if s["target"] == "enemy" else p.entity_id)
+		p.mana = p.max_mana
+		p.hp = maxi(1, p.max_hp / 3)
+		p.cooldowns.clear()
+		var before := [mob.hp, p.hp, p.buffs.keys(), mob.dots.size()]
+		World.request_cast(p.entity_id, id)
+		await _wait(float(s.get("cast_time", 0)) + 0.3)
+		var effect := ""
+		match str(s["type"]):
+			"damage":
+				effect = "mob hp %d -> %s" % [before[0], str(mob.hp) if is_instance_valid(mob) and not mob.dead else "dead"]
+			"heal":
+				effect = "my hp %d -> %d" % [before[1], p.hp]
+			"buff":
+				effect = "buffed %s" % p.buffs.has(id)
+			"dot":
+				effect = "dots on mob %d -> %d" % [before[3], mob.dots.size() if is_instance_valid(mob) else -1]
+		print("spells_1115: %s -> %s" % [id, effect])
+		if is_instance_valid(mob):
+			mob.hate.clear()
+	p.buffs.clear()
+	p.level = keep["level"]
+	p.spells = keep["spells"]
+	p.equipment = keep["equipment"]
 	p.recalc_stats()
 
 
