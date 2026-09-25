@@ -24,6 +24,18 @@
         22
       ],
       "delay": 2.4
+    },
+    "guard": {
+      "radius": 0,
+      "leash": 22,
+      "speed": 6.4,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "hunt_shouts": [
+        "Not while I hold this post!",
+        "Back, you cur!",
+        "The Watch stands here!"
+      ]
     }
   },
   "emberhold_guard": {

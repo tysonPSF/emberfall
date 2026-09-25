@@ -14,7 +14,9 @@ extends Entity
 ## forth at "walk_speed" instead of standing at a post, pausing at each end
 ## and stopping to talk when hailed. Guard options: "assist_standing" (only
 ## help players at least this well regarded by the guard's faction) and
-## "hunt_radius" (attack any monster that comes this close).
+## "hunt_radius" (attack any monster that comes this close; with
+## "hunt_aggressive_only", only monsters that attack on sight or are in a
+## fight).
 
 const NAME_COLOR := Color(0.55, 0.85, 1.0)
 const SCAN_SECONDS := 0.5
@@ -198,8 +200,11 @@ func _look_for_trouble() -> void:
 			fight(p, true)
 			return
 	var hunt := float(guard.get("hunt_radius", 0.0))
+	var only_aggressive := bool(guard.get("hunt_aggressive_only", false))  # leave rats and bears be
 	for m in World.get_mobs():
-		if not m.dead and distance_to(m) <= hunt and (best == null or distance_to(m) < distance_to(best)):
+		var hostile := m.aggressive or m.state == Mob.State.COMBAT  # attacks on sight, or is fighting someone right now
+		if not m.dead and distance_to(m) <= hunt and (hostile or not only_aggressive) \
+				and (best == null or distance_to(m) < distance_to(best)):
 			best = m
 	if best != null:
 		_engage(best)

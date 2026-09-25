@@ -31,6 +31,7 @@ const SECTIONS := [
 	["blessing", "greenmoor"],
 	["spells_1115", "greenmoor"],
 	["fx", "greenmoor"],
+	["holt", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1844,6 +1845,46 @@ func _t_fx() -> void:
 	p.recalc_stats()
 
 
+## Warden Holt defends his post: an aggressive gnoll walking up gets cut down;
+## a rat wandering by is left alone; afterwards he goes back to his spot.
+func _t_holt() -> void:
+	var main := get_parent()
+	var holt: Npc = _npcs()["warden_holt"]
+	var post := holt.global_position
+	var p := World.local_player
+	var place := func(m: Mob, dx: float, dz: float) -> void:
+		m.global_position = main.zone.ground(post.x + dx, post.z + dz) + Vector3.UP * 0.5
+		m.set_physics_process(false)
+	var rat := _nearest_mob(holt, "large_rat")
+	place.call(rat, 6.0, 3.0)
+	var scout := _nearest_mob(holt, "gnoll_scout")
+	place.call(scout, -9.0, 4.0)
+	await _wait(3.0)
+	print("holt: gnoll scout (aggressive) at %.0f m -> fighting it %s; rat (peaceful, calm) at %.0f m -> fighting it %s" % [
+			holt.distance_to(scout), holt.target == scout, holt.distance_to(rat), holt.target == rat])
+	scout.set_physics_process(true)
+	for k in 40:
+		await _wait(0.5)
+		if not is_instance_valid(scout) or scout.dead:
+			break
+	# a peaceful pup, but chasing the tester past his post
+	var pup := _nearest_mob(holt, "gnoll_pup")
+	place.call(pup, 8.0, -6.0)
+	p.global_position = main.zone.ground(post.x + 10.0, post.z - 7.0) + Vector3.UP
+	pup.add_hate(p, 5.0)
+	await _wait(3.0)
+	print("holt: scout dead %s; a pup fighting someone at %.0f m -> fighting it %s" % [not is_instance_valid(scout) or scout.dead, holt.distance_to(pup), holt.target == pup])
+	pup.set_physics_process(true)
+	for k in 40:
+		await _wait(0.5)
+		if not is_instance_valid(pup) or pup.dead:
+			break
+	await _wait(6.0)
+	print("holt: pup dead %s; rat still alive %s; Holt back at his post %s (%.1f m off)" % [not is_instance_valid(pup) or pup.dead, is_instance_valid(rat) and not rat.dead, holt.global_position.distance_to(post) < 1.5, holt.global_position.distance_to(post)])
+	if is_instance_valid(rat):
+		rat.set_physics_process(true)
+
+
 ## Moves the tester through the zone line into this zone if it isn't there.
 func _ensure_zone(zone_id: String) -> void:
 	var main := get_parent()
@@ -1888,7 +1929,7 @@ func _npcs() -> Dictionary:
 	return out
 
 
-func _nearest_mob(p: Player, only_id := "") -> Mob:
+func _nearest_mob(p: Entity, only_id := "") -> Mob:
 	var best: Mob = null
 	for m in World.get_mobs():
 		if not m.dead and (only_id == "" or m.mob_id == only_id) and (best == null or p.distance_to(m) < p.distance_to(best)):
