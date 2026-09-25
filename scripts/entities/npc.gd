@@ -43,6 +43,8 @@ func setup(id: String, name_override := "") -> void:
 	level = int(data.get("level", 10))
 	faction = str(data.get("faction", "town"))
 	guard = data.get("guard", {})
+	if not guard.is_empty():  # guards stay out of reach: always this far over the level cap
+		level = int(World.cfg("max_level", 10)) + int(World.cfg("guard_levels_over_cap", 15))
 	var combat: Dictionary = data.get("combat", {})
 	max_hp = int(combat.get("hp", 1000))
 	hp = max_hp
