@@ -2189,7 +2189,12 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 				p.trade_items.append(Pack.entry(item_id))  # held for you until there's room
 		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
 	if int(reward.get("xp", 0)) > 0:
-		p.add_xp(int(int(reward["xp"]) * float(cfg("xp_rate", 1.0))))
+		var xp := int(reward["xp"]) * float(cfg("xp_rate", 1.0))
+		if state["completions"] > 1:  # the full reward is for the first time; repeats pay a flat share
+			xp *= float(q.get("repeat_xp", cfg("quest_repeat_xp", 0.5)))
+			if state["completions"] == 2:
+				say(p, "You've done this task before; it teaches you less now.", C_XP)
+		p.add_xp(int(xp))
 	apply_faction(p, q.get("faction", {}))
 	if q.has("next"):  # a quest line: the next step starts as this one ends
 		_accept_quest(p, str(q["next"]))

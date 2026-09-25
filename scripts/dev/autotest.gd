@@ -57,6 +57,7 @@ const SECTIONS := [
 	["thornwood", "thornwood"],
 	["thornwood_mobs", "thornwood"],
 	["tw_density", "thornwood"],
+	["quest_repeat", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2122,3 +2123,21 @@ func _t_tw_density() -> void:
 		if is_instance_valid(harlan.target) and harlan.target is Mob:
 			fought[(harlan.target as Mob).entity_id] = (harlan.target as Mob).mob_id
 	print("tw_density: in two minutes Harlan fought %s" % [fought.values()])
+
+
+## A repeatable quest pays full experience the first time, half after.
+func _t_quest_repeat() -> void:
+	var p := World.local_player
+	var holt: Npc = _npcs()["warden_holt"]
+	p.level = 12
+	p.xp = 0
+	p.recalc_stats()
+	p.quests.erase("fang_bounty")
+	World._accept_quest(p, "fang_bounty")
+	var gains: Array = []
+	for k in 3:
+		var before := p.xp
+		World._complete_quest(p, holt, "fang_bounty")
+		gains.append(p.xp - before)
+	print("quest_repeat: fang bounty xp for turn-ins 1, 2, 3: %s (quest reward %d)" % [gains, int(GameData.quests["fang_bounty"]["reward"]["xp"])])
+	p.quests.erase("fang_bounty")
