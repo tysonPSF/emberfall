@@ -510,7 +510,8 @@ def tavern():
 	for x in (-uhw, uhw):          # corner posts
 		for y in (-uhd, uhd):
 			p.box((0.42, 0.42, 3.3), (x, y, 6.07), WOOD, grad=(0.2, 0.9))
-	for x in (-5.0, -2.2, 2.2, 5.0):        # studs divide the facade into window bays
+	# Studs sit clear of the porch roof, which sweeps out to about x = 2.8.
+	for x in (-5.45, -3.0, 3.0, 5.45):      # studs divide the facade into window bays
 		for y in (-uhd, uhd):
 			p.box((0.3, 0.26, 2.7), (x, y, 6.07), WOOD, grad=(0.3, 1.0))
 	for y in (-4.0, 4.0):          # studs on the side walls, clear of their windows
@@ -577,18 +578,36 @@ def tavern():
 	p.box((1.6, 1.7, 0.36), (-hw + 1.0, -2.4, 9.7), STONE_LIGHT, grad=(0.2, 0.7))
 
 	# --- door, steps and lanterns ---------------------------------------------
-	p.box((3.4, 0.5, 3.7), (0, bay_face + 0.12, 1.85), STONE_DARK, grad=(0.18, 0.9))
+	sill = 0.36                    # doors start at the porch deck, not at the grass
+	p.box((3.9, 0.5, 4.2), (0, bay_face + 0.12, sill + 1.98), STONE_DARK, grad=(0.18, 0.9))
 	for s in (-1, 1):              # double doors, banded
-		p.box((1.25, 0.26, 2.7), (s * 0.68, bay_face - 0.06, 1.42), WOOD, grad=(0.45, 1.0))
-		for z in (0.75, 2.05):
-			p.box((1.3, 0.2, 0.16), (s * 0.68, bay_face - 0.14, z), IRON, grad=(0.2, 0.7))
-		p.blob((0.2, 0.2, 0.2), (s * 1.18, bay_face - 0.2, 1.45), IRON, grad=(0.1, 0.6))
-	for k in range(5):             # stone arch over the doors
-		a = math.pi * (0.12 + 0.19 * k)
-		p.box((0.62, 0.46, 0.5), (math.cos(a) * 1.72, bay_face + 0.06, 2.78 + math.sin(a) * 0.62),
-			  STONE_LIGHT, rot=(0, -math.degrees(a) + 90, 0), grad=(0.15, 0.8))
-	p.box((5.0, 1.5, 0.32), (0, bay_face - 0.75, 0.16), STONE_LIGHT, grad=(0.25, 0.9))
-	p.box((6.0, 2.3, 0.18), (0, bay_face - 1.1, 0.06), STONE_DARK, grad=(0.3, 1.0))
+		p.box((1.25, 0.26, 2.7), (s * 0.68, bay_face - 0.06, sill + 1.35), WOOD, grad=(0.45, 1.0))
+		for z in (0.7, 2.0):
+			p.box((1.3, 0.2, 0.16), (s * 0.68, bay_face - 0.14, sill + z), IRON, grad=(0.2, 0.7))
+		# Pull handles, on the meeting edges where you would actually grab them.
+		p.seg((s * 0.26, bay_face - 0.28, sill + 0.95), (s * 0.26, bay_face - 0.28, sill + 1.75),
+			  0.045, 0.045, IRON, sides=5, grad=(0.1, 0.6))
+		for z in (1.0, 1.7):
+			p.box((0.1, 0.26, 0.09), (s * 0.26, bay_face - 0.18, sill + z), IRON, grad=(0.15, 0.65))
+	# Voussoirs shoulder to shoulder on a true semicircle, springing just above
+	# the doors and sized to them, so it reads as an arch and not as rubble.
+	arch_r, arch_z = 1.32, sill + 2.72
+	for k in range(11):
+		a = math.radians(180.0 * k / 10.0)
+		p.box((0.46, 0.46, 0.54), (math.cos(a) * arch_r, bay_face + 0.04, arch_z + math.sin(a) * arch_r),
+			  STONE_LIGHT, rot=(0, 90.0 - math.degrees(a), 0), grad=(0.15, 0.8))
+	p.box((0.44, 0.5, 0.52), (0, bay_face + 0.02, arch_z + arch_r), STONE_DARK, grad=(0.1, 0.7))
+
+	# --- porch deck: walkable, with a ramp up to it ---------------------------
+	deck_back, deck_front = bay_face, bay_face - 2.4
+	p.box((5.0, 2.4, sill), (0, (deck_back + deck_front) / 2, sill / 2), STONE_LIGHT, grad=(0.25, 0.9))
+	for s in (-1, 1):              # kerbs down the sides, so the ramp is the way up
+		p.box((0.44, 2.4, 0.52), (s * 2.28, (deck_back + deck_front) / 2, 0.26), STONE_DARK, grad=(0.25, 0.95))
+	ry1, ry0, rw = deck_front, deck_front - 1.7, 1.75
+	p.poly([(-rw, ry0, 0.0), (rw, ry0, 0.0), (rw, ry1, sill), (-rw, ry1, sill),
+			(-rw, ry1, 0.0), (rw, ry1, 0.0)],
+		   [(0, 1, 2, 3), (0, 4, 5, 1), (3, 2, 5, 4), (0, 3, 4), (1, 5, 2)],
+		   STONE_DARK, grad=(0.3, 1.0))
 	for s in (-1, 1):              # lanterns either side of the door
 		p.seg((s * 2.3, bay_face + 0.1, 3.5), (s * 2.3, bay_face - 0.5, 3.5), 0.06, 0.05, IRON, sides=4)
 		p.box((0.34, 0.34, 0.44), (s * 2.3, bay_face - 0.52, 3.25), EMBER, glow=3.2, grad=(0.1, 0.4))
@@ -605,7 +624,7 @@ def tavern():
 		p.box(size, loc, EMBER, glow=glow, grad=(0.08, 0.38))
 	for x in (-5.9, -3.5, 3.5, 5.9):        # ground floor, front
 		window((x, -hd - 0.06, 2.95), (1.35, 0.3, 1.7), 2.4)
-	for x in (-6.55, -3.6, 3.6, 6.55):      # upper storey, centred in each bay
+	for x in (-6.7, -4.2, 4.2, 6.7):        # upper storey, centred in each bay
 		window((x, -uhd - 0.06, 6.15), (1.2, 0.3, 1.35), 2.0)
 	for x in (-1.5, 1.5):                   # the bay's own windows
 		window((x, bay_face - 0.04, 6.15), (1.15, 0.3, 1.35), 2.0)
@@ -625,10 +644,14 @@ def tavern():
 	p.box((0.18, 2.0, 1.5), (sx, -hd - 1.62, 4.05), WOOD, grad=(0.3, 1.0))
 	for z in (4.83, 3.27):
 		p.box((0.1, 2.16, 0.14), (sx, -hd - 1.62, z), IRON, grad=(0.2, 0.7))
-	for s in (-1, 1):              # an ember over an anvil, painted both sides
-		p.blob((0.16, 0.62, 0.5), (sx + s * 0.11, -hd - 1.35, 4.32), FLAME, glow=2.8, grad=(0.05, 0.5))
-		p.box((0.12, 0.8, 0.26), (sx + s * 0.11, -hd - 1.95, 3.82), IRON, grad=(0.15, 0.6))
-		p.box((0.12, 0.34, 0.2), (sx + s * 0.11, -hd - 1.95, 3.62), IRON, grad=(0.15, 0.6))
+	for s in (-1, 1):              # a foaming tankard, painted on both faces
+		mx = sx + s * 0.11
+		p.box((0.12, 0.52, 0.62), (mx, -hd - 1.72, 3.93), GOLD, grad=(0.1, 0.65))       # the ale
+		p.box((0.11, 0.58, 0.07), (mx, -hd - 1.72, 3.6), WOOD, grad=(0.3, 0.9))         # base
+		p.blob((0.13, 0.56, 0.26), (mx, -hd - 1.72, 4.29), CLOTH_WHITE, grad=(0.0, 0.35))  # head
+		p.blob((0.1, 0.16, 0.14), (mx, -hd - 1.95, 4.42), CLOTH_WHITE, grad=(0.0, 0.3))    # a run of froth
+		for y, z, h in ((-hd - 1.36, 4.12, 0.14), (-hd - 1.3, 3.93, 0.34), (-hd - 1.36, 3.74, 0.14)):
+			p.box((0.1, 0.16 if h < 0.2 else 0.1, h), (mx, y, z), GOLD, grad=(0.15, 0.7))   # handle
 
 	# --- the yard: barrels, a bench, a trough ----------------------------------
 	for x, y, r in ((-5.4, -hd - 1.0, 0.44), (-4.4, -hd - 1.7, 0.4), (6.0, -hd - 1.2, 0.46)):
