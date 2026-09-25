@@ -36,6 +36,7 @@ const SECTIONS := [
 	["hotbar", "greenmoor"],
 	["reactions", "greenmoor"],
 	["drop", "greenmoor"],
+	["give", "emberhold"],
 	["camp", "greenmoor"],
 ]
 
@@ -929,10 +930,14 @@ func _t_bags() -> void:
 	print("bags: stowed on close: cursor empty=%s, backpack at %s" % [p.cursor.is_empty(), _where(p, "leather_backpack")])
 	hud._toggle_inventory()
 	hud._toggle_bag(0)
+	var pack_slot := int(_where(p, "leather_backpack").get_slice(":", 1))
+	hud._toggle_bag(pack_slot)  # two bags open: side by side, left of the window, level with its bottom
 	World.request_click(p.entity_id, "b:0:2")  # the dagger on the cursor, for the picture
 	await _wait(0.4)
+	print("bags: windows at %s; character window %s" % [hud._bag_windows.values().map(func(w: Control) -> String: return str(Rect2(w.position, w.size))), Rect2(hud._inv_panel.position, hud._inv_panel.size)])
 	await _shot("9j_inventory")
 	World.request_click(p.entity_id, "b:0:2")
+	hud._toggle_bag(pack_slot)
 	# a bag and its contents go to the corpse and come back whole
 	p.pack.add("gnoll_fang", 5)
 	var npcs := _npcs()
@@ -1205,6 +1210,52 @@ func _t_drop() -> void:
 			p.pack.count("rat_whiskers"), World.objects.values().filter(func(o: Variant) -> bool: return o is GroundItem and not (o as Node).is_queued_for_deletion()).size()])
 	p.pack.remove("gnoll_fang", 5)
 	p.pack.remove("iron_short_sword")
+
+
+## Handing quest items to a merchant the way a player does: G with nothing
+## ready opens the shop, G with the whiskers ready opens a trade, and clicking
+## Tovin with the whiskers on the cursor puts them in that trade.
+func _t_give() -> void:
+	var p := World.local_player
+	var tovin: Npc = _npcs()["merchant_tovin"]
+	_stand_by(p, tovin)
+	p.quests.erase("trail_pack_cord")
+	World.request_say(p.entity_id, "proper pack")
+	World.request_interact(p.entity_id)
+	print("give: G with nothing to hand in -> service '%s', trading=%s" % [p.service if p.service_npc_id >= 0 else "-", p.trade_npc_id >= 0])
+	World.request_service_close(p.entity_id)
+	p.pack.add("rat_whiskers", 4)
+	World.request_interact(p.entity_id)
+	print("give: G with the whiskers -> service '%s', trading with %s" % [p.service if p.service_npc_id >= 0 else "-", World.get_object(p.trade_npc_id).display_name if p.trade_npc_id >= 0 else "nobody"])
+	World.request_trade_cancel(p.entity_id)
+	World.request_set_target(p.entity_id, -1)
+	World.request_click(p.entity_id, _where(p, "rat_whiskers"))
+	World.request_give(p.entity_id, tovin.entity_id)
+	print("give: clicked Tovin holding the whiskers -> trade holds %s, cursor %s" % [p.trade_items.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], e["count"]]), p.cursor])
+	World.request_trade_give(p.entity_id)
+	print("give: after Give -> cord %d, step 2 active %s" % [p.pack.count("braided_whisker_cord"), p.quests.get("trail_pack_hide", {}).get("active", false)])
+	# the mix-up: step 2's items offered to Tovin come back with a pointer to Holt
+	p.pack.add("blackpaw_pelt", 3)
+	World.request_click(p.entity_id, _where(p, "braided_whisker_cord"))
+	World.request_give(p.entity_id, tovin.entity_id)
+	World.request_trade_add(p.entity_id, _where(p, "blackpaw_pelt"))
+	World.request_trade_give(p.entity_id)
+	p.pack.remove("blackpaw_pelt", 3)
+	# step 2 with a stack of 3 pelts: Holt takes 2 and hands one back
+	await _ensure_zone("greenmoor")
+	var holt: Npc = _npcs()["warden_holt"]
+	_stand_by(p, holt)
+	p.pack.add("blackpaw_pelt", 3)
+	World.request_interact(p.entity_id)
+	World.request_trade_add(p.entity_id, _where(p, "braided_whisker_cord"))
+	World.request_trade_add(p.entity_id, _where(p, "blackpaw_pelt"))
+	print("give: Holt's trade holds %s" % [p.trade_items.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], e["count"]])])
+	World.request_trade_give(p.entity_id)
+	print("give: after Give -> hide %d, pelts back %d, cord %d" % [p.pack.count("stitched_blackpaw_hide"), p.pack.count("blackpaw_pelt"), p.pack.count("braided_whisker_cord")])
+	p.pack.remove("blackpaw_pelt", p.pack.count("blackpaw_pelt"))
+	p.pack.remove("stitched_blackpaw_hide")
+	for q in ["trail_pack_cord", "trail_pack_hide", "trail_pack_clasp"]:
+		p.quests.erase(q)
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

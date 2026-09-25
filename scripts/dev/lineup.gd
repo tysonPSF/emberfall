@@ -4,12 +4,13 @@ extends Node3D
 ## --worn=head:iron_coif,chest:studded_tunic dresses every model in that gear
 ## (models.json "gear" ids), to compare how it sits on different bodies.
 ## --offhand=shield_round puts a models.json "weapons" entry in the left hand;
-## --grip=x,y,z[,px,py,pz] tries a rotation (degrees) and offset for it before
+## --grip=x,y,z[,px,py,pz[,bone[,orient[,ox,oy,oz]]]] tries a rotation
+## (degrees), offset, bone, orientation bone and outward offset for it before
 ## writing them to "grips".
 ## Model ids are data/models.json character ids. Quits when done.
 
 const SPACING := 1.8
-const VIEWS := {"front": 0.0, "three_quarter": 0.7, "side": PI / 2.0, "back": PI}
+const VIEWS := {"front": 0.0, "three_quarter": 0.7, "side": PI / 2.0, "back": PI, "behind_left": PI - 0.45}
 
 
 func _ready() -> void:
@@ -30,6 +31,12 @@ func _ready() -> void:
 			var grip := {"rot": [float(g[0]), float(g[1]), float(g[2])]}
 			if g.size() >= 6:
 				grip["pos"] = [float(g[3]), float(g[4]), float(g[5])]
+			if g.size() >= 7:
+				grip["bone"] = g[6]
+			if g.size() >= 8:
+				grip["orient"] = g[7]
+			if g.size() >= 11:
+				grip["out"] = [float(g[8]), float(g[9]), float(g[10])]
 			GameData.models["grips"][offhand if offhand != "" else "shield_round"] = grip
 		elif a.begins_with("--worn="):
 			for pair in a.substr(7).split(",", false):

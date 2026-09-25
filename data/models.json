@@ -200,7 +200,8 @@
   },
   "animations": [
     "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
-    "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb"
+    "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb",
+    "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
     "pine_a": {
@@ -918,39 +919,60 @@
   },
   "grips": {
     "shield_round": {
-      "rot": [
-        -90,
+      "bone": "lowerarm.l",
+      "orient": "chest",
+      "pos": [
         0,
+        0.13,
         0
       ],
-      "pos": [
-        0.12,
-        0.04,
-        0.04
+      "out": [
+        0.13,
+        0,
+        0.03
+      ],
+      "rot": [
+        0,
+        60,
+        0
       ]
     },
     "shield_round_barbarian": {
-      "rot": [
-        -90,
+      "bone": "lowerarm.l",
+      "orient": "chest",
+      "pos": [
         0,
+        0.13,
         0
       ],
-      "pos": [
-        0.12,
-        0.04,
-        0.04
+      "out": [
+        0.13,
+        0,
+        0.03
+      ],
+      "rot": [
+        0,
+        60,
+        0
       ]
     },
     "shield_badge": {
-      "rot": [
-        -90,
-        0,
-        -90
-      ],
+      "bone": "lowerarm.l",
+      "orient": "chest",
       "pos": [
-        0.12,
-        0.04,
-        0.04
+        0,
+        0.13,
+        0
+      ],
+      "out": [
+        0.16,
+        0,
+        0.03
+      ],
+      "rot": [
+        0,
+        60,
+        0
       ]
     }
   }

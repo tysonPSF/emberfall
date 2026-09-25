@@ -8,12 +8,11 @@ extends Node3D
 
 const KAYKIT_SCALE := 0.75
 const BLEND := 0.18
-const SIT_FRAME := 0.55
-const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump"]
+const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump", "sit"]
 const KAYKIT_ANIMS := {
 	"idle": "Idle_A", "walk": "Walking_A", "run": "Running_A", "jump": "Jump_Idle",
 	"attack": "Throw", "hit": "Hit_A", "death": "Death_A", "dead": "Death_A_Pose",
-	"sit": "PickUp", "cast": "Use_Item",
+	"sit": "Sit_Floor_Idle", "sit_down": "Sit_Floor_Down", "cast": "Use_Item",  # the sits are ours (tools/blender/anims.py)
 }
 
 static var _library: AnimationLibrary
@@ -22,7 +21,8 @@ static var _part_sources: Dictionary = {}  # model path -> an instance to copy b
 var anim: AnimationPlayer
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
-var _held: Dictionary = {}  # hand bone -> [model id, BoneAttachment3D]
+var _held: Dictionary = {}  # hand bone -> [model id, holder node]
+var _followers: Array = []  # [holder, position bone, orientation bone, offset on the position bone, offset in the orientation bone's frame]
 var _worn: Dictionary = {}  # slot -> [gear id, [nodes added for it], [body regions it covers], how shown]
 var _model: Node3D
 var _spec: Dictionary = {}
@@ -286,18 +286,40 @@ func _hold(bone: String, model_id: String) -> void:
 	_held.erase(bone)
 	if model_id == "" or not GameData.models["weapons"].has(model_id) or skeleton.find_bone(bone) < 0:
 		return
-	var slot := BoneAttachment3D.new()
-	slot.bone_name = bone
-	skeleton.add_child(slot)
-	var held: Node3D = (load(GameData.models["weapons"][model_id]) as PackedScene).instantiate()
 	var grip: Dictionary = GameData.models.get("grips", {}).get(model_id, {})  # how it sits in the hand, if not as modeled
+	var held: Node3D = (load(GameData.models["weapons"][model_id]) as PackedScene).instantiate()
 	var r: Array = grip.get("rot", [0, 0, 0])
 	var at: Array = grip.get("pos", [0, 0, 0])
 	held.rotation_degrees = Vector3(r[0], r[1], r[2])
-	held.position = Vector3(at[0], at[1], at[2])
+	var slot: Node3D
+	if grip.has("orient"):
+		# rides one bone (the forearm) but keeps another's orientation (the chest):
+		# a shield moves with the arm yet always hangs upright at your side,
+		# whatever twist the walk or swing puts in the wrist
+		slot = Node3D.new()
+		skeleton.add_child(slot)
+		var out: Array = grip.get("out", [0, 0, 0])
+		_followers.append([slot, skeleton.find_bone(str(grip.get("bone", bone))), skeleton.find_bone(str(grip["orient"])),
+				Vector3(at[0], at[1], at[2]), Vector3(out[0], out[1], out[2])])
+		if not skeleton.skeleton_updated.is_connected(_follow):
+			skeleton.skeleton_updated.connect(_follow)
+		_follow()
+	else:
+		slot = BoneAttachment3D.new()
+		(slot as BoneAttachment3D).bone_name = str(grip.get("bone", bone))
+		skeleton.add_child(slot)
+		held.position = Vector3(at[0], at[1], at[2])
 	slot.add_child(held)
 	Entity.use_entity_layer(slot)
 	_held[bone] = [model_id, slot]
+
+
+func _follow() -> void:
+	_followers = _followers.filter(func(f: Array) -> bool: return is_instance_valid(f[0]) and not (f[0] as Node).is_queued_for_deletion())
+	for f: Array in _followers:
+		var at := skeleton.get_bone_global_pose(f[1])
+		var basis := skeleton.get_bone_global_pose(f[2]).basis.orthonormalized()
+		(f[0] as Node3D).transform = Transform3D(basis, at * (f[3] as Vector3) + basis * (f[4] as Vector3))
 
 
 ## Clip for an action, or a raw clip name (e.g. "Spawn_Ground"); "" if the rig lacks it.
@@ -350,10 +372,13 @@ func _process(delta: float) -> void:
 		_loop("cast")
 	elif e.sitting and _clip("sit") != "":
 		var sit := _clip("sit")
-		if anim.assigned_animation != sit or anim.is_playing():
-			anim.play(sit, 0.0)  # no blend: pausing mid-blend would freeze the old pose
-			anim.seek(SIT_FRAME, true)
-			anim.pause()
+		var down := _clip("sit_down")
+		if anim.current_animation != sit and anim.current_animation != down:
+			if down != "":
+				anim.play(down, BLEND)  # sink to the ground, then settle into the seated loop
+				anim.queue(sit)
+			else:
+				anim.play(sit, BLEND)
 	else:
 		_loop("idle")
 

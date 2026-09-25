@@ -1964,6 +1964,34 @@ func request_trade_open(player_id: int) -> void:
 	_ui(p, &"trade_opened", [npc])
 
 
+## Whether this npc runs a quest you're on and carry everything for.
+func _hand_in_waiting(p: Player, npc: Npc) -> bool:
+	for quest_id: String in p.quests:
+		var q: Dictionary = GameData.quests.get(quest_id, {})
+		if q.get("giver") == npc.npc_id and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+			return true
+	return false
+
+
+## EQ's way of giving: click an npc with an item on the cursor. Opens a trade
+## with them (even a merchant) and puts the item in it.
+func request_give(player_id: int, npc_id: int) -> void:
+	if _remote(&"request_give", [player_id, npc_id]):
+		return
+	var p := get_object(player_id) as Player
+	var npc := get_object(npc_id) as Npc
+	if p == null or p.dead or npc == null or p.cursor.is_empty():
+		return
+	if p.trade_npc_id >= 0 and p.trade_npc_id != npc_id:
+		request_trade_cancel(player_id)
+	p.target = npc
+	if p.trade_npc_id < 0:
+		request_service_close(player_id)
+		request_trade_open(player_id)
+	if p.trade_npc_id == npc_id:
+		request_click(player_id, "t:%d" % p.trade_items.size())
+
+
 ## Shortcut: offers the entry at a pack place (a whole stack) in the open trade.
 func request_trade_add(player_id: int, place: String) -> void:
 	if _remote(&"request_trade_add", [player_id, place]):
@@ -2022,6 +2050,11 @@ func request_trade_give(player_id: int) -> void:
 			if not label in names:
 				names.append(label)
 		say(p, "%s has no use for %s and hands %s back." % [npc.display_name, ", ".join(names), "it" if left.size() == 1 else "them"], C_SYSTEM)
+		for quest_id: String in p.quests:  # meant for someone else's quest: say whose
+			var q: Dictionary = GameData.quests.get(quest_id, {})
+			if p.quests[quest_id].get("active", false) and q.get("giver") != npc.npc_id \
+					and left.any(func(id: String) -> bool: return (q["wants"] as Dictionary).has(id)):
+				say(p, "(%s: these are for %s.)" % [q["name"], GameData.npcs[q["giver"]]["name"]], C_XP)
 		_return_to_pack(p, left.map(func(id: String) -> Dictionary: return Pack.entry(id)))
 	p.inventory_changed.emit()
 	_close_trade(p)
@@ -2213,7 +2246,9 @@ func request_interact(player_id: int) -> void:
 	if p == null or p.dead:
 		return
 	var npc := p.valid_target_entity() as Npc
-	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false) or npc.data.has("guildmaster")):
+	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false) or npc.data.has("guildmaster")) \
+			or _hand_in_waiting(p, npc):
+		request_service_close(player_id)  # a merchant with a quest you're ready for trades instead of opening the shop
 		request_trade_open(player_id)
 		return
 	if npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] != p.char_class:

@@ -604,8 +604,11 @@ func _pick(screen_pos: Vector2) -> Object:
 
 func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	var col := _pick(screen_pos)
-	if not cursor.is_empty():  # holding something: clicking the world drops it, as in EQ
-		World.request_drop(entity_id)
+	if not cursor.is_empty():  # holding something: give it to the npc clicked, or drop it on the ground, as in EQ
+		if col is Npc:
+			World.request_give(entity_id, (col as Npc).entity_id)
+		else:
+			World.request_drop(entity_id)
 		return
 	if col == null:
 		return
