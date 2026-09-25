@@ -161,7 +161,9 @@ class Prop:
 		m = Matrix.LocRotScale(Vector(loc), Euler([math.radians(a) for a in rot]), Vector(size))
 		bmesh.ops.transform(bm, matrix=m, verts=bm.verts)
 
-	def build(self):
+	def build(self, bevel=0.0):
+		"""Joins the parts into one object. `bevel` rounds every hard edge by
+		that many meters, the way KayKit's own pieces are modeled."""
 		bpy.ops.object.select_all(action="DESELECT")
 		for p in self.parts:
 			p.select_set(True)
@@ -169,7 +171,48 @@ class Prop:
 		bpy.ops.object.join()
 		obj = self.parts[0]
 		obj.name = self.name
+		if bevel > 0.0:
+			mod = obj.modifiers.new("bevel", "BEVEL")
+			mod.width = bevel
+			mod.segments = 2
+			mod.limit_method = "ANGLE"
+			mod.angle_limit = math.radians(40)
+			mod.harden_normals = True
+			bpy.ops.object.modifier_apply(modifier=mod.name)
 		return obj
+
+
+KAYKIT = os.path.join(ROOT, "assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf")
+
+
+def kaykit(piece, loc, rot_z=0.0, scale=(0.75, 0.75, 0.75)):
+	"""Imports a KayKit Dungeon piece, placed and scaled, with its transform
+	baked in so it can join a prop: buildings made of the same walls as the
+	houses match them exactly."""
+	before = set(bpy.data.objects)
+	bpy.ops.import_scene.gltf(filepath=os.path.join(KAYKIT, piece + ".gltf"))
+	meshes = []
+	for o in set(bpy.data.objects) - before:
+		if o.type != "MESH":
+			continue
+		world = Matrix.Translation(Vector(loc)) @ Matrix.Rotation(rot_z, 4, "Z") @ Matrix.Diagonal((*scale, 1.0)) @ o.matrix_world
+		o.parent = None
+		o.data.transform(world)
+		o.matrix_world = Matrix.Identity(4)
+		meshes.append(o)
+	for o in set(bpy.data.objects) - before:
+		if o.type != "MESH":
+			bpy.data.objects.remove(o, do_unlink=True)
+	return meshes
+
+
+def join_into(obj, others):
+	bpy.ops.object.select_all(action="DESELECT")
+	for o in [obj] + others:
+		o.select_set(True)
+	bpy.context.view_layer.objects.active = obj
+	bpy.ops.object.join()
+	return obj
 
 
 # ---------------------------------------------------------------- nature
@@ -488,15 +531,13 @@ def tavern():
 	uhw, uhd = hw + jut, hd + jut
 	upper_top = 7.7
 
-	# --- stone ground floor ---------------------------------------------------
-	p.box((w + 0.7, d + 0.7, 1.5), (0, 0, 0.75), STONE_DARK, grad=(0.3, 1.0), jitter=0.015)
-	p.box((w, d, 3.1), (0, 0, 2.95), STONE_LIGHT, grad=(0.08, 0.72))
-	for s in (-1, 1):              # quoins: darker blocks stepping up the corners
-		for k in range(5):
-			p.box((1.3, 1.3, 0.52), (s * (hw - 0.5), -(hd - 0.5), 1.7 + k * 0.62), STONE_DARK, grad=(0.15, 0.85))
+	# --- stone ground floor: KayKit walls, pillars and windows, joined after
+	# build() below (same pieces as the houses, so the stone matches) ---------
+	# a plinth course under them, so the taller walls sit on something
+	p.box((w + 1.2, d + 1.2, 0.35), (0, 0, 0.17), STONE_DARK, grad=(0.3, 1.0))
 
 	# --- jettied upper storey -------------------------------------------------
-	p.box((w + jut * 2, d + jut * 2, 3.2), (0, 0, 6.1), BONE, grad=(0.02, 0.45))
+	p.box((w + jut * 2, d + jut * 2, 3.2), (0, 0, 6.1), BONE, grad=(0.25, 0.7))  # plaster, weathered: not stark white
 	for x in (-5.6, -2.8, 0.0, 2.8, 5.6):   # brackets carrying the oversail
 		p.box((0.36, 1.0, 0.95), (x, -(hd + 0.3), 4.2), WOOD, rot=(34, 0, 0), grad=(0.3, 1.0))
 
@@ -521,23 +562,32 @@ def tavern():
 	# --- porch bay and its cross-gable ----------------------------------------
 	bay_y = -(uhd + 1.25)
 	bay_face = -(uhd + 2.45)
-	p.box((5.2, 2.5, 3.3), (0, bay_y, 6.05), BONE, grad=(0.02, 0.45))
-	p.box((5.4, 2.7, 3.4), (0, bay_y, 2.3), STONE_LIGHT, grad=(0.08, 0.72))
+	p.box((5.2, 2.5, 3.3), (0, bay_y, 6.05), BONE, grad=(0.25, 0.7))
+	# (the porch bay's stone walls are KayKit pieces too, added after build)
 	for x in (-2.6, 2.6):          # bay corner posts
 		p.box((0.4, 0.4, 3.4), (x, bay_y, 6.05), WOOD, grad=(0.2, 0.9))
 	bay_h, bay_half = 2.0, 2.75
 	bay_slope = math.hypot(bay_half, bay_h)
 	bay_ang = math.atan2(bay_h, bay_half)
+	# The bay roof runs from just past the gable back until its ridge meets the
+	# main roof's slope, so the two roofs join (it starts at the ridge and
+	# slopes down to the eaves either side).
+	main_rise = 3.9 / (uhd + 0.75)          # the main roof's rise per meter, from its eaves
+	bay_front = -(uhd + 2.45) - 0.25
+	bay_back = -((upper_top + 3.9) - (7.75 + bay_h)) / main_rise - 0.3
+	bay_len = bay_back - bay_front
+	bay_mid = (bay_front + bay_back) / 2
 	for s in (1, -1):              # bay roof slopes toward +/-X
 		down = Vector((math.cos(bay_ang) * s, 0, -math.sin(bay_ang)))
 		out = Vector((math.sin(bay_ang) * s, 0, math.cos(bay_ang)))
-		base = Vector((0, bay_y - 0.08, 7.75))
-		p.box((bay_slope, 2.5, 0.16), base + down * bay_slope / 2, WOOD_GRAY,
+		base = Vector((0, bay_mid, 7.75 + bay_h))
+		p.box((bay_slope + 0.3, bay_len, 0.16), base + down * (bay_slope + 0.3) / 2, WOOD_GRAY,
 			  rot=(0, math.degrees(bay_ang) * s, 0), grad=(0.2, 0.8))
 		for i in range(4):
-			c = base + down * bay_slope * (i + 0.55) / 4 + out * 0.13
-			p.box((bay_slope / 4 * 1.15, 2.6, 0.12), c, CLAY,
+			c = base + down * (bay_slope + 0.3) * (i + 0.55) / 4 + out * 0.13
+			p.box(((bay_slope + 0.3) / 4 * 1.15, bay_len + 0.1, 0.12), c, CLAY,
 				  rot=(0, math.degrees(bay_ang) * s, 0), grad=(0.0, 0.9))
+	p.seg((0, bay_front, 7.75 + bay_h + 0.12), (0, bay_back, 7.75 + bay_h + 0.12), 0.14, 0.14, WOOD, sides=6)  # ridge beam
 	for y, t in ((bay_face, 0.16),):   # front gable only: the main roof closes the back
 		tri = [(-bay_half, 7.75), (bay_half, 7.75), (0, 7.75 + bay_h)]
 		verts = [(x, y - t / 2, z) for x, z in tri] + [(x, y + t / 2, z) for x, z in tri]
@@ -628,20 +678,26 @@ def tavern():
 		frame = tuple(size[i] + (-0.14 if i == thin else 0.34) for i in range(3))
 		p.box(frame, loc, WOOD, grad=(0.3, 1.0))
 		p.box(size, loc, EMBER, glow=glow, grad=(0.08, 0.38))
-	for x in (-5.9, -3.5, 3.5, 5.9):        # ground floor, front
-		window((x, -hd - 0.06, 2.95), (1.35, 0.3, 1.7), 2.4)
+		# a cross of mullions in front of the glass, so it reads as panes
+		out = [0.0, 0.0, 0.0]
+		out[thin] = -0.2 if loc[thin] <= 0 else 0.2
+		face = tuple(loc[i] + out[i] for i in range(3))
+		bar_v = [0.1, 0.1, 0.1]
+		bar_v[2] = size[2]
+		bar_h = [size[i] if i != 2 and i != thin else 0.1 for i in range(3)]
+		p.box(tuple(bar_v), face, WOOD, grad=(0.3, 1.0))
+		p.box(tuple(bar_h), face, WOOD, grad=(0.3, 1.0))
 	for x in (-6.7, -4.2, 4.2, 6.7):        # upper storey, centred in each bay
 		window((x, -uhd - 0.06, 6.15), (1.2, 0.3, 1.35), 2.0)
 	# One window under the porch gable, on the centreline. A pair either side of
 	# it would sit where the gable roof sweeps down past z = 6.3 and the roof
 	# would cut straight through the glass; only the middle is tall enough.
 	window((0.0, bay_face - 0.04, 5.9), (1.3, 0.3, 1.5), 2.2)
-	for y in (-2.6, 1.4):                   # side walls
-		for x in (-hw - 0.06, hw + 0.06):
-			window((x, y, 2.95), (0.3, 1.25, 1.6), 2.2)
+	for y in (-2.6, 1.4):                   # side walls, upper storey
 		window((-uhw - 0.06, y, 6.15), (0.3, 1.1, 1.3), 1.8)
-	for x in (-4.0, 0.0, 4.0):              # back, shuttered and dark
-		p.box((1.5, 0.3, 1.7), (x, hd + 0.05, 2.95), WOOD, grad=(0.35, 1.0))
+
+	# a capstone ledge where the stone storey meets the jetty
+	p.box((w + 0.9, d + 0.9, 0.36), (0, 0, 4.5), STONE_DARK, grad=(0.1, 0.7))
 
 	# --- the sign, on a wrought bracket ---------------------------------------
 	sx = hw - 2.2
@@ -670,7 +726,44 @@ def tavern():
 		p.box((0.24, 0.5, 0.62), (x, -hd - 1.9, 0.31), WOOD, grad=(0.35, 1.0))
 	p.box((2.4, 0.9, 0.62), (-6.6, -hd - 2.4, 0.31), STONE_LIGHT, grad=(0.2, 0.9))
 	p.box((2.0, 0.6, 0.2), (-6.6, -hd - 2.4, 0.5), WATER, grad=(0.25, 0.55))
-	return p.build()
+	# Light behind every KayKit window: a glowing pane inside the wall, seen
+	# only through the opening. Laid in the Prop before building so it bevels
+	# and joins with the rest.
+	sx_side = 11.0 / 4 / 4.0                 # side walls: four pieces across 11 m
+	win_z = 2.35
+	front = {-6.0: "wall_window_open", -3.0: "wall", 0.0: "wall", 3.0: "wall", 6.0: "wall_window_open"}
+	back = {-6.0: "wall", -3.0: "wall_window_closed", 0.0: "wall", 3.0: "wall_window_closed", 6.0: "wall"}
+	left = {-4.125: "wall", -1.375: "wall_window_open", 1.375: "wall_window_open", 4.125: "wall"}
+	right = {-4.125: "wall_window_open", -1.375: "wall_window_open", 1.375: "wall", 4.125: "wall"}
+	for x, piece in front.items():
+		if piece == "wall_window_open":
+			p.box((2.0, 0.08, 2.2), (x, -hd + 0.375, win_z), EMBER, glow=2.2, grad=(0.08, 0.38))
+	for side, walls in ((-1, left), (1, right)):
+		for y, piece in walls.items():
+			if piece == "wall_window_open":
+				p.box((0.08, 1.9, 2.2), (side * (hw - 0.375), y, win_z), EMBER, glow=2.0, grad=(0.08, 0.38))
+	obj = p.build(bevel=0.06)
+	tall = 4.4 / 4.0                         # the stone storey is 4.4 m; KayKit walls are 4
+	pieces = []
+	for x, piece in front.items():
+		pieces += kaykit(piece, (x, -hd + 0.375, 0), 0.0, (0.75, 0.75, tall))
+	for x, piece in back.items():
+		pieces += kaykit(piece, (x, hd - 0.375, 0), math.pi, (0.75, 0.75, tall))
+	for side, walls in ((-1, left), (1, right)):
+		for y, piece in walls.items():
+			pieces += kaykit(piece, (side * (hw - 0.375), y, 0), math.pi / 2 * -side, (sx_side, 0.75, tall))
+	for x in (-hw, hw):
+		for y in (-hd, hd):
+			pieces += kaykit("pillar", (x, y, 0), 0.0, (0.75, 0.75, tall))
+	# the porch bay: side walls from the facade out to the door, and a half
+	# wall either side of the arch (the door frame covers the rest)
+	bay_face = -(uhd + 2.45)
+	run = bay_face + hd                    # negative: from the facade out to the porch front
+	for sx in (-1, 1):
+		pieces += kaykit("wall", (sx * 2.325, -hd + run / 2, 0), math.pi / 2, (abs(run) / 4.0, 0.75, tall))
+		pieces += kaykit("wall_half", (sx * 2.7, bay_face + 0.375, 0), 0.0 if sx < 0 else math.pi, (1.38 / 2.0, 0.75, tall))
+		pieces += kaykit("pillar", (sx * 2.7, bay_face + 0.2, 0), 0.0, (0.6, 0.6, tall))
+	return join_into(obj, pieces)
 
 
 def tavern_bar():

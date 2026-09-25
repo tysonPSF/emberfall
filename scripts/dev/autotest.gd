@@ -40,6 +40,7 @@ const SECTIONS := [
 	["flee", "greenmoor"],
 	["compare", "greenmoor"],
 	["music", "greenmoor"],
+	["tavern", "emberhold"],
 	["camp", "greenmoor"],
 ]
 
@@ -1362,6 +1363,31 @@ func _t_music() -> void:
 	print("music: rat dead 2 s -> threatened %s, combat still on %s" % [p.threatened, Music._in_combat])
 	await _wait(5.5)
 	print("music: calm 7.5 s -> combat on %s, zone %.0f dB, combat %.0f dB, zone theme %s" % [Music._in_combat, bus_db.call("MusicZone"), bus_db.call("MusicCombat"), Music._current])
+
+
+## The Ember and Anvil beside the houses, for comparing how they're built.
+func _t_tavern() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for view: Array in [[Vector2(4, 2), "front"], [Vector2(30, 2), "side"]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(17, -16))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 4.0
+		p.pitch = -0.05
+		await _wait(0.6)
+		await _shot("9r_tavern_%s" % view[1])
+	# walk up the ramp and through the door
+	p.global_position = main.zone.ground(10.0, -6.5) + Vector3.UP
+	for k in 240:
+		if not is_instance_valid(main.zone) or main.zone.is_queued_for_deletion() or main.zone.zone_id != "emberhold":
+			break
+		var to := Vector3(10.67, p.global_position.y, -9.96) - p.global_position
+		p.velocity = to.normalized() * 4.0
+		p.global_position += to.normalized() * 4.0 * get_physics_process_delta_time()
+		await get_tree().physics_frame
+	await _wait(2.0)
+	print("tavern: walked to the door -> now in %s" % main.zone.zone_id)
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.
