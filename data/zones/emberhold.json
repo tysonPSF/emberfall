@@ -82,6 +82,18 @@
       "collide": "mesh"
     },
     {
+      "type": "prop",
+      "id": "lamp_post",
+      "pos": [
+        13.4,
+        -6.9
+      ],
+      "face": [
+        17,
+        -16
+      ]
+    },
+    {
       "type": "signpost",
       "pos": [
         -4.5,
@@ -389,6 +401,25 @@
       "arrive_face": [
         0,
         0
+      ]
+    },
+    {
+      "pos": [
+        10.67,
+        -9.96
+      ],
+      "size": [
+        1.8,
+        1.8
+      ],
+      "to": "emberhold_tavern",
+      "arrive": [
+        0,
+        2.6
+      ],
+      "arrive_face": [
+        0,
+        -2
       ]
     }
   ],

@@ -570,6 +570,12 @@ def tavern():
 			p.seg((x, s * span, upper_top), (x, 0, ridge_z), 0.15, 0.15, WOOD, sides=4)
 		p.seg((x, 0, upper_top + 0.2), (x, 0, ridge_z - 0.3), 0.12, 0.12, WOOD, sides=4)
 	p.seg((-hw - 1.05, 0, ridge_z + 0.13), (hw + 1.05, 0, ridge_z + 0.13), 0.17, 0.17, WOOD, sides=6)
+	# Soffit and fascia close the eaves. The wall stops at 7.7 and the roof
+	# starts there too, which left a slot you could see the attic through.
+	for s in (-1, 1):
+		p.box((w + 2.0, span - uhd + 0.1, 0.18), (0, s * (uhd + (span - uhd) / 2), upper_top - 0.02),
+			  WOOD_GRAY, grad=(0.25, 0.85))
+		p.box((w + 2.05, 0.2, 0.42), (0, s * (span + 0.05), upper_top + 0.06), WOOD, grad=(0.25, 0.95))
 
 	# --- chimneys: the tall one is the kitchen hearth --------------------------
 	p.box((2.0, 2.2, 11.4), (hw - 0.9, 2.6, 5.7), STONE_DARK, grad=(0.12, 0.88))
@@ -626,8 +632,10 @@ def tavern():
 		window((x, -hd - 0.06, 2.95), (1.35, 0.3, 1.7), 2.4)
 	for x in (-6.7, -4.2, 4.2, 6.7):        # upper storey, centred in each bay
 		window((x, -uhd - 0.06, 6.15), (1.2, 0.3, 1.35), 2.0)
-	for x in (-1.5, 1.5):                   # the bay's own windows
-		window((x, bay_face - 0.04, 6.15), (1.15, 0.3, 1.35), 2.0)
+	# One window under the porch gable, on the centreline. A pair either side of
+	# it would sit where the gable roof sweeps down past z = 6.3 and the roof
+	# would cut straight through the glass; only the middle is tall enough.
+	window((0.0, bay_face - 0.04, 5.9), (1.3, 0.3, 1.5), 2.2)
 	for y in (-2.6, 1.4):                   # side walls
 		for x in (-hw - 0.06, hw + 0.06):
 			window((x, y, 2.95), (0.3, 1.25, 1.6), 2.2)
@@ -662,6 +670,56 @@ def tavern():
 		p.box((0.24, 0.5, 0.62), (x, -hd - 1.9, 0.31), WOOD, grad=(0.35, 1.0))
 	p.box((2.4, 0.9, 0.62), (-6.6, -hd - 2.4, 0.31), STONE_LIGHT, grad=(0.2, 0.9))
 	p.box((2.0, 0.6, 0.2), (-6.6, -hd - 2.4, 0.5), WATER, grad=(0.25, 0.55))
+	return p.build()
+
+
+def tavern_bar():
+	"""The counter inside the Ember and Anvil: plank front, a worn top with a
+	footrail, and shelves of bottles and mugs behind it.
+
+	Front faces -Y, which is +Z in game, so it looks out at whoever is buying.
+	"""
+	p = Prop("tavern_bar", 83)
+	w = 6.0
+	hw = w / 2
+
+	# --- the counter ----------------------------------------------------------
+	p.box((w, 0.85, 1.02), (0, 0, 0.51), WOOD, grad=(0.3, 1.0))
+	for k in range(9):             # plank lines down the front
+		p.box((0.1, 0.1, 0.94), (-hw + 0.34 + k * 0.66, -0.46, 0.52), WOOD_GRAY, grad=(0.35, 1.0))
+	p.box((w + 0.5, 1.16, 0.17), (0, -0.14, 1.09), WOOD_GRAY, grad=(0.12, 0.62))
+	p.box((w + 0.5, 0.1, 0.1), (0, -0.7, 1.02), WOOD, grad=(0.25, 0.9))
+	p.seg((-hw + 0.3, -0.52, 0.24), (hw - 0.3, -0.52, 0.24), 0.055, 0.055, IRON, sides=5, grad=(0.15, 0.6))
+	for s in (-1, 1):              # footrail brackets
+		p.box((0.12, 0.12, 0.3), (s * (hw - 0.45), -0.5, 0.14), IRON, grad=(0.15, 0.6))
+
+	# --- what is standing on it -----------------------------------------------
+	p.seg((hw - 0.75, 0.05, 1.18), (hw - 0.75, 0.05, 1.72), 0.3, 0.27, WOOD, sides=8, grad=(0.25, 1.0))
+	p.seg((hw - 0.75, 0.05, 1.34), (hw - 0.75, 0.05, 1.46), 0.33, 0.33, IRON, sides=8, grad=(0.2, 0.7))
+	p.seg((hw - 0.75, -0.3, 1.42), (hw - 0.75, -0.44, 1.42), 0.05, 0.04, IRON, sides=5)   # tap
+	for k in range(4):             # mugs waiting to be filled
+		p.seg((-hw + 0.7 + k * 0.5, -0.1, 1.18), (-hw + 0.7 + k * 0.5, -0.1, 1.42), 0.11, 0.1, GOLD, sides=6, grad=(0.15, 0.7))
+	p.box((0.5, 0.36, 0.1), (0.6, -0.12, 1.23), WOOD_GRAY, grad=(0.2, 0.8))               # a board of cheese
+	p.blob((0.3, 0.26, 0.16), (0.6, -0.12, 1.33), CLAY, grad=(0.1, 0.6))
+
+	# --- the back shelves -----------------------------------------------------
+	p.box((w, 0.32, 2.5), (0, 1.55, 1.25), WOOD, grad=(0.22, 0.95))
+	for z in (0.88, 1.56, 2.2):
+		p.box((w - 0.3, 0.56, 0.11), (0, 1.3, z), WOOD_GRAY, grad=(0.18, 0.8))
+		for k in range(11):        # bottles, jars and tankards
+			x = -hw + 0.4 + k * 0.52 + p.rng.uniform(-0.05, 0.05)
+			sw = (LEAF, WATER, GOLD, CLAY, BONE)[(k + int(z * 3)) % 5]
+			h = p.rng.uniform(0.2, 0.34)
+			p.seg((x, 1.3, z + 0.06), (x, 1.3, z + 0.06 + h), 0.075, 0.06, sw, sides=6, grad=(0.1, 0.65))
+			if h > 0.3:
+				p.seg((x, 1.3, z + 0.06 + h), (x, 1.3, z + 0.14 + h), 0.03, 0.03, sw, sides=5, grad=(0.1, 0.5))
+	p.box((w + 0.3, 0.5, 0.16), (0, 1.4, 2.62), WOOD, grad=(0.2, 0.9))
+
+	# --- barrels stacked at the ends ------------------------------------------
+	for s in (-1, 1):
+		p.seg((s * (hw + 0.55), 1.3, 0.0), (s * (hw + 0.55), 1.3, 0.92), 0.44, 0.41, WOOD, sides=8, grad=(0.25, 1.0))
+		p.seg((s * (hw + 0.55), 1.3, 0.28), (s * (hw + 0.55), 1.3, 0.4), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
+		p.seg((s * (hw + 0.55), 1.3, 0.62), (s * (hw + 0.55), 1.3, 0.74), 0.47, 0.47, IRON, sides=8, grad=(0.2, 0.7))
 	return p.build()
 
 
@@ -880,6 +938,7 @@ PROPS = {
 	"market_stall": market_stall,
 	"well": well,
 	"tavern": tavern,
+	"tavern_bar": tavern_bar,
 	"signpost": signpost,
 	"grass_a": lambda: grass("grass_a", 61, 11, 0.42),
 	"grass_b": lambda: grass("grass_b", 62, 7, 0.28),

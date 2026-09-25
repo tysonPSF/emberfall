@@ -1,0 +1,82 @@
+{
+  "name": "The Ember and Anvil",
+  "interior": true,
+  "seed": 77,
+  "size": 200,
+  "height_amplitude": 0,
+  "flat_radius": 90,
+  "clear_radius": 90,
+  "trees": 0,
+  "rocks": 0,
+  "bind_point": [
+    0,
+    0
+  ],
+  "landmarks": [
+    {
+      "type": "tavern_room",
+      "pos": [
+        0,
+        0
+      ],
+      "yaw": 0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        4.9
+      ],
+      "size": [
+        3.2,
+        1.8
+      ],
+      "to": "emberhold",
+      "arrive": [
+        7.17,
+        -6.75
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "tavern_keeper",
+      "pos": [
+        0,
+        -5.3
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "tavern_regular",
+      "pos": [
+        -4.6,
+        4.5
+      ],
+      "face": [
+        -4.6,
+        3.2
+      ]
+    },
+    {
+      "id": "tavern_bard",
+      "pos": [
+        4.6,
+        -2.1
+      ],
+      "face": [
+        4.6,
+        -0.8
+      ]
+    }
+  ],
+  "spawns": []
+}
