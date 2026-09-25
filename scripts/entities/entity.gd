@@ -149,6 +149,12 @@ func animate(event: String) -> void:
 			m.play_once("attack", 1.6)
 		"hit":
 			m.play_once("hit", 1.0, false)
+		"sling":  # a stone: the throw, with empty hands
+			m.play_once("attack", 1.6)
+			m.show_ranged("", m._one_shot_left)
+		_ when event.begins_with("shoot"):  # "shoot:<bow model>": the bow in hand, drawn and loosed
+			m.play_once("shoot", 1.15)
+			m.show_ranged(event.get_slice(":", 1), m._one_shot_left if m._clip("shoot") != "" else 0.8)
 		_:
 			m.play_once(event)
 

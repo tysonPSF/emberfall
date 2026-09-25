@@ -11,7 +11,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · right-click an item for details (or to open a bag)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
@@ -23,6 +23,8 @@ const BAG_TIPS := """Click to pick up and put down · Ctrl-click takes one from 
 Shift-click equips (or sells, banks, offers in a trade)
 Right-click for details, or to open a bag · hover a bag to peek inside
 Click the ground to drop what you hold"""
+
+const BUY_BUNDLE := 20  # the shop's "Buy 20" button, for ammunition and other small stackables
 
 const ATTR_NAMES := {"dmg": "Damage", "ac": "AC", "hp": "HP", "mana": "Mana", "str": "STR", "sta": "STA", "agi": "AGI", "wis": "WIS", "int": "INT", "haste": "Haste", "hp_regen": "HP Regen", "mana_regen": "Mana Regen"}
 const CROSSHAIR_SIZE := 30.0
@@ -683,7 +685,7 @@ func _layout_bag_bar() -> void:
 	_bag_bar.position = Vector2(_hotbar_panel.position.x + _hotbar_panel.size.x - _bag_bar.size.x, _hotbar_panel.position.y - _bag_bar.size.y - 6.0)
 	_toasts.reset_size()
 	_toasts.position = Vector2(_bag_bar.position.x, _bag_bar.position.y - _toasts.size.y - 8.0)
-	_toasts.visible = _bag_peek == null and not _inv_panel.visible  # the peek and the character window sit where the notes do
+	_toasts.visible = _bag_peek == null and not _inv_panel.visible and _bag_windows.is_empty()  # the peek, the character window and open bags sit where the notes do
 	if _inv_panel.visible:  # the character window stands on the bag bar, right edges lined up
 		_inv_panel.reset_size()
 		var bottom := _bag_bar.position.y - 6.0
@@ -1230,7 +1232,7 @@ func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_npc = npc
 	var titles := {"shop": npc.display_name, "bank": "%s  -  Hearthbank" % npc.display_name,
 			"guild": "%s  -  %s training" % [npc.display_name, GameData.classes[player.char_class]["name"]]}
-	var hints := {"shop": "Click an item to buy it. Click items in your bags to sell them.",
+	var hints := {"shop": "Click an item to buy one (Buy 20 for arrows and stones). Click items in your bags to sell them.",
 			"bank": "Click items in your bags to deposit them; click a bank slot to take it back.",
 			"guild": "Click a spell to learn it. New spells go on the next number key."}
 	_service_title.text = titles[kind]
@@ -1283,7 +1285,21 @@ func _refresh_service() -> void:
 			if stack > 1:
 				b.tooltip_text += "\nShift-click to buy a stack of %d." % stack
 			b.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id, stack if Input.is_key_pressed(KEY_SHIFT) else 1))
-			_shop_list.add_child(b)
+			if stack < BUY_BUNDLE:
+				_shop_list.add_child(b)
+				continue
+			# arrows, stones and the like: a button for a bundle beside the row
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 4)
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(b)
+			var bundle := UIKit.button("Buy %d" % BUY_BUNDLE, Vector2(64, 0))
+			bundle.add_theme_font_size_override("font_size", 12)
+			bundle.tooltip_text = "Buy %d %s for %s." % [BUY_BUNDLE, World.plural(GameData.item_name(item_id)), World.format_coin(int(ware["price"]) * BUY_BUNDLE)]
+			bundle.disabled = player.coin < int(ware["price"]) * BUY_BUNDLE or (count > 0 and count < BUY_BUNDLE)
+			bundle.pressed.connect(func() -> void: World.request_buy(player.entity_id, item_id, BUY_BUNDLE))
+			row.add_child(bundle)
+			_shop_list.add_child(row)
 	else:
 		if _bank_grid.get_child_count() == 0:
 			for i in player.bank.size():
@@ -1588,6 +1604,21 @@ func _toggle_bag(g: int) -> void:
 	_layout_bags()
 
 
+## B: opens every bag you carry, or closes them all if any are open.
+func _toggle_all_bags() -> void:
+	if not _bag_windows.is_empty():
+		_close_all_bags()
+		return
+	for g in Pack.GENERAL:
+		if (player.pack.slots[g] as Dictionary).has("contents"):
+			_toggle_bag(g)
+
+
+func _close_all_bags() -> void:
+	for g: int in _bag_windows.keys():
+		_toggle_bag(g)
+
+
 ## Open bags sit just left of the character window, their bottoms level with
 ## its bottom (by the General slots they came from), lined up leftward in slot
 ## order: close to the items, EQ style. With the window closed they keep to the
@@ -1599,6 +1630,8 @@ func _layout_bags() -> void:
 	if _inv_panel.visible:
 		edge = Vector2(_inv_panel.position.x, _inv_panel.position.y + _inv_panel.size.y)
 	var x := edge.x - 6.0
+	var bottom := edge.y
+	var row_height := 0.0
 	var keys := _bag_windows.keys()
 	keys.sort()
 	for g: int in keys:
@@ -1607,8 +1640,13 @@ func _layout_bags() -> void:
 			continue
 		panel.reset_size()
 		var size := panel.get_combined_minimum_size()
+		if x - size.x < 12.0 and row_height > 0.0:  # out of room: start a row above
+			x = edge.x - 6.0
+			bottom -= row_height + 6.0
+			row_height = 0.0
 		x -= size.x
-		panel.position = Vector2(maxf(x, 12.0), maxf(edge.y - size.y, 12.0))
+		panel.position = Vector2(maxf(x, 12.0), maxf(bottom - size.y, 12.0))
+		row_height = maxf(row_height, size.y)
 		x -= 6.0
 
 
@@ -2354,6 +2392,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("inventory"):
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("bags"):
+		_toggle_all_bags()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("skills"):
 		_toggle_skills()
 		get_viewport().set_input_as_handled()
@@ -2394,7 +2435,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			World.request_loot_close(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _inv_panel.visible:
-			_inv_panel.visible = false
+			_toggle_inventory()  # its bags close with it
+			get_viewport().set_input_as_handled()
+		elif not _bag_windows.is_empty():
+			_close_all_bags()
 			get_viewport().set_input_as_handled()
 		elif _menu_panel.visible:
 			_menu_panel.visible = false

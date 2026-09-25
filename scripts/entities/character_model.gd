@@ -13,7 +13,7 @@ const KAYKIT_ANIMS := {
 	"idle": "Idle_A", "walk": "Walking_A", "run": "Running_A", "jump": "Jump_Idle",
 	"attack": "Throw", "hit": "Hit_A", "death": "Death_A", "dead": "Death_A_Pose",
 	"sit": "Sit_Floor_Idle", "sit_down": "Sit_Floor_Down", "cast": "Use_Item",  # the sits are ours (tools/blender/anims.py)
-	"kick": "Kick", "bash": "Shield_Bash",  # so are these
+	"kick": "Kick", "bash": "Shield_Bash", "shoot": "Bow_Shoot",  # so are these
 }
 
 static var _library: AnimationLibrary
@@ -29,6 +29,8 @@ var _worn: Dictionary = {}  # slot -> [gear id, [nodes added for it], [body regi
 var _model: Node3D
 var _spec: Dictionary = {}
 var _one_shot_left := 0.0
+var _ranged: Node3D  # a bow shown in the left hand for a shot, the usual held gear hidden meanwhile
+var _ranged_left := 0.0
 var _posed_dead := false
 
 
@@ -385,6 +387,37 @@ func _hold(bone: String, model_id: String) -> void:
 	_finish(slot, str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
 
 
+## For a ranged shot: hides what the hands hold and, for a bow, puts it in the
+## left hand, for `seconds` (the length of the shot); then the usual gear returns.
+func show_ranged(model_id: String, seconds: float) -> void:
+	_end_ranged()
+	for h: Array in _held.values():
+		if h[1] != null:
+			(h[1] as Node3D).visible = false
+	if model_id != "" and GameData.models["weapons"].has(model_id) and skeleton != null:
+		var grip: Dictionary = GameData.models.get("grips", {}).get(model_id, {})
+		var slot := BoneAttachment3D.new()
+		slot.bone_name = "handslot.l"
+		skeleton.add_child(slot)
+		var held: Node3D = (load(GameData.models["weapons"][model_id]) as PackedScene).instantiate()
+		var r: Array = grip.get("rot", [0, 0, 0])
+		held.rotation_degrees = Vector3(r[0], r[1], r[2])
+		slot.add_child(held)
+		Entity.use_entity_layer(slot)
+		_ranged = slot
+	_ranged_left = seconds
+
+
+func _end_ranged() -> void:
+	if _ranged != null and is_instance_valid(_ranged):
+		_ranged.queue_free()
+	_ranged = null
+	_ranged_left = 0.0
+	for h: Array in _held.values():
+		if h[1] != null and is_instance_valid(h[1]):
+			(h[1] as Node3D).visible = true
+
+
 func _follow() -> void:
 	_followers = _followers.filter(func(f: Array) -> bool: return is_instance_valid(f[0]) and not (f[0] as Node).is_queued_for_deletion())
 	for f: Array in _followers:
@@ -432,6 +465,10 @@ func _process(delta: float) -> void:
 	if e == null:
 		return
 	_one_shot_left -= delta
+	if _ranged_left > 0.0:
+		_ranged_left -= delta
+		if _ranged_left <= 0.0:
+			_end_ranged()
 	var moving := Vector2(e.velocity.x, e.velocity.z).length()
 	if not e.is_on_floor() and absf(e.velocity.y) > 2.0:
 		_loop("jump")

@@ -807,7 +807,7 @@ func request_ranged(player_id: int) -> void:
 	var delay := float(weapon.get("delay", 3.0)) / (1.0 + minf(int(p.attributes.get("haste", 0)), 40) / 100.0)
 	p.cooldowns["ranged"] = delay
 	p.sitting = false
-	p.animate("attack")
+	p.animate("shoot:%s" % str(weapon.get("model", "")) if str(weapon.get("skill", "")) == "archery" else "sling")
 	var ammo := GameData.item(ammo_id)
 	shot_fired.emit(p, t, str(ammo.get("projectile", weapon.get("projectile", "stone"))))
 	Net.broadcast_shot(p, t, str(ammo.get("projectile", weapon.get("projectile", "stone"))))

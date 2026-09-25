@@ -59,6 +59,8 @@ const SECTIONS := [
 	["tw_density", "thornwood"],
 	["quest_repeat", "greenmoor"],
 	["guard_levels", "greenmoor"],
+	["bowshot", "greenmoor"],
+	["buy_bundle", "thornwood"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2151,3 +2153,82 @@ func _t_guard_levels() -> void:
 		if not npc.guard.is_empty():
 			levels[npc.npc_id] = npc.level
 	print("guard_levels: cap %d -> %s" % [int(World.cfg("max_level", 10)), levels])
+
+
+## A bow shot shows the bow in the left hand, drawn, with the sword and shield
+## put away until it's loosed; B opens every bag and Esc closes them.
+func _t_bowshot() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	p.pack.clear()
+	for g in 5:
+		p.pack.slots[g] = Pack.entry(["small_sack", "worn_backpack", "gnollhide_satchel", "leather_backpack", "small_sack"][g])
+	p.pack.add("crude_arrow", 20)
+	p.equipment["range"] = "hunting_shortbow"  # warriors only; the tester is a wizard
+	p.recalc_stats()
+	p.inventory_changed.emit()
+	var rat: Mob = _nearest_mob(p, "large_rat")
+	for k in 12:  # somewhere around the rat with a clear line to it
+		var off := Vector2.from_angle(k * TAU / 12.0) * 12.0
+		p.global_position = main.zone.ground(rat.global_position.x + off.x, rat.global_position.z + off.y) + Vector3.UP
+		await _wait(0.1)
+		if World.in_sight(p, rat):
+			break
+	p.face_toward(rat.global_position)
+	p.target = rat
+	await _wait(0.4)
+	var m := p.visual as CharacterModel
+	World.request_ranged(p.entity_id)
+	await _wait(0.45)
+	var sword_hidden := m._held.values().all(func(h: Array) -> bool: return h[1] == null or not (h[1] as Node3D).visible)
+	print("bowshot: mid-shot clip %s, bow shown %s, held gear hidden %s" % [m.anim.current_animation, m._ranged != null, sword_hidden])
+	p.camera_pivot.rotation.y = -1.3  # from the side
+	p.zoom = 4.0
+	await _shot("9zf_bowshot_side")
+	p.camera_pivot.rotation.y = 0.0
+	await _wait(1.2)
+	print("bowshot: after the shot, bow gone %s, held gear back %s" % [m._ranged == null,
+			m._held.values().all(func(h: Array) -> bool: return h[1] == null or (h[1] as Node3D).visible)])
+	rat.hate.clear()
+	hud._toggle_all_bags()
+	await _wait(0.3)
+	var rects := hud._bag_windows.values().map(func(w: Control) -> Rect2: return Rect2(w.position, w.size))
+	var overlap := false
+	for i in rects.size():
+		for j in range(i + 1, rects.size()):
+			overlap = overlap or (rects[i] as Rect2).intersects(rects[j])
+	print("bowshot: B opened %d bags, overlapping %s" % [hud._bag_windows.size(), overlap])
+	await _shot("9zf_all_bags")
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.physical_keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await _wait(0.2)
+	print("bowshot: after Esc, %d bags open" % hud._bag_windows.size())
+
+
+## A shop's "Buy 20" button beside ammunition.
+func _t_buy_bundle() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	var elowen: Npc = _npcs()["elowen"]
+	_stand_by(p, elowen)
+	p.pack.clear()
+	p.coin = 1000
+	World.request_interact(p.entity_id)
+	await _wait(0.3)
+	var pressed := 0
+	for row in hud._shop_list.get_children():
+		if row is HBoxContainer:
+			var name := ((row as HBoxContainer).get_child(0) as Button).text.get_slice("   ", 0)
+			var bundle := (row as HBoxContainer).get_child(1) as Button
+			if name in ["Crude Arrow", "Sling Stone"]:
+				bundle.pressed.emit()
+				pressed += 1
+	await _wait(0.3)
+	print("buy_bundle: pressed %d bundle buttons -> arrows %d, stones %d, coin %d left of 1000" % [pressed, p.pack.count("crude_arrow"), p.pack.count("sling_stone"), p.coin])
+	await _shot("9zg_shop_bundle")
+	World.request_service_close(p.entity_id)

@@ -66,8 +66,9 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 | X | Sit / stand (much faster regen) |
 | L / double-click | Loot corpse |
 | I | Inventory, EQ-style: your equipment around your character, stats and coin, standing on the bag bar (your 8 general slots; right-click a bag to open it). Its **?** button lists the item controls and **Faction +** unfolds your standings. **Click** picks an item up onto the cursor and puts it down (or swaps); **Ctrl-click** takes one from a stack; **Shift-click** equips (or sells, banks, offers, depending on the open window) |
+| B | Open every bag you carry, or close them all (Esc closes open bags too) |
 | E / double-click | Hail a townsperson (click gold [keywords] in their reply) |
-| G | Interact with your target: a merchant's shop, the bank, or a give window for quest turn-ins |
+| G | Interact with your target: a merchant's shop (click buys one; **Buy 20** beside arrows, stones and other small stackables; Shift-click a full stack), the bank, or a give window for quest turn-ins |
 | I, H, Esc | Inventory, help, clear target / interrupt / close |
 | K | Skills: weapon, offense/defense, dodge/parry/block, abilities and casting schools. They rise as you use them, up to a cap set by class and level |
 | Right-click an item | Item window: full stats, a turning 3D look, **Use** for click effects, **Link in chat** (the link opens the same window for anyone who clicks it) |
@@ -98,6 +99,7 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 - **Spell effects**: spells show where they land (frost and fire bursts, rising heals, golden buff rings, lingering embers and venom, roots at the feet, a swirling gate) and casters glow while casting, for everyone watching. Kick and Bash have their own moves: a front kick and a shield-first lunge.
 - **Buff window**: your buffs on the right of the screen, each with its icon, name and time left (hover for what it does); it moves aside when the inventory is open.
 - **Debuff window**: under it, in red, whatever is hurting or holding you: poison, burns, frost, roots, with time left and the damage per tick; each tick names its source in the log ("You take 3 damage from Thornback Venom").
+- **Bow shots**: firing a bow puts the sword and shield away, raises the bow in your left hand, draws and looses (`Bow_Shoot`, built in `tools/blender/anims.py`); a sling throws with an empty hand. Everyone nearby sees it.
 - **Bag bar**: your eight general slots sit over the hotbar, so you rarely need the inventory window: they work just like it (click, Ctrl-click to split, Shift-click, right-click a bag to open it). Each bag shows how full it is (4/6) and the bar how many slots are free; rest the mouse on a bag to peek inside; "+3 Wolf Pelt" notes float up when loot comes in; items a quest of yours wants carry a gold "!" (and "Warden Holt wants 4 (you have 2)" in the tooltip); the Ranged button counts your arrows or stones.
 - **Hotbar**: one row of square gems for your spells and abilities (1-8) plus Attack (Q), Ranged (R) and Sit (X). Each shows a cooldown sweep, dims when you can't use it (mana, target, range) and glows while a toggle is on. Consider, Skills and Inventory are the small icons beside the gear, top right.
 - **Group chat window**: while you're in a group, a second chat window beside the main one shows only group chat and group events, so it doesn't scroll away in a fight (the lines stay in the main window too). Its Talk button switches your chat line to /g.
