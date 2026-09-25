@@ -26,6 +26,7 @@ const SECTIONS := [
 	["screens", "greenmoor"],
 	["chat", "greenmoor"],
 	["groupui", "greenmoor"],
+	["groupchat", "greenmoor"],
 	["wornlook", "greenmoor"],
 	["itemwindow", "greenmoor"],
 	["skills", "greenmoor"],
@@ -1625,6 +1626,35 @@ func _t_landmarks_tw() -> void:
 		await _shot("9w_%s" % view[2])
 	for m in World.get_mobs():
 		m.set_physics_process(true)
+
+
+## Group chat's own window: hidden when solo, shown in a group; group lines
+## land in it (and still in the main log), other chat doesn't; the Talk button
+## switches the chat line to /g.
+func _t_groupchat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Hud = main.hud
+	hud._update_group()
+	print("groupchat: solo -> window shown %s" % hud._group_log_panel.visible)
+	p.group = [{"id": p.entity_id, "name": p.display_name, "level": p.level, "class": p.char_class, "hp": p.hp, "max_hp": p.max_hp, "mana": p.mana, "max_mana": p.max_mana, "leader": true, "zone": "greenmoor", "dead": false},
+		{"id": 9002, "name": "Nick", "level": 8, "class": "cleric", "hp": 60, "max_hp": 70, "mana": 50, "max_mana": 80, "leader": false, "zone": "greenmoor", "dead": false}]
+	hud._update_group()
+	World.log_message.emit("Nick tells the group, 'pulling the bear, get ready'", World.C_CHAT_GROUP)
+	World.log_message.emit("A black bear claws YOU for 9 points of damage.", World.C_HIT_YOU)
+	World.log_message.emit("You tell your party, '{item:silkfangs_fang} dropped, anyone want it?'", World.C_CHAT_GROUP)
+	World.log_message.emit("You say, 'hello'", World.C_CHAT_SAY)
+	print("groupchat: grouped -> window shown %s; it holds %d lines: %s" % [hud._group_log_panel.visible, hud._group_log_lines, hud._group_log.get_parsed_text().replace("\n", " | ")])
+	var talk: Button = hud._group_log_panel.find_children("*", "Button", true, false)[0]
+	talk.pressed.emit()
+	print("groupchat: Talk button -> channel '%s', typing %s" % [hud._chat_channel, hud.is_typing()])
+	await _wait(0.4)
+	await _shot("9x_group_chat")
+	hud._chat.release_focus()
+	hud._set_channel("")
+	p.group = []
+	hud._update_group()
+	print("groupchat: left the group -> window shown %s" % hud._group_log_panel.visible)
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.
