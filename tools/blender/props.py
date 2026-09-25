@@ -1009,6 +1009,136 @@ def fishing_pole():
 	return p.build()
 
 
+def bridge_wood():
+	"""A timber footbridge for a road over a river. Built along Y (the road runs
+	along the prop's forward axis in game), origin at the middle of the span
+	at bank height; the deck arches 1.3 m over 22 m, gentle enough to walk,
+	with stone abutments at both ends, piers into the water and railings."""
+	p = Prop("bridge_wood", 131)
+	half_len, half_w, rise = 11.0, 2.1, 1.3
+
+	def deck_z(y):
+		return rise * (1.0 - (y / half_len) ** 2)
+
+	n = 22
+	for k in range(n):                                   # planks across the deck, following the arch
+		y0 = -half_len + (k + 0.08) * 2 * half_len / n
+		y1 = -half_len + (k + 0.92) * 2 * half_len / n
+		ym = (y0 + y1) / 2
+		tilt = math.degrees(math.atan2(deck_z(y1) - deck_z(y0), y1 - y0))
+		sw = WOOD if k % 3 else WOOD_GRAY
+		p.box((half_w * 2, y1 - y0, 0.16), (0, ym, deck_z(ym) - 0.08), sw, rot=(tilt, 0, 0), grad=(0.25, 0.9))
+	for x in (-half_w + 0.25, half_w - 0.25):            # stringers under the planks
+		prev = None
+		for k in range(n + 1):
+			y = -half_len + k * 2 * half_len / n
+			pt = (x, y, deck_z(y) - 0.3)
+			if prev:
+				p.seg(prev, pt, 0.14, 0.14, WOOD_GRAY, sides=4)
+			prev = pt
+	for x in (-half_w, half_w):                          # railings: posts and a top rail
+		prev = None
+		for k in range(8):
+			y = -half_len + 1.0 + k * (2 * half_len - 2.0) / 7
+			base = (x, y, deck_z(y) - 0.1)
+			top = (x, y, deck_z(y) + 1.0)
+			p.box((0.18, 0.18, 1.1), (x, y, deck_z(y) + 0.45), WOOD, grad=(0.25, 1.0))
+			if prev:
+				p.seg(prev, top, 0.07, 0.07, WOOD, sides=5)
+			prev = top
+	for y in (-4.0, 4.0):                                # piers standing in the river
+		for x in (-half_w + 0.3, half_w - 0.3):
+			p.seg((x, y, deck_z(y) - 0.35), (x, y, -2.6), 0.16, 0.2, WOOD_GRAY, sides=6)
+		p.box((half_w * 2, 0.22, 0.22), (0, y, deck_z(y) - 0.45), WOOD_GRAY, grad=(0.25, 0.9))
+	for s in (-1, 1):                                    # stone abutments where it meets the banks
+		y = s * (half_len - 0.6)
+		p.box((half_w * 2 + 1.0, 1.6, 1.4), (0, y, -0.55), STONE_LIGHT, grad=(0.1, 0.8))
+		p.box((half_w * 2 + 1.2, 0.5, 0.3), (0, s * (half_len - 1.3), 0.12), STONE_DARK, grad=(0.1, 0.8))
+	return p.build(bevel=0.03)
+
+
+def cobweb():
+	"""A spider's web hung upright, 3.2 m across: spokes, a spiral, and anchor
+	lines down to the ground so it doesn't float. Faces -Y."""
+	p = Prop("cobweb", 141)
+	c = Vector((0, 0, 1.9))
+	spokes = 11
+	ends = []
+	for k in range(spokes):
+		a = k * math.tau / spokes + p.rng.uniform(-0.1, 0.1)
+		r = p.rng.uniform(1.3, 1.7)
+		end = c + Vector((math.cos(a) * r, 0, math.sin(a) * r))
+		ends.append((a, r))
+		p.seg(c, end, 0.018, 0.012, CLOTH_WHITE, sides=3, grad=(0.0, 0.3))
+	for turn in range(1, 7):                        # the spiral, spoke to spoke
+		rr = turn * 0.22
+		for k in range(spokes):
+			a0, r0 = ends[k]
+			a1, r1 = ends[(k + 1) % spokes]
+			if rr > min(r0, r1):
+				continue
+			q0 = c + Vector((math.cos(a0) * rr, 0, math.sin(a0) * rr))
+			q1 = c + Vector((math.cos(a1) * (rr + 0.03), 0, math.sin(a1) * (rr + 0.03)))
+			p.seg(q0, q1, 0.012, 0.012, CLOTH_WHITE, sides=3, grad=(0.0, 0.3))
+	for x in (-1.2, 1.3):                           # anchors to the ground
+		p.seg(c + Vector((x * 0.9, 0, -0.9)), (x * 1.6, p.rng.uniform(-0.3, 0.3), 0.0), 0.015, 0.012, CLOTH_WHITE, sides=3)
+	p.seg(c + Vector((0, 0, 1.4)), (0.4, 0.2, 3.9), 0.015, 0.012, CLOTH_WHITE, sides=3)   # and one up, to a branch
+	return p.build()
+
+
+def web_mound():
+	"""A low tent of webbing over the ground, a nest's floor."""
+	p = Prop("web_mound", 143)
+	top = Vector((0, 0, 1.1))
+	for k in range(14):
+		a = k * math.tau / 14
+		r = p.rng.uniform(1.6, 2.2)
+		foot = Vector((math.cos(a) * r, math.sin(a) * r, 0.02))
+		mid = top.lerp(foot, 0.5) + Vector((0, 0, 0.25))
+		p.seg(top, mid, 0.02, 0.018, CLOTH_WHITE, sides=3)
+		p.seg(mid, foot, 0.018, 0.015, CLOTH_WHITE, sides=3)
+	p.blob((2.6, 2.6, 0.9), (0, 0, 0.3), CLOTH_WHITE, segs=(12, 6), grad=(0.0, 0.2))   # the gauzy sheet
+	return p.build()
+
+
+def egg_sacs():
+	p = Prop("egg_sacs", 145)
+	for k in range(7):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.55)
+		size = p.rng.uniform(0.3, 0.46)
+		p.blob((size, size, size * 1.2), (math.cos(a) * r, math.sin(a) * r, size * 0.55), CLOTH_WHITE, segs=(10, 7), grad=(0.0, 0.35))
+	for k in range(6):                              # strands tying them down
+		a = k * math.tau / 6
+		p.seg((0, 0, 0.5), (math.cos(a) * 0.9, math.sin(a) * 0.9, 0.0), 0.012, 0.01, CLOTH_WHITE, sides=3)
+	return p.build()
+
+
+def drying_rack():
+	"""Two posts and a pole with pelts hung over it: a hunter's camp. Faces -Y."""
+	p = Prop("drying_rack", 147)
+	for x in (-1.3, 1.3):
+		p.seg((x, 0, 0), (x, 0, 1.9), 0.07, 0.06, WOOD, sides=6, grad=(0.2, 1.0))
+		p.seg((x - 0.25, 0, 1.75), (x + 0.25, 0, 2.0), 0.05, 0.05, WOOD, sides=5)
+	p.seg((-1.45, 0, 1.9), (1.45, 0, 1.9), 0.05, 0.05, WOOD_GRAY, sides=6)
+	for x, sw, h in ((-0.75, WOOD_GRAY, 1.1), (0.0, HIDE, 1.3), (0.75, STONE_DARK, 1.0)):   # pelts, draped
+		for s in (-1, 1):
+			p.box((0.62, 0.05, h), (x, s * 0.05, 1.9 - h / 2), sw, rot=(s * 6, 0, 0), grad=(0.0, 0.6))
+	return p.build(bevel=0.02)
+
+
+def woodpile():
+	p = Prop("woodpile", 149)
+	for row, n in enumerate((5, 4, 3)):
+		for k in range(n):
+			x = (k - (n - 1) / 2) * 0.34
+			p.seg((x, -0.9, 0.17 + row * 0.3), (x, 0.9, 0.17 + row * 0.3), 0.16, 0.16, WOOD, sides=7, grad=(0.3, 1.0))
+			p.seg((x, -0.92, 0.17 + row * 0.3), (x, -0.9, 0.17 + row * 0.3), 0.13, 0.13, BONE, sides=7)   # cut ends
+	p.box((0.12, 0.12, 0.9), (0.95, 0.5, 0.45), WOOD_GRAY, rot=(0, 0, 0))                                 # the axe handle
+	p.box((0.25, 0.06, 0.18), (0.95, 0.5, 0.92), IRON)
+	return p.build(bevel=0.02)
+
+
 def cave_entrance():
 	"""A cave mouth in a rocky hillside: the way into a dungeon. Built facing -Y
 	(+Z in game) like the other buildings, so a landmark "face" aims the mouth.
@@ -1099,6 +1229,12 @@ PROPS = {
 	"campfire": campfire,
 	"torch_post": torch_post,
 	"cave_entrance": cave_entrance,
+	"bridge_wood": bridge_wood,
+	"cobweb": cobweb,
+	"web_mound": web_mound,
+	"egg_sacs": egg_sacs,
+	"drying_rack": drying_rack,
+	"woodpile": woodpile,
 	"banner_pole": banner_pole,
 	"palisade": palisade,
 	"roof_gable": roof_gable,

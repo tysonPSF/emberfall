@@ -46,6 +46,9 @@ const SECTIONS := [
 	["thornwood", "thornwood"],
 	["thornwood_mobs", "thornwood"],
 	["elowen", "thornwood"],
+	["signs", "greenmoor"],
+	["river", "thornwood"],
+	["landmarks_tw", "thornwood"],
 	["camp", "greenmoor"],
 ]
 
@@ -1546,6 +1549,82 @@ func _t_elowen() -> void:
 	World.request_interact(p.entity_id)
 	print("elowen: G with nothing to give -> shop open %s" % (p.service_npc_id == elowen.entity_id and p.service == "shop"))
 	World.request_service_close(p.entity_id)
+
+
+## Which way each signpost board points, in every zone (compare with where
+## the place it names actually is).
+func _t_signs() -> void:
+	for zone_id: String in ["greenmoor", "thornwood"]:
+		await _ensure_zone(zone_id)
+		var zone: Zone = get_parent().zone
+		for post: Node3D in zone.find_children("*", "Node3D", true, false):
+			var labels := post.find_children("*", "Label3D", false, false)
+			if labels.is_empty():
+				continue
+			var out := PackedStringArray()
+			for l: Label3D in labels:
+				var dir := (post.global_transform * l.position - post.global_position)
+				dir.y = 0
+				var compass := "E" if absf(dir.x) > absf(dir.z) and dir.x > 0 else ("W" if absf(dir.x) > absf(dir.z) else ("S" if dir.z > 0 else "N"))
+				out.append("%s -> %s" % [l.text, compass])
+			print("signs: %s at (%.0f, %.0f): %s" % [zone_id, post.global_position.x, post.global_position.z, ", ".join(out)])
+
+
+## Thornwood's river: walk the road north over the bridge (never dropping into
+## the water), then wade across the channel beside it; pictures of both.
+func _t_river() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for m in World.get_mobs():
+		m.set_physics_process(false)  # nobody interrupts the survey
+	p.global_position = main.zone.ground(-1.0, 130.0) + Vector3.UP
+	var lowest := INF
+	var dir := (Vector2(8, 80) - Vector2(-4, 150)).normalized()
+	for k in 360:
+		p.velocity = Vector3(dir.x, 0, dir.y) * 6.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+		p.move_and_slide()
+		await get_tree().physics_frame
+		if absf(p.global_position.z - 106.0) < 8.0:
+			lowest = minf(lowest, p.global_position.y)
+	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
+	print("river: over the bridge from z 130 to %.0f; lowest on the crossing %.2f, water level %.2f" % [p.global_position.z, lowest, level])
+	p.global_position = main.zone.ground(-30.0, 130.0) + Vector3.UP
+	var deepest := INF
+	for k in 360:
+		p.velocity = Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), -6.0)
+		p.move_and_slide()
+		await get_tree().physics_frame
+		deepest = minf(deepest, p.global_position.y)
+	print("river: waded across at x -30 to z %.0f; deepest %.2f (%.2f under the water)" % [p.global_position.z, deepest, level - deepest])
+	for view: Array in [[Vector2(-18, 128), Vector2(3.5, 106), "bridge"], [Vector2(-60, 125), Vector2(-100, 100), "banks"]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 6.0
+		p.pitch = -0.25
+		await _wait(0.7)
+		await _shot("9v_river_%s" % view[2])
+	for m in World.get_mobs():
+		m.set_physics_process(true)
+
+
+## Thornwood's landmarks: the ruined watchtower, the spider nest, Elowen's cabin.
+func _t_landmarks_tw() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for m in World.get_mobs():
+		m.set_physics_process(false)
+	for view: Array in [[Vector2(-8, -158), Vector2(-24, -181), "watchtower", 9.0], [Vector2(-150, -92), Vector2(-165, -104), "nest", 7.0],
+			[Vector2(-20, 192), Vector2(-38, 176), "cabin", 6.0]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = view[3]
+		p.pitch = -0.2
+		await _wait(0.8)
+		await _shot("9w_%s" % view[2])
+	for m in World.get_mobs():
+		m.set_physics_process(true)
 
 
 ## Moves the tester through the zone line into this zone if it isn't there.

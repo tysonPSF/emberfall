@@ -26,6 +26,7 @@ var _flat_spots: Array[Vector2] = []
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
+var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
@@ -60,6 +61,8 @@ func load_zone(id: String) -> void:
 			_ponds.append({"center": spot, "radius": float(lm.get("radius", 12)), "depth": float(lm.get("depth", 1.6)), "level": flat - 0.25})
 	for ps: Array in data.get("passes", []):
 		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
+	for river: Dictionary in data.get("rivers", []):
+		_add_river(river)
 	for road: Dictionary in data.get("roads", []):
 		var pts: Array[Vector2] = []
 		for pt: Array in road["points"]:
@@ -72,6 +75,8 @@ func load_zone(id: String) -> void:
 	_build_environment()
 	_build_terrain()
 	_build_landmarks()
+	for river: Dictionary in _rivers:
+		_build_river(river)
 	_build_props()
 	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
 		_build_clutter()
@@ -93,6 +98,19 @@ func height_at(x: float, z: float) -> float:
 		var d := Vector2(x, z).distance_to(pond["center"])
 		var r: float = pond["radius"]
 		h -= float(pond["depth"]) * (1.0 - smoothstep(r * 0.25, r + 1.5, d))
+	for river: Dictionary in _rivers:
+		var at := _river_at(river, x, z)  # [distance to the centerline, water level there]
+		var half_w: float = float(river["width"]) * 0.5
+		var bank: float = river["bank"]
+		var d: float = at[0] - half_w
+		if d < bank:
+			var level: float = at[1]
+			var bed: float
+			if d < 0.0:  # in the channel: deepest in the middle
+				bed = level - float(river["depth"]) * smoothstep(0.0, 1.0, minf(-d / (half_w * 0.6), 1.0))
+				h = bed
+			else:  # the banks slope from just above the water back up (or down) to the land
+				h = lerpf(level + 0.35, h, smoothstep(0.0, bank, d))
 	# Mountains ring the zone so you can't walk off the edge.
 	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
 	if edge > 0.0:
@@ -114,6 +132,46 @@ func _pass_factor(x: float, z: float) -> float:
 		var across := absf(x - ps[0]) if north_south else absf(z - ps[1])
 		f = minf(f, smoothstep(ps[2], ps[2] + 14.0, across))
 	return f
+
+
+## A river from its zone data: the water level at each point is the ground
+## there, but never higher than upstream (points run downstream), so it only
+## ever flows downhill; the channel is carved to that level.
+func _add_river(river: Dictionary) -> void:
+	var pts: Array[Vector2] = []
+	for pt: Array in river["points"]:
+		pts.append(Vector2(pt[0], pt[1]))
+	var levels: Array[float] = []
+	for i in pts.size():
+		var h := height_at(pts[i].x, pts[i].y) - 0.3  # before this river exists
+		levels.append(minf(h, levels[i - 1]) if i > 0 else h)
+	_rivers.append({"points": pts, "levels": levels, "width": float(river.get("width", 10.0)),
+			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0))})
+
+
+## [distance from the river's centerline, its water level at the nearest point].
+func _river_at(river: Dictionary, x: float, z: float) -> Array:
+	var p := Vector2(x, z)
+	var pts: Array[Vector2] = river["points"]
+	var levels: Array[float] = river["levels"]
+	var best := INF
+	var level := 0.0
+	for i in pts.size() - 1:
+		var seg := pts[i + 1] - pts[i]
+		var t := clampf((p - pts[i]).dot(seg) / seg.length_squared(), 0.0, 1.0)
+		var d := p.distance_to(pts[i] + seg * t)
+		if d < best:
+			best = d
+			level = lerpf(levels[i], levels[i + 1], t)
+	return [best, level]
+
+
+## How far a point is from the nearest river's water's edge (negative inside).
+func river_distance(x: float, z: float) -> float:
+	var best := INF
+	for river: Dictionary in _rivers:
+		best = minf(best, float(_river_at(river, x, z)[0]) - float(river["width"]) * 0.5)
+	return best
 
 
 ## Distance from a point to the nearest road's centerline, minus its half width.
@@ -273,6 +331,10 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 		var r: float = pond["radius"]
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(r - 1.5, r + 2.0, pd))  # muddy bank
 		c = c.lerp(Color(0.22, 0.21, 0.15), 1.0 - smoothstep(r * 0.4, r - 1.0, pd))  # silt on the bottom
+	var wet := river_distance(x, z)
+	if wet < 3.0:
+		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(0.5, 3.0, wet))  # muddy bank
+		c = c.lerp(Color(0.24, 0.23, 0.17), 1.0 - smoothstep(-3.0, 0.0, wet))  # silt on the bed
 	var road := road_distance(x, z)
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
@@ -310,6 +372,14 @@ func _build_landmarks() -> void:
 				_build_signpost(p, _landmark_yaw(lm), lm.get("labels", []))
 			"cave":
 				_build_cave(p, _landmark_yaw(lm))
+			"watchtower":
+				_build_watchtower(p, _landmark_yaw(lm))
+			"spider_nest":
+				_build_spider_nest(p)
+			"cabin":
+				_build_cabin(p, _landmark_yaw(lm))
+			"bridge":
+				_build_bridge(Vector2(lm["pos"][0], lm["pos"][1]), _landmark_yaw(lm))
 			"rockslide":
 				_build_rockslide(p, _landmark_yaw(lm), lm.get("labels", []))
 			"prop":
@@ -703,6 +773,152 @@ func _build_pond(lm: Dictionary) -> void:
 		_prop("lily_pads", Vector3(at.x, level + 0.01, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
 
 
+## A ruined watchtower of KayKit dungeon walls (3 m pieces, 2 x 2): the
+## ground floor whole with its door toward the landmark's facing, the second
+## storey broken, the top mostly fallen, rubble all around.
+func _build_watchtower(p: Vector3, yaw: float) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	var put := func(id: String, local: Vector3, local_yaw := 0.0, collide := "mesh", scale_ := 1.0) -> void:
+		_prop(id, xf * local, yaw + local_yaw, scale_, collide)
+	var storeys := [
+		{"front": ["wall_doorway", "wall"], "other": ["wall", "wall_cracked"], "gap": 0.0},
+		{"front": ["wall_window_open", "wall_cracked"], "other": ["wall_window_open", "wall_arched", "wall_cracked"], "gap": 0.25},
+		{"front": ["wall_broken", "wall_half"], "other": ["wall_broken", "wall_half"], "gap": 0.55}]
+	for level in storeys.size():
+		var y := level * 3.0
+		var st: Dictionary = storeys[level]
+		for i in 2:
+			var c := -1.5 + i * 3.0
+			var sides := [[Vector3(c, y, 3.0), 0.0, st["front"]], [Vector3(c, y, -3.0), PI, st["other"]],
+					[Vector3(3.0, y, c), PI / 2.0, st["other"]], [Vector3(-3.0, y, c), -PI / 2.0, st["other"]]]
+			for side: Array in sides:
+				if level > 0 and _rng.randf() < float(st["gap"]):
+					continue
+				var pieces: Array = side[2]
+				put.call(pieces[i] if side[2] == st["front"] else pieces[_rng.randi() % pieces.size()], side[0], side[1])
+		for x: float in [-3.0, 3.0]:
+			for z: float in [-3.0, 3.0]:
+				if level < 2 or _rng.randf() < 0.5:
+					put.call("pillar", Vector3(x, y, z), 0.0, "box")
+		if level == 1:
+			for q in 4:
+				if _rng.randf() < 0.7:
+					put.call("floor_tile_large", Vector3(-1.5 + (q % 2) * 3.0, 3.0, -1.5 + (q / 2) * 3.0), 0.0, "box")
+	put.call("banner_brown", Vector3(1.6, 3.2, 3.4), 0.0, "none")
+	for k in 9:
+		var a := _rng.randf() * TAU
+		var at := xf * Vector3(cos(a) * _rng.randf_range(4.5, 8.0), 0, sin(a) * _rng.randf_range(4.5, 8.0))
+		_prop("rubble_large" if k % 3 == 0 else "rubble_half", ground(at.x, at.z), _rng.randf() * TAU, _rng.randf_range(0.8, 1.2), "none")
+
+
+## A thornback nest: web mounds and egg sacs on the ground, webs hung upright
+## around it facing in, and the bones of what wandered in.
+func _build_spider_nest(p: Vector3) -> void:
+	for k in 4:
+		var a := k * TAU / 4.0 + _rng.randf_range(-0.3, 0.3)
+		var at := Vector2(p.x, p.z) + Vector2(cos(a), sin(a)) * _rng.randf_range(3.0, 7.0)
+		_prop("web_mound", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.9, 1.4), "none")
+	for k in 6:
+		var a := _rng.randf() * TAU
+		var at := Vector2(p.x, p.z) + Vector2(cos(a), sin(a)) * _rng.randf_range(1.0, 9.0)
+		_prop("egg_sacs", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+	for k in 7:
+		var a := k * TAU / 7.0 + _rng.randf_range(-0.2, 0.2)
+		var at := Vector2(p.x, p.z) + Vector2(cos(a), sin(a)) * _rng.randf_range(9.0, 13.0)
+		var face := atan2(p.x - at.x, p.z - at.y)  # facing into the nest
+		_prop("cobweb", ground(at.x, at.y), face, _rng.randf_range(0.9, 1.5), "none")
+	for k in 5:
+		var a := _rng.randf() * TAU
+		var at := Vector2(p.x, p.z) + Vector2(cos(a), sin(a)) * _rng.randf_range(2.0, 10.0)
+		_prop("rubble_half", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.4, 0.7), "none")
+
+
+## Elowen's cabin: a small KayKit house, a woodpile at its side, pelts drying
+## on a rack and a campfire out front with a log to sit on.
+func _build_cabin(p: Vector3, yaw: float) -> void:
+	var xf := _build_house(p, yaw, 2, true)
+	var on := func(local: Vector3) -> Vector3:
+		var w := xf * local
+		return ground(w.x, w.z)
+	_prop("woodpile", on.call(Vector3(4.4, 0, -1.0)), yaw + PI / 2.0)
+	_prop("drying_rack", on.call(Vector3(-5.2, 0, 3.0)), yaw + PI / 2.0 + 0.3)
+	_prop("campfire", on.call(Vector3(1.5, 0, 7.5)), 0.0, 1.0, "none")
+	_light(on.call(Vector3(1.5, 0, 7.5)) + Vector3.UP * 1.2, Color(1.0, 0.6, 0.25), 9.0, 1.2)
+	_prop("log_fallen", on.call(Vector3(-0.8, 0, 8.6)), yaw + 0.2, 1.0, "none")
+	_prop("barrel_small", on.call(Vector3(3.9, 0, 2.2)), yaw)
+
+
+## A bridge where a road crosses a river: set at the river's bank height (the
+## ground under it is the channel), running along the landmark's facing.
+func _build_bridge(at: Vector2, yaw: float) -> void:
+	var y := height_at(at.x, at.y)
+	for river: Dictionary in _rivers:
+		var r := _river_at(river, at.x, at.y)
+		if float(r[0]) < float(river["width"]) * 0.5 + 6.0:
+			y = float(r[1]) + 0.35
+	_prop("bridge_wood", Vector3(at.x, y, at.y), yaw, 1.0, "mesh")
+
+
+## A river's water: a ribbon along its course at the water level, flowing
+## downstream (the water shader runs its ripples along UV.y), and reeds and
+## stones along the banks.
+func _build_river(river: Dictionary) -> void:
+	var pts: Array[Vector2] = river["points"]
+	var levels: Array[float] = river["levels"]
+	var half_w: float = float(river["width"]) * 0.5 + 0.6
+	var samples: Array = []  # [point, level, distance along]
+	var along := 0.0
+	for i in pts.size() - 1:
+		var n := maxi(1, ceili(pts[i].distance_to(pts[i + 1]) / 3.0))
+		for k in n:
+			var t := float(k) / n
+			if not samples.is_empty():
+				along += (samples[-1][0] as Vector2).distance_to(pts[i].lerp(pts[i + 1], t))
+			samples.append([pts[i].lerp(pts[i + 1], t), lerpf(levels[i], levels[i + 1], t), along])
+	along += (samples[-1][0] as Vector2).distance_to(pts[-1])
+	samples.append([pts[-1], levels[-1], along])
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_normal(Vector3.UP)
+	var edges: Array = []  # [left, right] per sample
+	for i in samples.size():
+		var a: Vector2 = samples[maxi(i - 1, 0)][0]
+		var b: Vector2 = samples[mini(i + 1, samples.size() - 1)][0]
+		var side := (b - a).normalized().orthogonal() * half_w
+		var c: Vector2 = samples[i][0]
+		var y: float = samples[i][1]
+		edges.append([Vector3(c.x + side.x, y, c.y + side.y), Vector3(c.x - side.x, y, c.y - side.y), float(samples[i][2])])
+	for i in edges.size() - 1:
+		var l0: Vector3 = edges[i][0]
+		var r0: Vector3 = edges[i][1]
+		var l1: Vector3 = edges[i + 1][0]
+		var r1: Vector3 = edges[i + 1][1]
+		var v0: float = edges[i][2]
+		var v1: float = edges[i + 1][2]
+		for q: Array in [[l0, Vector2(0, v0)], [r0, Vector2(1, v0)], [l1, Vector2(0, v1)], [r0, Vector2(1, v0)], [r1, Vector2(1, v1)], [l1, Vector2(0, v1)]]:
+			st.set_uv(q[1])
+			st.add_vertex(q[0])
+	var water := MeshInstance3D.new()
+	water.mesh = st.commit()
+	var mat := ShaderMaterial.new()
+	mat.shader = WATER_SHADER
+	mat.set_shader_parameter("flow_speed", float(river.get("flow", 1.0)))
+	water.material_override = mat
+	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(water)
+	for k in int(float(along) / 7.0):
+		var s_: Array = samples[_rng.randi() % samples.size()]
+		var c: Vector2 = s_[0]
+		var side := Vector2.from_angle(_rng.randf() * TAU) * (half_w - 0.2 + _rng.randf_range(-0.8, 1.2))
+		var at := c + side
+		if road_distance(at.x, at.y) < 3.0:
+			continue
+		if _rng.randf() < 0.7:
+			_prop("reeds", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+		else:
+			_prop("rubble_half", ground(at.x, at.y) - Vector3.UP * 0.1, _rng.randf() * TAU, _rng.randf_range(0.3, 0.6), "none")
+
+
 func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
 	var post := _prop("signpost", p, yaw, 1.0, "none")
 	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
@@ -926,6 +1142,8 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
 			return false
+	if river_distance(x, z) < 1.0:
+		return false
 	for spot in _flat_spots:
 		if p.distance_to(spot) < 12.5:
 			return false
@@ -948,7 +1166,8 @@ func _build_spawns() -> void:
 func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
-		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0:
+		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
+				or river_distance(xz.x, xz.y) < 3.0:
 			continue
 		var clear := true
 		for spot in _flat_spots:

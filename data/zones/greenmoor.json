@@ -143,7 +143,7 @@
     {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50},
     {"type": "cave", "pos": [-150, -30], "face": [0, -30]},
     {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
-    {"type": "signpost", "pos": [12.5, -168], "yaw": -90, "labels": ["Thornwood Vale", "Obelisk"]}
+    {"type": "signpost", "pos": [12.5, -168], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]}
   ],
   "passes": [[0, 192, 9], [0, -192, 9]],
   "roads": [{"points": [[0, -192], [8, -175], [24, -150], [22, -105], [6, -60], [0, -6], [0, 6], [3, 60], [-2, 120], [0, 150], [0, 192]], "width": 3.5}],

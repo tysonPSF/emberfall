@@ -619,6 +619,24 @@
     },
     "cave_entrance": {
       "path": "res://assets/props/cave_entrance.glb"
+    },
+    "bridge_wood": {
+      "path": "res://assets/props/bridge_wood.glb"
+    },
+    "cobweb": {
+      "path": "res://assets/props/cobweb.glb"
+    },
+    "web_mound": {
+      "path": "res://assets/props/web_mound.glb"
+    },
+    "egg_sacs": {
+      "path": "res://assets/props/egg_sacs.glb"
+    },
+    "drying_rack": {
+      "path": "res://assets/props/drying_rack.glb"
+    },
+    "woodpile": {
+      "path": "res://assets/props/woodpile.glb"
     }
   },
   "gear": {
