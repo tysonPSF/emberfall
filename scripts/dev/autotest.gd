@@ -89,6 +89,7 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["compass", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -3458,6 +3459,29 @@ func _t_bash_stun() -> void:
 	p.equipment = kit
 	p.spells = known
 	p.recalc_stats()
+
+
+## The compass: headings that turn with you, the zone's name, a pass's name
+## when you face it, your target, and the sun by day and the moon by night.
+func _t_compass() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var hud: Node = main.hud
+	var mob := _nearest_mob(p, "large_rat")
+	World.request_set_target(p.entity_id, mob.entity_id)
+	for view: Array in [[12.0, Vector3(0, 0, -300), "north_noon"], [22.5, Vector3(300, 0, 0), "east_night"]]:
+		World.time_override = view[0]
+		p.global_position = z.ground(0, -120) + Vector3.UP
+		p.face_toward(view[1])
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 8.0
+		p.pitch = -0.15
+		await _wait(1.0)
+		var c: Compass = hud._compass
+		print("compass: %s -> heading %.0f, zone '%s', exits %s, sky %s" % [view[2], c._heading, c._zone_name, c._exits.map(func(e: Array) -> String: return e[1]), c._sky_mark()])
+		await _shot("9zz_compass_%s" % view[2])
+	World.time_override = -1.0
 
 
 ## The two customizable hotbars: a new character's spells on the main bar;
