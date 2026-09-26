@@ -17,7 +17,15 @@ CONVENTION, taken from the shipped zones rather than assumed: +z is SOUTH.
 Greenmoor's pass at [0, 192] leads to Emberhold, which CLAUDE.md calls its
 south pass. So in the grid below, gy rises NORTHWARD and converts to -z.
 """
-import json, math
+import json, math, os
+
+def _outdir():
+    """Write beside the repo's docs/ when run in the repo, else the render box."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    d = os.path.join(root, 'docs')
+    return d if os.path.isdir(d) else os.environ.get('EMBERFALL_OUT', '/mnt/user-data/outputs')
+
+OUT = _outdir()
 
 # A CITY ENDS IN -HOLD. Emberhold was already named that way, so the rule is
 # taken rather than invented, and it means a player can tell a city from a wild
@@ -103,13 +111,34 @@ AREAS = {
     'boneyard':    {'name': 'The Boneyard',   'deity': 'dark',      'accent': '#6b5a9e'},
 }
 
-# what the engine already ships, so the map has to grow out of it rather than over it
-EXISTING = {'emberhold', 'greenmoor', 'thornwood', 'hollowmere'}
+# WHAT IS ACTUALLY BUILT, read off the disk rather than typed.
+#
+# This was a hardcoded set of three and it was already wrong: Hollowmere had
+# shipped and the map still drew it as empty ground. A list of what exists is
+# a fact about the repository, so it is looked up, not maintained.
+#
+# `data/zones/*.json` is the whole truth. A file with no row in the layout is
+# reported rather than ignored - an interior like `emberhold_tavern` is fine
+# and expected, but an outdoor zone nobody put on the grid is a real
+# discrepancy and should be seen.
+def discover_built():
+    import glob
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    zdir = os.path.join(root, 'data', 'zones')
+    if os.path.isdir(zdir):
+        return {os.path.basename(f)[:-5] for f in glob.glob(os.path.join(zdir, '*.json'))}
+    # run outside the repo (a render box, CI): take the list from the
+    # environment rather than guessing, and say so
+    env = os.environ.get('EMBERFALL_BUILT', '')
+    return {p.strip() for p in env.split(',') if p.strip()}
+
+BUILT = discover_built()
+EXISTING = BUILT
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
 # Thornwood's three unused passes, which CLAUDE.md reserves: "a future zone
 # replaces one with a zone line"
-ROCKSLIDES = {'thornwood': ['north', 'west'], 'hollowmere': ['north', 'east', 'south']}
+ROCKSLIDES = {'thornwood': ['north', 'east', 'west']}
 
 DIRS = {'north': (0, 1), 'south': (0, -1), 'east': (1, 0), 'west': (-1, 0)}
 OPPOSITE = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
@@ -121,6 +150,7 @@ def build():
         zid, name, area, band, size, cell, kind = z
         rec = {'id': zid, 'name': name, 'area': area, 'levels': list(band),
                'size': size, 'cell': list(cell) if cell else None, 'kind': kind,
+               'built': zid in BUILT,
                'existing': zid in EXISTING,
                'reached': 'teleport' if zid in TELEPORT_ONLY else 'foot'}
         by_id[zid] = rec
@@ -150,6 +180,10 @@ def check(by_id, by_cell, links):
     on_grid = [r for r in by_id.values() if r['cell']]
     ok(len(by_cell) == len(on_grid),
        f'{len(on_grid)} zones on {len(by_cell)} distinct cells - no two share one')
+    stray = sorted(BUILT - set(by_id))
+    ok(not stray or all('_' in x for x in stray),
+       f'{len(BUILT)} zone files on disk'
+       + (f'; not on the grid: {", ".join(stray)} (interiors are expected)' if stray else ''))
     ok(all(not by_id[t]['cell'] for t in TELEPORT_ONLY),
        f'{len(TELEPORT_ONLY)} teleport-only zone(s) hold no cell: '
        f'{", ".join(by_id[t]["name"] for t in TELEPORT_ONLY)}')
@@ -242,12 +276,11 @@ if __name__ == '__main__':
     notes, fails = check(by_id, by_cell, links)
     for n in notes: print('  ok   ' + n)
     for f in fails: print('  FAIL ' + f)
-    out = {'note': 'Emberfall world layout. Cells are grid squares; gy rises NORTH '
+    out = {'built': sorted(BUILT),
+           'note': 'Emberfall world layout. Cells are grid squares; gy rises NORTH '
                    '(+z is south in the engine). Links are derived from the grid, '
                    'never typed: one border = a pass and a zone_line on each side.',
            'areas': AREAS, 'zones': list(by_id.values()), 'links': links}
-    import os
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs', 'world-layout.json')
-    json.dump(out, open(path, 'w'), indent=1)
-    print(f'\n{len(by_id)} zones, {len(links)} borders -> docs/world-layout.json')
+    json.dump(out, open(os.path.join(OUT, 'world-layout.json'), 'w'), indent=1)
+    print(f'\n{len(by_id)} zones, {len(links)} borders -> emberfall_world_layout.json')
     sys.exit(1 if fails else 0)

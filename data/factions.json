@@ -72,5 +72,15 @@
     "on_attack": {
       "hollowfolk": -50
     }
+  },
+  "brigands": {
+    "name": "Harrowfield Brigands",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "brigands": -10,
+      "emberhold": 4,
+      "watch": 3
+    }
   }
 }

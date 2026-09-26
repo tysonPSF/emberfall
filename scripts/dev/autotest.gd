@@ -72,6 +72,10 @@ const SECTIONS := [
 	["hollowmere_perf", "hollowmere"],
 	["night_isolate", "hollowmere"],
 	["physics_isolate", "hollowmere"],
+	["harrowfield_border", "greenmoor"],
+	["harrowfield", "harrowfield"],
+	["harrowfield_life", "harrowfield"],
+	["sign_fit", "hollowmere"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2687,3 +2691,139 @@ func _t_physics_isolate() -> void:
 		m.set_physics_process(true)
 	for n: Npc in _npcs().values():
 		n.set_physics_process(true)
+
+
+## Harrowfield's borders, both walked both ways: Greenmoor's east edge, and
+## Hollowmere's south edge.
+func _t_harrowfield_border() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for leg: Array in [["greenmoor", Vector2(170, 0), Vector2(1, 0), "harrowfield"], ["harrowfield", Vector2(0, -170), Vector2(0, -1), "hollowmere"],
+			["hollowmere", Vector2(0, 202), Vector2(0, 1), "harrowfield"], ["harrowfield", Vector2(-170, 0), Vector2(-1, 0), "greenmoor"]]:
+		if main.zone.zone_id != leg[0]:
+			print("harrowfield_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+			return
+		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
+		for k in 400:
+			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
+				break
+			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			p.move_and_slide()
+			await get_tree().physics_frame
+		await _wait(1.5)
+		for k in 20:
+			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
+				break
+			await _wait(0.5)
+		var z: Zone = main.zone
+		print("harrowfield_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
+				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
+
+
+## Harrowfield: the hamlet, fields, windmill, orchard and the brigands' farm.
+func _t_harrowfield() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 11.0
+	for view: Array in [[Vector2(-150, 0), Vector2(-40, 12), "arrival"], [Vector2(15, 0), Vector2(45, 25), "hamlet"], [Vector2(60, -60), Vector2(85, -30), "field"],
+			[Vector2(-20, -90), Vector2(-50, -72), "windmill"], [Vector2(90, 90), Vector2(115, 115), "orchard"], [Vector2(-95, 80), Vector2(-122, 104), "hideout"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.18
+		await _wait(1.0)
+		await _shot("9zl_harrowfield_%s" % view[2])
+	World.time_override = 22.5
+	p.global_position = z.ground(-20, 50) + Vector3.UP
+	p.face_toward(z.ground(4, 74))
+	await _wait(1.5)
+	await _shot("9zl_harrowfield_field_night")
+	World.time_override = -1.0
+
+
+## Harrowfield's people and monsters: all spawn, the three quests pay out, the
+## scarecrows walk at night.
+func _t_harrowfield_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("harrowfield_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	p.level = 8
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var oswin: Npc = npcs["farmer_oswin"]
+	var marta: Npc = npcs["widow_marta"]
+	_stand_by(p, oswin)
+	for word in ["hail", "boars", "tusks", "brigands", "ledger"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("boar_tusk", 4)
+	await _hand_in(p, oswin, ["boar_tusk"])
+	p.pack.add("garricks_ledger", 1)
+	p.pack.add("brigand_armband", 2)
+	await _hand_in(p, oswin, ["garricks_ledger", "brigand_armband"])
+	_stand_by(p, marta)
+	for word in ["hail", "scarecrows", "old tatters", "heart"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("straw_heart", 1)
+	await _hand_in(p, marta, ["straw_heart"])
+	await _wait(0.3)
+	print("harrowfield_life: rewards: gloves %d, band %d, hat %d; quests done %s" % [p.pack.count("farmhands_gloves"), p.pack.count("harvest_band"),
+			p.pack.count("tatters_hat"), ["tusks_for_oswin", "the_stolen_harvest", "old_tatters"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := {}
+	for m in World.get_mobs():
+		if m.mob_id in ["walking_scarecrow", "old_tatters"]:
+			night[m.mob_id] = int(night.get(m.mob_id, 0)) + 1
+	print("harrowfield_life: 23:00 -> %s" % night)
+	World.time_override = 12.0
+	for id: String in ["wild_boar", "old_bristleback", "brigand_cutpurse", "garrick_the_red"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("harrowfield_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 4.0, at.z + 3.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zm_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
+
+## Signposts: long place names fit their boards, from both sides of the road.
+func _t_sign_fit() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	World.time_override = 12.0
+	for zone_id: String in ["hollowmere", "harrowfield"]:
+		await _ensure_zone(zone_id)
+		var z: Zone = main.zone
+		for lm: Dictionary in z.data.get("landmarks", []):
+			if lm["type"] != "signpost":
+				continue
+			var at := Vector2(lm["pos"][0], lm["pos"][1])
+			for side: float in [1.0, -1.0]:
+				var yaw := deg_to_rad(float(lm.get("yaw", 0.0)))
+				var toward := Vector2(sin(yaw), cos(yaw)) * 3.2 * side + Vector2(cos(yaw), -sin(yaw)) * 0.4
+				p.global_position = z.ground(at.x + toward.x, at.y + toward.y) + Vector3.UP
+				p.face_toward(z.ground(at.x, at.y))
+				p.camera_pivot.rotation.y = 0.0
+				p.zoom = 0.0
+				p.pitch = 0.08
+				await _wait(0.6)
+				await _shot("9zn_sign_%s_%d_%s" % [zone_id, int(at.x), "front" if side > 0 else "back"])
+			break
+	World.time_override = -1.0

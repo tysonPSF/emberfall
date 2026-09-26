@@ -1,0 +1,1016 @@
+{
+  "name": "Harrowfield",
+  "music": "harrowfield",
+  "seed": 6421,
+  "size": 384,
+  "height_amplitude": 8,
+  "bind_point": [
+    40,
+    24
+  ],
+  "flat_radius": 20,
+  "trees": 160,
+  "tree_mix": [
+    "tree_round",
+    "tree_round",
+    "tree_round",
+    "pine_a"
+  ],
+  "groves": 0.5,
+  "rocks": 50,
+  "grass_colors": [
+    "#5b7430",
+    "#83913f"
+  ],
+  "fog_density": 0.005,
+  "sun_energy": 1.15,
+  "clutter": {
+    "grass_a": {
+      "density": 0.55,
+      "patch": 0.55,
+      "sway": 0.16,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.35
+      ],
+      "city": 0.2
+    },
+    "grass_b": {
+      "density": 0.6,
+      "patch": 0.35,
+      "sway": 0.14,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ],
+      "city": 0.3
+    },
+    "flowers_yellow": {
+      "density": 0.012,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.2
+    },
+    "flowers_purple": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "flowers_white": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.1
+    },
+    "fern": {
+      "density": 0.007,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 65,
+      "scale": [
+        0.9,
+        1.5
+      ]
+    },
+    "bush_a": {
+      "density": 0.0025,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "bush_b": {
+      "density": 0.0018,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.5
+      ]
+    },
+    "mushrooms": {
+      "density": 0.0025,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "pebbles": {
+      "density": 0.005,
+      "patch": 0.4,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.6
+      ],
+      "city": 0.5
+    },
+    "log_fallen": {
+      "density": 0.00035,
+      "patch": 0.3,
+      "range": 120,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "stump": {
+      "density": 0.0005,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
+  },
+  "fields": [
+    {
+      "pos": [
+        85,
+        -30
+      ],
+      "size": [
+        44,
+        30
+      ],
+      "yaw": 10,
+      "scarecrow": true,
+      "gate": 180
+    },
+    {
+      "pos": [
+        0,
+        72
+      ],
+      "size": [
+        50,
+        34
+      ],
+      "yaw": -5,
+      "scarecrow": true,
+      "gate": 0
+    },
+    {
+      "pos": [
+        -72,
+        42
+      ],
+      "size": [
+        36,
+        40
+      ],
+      "yaw": 20,
+      "scarecrow": true,
+      "gate": 90
+    },
+    {
+      "pos": [
+        98,
+        58
+      ],
+      "size": [
+        30,
+        26
+      ],
+      "yaw": 0,
+      "gate": 180
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "house",
+      "pos": [
+        24,
+        4
+      ],
+      "face": [
+        40,
+        20
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        57,
+        4
+      ],
+      "face": [
+        40,
+        20
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        24,
+        38
+      ],
+      "face": [
+        40,
+        20
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        58,
+        37
+      ],
+      "face": [
+        40,
+        20
+      ],
+      "size": 2
+    },
+    {
+      "type": "prop",
+      "id": "well",
+      "pos": [
+        40,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "market_stall",
+      "pos": [
+        47,
+        27
+      ],
+      "face": [
+        40,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "farm_cart",
+      "pos": [
+        31,
+        27
+      ],
+      "yaw": 30
+    },
+    {
+      "type": "prop",
+      "id": "hay_bale",
+      "pos": [
+        52,
+        13
+      ],
+      "yaw": 15
+    },
+    {
+      "type": "prop",
+      "id": "haystack",
+      "pos": [
+        118,
+        -8
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "haystack",
+      "pos": [
+        -40,
+        84
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "haystack",
+      "pos": [
+        30,
+        108
+      ]
+    },
+    {
+      "type": "windmill",
+      "pos": [
+        -50,
+        -72
+      ],
+      "face": [
+        40,
+        20
+      ]
+    },
+    {
+      "type": "orchard",
+      "pos": [
+        115,
+        115
+      ],
+      "yaw": 5,
+      "rows": 4,
+      "cols": 5
+    },
+    {
+      "type": "house",
+      "pos": [
+        -108,
+        124
+      ],
+      "face": [
+        -120,
+        106
+      ],
+      "size": 2
+    },
+    {
+      "type": "camp",
+      "pos": [
+        -122,
+        104
+      ]
+    },
+    {
+      "type": "ruins",
+      "pos": [
+        118,
+        -112
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -150,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Harrow's Rest",
+        "Greenmoor"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        30,
+        -56
+      ],
+      "yaw": 90,
+      "labels": [
+        "Hollowmere",
+        "Harrow's Rest"
+      ]
+    }
+  ],
+  "passes": [
+    [
+      -192,
+      0,
+      9
+    ],
+    [
+      0,
+      -192,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -192,
+          0
+        ],
+        [
+          -150,
+          2
+        ],
+        [
+          -110,
+          6
+        ],
+        [
+          -40,
+          12
+        ],
+        [
+          10,
+          16
+        ],
+        [
+          40,
+          20
+        ]
+      ],
+      "width": 3.2
+    },
+    {
+      "points": [
+        [
+          40,
+          20
+        ],
+        [
+          36,
+          -20
+        ],
+        [
+          26,
+          -60
+        ],
+        [
+          12,
+          -120
+        ],
+        [
+          0,
+          -192
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -181,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "greenmoor",
+      "arrive": [
+        167,
+        0
+      ],
+      "arrive_face": [
+        127,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -181
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "hollowmere",
+      "arrive": [
+        0,
+        199
+      ],
+      "arrive_face": [
+        0,
+        159
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "farmer_oswin",
+      "pos": [
+        33,
+        17
+      ],
+      "face": [
+        40,
+        20
+      ]
+    },
+    {
+      "id": "widow_marta",
+      "pos": [
+        27,
+        32
+      ],
+      "face": [
+        40,
+        20
+      ]
+    },
+    {
+      "id": "grocer_tilda",
+      "pos": [
+        48,
+        30
+      ],
+      "face": [
+        40,
+        20
+      ]
+    },
+    {
+      "id": "hamlet_watchman",
+      "pos": [
+        42,
+        14
+      ],
+      "patrol": [
+        [
+          42,
+          14
+        ],
+        [
+          10,
+          16
+        ],
+        [
+          -40,
+          12
+        ],
+        [
+          -110,
+          6
+        ],
+        [
+          -150,
+          2
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        -25
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        10,
+        -45
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -90,
+        -15
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -110,
+        60
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -30,
+        110
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        95
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        80,
+        -75
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -75,
+        -120
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -130,
+        -60
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        20
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -45,
+        -40
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        95,
+        10
+      ],
+      "pool": {
+        "wild_boar": 1
+      },
+      "respawn": 50,
+      "wander": 12
+    },
+    {
+      "pos": [
+        130,
+        -60
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        60
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        -140
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        -150
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        150
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        -140
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        118,
+        -100
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        125,
+        -122
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        105
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        130,
+        125
+      ],
+      "pool": {
+        "tusked_boar": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        115,
+        115
+      ],
+      "pool": {
+        "old_bristleback": 1
+      },
+      "respawn": 480,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -115,
+        98
+      ],
+      "pool": {
+        "brigand_cutpurse": 2,
+        "brigand_thug": 1
+      },
+      "respawn": 80,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -129,
+        98
+      ],
+      "pool": {
+        "brigand_cutpurse": 2,
+        "brigand_thug": 1
+      },
+      "respawn": 80,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -122,
+        112
+      ],
+      "pool": {
+        "brigand_cutpurse": 2,
+        "brigand_thug": 1
+      },
+      "respawn": 80,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -113,
+        110
+      ],
+      "pool": {
+        "brigand_cutpurse": 2,
+        "brigand_thug": 1
+      },
+      "respawn": 80,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -131,
+        108
+      ],
+      "pool": {
+        "brigand_cutpurse": 2,
+        "brigand_thug": 1
+      },
+      "respawn": 80,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -122,
+        104
+      ],
+      "pool": {
+        "garrick_the_red": 1
+      },
+      "respawn": 420,
+      "wander": 2
+    },
+    {
+      "pos": [
+        -85,
+        -8
+      ],
+      "pool": {
+        "brigand_cutpurse": 1
+      },
+      "respawn": 70,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -140,
+        -25
+      ],
+      "pool": {
+        "brigand_cutpurse": 1
+      },
+      "respawn": 70,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        -30
+      ],
+      "pool": {
+        "brigand_cutpurse": 1
+      },
+      "respawn": 70,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        70
+      ],
+      "pool": {
+        "brigand_cutpurse": 1
+      },
+      "respawn": 70,
+      "wander": 12
+    },
+    {
+      "pos": [
+        8,
+        82
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -66,
+        52
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        92,
+        -22
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        100,
+        64
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -22,
+        62
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        70,
+        -46
+      ],
+      "pool": {
+        "walking_scarecrow": 1
+      },
+      "respawn": 60,
+      "wander": 14,
+      "when": "night"
+    },
+    {
+      "pos": [
+        4,
+        74
+      ],
+      "pool": {
+        "old_tatters": 1
+      },
+      "respawn": 600,
+      "wander": 5,
+      "when": "night"
+    }
+  ]
+}

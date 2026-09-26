@@ -507,5 +507,107 @@
         "slashes"
       ]
     }
+  },
+  "farmer_oswin": {
+    "name": "Farmer Oswin",
+    "title": "Harrow's Rest",
+    "level": 14,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "Afternoon, {name}. Mind the ruts; the carts cut them deep this year. Harrow's Rest was the finest farmland outside Emberhold, before the [boars] and the [brigands].",
+      "boars": "Wild pigs, rooting up every row I plant, and the tusked ones will open your leg as soon as look at you. Bring me four [tusks] and I'll pay for every four.",
+      "tusks": "Four boar tusks, and I'll pay you each time. The first time, I've a pair of work gloves that'll do you better than they do me.",
+      "brigands": "Garrick the Red and his lot took the old Hallow farm in the southwest. They steal our seed, our tools, and anyone who walks the west road alone. Bring me Garrick's [ledger] and two of their red armbands, and I'll know it's done.",
+      "ledger": "He keeps a tally of everything he's taken from us. Bring it back with two of those red armbands, and you'll have the ring my father wore at every harvest.",
+      "unknown": "Couldn't tell you, {name}. Ask Marta, or Tilda at the stall."
+    }
+  },
+  "widow_marta": {
+    "name": "Widow Marta",
+    "title": "Harrow's Rest",
+    "level": 12,
+    "model": "rogue_hooded",
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "You're new. Don't walk the fields after dark, {name}. Not since the [scarecrows] started walking.",
+      "scarecrows": "My husband stitched every one of them. After he died they started climbing off their posts at night. The worst of them is the big one in the south field, the one we called [Old Tatters].",
+      "old tatters": "He stood in the south field for thirty years. Now he walks it, but only at night. There's something inside him that shouldn't be. Bring me his [heart] and let my husband's work rest.",
+      "heart": "A bundle of straw, bound with red thread; my husband sewed one into every scarecrow for luck. Bring me Old Tatters' heart and I'll give you his hat. It's the only thing of his I can bear to part with.",
+      "unknown": "I wouldn't know, {name}."
+    }
+  },
+  "grocer_tilda": {
+    "name": "Tilda",
+    "title": "Grocer",
+    "level": 12,
+    "model": "mage",
+    "faction": "emberhold",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "crude_arrow",
+        "sling_stone",
+        "leather_sling",
+        "fishing_bait",
+        "small_sack",
+        "cloth_cap",
+        "patchwork_pants"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Fresh bread, {name}, still warm! And arrows and stones for anyone going after those pigs. Press G if you want to see what I have.",
+      "unknown": "Oswin knows the farm business; I just sell the bread."
+    }
+  },
+  "hamlet_watchman": {
+    "name": "Watchman Pell",
+    "title": "The Watch",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "The Watch keeps a man out here since the brigands moved in, {name}. I walk from the green down the west road and back. Run to me if you're chased.",
+      "unknown": "Ask the farmers, {name}."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the Rest!",
+        "Off with you!"
+      ],
+      "shouts_player": [
+        "Halt, {name}! In the name of the Watch!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
+      "dmg": [
+        14,
+        28
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

@@ -822,10 +822,10 @@ def signpost():
 	"""Two arrow boards; the game writes the destinations on them."""
 	p = Prop("signpost", 45)
 	p.seg((0, 0, -0.3), (0, 0, 2.7), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
-	p.box((1.5, 0.08, 0.34), (0.55, -0.06, 2.25), WOOD_GRAY, grad=(0.1, 0.6))
-	p.seg((1.3, -0.06, 2.25), (1.55, -0.06, 2.25), 0.2, 0.0, WOOD_GRAY, sides=4, twist=45)
-	p.box((1.3, 0.08, 0.32), (-0.45, 0.06, 1.75), WOOD_GRAY, grad=(0.1, 0.6))
-	p.seg((-1.1, 0.06, 1.75), (-1.35, 0.06, 1.75), 0.19, 0.0, WOOD_GRAY, sides=4, twist=45)
+	p.box((2.1, 0.08, 0.34), (0.9, -0.06, 2.25), WOOD_GRAY, grad=(0.1, 0.6))  # room for a long place name
+	p.seg((1.95, -0.06, 2.25), (2.2, -0.06, 2.25), 0.2, 0.0, WOOD_GRAY, sides=4, twist=45)
+	p.box((2.0, 0.08, 0.32), (-0.85, 0.06, 1.75), WOOD_GRAY, grad=(0.1, 0.6))
+	p.seg((-1.85, 0.06, 1.75), (-2.1, 0.06, 1.75), 0.19, 0.0, WOOD_GRAY, sides=4, twist=45)
 	return p.build()
 
 
@@ -1385,6 +1385,134 @@ def bone_totem():
 	return p.build(bevel=0.01)
 
 
+# ---------------------------------------------------------------- Harrowfield
+
+def windmill():
+	"""A farm windmill: a round fieldstone tower (a door at the front, -Y) under
+	a wooden cap. The sails are their own prop (windmill_sails), turned by the
+	game at the hub 7.6 m up on the front."""
+	p = Prop("windmill", 101)
+	for k in range(7):  # the tower, narrowing in courses of fieldstone
+		z = k * 0.95
+		r = 2.4 - k * 0.14
+		p.seg((0, 0, z), (0, 0, z + 0.95), r, r - 0.14, STONE_WARM, sides=12, grad=(0.05 + 0.04 * (k % 2), 0.8), jitter=0.03)
+	p.seg((0, 0, 6.6), (0, 0, 7.0), 1.75, 1.7, WOOD, sides=12)  # a wooden band at the top
+	p.seg((0, 0, 7.0), (0, 0, 9.0), 1.85, 0.25, WOOD_GRAY, sides=12, grad=(0.0, 0.8))  # the cap
+	p.seg((0, -1.2, 7.6), (0, -2.0, 7.6), 0.28, 0.24, WOOD, sides=8)  # the axle out the front
+	p.box((1.1, 0.3, 1.9), (0, -2.35, 0.95), WOOD_GRAY, grad=(0.3, 1.0))  # door
+	p.box((1.4, 0.35, 0.2), (0, -2.35, 2.0), WOOD)
+	for z, a in ((3.4, 40), (4.8, -30)):  # little windows
+		p.box((0.5, 0.3, 0.7), (math.sin(math.radians(a)) * 2.05, -math.cos(math.radians(a)) * 2.05, z), SHADE, rot=(0, 0, a), grad=(0.9, 1.0))
+	p.box((0.9, 0.6, 0.5), (1.6, -1.6, 0.25), WOOD, rot=(0, 0, 20))  # sacks and a crate at the door
+	p.blob((0.7, 0.55, 0.8), (-1.5, -1.9, 0.4), CLOTH_WHITE, grad=(0.2, 0.8))
+	return p.build(bevel=0.04)
+
+
+def windmill_sails():
+	"""Four lattice sails round a hub at the origin, in the X-Z plane, facing -Y."""
+	p = Prop("windmill_sails", 102)
+	p.blob((0.5, 0.4, 0.5), (0, 0, 0), WOOD, segs=(8, 6))
+	for k in range(4):
+		a = k * math.pi / 2 + math.radians(15)
+		d = (math.cos(a), math.sin(a))
+		tip = (d[0] * 5.2, 0, d[1] * 5.2)
+		p.seg((0, -0.05, 0), tip, 0.12, 0.08, WOOD, sides=5)  # the whip
+		side = (-d[1], d[0])
+		for j in range(5):  # the lattice, with cloth on the outer part
+			t = 1.4 + j * 0.9
+			a0 = (d[0] * t, -0.08, d[1] * t)
+			a1 = (d[0] * t + side[0] * 1.0, -0.08, d[1] * t + side[1] * 1.0)
+			p.seg(a0, a1, 0.04, 0.04, WOOD, sides=4)
+		c = (d[0] * 3.4 + side[0] * 0.5, -0.1, d[1] * 3.4 + side[1] * 0.5)
+		p.box((0.9, 0.04, 3.6), c, CLOTH_WHITE, rot=(0, -math.degrees(a) + 90, 0), grad=(0.2, 0.7))
+	return p.build()
+
+
+def fence_wood():
+	"""A 3 m run of split-rail fence along X, posts at both ends."""
+	p = Prop("fence_wood", 103)
+	for x in (-1.5, 1.5):
+		p.seg((x, 0, 0), (x, 0, 1.25), 0.09, 0.08, WOOD, sides=5, grad=(0.2, 1.0))
+	for z in (0.45, 0.95):
+		p.seg((-1.6, 0, z + p.rng.uniform(-0.04, 0.04)), (1.6, 0, z + p.rng.uniform(-0.04, 0.04)), 0.06, 0.06, WOOD_GRAY, sides=5)
+	return p.build(bevel=0.02)
+
+
+def hay_bale():
+	"""A tied square bale of hay."""
+	p = Prop("hay_bale", 104)
+	p.box((1.2, 0.8, 0.7), (0, 0, 0.35), GOLD, grad=(0.1, 0.8), jitter=0.02)
+	for x in (-0.3, 0.3):
+		p.box((0.05, 0.84, 0.74), (x, 0, 0.35), WOOD_GRAY)
+	return p.build(bevel=0.05)
+
+
+def haystack():
+	"""A tall rounded stack of hay on a field."""
+	p = Prop("haystack", 105)
+	p.blob((3.0, 3.0, 3.4), (0, 0, 1.2), GOLD, segs=(12, 8), grad=(0.0, 0.9), jitter=0.06)
+	p.seg((0, 0, 2.6), (0, 0, 3.4), 0.06, 0.04, WOOD, sides=4)
+	return p.build()
+
+
+def farm_cart():
+	"""A two-wheeled farm cart, shafts to the front (-Y), loaded with sacks."""
+	p = Prop("farm_cart", 106)
+	p.box((1.6, 2.4, 0.12), (0, 0, 0.75), WOOD, grad=(0.2, 1.0))
+	for x in (-0.8, 0.8):
+		p.box((0.08, 2.4, 0.45), (x, 0, 1.0), WOOD_GRAY, grad=(0.2, 1.0))
+		p.seg((x * 1.05, 0.1, 0.6), (x * 1.3, 0.1, 0.6), 0.08, 0.08, WOOD, sides=6)
+		for k in range(10):  # the wheel rim
+			a0, a1 = k * math.tau / 10, (k + 1) * math.tau / 10
+			p.seg((x * 1.18, 0.1 + math.cos(a0) * 0.6, 0.6 + math.sin(a0) * 0.6), (x * 1.18, 0.1 + math.cos(a1) * 0.6, 0.6 + math.sin(a1) * 0.6), 0.06, 0.06, WOOD, sides=4)
+		for k in range(4):
+			a = k * math.pi / 4
+			p.seg((x * 1.18, 0.1 - math.cos(a) * 0.55, 0.6 - math.sin(a) * 0.55), (x * 1.18, 0.1 + math.cos(a) * 0.55, 0.6 + math.sin(a) * 0.55), 0.03, 0.03, WOOD_GRAY, sides=4)
+	for x in (-0.5, 0.5):
+		p.seg((x, -1.2, 0.75), (x * 0.8, -2.6, 0.55), 0.05, 0.05, WOOD, sides=5)  # shafts
+	for k in range(4):
+		p.blob((0.6, 0.5, 0.55), (-0.35 + (k % 2) * 0.7, -0.5 + (k // 2) * 0.8, 1.05), CLOTH_WHITE, grad=(0.2, 0.8))
+	return p.build(bevel=0.02)
+
+
+def wheat():
+	"""A clump of ripe wheat for the fields (drawn as clutter): golden stalks
+	with seed heads."""
+	p = Prop("wheat", 107)
+	for k in range(9):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.2)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(0.8, 1.05)
+		la = p.rng.uniform(0, math.tau)
+		lean = p.rng.uniform(0.05, 0.18)
+		top = (x + math.cos(la) * lean, y + math.sin(la) * lean, h)
+		w = 0.02
+		p.poly([(x - w, y, 0), (x + w, y, 0), (top[0], top[1], top[2] - 0.18)], [(0, 1, 2)], GOLD, grad=(0.35, 0.8))
+		p.blob((0.06, 0.06, 0.2), (top[0], top[1], top[2] - 0.08), GOLD, segs=(4, 3), grad=(0.0, 0.4))
+	return p.build()
+
+
+def scarecrow_post():
+	"""A scarecrow on its pole in a field: sack head, straw hat, arms out on a
+	crossbar, a ragged coat. Faces -Y."""
+	p = Prop("scarecrow_post", 108)
+	p.seg((0, 0, 0), (0, 0, 2.3), 0.07, 0.06, WOOD, sides=5)
+	p.seg((-1.0, 0, 1.75), (1.0, 0, 1.75), 0.05, 0.05, WOOD, sides=5)
+	p.box((0.8, 0.38, 0.9), (0, 0, 1.45), CLOTH_RED, grad=(0.4, 1.0), jitter=0.03)  # the coat
+	for s in (-1, 1):
+		p.seg((s * 0.35, 0, 1.75), (s * 0.95, 0, 1.72), 0.13, 0.11, CLOTH_RED, sides=6, grad=(0.4, 1.0))  # sleeves
+		p.seg((s * 0.95, 0, 1.72), (s * 1.12, -0.05, 1.62), 0.08, 0.0, GOLD, sides=5)  # straw hands
+	p.seg((0, 0, 1.0), (0.05, 0, 0.8), 0.18, 0.0, GOLD, sides=6)  # straw below the coat
+	p.blob((0.46, 0.42, 0.5), (0, 0, 2.15), HIDE, grad=(0.1, 0.6))  # sack head
+	p.box((0.08, 0.05, 0.08), (-0.1, -0.21, 2.2), STONE_DARK)
+	p.box((0.08, 0.05, 0.08), (0.1, -0.21, 2.2), STONE_DARK)
+	p.box((0.22, 0.04, 0.03), (0, -0.21, 2.05), STONE_DARK)
+	p.seg((0, 0, 2.36), (0, 0, 2.42), 0.5, 0.5, GOLD, sides=10)  # hat brim
+	p.seg((0, 0, 2.4), (0, 0.02, 2.72), 0.25, 0.14, GOLD, sides=8)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1440,6 +1568,14 @@ PROPS = {
 	"rowboat": rowboat,
 	"reed_hut": reed_hut,
 	"bone_totem": bone_totem,
+	"windmill": windmill,
+	"windmill_sails": windmill_sails,
+	"fence_wood": fence_wood,
+	"hay_bale": hay_bale,
+	"haystack": haystack,
+	"farm_cart": farm_cart,
+	"wheat": wheat,
+	"scarecrow_post": scarecrow_post,
 }
 
 

@@ -441,6 +441,65 @@ def scaled_leggings():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Harrowfield
+
+def boar_tusk():
+	p = Prop("boar_tusk", 291)
+	pts = [(0, 0, 0), (0.12, 0, 0.3), (0.3, 0, 0.55), (0.55, 0, 0.66)]
+	for i, (a0, a1) in enumerate(zip(pts, pts[1:])):
+		p.seg(a0, a1, 0.14 - i * 0.04, 0.1 - i * 0.035, BONE, sides=7, grad=(0.0, 0.6))
+	return p.build()
+
+
+def boar_hide():
+	p = Prop("boar_hide", 293)
+	p.blob((1.1, 0.8, 0.12), (0, 0, 0.06), WOOD_GRAY, segs=(12, 6), grad=(0.1, 0.7), jitter=0.05)
+	for k in range(7):  # the bristle ridge down the back
+		p.seg((-0.4 + k * 0.13, 0, 0.1), (-0.4 + k * 0.13, 0, 0.3), 0.04, 0.0, STONE_DARK, sides=3)
+	return p.build()
+
+
+def brigand_armband():
+	p = Prop("brigand_armband", 295)
+	for k in range(12):
+		a0, a1 = k * math.tau / 12, (k + 1) * math.tau / 12
+		p.seg((math.cos(a0) * 0.4, math.sin(a0) * 0.4, 0.2), (math.cos(a1) * 0.4, math.sin(a1) * 0.4, 0.2), 0.14, 0.14, CLOTH_RED, sides=6)
+	p.box((0.2, 0.3, 0.06), (0.42, 0, 0.12), CLOTH_RED, rot=(0, 30, 0))  # the knot's tails
+	return p.build()
+
+
+def garricks_ledger():
+	p = Prop("garricks_ledger", 297)
+	p.box((0.8, 1.0, 0.18), (0, 0, 0.09), HIDE, grad=(0.2, 0.9))
+	p.box((0.74, 0.94, 0.12), (0.03, 0, 0.12), CLOTH_WHITE, grad=(0.3, 0.6))
+	p.box((0.8, 0.08, 0.2), (0, 0.3, 0.1), CLOTH_RED)  # a strap
+	return p.build()
+
+
+def straw_heart():
+	p = Prop("straw_heart", 299)
+	for s_ in (-1, 1):
+		p.blob((0.45, 0.35, 0.45), (s_ * 0.18, 0, 0.55), GOLD, segs=(8, 6), jitter=0.03)
+	p.seg((0, 0, 0.1), (0, 0, 0.6), 0.35, 0.05, GOLD, sides=8)
+	for k in range(4):  # red thread wound round it
+		p.seg((-0.4, 0, 0.3 + k * 0.1), (0.4, 0, 0.35 + k * 0.1), 0.02, 0.02, CLOTH_RED, sides=3)
+	return p.build()
+
+
+def loaf_of_bread():
+	p = Prop("loaf_of_bread", 301)
+	p.blob((1.0, 0.55, 0.45), (0, 0, 0.22), WOOD, segs=(10, 6), grad=(0.0, 0.7))
+	for k in range(3):
+		p.box((0.06, 0.4, 0.04), (-0.25 + k * 0.25, 0, 0.44), CLOTH_WHITE, rot=(0, 0, 20))
+	return p.build()
+
+
+def harvest_band():
+	p = Prop("harvest_band", 303)
+	_ring(p, GOLD, stone=LEAF)
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
@@ -448,7 +507,8 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 patchwork_pants, leather_leggings, iron_greaves, wolf_pelt, dire_wolf_fang, bear_claw,
 									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet,
 									 mire_toad_skin, leech_teeth, turtle_shell_plate, mirescale_scale, waterlogged_locket,
-									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings]}
+									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings,
+									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band]}
 
 
 # ---------------------------------------------------------------- rendering

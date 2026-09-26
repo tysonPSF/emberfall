@@ -1255,14 +1255,447 @@ def build_drowned_hips():
 	return b.build_static()
 
 
+# ---------------------------------------------------------------- wild boar (Harrowfield)
+
+def build_boar():
+	hide = material("boar_hide", "4e4038", 0.95)
+	bristle = material("boar_bristle", "2a221e", 0.95)
+	grizzle = material("boar_grizzle", "7a6a5c", 0.95)
+	snout = material("boar_snout", "b89088", 0.7)
+	dark = material("boar_dark", "1a1412", 0.5)
+	tusk = material("boar_tusk", "e8dcc0", 0.4)
+	eye = material("boar_eye", "c83a1a", 0.3, emit=0.8)
+	b = Builder("boar")
+	legs = {"leg_fl": (0.2, -0.42), "leg_fr": (-0.2, -0.42), "leg_bl": (0.19, 0.46), "leg_br": (-0.19, 0.46)}
+	b.bone("root", (0, 0, 0.55))
+	b.bone("body", (0, 0.0, 0.66), "root")
+	b.bone("head", (0, -0.66, 0.74), "body")
+	b.bone("jaw", (0, -0.9, 0.58), "head")
+	b.bone("tail", (0, 0.78, 0.8), "body")
+
+	b.blob((0.72, 1.45, 0.66), (0, 0.08, 0.66), hide, "body", segs=(14, 9))              # barrel
+	b.blob((0.8, 0.74, 0.76), (0, -0.36, 0.76), hide, "body", segs=(12, 8))              # heavy shoulders
+	b.blob((0.62, 0.6, 0.6), (0, 0.52, 0.68), hide, "body", segs=(10, 8))                # rump
+	b.blob((0.5, 1.2, 0.26), (0, 0.02, 0.42), grizzle, "body", segs=(10, 6))             # paler belly
+	b.blob((0.36, 1.1, 0.2), (0, -0.08, 1.03), bristle, "body", rot=(4, 0, 0), segs=(8, 6))  # dark spine stripe
+	for k in range(9):   # the bristle ridge, tallest over the shoulders
+		y = -0.62 + k * 0.14
+		h = 0.2 - abs(y + 0.3) * 0.16
+		z = 1.1 - max(0.0, y + 0.1) * 0.22
+		for dx in (-0.05, 0.05):
+			b.seg((dx, y, z - 0.08), (dx * 2.2, y + 0.1, z + h), 0.06, 0.008, bristle, "body", sides=4)
+	b.blob((0.62, 0.56, 0.6), (0, -0.74, 0.78), hide, "head", segs=(12, 8))              # skull
+	b.blob((0.52, 0.4, 0.24), (0, -0.66, 1.02), bristle, "head", segs=(8, 5))            # forelock
+	b.seg((0, -0.9, 0.78), (0, -1.28, 0.62), 0.2, 0.13, hide, "head", sides=8)           # long snout
+	b.seg((0, -1.27, 0.62), (0, -1.36, 0.6), 0.14, 0.14, snout, "head", sides=10)        # disc nose
+	for s in (1, -1):
+		b.blob((0.05, 0.03, 0.06), (0.05 * s, -1.37, 0.61), dark, "head", segs=(5, 3))    # nostrils
+		b.blob((0.08, 0.06, 0.06), (0.2 * s, -0.94, 0.86), eye, "head", segs=(6, 4))
+		b.blob((0.13, 0.07, 0.05), (0.2 * s, -0.95, 0.91), bristle, "head", rot=(0, -20 * s, 0))  # brow
+		b.seg((0.2 * s, -0.66, 0.98), (0.3 * s, -0.6, 1.14), 0.08, 0.01, hide, "head", sides=4)  # small ears
+		b.blob((0.2, 0.3, 0.3), (0.26 * s, -0.8, 0.66), grizzle, "head", segs=(8, 5))    # grizzled cheeks
+		# curved tusks sweeping out and up from the lips
+		b.seg((0.12 * s, -1.12, 0.52), (0.2 * s, -1.2, 0.62), 0.04, 0.035, tusk, "jaw", sides=5)
+		b.seg((0.2 * s, -1.2, 0.62), (0.22 * s, -1.16, 0.76), 0.035, 0.008, tusk, "jaw", sides=5)
+	b.seg((0, -0.86, 0.58), (0, -1.2, 0.5), 0.11, 0.06, grizzle, "jaw", sides=6)         # lower jaw
+	b.seg((0, 0.78, 0.84), (0, 0.9, 0.62), 0.04, 0.025, hide, "tail", sides=5)          # short tail
+	b.blob((0.08, 0.08, 0.14), (0, 0.92, 0.55), bristle, "tail", segs=(6, 4))
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.58), "root")
+		back = y > 0
+		b.blob((0.26, 0.4 if back else 0.34, 0.42), (x * 1.05, y, 0.6), hide, name_, segs=(8, 6))   # ham / shoulder
+		b.seg((x, y, 0.5), (x, y + (0.04 if back else 0.0), 0.22), 0.075, 0.05, hide, name_, sides=6)
+		b.seg((x, y + (0.04 if back else 0.0), 0.22), (x, y - 0.01, 0.06), 0.045, 0.04, bristle, name_, sides=6)
+		b.seg((x, y - 0.02, 0.07), (x, y - 0.04, 0.0), 0.055, 0.065, dark, name_, sides=6)   # hoof
+	arm = b.build()
+
+	def tail(t, amp, cycles=2.0):
+		return {"tail": {"rot": (0, 0, amp * wave(t, cycles))}}
+
+	def idle(t):  # snuffles at the ground now and then
+		root = seq(t, [(0, 0), (0.35, 0), (0.5, 1), (0.7, 1), (0.85, 0)])
+		return merge({"body": {"loc": (0, 0, 0.01 * wave(t, 2))},
+					  "head": {"rot": (-16 * root + 5 * root * wave(t, 8), 0, 6 * wave(t, 1, 0.1))},
+					  "jaw": {"rot": (-4 * root * max(0.0, wave(t, 8)), 0, 0)}}, tail(t, 25, 3))
+
+	def walk(t):
+		return merge(_quad_legs(wave(t), 26), tail(t, 18), {"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))},
+															 "head": {"rot": (4 * wave(t, 2), 0, 3 * wave(t))}})
+
+	def run(t):  # a stiff-legged charging gallop
+		f, k = 38 * wave(t), 38 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.06 * max(0.0, wave(t, 1, 0.25))), "rot": (5 * wave(t, 1, 0.1), 0, 0)},
+					  "head": {"rot": (-8, 0, 0)}}, tail(t, 10))
+
+	def attack(t):  # head down, charge, then toss the tusks upward
+		lunge = seq(t, [(0, 0), (0.25, -0.1), (0.45, 0.4), (0.62, 0.3), (1, 0)])
+		head = seq(t, [(0, 0), (0.25, -22), (0.45, -26), (0.62, 30), (1, 0)])
+		pitch = seq(t, [(0, 0), (0.25, -6), (0.45, -4), (0.62, 12), (1, 0)])
+		hind = seq(t, [(0, 0), (0.25, 20), (0.45, -30), (0.62, -10), (1, 0)])
+		return merge({"root": {"loc": (0, lunge, 0.06 * max(0.0, lunge)), "rot": (pitch, 0, 0)},
+					  "head": {"rot": (head, 0, 0)}, "jaw": {"rot": (seq(t, [(0, 0), (0.5, 0), (0.62, -12), (0.9, 0)]), 0, 0)},
+					  "leg_bl": {"rot": (hind, 0, 0)}, "leg_br": {"rot": (hind, 0, 0)},
+					  "leg_fl": {"rot": (-hind * 0.6, 0, 0)}, "leg_fr": {"rot": (-hind * 0.5, 0, 0)}}, tail(t, 30, 3))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.12 * k, 0.03 * k), "rot": (8 * k, 4 * k, 0)},
+					  "head": {"rot": (14 * k, 0, -12 * k)}, "jaw": {"rot": (-10 * k, 0, 0)}}, tail(t, 30 * k, 3))
+
+	def death(t):  # a squealing stagger, then over onto its side
+		roll = seq(t, [(0.2, 0), (0.62, 88), (0.74, 82), (0.86, 90)])
+		drop = seq(t, [(0.2, 0), (0.62, -0.28)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		kick = 8 * wave(t, 4) * seq(t, [(0.6, 0), (0.72, 1), (1, 0)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.18, 12), (0.45, 0)]), roll, 0)},
+					  "head": {"rot": (seq(t, [(0, 0), (0.18, 20), (0.5, -8)]) * 1, 0, 14 * curl)},
+					  "jaw": {"rot": (-12 * curl, 0, 0)}},
+					 {"leg_fl": {"rot": (26 * curl + kick, 0, 0)}, "leg_fr": {"rot": (12 * curl, 0, 0)},
+					  "leg_bl": {"rot": (-22 * curl - kick, 0, 0)}, "leg_br": {"rot": (-10 * curl, 0, 0)}})
+
+	clip(arm, "idle", 2.6, idle, True)
+	clip(arm, "walk", 0.75, walk, True)
+	clip(arm, "run", 0.42, run, True)
+	clip(arm, "attack", 0.7, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.2, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- brigands and scarecrows (Harrowfield)
+# Bolt-ons for KayKit Rig_Medium bodies, in their mesh space like the gnoll's.
+
+def _ring(b, center, radii, z_tilt, width, mat, sides=14, gap=None):
+	"""A band of short segments round an ellipse, tipped `z_tilt` degrees about Y (roll) and X (pitch)."""
+	cx, cy, cz = center
+	rx, ry = radii
+	roll, pitch = z_tilt
+	rot = Euler((math.radians(pitch), math.radians(roll), 0)).to_matrix()
+	pts = []
+	for k in range(sides + 1):
+		a = 2 * math.pi * k / sides
+		p = rot @ Vector((rx * math.cos(a), ry * math.sin(a), 0))
+		pts.append((cx + p.x, cy + p.y, cz + p.z))
+	for k, (p, q) in enumerate(zip(pts, pts[1:])):
+		if gap and gap[0] <= k < gap[1]:
+			continue
+		b.seg(p, q, width, width, mat, "x", sides=4)
+
+
+def _tuft(b, root, direction, length, count, spread, mats, seed, width=0.022):
+	"""A bristle of straw: thin cones fanning out of `root` along `direction`."""
+	import random
+	rng = random.Random(seed)
+	d = Vector(direction).normalized()
+	side = d.orthogonal().normalized()
+	up = d.cross(side).normalized()
+	for k in range(count):
+		a = rng.uniform(0, 2 * math.pi)
+		r = rng.uniform(0.2, 1.0) * spread
+		v = (d + side * math.cos(a) * r + up * math.sin(a) * r).normalized()
+		ln = length * rng.uniform(0.6, 1.15)
+		start = Vector(root) + side * math.cos(a) * 0.03 + up * math.sin(a) * 0.03
+		b.seg(tuple(start), tuple(start + v * ln), width, 0.003, mats[k % len(mats)], "x", sides=3)
+
+
+def brigand_materials():
+	return {
+		"red": material("brigand_red", "8e2420", 0.85),
+		"hood": material("brigand_hood", "4a3e34", 0.95),
+		"hood_dark": material("brigand_hood_dark", "241c16", 0.95),
+		"red_dark": material("brigand_red_dark", "5a1614", 0.9),
+		"dot": material("brigand_dot", "c8b89a", 0.8),
+		"leather": material("brigand_leather", "4a3424", 0.8),
+		"leather_dark": material("brigand_leather_dark", "2c2018", 0.8),
+		"buckle": material("brigand_buckle", "a08a5a", 0.4),
+		"patch": material("brigand_patch", "141010", 0.5),
+		"scar": material("brigand_scar", "a05a50", 0.7),
+		"feather": material("brigand_feather", "2a2a2a", 0.8),
+	}
+
+
+def _shell(b, size, loc, mat, keep, segs=(16, 12)):
+	"""An ellipsoid with the faces `keep(direction)` rejects cut away (a hood's face opening)."""
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=segs[0], v_segments=segs[1], radius=0.5)
+	cut = [f for f in bm.faces if not keep(f.calc_center_median().normalized())]
+	bmesh.ops.delete(bm, geom=cut, context="FACES")
+	m = Matrix.LocRotScale(Vector(loc), None, Vector(size))
+	bmesh.ops.transform(bm, matrix=m, verts=bm.verts)
+	edge = [(tuple(e.verts[0].co), tuple(e.verts[1].co)) for e in bm.edges if len(e.link_faces) == 1]
+	b._add(bm, mat, "x")
+	return edge  # the cut's rim
+
+
+def _slab(b, pts, thick, mat):
+	"""A flat plate of `thick` through the (convex, planar) polygon `pts`: kerchief points, torn cloth."""
+	vs = [Vector(p) for p in pts]
+	n = (vs[1] - vs[0]).cross(vs[2] - vs[0]).normalized() * (thick / 2)
+	bm = bmesh.new()
+	front = [bm.verts.new(v + n) for v in vs]
+	back = [bm.verts.new(v - n) for v in vs]
+	bm.faces.new(front)
+	bm.faces.new(list(reversed(back)))
+	for k in range(len(vs)):
+		j = (k + 1) % len(vs)
+		bm.faces.new((front[j], front[k], back[k], back[j]))
+	b._add(bm, mat, "x")
+
+
+def build_brigand_hood():
+	"""A dirty hood and a red kerchief over the nose and mouth, for a KayKit ranger head."""
+	m = brigand_materials()
+	b = Builder("brigand_hood")
+	# the hood: a shell round the head with an oval cut for the face, a point
+	# falling behind and a ragged cowl over the shoulders
+	opening = lambda d: not (d.y < -0.5 and -0.8 < d.z < 0.1 and abs(d.x) < 0.58)
+	rim = _shell(b, (1.28, 1.38, 1.3), (0, -0.04, 1.8), m["hood"], opening, segs=(20, 14))
+	for p, q in rim:   # a thick folded edge round the face
+		if p[1] < -0.2:
+			b.seg(p, q, 0.05, 0.05, m["hood"], "x", sides=5)
+	_shell(b, (1.24, 1.34, 1.26), (0, -0.04, 1.8), m["hood_dark"], opening, segs=(20, 14))   # darker lining, seen round the face
+	b.seg((0, 0.2, 2.3), (0, 0.62, 2.3), 0.3, 0.14, m["hood"], "x", sides=8)                 # the point falling behind
+	b.seg((0, 0.62, 2.3), (0, 0.86, 2.0), 0.14, 0.02, m["hood"], "x", sides=8)
+	b.blob((0.28, 0.28, 0.28), (0, 0.62, 2.3), m["hood"], "x", segs=(8, 5))
+	_shell(b, (1.12, 1.02, 0.6), (0, 0.04, 1.12), m["hood"], lambda d: d.z > 0.0)          # cowl over the shoulders
+	for k in range(14):
+		a = 2 * math.pi * (k + 0.5) / 14
+		x, y = 0.55 * math.cos(a), 0.04 + 0.5 * math.sin(a)
+		if abs(x) < 0.2 and y < 0:
+			continue
+		out = Vector((x, y - 0.04, 0)).normalized()
+		w = Vector((-out.y, out.x, 0)) * 0.13
+		c = Vector((x, y, 1.13))
+		tip = c + out * 0.05 + Vector((0, 0, -0.14 - 0.05 * (k % 2)))
+		_slab(b, [tuple(c - w), tuple(c + w), tuple(tip)], 0.03, m["hood"])                   # ragged edge
+	# the kerchief
+	b.seg((0, -0.04, 1.26), (0, -0.04, 1.6), 0.46, 0.49, m["red"], "x", sides=14)
+	_slab(b, [(-0.3, -0.5, 1.4), (0.3, -0.5, 1.4), (0.02, -0.6, 1.04)], 0.04, m["red"])     # the point hanging over the chin
+	_ring(b, (0, -0.04, 1.595), (0.49, 0.49), (0, 0), 0.022, m["red_dark"], sides=14)       # hem
+	for x, z in ((-0.26, 1.5), (0.02, 1.56), (0.28, 1.48), (-0.3, 1.34), (0.3, 1.34)):     # a few pale spots
+		r = 0.46 + (z - 1.26) * 0.09 + 0.01
+		b.blob((0.06, 0.03, 0.06), (x, -0.04 - math.sqrt(max(0.0, r * r - x * x)), z), m["dot"], "x", segs=(5, 3))
+	b.blob((0.06, 0.03, 0.06), (0.0, -0.575, 1.24), m["dot"], "x", segs=(5, 3))
+	return b.build_static()
+
+
+def build_brigand_captain_hat():
+	"""A broad slouch hat with a red band, an eye patch and a scar, for a KayKit barbarian head."""
+	m = brigand_materials()
+	b = Builder("brigand_captain_hat")
+	b.seg((0, 0.02, 2.0), (0, 0.02, 2.06), 0.86, 0.84, m["leather"], "x", sides=16)       # brim
+	b.blob((0.5, 1.1, 0.12), (0.62, 0.02, 2.16), m["leather"], "x", rot=(0, -58, 0), segs=(8, 5))   # brim turned up on the left
+	b.seg((0, 0.02, 2.02), (0, 0.04, 2.44), 0.52, 0.42, m["leather_dark"], "x", sides=12)  # crown
+	b.blob((0.84, 0.7, 0.2), (0, 0.04, 2.44), m["leather_dark"], "x", segs=(10, 5))
+	b.blob((0.12, 0.6, 0.1), (0, 0.04, 2.52), m["leather"], "x", segs=(6, 4))             # dented top
+	b.seg((0, 0.02, 2.05), (0, 0.025, 2.18), 0.535, 0.515, m["red"], "x", sides=12)        # red band
+	b.blob((0.12, 0.1, 0.12), (0.5, -0.12, 2.12), m["buckle"], "x", segs=(6, 4))
+	b.seg((0.52, -0.1, 2.14), (0.72, 0.26, 2.66), 0.05, 0.01, m["feather"], "x", sides=4)  # black feather
+	b.seg((0.6, 0.06, 2.4), (0.72, 0.26, 2.66), 0.07, 0.01, m["red_dark"], "x", sides=4)
+	# eye patch over the right eye, strap slanting up over the head
+	b.blob((0.22, 0.08, 0.2), (-0.2, -0.5, 1.64), m["patch"], "x", segs=(8, 5))
+	_ring(b, (0, -0.02, 1.8), (0.54, 0.51), (-24, 0), 0.022, m["patch"], sides=16, gap=(12, 16))
+	def face(x, z):
+		return (x, -0.02 - 0.5 * math.sqrt(max(0.0, 1 - (x / 0.56) ** 2)) - 0.01, z)
+	pts = [face(0.26, 1.86), face(0.33, 1.72), face(0.38, 1.58), face(0.4, 1.46)]
+	for p, q in zip(pts, pts[1:]):   # a long scar down the left cheek, with stitch marks
+		b.seg(p, q, 0.022, 0.022, m["scar"], "x", sides=4)
+	for x, z in ((0.3, 1.8), (0.355, 1.65), (0.39, 1.52)):
+		b.seg(face(x - 0.05, z - 0.01), face(x + 0.05, z + 0.01), 0.012, 0.012, m["scar"], "x", sides=3)
+	return b.build_static()
+
+
+def scarecrow_materials():
+	return {
+		"sack": material("scarecrow_sack", "a38a62", 0.95),
+		"sack_dark": material("scarecrow_sack_dark", "6e5a3c", 0.95),
+		"stitch": material("scarecrow_stitch", "1e1712", 0.8),
+		"straw": material("scarecrow_straw", "d9b858", 0.9),
+		"straw_dark": material("scarecrow_straw_dark", "a4843a", 0.9),
+		"hat": material("scarecrow_hat", "b89448", 0.95),
+		"hat_dark": material("scarecrow_hat_dark", "7a5e2c", 0.95),
+		"band": material("scarecrow_band", "3a2a22", 0.9),
+		"rope": material("scarecrow_rope", "8a7248", 0.9),
+		"patch_a": material("scarecrow_patch_a", "6a3a2e", 0.95),
+		"patch_b": material("scarecrow_patch_b", "4e5a3a", 0.95),
+		"patch_c": material("scarecrow_patch_c", "5e6a7a", 0.95),
+		"glow": material("scarecrow_glow", "ff8a22", 0.3, emit=3.0),
+		"crow": material("scarecrow_crow", "1c1a20", 0.6),
+		"crow_sheen": material("scarecrow_crow_sheen", "2e3448", 0.5),
+		"beak": material("scarecrow_beak", "3a3630", 0.5),
+		"crow_eye": material("scarecrow_crow_eye", "e8e0c0", 0.3, emit=1.0),
+	}
+
+
+def _sack_head(b, m, tall=1.0, elder=False):
+	"""A burlap sack pulled over the head and tied at the neck, with a stitched face."""
+	cz = 1.66
+	b.blob((0.98, 0.92, 1.0 * tall), (0, 0.0, cz), m["sack"], "x", segs=(12, 9))
+	b.blob((0.5, 0.4, 0.3), (0.2, 0.12, cz + 0.42 * tall), m["sack"], "x", rot=(0, 20, 0), segs=(8, 5))   # lumpy crown
+	b.seg((0, 0, 1.18), (0, 0, 1.3), 0.34, 0.3, m["sack"], "x", sides=10)                   # gathered neck
+	b.seg((0, 0, 1.08), (0, 0, 1.18), 0.44, 0.34, m["sack_dark"], "x", sides=10)            # flared hem
+	_ring(b, (0, 0, 1.27), (0.32, 0.32), (0, 0), 0.035, m["rope"], sides=12)                 # the tie
+	b.seg((0.1, -0.3, 1.26), (0.16, -0.38, 1.08), 0.03, 0.02, m["rope"], "x", sides=4)
+	b.seg((0.08, -0.3, 1.26), (0.02, -0.38, 1.1), 0.03, 0.02, m["rope"], "x", sides=4)
+	face = -0.46
+	for s in (1, -1):
+		ex, ez = 0.21 * s, cz + 0.06
+		if elder:   # hollow button eyes with an ember deep in them
+			b.seg((ex, face + 0.03, ez), (ex, face - 0.02, ez), 0.11, 0.11, m["stitch"], "x", sides=10)
+			b.blob((0.07, 0.04, 0.07), (ex, face - 0.03, ez), m["glow"], "x", segs=(6, 4))
+			for a in (45, 135):
+				c, d = math.cos(math.radians(a)) * 0.14, math.sin(math.radians(a)) * 0.14
+				b.seg((ex - c, face + 0.02, ez - d), (ex + c, face + 0.02, ez + d), 0.012, 0.012, m["sack_dark"], "x", sides=3)
+		else:       # stitched X eyes, a faint glow showing through the weave
+			b.blob((0.2, 0.04, 0.18), (ex, face + 0.03, ez), m["glow"], "x", segs=(6, 4))
+			for a in (45, 135):
+				c, d = math.cos(math.radians(a)) * 0.11, math.sin(math.radians(a)) * 0.11
+				b.seg((ex - c, face - 0.005, ez - d), (ex + c, face - 0.005, ez + d), 0.028, 0.028, m["stitch"], "x", sides=4)
+	# a wide stitched grin: a curved seam with cross stitches
+	pts = []
+	for k in range(9):
+		u = (k - 4) / 4.0
+		x = 0.3 * u
+		z = cz - 0.2 + 0.07 * u * u + (0.02 if k % 2 else 0.0) * (1 if elder else 0)
+		y = face + 0.02 + 0.1 * u * u
+		pts.append((x, y, z))
+	for p, q in zip(pts, pts[1:]):
+		b.seg(p, q, 0.018, 0.018, m["stitch"], "x", sides=4)
+	for p in pts[1:-1]:
+		b.seg((p[0], p[1] - 0.005, p[2] + 0.06), (p[0], p[1] - 0.005, p[2] - 0.06), 0.014, 0.014, m["stitch"], "x", sides=3)
+	b.blob((0.2, 0.12, 0.08), (-0.24, face + 0.06, cz + 0.3), m["sack_dark"], "x", rot=(0, 20, 0), segs=(6, 4))  # a darned patch
+	for x, z in ((-0.33, cz + 0.3), (-0.15, cz + 0.3)):
+		b.seg((x, face + 0.04, z - 0.05), (x, face + 0.04, z + 0.05), 0.01, 0.01, m["stitch"], "x", sides=3)
+	_tuft(b, (0, 0.04, 1.14), (0, 0, -1), 0.24, 22, 1.6, [m["straw"], m["straw_dark"]], 3)   # straw spilling from the neck
+
+
+def build_scarecrow_head():
+	m = scarecrow_materials()
+	b = Builder("scarecrow_head")
+	_sack_head(b, m)
+	# floppy straw hat, tipped over one eye
+	tilt = Matrix.Translation((0, 0, 2.02)) @ Euler((math.radians(-10), math.radians(8), 0)).to_matrix().to_4x4()
+	hat = Builder("tmp")
+	hat.seg((0, 0, 0.0), (0, 0, 0.05), 0.78, 0.74, m["hat"], "x", sides=14)                # brim
+	hat.blob((0.5, 1.1, 0.14), (0.58, 0, -0.04), m["hat"], "x", rot=(0, 28, 0), segs=(8, 5))   # a drooping side of the brim
+	hat.seg((0, 0, 0.02), (0.02, 0.02, 0.38), 0.44, 0.34, m["hat"], "x", sides=12)          # crown
+	hat.blob((0.64, 0.6, 0.16), (0.02, 0.02, 0.38), m["hat_dark"], "x", segs=(8, 5))
+	hat.seg((0, 0, 0.04), (0.005, 0.005, 0.13), 0.45, 0.43, m["band"], "x", sides=12)
+	_tuft(hat, (0.1, -0.2, 0.4), (0.4, -0.3, 1), 0.16, 6, 0.6, [m["straw"], m["straw_dark"]], 9)  # straw poking through a hole
+	for k in range(10):   # ragged brim ends
+		a = 2 * math.pi * k / 10
+		x, y = 0.74 * math.cos(a), 0.74 * math.sin(a)
+		hat.seg((x, y, 0.02), (x * 1.12, y * 1.12, -0.04 - 0.03 * (k % 3)), 0.035, 0.005, m["hat_dark"], "x", sides=3)
+	for p in hat.parts:
+		p.data.transform(tilt)
+	b.parts.extend(hat.parts)
+	return b.build_static()
+
+
+def build_scarecrow_head_elder():
+	m = scarecrow_materials()
+	b = Builder("scarecrow_head_elder")
+	_sack_head(b, m, tall=1.08, elder=True)
+	# a huge, tattered, crooked hat
+	tilt = Matrix.Translation((0, 0.02, 2.06)) @ Euler((math.radians(-6), math.radians(-10), 0)).to_matrix().to_4x4()
+	hat = Builder("tmp")
+	hat.seg((0, 0, 0.0), (0, 0, 0.05), 0.98, 0.94, m["hat"], "x", sides=11)                # wide brim
+	hat.blob((0.6, 1.3, 0.14), (0.72, 0, -0.08), m["hat"], "x", rot=(0, 30, 0), segs=(8, 5))   # a side sagging down
+	for k in range(13):   # torn strips hanging off the brim
+		a = 2 * math.pi * k / 13 + 0.2
+		x, y = 0.93 * math.cos(a), 0.93 * math.sin(a)
+		drop = 0.1 + 0.08 * ((k * 5) % 3)
+		hat.seg((x, y, 0.02), (x * 1.1, y * 1.1, -drop), 0.07, 0.01, m["hat_dark"] if k % 2 else m["hat"], "x", sides=3)
+	crown = [((0, 0, 0.0), 0.46), ((0.02, 0.02, 0.4), 0.36), ((0.12, 0.04, 0.7), 0.22), ((0.34, 0.06, 0.86), 0.11), ((0.56, 0.06, 0.74), 0.02)]
+	for (p, r0), (q, r1) in zip(crown, crown[1:]):   # a tall crown, bent over at the tip
+		hat.seg(p, q, r0, r1, m["hat"], "x", sides=10)
+		hat.blob((r1 * 2, r1 * 2, r1 * 2), q, m["hat"], "x", segs=(8, 5))
+	hat.seg((0, 0, 0.03), (0.005, 0.003, 0.14), 0.47, 0.45, m["band"], "x", sides=10)
+	hat.blob((0.2, 0.12, 0.14), (-0.1, -0.4, 0.3), m["patch_a"], "x", rot=(-12, 0, 0), segs=(6, 4))  # patch on the crown
+	_tuft(hat, (0.3, 0.25, 0.1), (0.5, 0.6, 0.6), 0.2, 6, 0.6, [m["straw"], m["straw_dark"]], 21)
+	for p in hat.parts:
+		p.data.transform(tilt)
+	b.parts.extend(hat.parts)
+	return b.build_static()
+
+
+def build_scarecrow_chest():
+	"""Straw bursting from the collar and patches sewn on a KayKit coat."""
+	m = scarecrow_materials()
+	b = Builder("scarecrow_chest")
+	straw = [m["straw"], m["straw_dark"]]
+	for k, (x, y) in enumerate(((0.2, -0.24), (-0.2, -0.24), (0.3, 0.1), (-0.3, 0.1), (0.0, 0.3), (0.0, -0.3))):
+		_tuft(b, (x * 0.8, y * 0.8, 1.26), (x, y, 0.55), 0.22, 7, 0.7, straw, 40 + k)
+	for loc, size, rot, mat in (((0.2, -0.4, 0.95), (0.22, 0.06, 0.2), (0, 0, 8), m["patch_a"]),
+								((-0.18, -0.37, 0.7), (0.18, 0.06, 0.2), (0, 0, -12), m["patch_b"]),
+								((-0.28, 0.36, 1.0), (0.24, 0.06, 0.22), (0, 0, 10), m["patch_c"])):
+		b.blob(size, loc, mat, "x", rot=rot, segs=(6, 3))
+	return b.build_static()
+
+
+def build_scarecrow_hips():
+	"""A rope belt with straw hanging out all round the waist."""
+	m = scarecrow_materials()
+	b = Builder("scarecrow_hips")
+	_ring(b, (0, 0, 0.66), (0.47, 0.41), (0, 0), 0.04, m["rope"], sides=14)
+	b.blob((0.1, 0.08, 0.1), (0.2, -0.43, 0.66), m["rope"], "x", segs=(6, 4))
+	b.seg((0.2, -0.44, 0.64), (0.24, -0.46, 0.44), 0.03, 0.02, m["rope"], "x", sides=4)
+	for k in range(10):
+		a = math.radians(k * 36 + 18)
+		x, y = 0.46 * math.cos(a), 0.4 * math.sin(a)
+		if abs(x) < 0.16 and y < 0:   # keep the front clear over the legs' stride
+			continue
+		_tuft(b, (x, y, 0.62), (x * 0.8, y * 0.8, -1), 0.24, 5, 0.5, [m["straw"], m["straw_dark"]], 60 + k)
+	return b.build_static()
+
+
+def _cuff(side):
+	m = scarecrow_materials()
+	b = Builder(f"scarecrow_cuff_{side}")
+	s = 1 if side == "l" else -1
+	_tuft(b, (0.74 * s, 0, 1.1), (s, 0, -0.15), 0.2, 11, 1.2, [m["straw"], m["straw_dark"]], 80 if side == "l" else 81, width=0.025)
+	return b.build_static()
+
+
+def build_scarecrow_cuff_l():
+	return _cuff("l")
+
+
+def build_scarecrow_cuff_r():
+	return _cuff("r")
+
+
+def build_scarecrow_crow():
+	"""A crow perched on the left shoulder."""
+	m = scarecrow_materials()
+	b = Builder("scarecrow_crow")
+	x, y, z = 0.5, 0.06, 1.24
+	b.blob((0.2, 0.34, 0.24), (x, y, z + 0.14), m["crow"], "x", rot=(-20, 0, 0), segs=(8, 6))     # body
+	b.blob((0.18, 0.18, 0.18), (x, y - 0.16, z + 0.3), m["crow"], "x", segs=(8, 6))            # head
+	b.seg((x, y - 0.24, z + 0.3), (x, y - 0.38, z + 0.27), 0.045, 0.005, m["beak"], "x", sides=4)
+	for s in (1, -1):
+		b.blob((0.06, 0.34, 0.16), (x + 0.1 * s, y + 0.04, z + 0.15), m["crow_sheen"], "x", rot=(-18, 0, 0), segs=(6, 4))   # folded wings
+		b.blob((0.035, 0.03, 0.035), (x + 0.07 * s, y - 0.22, z + 0.33), m["crow_eye"], "x", segs=(5, 3))
+		b.seg((x + 0.04 * s, y, z + 0.04), (x + 0.04 * s, y - 0.02, z - 0.04), 0.012, 0.01, m["beak"], "x", sides=3)   # legs
+	b.seg((x, y + 0.14, z + 0.1), (x, y + 0.36, z - 0.02), 0.07, 0.02, m["crow"], "x", sides=4)   # tail
+	return b.build_static()
+
+
 ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail, "orc_face": build_orc_face,
 			   "lizard_head": build_lizard_head, "lizard_head_shaman": build_lizard_head_shaman,
 			   "lizard_head_chief": build_lizard_head_chief, "lizard_tail": build_lizard_tail,
 			   "lizard_tail_chief": build_lizard_tail_chief, "drowned_head": build_drowned_head,
-			   "drowned_chest": build_drowned_chest, "drowned_hips": build_drowned_hips}
+			   "drowned_chest": build_drowned_chest, "drowned_hips": build_drowned_hips,
+			   "brigand_hood": build_brigand_hood, "brigand_captain_hat": build_brigand_captain_hat,
+			   "scarecrow_head": build_scarecrow_head, "scarecrow_head_elder": build_scarecrow_head_elder,
+			   "scarecrow_chest": build_scarecrow_chest, "scarecrow_hips": build_scarecrow_hips,
+			   "scarecrow_cuff_l": build_scarecrow_cuff_l, "scarecrow_cuff_r": build_scarecrow_cuff_r,
+			   "scarecrow_crow": build_scarecrow_crow}
 CREATURES = {"rat": build_rat, "fire_beetle": build_beetle, "wolf": build_wolf, "dire_wolf": build_dire_wolf,
 			 "bear": build_bear, "spider": build_spider, "mire_toad": build_toad, "snapping_turtle": build_turtle,
-			 "bog_leech": build_leech}
+			 "bog_leech": build_leech, "boar": build_boar}
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

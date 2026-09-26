@@ -117,6 +117,8 @@ you build the neighbour:
 |---|---|
 | north | Cinderpass, The Ashfall (26–30) |
 | east | Hollowmere, The Emberlands (10–15) **(built: the rockslide is gone, zone lines both sides)** |
+
+Hollowmere's south pass opens onto Harrowfield (built), and Greenmoor gained an east pass to Harrowfield; Hollowmere's east and north are rockslides.
 | west | The Weeping Throat, The Long Monsoon (20–24) |
 
 The existing east and west passes sit at `k = -20` and `k = +40`, not 0. Use

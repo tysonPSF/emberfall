@@ -1,0 +1,86 @@
+{
+  "boar_tusk": {
+    "name": "Boar Tusk",
+    "value": 12,
+    "stack": 100
+  },
+  "boar_hide": {
+    "name": "Boar Hide",
+    "value": 18,
+    "stack": 20
+  },
+  "brigand_armband": {
+    "name": "Brigand's Red Armband",
+    "value": 10,
+    "stack": 20
+  },
+  "garricks_ledger": {
+    "name": "Garrick's Ledger",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "straw_heart": {
+    "name": "Heart of Straw",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "loaf_of_bread": {
+    "name": "Loaf of Bread",
+    "value": 3,
+    "stack": 20
+  },
+  "garricks_cutlass": {
+    "name": "Garrick's Cutlass",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 2.6,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 1,
+    "agi": 2,
+    "value": 900,
+    "rec_level": 7
+  },
+  "farmhands_gloves": {
+    "name": "Farmhand's Gloves",
+    "slot": "hands",
+    "ac": 3,
+    "str": 1,
+    "sta": 1,
+    "value": 160,
+    "rec_level": 4,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "harvest_band": {
+    "name": "Harvest Band",
+    "slot": "ring",
+    "sta": 2,
+    "str": 1,
+    "hp": 10,
+    "value": 700,
+    "rec_level": 6,
+    "no_drop": true,
+    "lore": true
+  },
+  "tatters_hat": {
+    "name": "Old Tatters' Hat",
+    "slot": "head",
+    "ac": 3,
+    "wis": 2,
+    "int": 2,
+    "hp": 5,
+    "value": 650,
+    "rec_level": 7,
+    "no_drop": true,
+    "lore": true,
+    "wear": "floppy_hat"
+  }
+}

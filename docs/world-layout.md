@@ -70,7 +70,7 @@ it means moving a zone.
 | Emberhold **(built)** | The Emberlands | city | 224 m | `[0, 0]` | city |
 | Greenmoor **(built)** | The Emberlands | 1–7 | 384 m | `[0, 1]` | field |
 | The Grove | The Emberlands | sanctuary | 256 m | *none — teleport* | sanctuary |
-| Harrowfield | The Emberlands | 3–9 | 384 m | `[1, 1]` | field |
+| Harrowfield **(built)** | The Emberlands | 3–9 | 384 m | `[1, 1]` | field |
 | Thornwood Vale **(built)** | The Emberlands | 6–14 | 512 m | `[0, 2]` | wood |
 | Hollowmere **(built)** | The Emberlands | 10–15 | 448 m | `[1, 2]` | water |
 | Lanternhold | The Dawnstair | city | 224 m | `[3, 2]` | city |
