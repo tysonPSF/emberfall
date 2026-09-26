@@ -922,5 +922,95 @@
         "slashes"
       ]
     }
+  },
+  "caravan_master_suri": {
+    "name": "Caravan-Master Suri",
+    "title": "Salt Traders",
+    "level": 30,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "Water first, {name}, questions after. Out here the sun kills slower than the [scorpions] and the [raiders], but it never stops trying.",
+      "scorpions": "Big as a cart and pale as the salt, so you step on them before you see them. Their stingers fetch a price in Lanternhold. Bring me four [stingers] and I'll pay each time.",
+      "stingers": "Four scorpion stingers, as often as you like. The first time, I've a pair of boots made for walking salt.",
+      "raiders": "The Salt Raiders, east, round a camp of stolen wagons. Their chief, [Vashti], blows a warhorn before every attack on a caravan.",
+      "vashti": "Vashti the Salt-Wolf. Bring me that warhorn of hers and the caravans will breathe again. You'll have the blade my best guard carried until the raiders took him.",
+      "unknown": "Ask Ibrem, {name}; he's been crossing the Bleach longer than I have."
+    }
+  },
+  "saltmaster_ibrem": {
+    "name": "Saltmaster Ibrem",
+    "title": "Salt Traders",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "salt_traders",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "smoked_mereperch",
+        "leather_backpack",
+        "steel_dirk",
+        "steel_longsword"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Salt, water and steel, {name}, at desert prices. Press G. And if you're headed north, mind the [bones].",
+      "bones": "The Bleach is a graveyard. Something enormous died here before the first caravan, and its bones don't lie still: the bone giants walk out of them. The biggest of them, the [Titan], sits in the great ribcage north of the flats.",
+      "titan": "The Bone Titan. There's a heart in that cage of ribs that won't stop beating. Bring me the [heart] and I'll give you a talisman carved from its first bone.",
+      "heart": "The Heart of the Titan. It'll be heavy. Bring it anyway.",
+      "unknown": "Ask Suri."
+    }
+  },
+  "caravan_guard": {
+    "name": "a caravan guard",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "Keep close to the wagons, {name}. Anything follows you in, I'll handle it.",
+      "unknown": "Ask the Caravan-Master."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To the wagons, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the caravan!",
+        "Back into the salt!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

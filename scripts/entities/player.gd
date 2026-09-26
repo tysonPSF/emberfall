@@ -65,6 +65,7 @@ var camera_pivot: Node3D
 var spring_arm: SpringArm3D
 var camera: Camera3D
 var zoom := 6.0
+var _zoom_before_first_person := 6.0
 var pitch := -0.3
 var mouse_looking := false
 var _cursor_hud: Node = null  # cached HUD, asked each frame whether a window needs the cursor
@@ -588,6 +589,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_consider(entity_id)
 	elif event.is_action_pressed("sit"):
 		World.request_sit(entity_id, not sitting)
+	elif event.is_action_pressed("zoom_in", true):  # held keys repeat, like turning the wheel
+		zoom = maxf(0.0, zoom - 1.0)
+	elif event.is_action_pressed("zoom_out", true):
+		zoom = minf(MAX_ZOOM, zoom + 1.0)
+	elif event.is_action_pressed("first_person"):  # straight into your eyes, and back out to where you were
+		if zoom > 0.0:
+			_zoom_before_first_person = zoom
+			zoom = 0.0
+		else:
+			zoom = _zoom_before_first_person
 	elif event.is_action_pressed("hail"):
 		World.request_hail(entity_id)
 	elif event.is_action_pressed("trade"):

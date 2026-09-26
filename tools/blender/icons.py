@@ -28,7 +28,7 @@ from mathutils import Matrix, Vector
 sys.path.insert(0, os.path.dirname(__file__))
 import gear  # noqa: E402
 import props  # noqa: E402
-from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, STONE_WARM, WATER,  # noqa: E402
+from props import (BONE, CLAY, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, STONE_WARM, WATER,  # noqa: E402
 				   STONE_LIGHT, WOOD, WOOD_GRAY)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -591,6 +591,90 @@ def dawn_tusk_pendant():
 	return p.build()
 
 
+# ---------------------------------------------------------------- The Bleach
+
+def _stinger(p, swatch, scale=1.0, glow=0.0):
+	pts = [(0, 0, 0.1), (0.25, 0, 0.35), (0.35, 0, 0.7), (0.2, 0, 1.0), (-0.05, 0, 1.08)]
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		a = tuple(c * scale for c in a)
+		b = tuple(c * scale for c in b)
+		p.seg(a, b, (0.16 - i * 0.03) * scale, (0.13 - i * 0.03) * scale, swatch, sides=7, grad=(0.1, 0.7), glow=glow)
+	tip = tuple(c * scale for c in (-0.05, 0, 1.08))
+	p.seg(tip, (-0.3 * scale, 0, 0.85 * scale), 0.05 * scale, 0.0, BONE, sides=5)
+
+
+def chitin_plate():
+	p = Prop("chitin_plate", 325)
+	p.blob((0.9, 0.7, 0.18), (0, 0, 0.1), STONE_WARM, segs=(10, 6), grad=(0.1, 0.7))
+	for k in range(3):  # ridges across the plate
+		p.seg((-0.4, -0.3 + k * 0.3, 0.2), (0.4, -0.3 + k * 0.3, 0.2), 0.04, 0.04, CLAY, sides=5)
+	return p.build()
+
+
+def scorpion_stinger():
+	p = Prop("scorpion_stinger", 327)
+	_stinger(p, CLAY)
+	return p.build()
+
+
+def queens_stinger():
+	p = Prop("queens_stinger", 329)
+	_stinger(p, CLOTH_RED, scale=1.25, glow=0.4)
+	return p.build()
+
+
+def bleached_bone():
+	p = Prop("bleached_bone", 331)
+	p.seg((-0.55, 0, 0.3), (0.55, 0, 0.5), 0.1, 0.1, BONE, sides=8)
+	for x, z in ((-0.6, 0.3), (0.6, 0.5)):
+		for s_ in (-1, 1):
+			p.blob((0.16, 0.16, 0.16), (x, s_ * 0.08, z + 0.08), BONE, segs=(7, 5))
+	return p.build()
+
+
+def salt_crystal():
+	p = Prop("salt_crystal", 333)
+	for (x, y, h, r) in ((0, 0, 0.9, 0.2), (0.22, 0.1, 0.55, 0.14), (-0.2, 0.05, 0.6, 0.15), (0.05, -0.2, 0.45, 0.12)):
+		p.seg((x, y, 0), (x * 1.3, y * 1.3, h), r, 0.0, CLOTH_WHITE, sides=6, glow=0.2)
+	return p.build()
+
+
+def raider_scarf():
+	p = Prop("raider_scarf", 335)
+	for k in range(5):
+		p.seg((-0.5, 0, 0.12 + k * 0.1), (0.5, 0, 0.16 + k * 0.1), 0.09, 0.09, STONE_WARM, sides=8, grad=(0.2, 0.7))
+	p.box((0.18, 0.04, 0.6), (0.55, 0, 0.1), STONE_WARM, rot=(0, 25, 0))  # a trailing end
+	p.box((0.18, 0.05, 0.05), (0.55, 0, -0.18), CLOTH_RED, rot=(0, 25, 0))
+	return p.build()
+
+
+def raider_warhorn():
+	p = Prop("raider_warhorn", 337)
+	pts = [(-0.6, 0, 0.3), (-0.2, 0, 0.2), (0.2, 0, 0.3), (0.5, 0, 0.6)]
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.06 + i * 0.07, 0.12 + i * 0.08, BONE, sides=10, grad=(0.1, 0.7))
+	for a, b, r in (((-0.24, 0, 0.21), (-0.16, 0, 0.2), 0.16), ((0.3, 0, 0.36), (0.36, 0, 0.44), 0.24)):  # gold bands round the horn
+		p.seg(a, b, r, r, GOLD, sides=10)
+	return p.build()
+
+
+def titans_heart():
+	p = Prop("titans_heart", 339)
+	p.blob((0.55, 0.5, 0.6), (0, 0, 0.5), BONE, segs=(10, 8), jitter=0.05, grad=(0.1, 0.7))
+	p.blob((0.3, 0.28, 0.32), (0, -0.25, 0.5), CLOTH_RED, segs=(8, 6), glow=1.2)
+	for s_ in (-1, 1):  # stumps of great vessels
+		p.seg((s_ * 0.2, 0, 0.9), (s_ * 0.3, 0, 1.15), 0.12, 0.1, BONE, sides=7)
+	return p.build()
+
+
+def bone_talisman():
+	p = Prop("bone_talisman", 341)
+	_cord(p, 0.5, 0.75, HIDE)
+	p.box((0.3, 0.08, 0.45), (0, -0.32, 0.3), BONE)
+	p.seg((0, -0.38, 0.35), (0, -0.4, 0.35), 0.08, 0.08, CLOTH_WHITE, sides=6, glow=0.5)
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
@@ -601,7 +685,8 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings,
 									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band,
 									 ram_horn, ram_fleece, sunhawk_feather, sunstone_shard, linen_wrappings, pilgrim_token, cult_sigil,
-									 sun_scarab, hierophants_mask, dawn_tusk_pendant]}
+									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
+									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman]}
 
 
 # ---------------------------------------------------------------- rendering

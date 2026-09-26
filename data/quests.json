@@ -316,5 +316,67 @@
     "faction": {
       "dawn_pilgrims": 25
     }
+  },
+  "stingers_for_the_road": {
+    "name": "Stingers for the Salt Road",
+    "giver": "caravan_master_suri",
+    "start_keyword": "stingers",
+    "wants": {
+      "scorpion_stinger": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 500
+    },
+    "first_reward_item": "sandstrider_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Stingers for the Salt Road. Bring Caravan-Master Suri four scorpion stingers.",
+    "ready_text": "Stingers! Four of them. Careful handing them over, {name}.",
+    "complete_text": "Lanternhold's apothecaries will pay well for these. Here's your share.",
+    "first_complete_text": "And the boots I promised. Salt won't eat these.",
+    "faction": {
+      "salt_traders": 15
+    }
+  },
+  "the_salt_wolf": {
+    "name": "The Salt-Wolf",
+    "giver": "caravan_master_suri",
+    "start_keyword": "vashti",
+    "wants": {
+      "raider_warhorn": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1500
+    },
+    "first_reward_item": "caravan_guards_blade",
+    "accept_text": "You have taken on a task: The Salt-Wolf. Bring Caravan-Master Suri the warhorn of Vashti, chief of the Salt Raiders.",
+    "ready_text": "That horn. I've heard it in my sleep. Give it here, {name}.",
+    "complete_text": "No more warhorns on the salt road. The caravans owe you.",
+    "first_complete_text": "His blade. He'd want it swinging again.",
+    "faction": {
+      "salt_traders": 30,
+      "lanternhold": 10
+    }
+  },
+  "heart_of_the_titan": {
+    "name": "Heart of the Titan",
+    "giver": "saltmaster_ibrem",
+    "start_keyword": "heart",
+    "wants": {
+      "titans_heart": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1500
+    },
+    "first_reward_item": "bone_talisman",
+    "accept_text": "You have taken on a task: Heart of the Titan. Bring Saltmaster Ibrem the heart from the Bone Titan's ribcage.",
+    "ready_text": "It's still warm. By the salt... give it here, {name}.",
+    "complete_text": "Let it stop at last. The bones will lie easier.",
+    "first_complete_text": "The talisman, carved from its first bone, as promised.",
+    "faction": {
+      "salt_traders": 25
+    }
   }
 }

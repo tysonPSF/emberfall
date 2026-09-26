@@ -32,6 +32,7 @@ MODES = {
 	"mixolydian": [0, 2, 4, 5, 7, 9, 10],
 	"dorian": [0, 2, 3, 5, 7, 9, 10],
 	"aeolian": [0, 2, 3, 5, 7, 8, 10],
+	"phrygian_dominant": [0, 1, 4, 5, 7, 8, 10],  # the desert's raised third over a flat second
 }
 
 
@@ -257,6 +258,13 @@ TRACKS = {
 		"form": ["A", "B", "A", "C"],
 		"melody": "horn", "arp": "harp", "arp_pattern": [0, 2, 4, 2, 1, 2, 4, 2], "pad": True, "bass": True,
 		"drum": [0, 2], "drum_sections": ["B", "C"], "reverb": 3.4, "sparse": 0.25, "bells": 0.35,
+	},
+	"the_bleach": {
+		"key": (50, "phrygian_dominant"), "bpm": 58, "beats": 4, "seed": 197,
+		"sections": {"A": [0, 1, 0, 6], "B": [5, 1, 6, 0], "C": [3, 1, 0, 0]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 2, 1, 0], "pad": True, "bass": True,
+		"drum": [0, 1.5], "drum_sections": ["B", "C"], "reverb": 3.8, "sparse": 0.4, "bells": 0.15,
 	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,

@@ -652,6 +652,143 @@
       "rig": "own",
       "scale": 0.9
     },
+    "giant_scorpion": {
+      "path": "res://assets/creatures/giant_scorpion.glb",
+      "rig": "own"
+    },
+    "scorpion_queen": {
+      "path": "res://assets/creatures/scorpion_queen.glb",
+      "rig": "own",
+      "scale": 1.35
+    },
+    "salt_basilisk": {
+      "path": "res://assets/creatures/salt_basilisk.glb",
+      "rig": "own",
+      "scale": 1.2
+    },
+    "bone_giant": {
+      "path": "res://assets/creatures/bone_giant_body.glb",
+      "scale": 1.1,
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Cloak",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/bone_giant_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/bone_giant_chest.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/bone_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/bone_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "bone_titan": {
+      "path": "res://assets/creatures/bone_giant_body.glb",
+      "scale": 1.3,
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Cloak",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/bone_titan_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/bone_giant_chest.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/bone_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/bone_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "salt_raider": {
+      "path": "res://assets/creatures/salt_raider_body.glb",
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/raider_wrap.glb"
+        }
+      ],
+      "gear_parts": {
+        "chest": [
+          "Rogue_Cape"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "raider_chief": {
+      "path": "res://assets/creatures/raider_chief_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/raider_chief_turban.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/raider_chief_chest.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
     "stone_guardian": {
       "path": "res://assets/creatures/stone_knight.glb",
       "hide": [
@@ -861,6 +998,12 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "titan_ribcage": {"path": "res://assets/props/titan_ribcage.glb"},
+    "titan_skull": {"path": "res://assets/props/titan_skull.glb"},
+    "mesa": {"path": "res://assets/props/mesa.glb"},
+    "salt_crystals": {"path": "res://assets/props/salt_crystals.glb"},
+    "dead_palm": {"path": "res://assets/props/dead_palm.glb"},
+    "caravan_wagon": {"path": "res://assets/props/caravan_wagon.glb"},
     "lantern_string": {"path": "res://assets/props/lantern_string.glb"},
     "elephant_statue": {"path": "res://assets/props/elephant_statue.glb"},
     "sun_pillar": {"path": "res://assets/props/sun_pillar.glb"},

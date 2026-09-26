@@ -1600,6 +1600,114 @@ def lantern_string():
 	return p.build()
 
 
+# ---------------------------------------------------------------- The Bleach
+
+def titan_ribcage():
+	"""The ribs of some ancient giant beast, arching out of the salt: a spine
+	along Y and pairs of curved ribs, about 18 m long and 7 m high."""
+	p = Prop("titan_ribcage", 131)
+	for k in range(9):  # the spine, half buried
+		y = -8.0 + k * 2.0
+		p.blob((1.3, 1.6, 1.0), (0, y, 0.3), BONE, segs=(8, 6), grad=(0.0, 0.7))
+	for k in range(7):  # ribs arching up and over
+		y = -6.0 + k * 2.0
+		h = 7.0 - abs(k - 3) * 0.7
+		for s_ in (-1, 1):
+			prev = None
+			for j in range(6):
+				t = j / 5
+				pt = (s_ * (1.0 + math.sin(t * math.pi * 0.9) * 4.2), y, 0.3 + h * math.sin(t * math.pi * 0.55))
+				if prev:
+					p.seg(prev, pt, 0.34 - j * 0.03, 0.31 - j * 0.03, BONE, sides=7, grad=(0.0, 0.7))
+				prev = pt
+	return p.build(bevel=0.03)
+
+
+def titan_skull():
+	"""A great horned skull lying on its jaw in the salt, tusks out front (-Y): 8 m across."""
+	p = Prop("titan_skull", 132)
+	p.blob((5.0, 6.0, 3.8), (0, 0, 1.4), BONE, segs=(12, 8), grad=(0.0, 0.8))
+	for s_ in (-1, 1):
+		p.blob((1.3, 1.3, 1.1), (s_ * 1.4, -2.4, 2.0), STONE_DARK, segs=(8, 6))  # eye sockets
+		pts = [(s_ * 1.8, -2.8, 0.9), (s_ * 2.4, -5.0, 0.8), (s_ * 2.2, -7.0, 1.6), (s_ * 1.5, -8.2, 2.8)]  # tusks
+		for i, (a, b) in enumerate(zip(pts, pts[1:])):
+			p.seg(a, b, 0.55 - i * 0.14, 0.45 - i * 0.14, BONE, sides=8, grad=(0.0, 0.6))
+		hp = [(s_ * 2.3, 1.2, 3.0), (s_ * 3.8, 1.8, 4.6), (s_ * 4.2, 1.0, 6.2)]  # horns
+		for i, (a, b) in enumerate(zip(hp, hp[1:])):
+			p.seg(a, b, 0.5 - i * 0.18, 0.35 - i * 0.18, BONE, sides=7, grad=(0.0, 0.6))
+	p.box((2.6, 2.4, 0.9), (0, -3.3, 0.45), BONE, grad=(0.1, 0.8))  # the jaw in the ground
+	return p.build(bevel=0.04)
+
+
+def mesa():
+	"""A flat-topped butte of banded pale stone, wider than it is tall: about
+	20 m across and 11 m high, its sides broken and uneven."""
+	p = Prop("mesa", 133)
+	for k in range(4):  # four thick bands, barely narrowing
+		z = k * 2.8
+		r = 10.0 - k * 0.45
+		p.seg((0, 0, z), (0, 0, z + 2.9), r, r - 0.25, STONE_WARM if k % 2 else STONE_LIGHT, sides=11, grad=(0.1, 0.9), jitter=0.9)
+	p.seg((0, 0, 11.2), (0, 0, 11.5), 8.4, 8.0, STONE_WARM, sides=11, jitter=0.4)  # the flat top
+	for k in range(9):  # fallen blocks and a scree skirt at the foot
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(9.5, 11.5)
+		s_ = p.rng.uniform(1.2, 2.4)
+		p.rock((s_, s_ * 0.9, s_ * 0.7), (math.cos(a) * d, math.sin(a) * d, 0.3), STONE_LIGHT)
+	return p.build()
+
+
+def salt_crystals():
+	"""A cluster of white salt crystals growing out of the flats, up to 1.6 m."""
+	p = Prop("salt_crystals", 134)
+	for k in range(9):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0, 0.6)
+		h = p.rng.uniform(0.5, 1.6)
+		lean = p.rng.uniform(-0.3, 0.3)
+		p.seg((math.cos(a) * r, math.sin(a) * r, -0.1), (math.cos(a) * r + lean, math.sin(a) * r, h), 0.2, 0.0, CLOTH_WHITE, sides=5, grad=(0.0, 0.5), glow=0.15)
+	return p.build()
+
+
+def dead_palm():
+	"""A dead palm at a dry oasis: a leaning grey trunk and a few broken, drooping fronds."""
+	p = Prop("dead_palm", 135)
+	pts = [(0, 0, 0), (0.3, 0, 2.0), (0.8, 0, 4.0), (1.5, 0, 5.8)]
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.32 - i * 0.06, 0.28 - i * 0.06, WOOD_GRAY, sides=7, grad=(0.1, 0.9))
+	for k in range(5):
+		a = k * math.tau / 5 + 0.3
+		p.seg((1.5, 0, 5.8), (1.5 + math.cos(a) * 1.8, math.sin(a) * 1.8, 5.0), 0.08, 0.02, HIDE, sides=4)
+	return p.build()
+
+
+def caravan_wagon():
+	"""A salt-trader's covered wagon: canvas hoops over a plank bed, big wheels, shafts to -Y."""
+	p = Prop("caravan_wagon", 136)
+	p.box((2.2, 4.2, 0.2), (0, 0, 1.0), WOOD, grad=(0.2, 1.0))
+	for x in (-1.1, 1.1):
+		p.box((0.1, 4.2, 0.5), (x, 0, 1.35), WOOD_GRAY)
+		for y in (-1.4, 1.4):  # wheels
+			for k in range(10):
+				a0, a1 = k * math.tau / 10, (k + 1) * math.tau / 10
+				p.seg((x * 1.12, y + math.cos(a0) * 0.75, 0.75 + math.sin(a0) * 0.75), (x * 1.12, y + math.cos(a1) * 0.75, 0.75 + math.sin(a1) * 0.75), 0.07, 0.07, WOOD, sides=4)
+			p.seg((x * 1.12, y, 0.0), (x * 1.12, y, 1.5), 0.04, 0.04, WOOD_GRAY, sides=4)
+	for k in range(5):  # the canvas hoops and cover
+		y = -1.8 + k * 0.9
+		prev = None
+		for j in range(7):
+			a = math.pi * j / 6
+			pt = (math.cos(a) * 1.15, y, 1.6 + math.sin(a) * 1.3)
+			if prev:
+				p.seg(prev, pt, 0.04, 0.04, WOOD, sides=4)
+			prev = pt
+	p.blob((2.4, 4.0, 2.6), (0, 0, 1.6), CLOTH_WHITE, segs=(10, 6), grad=(0.1, 0.6))
+	for s_ in (-1, 1):
+		p.seg((s_ * 0.5, -2.1, 1.0), (s_ * 0.4, -4.0, 0.7), 0.05, 0.05, WOOD, sides=5)
+	for k in range(3):
+		p.blob((0.55, 0.45, 0.5), (-0.6 + k * 0.6, 2.4, 1.3), HIDE, grad=(0.2, 0.8))  # salt sacks at the back
+	return p.build(bevel=0.02)
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1668,6 +1776,12 @@ PROPS = {
 	"broken_column": broken_column,
 	"sun_banner": sun_banner,
 	"lantern_string": lantern_string,
+	"titan_ribcage": titan_ribcage,
+	"titan_skull": titan_skull,
+	"mesa": mesa,
+	"salt_crystals": salt_crystals,
+	"dead_palm": dead_palm,
+	"caravan_wagon": caravan_wagon,
 }
 
 
