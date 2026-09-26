@@ -1,0 +1,1055 @@
+{
+  "name": "Hollowmere",
+  "music": "hollowmere",
+  "seed": 5309,
+  "size": 448,
+  "height_amplitude": 9,
+  "bind_point": [
+    160,
+    -40
+  ],
+  "flat_radius": 20,
+  "trees": 520,
+  "tree_mix": [
+    "tree_round",
+    "tree_round",
+    "tree_round",
+    "pine_b",
+    "pine_a"
+  ],
+  "groves": 0.55,
+  "rocks": 110,
+  "grass_colors": [
+    "#40542e",
+    "#5f6d3a"
+  ],
+  "fog_density": 0.01,
+  "fog_color": "#9aa6a4",
+  "sun_energy": 0.9,
+  "clutter": {
+    "grass_a": {
+      "density": 0.32,
+      "patch": 0.55,
+      "sway": 0.16,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.35
+      ],
+      "city": 0.2
+    },
+    "grass_b": {
+      "density": 0.3,
+      "patch": 0.35,
+      "sway": 0.14,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ],
+      "city": 0.3
+    },
+    "flowers_yellow": {
+      "density": 0.006,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.2
+    },
+    "flowers_purple": {
+      "density": 0.005,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "flowers_white": {
+      "density": 0.005,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.1
+    },
+    "fern": {
+      "density": 0.03,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 65,
+      "scale": [
+        0.9,
+        1.5
+      ]
+    },
+    "bush_a": {
+      "density": 0.006,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "bush_b": {
+      "density": 0.005,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.5
+      ]
+    },
+    "mushrooms": {
+      "density": 0.008,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "pebbles": {
+      "density": 0.005,
+      "patch": 0.4,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.6
+      ],
+      "city": 0.5
+    },
+    "log_fallen": {
+      "density": 0.0012,
+      "patch": 0.3,
+      "range": 120,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "stump": {
+      "density": 0.0016,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
+  },
+  "lakes": [
+    {
+      "points": [
+        [
+          -120,
+          -70
+        ],
+        [
+          -80,
+          -100
+        ],
+        [
+          -20,
+          -110
+        ],
+        [
+          40,
+          -100
+        ],
+        [
+          95,
+          -80
+        ],
+        [
+          120,
+          -40
+        ],
+        [
+          117,
+          10
+        ],
+        [
+          125,
+          60
+        ],
+        [
+          100,
+          100
+        ],
+        [
+          50,
+          120
+        ],
+        [
+          0,
+          115
+        ],
+        [
+          -50,
+          125
+        ],
+        [
+          -95,
+          105
+        ],
+        [
+          -125,
+          60
+        ],
+        [
+          -135,
+          10
+        ]
+      ],
+      "depth": 1.5,
+      "shelf": 16,
+      "bank": 12,
+      "islands": [
+        [
+          -40,
+          -30,
+          14
+        ],
+        [
+          40,
+          30,
+          11
+        ],
+        [
+          -70,
+          60,
+          9
+        ]
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "obelisk",
+      "pos": [
+        160,
+        -40
+      ]
+    },
+    {
+      "type": "stilt_village",
+      "pos": [
+        123,
+        -15
+      ],
+      "face": [
+        0,
+        -15
+      ],
+      "length": 10
+    },
+    {
+      "type": "lizard_camp",
+      "pos": [
+        -170,
+        85
+      ]
+    },
+    {
+      "type": "sunken_ruins",
+      "pos": [
+        10,
+        112
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -186,
+        -12
+      ],
+      "yaw": 180,
+      "labels": [
+        "Fishers' Village",
+        "Thornwood Vale"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        -200
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Hollowmere"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        200,
+        0
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Hollowmere"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        200
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Hollowmere"
+      ]
+    }
+  ],
+  "passes": [
+    [
+      -224,
+      -20,
+      9
+    ],
+    [
+      0,
+      224,
+      9
+    ],
+    [
+      224,
+      0,
+      9
+    ],
+    [
+      0,
+      -224,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -224,
+          -20
+        ],
+        [
+          -185,
+          -22
+        ],
+        [
+          -160,
+          -60
+        ],
+        [
+          -140,
+          -110
+        ],
+        [
+          -80,
+          -135
+        ],
+        [
+          -10,
+          -140
+        ],
+        [
+          60,
+          -130
+        ],
+        [
+          115,
+          -100
+        ],
+        [
+          150,
+          -60
+        ],
+        [
+          158,
+          -40
+        ],
+        [
+          140,
+          -18
+        ],
+        [
+          123,
+          -15
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -213,
+        -20
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "thornwood",
+      "arrive": [
+        231,
+        -20
+      ],
+      "arrive_face": [
+        191,
+        -20
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "hollow_elder",
+      "pos": [
+        92,
+        -15
+      ],
+      "face": [
+        123,
+        -15
+      ]
+    },
+    {
+      "id": "hollow_netmaker",
+      "pos": [
+        115,
+        -14
+      ],
+      "face": [
+        115,
+        -20
+      ]
+    },
+    {
+      "id": "mere_sentry",
+      "pos": [
+        158,
+        -37
+      ],
+      "patrol": [
+        [
+          158,
+          -37
+        ],
+        [
+          140,
+          -20
+        ],
+        [
+          124,
+          -15
+        ],
+        [
+          95,
+          -15
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -60,
+        -118
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -121
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        55,
+        -112
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        -92
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        -165
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        40,
+        -160
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        100,
+        -155
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -120,
+        -160
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -44,
+        -26
+      ],
+      "pool": {
+        "mire_toad": 1,
+        "bog_leech": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -36,
+        -36
+      ],
+      "pool": {
+        "mire_toad": 1,
+        "bog_leech": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -70,
+        60
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 70,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -139,
+        25
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        -97
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 16
+    },
+    {
+      "pos": [
+        110,
+        90
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -20,
+        124
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -92,
+        -97
+      ],
+      "pool": {
+        "bog_leech": 1
+      },
+      "respawn": 60,
+      "wander": 16
+    },
+    {
+      "pos": [
+        160,
+        70
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        170,
+        130
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        140,
+        95
+      ],
+      "pool": {
+        "mire_toad": 2,
+        "snapping_turtle": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -60,
+        140
+      ],
+      "pool": {
+        "snapping_turtle": 1
+      },
+      "respawn": 75,
+      "wander": 10
+    },
+    {
+      "pos": [
+        60,
+        140
+      ],
+      "pool": {
+        "snapping_turtle": 1
+      },
+      "respawn": 75,
+      "wander": 10
+    },
+    {
+      "pos": [
+        100,
+        125
+      ],
+      "pool": {
+        "snapping_turtle": 1
+      },
+      "respawn": 75,
+      "wander": 10
+    },
+    {
+      "pos": [
+        35,
+        25
+      ],
+      "pool": {
+        "snapping_turtle": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        45,
+        35
+      ],
+      "pool": {
+        "snapping_turtle": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        40,
+        30
+      ],
+      "pool": {
+        "old_snapjaw": 1
+      },
+      "respawn": 600,
+      "wander": 3
+    },
+    {
+      "pos": [
+        -160,
+        78
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -180,
+        78
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -165,
+        96
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -181,
+        93
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -172,
+        71
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -157,
+        89
+      ],
+      "pool": {
+        "mirescale_shaman": 2,
+        "mirescale_hunter": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -184,
+        85
+      ],
+      "pool": {
+        "mirescale_shaman": 2,
+        "mirescale_hunter": 1
+      },
+      "respawn": 90,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -170,
+        85
+      ],
+      "pool": {
+        "mirescale_hunter": 5,
+        "ssrakka": 1
+      },
+      "respawn": 300,
+      "wander": 0
+    },
+    {
+      "pos": [
+        -150,
+        20
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -150,
+        140
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -195,
+        150
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -110,
+        160
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -190,
+        20
+      ],
+      "pool": {
+        "mirescale_hunter": 3,
+        "mirescale_shaman": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        0,
+        118
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        18,
+        108
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        4,
+        104
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        22,
+        120
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 90,
+      "wander": 5
+    },
+    {
+      "pos": [
+        -20,
+        126
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        40,
+        126
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        10,
+        142
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        55,
+        110
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -35,
+        112
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -70,
+        62
+      ],
+      "pool": {
+        "drowned_fisher": 1
+      },
+      "respawn": 60,
+      "wander": 6,
+      "when": "night"
+    },
+    {
+      "pos": [
+        10,
+        112
+      ],
+      "pool": {
+        "captain_maren": 1
+      },
+      "respawn": 600,
+      "wander": 3,
+      "when": "night"
+    }
+  ]
+}

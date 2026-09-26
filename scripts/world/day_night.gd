@@ -33,7 +33,8 @@ func setup(environment: Environment, sky_material: ProceduralSkyMaterial, sun_li
 	moon = DirectionalLight3D.new()
 	moon.light_color = MOON_COLOR
 	moon.shadow_enabled = true
-	moon.directional_shadow_max_distance = 80.0
+	moon.directional_shadow_max_distance = 50.0
+	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS  # soft moonlight needs less detail than the sun
 	moon.rotation_degrees = Vector3(-55.0, 150.0, 0.0)
 	moon.light_angular_distance = 1.2  # a small disc in the sky
 	sun.add_sibling.call_deferred(moon)

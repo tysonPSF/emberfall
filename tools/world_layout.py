@@ -104,12 +104,12 @@ AREAS = {
 }
 
 # what the engine already ships, so the map has to grow out of it rather than over it
-EXISTING = {'emberhold', 'greenmoor', 'thornwood'}
+EXISTING = {'emberhold', 'greenmoor', 'thornwood', 'hollowmere'}
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
 # Thornwood's three unused passes, which CLAUDE.md reserves: "a future zone
 # replaces one with a zone line"
-ROCKSLIDES = {'thornwood': ['north', 'east', 'west']}
+ROCKSLIDES = {'thornwood': ['north', 'west'], 'hollowmere': ['north', 'east', 'south']}
 
 DIRS = {'north': (0, 1), 'south': (0, -1), 'east': (1, 0), 'west': (-1, 0)}
 OPPOSITE = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}

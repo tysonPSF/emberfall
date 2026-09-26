@@ -305,6 +305,195 @@
         "Skeleton_Mage_Jaw": "#a8c0ff",
         "Skeleton_Mage_Hat": "#a8c0ff"
       }
+    },
+    "mire_toad": {
+      "path": "res://assets/creatures/mire_toad.glb",
+      "rig": "own"
+    },
+    "snapping_turtle": {
+      "path": "res://assets/creatures/snapping_turtle.glb",
+      "rig": "own"
+    },
+    "bog_leech": {
+      "path": "res://assets/creatures/bog_leech.glb",
+      "rig": "own"
+    },
+    "lizardfolk": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue.glb",
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/lizard_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/lizard_tail.glb"
+        }
+      ],
+      "tint": {
+        "Rogue_ArmLeft": "#9cc070",
+        "Rogue_ArmRight": "#9cc070",
+        "Rogue_Body": "#b8c09a",
+        "Rogue_Cape": "#7a8a5a"
+      },
+      "gear_parts": {
+        "chest": [
+          "Rogue_Cape"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "lizardfolk_shaman": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage.glb",
+      "hide": [
+        "Mage_Head",
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/lizard_head_shaman.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/lizard_tail.glb"
+        }
+      ],
+      "tint": {
+        "Mage_ArmLeft": "#9cc070",
+        "Mage_ArmRight": "#9cc070",
+        "Mage_Body": "#9aa878",
+        "Mage_Cape": "#8a6a44"
+      },
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
+    "lizardfolk_chief": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+      "scale": 0.86,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/lizard_head_chief.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/lizard_tail_chief.glb"
+        }
+      ],
+      "tint": {
+        "Barbarian_Body": "#6f8a5a",
+        "Barbarian_ArmLeft": "#6f8a5a",
+        "Barbarian_ArmRight": "#6f8a5a",
+        "Barbarian_LegLeft": "#8a9a74",
+        "Barbarian_LegRight": "#8a9a74"
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "drowned": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/drowned_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/drowned_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/drowned_hips.glb"
+        }
+      ],
+      "tint": {
+        "Skeleton_Minion_Body": "#9fc4b8",
+        "Skeleton_Minion_ArmLeft": "#9fc4b8",
+        "Skeleton_Minion_ArmRight": "#9fc4b8",
+        "Skeleton_Minion_LegLeft": "#9fc4b8",
+        "Skeleton_Minion_LegRight": "#9fc4b8",
+        "Skeleton_Minion_Head": "#9fc4b8",
+        "Skeleton_Minion_Jaw": "#9fc4b8",
+        "Skeleton_Minion_Cloak": "#4a6a5a"
+      },
+      "gear_parts": {
+        "chest": [
+          "Skeleton_Minion_Cloak"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "drowned_captain": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/drowned_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/drowned_hips.glb"
+        }
+      ],
+      "tint": {
+        "Skeleton_Warrior_Body": "#a8c0b8",
+        "Skeleton_Warrior_ArmLeft": "#a8c0b8",
+        "Skeleton_Warrior_ArmRight": "#a8c0b8",
+        "Skeleton_Warrior_LegLeft": "#a8c0b8",
+        "Skeleton_Warrior_LegRight": "#a8c0b8",
+        "Skeleton_Warrior_Head": "#a8c0b8",
+        "Skeleton_Warrior_Jaw": "#a8c0b8",
+        "Skeleton_Warrior_Helmet": "#c08a5a",
+        "Skeleton_Warrior_Cloak": "#7aa0b0"
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
     }
   },
   "weapons": {
@@ -329,6 +518,12 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "boardwalk": {"path": "res://assets/props/boardwalk.glb"},
+    "boardwalk_ramp": {"path": "res://assets/props/boardwalk_ramp.glb"},
+    "stilt_hut": {"path": "res://assets/props/stilt_hut.glb"},
+    "rowboat": {"path": "res://assets/props/rowboat.glb"},
+    "reed_hut": {"path": "res://assets/props/reed_hut.glb"},
+    "bone_totem": {"path": "res://assets/props/bone_totem.glb"},
     "pine_a": {
       "path": "res://assets/props/pine_a.glb"
     },

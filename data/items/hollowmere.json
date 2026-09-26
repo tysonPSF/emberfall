@@ -1,0 +1,176 @@
+{
+  "mire_toad_skin": {
+    "name": "Mire Toad Skin",
+    "value": 28,
+    "stack": 20
+  },
+  "leech_teeth": {
+    "name": "Leech Teeth",
+    "value": 30,
+    "stack": 100
+  },
+  "turtle_shell_plate": {
+    "name": "Turtle Shell Plate",
+    "value": 45,
+    "stack": 20
+  },
+  "mirescale_scale": {
+    "name": "Mirescale Scale",
+    "value": 32,
+    "stack": 100
+  },
+  "waterlogged_locket": {
+    "name": "Waterlogged Locket",
+    "value": 50,
+    "stack": 20
+  },
+  "snapjaws_shell": {
+    "name": "Snapjaw's Shell",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "drowned_bell": {
+    "name": "The Drowned Bell",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "mirescale_warstaff": {
+    "name": "Mirescale Warstaff",
+    "slot": "primary",
+    "dmg": 8,
+    "delay": 3.0,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "value": 320,
+    "rec_level": 10
+  },
+  "reed_wand": {
+    "name": "Reed-bound Wand",
+    "slot": "primary",
+    "dmg": 4,
+    "delay": 2.8,
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "model": "wand",
+    "skill": "1h_blunt",
+    "int": 2,
+    "wis": 2,
+    "mana": 10,
+    "value": 380,
+    "rec_level": 10
+  },
+  "scaled_jerkin": {
+    "name": "Scaled Jerkin",
+    "slot": "chest",
+    "ac": 9,
+    "agi": 1,
+    "sta": 1,
+    "value": 460,
+    "rec_level": 10,
+    "wear": "studded_tunic"
+  },
+  "scaled_leggings": {
+    "name": "Scaled Leggings",
+    "slot": "legs",
+    "ac": 6,
+    "agi": 1,
+    "value": 360,
+    "rec_level": 10,
+    "wear": "leather_leggings"
+  },
+  "ssrakkas_glaive": {
+    "name": "Ssrakka's Glaive",
+    "slot": "primary",
+    "dmg": 12,
+    "delay": 3.2,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "agi": 2,
+    "value": 2800,
+    "rec_level": 13,
+    "proc": {
+      "spell": "marsh_bolt",
+      "chance": 0.08
+    }
+  },
+  "drowned_cutlass": {
+    "name": "Drowned Captain's Cutlass",
+    "slot": "primary",
+    "dmg": 11,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 2,
+    "sta": 2,
+    "value": 2600,
+    "rec_level": 13,
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.08
+    }
+  },
+  "netmakers_sleeves": {
+    "name": "Netmaker's Sleeves",
+    "slot": "arms",
+    "ac": 5,
+    "agi": 1,
+    "sta": 1,
+    "value": 520,
+    "rec_level": 10,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "snapshell_shield": {
+    "name": "Snapshell Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 9,
+    "sta": 3,
+    "hp": 15,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 1400,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true
+  },
+  "pearl_of_the_mere": {
+    "name": "Pearl of the Mere",
+    "slot": "neck",
+    "ac": 2,
+    "wis": 3,
+    "int": 3,
+    "mana": 20,
+    "hp": 10,
+    "value": 1800,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true
+  },
+  "smoked_mereperch": {
+    "name": "Smoked Mereperch",
+    "value": 6,
+    "stack": 20
+  }
+}

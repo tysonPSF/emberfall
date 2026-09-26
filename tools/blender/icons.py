@@ -342,12 +342,113 @@ def hollow_watch_signet():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Hollowmere
+
+def mire_toad_skin():
+	p = Prop("mire_toad_skin", 271)
+	p.blob((1.1, 0.85, 0.12), (0, 0, 0.06), LEAF, segs=(12, 6), grad=(0.2, 0.8), jitter=0.05)
+	for k in range(9):  # warts
+		a = k * 2.4
+		p.blob((0.12, 0.12, 0.08), (math.cos(a) * 0.35 * (k % 3 + 1) / 3, math.sin(a) * 0.28 * (k % 3 + 1) / 3, 0.13), WOOD, segs=(6, 4))
+	for x in (-1, 1):
+		p.seg((x * 0.45, 0.3, 0.05), (x * 0.75, 0.55, 0.03), 0.08, 0.05, LEAF, sides=5)
+		p.seg((x * 0.45, -0.3, 0.05), (x * 0.7, -0.5, 0.03), 0.08, 0.05, LEAF, sides=5)
+	return p.build()
+
+
+def leech_teeth():
+	p = Prop("leech_teeth", 273)
+	for k in range(10):  # a ring of little hooked teeth, still in their pink rim
+		a0, a1 = k * math.tau / 10, (k + 1) * math.tau / 10
+		p.seg((math.cos(a0) * 0.42, math.sin(a0) * 0.42, 0.1), (math.cos(a1) * 0.42, math.sin(a1) * 0.42, 0.1), 0.1, 0.1, CLOTH_RED, sides=6)
+		p.seg((math.cos(a0) * 0.36, math.sin(a0) * 0.36, 0.16), (math.cos(a0) * 0.2, math.sin(a0) * 0.2, 0.42), 0.06, 0.0, BONE, sides=4)
+	return p.build()
+
+
+def turtle_shell_plate():
+	p = Prop("turtle_shell_plate", 275)
+	p.poly([(0, 0.55, 0.1), (0.5, 0.25, 0.14), (0.45, -0.35, 0.1), (-0.05, -0.55, 0.08), (-0.5, -0.2, 0.12), (-0.4, 0.35, 0.1)],
+		   [(0, 1, 2, 3, 4, 5)], WOOD_GRAY, grad=(0.2, 0.9))
+	p.blob((0.9, 0.95, 0.3), (0, 0, 0.1), STONE_DARK, segs=(6, 4), grad=(0.1, 0.8))
+	p.blob((0.3, 0.3, 0.12), (0.05, 0.02, 0.24), LEAF, segs=(6, 4))  # moss
+	return p.build()
+
+
+def mirescale_scale():
+	p = Prop("mirescale_scale", 277)
+	p.poly([(0, 0.6, 0.02), (0.38, 0.1, 0.1), (0.25, -0.45, 0.06), (0, -0.6, 0.02), (-0.25, -0.45, 0.06), (-0.38, 0.1, 0.1)],
+		   [(0, 1, 2, 3, 4, 5)], LEAF, grad=(0.0, 0.7))
+	p.seg((0, 0.55, 0.1), (0, -0.55, 0.1), 0.05, 0.03, WOOD, sides=4)  # the ridge
+	return p.build()
+
+
+def waterlogged_locket():
+	p = Prop("waterlogged_locket", 279)
+	_cord(p, 0.5, 0.75, WOOD_GRAY)
+	p.blob((0.46, 0.14, 0.52), (0, -0.3, 0.3), IRON, segs=(10, 6), grad=(0.1, 0.9))
+	p.blob((0.16, 0.08, 0.16), (0.08, -0.38, 0.38), LEAF, segs=(6, 4))  # weed stuck to it
+	p.seg((0.0, -0.38, 0.55), (-0.2, -0.36, 0.1), 0.03, 0.02, LEAF, sides=3)
+	return p.build()
+
+
+def snapjaws_shell():
+	p = Prop("snapjaws_shell", 281)
+	p.blob((1.3, 1.1, 0.55), (0, 0, 0.25), STONE_DARK, segs=(10, 6), grad=(0.1, 0.9))
+	for k in range(5):  # ridge spikes
+		p.seg((0, -0.4 + k * 0.2, 0.5), (0, -0.4 + k * 0.2, 0.78), 0.08, 0.0, WOOD_GRAY, sides=4)
+	for x in (-0.35, 0.35):
+		for k in range(3):
+			p.seg((x, -0.3 + k * 0.3, 0.42), (x * 1.1, -0.3 + k * 0.3, 0.6), 0.06, 0.0, WOOD_GRAY, sides=4)
+	p.blob((0.35, 0.3, 0.12), (-0.25, 0.1, 0.52), LEAF, segs=(6, 4))
+	return p.build()
+
+
+def drowned_bell():
+	p = Prop("drowned_bell", 283)
+	p.seg((0, 0, 0.0), (0, 0, 0.75), 0.42, 0.22, IRON, sides=12, grad=(0.1, 0.9))
+	p.seg((0, 0, -0.04), (0, 0, 0.04), 0.46, 0.44, IRON, sides=12)
+	p.blob((0.2, 0.2, 0.18), (0, 0, 0.82), IRON, segs=(8, 5))
+	for k in range(6):  # weed and verdigris
+		a = k * 1.1
+		p.blob((0.14, 0.08, 0.2), (math.cos(a) * 0.36, math.sin(a) * 0.36, 0.3 + (k % 3) * 0.12), LEAF, segs=(5, 4))
+	p.seg((0, 0, 0.9), (0, 0, 1.1), 0.05, 0.05, WOOD_GRAY, sides=5)  # a scrap of rope
+	return p.build()
+
+
+def smoked_mereperch():
+	p = Prop("smoked_mereperch", 285)
+	p.blob((1.0, 0.35, 0.28), (0, 0, 0.14), WOOD, segs=(10, 6), grad=(0.1, 0.8))
+	p.poly([(0.45, 0, 0.14), (0.8, 0.2, 0.2), (0.8, -0.2, 0.2)], [(0, 1, 2)], WOOD)  # tail
+	p.blob((0.08, 0.08, 0.08), (-0.38, -0.1, 0.2), STONE_DARK, segs=(5, 4))  # eye
+	p.seg((-0.2, 0, 0.3), (0.3, 0, 0.3), 0.02, 0.02, HIDE, sides=3)  # the smoking string
+	return p.build()
+
+
+def pearl_of_the_mere():
+	p = Prop("pearl_of_the_mere", 287)
+	_cord(p, 0.5, 0.75, WOOD_GRAY)
+	p.blob((0.4, 0.38, 0.4), (0, -0.3, 0.28), CLOTH_WHITE, segs=(12, 8), grad=(0.0, 0.4), glow=0.4)
+	p.seg((0, -0.3, 0.5), (0, -0.3, 0.62), 0.07, 0.07, GOLD, sides=6)
+	return p.build()
+
+
+def scaled_leggings():
+	p = Prop("scaled_leggings", 289)
+	_trousers(p, LEAF, WOOD)
+	for x in (-1, 1):
+		for z in (0.6, 0.42, 0.24):
+			p.seg((x * 0.2, 0, z), (x * 0.21, 0, z - 0.06), 0.225, 0.23, LEAF, sides=8, grad=(0.0, 0.6))
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
 									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,
 									 patchwork_pants, leather_leggings, iron_greaves, wolf_pelt, dire_wolf_fang, bear_claw,
-									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet]}
+									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet,
+									 mire_toad_skin, leech_teeth, turtle_shell_plate, mirescale_scale, waterlogged_locket,
+									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings]}
 
 
 # ---------------------------------------------------------------- rendering

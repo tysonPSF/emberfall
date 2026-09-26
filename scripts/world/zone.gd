@@ -27,6 +27,8 @@ var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
+var _decks: Array = []  # [Transform3D (center, deck top), half size Vector2]: boardwalks you stand on over the water
+var _lakes: Array = []  # [{shore: PackedVector2Array, level, depth, shelf, bank, islands: [[Vector2, radius]]}]
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
@@ -63,6 +65,8 @@ func load_zone(id: String) -> void:
 		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
 	for river: Dictionary in data.get("rivers", []):
 		_add_river(river)
+	for lake: Dictionary in data.get("lakes", []):
+		_add_lake(lake)
 	for road: Dictionary in data.get("roads", []):
 		var pts: Array[Vector2] = []
 		for pt: Array in road["points"]:
@@ -77,6 +81,8 @@ func load_zone(id: String) -> void:
 	_build_landmarks()
 	for river: Dictionary in _rivers:
 		_build_river(river)
+	for lake: Dictionary in _lakes:
+		_build_lake(lake)
 	_build_props()
 	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
 		_build_clutter()
@@ -111,6 +117,8 @@ func height_at(x: float, z: float) -> float:
 				h = bed
 			else:  # the banks slope from just above the water back up (or down) to the land
 				h = lerpf(level + 0.35, h, smoothstep(0.0, bank, d))
+	for lake: Dictionary in _lakes:
+		h = _lake_height(lake, x, z, h)
 	# Mountains ring the zone so you can't walk off the edge.
 	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
 	if edge > 0.0:
@@ -172,6 +180,77 @@ func river_distance(x: float, z: float) -> float:
 	for river: Dictionary in _rivers:
 		best = minf(best, float(_river_at(river, x, z)[0]) - float(river["width"]) * 0.5)
 	return best
+
+
+## A lake from its zone data: a shoreline polygon, its water set a little
+## under the lowest ground along that shore (before the lake is carved), so
+## it never spills. "shelf" is how far the shallows run out before it's
+## "depth" deep; "bank" how wide the land slopes down to the water;
+## "islands" [[x, z, radius]] rise back out of it.
+func _add_lake(lake: Dictionary) -> void:
+	var shore := PackedVector2Array()
+	for pt: Array in lake["points"]:
+		shore.append(Vector2(pt[0], pt[1]))
+	var level := INF
+	for i in shore.size():  # the lowest ground along the shoreline, edges sampled every few meters
+		var a := shore[i]
+		var b := shore[(i + 1) % shore.size()]
+		for k in maxi(1, int(a.distance_to(b) / 4.0)):
+			var at := a.lerp(b, float(k) / maxi(1, int(a.distance_to(b) / 4.0)))
+			level = minf(level, height_at(at.x, at.y))
+	var islands: Array = []
+	for isl: Array in lake.get("islands", []):
+		islands.append([Vector2(isl[0], isl[1]), float(isl[2])])
+	_lakes.append({"shore": shore, "level": level - 0.4 + float(lake.get("raise", 0.0)), "depth": float(lake.get("depth", 1.5)),
+			"shelf": float(lake.get("shelf", 14.0)), "bank": float(lake.get("bank", 12.0)), "islands": islands})
+
+
+## Signed distance to a lake's shoreline: negative on the water.
+static func _shore_distance(shore: PackedVector2Array, p: Vector2) -> float:
+	var best := INF
+	for i in shore.size():
+		best = minf(best, p.distance_to(Geometry2D.get_closest_point_to_segment(p, shore[i], shore[(i + 1) % shore.size()])))
+	return -best if Geometry2D.is_point_in_polygon(p, shore) else best
+
+
+func _lake_height(lake: Dictionary, x: float, z: float, h: float) -> float:
+	var p := Vector2(x, z)
+	var d := _shore_distance(lake["shore"], p)
+	var bank: float = lake["bank"]
+	if d > bank:
+		return h
+	var level: float = lake["level"]
+	if d > 0.0:  # the shore slopes down to just above the water
+		h = lerpf(level + 0.3, h, smoothstep(0.0, bank, d))
+	else:  # shallows, then deep
+		h = level - 0.15 - float(lake["depth"]) * smoothstep(0.0, float(lake["shelf"]), -d)
+	for isl: Array in lake["islands"]:
+		var id := p.distance_to(isl[0])
+		var r: float = isl[1]
+		if id < r + 6.0:
+			var top := level + 0.9 + _detail.get_noise_2d(x * 2.0, z * 2.0) * 0.3
+			h = lerpf(top, h, smoothstep(r - 2.0, r + 6.0, id))
+	return h
+
+
+## How far a point is from the nearest lake's water (negative on it, islands dry).
+func lake_distance(x: float, z: float) -> float:
+	var best := INF
+	var p := Vector2(x, z)
+	for lake: Dictionary in _lakes:
+		var d := _shore_distance(lake["shore"], p)
+		for isl: Array in lake["islands"]:
+			d = maxf(d, float(isl[1]) - 1.0 - p.distance_to(isl[0]))
+		best = minf(best, d)
+	return best
+
+
+## The water level under a point, or -INF on dry land (for swimming, splashes, spawns).
+func water_level(x: float, z: float) -> float:
+	for lake: Dictionary in _lakes:
+		if lake_distance(x, z) < 0.0 and _shore_distance(lake["shore"], Vector2(x, z)) < 0.0:
+			return lake["level"]
+	return -INF
 
 
 ## Distance from a point to the nearest road's centerline, minus its half width.
@@ -334,7 +413,7 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 		var r: float = pond["radius"]
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(r - 1.5, r + 2.0, pd))  # muddy bank
 		c = c.lerp(Color(0.22, 0.21, 0.15), 1.0 - smoothstep(r * 0.4, r - 1.0, pd))  # silt on the bottom
-	var wet := river_distance(x, z)
+	var wet := minf(river_distance(x, z), lake_distance(x, z))
 	if wet < 3.0:
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(0.5, 3.0, wet))  # muddy bank
 		c = c.lerp(Color(0.24, 0.23, 0.17), 1.0 - smoothstep(-3.0, 0.0, wet))  # silt on the bed
@@ -385,8 +464,96 @@ func _build_landmarks() -> void:
 				_build_bridge(Vector2(lm["pos"][0], lm["pos"][1]), _landmark_yaw(lm))
 			"rockslide":
 				_build_rockslide(p, _landmark_yaw(lm), lm.get("labels", []))
+			"stilt_village":
+				_build_stilt_village(p, _landmark_yaw(lm), int(lm.get("length", 10)))
+			"lizard_camp":
+				_build_lizard_camp(p)
+			"sunken_ruins":
+				_build_ruins(p)
+				for k in 10:
+					var at := Vector2(p.x, p.z) + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(6.0, 20.0)
+					if water_level(at.x, at.y) > -INF:
+						_prop("lily_pads", Vector3(at.x, water_level(at.x, at.y) + 0.02, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.4), "none")
 			"prop":
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
+
+
+## A fishing village on stilts: a pier runs out over the lake along the
+## landmark's facing (from the shore at its position), fisher huts stand on
+## platforms either side of it, boats are moored alongside and a torch burns at
+## the end. Decks are registered so NPCs and the bind spot stand on them.
+func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
+	var level := -INF
+	var out := Vector2(sin(yaw), cos(yaw))
+	for k in range(4, length * 3, 3):  # the lake under the pier
+		var at := Vector2(p.x, p.z) + out * k
+		level = maxf(level, water_level(at.x, at.y))
+	if level == -INF:
+		level = p.y - 0.4
+	var deck_y := level + 0.8
+	var xf := Transform3D(Basis(Vector3.UP, yaw), Vector3(p.x, deck_y, p.z))
+	var put := func(id: String, local: Vector3, local_yaw := 0.0, collide := "mesh", scale_ := 1.0) -> void:
+		_prop(id, xf * local, yaw + local_yaw, scale_, collide)
+	var deck := func(local: Vector3, half_size: Vector2) -> void:
+		_decks.append([xf * Transform3D(Basis(), local), half_size])
+	put.call("boardwalk_ramp", Vector3(0, 0, 1.5), PI)  # up from the shore
+	for i in length:
+		put.call("boardwalk", Vector3(0, 0, 4.5 + i * 3.0))
+	deck.call(Vector3(0, 0, 3.0 + length * 1.5), Vector2(1.5, length * 1.5))
+	for i in range(2, length - 1, 3):
+		for side: float in [-1.0, 1.0]:
+			var z := 4.5 + i * 3.0
+			var cx := side * 4.5
+			for q: Array in [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]]:
+				put.call("boardwalk", Vector3(cx + q[0], 0, z + q[1]))
+			deck.call(Vector3(cx, 0, z), Vector2(3.0, 3.0))
+			put.call("stilt_hut", Vector3(cx + side * 0.4, 0.02, z), -side * PI / 2.0)  # door toward the pier
+			var glow := OmniLight3D.new()
+			glow.light_color = Color(1.0, 0.66, 0.36)
+			glow.omni_range = 5.5
+			glow.shadow_enabled = true
+			glow.position = xf * Vector3(cx + side * 0.4, 1.6, z)
+			_night_light(glow, 1.3)
+	for i in range(1, length, 4):  # boats tied up along the pier
+		var side := -1.0 if i % 8 == 1 else 1.0
+		_prop("rowboat", Vector3(0, 0, 0) + (xf * Vector3(side * 2.6, 0, 6.0 + i * 3.0)) - Vector3.UP * 0.8, yaw + _rng.randf_range(-0.15, 0.15), 1.0, "none")
+	var end := 3.0 + length * 3.0
+	put.call("barrel_small", Vector3(0.9, 0.02, end - 1.0), 0.3, "box")
+	put.call("crates_stacked", Vector3(-0.9, 0.02, end - 1.2), 0.0, "box")
+	_prop("torch_post", xf * Vector3(1.2, 0, end - 0.3), yaw, 1.0, "none")
+	_prop("torch_lit", xf * Vector3(1.2, 1.72, end - 0.3), yaw, 1.0, "none")
+	_light(xf * Vector3(1.2, 2.3, end - 0.3), Color(1.0, 0.6, 0.25), 7.0, 0.9)
+	_prop("rowboat", (xf * Vector3(-2.4, 0, end + 1.5)) - Vector3.UP * 0.8, yaw + PI / 2.0, 1.0, "none")
+
+
+## The height to stand at: a boardwalk's deck where there is one, else the ground.
+func surface_at(x: float, z: float) -> float:
+	var h := height_at(x, z)
+	for d: Array in _decks:
+		var local := (d[0] as Transform3D).affine_inverse() * Vector3(x, 0, z)
+		if absf(local.x) <= (d[1] as Vector2).x and absf(local.z) <= (d[1] as Vector2).y:
+			h = maxf(h, (d[0] as Transform3D).origin.y)
+	return h
+
+
+## Lizardfolk camp: domed reed huts in a ring round a fire, bone totems at the
+## way in, reeds crowding the edges.
+func _build_lizard_camp(p: Vector3) -> void:
+	var center := Vector2(p.x, p.z)
+	var gate := center.direction_to(_bind_xz).angle()
+	_prop("campfire", p, 0.0, 1.0, "none")
+	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.6, 0.25), 11.0, 1.2)
+	for k in 5:
+		var a := gate + PI / 5.0 + k * TAU / 6.0
+		_prop("reed_hut", _ring(p, a, 11.0), _face_center(a), _rng.randf_range(0.95, 1.15), "mesh")
+	for s: float in [-1.0, 1.0]:
+		_prop("bone_totem", _ring(p, gate + s * 0.28, 15.0), _face_center(gate) + PI, 1.0, "trunk")
+	_prop("drying_rack", _ring(p, gate + PI, 6.0), _face_center(gate + PI))
+	for k in 26:
+		var a := _rng.randf() * TAU
+		if absf(angle_difference(a, gate)) < 0.4:
+			continue
+		_prop("reeds", _ring(p, a, _rng.randf_range(15.0, 20.0)), _rng.randf() * TAU, _rng.randf_range(1.0, 1.6), "none")
 
 
 ## A cave mouth in a rocky hillside (the way into a dungeon), torches either
@@ -930,6 +1097,67 @@ func _build_river(river: Dictionary) -> void:
 			_prop("rubble_half", ground(at.x, at.y) - Vector3.UP * 0.1, _rng.randf() * TAU, _rng.randf_range(0.3, 0.6), "none")
 
 
+## A lake's water: its shoreline grown a few meters (the banks hide the
+## overlap), filled at the water level; reeds crowd the shallows and stones
+## the shore; islands get a tree or two.
+func _build_lake(lake: Dictionary) -> void:
+	var level: float = lake["level"]
+	var grown := Geometry2D.offset_polygon(lake["shore"], 4.0)
+	if grown.is_empty():
+		return
+	var outline: PackedVector2Array = grown[0]
+	var tris := Geometry2D.triangulate_polygon(outline)
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_normal(Vector3.UP)
+	for i in range(0, tris.size(), 3):
+		for k: int in [0, 2, 1]:  # counterclockwise seen from above
+			var v := outline[tris[i + k]]
+			st.set_uv(v * 0.05)
+			st.add_vertex(Vector3(v.x, level, v.y))
+	var water := MeshInstance3D.new()
+	water.mesh = st.commit()
+	var mat := ShaderMaterial.new()
+	mat.shader = WATER_SHADER
+	water.material_override = mat
+	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(water)
+	var shore: PackedVector2Array = lake["shore"]
+	var perimeter := 0.0
+	for i in shore.size():
+		perimeter += shore[i].distance_to(shore[(i + 1) % shore.size()])
+	for k in int(perimeter / 3.0):
+		var i := _rng.randi() % shore.size()
+		var at := shore[i].lerp(shore[(i + 1) % shore.size()], _rng.randf())
+		var inward := (Vector2.ZERO if shore.size() < 3 else (_centroid(shore) - at).normalized())
+		at += inward * _rng.randf_range(-3.0, 5.0)
+		if road_distance(at.x, at.y) < 3.0 or _near_flat_spot(at, 12.0):
+			continue
+		if _rng.randf() < 0.8:
+			_prop("reeds", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.9, 1.5), "none")
+		else:
+			_prop("rubble_half", ground(at.x, at.y) - Vector3.UP * 0.1, _rng.randf() * TAU, _rng.randf_range(0.3, 0.7), "none")
+	for isl: Array in lake["islands"]:
+		var c: Vector2 = isl[0]
+		for k in 3:
+			var at: Vector2 = c + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(0.0, float(isl[1]) - 3.0)
+			_prop("reeds", ground(at.x, at.y), _rng.randf() * TAU, _rng.randf_range(0.9, 1.3), "none")
+
+
+static func _centroid(pts: PackedVector2Array) -> Vector2:
+	var c := Vector2.ZERO
+	for v in pts:
+		c += v
+	return c / maxf(1.0, pts.size())
+
+
+func _near_flat_spot(p: Vector2, r: float) -> bool:
+	for spot in _flat_spots:
+		if p.distance_to(spot) < r:
+			return true
+	return false
+
+
 func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
 	var post := _prop("signpost", p, yaw, 1.0, "none")
 	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
@@ -1026,9 +1254,9 @@ func _build_npcs() -> void:
 	for entry: Dictionary in data.get("npcs", []):
 		var npc := Npc.new()
 		npc.setup(entry["id"], str(entry.get("name", "")))
-		npc.position = ground(entry["pos"][0], entry["pos"][1]) + Vector3.UP * float(entry.get("y", 0.1))
+		npc.position = Vector3(entry["pos"][0], surface_at(entry["pos"][0], entry["pos"][1]), entry["pos"][1]) + Vector3.UP * float(entry.get("y", 0.1))
 		for pt: Array in entry.get("patrol", []):
-			npc.patrol.append(ground(pt[0], pt[1]))
+			npc.patrol.append(Vector3(pt[0], surface_at(pt[0], pt[1]), pt[1]))
 		if entry.has("face"):
 			var d := Vector2(entry["face"][0], entry["face"][1]) - Vector2(entry["pos"][0], entry["pos"][1])
 			npc.rotation.y = atan2(-d.x, -d.y)
@@ -1155,7 +1383,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
 			return false
-	if river_distance(x, z) < 1.0:
+	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0:
 		return false
 	for spot in _flat_spots:
 		if p.distance_to(spot) < 12.5:
@@ -1181,7 +1409,7 @@ func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
 		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
-				or river_distance(xz.x, xz.y) < 3.0:
+				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0:
 			continue
 		var clear := true
 		for spot in _flat_spots:
@@ -1293,6 +1521,10 @@ func _face_center(angle: float) -> float:
 
 ## A light that comes on at dusk and goes out at dawn (DayNight fades it).
 func _night_light(light: Light3D, energy: float) -> void:
+	light.distance_fade_enabled = true  # far away it's only a glow in a window: no light, no shadow to draw
+	light.distance_fade_begin = 45.0
+	light.distance_fade_length = 10.0
+	light.distance_fade_shadow = 22.0
 	light.set_meta("full_energy", energy)
 	light.light_energy = 0.0
 	light.visible = false
