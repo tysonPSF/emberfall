@@ -9,6 +9,7 @@ signal leveled_up
 signal quests_changed
 
 const RUN_SPEED := 7.0
+const SNEAK_SPEED := 0.5  # a sneaking rogue moves at half speed
 const BACK_SPEED := 4.0
 const TURN_SPEED := 2.6
 const JUMP_VELOCITY := 7.5
@@ -205,8 +206,11 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened"]:
+			"group", "skills", "threatened", "sneaking"]:
 		set(key, d[key])
+	if bool(d.get("hidden", false)) != hidden:
+		hidden = bool(d.get("hidden", false))
+		show_hidden()
 	if bool(d["dead"]) != dead:
 		dead = bool(d["dead"])
 		if nameplate != null:
@@ -738,6 +742,8 @@ func _physics_process(delta: float) -> void:
 		World.request_sprint(entity_id, want_sprint)
 	if sprinting:
 		spd *= float(World.cfg("sprint_speed_mult", 1.55))
+	if sneaking:
+		spd *= SNEAK_SPEED
 	if dir != Vector3.ZERO and sitting and _may_ask("stand"):
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd

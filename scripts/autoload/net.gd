@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 10  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 11  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -571,7 +571,7 @@ func _replicate(peer: int) -> void:
 		if obj is Entity and id != own:
 			var e := obj as Entity
 			var p := e.global_position
-			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0)
+			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0) | (8 if e.hidden else 0)
 			var row := PackedFloat32Array([id, p.x, p.y, p.z, e.rotation.y, e.hp, e.max_hp, e.level, flags])
 			if _keyframe or sent.get(id) != row:
 				sent[id] = row
@@ -678,7 +678,7 @@ func _s_state(s: PackedFloat32Array) -> void:
 		e.max_hp = int(s[i + 6])
 		e.level = int(s[i + 7])
 		var flags := int(s[i + 8])
-		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0)
+		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0)
 
 
 # --- the player's own state (server -> its client) ------------------------------
@@ -699,7 +699,7 @@ func _send_self(peer: int) -> void:
 		"cast": p.cast, "cooldowns": p.cooldowns, "buffs": p.buffs, "dead": p.dead, "sitting": p.sitting,
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
-		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened,
+		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking,
 		"group": p.group, "skills": p.skills,
 	}
 	_s_self.rpc_id(peer, d)

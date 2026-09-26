@@ -39,6 +39,8 @@ var hate: Dictionary = {}  # entity_id -> float (used by mobs)
 var buffs: Dictionary = {}  # spell_id -> {left, stats: {ac, hp, dmg}}
 var dots: Array = []  # [{spell, caster_id, damage, ticks, next}]
 var root_left := 0.0  # seconds this entity can't move
+var hidden := false  # a rogue's Hide: unseen by monsters (and other players) until it breaks
+var sneaking := false  # a rogue's Sneak: half speed, and walking keeps Hide
 
 var body_height := 1.8
 var visual: Node3D  # CharacterModel when the entity has a rigged model
@@ -197,8 +199,11 @@ func puppet(delta: float) -> void:
 
 
 ## Client: dead, sitting and casting as the server reports them.
-func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool) -> void:
+func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden := false) -> void:
 	sitting = is_sitting
+	if is_hidden != hidden:
+		hidden = is_hidden
+		show_hidden()
 	if is_casting and cast.is_empty():
 		cast = {"spell": "", "time": 0.0, "total": 1.0}
 	elif not is_casting:
@@ -209,6 +214,18 @@ func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool) -> void:
 			visual.visible = not dead
 		if nameplate != null:
 			nameplate.visible = not dead
+
+
+## Hidden: another player sees nothing at all; your own character is a
+## ghostly outline so you know where you are.
+func show_hidden() -> void:
+	var own := self == World.local_player
+	if visual != null:
+		visual.visible = not dead and (own or not hidden)
+		for g: GeometryInstance3D in visual.find_children("*", "GeometryInstance3D", true, false):
+			g.transparency = 0.65 if hidden and own else 0.0
+	if nameplate != null:
+		nameplate.visible = not dead and not (hidden and not own)
 
 
 ## Visual events from the rules ("attack", "hit", "spawn"). No-op for primitive art.

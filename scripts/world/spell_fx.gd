@@ -254,11 +254,11 @@ func _ring(color: Color, radius: float, grow: float, time: float, at: Vector3, u
 	ring.material_override = mat
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	ring.position = at
+	add_child(ring)
 	if upright:
 		ring.rotation.x = PI / 2.0
 		ring.top_level = true  # faces the same way whatever the target does
 		ring.global_position = global_position + at
-	add_child(ring)
 	var tw := ring.create_tween().set_parallel(true)
 	tw.tween_property(ring, "scale", Vector3.ONE * (1.0 + grow), time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_property(mat, "albedo_color", Color(color, 0.0), time)

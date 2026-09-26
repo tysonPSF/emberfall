@@ -254,7 +254,7 @@
     "weapon": "axe_2handed",
     "guildmaster": {
       "class": "warrior",
-      "refuse": "I train warriors, {name}. Soft hands like yours want Sister Anwen or the Magister."
+      "refuse": "I train warriors, {name}. Soft hands like yours want Sister Anwen or the Magister. And if you're the sneaking kind, there's a woman in the back corner of the Ember and Anvil."
     },
     "dialogue": {
       "hail": "You there, {name}! Think you can hold a line? The Watch trains every [warrior] who can, and a few who can't.",
@@ -271,7 +271,7 @@
     "weapon": "staff",
     "guildmaster": {
       "class": "cleric",
-      "refuse": "The hearth calls whom it calls, {name}. You're not one of mine. Try Sergeant Brask or Magister Coyle."
+      "refuse": "The hearth calls whom it calls, {name}. You're not one of mine. Try Sergeant Brask or Magister Coyle, or, for your kind of work, the corner table at the Ember and Anvil."
     },
     "dialogue": {
       "hail": "Peace of the hearth to you, {name}. Those who [tend] it learn to mend what the wilds tear.",
@@ -288,7 +288,7 @@
     "weapon": "wand",
     "guildmaster": {
       "class": "wizard",
-      "refuse": "Hmm? Oh, no, no. I teach wizards. You want the Sergeant, or the Sister at the hearth."
+      "refuse": "Hmm? Oh, no, no. I teach wizards. You want the Sergeant, or the Sister at the hearth. Or that shady one who drinks at the Ember and Anvil."
     },
     "dialogue": {
       "hail": "Ah, {name}. Careful, the ink's still wet. You've an interest in the [arcane]?",
@@ -608,6 +608,25 @@
         "slash",
         "slashes"
       ]
+    }
+  },
+  "gm_vessa": {
+    "name": "Vessa Nightwhisper",
+    "title": "Rogue Guildmaster",
+    "level": 35,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "Me? I just like the corner, {name}. The Sergeant's by the gate, if you want a guild."
+    },
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "Sit, {name}, you're blocking my light. ...Ah. You're one of mine, or you want to be. The Watch calls us [thieves]; I call us the only ones in Emberhold who look behind things.",
+      "thieves": "Thieves, knives, whatever they like. We go where the Watch can't see: gnoll camps, orc tents, the dark behind a lizard's back. Learn to [hide] before you learn anything else.",
+      "hide": "Stand still in the shadows and they'll walk right past you. Move, and they won't. When you're older, I'll teach you to [sneak], and then the shadows move with you.",
+      "sneak": "Slow and quiet. Hidden and moving, you choose the fight, and the first blade goes in their back. That first strike from the dark hits twice as hard. Remember it.",
+      "unknown": "Couldn't say, {name}. Buy a drink and ask the keeper."
     }
   }
 }

@@ -5,7 +5,7 @@
   "strike": {"name": "Strike", "type": "damage", "target": "enemy", "mana": 8, "cast_time": 1.5, "recast": 2, "range": 25, "min": 5, "max": 8, "per_level": 1.2, "classes": {"cleric": 1}, "cost": 0, "desc": "Holy force strikes your enemy.", "skill": "evocation", "fx": {"kind": "burst", "color": "#fff0a0"}},
   "blast_of_frost": {"name": "Blast of Frost", "type": "damage", "target": "enemy", "mana": 8, "cast_time": 1.75, "recast": 2, "range": 30, "min": 10, "max": 15, "per_level": 2, "classes": {"wizard": 1}, "cost": 0, "desc": "A lance of ice.", "skill": "evocation", "fx": {"kind": "burst", "color": "#8ad8ff"}},
   "gate": {"name": "Gate", "type": "gate", "target": "self", "mana": 10, "cast_time": 5, "recast": 10, "range": 0, "classes": {"wizard": 1}, "cost": 0, "desc": "Returns you to your bind point.", "skill": "alteration", "fx": {"kind": "gate", "color": "#7ab8ff"}},
-  "bind_wound": {"name": "Bind Wound", "ability": true, "type": "heal", "target": "self", "mana": 0, "cast_time": 4, "recast": 30, "range": 0, "min": 8, "max": 12, "per_level": 1.5, "classes": {"warrior": 2}, "cost": 40, "desc": "Bandage yourself between fights. Standing still, four seconds.", "skill": "bind_wound", "fx": {"kind": "heal", "color": "#f2e6c8"}},
+  "bind_wound": {"name": "Bind Wound", "ability": true, "type": "heal", "target": "self", "mana": 0, "cast_time": 4, "recast": 30, "range": 0, "min": 8, "max": 12, "per_level": 1.5, "classes": {"warrior": 2, "rogue": 2}, "cost": 40, "desc": "Bandage yourself between fights. Standing still, four seconds.", "skill": "bind_wound", "fx": {"kind": "heal", "color": "#f2e6c8"}},
   "bash": {"name": "Bash", "ability": true, "type": "damage", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 10, "range": 3.4, "min": 4, "max": 9, "per_level": 1.0, "verb": ["bash", "bashes"], "classes": {"warrior": 4}, "cost": 120, "desc": "Slam your target with your shield. Requires a shield.", "skill": "bash", "requires": "shield", "anim": "bash"},
   "battle_cry": {"name": "Battle Cry", "ability": true, "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 120, "range": 0, "duration": 60, "stats": {"dmg": 3, "ac": 4}, "classes": {"warrior": 6}, "cost": 300, "land_text": "You roar a battle cry!", "fade_text": "Your battle fury fades.", "desc": "For a minute: +3 damage, +4 AC.", "fx": {"kind": "buff", "color": "#ff6a4a"}},
   "courage": {"name": "Courage", "type": "buff", "target": "friendly", "mana": 12, "cast_time": 2.5, "recast": 3, "range": 25, "duration": 900, "stats": {"ac": 4, "hp": 10}, "classes": {"cleric": 2}, "cost": 50, "land_text": "You feel courageous.", "fade_text": "Your courage fades.", "desc": "For fifteen minutes: +4 AC, +10 HP. Cast it on friends.", "skill": "abjuration", "fx": {"kind": "buff", "color": "#ffd66b"}},
@@ -89,6 +89,156 @@
     "fx": {
       "kind": "dot",
       "color": "#6fd0d8"
+    }
+  },
+  "backstab": {
+    "name": "Backstab",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 8,
+    "range": 3.4,
+    "min": 6,
+    "max": 12,
+    "per_level": 1.6,
+    "verb": [
+      "backstab",
+      "backstabs"
+    ],
+    "classes": {
+      "rogue": 1
+    },
+    "cost": 0,
+    "skill": "backstab",
+    "requires": "piercing",
+    "from_behind": true,
+    "ambush": 2.0,
+    "desc": "Drive a piercing weapon into your target's back: you must be behind it. Double damage as an opener from hiding.",
+    "fx": {
+      "kind": "impact",
+      "color": "#e0e0e0"
+    }
+  },
+  "hide": {
+    "name": "Hide",
+    "ability": true,
+    "type": "hide",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 3,
+    "range": 0,
+    "classes": {
+      "rogue": 1
+    },
+    "cost": 0,
+    "skill": "hide",
+    "desc": "Melt into the shadows: monsters not already after you won't notice you. Moving (unless you sneak), attacking or using another ability ends it. Use again to step out."
+  },
+  "sneak": {
+    "name": "Sneak",
+    "ability": true,
+    "type": "sneak",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 2,
+    "range": 0,
+    "classes": {
+      "rogue": 3
+    },
+    "cost": 30,
+    "skill": "sneak",
+    "desc": "Move quietly at half speed; while sneaking, walking doesn't end Hide. Use again to stop."
+  },
+  "evade": {
+    "name": "Evade",
+    "ability": true,
+    "type": "evade",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 0,
+    "classes": {
+      "rogue": 5
+    },
+    "cost": 150,
+    "skill": "hide",
+    "desc": "Slip out of sight for a heartbeat: everything fighting you loses much of its anger at you. Better with your Hide skill."
+  },
+  "envenom_blade": {
+    "name": "Envenom Blade",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 90,
+    "range": 0,
+    "duration": 60,
+    "stats": {},
+    "proc": {
+      "spell": "rogue_venom",
+      "chance": 0.2
+    },
+    "classes": {
+      "rogue": 8
+    },
+    "cost": 400,
+    "land_text": "You coat your blade in poison.",
+    "fade_text": "The poison on your blade has dried.",
+    "desc": "For a minute, your weapon hits may poison: a venom that burns for 15 seconds.",
+    "fx": {
+      "kind": "buff",
+      "color": "#8fd14f"
+    }
+  },
+  "rogue_venom": {
+    "name": "Rogue's Venom",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 3,
+    "ticks": 5,
+    "per_level": 0.5,
+    "classes": {},
+    "dot_text": "%s is poisoned.",
+    "land_text": "Poison burns in the wound.",
+    "desc": "A rogue's venom.",
+    "fx": {
+      "kind": "dot",
+      "color": "#8fd14f"
+    }
+  },
+  "rake": {
+    "name": "Rake",
+    "ability": true,
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 12,
+    "range": 3.4,
+    "tick": 6,
+    "ticks": 4,
+    "per_level": 0.8,
+    "classes": {
+      "rogue": 11
+    },
+    "cost": 900,
+    "skill": "offense",
+    "dot_text": "%s is bleeding from a deep gash.",
+    "land_text": "A blade rakes you open; you're bleeding.",
+    "desc": "A vicious slash that leaves your target bleeding for 12 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#c8283c"
     }
   }
 }

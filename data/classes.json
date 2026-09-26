@@ -66,5 +66,27 @@
     },
     "model": "mage",
     "caster_stat": "int"
+  },
+  "rogue": {
+    "name": "Rogue",
+    "description": "A knife in the dark. Hides and sneaks past trouble, backstabs from behind, and poisons the blade. Light armor, quick hands.",
+    "color": "#5a9a5a",
+    "hp_base": 16,
+    "hp_per_level": 11,
+    "mana_base": 0,
+    "mana_per_level": 0,
+    "ac_base": 8,
+    "melee_skill": 0.95,
+    "hp_regen": 1,
+    "mana_regen": 0,
+    "spells": [
+      "backstab",
+      "hide"
+    ],
+    "starting_items": {
+      "primary": "rusty_dagger",
+      "chest": "patchwork_tunic"
+    },
+    "model": "rogue"
   }
 }

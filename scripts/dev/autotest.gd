@@ -79,6 +79,9 @@ const SECTIONS := [
 	["nav_bake", "greenmoor"],
 	["nav_chase", "harrowfield"],
 	["dual_wield", "greenmoor"],
+	["rogue", "greenmoor"],
+	["rogue_guild", "emberhold_tavern"],
+	["venom_drop", "thornwood"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2966,3 +2969,158 @@ func _t_dual_wield() -> void:
 	p.equipment.clear()
 	p.level = 1
 	p.recalc_stats()
+
+
+## The rogue: hide and sneak past a gnoll scout, walking openly breaks it,
+## backstab only from behind (and harder from the shadows), evade sheds anger,
+## an envenomed blade poisons.
+func _t_rogue() -> void:
+	var p := World.local_player
+	var saved_class := p.char_class
+	p.char_class = "rogue"
+	p.level = 5
+	p.spells = ["backstab", "hide", "sneak", "evade", "envenom_blade", "rake", "bind_wound"]
+	for sk: String in ["hide", "sneak", "backstab", "piercing", "offense"]:
+		p.skills[sk] = World.skill_cap(p, sk)
+	p.equipment.clear()
+	p.pack.clear()
+	p.pack.add("rusty_dagger")
+	World.request_equip(p.entity_id, _where(p, "rusty_dagger"))
+	p.recalc_stats()
+	p.hp = p.max_hp
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var scout: Mob = _nearest_mob(p, "gnoll_scout")
+	for m in World.get_mobs():
+		m.hate.clear()
+	var out := Vector3(scout.global_position.x - 115.0, 0, scout.global_position.z + 100.0)  # away from the gnoll camp's middle
+	out = out.normalized() if out.length() > 1.0 else Vector3(1, 0, 0)
+	p.global_position = scout.global_position + out * 45.0 + Vector3.UP
+	await _wait(0.5)
+	for m in World.get_mobs():
+		m.hate.clear()
+	World.request_cast(p.entity_id, "sneak")
+	World.request_cast(p.entity_id, "hide")
+	await _wait(0.2)
+	p.global_position = scout.global_position + Vector3(5, 0.5, 0)  # right up beside it, sneaking
+	await _wait(3.0)
+	print("rogue: hidden and sneaking 5 m from a gnoll scout for 3 s -> hidden %s, scout noticed me %s" % [p.hidden, scout.hate.has(p.entity_id)])
+	await _shot("9zo_rogue_hidden")
+	World.request_cast(p.entity_id, "sneak")  # stop sneaking...
+	await _wait(0.1)
+	p.global_position += Vector3(1.0, 0, 0)  # ...and step out
+	await _wait(0.2)
+	print("rogue: walked without sneaking -> hidden %s (%s)" % [p.hidden, said.filter(func(t: String) -> bool: return "hidden" in t).back()])
+	scout.hate.clear()
+	scout.set_physics_process(false)  # hold still while we walk round it
+	var fwd := -scout.global_transform.basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized()
+	p.global_position = scout.global_position + fwd * 2.0 + Vector3.UP * 0.3
+	World.request_set_target(p.entity_id, scout.entity_id)
+	World.request_cast(p.entity_id, "backstab")
+	await _wait(0.2)
+	print("rogue: backstab from the front -> %s" % said.back())
+	scout.hate.clear()  # calm it again, as if we'd never been there
+	scout.auto_attack = false
+	scout.target = null
+	scout.state = Mob.State.IDLE
+	p.global_position = scout.global_position + fwd * 25.0 + Vector3.UP
+	await _wait(2.5)
+	World.request_cast(p.entity_id, "sneak")
+	World.request_cast(p.entity_id, "hide")
+	await _wait(0.2)
+	p.global_position = scout.global_position - fwd * 2.0 + Vector3.UP * 0.3
+	p.cooldowns.erase("backstab")
+	said.clear()
+	var hp_before := scout.hp
+	World.request_cast(p.entity_id, "backstab")
+	await _wait(0.2)
+	print("rogue: backstab from behind, from hiding -> %s; %s (the scout lost %d hp)" % [said.filter(func(t: String) -> bool: return "shadows" in t).size() > 0, said.filter(func(t: String) -> bool: return "backstab" in t).back(), hp_before - scout.hp])
+	scout.set_physics_process(true)
+	scout.add_hate(p, 40.0)
+	var anger := float(scout.hate.get(p.entity_id, 0.0))
+	World.request_cast(p.entity_id, "evade")
+	await _wait(0.2)
+	print("rogue: evade -> the scout's anger at me %.0f -> %.0f" % [anger, float(scout.hate.get(p.entity_id, 0.0))])
+	scout.max_hp = 5000
+	scout.hp = 5000
+	scout.dmg_max = 1
+	World.request_cast(p.entity_id, "envenom_blade")
+	World.request_set_target(p.entity_id, scout.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	var poisoned := false
+	for k in 60:
+		await _wait(0.5)
+		p.hp = p.max_hp
+		if scout.dots.any(func(d: Dictionary) -> bool: return d["spell"] == "rogue_venom"):
+			poisoned = true
+			break
+	World.request_toggle_attack(p.entity_id)
+	print("rogue: envenom blade -> the scout poisoned while I fought it: %s" % poisoned)
+	World.log_message.disconnect(listen)
+	scout.hate.clear()
+	p.hidden = false
+	p.sneaking = false
+	p.show_hidden()
+	p.char_class = saved_class
+	p.equipment.clear()
+	p.level = 1
+	p.recalc_stats()
+
+
+## Vessa Nightwhisper in her corner of the tavern, and the four classes at character creation.
+func _t_rogue_guild() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var vessa: Npc = _npcs().get("gm_vessa")
+	if vessa == null:
+		print("rogue_guild: no Vessa in %s" % main.zone.zone_id)
+		return
+	p.global_position = vessa.global_position + Vector3(-4.0, 0.5, 2.5)
+	p.face_toward(vessa.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 3.0
+	World.request_set_target(p.entity_id, vessa.entity_id)
+	World.request_hail(p.entity_id)
+	await _wait(0.8)
+	await _shot("9zp_vessa")
+	var cc := CharCreate.new()
+	main.add_child(cc)
+	await _wait(0.6)
+	await _shot("9zp_char_create")
+	print("rogue_guild: Vessa at %s; character creation offers %s" % [vessa.global_position, GameData.classes.keys()])
+	cc.queue_free()
+
+
+## Thornback spiders drop venom sacs (the Silk and Venom quest): kill a lot and count.
+func _t_venom_drop() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 12
+	p.recalc_stats()
+	var kills := 0
+	var sacs := 0
+	var silk := 0
+	for round_ in 40:
+		var spider: Mob = _nearest_mob(p, "thornback_spider")
+		if spider == null:
+			await _wait(1.0)
+			continue
+		p.global_position = spider.global_position + Vector3(2, 0.5, 0)
+		spider.add_hate(p, 1.0)
+		var where := spider.global_position
+		World.damage(spider, spider.hp + 10, p)
+		kills += 1
+		await _wait(0.1)
+		for c in main.zone.get_children():
+			if c is Corpse and not c.has_meta("counted") and (c as Corpse).global_position.distance_to(where) < 3.0:
+				c.set_meta("counted", true)
+				for e: Dictionary in (c as Corpse).entries:
+					sacs += 1 if str(e.get("item", "")) == "venom_sac" else 0
+					silk += 1 if str(e.get("item", "")) == "spider_silk" else 0
+		for sp in main.zone.get_children():  # bring them back at once, for the next kill
+			if sp is SpawnPoint and (sp as SpawnPoint).mob == null:
+				(sp as SpawnPoint).spawn()
+	print("venom_drop: %d thornback spiders killed -> %d venom sacs, %d spider silk on their corpses" % [kills, sacs, silk])
