@@ -73,7 +73,7 @@ it means moving a zone.
 | Harrowfield **(built)** | The Emberlands | 3–9 | 384 m | `[1, 1]` | field |
 | Thornwood Vale **(built)** | The Emberlands | 6–14 | 512 m | `[0, 2]` | wood |
 | Hollowmere **(built)** | The Emberlands | 10–15 | 448 m | `[1, 2]` | water |
-| Lanternhold | The Dawnstair | city | 224 m | `[3, 2]` | city |
+| Lanternhold **(built)** | The Dawnstair | city | 224 m | `[3, 2]` | city |
 | Sunward Steps **(built)** | The Dawnstair | 14–18 | 448 m | `[2, 2]` | terrace |
 | The Bleach | The Dawnstair | 16–21 | 512 m | `[2, 3]` | waste |
 | High Terrace | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |

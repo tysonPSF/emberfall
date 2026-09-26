@@ -551,6 +551,8 @@ func _build_landmarks() -> void:
 				_build_sun_shrine(p, _landmark_yaw(lm), bool(lm.get("great", false)))
 			"waystation":
 				_build_waystation(p, _landmark_yaw(lm))
+			"dawn_plaza":
+				_build_dawn_plaza(p)
 			"orchard":
 				_build_orchard(p, _landmark_yaw(lm), int(lm.get("rows", 4)), int(lm.get("cols", 5)))
 			"sunken_ruins":
@@ -711,6 +713,34 @@ func _build_sun_shrine(p: Vector3, yaw: float, great: bool) -> void:
 	glow.omni_range = 12.0 if great else 8.0
 	glow.position = xf * Vector3(0, 6.0 if great else 4.5, -half_w * 1.5 - 1.5)
 	_night_light(glow, 1.4)
+
+
+## Lanternhold's heart: the stone shrine of Prabhagaj, the Dawn-Tusk, on a
+## raised stone platform in a paved plaza: the elephant, twice life size,
+## raising the sun; sun pillars in a ring; lamps round the edge; a golden
+## light on the disc after dusk. The city's bindstone.
+func _build_dawn_plaza(p: Vector3) -> void:
+	for i in 11:
+		for j in 11:
+			var off := Vector3(-15.0 + i * 3.0, 0.04, -15.0 + j * 3.0)
+			if Vector2(off.x, off.z).length() < 17.0:
+				_prop("floor_tile_large", p + off, _rng.randi() % 4 * PI / 2.0, 1.0, "none")
+	for i in 5:  # the raised platform the statue stands on
+		for j in 5:
+			_prop("floor_tile_large", p + Vector3(-6.0 + i * 3.0, 0.55, -6.0 + j * 3.0), 0.0, 1.0, "box")
+	_prop("elephant_statue", p + Vector3(0, 0.6, 0), 0.0, 2.1, "box")
+	for k in 8:
+		var a := k * TAU / 8.0 + TAU / 16.0
+		_prop("sun_pillar", p + Vector3(cos(a) * 10.5, 0, sin(a) * 10.5), -a + PI / 2.0, 1.2, "trunk")
+	for k in 8:
+		var a := k * TAU / 8.0
+		_lamp(p + Vector3(cos(a) * 15.5, 0, sin(a) * 15.5), -a + PI / 2.0)
+	_light(p + Vector3(0, 4.0, 0), Color(1.0, 0.85, 0.55), 18.0, 0.9)
+	var disc := OmniLight3D.new()  # the sun disc glows gold after dusk
+	disc.light_color = Color(1.0, 0.82, 0.45)
+	disc.omni_range = 20.0
+	disc.position = p + Vector3(0, 12.0, -5.2)
+	_night_light(disc, 2.2)
 
 
 ## A pilgrims' waystation: tents round a fire, a stall, torches.

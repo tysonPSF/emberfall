@@ -86,6 +86,8 @@ const SECTIONS := [
 	["sunward", "sunward_steps"],
 	["sunward_life", "sunward_steps"],
 	["level20", "sunward_steps"],
+	["lanternhold_border", "sunward_steps"],
+	["lanternhold", "lanternhold"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -3367,3 +3369,78 @@ func _t_level20() -> void:
 	p.equipment.clear()
 	p.level = 1
 	p.recalc_stats()
+
+
+## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
+func _t_lanternhold_border() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for leg: Array in [["sunward_steps", Vector2(200, 0), Vector2(1, 0), "lanternhold"], ["lanternhold", Vector2(-84, 0), Vector2(-1, 0), "sunward_steps"]]:
+		if main.zone.zone_id != leg[0]:
+			print("lanternhold_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+			return
+		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
+		for k in 400:
+			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
+				break
+			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			p.move_and_slide()
+			await get_tree().physics_frame
+		await _wait(1.5)
+		for k in 20:
+			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
+				break
+			await _wait(0.5)
+		var z: Zone = main.zone
+		print("lanternhold_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
+				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
+
+
+## Lanternhold: the gate, the shrine plaza by day and by night, the Dawn-Tusk's
+## blessing (only for his followers, once an hour), guildmasters and the bank.
+func _t_lanternhold() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 11.0
+	for view: Array in [[Vector2(-46, 0), Vector2(0, 0), "gate"], [Vector2(0, 26), Vector2(0, 0), "shrine"], [Vector2(30, 36), Vector2(0, 0), "street"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.12
+		await _wait(1.0)
+		await _shot("9zs_lanternhold_%s" % view[2])
+	World.time_override = 22.5
+	for view: Array in [[Vector2(0, 26), Vector2(0, 0), "shrine_night"], [Vector2(-46, 0), Vector2(0, 0), "gate_night"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		await _wait(1.5)
+		await _shot("9zs_lanternhold_%s" % view[2])
+	World.time_override = -1.0
+	var npcs := _npcs()
+	var amaru: Npc = npcs["dawnpriest_amaru"]
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var saved_deity := p.deity
+	p.deity = "fire"
+	p.cooldowns.clear()
+	p.buffs.erase("dawn_tusk_blessing")
+	_stand_by(p, amaru)
+	World.request_say(p.entity_id, "blessing")
+	var refused := p.buffs.has("dawn_tusk_blessing")
+	p.deity = "light"
+	World.request_say(p.entity_id, "blessing")
+	var blessed := p.buffs.has("dawn_tusk_blessing")
+	said.clear()
+	World.request_say(p.entity_id, "blessing")
+	print("lanternhold: blessing -> a follower of Agnavar blessed: %s; a follower of Prabhagaj blessed: %s (+%d AC); asking again: '%s'" % [refused, blessed,
+			int(GameData.spells["dawn_tusk_blessing"]["stats"]["ac"]), said.filter(func(t: String) -> bool: return "within the hour" in t).size() > 0])
+	p.deity = saved_deity
+	var trains := {}
+	for id: String in ["gm_idris", "gm_solenne", "gm_orrin", "gm_kestrel"]:
+		trains[id] = str(npcs[id].data["guildmaster"]["class"])
+	var bank_ok := bool(npcs["banker_tamsyn"].data.get("banker", false))
+	print("lanternhold: guildmasters %s; banker %s; bind point %s (the shrine)" % [trains, bank_ok, z.bind_point])
+	World.log_message.disconnect(listen)

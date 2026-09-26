@@ -613,6 +613,17 @@ def deadly_venom():
 	return p.build()
 
 
+def dawn_tusk_blessing():
+	p = Prop("dawn_tusk_blessing", 443)
+	p.blob((0.6, 0.5, 0.55), (0, 0, 0.4), STONE_LIGHT, segs=(10, 8))                      # an elephant's head
+	for s_ in (-1, 1):
+		p.blob((0.1, 0.35, 0.4), (s_ * 0.36, 0.05, 0.42), STONE_LIGHT, segs=(6, 5))        # ears
+		p.seg((s_ * 0.12, -0.25, 0.25), (s_ * 0.2, -0.45, 0.15), 0.05, 0.02, BONE, sides=5)  # tusks
+	p.seg((0, -0.3, 0.3), (0, -0.4, 0.85), 0.09, 0.06, STONE_LIGHT, sides=6)               # the trunk, raised
+	p.seg((0, -0.42, 1.05), (0, -0.46, 1.05), 0.26, 0.26, GOLD, sides=14, glow=1.6)        # holding the sun
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -666,7 +677,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold,
 								  backstab, hide, sneak, evade, envenom_blade, rogue_venom, rake,
 								  provoke, defensive_stance, cleave, greater_healing, divine_aura, sunfire, lightning_bolt, frost_snare,
-								  fireball, assassinate, blind, deadly_poison, deadly_venom]}
+								  fireball, assassinate, blind, deadly_poison, deadly_venom, dawn_tusk_blessing]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

@@ -1574,6 +1574,32 @@ def sun_banner():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Lanternhold
+
+def lantern_string():
+	"""A string of paper lanterns slung between two posts across a street:
+	9 m span, the rope sagging to 4 m, lanterns glowing gold. Spans along X."""
+	p = Prop("lantern_string", 121)
+	half = 4.5
+	for x in (-half, half):
+		p.seg((x, 0, 0), (x, 0, 4.9), 0.09, 0.08, WOOD, sides=6, grad=(0.2, 1.0))
+		p.seg((x, 0, 4.9), (x, 0, 5.1), 0.13, 0.13, WOOD_GRAY, sides=6)
+	n = 12
+	prev = None
+	for k in range(n + 1):
+		t = k / n
+		x = -half + t * 2 * half
+		z = 4.8 - 0.9 * (1 - (2 * t - 1) ** 2)  # a sagging rope
+		pt = (x, 0, z)
+		if prev:
+			p.seg(prev, pt, 0.02, 0.02, WOOD_GRAY, sides=3)
+		prev = pt
+		if 0 < k < n and k % 2 == 0:
+			p.seg((x, 0, z), (x, 0, z - 0.25), 0.01, 0.01, WOOD_GRAY, sides=3)
+			p.blob((0.34, 0.34, 0.42), (x, 0, z - 0.45), EMBER if k % 4 else GOLD, segs=(8, 6), glow=1.6)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1641,6 +1667,7 @@ PROPS = {
 	"sun_pillar": sun_pillar,
 	"broken_column": broken_column,
 	"sun_banner": sun_banner,
+	"lantern_string": lantern_string,
 }
 
 

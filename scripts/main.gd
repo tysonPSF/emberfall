@@ -60,9 +60,17 @@ func _ready() -> void:
 	elif "--flowtest" in args:
 		add_child(load("res://scripts/dev/flowtest.gd").new())
 	elif "--resume" in args and str(_settings().get("mode", "")) == "online":
-		_show_login()  # reloaded after an update: back to the server's login
+		_resume_online(title)
 	elif "--resume" in args and GameData.deities.has(str(save.get("deity", ""))):
 		_play(save, title)  # reloaded after an update: straight back in (older saves stop to pick a deity)
+
+
+## Reloaded while playing online: back to the server's login. The title made
+## at startup goes: left behind the login, it stayed on top of the world once
+## you went Back and continued offline.
+func _resume_online(title: CharCreate) -> void:
+	title.queue_free()
+	_show_login()
 
 
 func _show_title(save: Dictionary, status := "", is_error := false) -> CharCreate:

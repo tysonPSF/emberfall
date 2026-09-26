@@ -36,6 +36,20 @@ func _run() -> void:
 		await get_tree().physics_frame
 	await _wait(2.0)
 	_report(main, "after zoning to Greenmoor")
+	# Reloaded while online (--resume with mode "online"), Back from the login,
+	# Continue offline: no title screen may be left over the world.
+	main._teardown_world()
+	var title2 := main._show_title({"name": "Flower", "class": "warrior", "deity": "fire", "zone": "greenmoor", "position": [0.0, 1.0, 0.0]}) as CharCreate
+	main._resume_online(title2)
+	await _wait(2.0)
+	var login2 := _find(main, "LoginScreen") as LoginScreen
+	login2.back.emit()
+	await _wait(0.5)
+	var title3 := _find(main, "CharCreate") as CharCreate
+	title3.confirmed.emit({"name": "Flower", "class": "warrior", "deity": "fire", "zone": "greenmoor", "position": [0.0, 1.0, 0.0]})
+	await _wait(2.0)
+	print("flow: resumed online, back, continue offline: titles left in the tree %d, in the world %s" % [
+			_all(main, "CharCreate").filter(func(n: Node) -> bool: return not n.is_queued_for_deletion()).size(), World.local_player != null])
 	get_tree().quit()
 
 

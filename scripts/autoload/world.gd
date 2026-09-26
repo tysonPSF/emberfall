@@ -2188,6 +2188,23 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
 			_accept_quest(p, quest_id)
+	var bless: Dictionary = npc.data.get("blesses", {})
+	if not bless.is_empty() and key == str(bless.get("keyword", "blessing")):
+		_shrine_blessing(p, npc, bless)
+
+
+## A shrine's priest blesses followers of their god ("blesses" in npcs.json:
+## deity, spell, keyword, every seconds; refuse / wait / give lines).
+func _shrine_blessing(p: Player, npc: Npc, bless: Dictionary) -> void:
+	var timer := "blessed_" + str(bless["spell"])
+	if p.deity != str(bless["deity"]):
+		_npc_say(p, npc, str(bless.get("refuse", "This blessing isn't for you, {name}.")))
+	elif p.cooldowns.has(timer):
+		_npc_say(p, npc, str(bless.get("wait", "Come back later, {name}.")))
+	else:
+		_npc_say(p, npc, str(bless.get("give", "Be blessed, {name}.")))
+		_land(npc, str(bless["spell"]), p, GameData.spells[str(bless["spell"])], 0)
+		p.cooldowns[timer] = float(bless.get("every", 3600))
 
 
 ## An outfitter (Warden Holt) rearms anyone who comes to them with no weapon,

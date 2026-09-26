@@ -1,0 +1,229 @@
+{
+  "steel_helm": {
+    "name": "Steel Helm",
+    "slot": "head",
+    "ac": 9,
+    "sta": 2,
+    "value": 1400,
+    "rec_level": 15,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "steel_breastplate": {
+    "name": "Steel Breastplate",
+    "slot": "chest",
+    "ac": 16,
+    "sta": 3,
+    "value": 2600,
+    "rec_level": 16,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "steel_vambraces": {
+    "name": "Steel Vambraces",
+    "slot": "arms",
+    "ac": 7,
+    "str": 1,
+    "value": 1100,
+    "rec_level": 15,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "steel_gauntlets": {
+    "name": "Steel Gauntlets",
+    "slot": "hands",
+    "ac": 6,
+    "str": 1,
+    "value": 1000,
+    "rec_level": 15,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "steel_greaves": {
+    "name": "Steel Greaves",
+    "slot": "legs",
+    "ac": 11,
+    "sta": 2,
+    "value": 1800,
+    "rec_level": 16,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "steel_boots": {
+    "name": "Steel Boots",
+    "slot": "feet",
+    "ac": 7,
+    "agi": 1,
+    "value": 1100,
+    "rec_level": 15,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "steel_kite_shield": {
+    "name": "Steel Kite Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 10,
+    "sta": 2,
+    "model": "shield_badge",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 2200,
+    "rec_level": 16
+  },
+  "dawnweave_cap": {
+    "name": "Dawnweave Cap",
+    "slot": "head",
+    "ac": 4,
+    "int": 2,
+    "wis": 2,
+    "mana": 15,
+    "value": 1200,
+    "rec_level": 15,
+    "wear": "cloth_cap"
+  },
+  "dawnweave_robe": {
+    "name": "Dawnweave Robe",
+    "slot": "chest",
+    "ac": 8,
+    "int": 3,
+    "wis": 3,
+    "mana": 30,
+    "value": 2400,
+    "rec_level": 16,
+    "wear": "patchwork_tunic"
+  },
+  "dawnweave_gloves": {
+    "name": "Dawnweave Gloves",
+    "slot": "hands",
+    "ac": 3,
+    "int": 2,
+    "wis": 2,
+    "mana": 10,
+    "value": 900,
+    "rec_level": 15,
+    "wear": "cloth_gloves"
+  },
+  "shadowleather_jerkin": {
+    "name": "Shadowleather Jerkin",
+    "slot": "chest",
+    "ac": 12,
+    "agi": 3,
+    "str": 1,
+    "value": 2400,
+    "rec_level": 16,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_tunic"
+  },
+  "shadowleather_boots": {
+    "name": "Shadowleather Boots",
+    "slot": "feet",
+    "ac": 6,
+    "agi": 2,
+    "value": 1000,
+    "rec_level": 15,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_boots"
+  },
+  "steel_longsword": {
+    "name": "Steel Longsword",
+    "slot": "primary",
+    "dmg": 12,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 2800,
+    "rec_level": 16,
+    "classes": [
+      "warrior",
+      "rogue"
+    ]
+  },
+  "steel_dirk": {
+    "name": "Steel Dirk",
+    "slot": "primary",
+    "dmg": 9,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 2400,
+    "rec_level": 16,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard"
+    ]
+  },
+  "steel_war_axe": {
+    "name": "Steel War Axe",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 2600,
+    "rec_level": 16,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "sunwood_staff": {
+    "name": "Sunwood Staff",
+    "slot": "primary",
+    "dmg": 11,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 3,
+    "wis": 3,
+    "mana": 25,
+    "value": 2600,
+    "rec_level": 16,
+    "classes": [
+      "cleric",
+      "wizard"
+    ]
+  }
+}
