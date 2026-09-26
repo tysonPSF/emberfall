@@ -6,6 +6,9 @@ extends CanvasLayer
 
 signal back  # leave for the title screen
 
+const REMEMBER_KEY := "remembered_logins"  # in settings.json: {"server|account": password hash}
+const SAVED_DOTS := "********"  # what the password field shows for a remembered one
+
 var address := ""
 var account := ""
 var offline_save: Dictionary = {}  # the local character, offered for import
@@ -16,6 +19,10 @@ var _chars_box: VBoxContainer
 var _list: VBoxContainer
 var _account_edit: LineEdit
 var _pw_edit: LineEdit
+var _remember: CheckBox
+var _saved_hash := ""  # a remembered password's hash, in use while the field shows its dots
+var _sent_hash := ""  # what the last login attempt sent
+var _logging_in := false
 var _status: Label
 var _import_button: Button
 var _names_here: Array = []
@@ -57,7 +64,19 @@ func _ready() -> void:
 	_pw_edit.secret = true
 	_pw_edit.custom_minimum_size.y = 36
 	_pw_edit.text_submitted.connect(func(_t: String) -> void: _login(false))
+	_pw_edit.text_changed.connect(func(_t: String) -> void: _saved_hash = "")  # typing replaces a remembered one
 	_login_box.add_child(_pw_edit)
+	_remember = CheckBox.new()
+	_remember.text = "Remember password"
+	_remember.focus_mode = Control.FOCUS_NONE
+	_remember.add_theme_font_size_override("font_size", 13)
+	_remember.tooltip_text = "Keeps a hash of your password on this computer (never the password itself), so next time you only click Log in."
+	_remember.toggled.connect(func(on: bool) -> void:
+		if not on:
+			_forget())
+	_login_box.add_child(_remember)
+	_account_edit.text_changed.connect(func(_t: String) -> void: _fill_remembered())
+	_fill_remembered()
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	for spec: Array in [["Log in", false], ["Create account", true]]:
@@ -95,11 +114,16 @@ func _ready() -> void:
 	v.add_child(leave)
 
 	Net.connected_ok.connect(_on_connected)
-	Net.join_failed.connect(func(reason: String) -> void: _say(reason, true))
+	Net.join_failed.connect(func(reason: String) -> void:
+		_login_failed()
+		_say(reason, true))
 	Net.left_server.connect(func(reason: String) -> void:
 		_show_login()
 		_say(reason, true))
-	Net.server_message.connect(_say)
+	Net.server_message.connect(func(text: String, is_error: bool) -> void:
+		if is_error:
+			_login_failed()
+		_say(text, is_error))
 	Net.characters_listed.connect(_on_characters)
 	if logged_in:
 		_say("Choose a character.")
@@ -122,10 +146,18 @@ func _login(create: bool) -> void:
 		_say("Enter an account name and password.", true)
 		return
 	_say("Creating account..." if create else "Logging in...")
-	Net.login(account, _pw_edit.text, create)
+	_sent_hash = _saved_hash if _saved_hash != "" else Net.password_hash(account, _pw_edit.text)
+	_logging_in = true
+	Net.login_hashed(account, _sent_hash, create)
 
 
 func _on_characters(list: Array) -> void:
+	if _logging_in:  # in: keep (or drop) the password for next time
+		_logging_in = false
+		if _remember.button_pressed:
+			var saved := _remembered()
+			saved[_remember_key()] = _sent_hash
+			Controls._save_setting(REMEMBER_KEY, saved)
 	logged_in = true
 	_login_box.visible = false
 	_chars_box.visible = true
@@ -176,3 +208,54 @@ func _show_login() -> void:
 func _say(text: String, is_error := false) -> void:
 	_status.text = text
 	_status.add_theme_color_override("font_color", Color(1, 0.45, 0.35) if is_error else UIKit.DIM)
+
+
+## Remembered passwords, per server and account.
+func _remembered() -> Dictionary:
+	if not FileAccess.file_exists(Controls.SETTINGS_PATH):
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(Controls.SETTINGS_PATH))
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return {}
+	var saved: Variant = (parsed as Dictionary).get(REMEMBER_KEY, {})
+	return saved if typeof(saved) == TYPE_DICTIONARY else {}
+
+
+func _remember_key() -> String:
+	return "%s|%s" % [address, _account_edit.text.strip_edges().to_lower()]
+
+
+## Shows the dots (and ticks the box) when this account's password is remembered.
+func _fill_remembered() -> void:
+	var h := str(_remembered().get(_remember_key(), ""))
+	if h != "":
+		_pw_edit.text = SAVED_DOTS
+		_saved_hash = h
+		_remember.set_pressed_no_signal(true)
+	elif _saved_hash != "":
+		_pw_edit.text = ""
+		_saved_hash = ""
+		_remember.set_pressed_no_signal(false)
+
+
+func _forget() -> void:
+	var saved := _remembered()
+	if saved.erase(_remember_key()):
+		Controls._save_setting(REMEMBER_KEY, saved)
+	if _saved_hash != "":
+		_pw_edit.text = ""
+		_saved_hash = ""
+
+
+## A refused login: a remembered password that didn't work is forgotten.
+func _login_failed() -> void:
+	if not _logging_in:
+		return
+	_logging_in = false
+	if _saved_hash != "":
+		var saved := _remembered()
+		saved.erase(_remember_key())
+		Controls._save_setting(REMEMBER_KEY, saved)
+		_saved_hash = ""
+		_pw_edit.text = ""
+		_pw_edit.grab_focus()

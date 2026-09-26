@@ -62,6 +62,7 @@ const SECTIONS := [
 	["bowshot", "greenmoor"],
 	["buy_bundle", "thornwood"],
 	["corwin_route", "greenmoor"],
+	["remember_login", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2263,3 +2264,47 @@ func _t_corwin_route() -> void:
 			break
 	Engine.time_scale = 1.0
 	print("corwin_route: reached z %.0f (road ends at -192, zone line -177), nearest the obelisk %.1f m (stones at 7), heading back %s" % [north, closest_to_obelisk, turned_back])
+
+
+## "Remember password" on the server login, against a throwaway local server:
+##   godot --headless --path . -- --server --port=7791 --data=<tmp dir>
+##   godot --path . -- --autotest --only=remember_login --login-port=7791
+## Skipped without --login-port. Cleans its entry out of settings.json.
+func _t_remember_login() -> void:
+	var port := 0
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--login-port="):
+			port = int(a.substr(13))
+	if port == 0:
+		print("remember_login: skipped (no --login-port)")
+		return
+	var address := "127.0.0.1:%d" % port
+	var ls := LoginScreen.new()
+	ls.address = address
+	ls.account = "remtest"
+	add_child(ls)
+	await Net.connected_ok
+	ls._pw_edit.text = "correct horse"
+	ls._remember.button_pressed = true
+	ls._login(true)
+	await Net.characters_listed
+	var saved: Dictionary = ls._remembered()
+	print("remember_login: created and in; saved for this server %s, holds the password itself %s" % [saved.has("%s|remtest" % address),
+			"correct horse" in FileAccess.get_file_as_string(Controls.SETTINGS_PATH)])
+	Net.leave()
+	ls.queue_free()
+	await _wait(0.3)
+	ls = LoginScreen.new()
+	ls.address = address
+	ls.account = "remtest"
+	add_child(ls)
+	await Net.connected_ok
+	print("remember_login: back again -> field shows '%s', box ticked %s" % [ls._pw_edit.text, ls._remember.button_pressed])
+	ls._login(false)
+	await Net.characters_listed
+	print("remember_login: logged in with the remembered password")
+	ls._remember.button_pressed = false
+	print("remember_login: unticked -> still saved %s" % ls._remembered().has("%s|remtest" % address))
+	Net.leave()
+	ls.queue_free()
+	await _wait(0.3)
