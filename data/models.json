@@ -1059,6 +1059,46 @@
         "waist",
         "chest"
       ]
+    },
+    "earth_elemental": {
+      "path": "res://assets/creatures/earth_elemental.glb",
+      "rig": "own"
+    },
+    "fire_elemental": {
+      "path": "res://assets/creatures/fire_elemental.glb",
+      "rig": "own"
+    },
+    "air_elemental": {
+      "path": "res://assets/creatures/air_elemental.glb",
+      "rig": "own"
+    },
+    "magician": {
+      "path": "res://assets/creatures/magician_body.glb",
+      "headgear_parts": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/magician_amulet.glb"
+        }
+      ]
+    },
+    "necromancer": {
+      "path": "res://assets/creatures/necromancer_body.glb",
+      "headgear_parts": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/necromancer_clasp.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/necromancer_pauldron.glb"
+        }
+      ]
     }
   },
   "weapons": {
@@ -1106,6 +1146,8 @@
     "loom": {"path": "res://assets/props/loom.glb"},
     "brew_barrel": {"path": "res://assets/props/brew_barrel.glb"},
     "forge": {"path": "res://assets/props/forge.glb"},
+    "crypt_entrance": {"path": "res://assets/props/crypt_entrance.glb"},
+    "crypt_room": {"path": "res://assets/props/crypt_room.glb"},
     "titan_ribcage": {"path": "res://assets/props/titan_ribcage.glb"},
     "titan_skull": {"path": "res://assets/props/titan_skull.glb"},
     "mesa": {"path": "res://assets/props/mesa.glb"},

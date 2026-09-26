@@ -298,11 +298,7 @@
     "skill": "piercing",
     "value": 4600,
     "rec_level": 21,
-    "classes": [
-      "warrior",
-      "rogue",
-      "wizard"
-    ]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer"]
   },
   "tidesteel_war_axe": {
     "name": "Tidesteel War Axe",
@@ -337,10 +333,7 @@
     "mana": 35,
     "value": 5000,
     "rec_level": 21,
-    "classes": [
-      "cleric",
-      "wizard"
-    ]
+    "classes": ["cleric", "wizard", "magician", "necromancer"]
   },
   "tidesteel_greataxe": {
     "name": "Tidesteel Greataxe",
@@ -410,10 +403,7 @@
     "mana": 60,
     "value": 9000,
     "rec_level": 23,
-    "classes": [
-      "cleric",
-      "wizard"
-    ],
+    "classes": ["cleric", "wizard", "magician", "necromancer"],
     "proc": {
       "spell": "storm_bolt",
       "chance": 0.06

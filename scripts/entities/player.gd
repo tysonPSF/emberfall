@@ -42,6 +42,9 @@ var trade_items: Array = []  # entries offered in the open trade
 var station_kind := ""  # the crafting station whose combine window is open ("oven", "forge"...), "" when none
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
+var pet_id := -1  # your pet's entity id, -1 with none
+var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
+var pet_hp := -1  # its health when you last left, to bring it back as it was
 var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
 var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
@@ -106,6 +109,9 @@ func from_save(d: Dictionary) -> void:
 		if not clean.is_empty() and not pack.add_entry(clean):
 			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
+	var saved_pet: Dictionary = d.get("pet", {})
+	pet_spell = str(saved_pet.get("spell", ""))
+	pet_hp = int(saved_pet.get("hp", -1))
 	factions = (d.get("factions", {}) as Dictionary).duplicate()
 	for k: String in factions:
 		factions[k] = int(factions[k])
@@ -212,7 +218,7 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items"]:
+			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -247,8 +253,15 @@ func to_save() -> Dictionary:
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
-		"position": [p.x, p.y, p.z],
+		"position": [p.x, p.y, p.z], "pet": _pet_save(),
 	}
+
+
+func _pet_save() -> Dictionary:
+	if pet_spell == "":
+		return {}
+	var pet := World.get_object(pet_id) as Pet
+	return {"spell": pet_spell, "hp": pet.hp if pet != null and not pet.dead else pet_hp}
 
 
 ## Whether one more of this item fits in the general slots and bags.

@@ -88,5 +88,50 @@
       "chest": "patchwork_tunic"
     },
     "model": "rogue"
+  },
+  "magician": {
+    "name": "Magician",
+    "description": "Summons elementals of earth, water, fire and air to fight at their side, and keeps them healed and hasted. Fragile; the pet takes the blows.",
+    "color": "#d8703a",
+    "hp_base": 12,
+    "hp_per_level": 6,
+    "mana_base": 24,
+    "mana_per_level": 14,
+    "ac_base": 4,
+    "melee_skill": 0.5,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "call_of_earth"
+    ],
+    "starting_items": {
+      "primary": "rusty_dagger",
+      "head": "cloth_cap"
+    },
+    "model": "magician",
+    "caster_stat": "int"
+  },
+  "necromancer": {
+    "name": "Necromancer",
+    "description": "Raises the dead to fight for them, drains life to heal themselves, rots foes with disease and poison, sends them fleeing in terror, and feigns death when it all goes wrong.",
+    "color": "#8a5aa8",
+    "hp_base": 12,
+    "hp_per_level": 6,
+    "mana_base": 24,
+    "mana_per_level": 14,
+    "ac_base": 4,
+    "melee_skill": 0.5,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "raise_bones",
+      "lifetap"
+    ],
+    "starting_items": {
+      "primary": "rusty_dagger",
+      "chest": "patchwork_tunic"
+    },
+    "model": "necromancer",
+    "caster_stat": "int"
   }
 }

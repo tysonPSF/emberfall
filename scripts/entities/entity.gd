@@ -43,6 +43,9 @@ var snare_left := 0.0  # seconds at half speed (Frost Snare)
 var stun_left := 0.0  # seconds unable to move or fight (Blind)
 var hidden := false  # a rogue's Hide: unseen by monsters (and other players) until it breaks
 var sneaking := false  # a rogue's Sneak: half speed, and walking keeps Hide
+var feigning := false  # a necromancer's Feign Death: lying still, forgotten by everything hunting them
+var fear_left := 0.0  # seconds a feared monster runs from whoever scared it
+var feared_by := -1
 
 var body_height := 1.8
 var visual: Node3D  # CharacterModel when the entity has a rigged model
@@ -201,8 +204,9 @@ func puppet(delta: float) -> void:
 
 
 ## Client: dead, sitting and casting as the server reports them.
-func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden := false) -> void:
+func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden := false, is_feigning := false) -> void:
 	sitting = is_sitting
+	feigning = is_feigning
 	if is_hidden != hidden:
 		hidden = is_hidden
 		show_hidden()

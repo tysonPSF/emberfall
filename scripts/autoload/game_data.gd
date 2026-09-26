@@ -12,6 +12,7 @@ var models: Dictionary = {}
 var npcs: Dictionary = {}
 var quests: Dictionary = {}
 var recipes: Dictionary = {}  # data/recipes.json: "recipes" and "containers"
+var pets: Dictionary = {}  # data/pets.json: tiers, base stats, kinds
 var factions: Dictionary = {}
 var deities: Dictionary = {}
 var loot: Dictionary = {}
@@ -29,6 +30,7 @@ func _ready() -> void:
 	npcs = _load("res://data/npcs.json")
 	quests = _load("res://data/quests.json")
 	recipes = _load("res://data/recipes.json")
+	pets = _load("res://data/pets.json")
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
 	loot = _load("res://data/loot.json")
@@ -77,6 +79,9 @@ func icon(icon_name: String) -> Texture2D:
 	if not _icons.has(icon_name):
 		var path := "res://assets/icons/%s.png" % icon_name
 		_icons[icon_name] = load(path) if ResourceLoader.exists(path) else null
+		for prefix: String in ["spell_meal_", "spell_potion_"]:  # a meal's or potion's buff shows the dish or the bottle
+			if _icons[icon_name] == null and icon_name.begins_with(prefix):
+				_icons[icon_name] = icon(icon_name.trim_prefix(prefix))
 	return _icons[icon_name]
 
 

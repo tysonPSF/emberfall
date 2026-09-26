@@ -89,6 +89,11 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["pets", "greenmoor"],
+	["necromancer", "greenmoor"],
+	["pet_look", "greenmoor"],
+	["crypt_door", "emberhold"],
+	["crypt", "emberhold_crypt"],
 	["tradeskills", "emberhold"],
 	["crafters_emberhold", "emberhold"],
 	["crafters_lanternhold", "lanternhold"],
@@ -3448,6 +3453,242 @@ func _t_bash_stun() -> void:
 	p.equipment = kit
 	p.spells = known
 	p.recalc_stats()
+
+
+## Pets: summoned, they follow, attack on command (and taunt), back off,
+## guard and sit; heals and buffs reach them; their kills are their owner's;
+## they come back after vanishing (a zone, a login); /pet leave dismisses.
+## And a table of every kind's stats at levels 1, 10, 18, 25.
+func _t_pets() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	for lvl: int in [1, 10, 18, 25]:
+		p.level = lvl
+		var row := []
+		for kind: String in ["earth", "water", "fire", "air", "primal", "skeleton", "skeletal_knight"]:
+			var spell := ""
+			for sid: String in GameData.spells:
+				if str(GameData.spells[sid].get("pet", "")) == kind:
+					spell = sid
+			var pet := Pet.new()
+			pet.setup(p, spell)
+			row.append("%s %d hp %d-%d ac %d %.1fs %s" % [kind, pet.max_hp, pet.dmg_min, pet.dmg_max, pet.ac, pet.attack_delay, pet.model_id])
+			pet.free()
+		print("pets: level %d: %s" % [lvl, ", ".join(row)])
+	p.char_class = "magician"
+	p.level = 10
+	p.spells = ["call_of_earth", "renew_elements", "burnout"]
+	p.recalc_stats()
+	for sk: String in GameData.skills["skills"]:  # no fizzles in the test
+		if World.skill_cap(p, sk) > 0:
+			p.skills[sk] = World.skill_cap(p, sk)
+	p.mana = p.max_mana
+	p.cooldowns.clear()
+	var home := z.ground(20, 60) + Vector3.UP
+	p.global_position = home
+	World.request_cast(p.entity_id, "call_of_earth")
+	await _wait(5.4)
+	var pet := World.get_object(p.pet_id) as Pet
+	print("pets: summoned -> %s (%s), level %d, %d hp; window %s" % [pet.display_name if pet else "none", pet.kind if pet else "", pet.level if pet else 0,
+			pet.max_hp if pet else 0, main.hud._pet_panel.visible])
+	if pet == null:
+		return
+	# it follows
+	p.global_position = home + Vector3(15, 0, 0)
+	await _wait(4.0)
+	print("pets: walked 15 m away -> the pet is %.1f m from you" % pet.distance_to(p))
+	# attack on command, taunting
+	var mob := _nearest_mob(p, "gnoll_pup")
+	mob.set_physics_process(false)
+	mob.max_hp = 100000
+	mob.hp = mob.max_hp
+	p.global_position = z.ground(mob.global_position.x + 6.0, mob.global_position.z) + Vector3.UP
+	pet.global_position = z.ground(mob.global_position.x + 3.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_pet(p.entity_id, "attack")
+	await _wait(6.0)
+	print("pets: attack -> the pup took %d from the pet; the pup's top foe is %s" % [100000 - mob.hp, mob.top_hated().display_name if mob.top_hated() else "none"])
+	World.request_pet(p.entity_id, "back")
+	await _wait(0.3)
+	print("pets: back off -> attacking %s" % pet.auto_attack)
+	# heal and buff
+	pet.hp = 10
+	World.request_cast(p.entity_id, "renew_elements")
+	await _wait(2.8)
+	var healed := pet.hp
+	var delay0 := pet.attack_delay
+	World.request_cast(p.entity_id, "burnout")
+	await _wait(3.3)
+	print("pets: renew elements 10 -> %d hp; burnout delay %.2f -> %.2f" % [healed, delay0, pet.attack_delay])
+	# guard and sit
+	World.request_pet(p.entity_id, "guard")
+	var spot := pet.global_position
+	p.global_position += Vector3(12, 0, 0)
+	await _wait(3.0)
+	var guarded := pet.global_position.distance_to(spot)
+	World.request_pet(p.entity_id, "sit")
+	await _wait(0.3)
+	print("pets: guard -> stayed within %.1f m of its spot as you left; sit -> sitting %s" % [guarded, pet.sitting])
+	World.request_pet(p.entity_id, "follow")
+	# a kill by the pet is its owner's
+	mob.max_hp = 30
+	mob.hp = 20
+	mob.level = 8
+	var xp0 := p.xp
+	pet.global_position = z.ground(mob.global_position.x + 1.5, mob.global_position.z) + Vector3.UP
+	World.request_pet(p.entity_id, "attack")
+	await _wait(8.0)
+	print("pets: the pet killed the pup: dead %s; your xp %d -> %d" % [mob.dead if is_instance_valid(mob) else true, xp0, p.xp])
+	# it comes back after vanishing (zoning, logging in)
+	var hp0 := pet.hp
+	var old_id := pet.entity_id
+	pet.queue_free()
+	await _wait(0.5)
+	var back := World.get_object(p.pet_id) as Pet
+	print("pets: vanished -> back as a new pet %s, %d hp (was %d); saved %s" % [back != null and back.entity_id != old_id, back.hp if back else 0, hp0, p.to_save().get("pet", {})])
+	World.request_chat(p.entity_id, "/pet leave")
+	await _wait(0.3)
+	print("pets: /pet leave -> pet %s, remembered spell '%s'" % [World.get_object(p.pet_id) != null, p.pet_spell])
+	p.char_class = saved_class
+	p.level = 1
+	p.spells = GameData.classes[saved_class]["spells"].duplicate()
+	p.recalc_stats()
+
+
+## The Necromancer: a skeleton pet, lifetaps, a disease that ticks, a draining
+## bond, fear (not on named foes), root and snare, and Feign Death.
+func _t_necromancer() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	p.char_class = "necromancer"
+	p.level = 25
+	p.spells = ["raise_bones", "lifetap", "disease_cloud", "dread", "feign_death", "bond_of_death", "clinging_darkness", "mass_dread", "raise_skeletal_knight"]
+	p.recalc_stats()
+	for sk: String in GameData.skills["skills"]:
+		if World.skill_cap(p, sk) > 0:
+			p.skills[sk] = World.skill_cap(p, sk)
+	var cast := func(sid: String) -> void:
+		p.cooldowns.clear()
+		p.mana = p.max_mana
+		World.request_cast(p.entity_id, sid)
+		await _wait(float(GameData.spells[sid]["cast_time"]) + 0.3)
+	p.global_position = z.ground(20, 60) + Vector3.UP
+	await cast.call("raise_skeletal_knight")
+	var pet := World.get_object(p.pet_id) as Pet
+	print("necromancer: raised %s (%s, %d hp)" % [pet.display_name if pet else "nothing", pet.model_id if pet else "", pet.max_hp if pet else 0])
+	World.request_pet(p.entity_id, "sit")
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 100000
+	mob.hp = mob.max_hp
+	p.global_position = z.ground(mob.global_position.x + 8.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	p.hp = p.max_hp / 2
+	var hp0 := p.hp
+	await cast.call("lifetap")
+	print("necromancer: lifetap -> you %d -> %d hp, the target lost %d" % [hp0, p.hp, 100000 - mob.hp])
+	var t0 := mob.hp
+	await cast.call("disease_cloud")
+	await _wait(6.5)
+	print("necromancer: disease cloud ticked %d damage over 6 s" % (t0 - mob.hp))
+	p.hp = p.max_hp / 2
+	hp0 = p.hp
+	await cast.call("bond_of_death")
+	await _wait(6.5)
+	print("necromancer: bond of death healed you %d over 6 s" % (p.hp - hp0))
+	await cast.call("clinging_darkness")
+	print("necromancer: clinging darkness -> snared %.0f s" % mob.snare_left)
+	mob.set_physics_process(true)
+	var d0 := mob.distance_to(p)
+	await cast.call("dread")
+	var feared := mob.fear_left
+	await _wait(3.0)
+	print("necromancer: dread -> feared %.0f s; ran from %.1f to %.1f m away; swinging %s" % [feared, d0, mob.distance_to(p), mob.auto_attack])
+	mob.fear_left = 0.0
+	mob.add_hate(p, 50.0)
+	await _wait(0.5)
+	await cast.call("feign_death")
+	print("necromancer: feign death -> lying there %s; the gnoll still hunting you %s" % [p.feigning, mob.hate.has(p.entity_id)])
+	p.global_position += Vector3(1, 0, 0)
+	await _wait(0.2)
+	print("necromancer: moved -> still feigning %s" % p.feigning)
+	var named := _nearest_mob(p, "rhagg")
+	if named != null:
+		World.request_set_target(p.entity_id, named.entity_id)
+		p.global_position = z.ground(named.global_position.x + 8.0, named.global_position.z) + Vector3.UP
+		await cast.call("dread")
+		print("necromancer: dread on a named foe -> feared %.0f s" % named.fear_left)
+		named.hate.clear()
+	World.request_pet(p.entity_id, "leave")
+	mob.hate.clear()
+	p.char_class = saved_class
+	p.level = 1
+	p.spells = GameData.classes[saved_class]["spells"].duplicate()
+	p.recalc_stats()
+
+
+## Every pet kind at level 20, side by side with a magician and a necromancer.
+func _t_pet_look() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	p.level = 20
+	var at := z.ground(30, 60)
+	var pets := []
+	var i := 0
+	for spell: String in ["call_of_earth", "call_of_water", "call_of_fire", "call_of_air", "call_of_the_primal", "raise_bones", "raise_skeletal_knight"]:
+		var pet := Pet.new()
+		pet.setup(p, spell)
+		z.add_child(pet)
+		pet.global_position = z.ground(at.x - 9.0 + i * 3.0, at.z) + Vector3.UP * 0.3
+		pet.set_physics_process(false)
+		pet.rotation.y = 0.0
+		pets.append(pet)
+		i += 1
+	for cls: String in ["magician", "necromancer"]:
+		var look := {"model": GameData.classes[cls]["model"], "weapon": "staff"}
+		var body := Entity.make_visual(look)
+		z.add_child(body)
+		body.global_position = z.ground(at.x - 9.0 + i * 3.0, at.z)
+		pets.append(body)
+		i += 1
+	p.global_position = z.ground(at.x, at.z + 14.0) + Vector3.UP
+	p.face_toward(Vector3(at.x, p.global_position.y, at.z))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 8.0
+	p.pitch = -0.1
+	await _wait(1.0)
+	await _shot("9zz_pets")
+	for n: Node in pets:
+		n.queue_free()
+	World.time_override = -1.0
+	p.level = 1
+
+
+## Down the mausoleum stairs into the crypt, and back up.
+func _t_crypt_door() -> void:
+	if await _walk_border("crypt_door", "emberhold", Vector2(-32, -25), Vector2(0, -1), "emberhold_crypt"):
+		await _walk_border("crypt_door", "emberhold_crypt", Vector2(0, 5), Vector2(0, 1), "emberhold")
+
+
+## The necromancers' crypt under Emberhold, and its guildmaster.
+func _t_crypt() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("crypt: %s, %d people %s" % [z.zone_name, _npcs().size(), _npcs().keys()])
+	for view: Array in [[Vector3(0, 0, 6.3), Vector3(0, 0, -5), "door"], [Vector3(-3.5, 0, 1.5), Vector3(0, 0, -5.45), "morvath"]]:
+		p.global_position = view[0] + Vector3.UP * 0.2
+		p.face_toward(view[1])
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(1.0)
+		await _shot("9zz_crypt_%s" % view[2])
 
 
 ## Tradeskills: every recipe names real items and containers; stations open

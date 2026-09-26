@@ -20,6 +20,7 @@ signal service_changed
 signal service_closed
 signal station_opened(kind: String)  # a crafting station's combine window
 signal station_closed
+signal pet_changed  # your pet came, went, or was told something
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
 signal shot_fired(from: Entity, to: Entity, projectile: String)
@@ -310,6 +311,8 @@ func _physics_process(delta: float) -> void:
 		if obj is Player and is_instance_valid(obj):
 			_update_stamina(obj, delta)
 			_check_hidden(obj as Player)
+			_check_feign(obj as Player)
+			_check_pet(obj as Player)
 			_check_burden(obj as Player, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
@@ -337,6 +340,7 @@ func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
 	e.snare_left = maxf(0.0, e.snare_left - delta)
 	e.stun_left = maxf(0.0, e.stun_left - delta)
+	e.fear_left = maxf(0.0, e.fear_left - delta)
 	if e is Player:
 		(e as Player).off_swing_timer = maxf(0.0, (e as Player).off_swing_timer - delta)
 	e.root_left = maxf(0.0, e.root_left - delta)
@@ -362,12 +366,15 @@ func _update_timers(e: Entity, delta: float) -> void:
 		say(caster, "%s has taken %d damage from your %s." % [cap(e.display_name), dot["damage"], GameData.spells[dot["spell"]]["name"]], C_SPELL)
 		say(e, "You take %d damage from %s." % [dot["damage"], GameData.spells[dot["spell"]]["name"]], C_HIT_YOU)
 		damage(e, int(dot["damage"]), caster)
+		if caster != null and not caster.dead and GameData.spells[dot["spell"]].get("drain", false):  # Bond of Death: each tick feeds the caster
+			caster.hp = mini(caster.max_hp, caster.hp + int(dot["damage"]))
+			caster.stats_changed.emit()
 		if e.dead:
 			return
 
 
 func _update_melee(e: Entity) -> void:
-	if not e.auto_attack or e.stun_left > 0.0:
+	if not e.auto_attack or e.stun_left > 0.0 or e.fear_left > 0.0:
 		return
 	var t := e.valid_target_entity()
 	if not can_attack(e, t):
@@ -575,9 +582,9 @@ static func weapon_item(e: Entity) -> Dictionary:
 func _try_proc(e: Entity, t: Entity) -> void:
 	_try_buff_proc(e, t)
 	var proc: Dictionary = weapon_item(e).get("proc", {})
-	var natural := proc.is_empty() and e is Mob  # a monster's own: a spider's venom, a shaman's bolt
+	var natural := proc.is_empty() and (e is Mob or e is Pet)  # a monster's own: a spider's venom, a shaman's bolt
 	if natural:
-		proc = (e as Mob).data.get("proc", {})
+		proc = (e as Mob).data.get("proc", {}) if e is Mob else (e as Pet).proc
 	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)):
 		return
 	var spell_id := str(proc["spell"])
@@ -629,6 +636,176 @@ func _fish(p: Player) -> bool:
 	say(p, "You caught %s!" % GameData.item_name(catch), C_LOOT)
 	p.inventory_changed.emit()
 	return true
+
+
+# ---------------------------------------------------------------- pets
+
+## Summons (or re-summons) a player's pet from a "pet" spell. One pet at a time:
+## a new one replaces the old. World keeps it with you from then on.
+func summon_pet(p: Player, spell_id: String, hp := -1) -> void:
+	if p == null:
+		return
+	dismiss_pet(p, false)
+	var pet := Pet.new()
+	pet.setup(p, spell_id)
+	if hp > 0:
+		pet.hp = mini(hp, pet.max_hp)
+	var z := zone_of(p)
+	z.add_child(pet)
+	pet.global_position = p.global_position - p.global_basis.z * -1.5 + p.global_basis.x * 1.5 + Vector3.UP * 0.5
+	p.pet_id = pet.entity_id
+	p.pet_spell = spell_id
+	p.pet_hp = pet.hp
+	var k: Dictionary = GameData.pets["kinds"][pet.kind]
+	var kind_name := str(k.get("name", pet.kind))
+	say(p, "You summon %s, %s %s." % [pet.display_name, "an" if kind_name[0] in "aeiou" else "a", kind_name], C_SPELL)
+	_ui(p, &"pet_changed")
+
+
+## Gets rid of a player's pet ("/pet leave", or a new summon replacing it).
+func dismiss_pet(p: Player, forget := true) -> void:
+	var pet := get_object(p.pet_id) as Pet
+	if pet != null:
+		pet.queue_free()
+	p.pet_id = -1
+	if forget:
+		p.pet_spell = ""
+		_ui(p, &"pet_changed")
+
+
+func _kill_pet(pet: Pet) -> void:
+	pet.dead = true
+	pet.hp = 0
+	for obj: Node3D in objects.values():
+		if obj is Entity:
+			obj.hate.erase(pet.entity_id)
+	var p := pet.owner_player()
+	if p != null:
+		say(p, "%s has been slain! Your pet is gone." % pet.display_name, C_WARN)
+		p.pet_id = -1
+		p.pet_spell = ""
+		_ui(p, &"pet_changed")
+	pet.queue_free()
+
+
+## Keeps a player's pet at their side: after they zone (the pet is left in the
+## old zone), log in (only the spell was saved) or the pet wandered off into
+## nothing. Runs once a second or so per player with a pet.
+func _check_pet(p: Player) -> void:
+	if p.pet_spell == "" or p.dead:
+		return
+	var pet := get_object(p.pet_id) as Pet
+	if pet != null and not pet.dead and zone_of(pet) == zone_of(p):
+		p.pet_hp = pet.hp
+		return
+	if pet != null:
+		p.pet_hp = pet.hp
+		pet.queue_free()
+		p.pet_id = -1
+	if zone_of(p) == null or not GameData.spells.has(p.pet_spell):
+		return
+	summon_pet(p, p.pet_spell, p.pet_hp)
+
+
+## A pet's taunt: puts it on top of its target's hate list.
+func pet_taunt(pet: Pet, m: Mob) -> void:
+	var top := 0.0
+	for v: float in m.hate.values():
+		top = maxf(top, v)
+	if float(m.hate.get(pet.entity_id, 0.0)) < top:
+		m.hate[pet.entity_id] = top + 10.0
+
+
+## EQ's pet commands, from the pet window or /pet: attack (your target), back
+## (off), follow, guard (here), sit, taunt (on/off), leave (dismiss), health.
+func request_pet(player_id: int, command: String) -> void:
+	if _remote(&"request_pet", [player_id, command]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var pet := get_object(p.pet_id) as Pet
+	if pet == null or pet.dead:
+		say(p, "You don't have a pet.", C_WARN)
+		return
+	match command:
+		"attack":
+			var t := p.valid_target_entity()
+			if t == null or not can_attack(pet, t):
+				say(p, "Your pet needs something it can attack.", C_WARN)
+				return
+			pet.attack(t)
+			say(p, "%s says, 'Attacking %s, master.'" % [pet.display_name, t.display_name], C_SAY)
+		"back":
+			pet.back_off()
+			say(p, "%s says, 'Backing off, master.'" % pet.display_name, C_SAY)
+		"follow":
+			pet.mode = Pet.Mode.FOLLOW
+			pet.sitting = false
+			say(p, "%s says, 'Following you, master.'" % pet.display_name, C_SAY)
+		"guard":
+			pet.mode = Pet.Mode.GUARD
+			pet.guard_spot = pet.global_position
+			pet.sitting = false
+			say(p, "%s says, 'Guarding this spot, master.'" % pet.display_name, C_SAY)
+		"sit":
+			pet.back_off()
+			pet.mode = Pet.Mode.SIT
+			say(p, "%s says, 'Resting, master.'" % pet.display_name, C_SAY)
+		"taunt":
+			pet.taunting = not pet.taunting
+			say(p, "%s says, '%s, master.'" % [pet.display_name, "Taunting attackers" if pet.taunting else "No longer taunting"], C_SAY)
+		"leave":
+			say(p, "%s crumbles away." % pet.display_name, C_SPELL)
+			dismiss_pet(p)
+			return
+		"health":
+			say(p, "%s says, 'I am at %d%% health, master.'" % [pet.display_name, roundi(100.0 * pet.hp / maxf(1.0, pet.max_hp))], C_SAY)
+	_ui(p, &"pet_changed")
+
+
+# ---------------------------------------------------------------- fear, feign death
+
+## Fear: the monster turns and runs from you for a while, not fighting. It
+## remembers who did it when it wears off.
+func _fear(c: Entity, t: Entity, s: Dictionary, announce := true) -> void:
+	if not (t is Mob) or (t as Mob).data.get("named", false):
+		if announce:
+			say(c, "%s is not afraid of you." % cap(t.display_name), C_WARN)
+		t.add_hate(c, 10.0)
+		return
+	t.fear_left = float(s.get("duration", 10))
+	t.feared_by = c.entity_id
+	t.auto_attack = false
+	t.add_hate(c, 10.0)
+	if announce:
+		say(c, "%s flees in terror!" % cap(t.display_name), C_SPELL)
+
+
+## Feign Death: you drop as if slain. It may fail (worse at low skill); if it
+## works, everything hunting you forgets you, and nothing notices you until you
+## get up (move, attack or cast).
+func _feign_death(c: Entity, s: Dictionary) -> void:
+	c.auto_attack = false
+	c.feigning = true
+	c.cast = {}
+	if c is Player and randf() > 0.5 + 0.45 * skill_frac(c as Player, str(s.get("skill", "feign_death"))):
+		say(c, "You fall to the ground, but nothing is fooled.", C_WARN)
+		return
+	for m in get_mobs():
+		m.hate.erase(c.entity_id)
+		if m.valid_target_entity() == c:
+			m.target = null
+	say(c, "You fall to the ground, as if dead. Everything hunting you loses interest.", C_SPELL)
+
+
+func _check_feign(p: Player) -> void:
+	var at := Vector2(p.global_position.x, p.global_position.z)
+	var was: Vector2 = p.get_meta("feign_at", at)
+	p.set_meta("feign_at", at)
+	if p.feigning and at.distance_to(was) > 0.05:
+		p.feigning = false
+		say(p, "You stand back up.", C_SPELL)
 
 
 # ---------------------------------------------------------------- tradeskills
@@ -885,9 +1062,10 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 	d.sitting = false
 	if d is Player and not d.cast.is_empty() and amount > 0 and src != d:
 		_channel(d as Player)
-	if d is Mob and src is Player:  # kill credit goes to whoever did the most
+	var credit := (src as Pet).owner_player() if src is Pet else src  # a pet's damage is its owner's
+	if d is Mob and credit is Player:  # kill credit goes to whoever did the most
 		var by: Dictionary = d.get_meta("damage_by", {})
-		by[src.entity_id] = int(by.get(src.entity_id, 0)) + amount
+		by[credit.entity_id] = int(by.get(credit.entity_id, 0)) + amount
 		d.set_meta("damage_by", by)
 	if src != null:
 		d.add_hate(src, float(amount))
@@ -923,6 +1101,11 @@ func _regen_tick() -> void:
 # --- death ----------------------------------------------------------------
 
 func kill(d: Entity, killer: Entity) -> void:
+	if killer is Pet and (killer as Pet).owner_player() != null:
+		killer = (killer as Pet).owner_player()  # the owner earns what the pet kills
+	if d is Pet:
+		_kill_pet(d as Pet)
+		return
 	d.dead = true
 	d.hp = 0
 	d.dots.clear()
@@ -995,6 +1178,9 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 
 func _kill_player(p: Player, killer: Entity) -> void:
 	p.hostile_npcs.clear()
+	if p.pet_spell != "":  # the bond breaks with your death
+		dismiss_pet(p)
+	p.feigning = false
 	request_trade_cancel(p.entity_id)
 	request_service_close(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
@@ -1116,6 +1302,7 @@ func request_toggle_attack(entity_id: int) -> void:
 		say(e, "Auto attack is off.")
 		return
 	unhide(e)
+	e.feigning = false
 	var t := e.valid_target_entity()
 	if e is Player and t is Npc and not can_attack(e, t):
 		var p := e as Player
@@ -1337,6 +1524,9 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 		say(c, "You need a piercing weapon in your main hand to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
 	var t := _resolve_spell_target(c, s)
+	if t == null and str(s.get("target", "")) == "pet":
+		say(c, "You don't have a pet.", C_WARN)
+		return
 	if t == null:
 		say(c, "You must first select a target for this spell!", C_WARN)
 		return
@@ -1349,6 +1539,8 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if s.get("requires_hidden", false) and not c.hidden:
 		say(c, "You must be hidden to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
+	if c.feigning and str(s["type"]) != "feign_death":
+		c.feigning = false  # getting up to cast
 	if c.hidden and not str(s["type"]) in ["hide", "sneak"]:
 		if s.has("ambush"):
 			c.set_meta("ambush", float(s["ambush"]))  # an opener from the shadows hits harder
@@ -1380,6 +1572,8 @@ func _resolve_spell_target(c: Entity, s: Dictionary) -> Entity:
 			return c
 		"friendly":
 			return t if t != null and t.faction == c.faction else c
+		"pet":  # your own pet, whatever you have targeted
+			return get_object((c as Player).pet_id) as Entity if c is Player else null
 		_:
 			return t if can_attack(c, t) else null
 
@@ -1542,6 +1736,25 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(c, "You are as quiet as a cat stalking its prey.", C_SPELL)
 		"fish":
 			_fish(c as Player)
+		"pet":
+			summon_pet(c as Player, spell_id)
+		"lifetap":  # hurts the target and heals you as much
+			say(c, "You drain %s for %d points of damage." % [t.display_name, power], C_SPELL)
+			say(t, "%s drains you for %d points of damage." % [cap(c.display_name), power], C_HIT_YOU)
+			damage(t, power, c)
+			c.hp = mini(c.max_hp, c.hp + power)
+			c.stats_changed.emit()
+		"fear":
+			_fear(c, t, s)
+		"fear_area":
+			var scared := 0
+			for m in get_mobs():
+				if not m.dead and can_attack(c, m) and m.distance_to(c) <= float(s.get("radius", 10.0)):
+					_fear(c, m, s, false)
+					scared += 1
+			say(c, "Your dread spreads; %d foes flee." % scared if scared > 0 else "There is no one near to frighten.", C_SPELL)
+		"feign_death":
+			_feign_death(c, s)
 		"restore_mana":
 			t.mana = mini(t.max_mana, t.mana + power)
 			t.stats_changed.emit()
@@ -2391,6 +2604,14 @@ func request_chat(player_id: int, text: String) -> void:
 			say(p, "Your location is %d, %d, %d in %s." % [roundi(p.global_position.x), roundi(p.global_position.y), roundi(p.global_position.z), zone_of(p).zone_name], C_SYSTEM)
 		"/camp":
 			request_camp(player_id)
+		"/pet":
+			var pet_cmd := rest.to_lower().get_slice(" ", 0)
+			var aliases := {"back": "back", "backoff": "back", "attack": "attack", "follow": "follow", "guard": "guard", "sit": "sit",
+					"taunt": "taunt", "leave": "leave", "dismiss": "leave", "get": "leave", "health": "health", "report": "health"}
+			if aliases.has(pet_cmd):
+				request_pet(player_id, aliases[pet_cmd])
+			else:
+				say(p, "Pet commands: /pet attack, back, follow, guard, sit, taunt, health, leave.", C_SYSTEM)
 		"/fish":
 			request_item_click(player_id, "primary")
 		"/g", "/gsay", "/group":

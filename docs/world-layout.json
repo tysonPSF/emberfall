@@ -1,6 +1,7 @@
 {
  "built": [
   "emberhold",
+  "emberhold_crypt",
   "emberhold_tavern",
   "greenmoor",
   "harrowfield",

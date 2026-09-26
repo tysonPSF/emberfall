@@ -31,6 +31,7 @@ var _think_timer := 0.0
 var _scan_timer := 0.0
 var _plate_timer := 0.0
 var _wander_target := Vector3.ZERO
+var _move_speed := 0.0
 
 
 func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
@@ -204,6 +205,37 @@ func _physics_process(delta: float) -> void:
 	var move := Vector3.ZERO
 	var move_speed := speed
 
+	if fear_left > 0.0:  # feared: runs from whoever scared it and doesn't fight
+		var scary := World.get_object(feared_by) as Node3D
+		auto_attack = false
+		if scary != null:
+			move = -_dir_to(scary.global_position)
+			move_speed = speed * 0.7
+	else:
+		move = _think_state(delta)
+		move_speed = _move_speed
+	if root_left > 0.0 or stun_left > 0.0:
+		move = Vector3.ZERO  # rooted: turns and swings, but can't walk (stunned: not even swings)
+	if snare_left > 0.0:
+		move_speed *= 0.5
+	if move != Vector3.ZERO:
+		if state != State.COMBAT or fear_left > 0.0:
+			face_toward(global_position + move)
+		velocity.x = move.x * move_speed
+		velocity.z = move.z * move_speed
+	else:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		if is_on_floor():
+			return  # standing still on the ground: no need to sweep the collision (most mobs, most of the time)
+	move_and_slide()
+
+
+## What the mob does this frame in its current state; returns the step to take
+## (and sets _move_speed).
+func _think_state(delta: float) -> Vector3:
+	var move := Vector3.ZERO
+	var move_speed := speed
 	match state:
 		State.IDLE:
 			if _think_timer <= 0.0:
@@ -250,21 +282,8 @@ func _physics_process(delta: float) -> void:
 				hp = max_hp
 				stats_changed.emit()
 
-	if root_left > 0.0 or stun_left > 0.0:
-		move = Vector3.ZERO  # rooted: turns and swings, but can't walk (stunned: not even swings)
-	if snare_left > 0.0:
-		move_speed *= 0.5
-	if move != Vector3.ZERO:
-		if state != State.COMBAT:
-			face_toward(global_position + move)
-		velocity.x = move.x * move_speed
-		velocity.z = move.z * move_speed
-	else:
-		velocity.x = 0.0
-		velocity.z = 0.0
-		if is_on_floor():
-			return  # standing still on the ground: no need to sweep the collision (most mobs, most of the time)
-	move_and_slide()
+	_move_speed = move_speed
+	return move
 
 
 func _scan_for_aggro(delta: float) -> void:
@@ -273,7 +292,7 @@ func _scan_for_aggro(delta: float) -> void:
 		return
 	_scan_timer = 0.5
 	for p in World.get_players():
-		if p.dead or p.hidden or World.con_of(p.level, level) == World.Con.GRAY:
+		if p.dead or p.hidden or p.feigning or World.con_of(p.level, level) == World.Con.GRAY:
 			continue
 		# aggressive mobs attack anyone close; others only those their faction hates
 		var radius := aggro_radius if aggressive else (12.0 if World.mob_kos(p, faction) else 0.0)

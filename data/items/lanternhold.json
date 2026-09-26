@@ -182,11 +182,7 @@
     "skill": "piercing",
     "value": 2400,
     "rec_level": 16,
-    "classes": [
-      "warrior",
-      "rogue",
-      "wizard"
-    ]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer"]
   },
   "steel_war_axe": {
     "name": "Steel War Axe",
@@ -221,9 +217,6 @@
     "mana": 25,
     "value": 2600,
     "rec_level": 16,
-    "classes": [
-      "cleric",
-      "wizard"
-    ]
+    "classes": ["cleric", "wizard", "magician", "necromancer"]
   }
 }

@@ -398,8 +398,8 @@ func _build_environment() -> void:
 		ienv.background_mode = Environment.BG_COLOR
 		ienv.background_color = Color(0.03, 0.025, 0.02)
 		ienv.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-		ienv.ambient_light_color = Color(0.62, 0.58, 0.54)
-		ienv.ambient_light_energy = 0.34
+		ienv.ambient_light_color = Color.html(str(data.get("ambient_color", "#9e948a")))
+		ienv.ambient_light_energy = float(data.get("ambient_energy", 0.34))
 		ienv.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 		ienv.fog_enabled = true
 		ienv.fog_light_color = Color(0.1, 0.07, 0.05)
@@ -560,6 +560,8 @@ func _build_landmarks() -> void:
 				_build_market(p, _landmark_yaw(lm))
 			"tavern_room":
 				_build_tavern_room(p, _landmark_yaw(lm))
+			"crypt_room":
+				_build_crypt_room(p)
 			"pond":
 				_build_pond(lm)
 			"signpost":
@@ -1800,6 +1802,20 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 	if id in STATION_PROPS:
 		_add_station(id, root, _prop_bounds(id, model), s)
 	return root
+
+
+## The necromancers' crypt under Emberhold: one prop (props.py crypt_room),
+## lit only by its candles and the ritual circle's purple glow.
+func _build_crypt_room(p: Vector3) -> void:
+	_prop("crypt_room", p, 0.0, 1.0, "mesh")
+	var candle := Color(1.0, 0.66, 0.36)
+	for at: Array in [[0, 1.6, 0.4], [2.85, 1.6, -1.67], [1.76, 1.6, -5.03], [-1.76, 1.6, -5.03], [-2.85, 1.6, -1.67],
+			[1.75, 1.8, -6.68], [-1.75, 1.8, -6.68], [1.9, 1.7, 6.78], [-1.9, 1.7, 6.78]]:
+		_light(p + Vector3(at[0], at[1], at[2]), candle, 7.0, 1.2)
+	for at: Array in [[-9.65, 1.6, -0.22], [9.65, 1.6, 4.82], [-9.65, 2.5, 3.23], [9.65, 1.6, -2.08], [5.12, 1.6, -7.4], [-5.12, 1.6, 7.4],
+			[-8.0, 1.4, 4.6], [8.0, 1.4, -3.1]]:
+		_light(p + Vector3(at[0], at[1], at[2]), candle, 5.0, 0.7)
+	_light(p + Vector3(0, 0.6, -2.6), Color(0.62, 0.35, 0.95), 6.0, 1.3)  # the ritual circle
 
 
 ## Crafting stations: every oven, loom, brew barrel, forge and campfire is one,
