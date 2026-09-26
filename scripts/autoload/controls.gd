@@ -25,7 +25,7 @@ const BINDINGS := {
 	"target_group_4": [KEY_F5],
 	"target_group_5": [KEY_F6],
 	"settings": [KEY_O],
-	"settings_mouse_look": [KEY_M],
+	"map": [KEY_M],
 	"settings_music_down": [KEY_BRACKETLEFT],
 	"settings_music_up": [KEY_BRACKETRIGHT],
 	"consider": [KEY_C],
@@ -54,6 +54,9 @@ const BINDINGS := {
 	"hotbar_10": [KEY_0],
 	"spellbook": [KEY_P],
 }
+
+## Ctrl+M: mouselook on or off, anywhere.
+const CTRL_BINDINGS := {"settings_mouse_look": KEY_M}
 
 ## The second hotbar: Ctrl and the same number keys (under your little finger,
 ## and no clash with Shift's sprint), or Shift.
@@ -125,6 +128,13 @@ func _ready() -> void:
 			var ev := InputEventKey.new()
 			ev.physical_keycode = key
 			InputMap.action_add_event(action, ev)
+	for action: String in CTRL_BINDINGS:
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+		var cev := InputEventKey.new()
+		cev.physical_keycode = CTRL_BINDINGS[action]
+		cev.ctrl_pressed = true
+		InputMap.action_add_event(action, cev)
 	for action: String in SHIFT_BINDINGS:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)

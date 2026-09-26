@@ -89,6 +89,8 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["zone_map", "greenmoor"],
+	["zone_map_town", "rainhold"],
 	["compass", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
@@ -3459,6 +3461,76 @@ func _t_bash_stun() -> void:
 	p.equipment = kit
 	p.spells = known
 	p.recalc_stats()
+
+
+## The zone map (M): painted from the zone a few rows a frame, fog lifting
+## where you've walked, and marks for exits, landmarks and town services.
+func _t_zone_map() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	var m: MapWindow = hud._map
+	var t0 := Time.get_ticks_msec()
+	print("zone_map: when you open it, already painted: %s" % m._painted.has(main.zone.zone_id))
+	var z0: Zone = main.zone
+	var step := z0.size / MapWindow.RES
+	var u := Time.get_ticks_usec()
+	for i in MapWindow.RES + 2:
+		z0.height_at(-z0.half + i * step, 10.0)
+	var h_row := Time.get_ticks_usec() - u
+	u = Time.get_ticks_usec()
+	for i in MapWindow.RES:
+		z0._ground_color(-z0.half + i * step, 10.0, 1.0)
+	print("zone_map: one row of heights %.1f ms, one row of colors %.1f ms" % [h_row / 1000.0, (Time.get_ticks_usec() - u) / 1000.0])
+	var worst := 0.0
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:  # the slowest frame while it paints
+		await get_tree().process_frame
+		worst = maxf(worst, get_process_delta_time())
+	print("zone_map: painting in the background finished %d ms into the section; slowest frame meanwhile %.1f ms" % [Time.get_ticks_msec() - t0, worst * 1000.0])
+	t0 = Time.get_ticks_msec()
+	for spot: Vector2 in [Vector2(0, 0), Vector2(0, -80), Vector2(0, -170), Vector2(60, 20)]:  # a walk up the road
+		p.global_position = main.zone.ground(spot.x, spot.y) + Vector3.UP
+		m._reveal(main.zone)
+	m.toggle()
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:
+		await get_tree().process_frame
+	var cells: PackedByteArray = m._fog.get(main.zone.zone_id, PackedByteArray())
+	var seen := 0
+	for c in cells:
+		seen += c
+	var kinds := {}
+	for mk: Array in m._marks:
+		kinds[mk[0]] = int(kinds.get(mk[0], 0)) + 1
+	print("zone_map: painted in %d ms; %d of %d fog cells explored; marks %s" % [Time.get_ticks_msec() - t0, seen, cells.size(), kinds])
+	await _wait(0.3)
+	await _shot("9zz_map_greenmoor")
+	m.toggle()
+	m._save_fog()
+	print("zone_map: fog saved -> %s" % FileAccess.file_exists(m._fog_path()))
+
+
+## A town's map, all explored: guildmasters, the bank, merchants, quests and
+## crafting stations, with one highlighted from the legend.
+func _t_zone_map_town() -> void:
+	var main := get_parent()
+	var hud: Node = main.hud
+	var m: MapWindow = hud._map
+	m.toggle()
+	var cells := PackedByteArray()
+	cells.resize(MapWindow.FOG_CELLS * MapWindow.FOG_CELLS)
+	cells.fill(1)
+	m._fog[main.zone.zone_id] = cells
+	m._fog_dirty = true
+	var t0 := Time.get_ticks_msec()
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:
+		await get_tree().process_frame
+	for i in m._marks.size():
+		if m._marks[i][0] == "bank":
+			m._highlight = i
+	await _wait(0.3)
+	print("zone_map_town: %s painted in %d ms; %d marks" % [main.zone.zone_id, Time.get_ticks_msec() - t0, m._marks.size()])
+	await _shot("9zz_map_%s" % main.zone.zone_id)
+	m.toggle()
 
 
 ## The compass: headings that turn with you, the zone's name, a pass's name
