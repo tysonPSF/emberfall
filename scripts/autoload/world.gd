@@ -3376,7 +3376,7 @@ func request_train(player_id: int, spell_id: String) -> void:
 	var slot := p.hotbar.find("")  # on the bars if there's room: the first empty slot
 	if not ("spell:" + spell_id) in p.hotbar and slot >= 0:
 		p.hotbar[slot] = "spell:" + spell_id
-		say(p, "%s teaches you %s. (Key %s%d)" % [npc.display_name, s["name"], "Shift+" if slot >= 10 else "", (slot % 10 + 1) % 10], C_XP)
+		say(p, "%s teaches you %s. (Key %s%d)" % [npc.display_name, s["name"], "Ctrl+" if slot >= 10 else "", (slot % 10 + 1) % 10], C_XP)
 	else:
 		say(p, "%s teaches you %s. Drag it from your spellbook (P) onto a hotbar slot." % [npc.display_name, s["name"]], C_XP)
 	p.inventory_changed.emit()

@@ -55,7 +55,8 @@ const BINDINGS := {
 	"spellbook": [KEY_P],
 }
 
-## The second hotbar: Shift and the same number keys.
+## The second hotbar: Ctrl and the same number keys (under your little finger,
+## and no clash with Shift's sprint), or Shift.
 const SHIFT_BINDINGS := {
 	"hotbar2_1": KEY_1, "hotbar2_2": KEY_2, "hotbar2_3": KEY_3, "hotbar2_4": KEY_4, "hotbar2_5": KEY_5,
 	"hotbar2_6": KEY_6, "hotbar2_7": KEY_7, "hotbar2_8": KEY_8, "hotbar2_9": KEY_9, "hotbar2_10": KEY_0,
@@ -127,7 +128,9 @@ func _ready() -> void:
 	for action: String in SHIFT_BINDINGS:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
-		var sev := InputEventKey.new()
-		sev.physical_keycode = SHIFT_BINDINGS[action]
-		sev.shift_pressed = true
-		InputMap.action_add_event(action, sev)
+		for mod: String in ["ctrl", "shift"]:
+			var sev := InputEventKey.new()
+			sev.physical_keycode = SHIFT_BINDINGS[action]
+			sev.ctrl_pressed = mod == "ctrl"
+			sev.shift_pressed = mod == "shift"
+			InputMap.action_add_event(action, sev)
