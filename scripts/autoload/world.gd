@@ -306,6 +306,7 @@ func _physics_process(delta: float) -> void:
 		if obj is Player and is_instance_valid(obj):
 			_update_stamina(obj, delta)
 			_check_hidden(obj as Player)
+			_check_burden(obj as Player, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -1000,6 +1001,9 @@ func request_sprint(entity_id: int, on: bool) -> void:
 	# stamina returns, which stutters your speed and repeats the winded message.
 	if on and (p.sitting or p.stamina < float(cfg("sprint_resume_at", 25.0))):
 		return
+	if on and p.encumbrance_speed() < 0.6:
+		say(p, "You are carrying too much to run.", C_WARN)
+		return
 	p.sprinting = on
 
 
@@ -1313,6 +1317,19 @@ static func behind(attacker: Entity, target: Entity) -> bool:
 	facing.y = 0.0
 	to_attacker.y = 0.0
 	return facing.normalized().dot(to_attacker.normalized()) < -0.25
+
+
+## Tells a player when their load starts slowing them, and when it stops.
+func _check_burden(p: Player, delta: float) -> void:
+	var t := float(p.get_meta("burden_check", 0.0)) - delta
+	if t > 0.0:
+		p.set_meta("burden_check", t)
+		return
+	p.set_meta("burden_check", 1.0)
+	var burdened := p.encumbrance_speed() < 1.0
+	if burdened != bool(p.get_meta("burdened", false)):
+		p.set_meta("burdened", burdened)
+		say(p, "You are burdened by all you carry; it slows you down." if burdened else "You are no longer encumbered.", C_WARN if burdened else C_SYSTEM)
 
 
 ## A hidden rogue who walks off without sneaking is seen.

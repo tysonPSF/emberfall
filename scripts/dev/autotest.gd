@@ -88,6 +88,7 @@ const SECTIONS := [
 	["level20", "sunward_steps"],
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
+	["encumbrance", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -3444,3 +3445,50 @@ func _t_lanternhold() -> void:
 	var bank_ok := bool(npcs["banker_tamsyn"].data.get("banker", false))
 	print("lanternhold: guildmasters %s; banker %s; bind point %s (the shrine)" % [trains, bank_ok, z.bind_point])
 	World.log_message.disconnect(listen)
+
+
+## Encumbrance: what things weigh, a bag that lightens its load, coin that
+## weighs until it's banked, and the slowdown past your limit.
+func _t_encumbrance() -> void:
+	var p := World.local_player
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var saved_class := p.char_class
+	p.char_class = "warrior"
+	p.level = 9
+	p.recalc_stats()
+	p.pack.clear()
+	p.equipment.clear()
+	p.coin = 0
+	p.bank_coin = 0
+	var sample := {}
+	for id: String in ["iron_dagger", "iron_short_sword", "oak_staff", "round_shield", "leather_tunic", "studded_tunic", "iron_greaves", "cloth_cap", "wolf_pelt", "crude_arrow", "tarnished_ring", "leather_backpack"]:
+		sample[id] = GameData.item_weight(id)
+	print("encumbrance: weights %s" % sample)
+	print("encumbrance: a level 9 warrior carries %.1f of %d" % [p.carried_weight(), int(p.carry_capacity())])
+	p.pack.add("wolf_pelt", 20)
+	var loose := p.carried_weight()
+	p.pack.clear()
+	var bag := Pack.entry("leather_backpack")
+	bag["contents"][0] = Pack.entry("wolf_pelt", 20)
+	p.pack.slots[0] = bag
+	print("encumbrance: 20 wolf pelts loose %.1f, in a leather backpack %.1f" % [loose, p.carried_weight()])
+	p.pack.clear()
+	p.coin = 500 * 1000  # 500 platinum
+	await _wait(1.3)
+	print("encumbrance: 500 platinum on hand -> %.1f of %d, speed x%.2f; told '%s'" % [p.carried_weight(), int(p.carry_capacity()), p.encumbrance_speed(),
+			said.filter(func(t: String) -> bool: return "burden" in t).back() if said.any(func(t: String) -> bool: return "burden" in t) else "-"])
+	p.coin = 900 * 1000
+	said.clear()
+	World.request_sprint(p.entity_id, true)
+	print("encumbrance: 900 platinum -> speed x%.2f; sprinting %s (%s)" % [p.encumbrance_speed(), p.sprinting, said.back() if not said.is_empty() else "-"])
+	p.bank_coin += p.coin  # the banker's vault weighs nothing
+	p.coin = 0
+	await _wait(1.3)
+	print("encumbrance: banked -> %.1f, speed x%.2f; told '%s'" % [p.carried_weight(), p.encumbrance_speed(), said.back() if not said.is_empty() else "-"])
+	World.log_message.disconnect(listen)
+	p.bank_coin = 0
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()

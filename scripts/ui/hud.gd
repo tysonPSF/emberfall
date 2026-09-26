@@ -140,6 +140,7 @@ var _cursor_icon: TextureRect
 var _cursor_count: Label
 var _sell_cursor: Button
 var _coin_label: Label
+var _weight_label: Label
 var _stats_label: Label
 var _faction_label: Label
 
@@ -1411,6 +1412,10 @@ func _build_inventory() -> void:
 	stats.add_child(_stats_label)
 	_coin_label = UIKit.label("", 12, UIKit.GOLD)
 	stats.add_child(_coin_label)
+	_weight_label = UIKit.label("", 12, UIKit.TEXT)
+	_weight_label.tooltip_text = "What you carry, worn and packed, and your coin. Past your limit you slow down; the banker keeps coin weightless."
+	_weight_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	stats.add_child(_weight_label)
 	# standing with each faction, folded away: it's long and rarely needed
 	var faction_button := UIKit.button("Faction  +", Vector2(0, 22))
 	faction_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -2244,6 +2249,10 @@ func _refresh_inventory() -> void:
 	if _inv_panel.visible:
 		_refresh_doll()
 	_coin_label.text = _coin_text(player.coin)
+	var load := player.carried_weight()
+	var limit := player.carry_capacity()
+	_weight_label.text = "Weight  %.1f / %d" % [load, int(limit)]
+	_weight_label.add_theme_color_override("font_color", Color(1, 0.5, 0.4) if load > limit else UIKit.TEXT)
 	if _sell_cursor != null:
 		_refresh_sell_cursor()
 
@@ -2291,6 +2300,10 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 		flags.append("NO DROP")
 	if not flags.is_empty():
 		lines.append("  ".join(flags))
+	var wt := "Weight %.1f" % GameData.item_weight(item_id)
+	if float(it.get("weight_reduction", 0.0)) > 0.0:
+		wt += "   Lightens what's inside by %d%%" % roundi(float(it["weight_reduction"]) * 100.0)
+	lines.append(wt)
 	if it.has("slot"):
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())
 	if it.has("dmg") and it.has("delay"):

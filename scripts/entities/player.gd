@@ -27,6 +27,8 @@ var off_dmg_max := 0
 var off_delay := 0.0
 var off_verb: Array = ["hit", "hits"]
 var off_swing_timer := 0.0
+var _load_factor := 1.0  # encumbrance_speed(), refreshed a few times a second for movement
+var _load_timer := 0.0
 var attributes: Dictionary = {}  # totals from gear, for the character sheet
 var deity := ""  # data/deities.json id, chosen at creation; "" for none
 var xp := 0
@@ -378,6 +380,54 @@ func fill_skills() -> void:
 			skills[id] = int(cap * start)
 		elif skills.has(id):
 			skills[id] = int(skills[id])
+
+
+## Everything you carry, EverQuest-style: what you wear, what's in your pack
+## (a good bag lightens what's inside it), what's on the cursor, and your coin.
+func _load_speed() -> float:
+	_load_timer -= get_physics_process_delta_time()
+	if _load_timer <= 0.0:
+		_load_timer = 0.3
+		_load_factor = encumbrance_speed()
+	return _load_factor
+
+
+func carried_weight() -> float:
+	var w := 0.0
+	for slot: String in equipment:
+		w += GameData.item_weight(str(equipment[slot]))
+	for e: Dictionary in pack.slots:
+		if e.is_empty():
+			continue
+		w += GameData.item_weight(str(e["item"])) * int(e.get("count", 1))
+		if e.has("contents"):
+			var inside := 0.0
+			for c: Dictionary in e["contents"]:
+				if not c.is_empty():
+					inside += GameData.item_weight(str(c["item"])) * int(c.get("count", 1))
+			w += inside * (1.0 - float(GameData.item(str(e["item"])).get("weight_reduction", 0.0)))
+	if not cursor.is_empty():
+		w += GameData.item_weight(str(cursor["item"])) * int(cursor.get("count", 1))
+	return w + coin_weight()
+
+
+## Coins weigh what the fewest coins for your purse would (1 platinum = 10 gold
+## = 100 silver = 1000 copper): small change is light, a fortune is not. Bank it.
+func coin_weight() -> float:
+	var coins := coin / 1000 + (coin / 100) % 10 + (coin / 10) % 10 + coin % 10
+	return coins * float(World.cfg("coin_weight", 0.1))
+
+
+## How much you can carry before it slows you: grows with level and strength.
+func carry_capacity() -> float:
+	return float(World.cfg("carry_base", 40)) + level * float(World.cfg("carry_per_level", 2)) + int(attributes.get("str", 0)) * float(World.cfg("carry_per_str", 3))
+
+
+## Your speed under your load: 1 up to capacity, then 10% slower for every 10%
+## over, never below 40%.
+func encumbrance_speed() -> float:
+	var over := carried_weight() / maxf(carry_capacity(), 1.0)
+	return 1.0 if over <= 1.0 else maxf(0.4, 1.0 - (over - 1.0))
 
 
 func xp_to_next() -> int:
@@ -746,6 +796,7 @@ func _physics_process(delta: float) -> void:
 		spd *= SNEAK_SPEED
 	if snare_left > 0.0:
 		spd *= 0.5
+	spd *= _load_speed()
 	if dir != Vector3.ZERO and sitting and _may_ask("stand"):
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd
