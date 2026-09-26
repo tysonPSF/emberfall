@@ -925,7 +925,7 @@ func _physics_process(delta: float) -> void:
 		_zone_hold = 0.0
 	elif not _held_line:
 		_held_line = true
-		_zone_hold = 8.0  # then you can walk out, if the server never answers
+		_zone_hold = 30.0  # then you can walk out, if the server never answers
 	if _zone_hold > 0.0:
 		_zone_hold -= delta
 		dir = Vector3.ZERO
