@@ -45,6 +45,23 @@ var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while i
 var pet_id := -1  # your pet's entity id, -1 with none
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
 var pet_hp := -1  # its health when you last left, to bring it back as it was
+var hotbar: Array = []  # HOTBAR_SLOTS entries, main bar (keys 1-0) then the Shift bar: "spell:<id>", "item:<id>", "act:<name>" or ""
+
+const HOTBAR_SLOTS := 20
+## What an "act:" slot can do: [name, icon, what it does].
+const HOTBAR_ACTIONS := {
+	"attack": ["Attack", "action_attack", "Turns auto attack on or off."],
+	"ranged": ["Ranged", "action_ranged", "Fires your bow or sling at your target."],
+	"sit": ["Sit / Stand", "action_sit", "Rest to regain health and mana faster."],
+	"consider": ["Consider", "action_consider", "Sizes up your target: how tough it is, and how it feels about you."],
+	"hail": ["Hail", "action_hail", "Greets your target, or whoever is nearest."],
+	"loot": ["Loot", "action_loot", "Opens the corpse you have targeted."],
+	"pet_attack": ["Pet: Attack", "action_pet_attack", "Sends your pet at your target."],
+	"pet_back": ["Pet: Back Off", "action_pet_back", "Calls your pet off the fight."],
+	"pet_follow": ["Pet: Follow", "action_pet_follow", "Your pet follows you."],
+	"pet_guard": ["Pet: Guard", "action_pet_guard", "Your pet guards where it stands."],
+	"pet_sit": ["Pet: Sit", "action_pet_sit", "Your pet sits and rests."],
+}
 var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
 var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
@@ -109,6 +126,12 @@ func from_save(d: Dictionary) -> void:
 		if not clean.is_empty() and not pack.add_entry(clean):
 			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
+	hotbar = (d.get("hotbar", []) as Array).duplicate()
+	if hotbar.is_empty():  # a new character, or one from before the bars were yours to arrange
+		hotbar = default_hotbar(spells)
+	hotbar.resize(HOTBAR_SLOTS)
+	for i in HOTBAR_SLOTS:
+		hotbar[i] = str(hotbar[i]) if hotbar[i] != null else ""
 	var saved_pet: Dictionary = d.get("pet", {})
 	pet_spell = str(saved_pet.get("spell", ""))
 	pet_hp = int(saved_pet.get("hp", -1))
@@ -218,7 +241,7 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning"]:
+			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -253,7 +276,7 @@ func to_save() -> Dictionary:
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
-		"position": [p.x, p.y, p.z], "pet": _pet_save(),
+		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar,
 	}
 
 
@@ -633,10 +656,65 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			World.request_set_target(entity_id, -1)
 	else:
-		for i in 8:
-			if event.is_action_pressed("hotbar_%d" % (i + 1)) and i < spells.size():
-				World.request_cast(entity_id, spells[i])
+		for i in 10:  # exact: Shift+1 is the second bar, not the first
+			if event.is_action_pressed("hotbar_%d" % (i + 1), false, true):
+				activate_hotbar(i)
 				break
+			if event.is_action_pressed("hotbar2_%d" % (i + 1), false, true):
+				activate_hotbar(10 + i)
+				break
+
+
+## Your first ten spells on the main bar, the rest empty.
+static func default_hotbar(known: Array) -> Array:
+	var out: Array = []
+	out.resize(HOTBAR_SLOTS)
+	out.fill("")
+	for i in mini(known.size(), 10):
+		out[i] = "spell:" + str(known[i])
+	return out
+
+
+## Uses what's in a hotbar slot: casts the spell, uses the item (eats, drinks,
+## right-clicks a worn click item), or does the action.
+func activate_hotbar(index: int) -> void:
+	if index < 0 or index >= hotbar.size():
+		return
+	var entry := str(hotbar[index])
+	var kind := entry.get_slice(":", 0)
+	var arg := entry.get_slice(":", 1)
+	match kind:
+		"spell":
+			World.request_cast(entity_id, arg)
+		"item":
+			for slot: String in equipment:
+				if GameData.base_item(str(equipment[slot])) == arg and GameData.item(str(equipment[slot])).has("click"):
+					World.request_item_click(entity_id, slot)
+					return
+			for place: String in pack.places():
+				var e := pack.get_at(place)
+				if not e.is_empty() and GameData.base_item(str(e["item"])) == arg and GameData.item(str(e["item"])).has("use"):
+					World.request_use_item(entity_id, place)
+					return
+			World.say(self, "You have no %s you can use." % GameData.item_name(arg), World.C_WARN)
+		"act":
+			match arg:
+				"attack":
+					World.request_toggle_attack(entity_id)
+				"ranged":
+					World.request_ranged(entity_id)
+				"sit":
+					World.request_sit(entity_id, not sitting)
+				"consider":
+					World.request_consider(entity_id)
+				"hail":
+					World.request_hail(entity_id)
+				"loot":
+					if is_instance_valid(target) and target is Corpse:
+						World.request_loot_open(entity_id, (target as Corpse).object_id)
+				_:
+					if arg.begins_with("pet_"):
+						World.request_pet(entity_id, arg.trim_prefix("pet_"))
 
 
 ## Mouselook is the normal state: the mouse turns you and the cursor stays hidden.

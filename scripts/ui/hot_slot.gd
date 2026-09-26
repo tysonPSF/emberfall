@@ -22,6 +22,10 @@ var seconds := 0.0  # recast left, shown while sweeping
 var usable := true
 var lit := false
 var lit_color := Color(1.0, 0.32, 0.25)
+var dragging := false  # set by whoever started a drag from this slot
+var empty_look := false  # an empty customizable slot: a faint frame
+
+signal dropped_nowhere  # a drag from this slot ended off any slot: the HUD clears it
 
 
 func _init() -> void:
@@ -30,6 +34,13 @@ func _init() -> void:
 	flat = true
 	mouse_entered.connect(queue_redraw)
 	mouse_exited.connect(queue_redraw)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and dragging:
+		dragging = false
+		if not get_viewport().gui_is_drag_successful():
+			dropped_nowhere.emit()
 
 
 ## Sets the fields and redraws only when something changed.
@@ -46,6 +57,16 @@ func show_state(new_sweep: float, new_seconds: float, new_usable: bool, new_lit:
 
 func _draw() -> void:
 	var r := Rect2(Vector2.ZERO, size)
+	if empty_look:
+		var frame := StyleBoxFlat.new()
+		frame.set_corner_radius_all(6)
+		frame.bg_color = Color(0, 0, 0, 0.22)
+		frame.border_color = UIKit.GOLD if is_hovered() else Color(1, 1, 1, 0.12)
+		frame.set_border_width_all(1)
+		draw_style_box(frame, r)
+		if key_text != "":
+			draw_string(get_theme_default_font(), Vector2(4, 13), key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(UIKit.GOLD, 0.5))
+		return
 	var face := StyleBoxFlat.new()
 	face.set_corner_radius_all(6)
 	face.bg_color = gem.darkened(0.45) if usable else gem.darkened(0.62).lerp(Color(0.2, 0.2, 0.2), 0.5)

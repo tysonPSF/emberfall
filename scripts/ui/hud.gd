@@ -9,7 +9,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
-[b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-8 abilities & spells (learn more from your guildmaster) · C consider (con colors!) · K skills (they rise as you use them)
+[b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-0 and Shift+1-0 your two hotbars (P opens your spellbook: drag spells and actions onto them; click a slot with an item on the cursor to put it there; right-click or drag a slot off to clear it) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -126,6 +126,9 @@ var _loot_corpse: Corpse
 var _inv_panel: PanelContainer
 var _slot_buttons: Dictionary = {}  # place ("g:3", "e:head", "k:2"...) -> [slot Buttons] (the bag bar repeats the general slots)
 var _hotbar_panel: PanelContainer
+var _hot_lock: Button
+var _book_panel: PanelContainer
+var _book_spells: GridContainer
 var _bag_bar: PanelContainer
 var _bag_free: Label
 var _bag_peek: PanelContainer  # a bag's contents while the mouse rests on it in the bag bar
@@ -308,36 +311,174 @@ func _build_cast_bar() -> void:
 	_cast_panel.visible = false
 
 
-## EQ-style hotbar: one row of square gems (spells and abilities, keys 1-8)
-## and the three combat toggles (Q attack, R ranged, X sit). Menus live in
-## the small icons by the gear, top right.
+## EQ-style hotbars: two rows of ten slots you arrange yourself (keys 1-0 and
+## Shift+1-0) holding spells, items or actions, with the fixed Attack, Ranged
+## and Sit buttons beside the main row. Drag a spell or an action from the
+## spellbook (P) onto a slot; put an item on a slot by clicking the slot with it
+## on your cursor; drag slots onto each other to swap them, or off the bars
+## (or right-click them) to clear them. The lock stops all of that.
 func _build_hotbar() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(1, 1), Vector2(-12, -12))
 	root.add_child(p)
 	_hotbar_panel = p
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 5)
-	p.add_child(row)
-	for i in 8:
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 5)
+	p.add_child(v)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 5)
+	var main := HBoxContainer.new()
+	main.add_theme_constant_override("separation", 5)
+	v.add_child(top)
+	v.add_child(main)
+	for i in Player.HOTBAR_SLOTS:
 		var slot := HotSlot.new()
-		slot.key_text = str(i + 1)
-		slot.pressed.connect(func() -> void:
-			if i < player.spells.size():
-				World.request_cast(player.entity_id, player.spells[i]))
-		slot.visible = false
-		row.add_child(slot)
+		slot.key_text = str((i % 10 + 1) % 10) if i < 10 else "S%d" % ((i % 10 + 1) % 10)
+		slot.pressed.connect(_hot_pressed.bind(i))
+		slot.gui_input.connect(func(ev: InputEvent) -> void:
+			if ev is InputEventMouseButton and (ev as InputEventMouseButton).pressed and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
+				if not Controls.hotbar_locked:
+					World.request_hotbar_set(player.entity_id, i, "")
+				slot.accept_event())
+		slot.set_drag_forwarding(_hot_drag.bind(i), _hot_can_drop.bind(i), _hot_drop.bind(i))
+		slot.dropped_nowhere.connect(func() -> void:
+			if not Controls.hotbar_locked:
+				World.request_hotbar_set(player.entity_id, i, ""))
+		(main if i < 10 else top).add_child(slot)
 		_spell_slots.append(slot)
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(8, 0)
-	row.add_child(gap)
-	_attack_slot = _action_slot(row, "Q", "action_attack", "Attack (Q)\nTurns auto attack on or off. Glows red while you're swinging.",
+	main.add_child(gap)
+	_attack_slot = _action_slot(main, "Q", "action_attack", "Attack (Q)\nTurns auto attack on or off. Glows red while you're swinging.",
 			func() -> void: World.request_toggle_attack(player.entity_id))
-	_ranged_slot = _action_slot(row, "R", "action_ranged", "Ranged (R)\nFires your bow or sling at your target: pull one mob to you.",
+	_ranged_slot = _action_slot(main, "R", "action_ranged", "Ranged (R)\nFires your bow or sling at your target: pull one mob to you.",
 			func() -> void: World.request_ranged(player.entity_id))
-	_sit_slot = _action_slot(row, "X", "action_sit", "Sit / Stand (X)\nRest to regain health and mana faster.",
+	_sit_slot = _action_slot(main, "X", "action_sit", "Sit / Stand (X)\nRest to regain health and mana faster.",
 			func() -> void: World.request_sit(player.entity_id, not player.sitting))
 	_sit_slot.lit_color = Color(0.45, 0.75, 1.0)
+	var tools := VBoxContainer.new()  # beside the second row: the spellbook and the lock
+	tools.add_theme_constant_override("separation", 3)
+	var book := UIKit.button("Spells", Vector2(0, 22))
+	book.add_theme_font_size_override("font_size", 11)
+	book.tooltip_text = "Spellbook (P)\nEverything you know, and the actions: drag them onto your hotbars."
+	book.pressed.connect(_toggle_spellbook)
+	_hot_lock = UIKit.button("", Vector2(0, 22))
+	_hot_lock.add_theme_font_size_override("font_size", 11)
+	_hot_lock.tooltip_text = "Locks the hotbars so nothing gets dragged off or swapped by accident."
+	_hot_lock.pressed.connect(func() -> void:
+		Controls.set_hotbar_locked(not Controls.hotbar_locked)
+		_hot_lock.text = "Locked" if Controls.hotbar_locked else "Lock")
+	_hot_lock.text = "Locked" if Controls.hotbar_locked else "Lock"
+	tools.add_child(book)
+	tools.add_child(_hot_lock)
+	top.add_child(tools)
+	_build_spellbook()
+
+
+func _hot_pressed(i: int) -> void:
+	if not player.cursor.is_empty():  # holding an item: make it a hotkey, EQ style, and put the item back
+		World.request_hotbar_set(player.entity_id, i, "item:" + GameData.base_item(str(player.cursor["item"])))
+		World.request_stow_cursor(player.entity_id)
+		return
+	player.activate_hotbar(i)
+
+
+func _hot_drag(_at: Vector2, i: int) -> Variant:
+	if Controls.hotbar_locked or str(player.hotbar[i]) == "":
+		return null
+	var slot := _spell_slots[i]
+	slot.dragging = true
+	var pic := TextureRect.new()
+	pic.texture = slot.picture
+	pic.custom_minimum_size = Vector2(40, 40)
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.modulate = Color(1, 1, 1, 0.8)
+	slot.set_drag_preview(pic)
+	return {"hot": i}
+
+
+func _hot_can_drop(_at: Vector2, data: Variant, _i: int) -> bool:
+	if not (data is Dictionary):
+		return false
+	return (data as Dictionary).has("hotvalue") or ((data as Dictionary).has("hot") and not Controls.hotbar_locked)
+
+
+func _hot_drop(_at: Vector2, data: Variant, i: int) -> void:
+	var d := data as Dictionary
+	if d.has("hot"):
+		if int(d["hot"]) != i:
+			World.request_hotbar_swap(player.entity_id, int(d["hot"]), i)
+	elif d.has("hotvalue"):
+		World.request_hotbar_set(player.entity_id, i, str(d["hotvalue"]))
+
+
+## The spellbook (P): what you know, and the actions, each dragged from here
+## onto a hotbar slot. Clicking one casts it (or does it).
+func _build_spellbook() -> void:
+	_book_panel = UIKit.panel()
+	UIKit.place(_book_panel, Vector2(0.5, 0.5), Vector2(-230, -220))
+	root.add_child(_book_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	v.custom_minimum_size.x = 440
+	_book_panel.add_child(v)
+	var head := HBoxContainer.new()
+	var title := UIKit.label("Spellbook", 15, UIKit.GOLD)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var close := UIKit.button("x", Vector2(24, 22))
+	close.pressed.connect(_toggle_spellbook)
+	head.add_child(close)
+	v.add_child(head)
+	var hint := UIKit.label("Drag a spell or an action onto a hotbar slot. To put an item there, pick it up and click the slot.", 12, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(hint)
+	_book_spells = GridContainer.new()
+	_book_spells.columns = 8
+	_book_spells.add_theme_constant_override("h_separation", 4)
+	_book_spells.add_theme_constant_override("v_separation", 4)
+	v.add_child(_book_spells)
+	v.add_child(UIKit.label("Actions", 13, UIKit.GOLD))
+	var acts := GridContainer.new()
+	acts.columns = 8
+	acts.add_theme_constant_override("h_separation", 4)
+	v.add_child(acts)
+	for act: String in Player.HOTBAR_ACTIONS:
+		var info: Array = Player.HOTBAR_ACTIONS[act]
+		var b := _book_entry("act:" + act, GameData.icon(str(info[1])), HotSlot.GEMS["action"], "%s\n%s" % [info[0], info[2]])
+		acts.add_child(b)
+	_book_panel.visible = false
+
+
+func _book_entry(value: String, pic: Texture2D, gem: Color, tip: String, fallback := "") -> HotSlot:
+	var b := HotSlot.new()
+	b.picture = pic
+	b.gem = gem
+	b.fallback = fallback
+	b.tooltip_text = tip + "\nDrag onto a hotbar slot."
+	b.set_drag_forwarding(func(_at: Vector2) -> Variant:
+		var pv := TextureRect.new()
+		pv.texture = pic
+		pv.custom_minimum_size = Vector2(40, 40)
+		pv.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		b.set_drag_preview(pv)
+		return {"hotvalue": value}, Callable(), Callable())
+	b.pressed.connect(func() -> void:
+		if value.begins_with("spell:"):
+			World.request_cast(player.entity_id, value.trim_prefix("spell:")))
+	return b
+
+
+func _toggle_spellbook() -> void:
+	_book_panel.visible = not _book_panel.visible
+	if not _book_panel.visible:
+		return
+	for c in _book_spells.get_children():
+		c.queue_free()
+	for spell_id: String in player.spells:
+		var sp: Dictionary = GameData.spells[spell_id]
+		var initials := "".join(Array(str(sp["name"]).split(" ")).map(func(w: String) -> String: return w.left(1)))
+		_book_spells.add_child(_book_entry("spell:" + spell_id, GameData.icon("spell_" + spell_id), HotSlot.GEMS[_gem_kind(sp)], spell_tooltip(spell_id), initials))
 
 
 func _action_slot(row: Control, key: String, icon_name: String, tip: String, act: Callable) -> HotSlot:
@@ -1997,7 +2138,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
+	return (_book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -2145,22 +2286,69 @@ func _update_hotbar() -> void:
 	_ranged_slot.show_state(_sweep("ranged", ranged_left), ranged_left, can_fire, false)
 	_sit_slot.show_state(0.0, 0.0, not player.dead, player.sitting)
 	for i in _spell_slots.size():
-		var slot := _spell_slots[i]
-		slot.visible = i < player.spells.size()
-		if not slot.visible:
-			continue
-		var spell_id: String = player.spells[i]
-		var s: Dictionary = GameData.spells[spell_id]
-		if slot.get_meta("spell", "") != spell_id:
-			slot.set_meta("spell", spell_id)
-			slot.tooltip_text = spell_tooltip(spell_id)
-			slot.picture = GameData.icon("spell_" + spell_id)
-			slot.fallback = "".join(Array(str(s["name"]).split(" ")).map(func(w: String) -> String: return w.left(1)))
-			slot.gem = HotSlot.GEMS[_gem_kind(s)]
-			slot.queue_redraw()
-		var cd := float(player.cooldowns.get(spell_id, 0.0))
-		var on := (str(s["type"]) == "hide" and player.hidden) or (str(s["type"]) == "sneak" and player.sneaking)  # toggles glow while on
-		slot.show_state(_sweep(spell_id, cd), cd, _spell_usable(s, t), on)
+		_show_hot_slot(_spell_slots[i], str(player.hotbar[i]) if i < player.hotbar.size() else "", t)
+
+
+## Draws one customizable hotbar slot from what's in it.
+func _show_hot_slot(slot: HotSlot, entry: String, t: Entity) -> void:
+	var kind := entry.get_slice(":", 0)
+	var arg := entry.get_slice(":", 1)
+	if slot.get_meta("entry", null) != entry:
+		slot.set_meta("entry", entry)
+		slot.set_meta("spell", arg if kind == "spell" else "-")
+		slot.empty_look = entry == ""
+		slot.picture = null
+		slot.fallback = ""
+		slot.count_text = ""
+		slot.gem = HotSlot.GEMS["action"]
+		match kind:
+			"":
+				slot.tooltip_text = "Empty. Drag a spell or an action here from your spellbook (P), or click here with an item on your cursor."
+			"spell":
+				var s: Dictionary = GameData.spells.get(arg, {})
+				slot.tooltip_text = spell_tooltip(arg)
+				slot.picture = GameData.icon("spell_" + arg)
+				slot.fallback = "".join(Array(str(s.get("name", "?")).split(" ")).map(func(w: String) -> String: return w.left(1)))
+				slot.gem = HotSlot.GEMS[_gem_kind(s)]
+			"item":
+				slot.tooltip_text = _item_tooltip(arg)
+				slot.picture = GameData.item_icon(arg)
+				slot.fallback = GameData.item_name(arg).left(2)
+				slot.gem = HotSlot.GEMS["buff"].darkened(0.2)
+			"act":
+				var info: Array = Player.HOTBAR_ACTIONS.get(arg, ["?", "", ""])
+				slot.tooltip_text = "%s\n%s" % [info[0], info[2]]
+				slot.picture = GameData.icon(str(info[1]))
+				slot.fallback = str(info[0]).left(2)
+		slot.queue_redraw()
+	match kind:
+		"spell":
+			var s: Dictionary = GameData.spells.get(arg, {})
+			if s.is_empty():
+				return
+			var cd := float(player.cooldowns.get(arg, 0.0))
+			var on := (str(s["type"]) == "hide" and player.hidden) or (str(s["type"]) == "sneak" and player.sneaking)  # toggles glow while on
+			slot.show_state(_sweep(arg, cd), cd, _spell_usable(s, t) and arg in player.spells, on)
+		"item":
+			var it := GameData.item(arg)
+			var have := 0
+			for e: Dictionary in player.pack.entries():
+				if GameData.base_item(str(e["item"])) == arg:
+					have += int(e.get("count", 1))
+			var worn := player.equipment.values().any(func(id: Variant) -> bool: return GameData.base_item(str(id)) == arg)
+			var count := str(have) if Pack.stack_of(arg) > 1 else ""
+			if count != slot.count_text:
+				slot.count_text = count
+				slot.queue_redraw()
+			var key := "item:" + str((it.get("use", {}) as Dictionary).get("group", arg)) if it.has("use") else "item:" + arg
+			var cd := float(player.cooldowns.get(key, 0.0))
+			slot.show_state(_sweep(key, cd), cd, (have > 0 and it.has("use")) or (worn and it.has("click")), false)
+		"act":
+			var lit := (arg == "attack" and player.auto_attack) or (arg == "sit" and player.sitting)
+			var ok := not player.dead and (not arg.begins_with("pet_") or player.pet_id >= 0)
+			slot.show_state(0.0, 0.0, ok, lit)
+		_:
+			slot.show_state(0.0, 0.0, true, false)
 
 
 ## What kind of gem a spell sits on: damage red, heals green, buffs blue,
@@ -2543,6 +2731,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("skills"):
 		_toggle_skills()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("spellbook"):
+		_toggle_spellbook()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("help"):
 		_show_help(not _help_panel.visible)
 		get_viewport().set_input_as_handled()
@@ -2561,7 +2752,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _skills_panel.visible:
+		if _book_panel.visible:
+			_book_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _skills_panel.visible:
 			_skills_panel.visible = false
 			get_viewport().set_input_as_handled()
 		elif _item_panel.visible:

@@ -1241,6 +1241,76 @@ def action_skills():
 	return p.build()
 
 
+def action_hail():
+	p = Prop("action_hail", 347)
+	p.blob((0.5, 0.3, 0.55), (0, 0, 0.45), HIDE, segs=(10, 8))                      # an open hand raised
+	for k in range(4):
+		x = -0.22 + k * 0.15
+		p.seg((x, 0, 0.7), (x * 1.1, 0, 1.05 - abs(k - 1.5) * 0.06), 0.06, 0.05, HIDE, sides=6)
+	p.seg((0.28, 0, 0.45), (0.5, 0, 0.7), 0.06, 0.05, HIDE, sides=6)                  # thumb
+	for k in range(3):                                                               # a wave
+		_ring(p, 0.55 + k * 0.14, 0.6, 0.02, GOLD, glow=1.0, sides=6, tilt=math.pi / 2)
+	return p.build()
+
+
+def action_loot():
+	p = Prop("action_loot", 349)
+	p.blob((0.8, 0.6, 0.6), (0, 0, 0.3), HIDE, segs=(10, 8))                         # a sack...
+	p.seg((0, 0, 0.62), (0, 0, 0.78), 0.12, 0.18, HIDE, sides=8)
+	for k in range(4):                                                               # ...spilling coins
+		p.seg((-0.5 + k * 0.28, -0.3, 0.05), (-0.5 + k * 0.28, -0.3, 0.1), 0.13, 0.13, GOLD, sides=10, glow=0.6)
+	return p.build()
+
+
+def _pet_head(p):
+	p.blob((0.5, 0.42, 0.5), (0, 0, 0.55), STONE_LIGHT, segs=(10, 8))                # a small elemental's head
+	for s_ in (-1, 1):
+		p.blob((0.1, 0.06, 0.1), (s_ * 0.12, -0.2, 0.6), GOLD, segs=(6, 4), glow=1.6)
+
+
+def action_pet_attack():
+	p = Prop("action_pet_attack", 351)
+	_pet_head(p)
+	p.seg((0.3, 0, 0.1), (0.9, 0, 0.95), 0.06, 0.0, IRON, sides=4)                    # a blade behind it
+	return p.build()
+
+
+def action_pet_back():
+	p = Prop("action_pet_back", 353)
+	_pet_head(p)
+	for k in range(3):                                                               # arrows pointing back
+		p.seg((0.9 - k * 0.05, 0, 0.2 + k * 0.3), (0.45, 0, 0.2 + k * 0.3), 0.04, 0.04, CLOTH_WHITE, sides=4, glow=0.8)
+		p.seg((0.45, 0, 0.2 + k * 0.3), (0.58, 0, 0.3 + k * 0.3), 0.03, 0.03, CLOTH_WHITE, sides=4, glow=0.8)
+	return p.build()
+
+
+def action_pet_follow():
+	p = Prop("action_pet_follow", 355)
+	_pet_head(p)
+	for k in range(3):                                                               # footprints
+		p.blob((0.12, 0.2, 0.03), (-0.5 + k * 0.25, -0.1, 0.02 + (k % 2) * 0.12), LEAF, segs=(6, 4), glow=0.8)
+	return p.build()
+
+
+def action_pet_guard():
+	p = Prop("action_pet_guard", 357)
+	_pet_head(p)
+	p.seg((0.55, 0.1, 0.5), (0.55, -0.05, 0.5), 0.3, 0.3, WOOD, sides=12)             # a shield beside it
+	p.blob((0.12, 0.08, 0.12), (0.55, -0.08, 0.5), IRON, segs=(8, 5))
+	return p.build()
+
+
+def action_pet_sit():
+	p = Prop("action_pet_sit", 359)
+	_pet_head(p)
+	for k in range(2):                                                               # resting z's
+		x, z = 0.5 + k * 0.2, 0.8 + k * 0.25
+		p.box((0.24, 0.04, 0.04), (x, 0, z + 0.1), CLOTH_WHITE, glow=0.6)
+		p.box((0.24, 0.04, 0.04), (x, 0, z - 0.1), CLOTH_WHITE, glow=0.6)
+		p.box((0.3, 0.04, 0.04), (x, 0, z), CLOTH_WHITE, rot=(0, 45, 0), glow=0.6)
+	return p.build()
+
+
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
@@ -1256,7 +1326,8 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  call_of_earth, call_of_water, call_of_fire, call_of_air, call_of_the_primal, renew_elements, greater_renewal, burnout, elemental_bond, primal_fury, elemental_aegis,
 								  raise_bones, raise_skeletal_knight, mend_bones, dark_empowerment, lifetap, siphon_life, soul_rend, disease_cloud, venom_bolt,
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind]}
-ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
+ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
+								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 
 
 def main():
