@@ -28,7 +28,7 @@ Your character saves to Godot's `user://character.json` (per machine, not in git
 
 ## Playing together
 
-One machine runs the **server**, which holds the world, the rules, and everyone's accounts and characters. Everyone else plays a normal copy of the game: type the server's address into the **Server** box on the title screen and press **Connect**, then log in (the first time, **Create account**) and pick or create a character. Your offline character can be brought over once. Camping returns you to character select.
+One machine runs the **server**, which holds the world, the rules, and everyone's accounts and characters. Everyone else plays a normal copy of the game: type the server's address into the **Server** box on the title screen and press **Connect**, then log in (the first time, **Create account**) and pick or create a character. Your offline character can be brought over once. Camping returns you to character select. Tick **Remember password** to skip typing it next time: the game keeps a hash of it in `settings.json` (never the password itself), per server and account; untick it to forget. Anyone with that file could still log in to that game account, so don't tick it on a shared computer.
 
 **Running the server** (Linux or macOS, no screen needed):
 
@@ -46,7 +46,7 @@ tools/server/run_server.sh                 # GODOT=/path/to/godot PORT=7777 to o
 **What works so far** (multiplayer phases 1 and 2): everyone sees each other, fights the same mobs, loots, trades with NPCs, shops, banks, trains and camps, and each zone runs on its own, so players can be in different zones at once. For now:
 - Groups work EQ-style: up to 6, a leader, experience split by level among members in the zone (with a small bonus per member, and nothing for anyone far below the group's highest), faction and loot rights for the group that did the most damage (3 minutes, then anyone), coin split on loot, and group spells (Clerics: Circle of Mending at 5, Hearthbond at 6).
 
-For testing on one machine: run the server (add `--data=/tmp/efdata` to keep test accounts out of the way), then `godot --path . -- --nettest=Alpha --port=7777` and `--nettest=Bravo` in two more terminals (`--dev-loot` on the server makes every mob drop everything).
+For testing on one machine: run the server (add `--data=/tmp/efdata` to keep test accounts out of the way), then `godot --path . -- --nettest=Alpha --port=7777` and `--nettest=Bravo` in two more terminals (`--autotest --only=remember_login --login-port=<port>` checks Remember password against it) (`--dev-loot` on the server makes every mob drop everything).
 
 ## Controls
 

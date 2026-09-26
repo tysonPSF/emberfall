@@ -105,7 +105,16 @@ func connect_to(server: String) -> void:
 
 ## Client: the password never leaves this machine; the server gets a hash of it.
 func login(account: String, password: String, create := false) -> void:
-	var pw_hash := ("emberfall:%s:%s" % [account.to_lower(), password]).sha256_text()
+	login_hashed(account, password_hash(account, password), create)
+
+
+## What the server checks instead of the password (and what "Remember
+## password" keeps, so the password itself is never written down).
+static func password_hash(account: String, password: String) -> String:
+	return ("emberfall:%s:%s" % [account.to_lower(), password]).sha256_text()
+
+
+func login_hashed(account: String, pw_hash: String, create := false) -> void:
 	_c_login.rpc_id(1, account.strip_edges(), pw_hash, PROTOCOL, create)
 
 
