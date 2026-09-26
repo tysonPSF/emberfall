@@ -167,7 +167,7 @@
         "leather_sling",
         "sling_stone",
         "small_sack",
-        "leather_backpack"
+        "leather_backpack", "hardened_leather_jerkin", "hardened_leather_leggings", "hardened_leather_gloves", "hardened_leather_boots"
       ],
       "buy_rate": 0.5
     },
@@ -199,7 +199,7 @@
         "round_shield",
         "iron_kite_shield",
         "iron_gauntlets",
-        "iron_boots"
+        "iron_boots", "tempered_dirk", "tempered_longsword", "tempered_war_axe", "tempered_helm", "tempered_breastplate", "tempered_vambraces", "tempered_gauntlets", "tempered_greaves", "tempered_boots", "tempered_kite_shield"
       ],
       "buy_rate": 0.5
     },

@@ -2336,7 +2336,7 @@
     ],
     "model": "sun_cultist",
     "proc": {
-      "spell": "sunfire",
+      "spell": "false_sunfire",
       "chance": 0.12,
       "text": "%s calls down %s!"
     },

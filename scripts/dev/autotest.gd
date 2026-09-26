@@ -94,6 +94,7 @@ const SECTIONS := [
 	["pet_look", "greenmoor"],
 	["crypt_door", "emberhold"],
 	["crypt", "emberhold_crypt"],
+	["balance", "greenmoor"],
 	["tradeskills", "emberhold"],
 	["crafters_emberhold", "emberhold"],
 	["crafters_lanternhold", "lanternhold"],
@@ -3671,8 +3672,25 @@ func _t_pet_look() -> void:
 
 ## Down the mausoleum stairs into the crypt, and back up.
 func _t_crypt_door() -> void:
+	var p := World.local_player
+	var z: Zone = get_parent().zone
+	World.time_override = 12.0
+	p.global_position = z.ground(-27, -20) + Vector3.UP
+	p.face_toward(z.ground(-32, -32))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 8.0
+	p.pitch = -0.15
+	await _wait(1.0)
+	await _shot("9zz_mausoleum")
+	World.time_override = -1.0
 	if await _walk_border("crypt_door", "emberhold", Vector2(-32, -25), Vector2(0, -1), "emberhold_crypt"):
 		await _walk_border("crypt_door", "emberhold_crypt", Vector2(0, 5), Vector2(0, 1), "emberhold")
+
+
+## The balance simulator (scripts/dev/balance_sim.gd): every class against
+## typical monsters at levels 5-25. Long; run it on its own, headless is fine.
+func _t_balance() -> void:
+	await load("res://scripts/dev/balance_sim.gd").new().run(self)
 
 
 ## The necromancers' crypt under Emberhold, and its guildmaster.
