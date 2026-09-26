@@ -301,6 +301,10 @@ func _start_server(args: PackedStringArray) -> void:
 			data_dir = a.substr(7)
 	_start_zone = zone_id
 	_server_zone(zone_id)
+	if "--preload-zones" in args:  # build every zone now, so nobody waits on a first visit
+		for f: String in DirAccess.get_files_at("res://data/zones"):
+			if f.ends_with(".json"):
+				_server_zone(f.get_basename())
 	Net.accounts = AccountStore.new(data_dir)
 	Net.start_zone = zone_id
 	Net.make_player = _make_remote_player
@@ -361,12 +365,13 @@ func _server_zone(zone_id: String) -> Zone:
 	holder.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	add_child(holder)
 	var z := Zone.new()
+	var started := Time.get_ticks_msec()
 	holder.add_child(z)
 	z.load_zone(zone_id)
 	if OS.get_environment("EMBERFALL_ZONE_DELAY") != "":  # testing: act like a slow server building a zone
 		OS.delay_msec(int(OS.get_environment("EMBERFALL_ZONE_DELAY")))
 	_server_zones[zone_id] = z
-	print("zone up: %s" % zone_id)
+	print("zone up: %s (built in %d ms)" % [zone_id, Time.get_ticks_msec() - started])
 	return z
 
 

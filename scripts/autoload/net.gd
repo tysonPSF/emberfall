@@ -78,6 +78,7 @@ func host(port := DEFAULT_PORT) -> Error:
 	multiplayer.multiplayer_peer = peer
 	mode = "server"
 	multiplayer.peer_disconnected.connect(_on_peer_left)
+	multiplayer.peer_connected.connect(func(id: int) -> void: _be_patient(id))
 	print("Emberfall server listening on UDP port %d" % port)
 	return OK
 
@@ -98,9 +99,24 @@ func connect_to(server: String) -> void:
 		return
 	multiplayer.multiplayer_peer = peer
 	mode = "client"
-	multiplayer.connected_to_server.connect(func() -> void: connected_ok.emit(), CONNECT_ONE_SHOT)
+	multiplayer.connected_to_server.connect(func() -> void:
+		_be_patient(1)
+		connected_ok.emit(), CONNECT_ONE_SHOT)
 	multiplayer.connection_failed.connect(func() -> void: _drop("No answer from %s." % address, true), CONNECT_ONE_SHOT)
 	multiplayer.server_disconnected.connect(func() -> void: _drop("The server closed the connection.", false), CONNECT_ONE_SHOT)
+
+
+## Waits up to a minute for the other side before calling a connection dead.
+## ENet's default gives up after as little as 5 s of silence, and a server
+## building a zone for the first time (or a client loading one) can be busy
+## that long: both sides then dropped ("The server closed the connection").
+func _be_patient(peer_id: int) -> void:
+	var enet := multiplayer.multiplayer_peer as ENetMultiplayerPeer
+	if enet == null:
+		return
+	var link := enet.get_peer(peer_id)
+	if link != null:
+		link.set_timeout(64, 30000, 60000)
 
 
 ## Client: the password never leaves this machine; the server gets a hash of it.
