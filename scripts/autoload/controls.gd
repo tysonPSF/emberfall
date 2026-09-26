@@ -50,6 +50,15 @@ const BINDINGS := {
 	"hotbar_6": [KEY_6],
 	"hotbar_7": [KEY_7],
 	"hotbar_8": [KEY_8],
+	"hotbar_9": [KEY_9],
+	"hotbar_10": [KEY_0],
+	"spellbook": [KEY_P],
+}
+
+## The second hotbar: Shift and the same number keys.
+const SHIFT_BINDINGS := {
+	"hotbar2_1": KEY_1, "hotbar2_2": KEY_2, "hotbar2_3": KEY_3, "hotbar2_4": KEY_4, "hotbar2_5": KEY_5,
+	"hotbar2_6": KEY_6, "hotbar2_7": KEY_7, "hotbar2_8": KEY_8, "hotbar2_9": KEY_9, "hotbar2_10": KEY_0,
 }
 
 
@@ -61,6 +70,14 @@ var mouse_look := true
 
 ## Music loudness, 0..1 (0 is off). Saved per machine.
 var music_volume := 0.25
+
+## Hotbars locked: no dragging slots around or off by accident. Saved per machine.
+var hotbar_locked := false
+
+
+func set_hotbar_locked(on: bool) -> void:
+	hotbar_locked = on
+	_save_setting("hotbar_locked", on)
 
 
 func set_mouse_look(on: bool) -> void:
@@ -95,6 +112,7 @@ func _load_settings() -> void:
 	if typeof(parsed) == TYPE_DICTIONARY:
 		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
 		music_volume = clampf(float((parsed as Dictionary).get("music_volume", 0.25)), 0.0, 1.0)
+		hotbar_locked = bool((parsed as Dictionary).get("hotbar_locked", false))
 
 
 func _ready() -> void:
@@ -106,3 +124,10 @@ func _ready() -> void:
 			var ev := InputEventKey.new()
 			ev.physical_keycode = key
 			InputMap.action_add_event(action, ev)
+	for action: String in SHIFT_BINDINGS:
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+		var sev := InputEventKey.new()
+		sev.physical_keycode = SHIFT_BINDINGS[action]
+		sev.shift_pressed = true
+		InputMap.action_add_event(action, sev)

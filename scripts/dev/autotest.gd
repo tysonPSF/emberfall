@@ -89,6 +89,7 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
 	["pet_look", "greenmoor"],
@@ -1192,6 +1193,8 @@ func _t_hotbar() -> void:
 	var hud: Hud = main.hud
 	var known := p.spells.duplicate()
 	p.spells = ["blast_of_frost", "gate", "burning_embers", "minor_shielding", "root", "fire_bolt", "hearthbond", "kick"]
+	var bars := p.hotbar.duplicate()
+	p.hotbar = Player.default_hotbar(p.spells)
 	p.pack.add("leather_sling")
 	p.pack.add("sling_stone", 20)
 	World.request_equip(p.entity_id, _where(p, "leather_sling"))
@@ -1207,9 +1210,10 @@ func _t_hotbar() -> void:
 	World.request_toggle_attack(p.entity_id)
 	p.mana = 12  # enough for some spells, not all: the rest dim
 	await _wait(0.4)
-	print("hotbar: slots shown %d; usable %s; ranged sweep %.2f" % [hud._spell_slots.filter(func(x: HotSlot) -> bool: return x.visible).size(),
-			hud._spell_slots.map(func(x: HotSlot) -> String: return "%s=%s%s" % [x.get_meta("spell", "-"), "on" if x.usable else "dim", " (%.1fs)" % x.seconds if x.sweep > 0.0 else ""]), hud._ranged_slot.sweep])
+	print("hotbar: slots shown %d; usable %s; ranged sweep %.2f" % [hud._spell_slots.filter(func(x: HotSlot) -> bool: return x.get_meta("spell", "-") != "-").size(),
+			hud._spell_slots.slice(0, 8).map(func(x: HotSlot) -> String: return "%s=%s%s" % [x.get_meta("spell", "-"), "on" if x.usable else "dim", " (%.1fs)" % x.seconds if x.sweep > 0.0 else ""]), hud._ranged_slot.sweep])
 	await _shot("9n_hotbar")
+	p.hotbar = bars
 	World.request_toggle_attack(p.entity_id)
 	p.spells = known
 	if not mob.dead:
@@ -3453,6 +3457,76 @@ func _t_bash_stun() -> void:
 	p.zoom = 6.0
 	p.equipment = kit
 	p.spells = known
+	p.recalc_stats()
+
+
+## The two customizable hotbars: a new character's spells on the main bar;
+## slots set, swapped and cleared; a spell, an item and an action used from
+## them; a drop from the spellbook, an item placed from the cursor; the lock;
+## and the layout kept in the save.
+func _t_hotbars() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	var fresh := Player.default_hotbar(["blast_of_frost", "gate"])
+	print("hotbars: a new wizard's bars -> %s (%d slots)" % [fresh.slice(0, 3), fresh.size()])
+	var kit := p.hotbar.duplicate()
+	p.char_class = "wizard"
+	p.level = 10
+	p.spells = ["blast_of_frost", "gate", "burning_embers", "minor_shielding"]
+	p.recalc_stats()
+	p.mana = p.max_mana
+	p.cooldowns.clear()
+	World.request_hotbar_set(p.entity_id, 0, "spell:blast_of_frost")
+	World.request_hotbar_set(p.entity_id, 1, "spell:burning_embers")
+	World.request_hotbar_set(p.entity_id, 3, "spell:not_a_spell_i_know")
+	World.request_hotbar_swap(p.entity_id, 0, 1)
+	World.request_hotbar_set(p.entity_id, 2, "")
+	print("hotbars: set, swap, clear -> %s; an unknown spell refused: %s" % [p.hotbar.slice(0, 3), p.hotbar[3] != "spell:not_a_spell_i_know"])
+	# use a spell, an item and an action from the bars
+	var mob := _nearest_mob(p, "large_rat")
+	p.global_position = main.zone.ground(mob.global_position.x + 8.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	p.activate_hotbar(1)
+	await _wait(0.2)
+	var casting := str(p.cast.get("spell", "")) if not p.cast.is_empty() else ("done, on cooldown" if p.cooldowns.has("blast_of_frost") else "nothing")
+	World.request_interrupt(p.entity_id)
+	p.pack.clear()
+	p.pack.add("healing_potion", 3)
+	World.request_hotbar_set(p.entity_id, 10, "item:healing_potion")
+	p.hp = 1
+	p.activate_hotbar(10)
+	var sitting0 := p.sitting
+	World.request_hotbar_set(p.entity_id, 11, "act:sit")
+	p.activate_hotbar(11)
+	print("hotbars: key 2 -> casting %s; Shift+1 (a potion) -> %d hp, %d potions left; Shift+2 (sit) -> sitting %s -> %s" % [casting, p.hp,
+			p.pack.count("healing_potion"), sitting0, p.sitting])
+	World.request_sit(p.entity_id, false)
+	# the HUD: a drop from the spellbook, an item from the cursor
+	hud._hot_drop(Vector2.ZERO, {"hotvalue": "act:hail"}, 12)
+	p.pack.add("roast_meat", 2)
+	World.request_click(p.entity_id, _where(p, "roast_meat"))
+	hud._hot_pressed(13)
+	print("hotbars: spellbook drop -> slot S3 = %s; cursor click -> slot S4 = %s, cursor now empty %s, meat back in the pack %d" % [p.hotbar[12],
+			p.hotbar[13], p.cursor.is_empty(), p.pack.count("roast_meat")])
+	# the lock
+	Controls.hotbar_locked = true
+	var drag: Variant = hud._hot_drag(Vector2.ZERO, 0)
+	Controls.hotbar_locked = false
+	print("hotbars: locked -> drag from a slot %s" % ("refused" if drag == null else "allowed"))
+	# kept in the save
+	var saved: Array = p.to_save()["hotbar"]
+	var again := Player.new()
+	again.from_save(p.to_save())
+	print("hotbars: saved and loaded -> same bars %s" % (again.hotbar == p.hotbar))
+	again.free()
+	hud._toggle_spellbook()
+	await _wait(0.5)
+	await _shot("9zz_hotbars")
+	hud._toggle_spellbook()
+	p.hotbar = kit
+	p.pack.clear()
+	p.level = 1
 	p.recalc_stats()
 
 

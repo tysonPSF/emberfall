@@ -808,6 +808,39 @@ func _check_feign(p: Player) -> void:
 		say(p, "You stand back up.", C_SPELL)
 
 
+# ---------------------------------------------------------------- hotbars
+
+## Puts something in a hotbar slot ("" clears it): a spell you know, an item,
+## or one of Player.HOTBAR_ACTIONS.
+func request_hotbar_set(player_id: int, index: int, value: String) -> void:
+	if _remote(&"request_hotbar_set", [player_id, index, value]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or index < 0 or index >= p.hotbar.size():
+		return
+	var kind := value.get_slice(":", 0)
+	var arg := value.get_slice(":", 1)
+	var ok := value == "" or (kind == "spell" and arg in p.spells) or (kind == "item" and GameData.items.has(arg)) \
+			or (kind == "act" and Player.HOTBAR_ACTIONS.has(arg))
+	if not ok:
+		return
+	p.hotbar[index] = value
+	p.stats_changed.emit()
+
+
+## Swaps two hotbar slots (dragging one onto another).
+func request_hotbar_swap(player_id: int, a: int, b: int) -> void:
+	if _remote(&"request_hotbar_swap", [player_id, a, b]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or a < 0 or b < 0 or a >= p.hotbar.size() or b >= p.hotbar.size():
+		return
+	var t: String = p.hotbar[a]
+	p.hotbar[a] = p.hotbar[b]
+	p.hotbar[b] = t
+	p.stats_changed.emit()
+
+
 # ---------------------------------------------------------------- tradeskills
 
 const STATION_SLOTS := 10
@@ -3340,7 +3373,12 @@ func request_train(player_id: int, spell_id: String) -> void:
 	var s: Dictionary = GameData.spells[spell_id]
 	p.coin -= int(s.get("cost", 0))
 	p.spells.append(spell_id)
-	say(p, "%s teaches you %s. (Key %d)" % [npc.display_name, s["name"], p.spells.size()], C_XP)
+	var slot := p.hotbar.find("")  # on the bars if there's room: the first empty slot
+	if not ("spell:" + spell_id) in p.hotbar and slot >= 0:
+		p.hotbar[slot] = "spell:" + spell_id
+		say(p, "%s teaches you %s. (Key %s%d)" % [npc.display_name, s["name"], "Shift+" if slot >= 10 else "", (slot % 10 + 1) % 10], C_XP)
+	else:
+		say(p, "%s teaches you %s. Drag it from your spellbook (P) onto a hotbar slot." % [npc.display_name, s["name"]], C_XP)
 	p.inventory_changed.emit()
 	p.stats_changed.emit()
 	_ui(p, &"service_changed")
