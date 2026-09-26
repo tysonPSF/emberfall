@@ -219,8 +219,7 @@ func _physics_process(delta: float) -> void:
 	if snare_left > 0.0:
 		move_speed *= 0.5
 	if move != Vector3.ZERO:
-		if state != State.COMBAT or fear_left > 0.0:
-			face_toward(global_position + move)
+		face_toward(global_position + move)  # walking (a path around a rock, too) faces the way it goes; in reach, it faces its target
 		velocity.x = move.x * move_speed
 		velocity.z = move.z * move_speed
 	else:

@@ -124,8 +124,8 @@ func _physics_process(delta: float) -> void:
 	velocity.z = move.z * speed
 	if move != Vector3.ZERO or not is_on_floor():  # standing still on the ground needs no collision sweep
 		move_and_slide()
-	if move != Vector3.ZERO and not auto_attack:
-		face_toward(global_position + move)
+	if move != Vector3.ZERO:
+		face_toward(global_position + move)  # walks forward, even on a path around something; faces its target once in reach
 	if _face_timer > 0.0 and not auto_attack:
 		_face_timer -= delta
 		if _face_timer <= 0.0:
