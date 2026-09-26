@@ -28,6 +28,7 @@
     "double_attack": {"name": "Double Attack", "group": "Combat", "caps": {"warrior": 5, "rogue": 5}, "from": {"warrior": 15, "rogue": 15}},
     "backstab": {"name": "Backstab", "group": "Abilities", "caps": {"rogue": 5}},
     "hide": {"name": "Hide", "group": "Abilities", "caps": {"rogue": 5}},
-    "sneak": {"name": "Sneak", "group": "Abilities", "caps": {"rogue": 5}, "from": {"rogue": 3}}
+    "sneak": {"name": "Sneak", "group": "Abilities", "caps": {"rogue": 5}, "from": {"rogue": 3}},
+    "fishing": {"name": "Fishing", "group": "Abilities", "caps": {"warrior": 5, "cleric": 5, "wizard": 5, "rogue": 5}}
   }
 }

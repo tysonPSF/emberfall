@@ -1012,5 +1012,250 @@
         "slashes"
       ]
     }
+  },
+  "tidepriest_nalini": {
+    "name": "Tidepriest Nalini",
+    "title": "Keeper of the Tide Shrine",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "blesses": {
+      "deity": "water",
+      "spell": "tide_trunk_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The rain falls on everyone, {name}, but the Tide-Trunked's blessing is for those who follow her. Your own god has gifts of their own.",
+      "wait": "You've had her blessing within the hour, {name}. Let it wear off before you ask again.",
+      "give": "Stand in the spray, {name}. ...There. Go gently."
+    },
+    "dialogue": {
+      "hail": "Welcome to Rainhold, {name}, and to the shrine of Jalendra, the Tide-Trunked. The rain never stops here; we stopped minding. Followers of hers may ask for her [blessing]. And if you're strong, there's a [storm] in the Throat I need quieted.",
+      "storm": "The Weeping Storm. A spirit of the monsoon gone wild, raging at the old temple in the Weeping Throat, north of the city. Bring me its [heart] and I'll give you a charm blessed at this shrine.",
+      "heart": "The Heart of the Storm. It will crackle in your hands. Bring it anyway.",
+      "unknown": "Ask the guildmasters, {name}, or Hunter Asha on the east pier."
+    }
+  },
+  "gm_oruk": {
+    "name": "Tidewarden Oruk",
+    "title": "Warrior Guildmaster",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my trade, {name}. Try the other halls."
+    },
+    "dialogue": {
+      "hail": "The Throat is full of trolls that won't stay dead, {name}. Warriors, I'll teach you to keep hitting until they do.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
+  },
+  "gm_silt": {
+    "name": "Silt",
+    "title": "Rogue Guildmaster",
+    "level": 40,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "I don't know you, {name}. Keep walking."
+    },
+    "dialogue": {
+      "hail": "Rain covers footsteps, {name}. If you're one of mine, come closer.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
+  },
+  "gm_imani": {
+    "name": "Rain-Sister Imani",
+    "title": "Cleric Guildmaster",
+    "level": 40,
+    "model": "knight",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "The rain calls whom it calls, {name}; not you, not to me."
+    },
+    "dialogue": {
+      "hail": "The Tide-Trunked heals as the rain does: slowly, everywhere. Clerics, come learn.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
+  },
+  "gm_veyra": {
+    "name": "Stormcaller Veyra",
+    "title": "Wizard Guildmaster",
+    "level": 40,
+    "model": "mage",
+    "weapon": "wand",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Hmm? No. I teach wizards."
+    },
+    "dialogue": {
+      "hail": "Lightning lives in every cloud over Rainhold, {name}. Wizards, sit, and I'll show you how to call it down.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
+  },
+  "banker_oduya": {
+    "name": "Banker Oduya",
+    "title": "Rainhold Counting House",
+    "level": 20,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "banker": true,
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The Counting House keeps accounts with the Hearthbank of Emberhold, {name}: what you left there, you'll find here, dry.",
+      "unknown": "I only keep the vault."
+    }
+  },
+  "armorer_kaveh": {
+    "name": "Armorer Kaveh",
+    "title": "Tidesteel, Rainsilk, Sharkskin",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "tidesteel_helm",
+        "tidesteel_breastplate",
+        "tidesteel_vambraces",
+        "tidesteel_gauntlets",
+        "tidesteel_greaves",
+        "tidesteel_boots",
+        "tidesteel_shield",
+        "rainsilk_cap",
+        "rainsilk_robe",
+        "rainsilk_gloves",
+        "rainsilk_slippers",
+        "sharkskin_jerkin",
+        "sharkskin_leggings",
+        "sharkskin_gloves",
+        "sharkskin_boots"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Tidesteel doesn't rust, {name}, rainsilk doesn't soak, and sharkskin doesn't care. Press G.",
+      "unknown": "Couldn't say."
+    }
+  },
+  "weaponsmith_ifeoma": {
+    "name": "Weaponsmith Ifeoma",
+    "title": "Blades of the Tide",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "tidesteel_sword",
+        "coral_dirk",
+        "tidesteel_war_axe",
+        "tidesteel_greataxe",
+        "driftwood_staff",
+        "crude_arrow",
+        "sling_stone",
+        "ashwood_recurve"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Steel folded in rainwater, {name}. Press G to see.",
+      "unknown": "Couldn't say."
+    }
+  },
+  "fisher_oji": {
+    "name": "Fisher Oji",
+    "title": "Rainhold Docks",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "fishing_pole",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "fishing_pole",
+        "fishing_bait",
+        "loaf_of_bread",
+        "smoked_mereperch",
+        "leather_backpack"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Rain's good for fishing, {name}. Everything is, if you're patient. Press G for a pole and worms, then [fishing].",
+      "fishing": "Hold the pole, face the water, and right-click it, or type /fish. Every cast uses a worm. You'll get better the more you try. Bring me four [snapper] from the lagoon.",
+      "snapper": "Four lagoon snapper, as often as you like. The first time, I'll give you a slicker that keeps the rain off.",
+      "unknown": "Ask Hunter Asha about the Throat."
+    }
+  },
+  "hunter_asha": {
+    "name": "Hunter Asha",
+    "title": "Rainhold Wardens",
+    "level": 35,
+    "model": "rogue_hooded",
+    "weapon": "bow",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "You look like you can hunt, {name}. The Weeping Throat, north of the city, is full of [trolls] and worse. And there's an old [crocodile] I've been after for ten years.",
+      "trolls": "The Mudtooth trolls, in a camp of huts on the east bank of the river. They heal as fast as you cut them. Bring me four [tusks] and I'll pay you each time. Or bring me the stone crown of their chief, [Gorrak].",
+      "tusks": "Four troll tusks. As often as you like. The first time, gloves of troll hide: they knit themselves.",
+      "gorrak": "Gorrak Mudtooth. Bring me his stone crown and you'll have the blade of the last Tidewarden who went up there.",
+      "crocodile": "Old Graveljaw, in the swamp where the river spreads out in the southwest of the Throat. Bring me his [tooth].",
+      "tooth": "Graveljaw's tooth. Do that and I'll give you leggings of crocodile scale, from the one I did kill.",
+      "unknown": "Ask at the shrine."
+    }
+  },
+  "rainhold_guard": {
+    "name": "a Rainhold tidewatch",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Welcome to Rainhold, {name}. Mind the planks, they're slick. Trouble on the road? Run for the piers.",
+      "unknown": "Ask at the shrine."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!",
+        "To the piers, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not in Rainhold!",
+        "Back into the rain!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Rainhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

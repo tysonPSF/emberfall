@@ -85,6 +85,7 @@ func load_zone(id: String) -> void:
 	_build_environment()
 	_build_terrain()
 	_build_landmarks()
+	bind_point.y = maxf(bind_point.y, surface_at(bind_point.x, bind_point.z))  # a bindstone out on the decks
 	for river: Dictionary in _rivers:
 		if not river.get("dry", false):
 			_build_river(river)
@@ -95,6 +96,8 @@ func load_zone(id: String) -> void:
 	_build_props()
 	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
 		_build_clutter()
+		if data.has("rain"):
+			add_child(Rain.new(data["rain"]))
 	_build_road_lamps()
 	if Net.is_authority():  # a client's mobs and npcs come from the server
 		_bake_navigation.call_deferred()
@@ -334,6 +337,19 @@ func water_level(x: float, z: float) -> float:
 	return -INF
 
 
+## Whether there's water to fish at a point: a lake, or a river that isn't
+## dry, and open water, not under a boardwalk's planks.
+func fishable_at(x: float, z: float) -> bool:
+	if surface_at(x, z) > height_at(x, z) + 0.01:  # a deck over it
+		return false
+	if water_level(x, z) > -INF:
+		return true
+	for river: Dictionary in _rivers:
+		if not river["dry"] and float(_river_at(river, x, z)[0]) < float(river["width"]) * 0.5 - 0.5:
+			return true
+	return false
+
+
 ## Distance from a point to the nearest road's centerline, minus its half width.
 func road_distance(x: float, z: float) -> float:
 	var best := INF
@@ -562,6 +578,8 @@ func _build_landmarks() -> void:
 				_build_rockslide(p, _landmark_yaw(lm), lm.get("labels", []))
 			"stilt_village":
 				_build_stilt_village(p, _landmark_yaw(lm), int(lm.get("length", 10)))
+			"stilt_city":
+				_build_stilt_city(lm)
 			"lizard_camp":
 				_build_lizard_camp(p)
 			"windmill":
@@ -630,6 +648,48 @@ func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
 	_prop("torch_lit", xf * Vector3(1.2, 1.72, end - 0.3), yaw, 1.0, "none")
 	_light(xf * Vector3(1.2, 2.3, end - 0.3), Color(1.0, 0.6, 0.25), 7.0, 0.9)
 	_prop("rowboat", (xf * Vector3(-2.4, 0, end + 1.5)) - Vector3.UP * 0.8, yaw + PI / 2.0, 1.0, "none")
+
+
+## A whole city on stilts over a lake (Rainhold): "pieces" are [prop, x, z, yaw°]
+## laid out by hand on the props' 9 m grid. Every deck sits at one height, a
+## little over the water; walkable pieces register as decks (surface_at) so
+## NPCs and the bind point stand on them; boats float at the water line;
+## "boardwalk_ramp" steps down to the shore; "lamp" is a lit torch post.
+const STILT_DECKS := {"stilt_platform": Vector2(4.5, 4.5), "stilt_walkway": Vector2(1.5, 4.5), "rope_bridge": Vector2(1.5, 6.0),
+		"boardwalk": Vector2(1.5, 1.5)}
+const STILT_ON_DECK := ["stilt_hall", "stilt_house", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack"]
+
+
+func _build_stilt_city(lm: Dictionary) -> void:
+	var level := -INF
+	for piece: Array in lm["pieces"]:
+		level = maxf(level, water_level(float(piece[1]), float(piece[2])))
+	if level == -INF:
+		level = height_at(lm["pos"][0], lm["pos"][1])
+	var deck_y := level + float(lm.get("deck", 0.8))
+	for piece: Array in lm["pieces"]:
+		var id := str(piece[0])
+		var yaw := deg_to_rad(float(piece[3]) if piece.size() > 3 else 0.0)
+		var at := Vector3(float(piece[1]), deck_y, float(piece[2]))
+		if STILT_DECKS.has(id):
+			_prop(id, at, yaw, 1.0, "mesh")
+			_decks.append([Transform3D(Basis(Vector3.UP, yaw), at), STILT_DECKS[id]])
+		elif id in STILT_ON_DECK:
+			_prop(id, at + Vector3.UP * 0.02, yaw, 1.0, "mesh" if id.begins_with("stilt") or id == "jalendra_shrine" else "box")
+		elif id == "boardwalk_ramp":
+			_prop(id, at, yaw, 1.0, "mesh")
+		elif id in ["canoe", "rowboat"]:
+			_prop(id, Vector3(at.x, level, at.z), yaw, 1.0, "none")
+		elif id == "lamp":
+			_prop("torch_post", at, yaw, 1.0, "none")
+			_prop("torch_lit", at + Vector3.UP * 1.72, yaw, 1.0, "none")
+			var glow := OmniLight3D.new()
+			glow.light_color = Color(1.0, 0.64, 0.32)
+			glow.omni_range = 9.0
+			glow.position = at + Vector3.UP * 2.3
+			_night_light(glow, 1.4)
+		else:
+			_prop(id, at, yaw, 1.0, "box")
 
 
 ## On a ground patch marked "bare" (a salt flat): no grass or flowers there.

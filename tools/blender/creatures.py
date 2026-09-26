@@ -2878,6 +2878,776 @@ def build_raider_chief_chest():
 	return b.build_static()
 
 
+# ---------------------------------------------------------------- river trolls (The Weeping Throat)
+# Bolt-ons for a repainted KayKit barbarian (its head hidden), in its mesh space
+# like the gnoll's: a low, forward-thrust troll head, a mossy hump on the back
+# to hunch it, a loincloth, and big clawed fists round the hands.
+
+def troll_materials(chief=False):
+	p = "troll_chief" if chief else "troll"
+	return {
+		"skin": material(f"{p}_skin", "5c7a48" if chief else "7e9470", 0.85),
+		"skin_dark": material(f"{p}_skin_dark", "33472a" if chief else "4e5e44", 0.9),
+		"moss": material(f"{p}_moss", "46682a", 0.95),
+		"moss_b": material(f"{p}_moss_b", "6e8434", 0.95),
+		"hair": material(f"{p}_hair", "22261c", 0.95),
+		"tusk": material(f"{p}_tusk", "e6dcc0", 0.5),
+		"eye": material(f"{p}_eye", "ff8a1e" if chief else "f0d040", 0.3, emit=1.6 if chief else 1.2),
+		"socket": material(f"{p}_socket", "161c12", 0.9),
+		"mouth": material(f"{p}_mouth", "2a1614", 0.9),
+		"claw": material(f"{p}_claw", "3a3226", 0.6),
+		"bone": material(f"{p}_bone", "e8dec4", 0.6),
+		"cord": material(f"{p}_cord", "3e2e1e", 0.9),
+		"hide": material(f"{p}_hide", "6a5238", 0.95),
+		"hide_dark": material(f"{p}_hide_dark", "3e2e20", 0.95),
+		"red": material(f"{p}_paint_red", "b02a1a", 0.8),
+		"white": material(f"{p}_paint_white", "ece4d0", 0.8),
+		"antler": material(f"{p}_antler", "d8c8a0", 0.6),
+		"stone": material(f"{p}_stone", "7a8a8e", 0.5),
+		"stone_b": material(f"{p}_stone_b", "4e6066", 0.5),
+		"fur": material(f"{p}_fur", "5e4632", 0.95),
+		"fur_b": material(f"{p}_fur_b", "3a2c20", 0.95),
+		"fur_light": material(f"{p}_fur_light", "8e7658", 0.95),
+	}
+
+
+def _troll_head(b, m, chief):
+	sk, dk = m["skin"], m["skin_dark"]
+	b.blob((0.8, 0.78, 0.64), (0, 0.06, 1.68), sk, "x", segs=(12, 9))                         # low, sloping cranium
+	b.blob((0.74, 0.54, 0.5), (0, -0.26, 1.5), sk, "x", segs=(12, 8))                          # the face, thrust forward
+	b.blob((0.82, 0.28, 0.18), (0, -0.46, 1.7), dk, "x", rot=(-10, 0, 0), segs=(10, 6))          # heavy brow
+	b.blob((0.72, 0.5, 0.28), (0, -0.34, 1.18), sk, "x", segs=(10, 6))                          # underslung jaw
+	b.blob((0.52, 0.1, 0.07), (0, -0.56, 1.3), m["mouth"], "x", segs=(10, 4))                   # a wide lipless mouth
+	for s in (1, -1):
+		b.blob((0.18, 0.08, 0.13), (0.16 * s, -0.5, 1.6), m["socket"], "x", segs=(8, 5))           # deep-set eyes
+		b.blob((0.09, 0.05, 0.07), (0.16 * s, -0.535, 1.6), m["eye"], "x", segs=(6, 4))
+		b.blob((0.22, 0.2, 0.18), (0.28 * s, -0.4, 1.42), sk, "x", segs=(8, 5))                    # heavy cheeks
+		b.seg((0.36 * s, -0.04, 1.62), (0.8 * s, 0.08, 1.46), 0.13, 0.015, sk, "x", sides=5)      # long drooping ears
+		b.seg((0.4 * s, -0.08, 1.62), (0.72 * s, 0.02, 1.49), 0.06, 0.01, dk, "x", sides=4)
+		b.seg((0.2 * s, -0.6, 1.2), (0.24 * s, -0.66, 1.44), 0.055, 0.012, m["tusk"], "x", sides=5)   # small tusks up out of the jaw
+	# the long hooked nose, drooping down over the mouth
+	b.seg((0, -0.5, 1.66), (0, -0.8, 1.52), 0.1, 0.085, sk, "x", sides=8)
+	b.seg((0, -0.8, 1.52), (0, -0.84, 1.3), 0.085, 0.055, sk, "x", sides=8)
+	b.blob((0.14, 0.14, 0.16), (0, -0.82, 1.3), dk, "x", segs=(8, 6))
+	b.blob((0.07, 0.06, 0.06), (0.07, -0.68, 1.6), dk, "x", segs=(5, 4))                        # a wart
+	for x, y, z in ((0.24, -0.3, 1.86), (-0.3, -0.1, 1.9), (0.12, 0.24, 1.96)):
+		b.blob((0.08, 0.08, 0.06), (x, y, z), dk, "x", segs=(5, 4))
+	# stringy hair and river moss hanging from the scalp
+	b.blob((0.5, 0.56, 0.14), (0, 0.12, 1.98), m["moss"], "x", rot=(14, 0, 0), segs=(10, 6))     # matted moss on the crown
+	b.blob((0.24, 0.3, 0.1), (0.12, -0.1, 2.0), m["moss_b"], "x", rot=(-8, 10, 0), segs=(8, 5))
+	strands = ((0.3, -0.1, 1.88, 0.5), (0.36, 0.12, 1.82, 0.7), (0.24, 0.3, 1.86, 0.8), (0.08, 0.38, 1.84, 0.9),
+			   (-0.08, 0.36, 1.86, 0.75), (-0.24, 0.3, 1.86, 0.85), (-0.36, 0.1, 1.82, 0.6), (-0.3, -0.12, 1.88, 0.45),
+			   (0.16, -0.24, 1.96, 0.35), (-0.14, -0.22, 1.97, 0.3))
+	for k, (x, y, z, ln) in enumerate(strands):
+		mat = m["hair"] if k % 3 else m["moss_b"]
+		_kelp(b, (x, y, z), ln, mat, lean=(x * 0.25, 0.3 if y > 0 else -0.1), width=0.05)
+	if chief:
+		# war paint: red slashes down the cheeks, a white bar across the brow
+		for s in (1, -1):
+			for k in range(3):
+				x = (0.22 + 0.07 * k) * s
+				b.seg((x, -0.5 + 0.05 * k, 1.56), (x * 1.05, -0.46 + 0.05 * k, 1.36), 0.022, 0.018, m["red"], "x", sides=4)
+			b.blob((0.24, 0.05, 0.06), (0.2 * s, -0.575, 1.72), m["white"], "x", rot=(0, 0, 10 * s), segs=(8, 4))
+		b.seg((0, -0.58, 1.54), (0, -0.84, 1.44), 0.02, 0.02, m["red"], "x", sides=4)
+		# a crown of river stones bound round the brow, antlers rising from it
+		_ring(b, (0, 0.04, 1.9), (0.44, 0.42), (0, -8), 0.035, m["cord"], sides=18)
+		for k in range(10):
+			a = 2 * math.pi * k / 10 - math.pi / 2
+			p = Vector((0.44 * math.cos(a), 0.04 + 0.42 * math.sin(a), 1.9 - 0.06 * math.sin(a)))
+			sz = 0.16 if k == 0 else 0.12
+			b.blob((sz, sz * 0.8, sz), tuple(p), m["stone"] if k % 2 else m["stone_b"], "x", segs=(7, 5))
+		for s in (1, -1):
+			beam = [(0.32 * s, 0.02, 1.96), (0.52 * s, 0.06, 2.24), (0.66 * s, 0.02, 2.54), (0.7 * s, -0.12, 2.78)]
+			for k, (p, q) in enumerate(zip(beam, beam[1:])):
+				b.seg(p, q, 0.06 - 0.015 * k, 0.045 - 0.015 * k, m["antler"], "x", sides=6)
+			for base, tip in (((0.52 * s, 0.06, 2.24), (0.46 * s, -0.2, 2.44)), ((0.64 * s, 0.03, 2.48), (0.86 * s, -0.06, 2.66)),
+							  ((0.66 * s, 0.02, 2.54), (0.56 * s, -0.16, 2.74))):
+				b.seg(base, tip, 0.035, 0.008, m["antler"], "x", sides=5)
+		b.blob((0.2, 0.14, 0.18), (0, -0.4, 2.0), m["bone"], "x", segs=(8, 6))                  # a small skull at the brow
+		for s in (1, -1):
+			b.blob((0.05, 0.03, 0.05), (0.045 * s, -0.47, 2.01), m["hair"], "x", segs=(5, 3))
+
+
+def build_troll_head():
+	b = Builder("troll_head")
+	_troll_head(b, troll_materials(), False)
+	return b.build_static()
+
+
+def build_troll_chief_head():
+	b = Builder("troll_chief_head")
+	_troll_head(b, troll_materials(True), True)
+	return b.build_static()
+
+
+def _troll_back(b, m, chief):
+	"""A great hump of muscle over the shoulders so the head hangs forward, grown over with moss."""
+	sk = m["skin"]
+	b.blob((0.84, 0.56, 0.54), (0, 0.22, 1.2), sk, "x", segs=(12, 8))
+	for s in (1, -1):
+		b.blob((0.46, 0.5, 0.42), (0.3 * s, 0.06, 1.24), sk, "x", segs=(10, 7))                 # bulging trapezius
+	b.blob((0.7, 0.44, 0.2), (0, 0.3, 1.42), m["moss"], "x", rot=(-20, 0, 0), segs=(10, 6))
+	b.blob((0.36, 0.3, 0.12), (0.18, 0.4, 1.3), m["moss_b"], "x", rot=(-40, 0, 0), segs=(8, 5))
+	for x, y, z, ln in ((0.28, 0.44, 1.32, 0.34), (0.08, 0.5, 1.3, 0.5), (-0.14, 0.5, 1.3, 0.42), (-0.32, 0.4, 1.3, 0.3),
+						(0.4, 0.2, 1.36, 0.26), (-0.42, 0.18, 1.36, 0.3)):
+		_kelp(b, (x, y, z), ln, m["moss"] if ln > 0.33 else m["moss_b"], lean=(0.0, 0.2), width=0.045, parts=2)
+	# a necklace of bones round the neck, a jawbone hanging at the front
+	pts = []
+	for k in range(15):
+		a = math.pi + math.pi * k / 14
+		pts.append((0.42 * math.cos(a), 0.42 * math.sin(a) - 0.02, 1.28 + 0.26 * math.sin(a)))
+	for p, q in zip(pts, pts[1:]):
+		b.seg(p, q, 0.018, 0.018, m["cord"], "x", sides=4)
+	for k in (3, 5, 9, 11):   # a few teeth and claws strung on it
+		p = pts[k]
+		b.seg(p, (p[0] * 1.02, p[1] - 0.04, p[2] - (0.12 if k in (5, 9) else 0.08)), 0.03, 0.005, m["bone"], "x", sides=4)
+	if chief:   # a skull
+		b.blob((0.2, 0.16, 0.19), (0, -0.48, 0.92), m["bone"], "x", segs=(8, 6))
+		for s in (1, -1):
+			b.blob((0.05, 0.03, 0.05), (0.045 * s, -0.56, 0.94), m["hair"], "x", segs=(5, 3))
+	else:       # a smooth river stone with a hole worn through it
+		b.blob((0.18, 0.08, 0.16), (0, -0.47, 0.96), m["stone"], "x", segs=(8, 5))
+		b.blob((0.06, 0.03, 0.06), (0, -0.51, 0.97), m["hair"], "x", segs=(5, 3))
+	if chief:   # a fur mantle heaped over the shoulders
+		_shell(b, (1.2, 1.1, 0.9), (0, 0.06, 1.2), m["fur"], lambda d: d.z > -0.05 and not (d.y < -0.55 and abs(d.x) < 0.5))
+		for s in (1, -1):
+			b.blob((0.5, 0.64, 0.34), (0.42 * s, 0.06, 1.3), m["fur"], "x", rot=(0, 18 * s, 0), segs=(10, 7))
+			b.blob((0.34, 0.5, 0.18), (0.46 * s, 0.06, 1.44), m["fur_light"], "x", rot=(0, 22 * s, 0), segs=(8, 5))
+		for k in range(9):   # ragged edge
+			a = math.radians(-10 + k * 25)
+			p = (0.6 * math.cos(a), 0.06 + 0.56 * math.sin(a), 1.16)
+			_tuft(b, p, (math.cos(a) * 0.3, math.sin(a) * 0.3, -1), 0.2, 4, 0.3, [m["fur"], m["fur_b"]], 300 + k, width=0.04)
+		b.blob((0.12, 0.1, 0.12), (0.34, -0.36, 1.2), m["bone"], "x", segs=(6, 4))             # the clasp: a knuckle bone
+
+
+def build_troll_back():
+	b = Builder("troll_back")
+	_troll_back(b, troll_materials(), False)
+	return b.build_static()
+
+
+def build_troll_chief_back():
+	b = Builder("troll_chief_back")
+	_troll_back(b, troll_materials(True), True)
+	return b.build_static()
+
+
+def _troll_loincloth(b, m, chief):
+	_wrap(b, (0, 0.0, 0.62), (0.47, 0.41), 0.1, 0.04, m["cord"] if not chief else m["fur_b"], sides=18)
+	cloth, dark = (m["fur"], m["fur_b"]) if chief else (m["hide"], m["hide_dark"])
+	_slab(b, [(-0.2, -0.44, 0.64), (0.2, -0.44, 0.64), (0.16, -0.47, 0.22), (0.0, -0.49, 0.16), (-0.16, -0.47, 0.22)], 0.04, cloth)
+	_slab(b, [(-0.24, 0.42, 0.64), (0.24, 0.42, 0.64), (0.2, 0.46, 0.2), (-0.2, 0.46, 0.2)], 0.04, dark)
+	for s in (1, -1):   # a strip hanging at each hip
+		_slab(b, [(0.44 * s, -0.1, 0.62), (0.46 * s, 0.1, 0.62), (0.47 * s, 0.08, 0.38), (0.45 * s, -0.08, 0.4)], 0.03, dark)
+	_kelp(b, (0.3, -0.34, 0.6), 0.3, m["moss_b"], width=0.035, parts=2)
+	_kelp(b, (-0.1, 0.44, 0.6), 0.36, m["moss"], width=0.035, parts=2)
+	if chief:
+		b.blob((0.16, 0.1, 0.16), (0, -0.48, 0.62), m["stone"], "x", segs=(7, 5))
+
+
+def build_troll_loincloth():
+	b = Builder("troll_loincloth")
+	_troll_loincloth(b, troll_materials(), False)
+	return b.build_static()
+
+
+def build_troll_chief_loincloth():
+	b = Builder("troll_chief_loincloth")
+	_troll_loincloth(b, troll_materials(True), True)
+	return b.build_static()
+
+
+def _troll_fist(name, s, chief):
+	"""A knobbly fist with long dark claws round the KayKit hand (s = side), so the arms read long."""
+	m = troll_materials(chief)
+	b = Builder(name)
+	b.blob((0.3, 0.3, 0.28), (0.86 * s, -0.02, 1.08), m["skin"], "x", segs=(10, 7))
+	b.blob((0.2, 0.24, 0.24), (0.74 * s, 0.0, 1.1), m["skin"], "x", segs=(8, 6))                 # thick wrist
+	for k, (y, z) in enumerate(((-0.13, 1.04), (-0.05, 1.0), (0.04, 1.0), (0.12, 1.04))):
+		b.seg((0.96 * s, y, z), (1.1 * s, y * 1.2, z - 0.1), 0.035, 0.005, m["claw"], "x", sides=5)
+	b.seg((0.8 * s, -0.16, 1.06), (0.84 * s, -0.28, 0.98), 0.035, 0.005, m["claw"], "x", sides=5)   # thumb claw
+	for y in (-0.06, 0.06):
+		b.blob((0.07, 0.07, 0.05), (0.9 * s, y, 1.2), m["skin_dark"], "x", segs=(5, 4))            # knuckles
+	return b.build_static()
+
+
+def build_troll_fist_l():
+	return _troll_fist("troll_fist_l", 1, False)
+
+
+def build_troll_fist_r():
+	return _troll_fist("troll_fist_r", -1, False)
+
+
+def build_troll_chief_fist_l():
+	return _troll_fist("troll_chief_fist_l", 1, True)
+
+
+def build_troll_chief_fist_r():
+	return _troll_fist("troll_chief_fist_r", -1, True)
+
+
+# ---------------------------------------------------------------- water and storm elementals (The Weeping Throat)
+
+def clip_scaled(arm, name, seconds, pose_fn, loop):
+	"""clip() that also keys each bone's scale: poses may carry "scale": (x, y, z) (the elementals collapse)."""
+	act = bpy.data.actions.new(name)
+	act.use_fake_user = True
+	arm.animation_data.action = act
+	frames = max(2, round(seconds * FPS))
+	for f in range(frames + 1):
+		t = f / frames
+		if loop and f == frames:
+			t = 0.0
+		pose = pose_fn(t)
+		for pb in arm.pose.bones:
+			p = pose.get(pb.name, {})
+			pitch, roll, yaw = p.get("rot", (0, 0, 0))
+			pb.rotation_euler = (math.radians(pitch), math.radians(roll), math.radians(yaw))
+			pb.location = p.get("loc", (0, 0, 0))
+			pb.scale = p.get("scale", (1, 1, 1))
+			for key in ("rotation_euler", "location", "scale"):
+				pb.keyframe_insert(key, frame=f + 1)
+	for fc in _fcurves(act):
+		for kp in fc.keyframe_points:
+			kp.interpolation = "LINEAR"
+	return act
+
+
+def merge_scaled(*poses):
+	"""merge() that keeps "scale" too, multiplying where poses overlap."""
+	out = merge(*poses)
+	for p in poses:
+		for bone, v in p.items():
+			if "scale" in v:
+				cur = out[bone].get("scale", (1, 1, 1))
+				out[bone]["scale"] = tuple(a * b for a, b in zip(cur, v["scale"]))
+	return out
+
+
+def _zigzag(b, pts, r, mat, bone):
+	for p, q in zip(pts, pts[1:]):
+		b.seg(p, q, r, r * 0.8, mat, bone, sides=4)
+
+
+def build_elemental(name="water_elemental", storm=False):
+	"""A column of living water rising out of a pool: a swirl of currents spins round its trunk,
+	a curling wave for a crest, two heavy arms. The storm spirit is the same shape in cloud and lightning."""
+	import random
+	rng = random.Random(53 if storm else 47)
+	if storm:
+		deep = material(f"{name}_deep", "2c3340", 0.5)
+		mid = material(f"{name}_mid", "4a5668", 0.45)
+		light = material(f"{name}_light", "8a98b0", 0.4, emit=0.15)
+		foam = material(f"{name}_foam", "c8d0dc", 0.5, emit=0.1)
+		eye = material(f"{name}_eye", "fff0a0", 0.2, emit=3.0)
+		bolt = material(f"{name}_bolt", "ffd84a", 0.2, emit=1.6)
+		cloud = material(f"{name}_cloud", "9aa4b4", 0.9)
+		cloud_b = material(f"{name}_cloud_b", "c4cad4", 0.9)
+	else:
+		deep = material(f"{name}_deep", "1c5e80", 0.15)
+		mid = material(f"{name}_mid", "3290b4", 0.12)
+		light = material(f"{name}_light", "86d4e4", 0.1, emit=0.25)
+		foam = material(f"{name}_foam", "e0f6fa", 0.3, emit=0.25)
+		eye = material(f"{name}_eye", "e8ffff", 0.1, emit=4.0)
+		bolt = None
+	b = Builder(name)
+	b.bone("root", (0, 0, 0.05))
+	b.bone("pool", (0, 0, 0.05), "root")
+	b.bone("low", (0, 0, 0.3), "root")
+	b.bone("swirl", (0, 0, 0.3), "low")
+	b.bone("mid", (0, 0, 0.95), "low")
+	b.bone("chest", (0, 0, 1.45), "mid")
+	b.bone("head", (0, -0.04, 1.92), "chest")
+
+	# the pool it rises from: a flat swirl of water ringed with breaking wavelets
+	b.blob((1.7, 1.7, 0.12), (0, 0, 0.05), deep, "pool", segs=(16, 6))
+	b.blob((1.3, 1.3, 0.16), (0, 0, 0.08), mid, "pool", segs=(16, 6))
+	for k in range(11):
+		a = 2 * math.pi * k / 11
+		r = 0.72 + 0.06 * (k % 2)
+		c = Vector((r * math.cos(a), r * math.sin(a), 0.1))
+		tang = Vector((-math.sin(a), math.cos(a), 0))
+		b.blob((0.3, 0.3, 0.2), tuple(c), mid, "pool", rot=(0, 0, math.degrees(a)), segs=(8, 5))
+		b.seg(tuple(c + Vector((0, 0, 0.06))), tuple(c + tang * 0.18 + Vector((0, 0, 0.16))), 0.07, 0.0, foam if k % 2 else light, "pool", sides=5)
+	# the trunk: a column narrowing to the waist, then swelling into the chest
+	b.seg((0, 0, 0.08), (0, 0, 0.98), 0.5, 0.3, deep, "low", sides=14)
+	b.seg((0, 0, 0.1), (0, 0, 0.7), 0.56, 0.34, mid, "low", sides=14)
+	b.seg((0, 0, 0.92), (0, 0, 1.45), 0.3, 0.42, deep, "mid", sides=14)
+	b.blob((0.98, 0.72, 0.72), (0, 0, 1.6), mid, "chest", segs=(14, 9))
+	b.blob((0.7, 0.4, 0.5), (0, -0.2, 1.62), light if not storm else mid, "chest", segs=(12, 7))   # the brighter breast
+	for s in (1, -1):
+		b.blob((0.42, 0.42, 0.42), (0.44 * s, 0.0, 1.76), mid, "chest", segs=(10, 7))
+		b.blob((0.24, 0.24, 0.1), (0.46 * s, -0.02, 1.96), foam, "chest", segs=(8, 5))            # spray off the shoulders
+	# currents: three streams spiral up round the trunk (three-fold, so a third of a turn loops)
+	for h in range(3):
+		pts = []
+		for k in range(25):
+			u = k / 24
+			a = 2 * math.pi * (h / 3 + u * 1.25)
+			r = 0.58 - 0.22 * u + 0.03 * math.sin(u * 9)
+			pts.append(Vector((r * math.cos(a), r * math.sin(a), 0.14 + u * 1.12)))
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			w = 0.085 - 0.05 * k / 24
+			b.seg(tuple(p), tuple(q), w, w * 0.94, light if (k // 3 + h) % 4 else foam, "swirl", sides=6)
+		if storm:   # lightning runs along one of the streams
+			for k in range(2, 22, 7):
+				p = pts[k]
+				_zigzag(b, [tuple(p), tuple(p + Vector((0.06, 0.02, 0.12))), tuple(p + Vector((-0.03, 0.0, 0.2))),
+							tuple(p + Vector((0.04, -0.02, 0.32)))], 0.025, bolt, "swirl")
+	for k in range(16):   # bubbles and flecks of foam on the trunk
+		z = rng.uniform(0.3, 1.5)
+		a = rng.uniform(0, 2 * math.pi)
+		r = (0.46 - 0.16 * min(1.0, z / 0.95)) if z < 0.95 else (0.3 + 0.12 * (z - 0.95) / 0.5)
+		bone = "low" if z < 0.95 else "mid"
+		sz = rng.uniform(0.07, 0.13)
+		b.blob((sz, sz, sz), (r * math.cos(a), r * math.sin(a), z), foam if k % 3 == 0 else light, bone, segs=(6, 4))
+	# the head: a smooth dome with a breaking wave curling back off it for a crest
+	b.blob((0.5, 0.48, 0.54), (0, -0.06, 2.04), mid, "head", segs=(12, 9))
+	b.blob((0.36, 0.2, 0.3), (0, -0.24, 1.98), light if not storm else mid, "head", segs=(10, 6))
+	for s in (1, -1):
+		b.blob((0.13, 0.05, 0.07), (0.11 * s, -0.3, 2.07), eye, "head", rot=(0, 0, -12 * s), segs=(8, 5))
+	crest = [(0, -0.22, 2.22), (0, -0.08, 2.42), (0, 0.14, 2.56), (0, 0.36, 2.54), (0, 0.5, 2.4), (0, 0.46, 2.26), (0, 0.34, 2.24)]
+	for k, (p, q) in enumerate(zip(crest, crest[1:])):
+		r0, r1 = 0.2 - 0.028 * k, 0.2 - 0.028 * (k + 1)
+		b.seg(p, q, r0, r1, mid if k < 3 else light, "head", sides=8)
+	for s in (1, -1):   # smaller wavelets along the sides of the crest
+		side = [(0.16 * s, -0.12, 2.2), (0.24 * s, 0.04, 2.36), (0.28 * s, 0.24, 2.4), (0.3 * s, 0.4, 2.3), (0.26 * s, 0.4, 2.18)]
+		for k, (p, q) in enumerate(zip(side, side[1:])):
+			b.seg(p, q, 0.11 - 0.022 * k, 0.11 - 0.022 * (k + 1) + 0.005, light, "head", sides=6)
+	b.blob((0.16, 0.16, 0.14), (0, 0.4, 2.2), foam, "head", segs=(8, 5))
+	if storm:   # billowing thunderhead on the shoulders and behind the head
+		for s in (1, -1):
+			for k, (x, y, z, r) in enumerate(((0.46, 0.06, 2.0, 0.34), (0.62, 0.1, 1.86, 0.26), (0.32, 0.2, 2.06, 0.28), (0.5, -0.12, 1.98, 0.22))):
+				b.blob((r, r, r * 0.8), (x * s, y, z), cloud if k % 2 else cloud_b, "chest", segs=(9, 6))
+		for k, (x, y, z, r) in enumerate(((0, 0.26, 2.1, 0.44), (0.2, 0.3, 1.96, 0.3), (-0.2, 0.3, 1.96, 0.3), (0, 0.36, 1.84, 0.34))):
+			b.blob((r, r, r * 0.8), (x, y, z), cloud_b if k % 2 else cloud, "chest", segs=(9, 6))
+		for k in range(8):
+			a = 2 * math.pi * (k + 0.3) / 8
+			b.blob((0.34, 0.34, 0.22), (0.62 * math.cos(a), 0.62 * math.sin(a), 0.2), cloud if k % 2 else cloud_b, "pool", segs=(8, 5))
+	if storm:   # a crown of jagged lightning
+		for k in range(5):
+			a = math.radians(-60 + 30 * k)
+			base = Vector((0.2 * math.sin(a), -0.06 - 0.16 * math.cos(a), 2.22))
+			tall = 0.44 if k == 2 else 0.32
+			out = Vector((math.sin(a) * 0.3, -math.cos(a) * 0.2, 1)).normalized()
+			side = Vector((math.cos(a), math.sin(a), 0)) * 0.06
+			_zigzag(b, [tuple(base), tuple(base + out * tall * 0.4 + side), tuple(base + out * tall * 0.6 - side),
+						tuple(base + out * tall)], 0.035, bolt, "head")
+		for pts in (((0.2, -0.32, 1.7), (0.26, -0.36, 1.54), (0.18, -0.38, 1.44), (0.24, -0.34, 1.26)),
+					((-0.24, -0.3, 1.64), (-0.14, -0.36, 1.52), (-0.2, -0.36, 1.4)),
+					((0.34, 0.1, 0.9), (0.28, 0.2, 0.72), (0.4, 0.2, 0.58), (0.36, 0.26, 0.4)),
+					((-0.36, 0.14, 0.76), (-0.44, 0.0, 0.58), (-0.38, 0.06, 0.4))):
+			_zigzag(b, list(pts), 0.03, bolt, "chest" if pts[0][2] > 1.2 else "low")
+	# two heavy arms of water hanging to the knees, fists like breakers
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		b.bone(f"arm_{side}", (0.48 * s, 0, 1.76), "chest")
+		b.bone(f"hand_{side}", (0.7 * s, -0.06, 1.3), f"arm_{side}")
+		b.seg((0.48 * s, 0, 1.76), (0.7 * s, -0.06, 1.3), 0.19, 0.14, mid, f"arm_{side}", sides=10)
+		b.blob((0.24, 0.24, 0.24), (0.7 * s, -0.06, 1.3), deep, f"hand_{side}", segs=(8, 6))
+		b.seg((0.7 * s, -0.06, 1.3), (0.76 * s, -0.12, 0.94), 0.13, 0.19, mid, f"hand_{side}", sides=10)
+		b.blob((0.42, 0.42, 0.44), (0.78 * s, -0.14, 0.82), deep, f"hand_{side}", segs=(10, 8))
+		b.blob((0.3, 0.3, 0.2), (0.8 * s, -0.18, 0.92), light, f"hand_{side}", segs=(8, 5))
+		for k, (dx, dy, dz, sz) in enumerate(((0.02, -0.04, 0.56, 0.12), (-0.08, 0.06, 0.52, 0.08), (0.1, 0.04, 0.58, 0.07))):
+			b.blob((sz, sz, sz * 1.4), (0.78 * s + dx * s, -0.14 + dy, dz), foam if k else light, f"hand_{side}", segs=(6, 4))   # drips
+		if storm:
+			_zigzag(b, [(0.52 * s, -0.12, 1.7), (0.62 * s, -0.18, 1.52), (0.58 * s, -0.16, 1.4), (0.7 * s, -0.2, 1.3)], 0.025, bolt, f"arm_{side}")
+			_zigzag(b, [(0.74 * s, -0.3, 1.1), (0.82 * s, -0.34, 0.96), (0.76 * s, -0.36, 0.86), (0.86 * s, -0.3, 0.72)], 0.025, bolt, f"hand_{side}")
+	arm = b.build()
+
+	def arms(l, r, spread=0.0, bend=0.0):
+		return {"arm_l": {"rot": (l, 0, 0), "loc": (0, 0, 0)}, "arm_r": {"rot": (r, 0, 0)},
+				"hand_l": {"rot": (bend, spread, 0)}, "hand_r": {"rot": (bend, -spread, 0)}}
+
+	def body(t, lean, sway, spin):
+		return {"low": {"rot": (lean + 2 * wave(t, 1, 0.25), sway * wave(t), 0)},
+				"mid": {"rot": (lean * 0.4 + 2 * wave(t, 1, 0.5), -sway * 0.6 * wave(t, 1, 0.1), 3 * wave(t))},
+				"chest": {"rot": (lean * 0.2, -sway * 0.4 * wave(t, 1, 0.2), -3 * wave(t, 1, 0.3))},
+				"head": {"rot": (-lean * 0.5 + 3 * wave(t, 1, 0.6), 0, 5 * wave(t, 1, 0.1))},
+				"swirl": {"rot": (0, 0, spin * t)}}
+
+	def ripple(t, cycles=2):
+		k = 1 + 0.05 * wave(t, cycles)
+		return {"pool": {"rot": (0, 0, -360 / 11 * t), "scale": (k, k, 1 + 0.2 * wave(t, cycles, 0.25))}}
+
+	def idle(t):
+		return merge_scaled(body(t, 0, 3, 120), ripple(t), arms(6 * wave(t, 1, 0.1), 6 * wave(t, 1, 0.6), 4, 5 + 4 * wave(t)))
+
+	def walk(t):   # glides forward, leaning into it, the arms swinging
+		return merge_scaled(body(t, -8, 4, 240), ripple(t, 2), arms(18 * wave(t), -18 * wave(t), 4, 10))
+
+	def run(t):
+		return merge_scaled(body(t, -18, 5, 360), ripple(t, 3), arms(-30 + 10 * wave(t, 2), -30 - 10 * wave(t, 2), 8, 20))
+
+	def attack(t):   # both arms heave up overhead and crash down like a wave
+		up = seq(t, [(0, 0), (0.35, 165), (0.48, 175), (0.6, 55), (0.75, 45), (1, 0)])
+		lean = seq(t, [(0, 0), (0.35, 10), (0.48, 12), (0.6, -22), (0.75, -18), (1, 0)])
+		bend = seq(t, [(0, 0), (0.35, 30), (0.5, 20), (0.6, -10), (1, 0)])
+		surge = seq(t, [(0, 0), (0.48, -0.05), (0.6, 0.3), (0.8, 0.22), (1, 0)])
+		splash = seq(t, [(0.55, 1.0), (0.62, 1.25), (0.9, 1.0)])
+		return merge_scaled({"root": {"loc": (0, surge, 0)}, "low": {"rot": (lean * 0.5, 0, 0)}, "mid": {"rot": (lean * 0.4, 0, 0)},
+					  "chest": {"rot": (lean * 0.3, 0, 0)}, "head": {"rot": (-lean * 0.4, 0, 0)},
+					  "swirl": {"rot": (0, 0, 240 * t)}, "pool": {"scale": (splash, splash, 1.0)}},
+					 arms(up, up, 10, bend))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"low": {"rot": (10 * k, 6 * k, 0)}, "mid": {"rot": (8 * k, 0, 0)}, "head": {"rot": (12 * k, 0, 10 * k)},
+					  "swirl": {"rot": (0, 0, 60 * t)}, "pool": {"scale": (1 + 0.1 * k, 1 + 0.1 * k, 1)}},
+					 arms(-25 * k, -20 * k, 15 * k, -10 * k))
+
+	def death(t):   # reels, then pours down into its own pool and spreads flat
+		reel = seq(t, [(0, 0), (0.25, 14), (0.4, -10), (0.55, 0)])
+		fall = seq(t, [(0.3, 0), (0.85, 1)])
+		shrink = 1 - 0.9 * fall
+		spread = 1 + 0.7 * seq(t, [(0.4, 0), (0.95, 1)])
+		return merge_scaled({"low": {"rot": (reel, reel * 0.4, 0), "loc": (0, 0, -0.26 * fall), "scale": (1 + 0.3 * fall, 1 + 0.3 * fall, max(0.05, shrink))},
+					  "mid": {"rot": (-reel * 0.6, 0, 0), "scale": (shrink, shrink, shrink)},
+					  "head": {"rot": (reel, 0, 20 * fall)}, "swirl": {"rot": (0, 0, 200 * t), "scale": (1, 1, max(0.1, 1 - fall))},
+					  "pool": {"scale": (spread, spread, 1 + 0.6 * fall)}},
+					 arms(-40 * fall + reel, -30 * fall - reel, 30 * fall, 0))
+
+	# the loops keep turning: t = 1 lands a whole third of a turn on, which looks the same as t = 0,
+	# so they're sampled to t = 1 (loop False) instead of snapping back
+	clip_scaled(arm, "idle", 3.0, idle, False)
+	clip_scaled(arm, "walk", 1.2, walk, False)
+	clip_scaled(arm, "run", 0.8, run, False)
+	clip_scaled(arm, "attack", 1.0, attack, False)
+	clip_scaled(arm, "hit", 0.45, hit, False)
+	clip_scaled(arm, "death", 1.6, death, False)
+	return arm
+
+
+def build_storm_elemental():
+	return build_elemental("storm_elemental", storm=True)
+
+
+# ---------------------------------------------------------------- giant poison frog (The Weeping Throat)
+
+def build_frog():
+	back = material("frog_back", "f4cc1c", 0.3)
+	back_b = material("frog_back_b", "ff9a12", 0.3)
+	spot = material("frog_spot", "121212", 0.3)
+	leg = material("frog_leg", "2a6ee0", 0.3)
+	leg_dark = material("frog_leg_dark", "163e96", 0.35)
+	belly = material("frog_belly", "4a86e8", 0.4)
+	mouth = material("frog_mouth", "d2566a", 0.5)
+	eye = material("frog_eye", "0c0c0e", 0.05)
+	glint = material("frog_glint", "ffffff", 0.1, emit=0.8)
+	b = Builder("giant_frog")
+	b.bone("root", (0, 0, 0.36))
+	b.bone("body", (0, 0.1, 0.36), "root")
+	b.bone("head", (0, -0.3, 0.46), "body")
+	b.bone("jaw", (0, -0.26, 0.38), "head")
+	b.bone("tongue", (0, -0.5, 0.4), "head")
+
+	# a sleek body sitting up at the front, glossy yellow with black blotches
+	b.blob((0.84, 1.0, 0.56), (0, 0.12, 0.42), back, "body", rot=(-14, 0, 0), segs=(14, 9))
+	b.blob((0.74, 0.86, 0.3), (0, 0.08, 0.28), belly, "body", rot=(-14, 0, 0), segs=(12, 6))
+	b.blob((0.94, 0.62, 0.44), (0, -0.44, 0.54), back, "head", segs=(14, 8))
+	b.blob((0.9, 0.56, 0.18), (0, -0.46, 0.38), belly, "jaw", segs=(12, 6))                   # throat and lower jaw
+	b.blob((0.8, 0.46, 0.08), (0, -0.5, 0.45), mouth, "jaw", segs=(10, 5))                   # inside of the mouth
+	b.seg((-0.38, -0.66, 0.47), (0.38, -0.66, 0.47), 0.018, 0.018, spot, "head", sides=4)    # the long mouth line
+	b.seg((0, -0.3, 0.42), (0, -0.66, 0.42), 0.07, 0.06, mouth, "tongue", sides=6)           # tongue, hidden until it shoots
+	b.blob((0.16, 0.14, 0.12), (0, -0.66, 0.42), mouth, "tongue", segs=(8, 5))
+	for s in (1, -1):
+		b.blob((0.3, 0.3, 0.3), (0.3 * s, -0.5, 0.72), back_b, "head", segs=(10, 7))             # eye bulges
+		b.blob((0.27, 0.27, 0.27), (0.32 * s, -0.54, 0.76), eye, "head", segs=(12, 8))           # big glossy black eyes
+		b.blob((0.07, 0.04, 0.06), (0.36 * s, -0.66, 0.84), glint, "head", segs=(5, 3))
+		b.blob((0.04, 0.03, 0.03), (0.07 * s, -0.72, 0.58), spot, "head", segs=(5, 3))            # nostrils
+		b.blob((0.2, 0.7, 0.2), (0.4 * s, 0.1, 0.46), back_b, "body", rot=(-14, 0, 12 * s), segs=(8, 6))  # orange flank stripes
+	for x, y, z, w in ((0, 0.04, 0.72, 0.28), (0.22, 0.3, 0.62, 0.2), (-0.2, 0.36, 0.6, 0.22), (0.16, -0.14, 0.72, 0.16),
+					   (-0.2, -0.1, 0.72, 0.18), (0, 0.5, 0.48, 0.2), (0.34, 0.0, 0.58, 0.14), (-0.34, 0.12, 0.56, 0.16),
+					   (0.0, -0.4, 0.77, 0.16), (0.22, -0.34, 0.72, 0.1), (-0.2, -0.3, 0.73, 0.1)):
+		b.blob((w, w * 1.3, 0.06), (x, y, z), spot, "head" if y < -0.25 else "body", rot=(-14, x * 40, 0), segs=(8, 4))
+
+	legs = {"leg_fl": (0.28, -0.36), "leg_fr": (-0.28, -0.36), "leg_bl": (0.36, 0.34), "leg_br": (-0.36, 0.34)}
+	for name_, (x, y) in legs.items():
+		s = 1 if x > 0 else -1
+		b.bone(name_, (x, y, 0.32), "root")
+		if y < 0:   # front: slim arms straight down, round toe pads
+			b.seg((x, y, 0.36), (x + 0.1 * s, y - 0.06, 0.05), 0.07, 0.05, leg, name_, sides=6)
+			for k in (-1, 0, 1):
+				tip = (x + (0.12 + 0.08 * k) * s, y - 0.2, 0.03)
+				b.seg((x + 0.1 * s, y - 0.08, 0.04), tip, 0.025, 0.02, leg_dark, name_, sides=4)
+				b.blob((0.07, 0.07, 0.05), tip, leg, name_, segs=(6, 4))
+		else:       # back: long folded thighs, shins forward, long toes
+			b.blob((0.28, 0.6, 0.3), (x + 0.1 * s, y + 0.02, 0.28), leg, name_, rot=(16, 0, 0), segs=(10, 7))
+			b.blob((0.12, 0.26, 0.06), (x + 0.14 * s, y + 0.06, 0.42), spot, name_, segs=(6, 4))
+			b.seg((x + 0.16 * s, y + 0.24, 0.14), (x + 0.22 * s, y - 0.26, 0.08), 0.07, 0.05, leg, name_, sides=6)
+			b.seg((x + 0.22 * s, y - 0.26, 0.08), (x + 0.26 * s, y - 0.36, 0.03), 0.05, 0.04, leg_dark, name_, sides=5)
+			for k in (-1, 0, 1):
+				tip = (x + (0.26 + 0.12 * k) * s, y - 0.56, 0.03)
+				b.seg((x + 0.26 * s, y - 0.36, 0.03), tip, 0.028, 0.02, leg_dark, name_, sides=4)
+				b.blob((0.07, 0.07, 0.05), tip, leg, name_, segs=(6, 4))
+	arm = b.build()
+
+	def legs_pose(front, back):
+		return {"leg_fl": {"rot": (front, 0, 0)}, "leg_fr": {"rot": (front, 0, 0)},
+				"leg_bl": {"rot": (back, 0, 0)}, "leg_br": {"rot": (back, 0, 0)}}
+
+	def hop(t, height, reach, forward):
+		air = max(0.0, math.sin(math.pi * min(1.0, max(0.0, (t - 0.15) / 0.5))))
+		kick = seq(t, [(0, 0), (0.12, 0.25), (0.3, -1), (0.6, 0), (1, 0)])
+		pitch = seq(t, [(0, 0), (0.12, -4), (0.3, 14), (0.55, -10), (0.7, 0)])
+		squash = seq(t, [(0, 0), (0.12, -0.05), (0.3, 0), (0.65, 0), (0.72, -0.06), (0.9, 0)])
+		drift = forward * (seq(t, [(0.15, 0), (0.65, 1)]) - 0.5)   # surges ahead in the air, drifts back on the ground
+		return merge({"root": {"loc": (0, drift, height * air + squash), "rot": (pitch, 0, 0)},
+					  "head": {"rot": (-pitch * 0.4, 0, 0)}},
+					 legs_pose(seq(t, [(0, 0), (0.3, -20), (0.55, reach), (0.7, 0)]), 65 * kick))
+
+	def idle(t):   # the throat pumps; now and then it blinks its body down and up
+		gulp = max(0.0, wave(t, 3))
+		return {"body": {"loc": (0, 0, 0.01 * wave(t))}, "jaw": {"loc": (0, 0, -0.03 * gulp)},
+				"head": {"rot": (3 * wave(t, 1, 0.3), 0, 6 * wave(t, 0.5))}}
+
+	def walk(t):
+		return hop(t, 0.3, 28, 0.18)
+
+	def run(t):
+		return hop(t, 0.5, 38, 0.3)
+
+	def attack(t):   # crouch, lunge with the mouth gaping, the tongue lashing out and snapping back
+		lunge = seq(t, [(0, 0), (0.28, -0.08), (0.42, 0.38), (0.7, 0.3), (1, 0)])
+		pitch = seq(t, [(0, 0), (0.28, -8), (0.42, 14), (0.7, 4), (1, 0)])
+		jaw = seq(t, [(0, 0), (0.3, -8), (0.4, -42), (0.6, -36), (0.7, 2), (0.8, 0)])
+		tongue = seq(t, [(0, 0), (0.36, 0), (0.46, 1.0), (0.54, 0.95), (0.66, 0)])
+		return merge({"root": {"loc": (0, lunge, 0.16 * max(0.0, lunge)), "rot": (pitch, 0, 0)},
+					  "jaw": {"rot": (jaw, 0, 0)}, "tongue": {"loc": (0, tongue, -0.04 * tongue)},
+					  "head": {"rot": (-jaw * 0.3, 0, 0)}},
+					 legs_pose(seq(t, [(0, 0), (0.28, -12), (0.42, 30), (1, 0)]), seq(t, [(0, 0), (0.28, 14), (0.42, -55), (1, 0)])))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.14 * k, -0.04 * k), "rot": (-8 * k, 6 * k, 0)},
+					  "head": {"rot": (-10 * k, 0, 8 * k)}, "jaw": {"rot": (-16 * k, 0, 0)}}, legs_pose(10 * k, 10 * k))
+
+	def death(t):   # a last leap that ends on its back, legs twitching
+		roll = seq(t, [(0.1, 0), (0.5, 100), (0.68, 176), (0.8, 180)])
+		lift = seq(t, [(0.1, 0), (0.35, 0.36), (0.72, 0.1), (0.8, 0.12)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		twitch = 10 * wave(t, 6) * seq(t, [(0.75, 0), (0.85, 1), (1, 0)])
+		return merge({"root": {"loc": (0, 0, lift), "rot": (0, roll, 0)}, "jaw": {"rot": (-20 * curl, 0, 0)},
+					  "head": {"rot": (-10 * curl, 0, 0)}, "tongue": {"loc": (0, 0.3 * curl, 0)}},
+					 legs_pose(-20 * curl + twitch, -70 * curl - twitch))
+
+	clip(arm, "idle", 2.2, idle, True)
+	clip(arm, "walk", 0.8, walk, True)
+	clip(arm, "run", 0.55, run, True)
+	clip(arm, "attack", 0.8, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.2, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- river crocodiles (The Weeping Throat)
+
+CROC_LEGS = {"leg_fl": (0.3, -0.42), "leg_fr": (-0.3, -0.42), "leg_bl": (0.32, 0.36), "leg_br": (-0.32, 0.36)}
+CROC_TAIL = ("tail1", "tail2", "tail3")
+
+
+def build_croc(name="river_croc", ancient=False):
+	"""Long and low, about 3 m snout to tail. The ancient one is the same beast grown old:
+	pale scarred hide under moss and barnacles, broken teeth, eyes that burn."""
+	import random
+	rng = random.Random(61 if ancient else 59)
+	if ancient:
+		hide = material(f"{name}_hide", "5e6448", 0.9)
+		dark = material(f"{name}_dark", "3e422e", 0.9)
+		scute = material(f"{name}_scute", "4a4c36", 0.85)
+		belly = material(f"{name}_belly", "c8c0a0", 0.9)
+		eye = material(f"{name}_eye", "ffd21e", 0.2, emit=3.5)
+	else:
+		hide = material(f"{name}_hide", "4a5430", 0.75)
+		dark = material(f"{name}_dark", "2c341c", 0.8)
+		scute = material(f"{name}_scute", "3a4224", 0.75)
+		belly = material(f"{name}_belly", "cdc596", 0.85)
+		eye = material(f"{name}_eye", "d8c040", 0.2, emit=0.8)
+	mouth = material(f"{name}_mouth", "b86a5a", 0.6)
+	tooth = material(f"{name}_tooth", "d8d0b0" if ancient else "eee8d0", 0.4)
+	claw = material(f"{name}_claw", "241c14", 0.6)
+	pupil = material(f"{name}_pupil", "0c0a06", 0.2)
+	if ancient:
+		scar = material(f"{name}_scar", "b8b494", 0.9)
+		moss = material(f"{name}_moss", "4a6a26", 0.95)
+		moss_b = material(f"{name}_moss_b", "6e8034", 0.95)
+		drowned = drowned_materials()
+	b = Builder(name)
+	b.bone("root", (0, 0, 0.3))
+	b.bone("body", (0, 0.0, 0.3), "root")
+	b.bone("head", (0, -0.66, 0.32), "body")
+	b.bone("jaw", (0, -0.74, 0.25), "head")
+	b.bone("tail1", (0, 0.5, 0.28), "body")
+	b.bone("tail2", (0, 0.88, 0.24), "tail1")
+	b.bone("tail3", (0, 1.24, 0.19), "tail2")
+
+	# the long, flat body
+	b.blob((0.7, 1.3, 0.34), (0, -0.02, 0.3), hide, "body", segs=(14, 9))
+	b.blob((0.62, 1.2, 0.14), (0, -0.02, 0.19), belly, "body", segs=(12, 6))
+	b.blob((0.5, 0.4, 0.28), (0, -0.62, 0.3), hide, "body", segs=(10, 7))                      # the neck
+	for k in range(7):   # bands of back armor with twin rows of scutes
+		y = -0.5 + k * 0.16
+		w = 0.56 - 0.06 * abs(k - 3) / 3
+		b.blob((w, 0.13, 0.12), (0, y, 0.43), scute, "body", segs=(10, 4))
+		for x in (-0.16, -0.06, 0.06, 0.16):
+			h = 0.08 if abs(x) > 0.1 else 0.06
+			b.seg((x, y, 0.44), (x, y + 0.02, 0.44 + h), 0.045, 0.0, dark, "body", sides=4)
+	for s in (1, -1):   # flank scales
+		for k in range(5):
+			b.blob((0.08, 0.16, 0.06), (0.33 * s, -0.4 + k * 0.2, 0.34), scute, "body", rot=(0, 30 * s, 0), segs=(6, 4))
+	# the head: a flat skull tapering into a long snout, eyes and nostrils riding on top
+	b.blob((0.44, 0.34, 0.2), (0, -0.8, 0.34), hide, "head", segs=(12, 7))
+	b.blob((0.3, 0.64, 0.12), (0, -1.12, 0.32), hide, "head", segs=(12, 6))
+	b.blob((0.22, 0.16, 0.12), (0, -1.42, 0.33), hide, "head", segs=(10, 6))                    # the knobbed snout tip
+	b.blob((0.26, 0.9, 0.05), (0, -1.06, 0.27), mouth, "head", segs=(10, 4))                   # roof of the mouth
+	for s in (1, -1):
+		b.blob((0.13, 0.14, 0.1), (0.11 * s, -0.78, 0.44), hide, "head", segs=(8, 5))               # eye bumps
+		b.blob((0.09, 0.08, 0.07), (0.12 * s, -0.8, 0.47), eye, "head", segs=(8, 5))
+		b.blob((0.015, 0.06, 0.06), (0.12 * s, -0.84, 0.47), pupil, "head", segs=(4, 3))
+		b.blob((0.04, 0.04, 0.03), (0.05 * s, -1.44, 0.39), dark, "head", segs=(5, 3))              # nostrils
+		for k in range(8):   # upper teeth down both sides, jutting out and down
+			y = -0.8 - k * 0.08
+			x = (0.16 - 0.08 * k / 7) * s
+			if ancient and k in (2, 5):
+				continue   # knocked out
+			ln = 0.07 if k in (1, 4, 7) else 0.05
+			if ancient and k in (3, 6):
+				ln *= 0.45   # broken off
+			b.seg((x, y, 0.29), (x * 1.08, y, 0.29 - ln), 0.02, 0.0 if not (ancient and k in (3, 6)) else 0.012, tooth, "head", sides=4)
+	b.blob((0.34, 0.14, 0.12), (0, -0.72, 0.25), hide, "jaw", segs=(8, 5))
+	b.blob((0.28, 0.72, 0.08), (0, -1.08, 0.22), belly, "jaw", segs=(10, 5))                     # lower jaw
+	b.blob((0.26, 0.66, 0.06), (0, -1.08, 0.25), mouth, "jaw", segs=(10, 4))
+	for s in (1, -1):
+		b.seg((0.13 * s, -0.76, 0.24), (0.1 * s, -1.4, 0.23), 0.05, 0.04, hide, "jaw", sides=6)
+		for k in range(7):
+			y = -0.84 - k * 0.08
+			x = (0.13 - 0.06 * k / 6) * s
+			if ancient and k == 3:
+				continue
+			ln = 0.06 if k % 2 else 0.045
+			b.seg((x, y, 0.25), (x * 1.06, y, 0.25 + ln), 0.018, 0.0, tooth, "jaw", sides=4)
+	# the tail: tall and flattened, a double crest merging into one toward the tip
+	tail = [(0, 0.46, 0.29), (0, 0.9, 0.25), (0, 1.26, 0.2), (0, 1.66, 0.14)]
+	radii = [0.22, 0.16, 0.1, 0.02]
+	for k, bone in enumerate(CROC_TAIL):
+		p, q = Vector(tail[k]), Vector(tail[k + 1])
+		b.seg(tuple(p), tuple(q), radii[k], radii[k + 1], hide, bone, sides=8)
+		b.seg(tuple(p - Vector((0, 0, 0.06))), tuple(q - Vector((0, 0, 0.04))), radii[k] * 0.8, radii[k + 1] * 0.8, belly, bone, sides=6)
+		for j in range(3):
+			u = (j + 0.5) / 3
+			c = p + (q - p) * u
+			r = radii[k] + (radii[k + 1] - radii[k]) * u
+			xs = (-0.07, 0.07) if k < 2 else (0.0,)
+			for x in xs:
+				b.seg((x, c.y, c.z + r * 0.8), (x, c.y + 0.03, c.z + r * 0.8 + 0.08 - 0.015 * k), 0.04, 0.0, dark, bone, sides=4)
+	# four short sprawling legs
+	for name_, (x, y) in CROC_LEGS.items():
+		s = 1 if x > 0 else -1
+		f = -1 if y < 0 else 1
+		b.bone(name_, (x, y, 0.28), "root")
+		elbow = (x + 0.3 * s, y + 0.04 * f, 0.26)
+		foot = (x + 0.36 * s, y - 0.04, 0.04)
+		b.blob((0.3, 0.3, 0.22), (x + 0.06 * s, y, 0.27), hide, name_, segs=(8, 6))
+		b.seg((x, y, 0.28), elbow, 0.09, 0.08, hide, name_, sides=7)
+		b.seg(elbow, foot, 0.08, 0.06, hide, name_, sides=7)
+		b.blob((0.2, 0.22, 0.06), (foot[0], foot[1] - 0.04, 0.03), dark, name_, segs=(8, 5))
+		for k in (-1, 0, 1):
+			b.seg((foot[0] + 0.06 * k, foot[1] - 0.12, 0.03), (foot[0] + 0.08 * k, foot[1] - 0.2, 0.01), 0.022, 0.0, claw, name_, sides=4)
+	if ancient:
+		# old scars raked across the hide, moss on the back, barnacle lumps
+		for p, q in (((0.26, -0.3, 0.38), (0.12, -0.02, 0.46)), ((-0.3, 0.1, 0.36), (-0.1, 0.34, 0.45)),
+					 ((0.2, -0.86, 0.4), (0.06, -1.1, 0.38)), ((0.3, 0.3, 0.34), (0.22, 0.5, 0.4))):
+			b.seg(p, q, 0.02, 0.02, scar, "head" if p[1] < -0.7 else "body", sides=4)
+		for x, y, w in ((0.08, -0.36, 0.3), (-0.12, 0.0, 0.34), (0.1, 0.3, 0.26), (-0.04, 0.48, 0.2)):
+			b.blob((w, w * 1.3, 0.08), (x, y, 0.47), moss if w > 0.25 else moss_b, "body", segs=(8, 4))
+		for x, y in ((0.2, -0.2), (-0.22, 0.2), (0.18, 0.44), (-0.14, -0.5)):
+			_kelp(b, (x, y, 0.44), 0.18, moss, lean=(x * 0.8, 0.0), width=0.03, parts=2)
+		for k in range(12):
+			bone = "body"
+			y = rng.uniform(-0.55, 0.55)
+			sx = rng.choice((1, -1))
+			loc = (sx * rng.uniform(0.18, 0.3), y, rng.uniform(0.36, 0.42))
+			if k >= 9:
+				bone, loc = "head", (sx * rng.uniform(0.06, 0.16), rng.uniform(-1.3, -0.9), 0.36)
+			nrm = (loc[0], 0.0, 1.0)
+			n = Vector(nrm).normalized()
+			base = Vector(loc)
+			sz = rng.uniform(0.7, 1.1)
+			b.seg(tuple(base), tuple(base + n * 0.07 * sz), 0.055 * sz, 0.035 * sz, drowned["barnacle"], bone, sides=6)
+			b.blob((0.04 * sz, 0.04 * sz, 0.04 * sz), tuple(base + n * 0.07 * sz), drowned["hole"], bone, segs=(5, 3))
+	arm = b.build()
+
+	def leg(name_, swing, lift=0.0):
+		s = 1 if CROC_LEGS[name_][0] > 0 else -1
+		return {name_: {"rot": (0, lift * s, -swing * s)}}
+
+	def gait(t, amp, lift):
+		out = {}
+		for name_ in CROC_LEGS:
+			ph = 0.0 if name_ in ("leg_fl", "leg_br") else 0.5
+			out.update(leg(name_, amp * wave(t, 1, ph), lift * max(0.0, wave(t, 1, ph + 0.25))))
+		return out
+
+	def tail(t, amp, cycles=1.0, pitch=0.0):
+		return {"tail1": {"rot": (pitch, 0, amp * wave(t, cycles))}, "tail2": {"rot": (pitch * 0.5, 0, amp * wave(t, cycles, -0.12))},
+				"tail3": {"rot": (0, 0, amp * 1.3 * wave(t, cycles, -0.24))}}
+
+	def idle(t):   # lies still; the tail sways, the jaws hang a little open now and then
+		gape = seq(t, [(0, 0), (0.4, 0), (0.5, 1), (0.8, 1), (0.9, 0)])
+		return merge({"body": {"loc": (0, 0, 0.008 * wave(t))}, "head": {"rot": (1 * wave(t), 0, 3 * wave(t, 0.5))},
+					  "jaw": {"rot": (-10 * gape, 0, 0)}}, tail(t, 7, 0.5), gait(t, 0.5, 0))
+
+	def walk(t):   # the sprawling waddle: the spine bends side to side
+		return merge(gait(t, 24, 14), tail(t, 14),
+					 {"body": {"rot": (0, 2 * wave(t, 2), 7 * wave(t, 1, 0.25))}, "root": {"loc": (0, 0, 0.01 * abs(wave(t, 2)))},
+					  "head": {"rot": (0, 0, -8 * wave(t, 1, 0.25))}})
+
+	def run(t):   # the high walk, belly off the ground
+		return merge(gait(t, 34, 22), tail(t, 20),
+					 {"body": {"rot": (0, 3 * wave(t, 2), 10 * wave(t, 1, 0.25))}, "root": {"loc": (0, 0, 0.05 + 0.02 * abs(wave(t, 2)))},
+					  "head": {"rot": (-3, 0, -10 * wave(t, 1, 0.25))}})
+
+	def attack(t):   # swings the head aside with the jaws wide, then whips it back across in a snap
+		swing = seq(t, [(0, 0), (0.3, 30), (0.42, -12), (0.55, -18), (1, 0)])
+		jaw = seq(t, [(0, 0), (0.28, -36), (0.38, -40), (0.44, 2), (0.7, 0)])
+		lift = seq(t, [(0, 0), (0.28, 22), (0.38, 24), (0.44, 2), (1, 0)])
+		lunge = seq(t, [(0, 0), (0.3, -0.06), (0.44, 0.3), (0.6, 0.24), (1, 0)])
+		return merge({"root": {"loc": (0, lunge, 0.02 * max(0.0, lunge))},
+					  "body": {"rot": (0, swing * 0.1, swing * 0.35)}, "head": {"rot": (lift, -swing * 0.2, swing * 0.8)},
+					  "jaw": {"rot": (jaw, 0, 0)}},
+					 tail(t, 0, 1), {"tail1": {"rot": (0, 0, -swing * 0.5)}, "tail2": {"rot": (0, 0, -swing * 0.4)}},
+					 leg("leg_fl", -seq(t, [(0, 0), (0.44, 18), (1, 0)])), leg("leg_fr", seq(t, [(0, 0), (0.44, 18), (1, 0)])))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.1 * k, 0.02 * k), "rot": (4 * k, 5 * k, 0)},
+					  "head": {"rot": (10 * k, 0, 12 * k)}, "jaw": {"rot": (-28 * k, 0, 0)}}, tail(t, 18 * k, 2), gait(t, 6 * k, 8 * k))
+
+	def death(t):   # thrashes, then death-rolls over onto its back, pale belly up
+		roll = seq(t, [(0.2, 0), (0.55, 95), (0.72, 176), (0.82, 180)])
+		lift = seq(t, [(0.2, 0), (0.45, 0.26), (0.74, 0.02), (0.82, 0.04)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		out = merge({"root": {"loc": (0, 0, lift), "rot": (0, roll, 0)},
+					 "head": {"rot": (-12 * curl, 0, 14 * curl)}, "jaw": {"rot": (-30 * curl, 0, 0)}},
+					tail(t, 22 * seq(t, [(0, 1), (0.4, 0)]), 3, pitch=-8 * curl))
+		for i, name_ in enumerate(CROC_LEGS):
+			out = merge(out, leg(name_, 8 * wave(t, 5, i * 0.2) * seq(t, [(0.7, 0), (0.8, 1), (1, 0.3)]), -35 * curl))
+		return out
+
+	clip(arm, "idle", 3.2, idle, True)
+	clip(arm, "walk", 1.0, walk, True)
+	clip(arm, "run", 0.6, run, True)
+	clip(arm, "attack", 0.85, attack, False)
+	clip(arm, "hit", 0.45, hit, False)
+	clip(arm, "death", 1.5, death, False)
+	return arm
+
+
+def build_ancient_croc():
+	return build_croc("ancient_croc", ancient=True)
+
+
 # ---------------------------------------------------------------- repainted KayKit bodies
 # Tints only multiply a texture, so a purple robe can't turn saffron. These
 # write a copy of a KayKit character .glb with its palette texture repainted
@@ -2947,6 +3717,16 @@ def repaint_kaykit(src, dst, image_name, cells=None, every=None):
 
 
 KAYKIT = "assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/"
+# the barbarian as a troll: skin (0,0 and 1,3) mossy green-gray, trousers (7,1) bare
+# legs, boots (3,2) calloused feet, fur trim (2,1) and vest (7,0) shaggy moss, leather grimy
+TROLL_CELLS = {(0, 0): ("98ac86", "4e6044"), (1, 3): ("98ac86", "4e6044"), (3, 1): ("8ea27c", "4a5a40"),
+			   (7, 1): ("8ea27c", "4a5a40"), (3, 2): ("6e7e5e", "343e2c"), (7, 0): ("5e7434", "2a3618"),
+			   (2, 1): ("6a8438", "2e3e1c"), (6, 0): ("6a5a40", "32281a"), (6, 1): ("6a5a40", "32281a"),
+			   (3, 0): ("7a7a6a", "3a3a30"), (5, 1): ("6a5a40", "32281a")}
+TROLL_CHIEF_CELLS = {(0, 0): ("6e8e56", "2c3e22"), (1, 3): ("6e8e56", "2c3e22"), (3, 1): ("668450", "2a3a20"),
+					 (7, 1): ("668450", "2a3a20"), (3, 2): ("4e5e40", "20281a"), (7, 0): ("5e4632", "2a1c12"),
+					 (2, 1): ("8e7658", "3a2c20"), (6, 0): ("5a4430", "261a10"), (6, 1): ("5a4430", "261a10"),
+					 (3, 0): ("8a8474", "3e3a30"), (5, 1): ("8a2a1c", "3a100a")}
 # name: (source, image name, cells, every)
 BODIES = {
 	"stone_knight": (KAYKIT + "Knight.glb", "stone_texture", None, ("f6ead0", "6a5e4c")),
@@ -2968,6 +3748,8 @@ BODIES = {
 						 {(0, 1): ("dcc89c", "8a7450"), (1, 1): ("c4a882", "6e5838"), (3, 2): ("cfbc98", "7e6a4c")}, None),
 	"raider_chief_body": (KAYKIT + "Barbarian.glb", "raider_chief_texture",
 						  {(7, 0): ("d6c296", "7e6a48"), (3, 2): ("cfbc98", "7a6446"), (1, 3): ("c83a2a", "6a1410")}, None),
+	"river_troll_body": (KAYKIT + "Barbarian.glb", "river_troll_texture", TROLL_CELLS, None),
+	"troll_chieftain_body": (KAYKIT + "Barbarian.glb", "troll_chieftain_texture", TROLL_CHIEF_CELLS, None),
 }
 
 
@@ -2991,11 +3773,18 @@ ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail, "
 			   "bone_giant_chest": build_bone_giant_chest, "bone_bracer_l": build_bone_bracer_l,
 			   "bone_bracer_r": build_bone_bracer_r,
 			   "raider_wrap": build_raider_wrap, "raider_chief_turban": build_raider_chief_turban,
-			   "raider_chief_chest": build_raider_chief_chest}
+			   "raider_chief_chest": build_raider_chief_chest,
+			   "troll_head": build_troll_head, "troll_chief_head": build_troll_chief_head, "troll_back": build_troll_back,
+			   "troll_chief_back": build_troll_chief_back, "troll_loincloth": build_troll_loincloth,
+			   "troll_chief_loincloth": build_troll_chief_loincloth, "troll_fist_l": build_troll_fist_l,
+			   "troll_fist_r": build_troll_fist_r, "troll_chief_fist_l": build_troll_chief_fist_l,
+			   "troll_chief_fist_r": build_troll_chief_fist_r}
 CREATURES = {"rat": build_rat, "fire_beetle": build_beetle, "wolf": build_wolf, "dire_wolf": build_dire_wolf,
 			 "bear": build_bear, "spider": build_spider, "mire_toad": build_toad, "snapping_turtle": build_turtle,
 			 "bog_leech": build_leech, "boar": build_boar, "mountain_ram": build_ram, "sunhawk": build_sunhawk,
-			 "giant_scorpion": build_scorpion, "scorpion_queen": build_scorpion_queen, "salt_basilisk": build_basilisk}
+			 "giant_scorpion": build_scorpion, "scorpion_queen": build_scorpion_queen, "salt_basilisk": build_basilisk,
+			 "water_elemental": build_elemental, "storm_elemental": build_storm_elemental, "giant_frog": build_frog,
+			 "river_croc": build_croc, "ancient_croc": build_ancient_croc}
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

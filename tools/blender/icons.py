@@ -675,6 +675,142 @@ def bone_talisman():
 	return p.build()
 
 
+
+# ---------------------------------------------------------------- the Long Monsoon
+
+def _fish(p, body, fin, length=1.0, fat=0.3, spots=None):
+	p.blob((length, fat * 0.8, fat * 1.6), (0, 0, 0.35), body, segs=(12, 6), grad=(0.1, 0.8))
+	p.poly([(length * 0.45, 0, 0.35), (length * 0.75, 0, 0.62), (length * 0.75, 0, 0.08)], [(0, 1, 2)], fin)       # tail
+	p.poly([(-0.15, 0, 0.35 + fat * 0.7), (0.2, 0, 0.35 + fat * 0.7), (0.05, 0, 0.35 + fat * 1.3)], [(0, 1, 2)], fin)  # dorsal fin
+	p.blob((0.09, 0.05, 0.09), (-length * 0.36, -fat * 0.3, 0.42), STONE_DARK, segs=(6, 4))                          # eye
+	for (x, z) in spots or []:
+		p.blob((0.1, 0.04, 0.1), (x, -fat * 0.36, z), fin, segs=(6, 4))
+
+
+def river_trout():
+	p = Prop("river_trout", 343)
+	_fish(p, STONE_LIGHT, CLOTH_RED, spots=[(0.0, 0.42), (0.15, 0.3), (-0.12, 0.3)])
+	return p.build()
+
+
+def mud_carp():
+	p = Prop("mud_carp", 345)
+	_fish(p, WOOD, HIDE, length=0.9, fat=0.38)
+	return p.build()
+
+
+def lagoon_snapper():
+	p = Prop("lagoon_snapper", 347)
+	_fish(p, CLOTH_RED, EMBER, length=0.95, fat=0.36)
+	return p.build()
+
+
+def monsoon_eel():
+	p = Prop("monsoon_eel", 349)
+	pts = [(-0.6, 0, 0.3), (-0.3, 0, 0.45), (0.0, 0, 0.3), (0.3, 0, 0.15), (0.6, 0, 0.3)]
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.11 - i * 0.015, 0.1 - i * 0.02, WATER, sides=7, grad=(0.1, 0.8))
+	p.blob((0.04, 0.03, 0.04), (-0.62, -0.08, 0.34), STONE_DARK, segs=(6, 4))
+	return p.build()
+
+
+def jungle_catfish():
+	p = Prop("jungle_catfish", 351)
+	_fish(p, STONE_DARK, HIDE, length=1.05, fat=0.34)
+	for s_ in (-1, 1):  # whiskers
+		p.seg((-0.5, s_ * 0.08, 0.32), (-0.75, s_ * 0.2, 0.2), 0.015, 0.01, HIDE, sides=3)
+	return p.build()
+
+
+def rainbow_koi():
+	p = Prop("rainbow_koi", 353)
+	_fish(p, GOLD, CLOTH_RED, length=0.95, fat=0.32, spots=[(0.0, 0.45), (0.2, 0.32), (-0.15, 0.28)])
+	p.blob((0.12, 0.02, 0.1), (0.1, -0.15, 0.4), WATER, segs=(6, 4), glow=0.8)
+	return p.build()
+
+
+def tattered_boot():
+	p = Prop("tattered_boot", 355)
+	p.seg((0, 0, 0.1), (0, 0, 0.75), 0.2, 0.22, HIDE, sides=8, grad=(0.1, 0.6))
+	p.blob((0.4, 0.22, 0.14), (-0.22, 0, 0.1), HIDE, segs=(8, 5))
+	p.blob((0.12, 0.05, 0.1), (-0.5, -0.05, 0.14), LEAF, segs=(6, 4))  # weed hanging off it
+	return p.build()
+
+
+def troll_tusk():
+	p = Prop("troll_tusk", 357)
+	p.seg((0, 0, 0.05), (0.2, 0, 0.6), 0.16, 0.08, BONE, sides=7, grad=(0.1, 0.7))
+	p.seg((0.2, 0, 0.6), (0.1, 0, 0.95), 0.08, 0.0, BONE, sides=6)
+	p.seg((0, 0, 0.02), (0, 0, 0.12), 0.18, 0.18, LEAF, sides=8)  # a mossy root
+	return p.build()
+
+
+def frog_skin():
+	p = Prop("frog_skin", 359)
+	p.blob((0.7, 0.55, 0.08), (0, 0, 0.1), GOLD, segs=(10, 6))
+	for (x, y) in ((-0.3, 0.1), (0.15, -0.2), (0.25, 0.2), (-0.05, 0.0)):
+		p.blob((0.1, 0.1, 0.03), (x, y, 0.17), STONE_DARK, segs=(6, 4))
+	return p.build()
+
+
+def croc_hide():
+	p = Prop("croc_hide", 361)
+	p.blob((0.8, 0.5, 0.1), (0, 0, 0.1), LEAF, segs=(10, 6), grad=(0.1, 0.5))
+	for k in range(5):  # scutes
+		p.box((0.12, 0.35, 0.08), (-0.4 + k * 0.2, 0, 0.2), STONE_DARK)
+	return p.build()
+
+
+def croc_tooth():
+	p = Prop("croc_tooth", 363)
+	p.seg((0, 0, 0.0), (0.05, 0, 0.9), 0.16, 0.0, BONE, sides=6, grad=(0.1, 0.7))
+	return p.build()
+
+
+def elemental_essence():
+	p = Prop("elemental_essence", 365)
+	p.blob((0.4, 0.4, 0.5), (0, 0, 0.45), WATER, segs=(10, 8), glow=1.4)
+	p.seg((0, 0, 0.85), (0, 0, 1.1), 0.12, 0.12, STONE_LIGHT, sides=8)  # a stoppered vial of rain
+	return p.build()
+
+
+def gorraks_crown():
+	p = Prop("gorraks_crown", 367)
+	for k in range(8):  # a ring of river stones
+		a = k * math.tau / 8
+		p.blob((0.16, 0.16, 0.14), (math.cos(a) * 0.45, math.sin(a) * 0.45, 0.2), STONE_LIGHT if k % 2 else STONE_DARK, segs=(6, 4))
+	for s_ in (-1, 1):  # antlers
+		p.seg((s_ * 0.4, 0, 0.3), (s_ * 0.6, 0, 0.9), 0.05, 0.03, BONE, sides=5)
+		p.seg((s_ * 0.52, 0, 0.65), (s_ * 0.3, 0, 0.95), 0.03, 0.02, BONE, sides=4)
+	p.blob((0.18, 0.14, 0.16), (0, -0.46, 0.34), BONE, segs=(6, 5))  # a small skull at the front
+	return p.build()
+
+
+def heart_of_the_storm():
+	p = Prop("heart_of_the_storm", 369)
+	p.blob((0.45, 0.45, 0.5), (0, 0, 0.5), STONE_DARK, segs=(10, 8), jitter=0.05)
+	for pts in (((-0.3, -0.3, 0.9), (-0.05, -0.35, 0.6), (-0.2, -0.38, 0.45)), ((0.3, -0.3, 0.3), (0.1, -0.36, 0.5), (0.25, -0.4, 0.7))):
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.04, 0.03, GOLD, sides=4, glow=2.2)
+	return p.build()
+
+
+def graveljaws_tooth():
+	p = Prop("graveljaws_tooth", 371)
+	p.seg((0, 0, 0.0), (0.12, 0, 1.1), 0.26, 0.0, BONE, sides=7, grad=(0.05, 0.6))
+	p.blob((0.12, 0.05, 0.1), (0.02, -0.18, 0.35), LEAF, segs=(6, 4))  # moss
+	return p.build()
+
+
+def tide_trunk_charm():
+	p = Prop("tide_trunk_charm", 373)
+	_cord(p, 0.5, 0.75, WATER)
+	p.blob((0.3, 0.12, 0.28), (0, -0.32, 0.4), STONE_LIGHT, segs=(8, 6))            # a little stone elephant head
+	p.seg((0, -0.4, 0.35), (0.05, -0.45, 0.62), 0.05, 0.03, STONE_LIGHT, sides=5)    # trunk raised
+	p.blob((0.08, 0.08, 0.08), (0.06, -0.46, 0.7), WATER, segs=(6, 4), glow=1.6)     # a drop of water
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
@@ -686,7 +822,9 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band,
 									 ram_horn, ram_fleece, sunhawk_feather, sunstone_shard, linen_wrappings, pilgrim_token, cult_sigil,
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
-									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman]}
+									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
+									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm]}
 
 
 # ---------------------------------------------------------------- rendering

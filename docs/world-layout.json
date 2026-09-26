@@ -6,9 +6,11 @@
   "harrowfield",
   "hollowmere",
   "lanternhold",
+  "rainhold",
   "sunward_steps",
   "the_bleach",
-  "thornwood"
+  "thornwood",
+  "weeping_throat"
  ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
  "areas": {
@@ -271,8 +273,8 @@
     2
    ],
    "kind": "water",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -361,8 +363,8 @@
     1
    ],
    "kind": "city",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

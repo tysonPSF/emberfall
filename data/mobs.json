@@ -2739,5 +2739,343 @@
         "item": "sandwrap_hood"
       }
     ]
+  },
+  "river_troll": {
+    "name": "a river troll",
+    "level": [
+      20,
+      23
+    ],
+    "hp_base": 150,
+    "hp_per_level": 22,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.8,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "river_trolls",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#5a7a4a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "hp_regen": 18,
+    "loot": [
+      {
+        "item": "troll_tusk",
+        "chance": 0.55
+      }
+    ],
+    "model": "river_troll",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "troll_weapons"
+      }
+    ]
+  },
+  "troll_chieftain": {
+    "name": "Gorrak Mudtooth",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.8,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "river_trolls",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#3e5e34",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "hp_regen": 60,
+    "loot": [
+      {
+        "item": "gorraks_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "troll_tusk",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "troll_chieftain",
+    "named": true,
+    "xp_bonus": 3.0,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "mudtooth_maul"
+      }
+    ]
+  },
+  "water_elemental": {
+    "name": "a water elemental",
+    "level": [
+      21,
+      24
+    ],
+    "hp_base": 140,
+    "hp_per_level": 22,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 3.0,
+    "ac": 36,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#3a9ad0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "elemental_essence",
+        "chance": 0.5
+      }
+    ],
+    "model": "water_elemental",
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.12,
+      "text": "%s's blow carries %s!"
+    }
+  },
+  "storm_elemental": {
+    "name": "the Weeping Storm",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3600,
+    "hp_per_level": 0,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 3.0,
+    "ac": 52,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#4a5870",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "heart_of_the_storm",
+        "chance": 1.0
+      },
+      {
+        "item": "elemental_essence",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "stormcallers_staff",
+        "chance": 0.35
+      }
+    ],
+    "model": "storm_elemental",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "storm_bolt",
+      "chance": 0.25,
+      "text": "%s calls down a %s!"
+    }
+  },
+  "giant_frog": {
+    "name": "a giant poison frog",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.4,
+    "ac": 26,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#e0c020",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "frog_skin",
+        "chance": 0.5
+      }
+    ],
+    "model": "giant_frog",
+    "proc": {
+      "spell": "frog_poison",
+      "chance": 0.15,
+      "text": "%s's slime carries %s!"
+    }
+  },
+  "river_croc": {
+    "name": "a river crocodile",
+    "level": [
+      21,
+      24
+    ],
+    "hp_base": 150,
+    "hp_per_level": 22,
+    "dmg_min": 14,
+    "dmg_max": 27,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a5a30",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "croc_hide",
+        "chance": 0.45
+      },
+      {
+        "item": "croc_tooth",
+        "chance": 0.3
+      }
+    ],
+    "model": "river_croc",
+    "proc": {
+      "spell": "death_roll",
+      "chance": 0.08,
+      "text": "%s drags you into a %s!"
+    }
+  },
+  "ancient_croc": {
+    "name": "Old Graveljaw",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 4000,
+    "hp_per_level": 0,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 3.0,
+    "ac": 56,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6a6a50",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "graveljaws_tooth",
+        "chance": 1.0
+      },
+      {
+        "item": "croc_hide",
+        "chance": 1.0,
+        "count": [
+          3,
+          4
+        ]
+      }
+    ],
+    "model": "ancient_croc",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "death_roll",
+      "chance": 0.2,
+      "text": "%s drags you into a %s!"
+    }
   }
 }

@@ -1,0 +1,1435 @@
+{
+  "name": "The Weeping Throat",
+  "music": "weeping_throat",
+  "seed": 7719,
+  "size": 448,
+  "height_amplitude": 10,
+  "bind_point": [
+    0,
+    190
+  ],
+  "flat_radius": 20,
+  "trees": 800,
+  "tree_mix": [
+    "jungle_tree",
+    "jungle_tree",
+    "jungle_tree",
+    "tree_round"
+  ],
+  "groves": 0.7,
+  "rocks": 90,
+  "grass_colors": [
+    "#2f5a2a",
+    "#4b7a34"
+  ],
+  "fog_density": 0.016,
+  "fog_color": "#7a8e84",
+  "sun_energy": 0.7,
+  "rain": {
+    "amount": 3000
+  },
+  "fish": {
+    "jungle_catfish": 4,
+    "river_trout": 3,
+    "monsoon_eel": 2,
+    "tattered_boot": 1
+  },
+  "clutter": {
+    "grass_a": {
+      "density": 0.4,
+      "patch": 0.55,
+      "sway": 0.18,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        1.0,
+        1.7
+      ]
+    },
+    "grass_b": {
+      "density": 0.4,
+      "patch": 0.35,
+      "sway": 0.16,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        1.0,
+        1.6
+      ]
+    },
+    "fern": {
+      "density": 0.05,
+      "patch": 0.8,
+      "sway": 0.08,
+      "range": 65,
+      "scale": [
+        1.2,
+        2.0
+      ]
+    },
+    "flowers_purple": {
+      "density": 0.004,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "bush_a": {
+      "density": 0.008,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        1.0,
+        1.7
+      ]
+    },
+    "bush_b": {
+      "density": 0.008,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        1.0,
+        1.7
+      ]
+    },
+    "mushrooms": {
+      "density": 0.006,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "log_fallen": {
+      "density": 0.0006,
+      "patch": 0.3,
+      "range": 120,
+      "shadow": true,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "stump": {
+      "density": 0.0006,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        -160,
+        160
+      ],
+      "radius": 38,
+      "color": "#4a4a30",
+      "flatten": 0.7
+    }
+  ],
+  "rivers": [
+    {
+      "points": [
+        [
+          -30,
+          -196
+        ],
+        [
+          -10,
+          -150
+        ],
+        [
+          30,
+          -115
+        ],
+        [
+          95,
+          -75
+        ],
+        [
+          100,
+          -20
+        ],
+        [
+          80,
+          20
+        ],
+        [
+          20,
+          62
+        ],
+        [
+          -60,
+          92
+        ],
+        [
+          -125,
+          130
+        ],
+        [
+          -165,
+          165
+        ]
+      ],
+      "width": 14,
+      "depth": 1.6,
+      "bank": 10,
+      "flow": 1.2
+    },
+    {
+      "points": [
+        [
+          -175,
+          -130
+        ],
+        [
+          -150,
+          -80
+        ],
+        [
+          -110,
+          -30
+        ],
+        [
+          -80,
+          30
+        ],
+        [
+          -70,
+          80
+        ]
+      ],
+      "width": 7,
+      "depth": 0.9,
+      "bank": 6,
+      "flow": 1.4
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "id": "waterfall",
+      "pos": [
+        -30,
+        -200
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "id": "waterfall_water",
+      "pos": [
+        -30,
+        -200
+      ],
+      "yaw": 0,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "waterfall",
+      "pos": [
+        -178,
+        -134
+      ],
+      "yaw": 30
+    },
+    {
+      "type": "prop",
+      "id": "waterfall_water",
+      "pos": [
+        -178,
+        -134
+      ],
+      "yaw": 30,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "jungle_temple",
+      "pos": [
+        -122,
+        -100
+      ],
+      "yaw": 20,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "id": "temple_arch_ruin",
+      "pos": [
+        -100,
+        -66
+      ],
+      "yaw": 20,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "id": "hanging_vines",
+      "pos": [
+        -100,
+        -66
+      ],
+      "yaw": 20
+    },
+    {
+      "type": "prop",
+      "id": "temple_arch_ruin",
+      "pos": [
+        -150,
+        -62
+      ],
+      "yaw": -40,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "id": "jalendra_head_fallen",
+      "pos": [
+        -82,
+        -122
+      ],
+      "yaw": -60,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "id": "troll_hut",
+      "pos": [
+        130,
+        -72
+      ],
+      "yaw": 200
+    },
+    {
+      "type": "prop",
+      "id": "troll_hut",
+      "pos": [
+        148,
+        -48
+      ],
+      "yaw": 250
+    },
+    {
+      "type": "prop",
+      "id": "troll_hut",
+      "pos": [
+        124,
+        -38
+      ],
+      "yaw": 160
+    },
+    {
+      "type": "prop",
+      "id": "troll_hut",
+      "pos": [
+        152,
+        -74
+      ],
+      "yaw": 220
+    },
+    {
+      "type": "prop",
+      "id": "troll_totem",
+      "pos": [
+        118,
+        -58
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "troll_totem",
+      "pos": [
+        140,
+        -88
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "campfire",
+      "pos": [
+        134,
+        -57
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "drying_rack",
+      "pos": [
+        142,
+        -62
+      ],
+      "yaw": 30
+    },
+    {
+      "type": "prop",
+      "id": "jungle_tree_giant",
+      "pos": [
+        40,
+        20
+      ],
+      "yaw": 0,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "jungle_tree_giant",
+      "pos": [
+        -60,
+        160
+      ],
+      "yaw": 90,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "jungle_tree_giant",
+      "pos": [
+        170,
+        -160
+      ],
+      "yaw": 45,
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        198,
+        31
+      ],
+      "yaw": 90,
+      "labels": [
+        "Weeping Throat",
+        "Thornwood Vale"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        9,
+        196
+      ],
+      "yaw": 180,
+      "labels": [
+        "Weeping Throat",
+        "Rainhold"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        -200,
+        0
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Weeping Throat"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        -200
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Weeping Throat"
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        180,
+        60
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        183,
+        58
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        150,
+        30
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        153,
+        28
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        90,
+        120
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        93,
+        118
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        30,
+        150
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        33,
+        148
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        -30,
+        100
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        -27,
+        98
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        60,
+        -20
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        63,
+        -22
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        -40,
+        -60
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        -37,
+        -62
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        -150,
+        -160
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        -147,
+        -162
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        170,
+        -110
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        173,
+        -112
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        -180,
+        80
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        -177,
+        78
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        100,
+        190
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        103,
+        188
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        -100,
+        150
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        -97,
+        148
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "taro_plant",
+      "pos": [
+        15,
+        -60
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "fern_clump",
+      "pos": [
+        18,
+        -62
+      ],
+      "collide": "none"
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          224,
+          40
+        ],
+        [
+          170,
+          40
+        ],
+        [
+          120,
+          75
+        ],
+        [
+          70,
+          110
+        ],
+        [
+          25,
+          160
+        ],
+        [
+          0,
+          224
+        ]
+      ],
+      "width": 3
+    }
+  ],
+  "passes": [
+    [
+      224,
+      40,
+      9
+    ],
+    [
+      0,
+      224,
+      9
+    ],
+    [
+      -224,
+      0,
+      9
+    ],
+    [
+      0,
+      -224,
+      9
+    ]
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        213,
+        40
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "thornwood",
+      "arrive": [
+        -231,
+        40
+      ],
+      "arrive_face": [
+        -191,
+        40
+      ]
+    },
+    {
+      "pos": [
+        0,
+        213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "rainhold",
+      "arrive": [
+        0,
+        -46
+      ],
+      "arrive_face": [
+        0,
+        -6
+      ]
+    }
+  ],
+  "npcs": [],
+  "spawns": [
+    {
+      "pos": [
+        150,
+        110
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        110,
+        150
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        60,
+        130
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -20,
+        130
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -60,
+        40
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        40,
+        -40
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -20,
+        -60
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        160,
+        -20
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        80,
+        -150
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -150,
+        20
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -100,
+        180
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        170,
+        170
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -170,
+        -170
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        20,
+        -170
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -60,
+        -170
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        120,
+        40
+      ],
+      "pool": {
+        "giant_frog": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        86.2,
+        -39.2
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        75.3,
+        2.6
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        34.5,
+        37.2
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -22.6,
+        65.1
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -84.4,
+        92.4
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -125.2,
+        116.2
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        74.2,
+        -101.9
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        11.4,
+        -147.3
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -150,
+        -10
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -95,
+        20
+      ],
+      "pool": {
+        "river_croc": 1
+      },
+      "respawn": 90,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -167.6,
+        151.3
+      ],
+      "pool": {
+        "ancient_croc": 1
+      },
+      "respawn": 900,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -100,
+        -80
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -139.5,
+        -80.4
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -130,
+        -120
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -95,
+        -115
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        -100
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -110,
+        -55
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -170,
+        -60
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -80,
+        -150
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -120,
+        -10
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -70,
+        -40
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -180,
+        40
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -40,
+        -110
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -118,
+        -80
+      ],
+      "pool": {
+        "storm_elemental": 1
+      },
+      "respawn": 1200,
+      "wander": 3
+    },
+    {
+      "pos": [
+        -60,
+        -20
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 80,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -160,
+        -140
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 80,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -30,
+        -150
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 80,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -100,
+        60
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 80,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        160,
+        -120
+      ],
+      "pool": {
+        "water_elemental": 1
+      },
+      "respawn": 80,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        122,
+        -70
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        140,
+        -45
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        128,
+        -40
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        148,
+        -70
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        118,
+        -55
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        138,
+        -85
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        150,
+        -58
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 100,
+      "wander": 5
+    },
+    {
+      "pos": [
+        112.0,
+        -20.0
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        85,
+        -100
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        -60
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        110,
+        10
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        170,
+        -90
+      ],
+      "pool": {
+        "river_troll": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        135,
+        -58
+      ],
+      "pool": {
+        "troll_chieftain": 1
+      },
+      "respawn": 900,
+      "wander": 2
+    }
+  ]
+}

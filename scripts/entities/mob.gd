@@ -48,7 +48,7 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 	attack_delay = float(d["attack_delay"])
 	ac = int(d["ac"])
 	attack_verb = d["verb"]
-	hp_regen = maxi(1, level)
+	hp_regen = int(d.get("hp_regen", maxi(1, level)))  # trolls knit fast, even mid-fight
 	speed = float(d["speed"])
 	aggressive = d["aggressive"]
 	aggro_radius = float(d["aggro_radius"])

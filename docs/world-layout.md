@@ -79,8 +79,8 @@ it means moving a zone.
 | High Terrace | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |
 | Mirror Flats | The Dawnstair | 20–24 | 512 m | `[2, 4]` | waste |
 | Dawnwatch | The Dawnstair | 22–24 | 448 m | `[1, 4]` | outpost |
-| Rainhold | The Long Monsoon | city | 224 m | `[-1, 1]` | city |
-| The Weeping Throat | The Long Monsoon | 20–24 | 448 m | `[-1, 2]` | water |
+| Rainhold **(built)** | The Long Monsoon | city | 224 m | `[-1, 1]` | city |
+| The Weeping Throat **(built)** | The Long Monsoon | 20–24 | 448 m | `[-1, 2]` | water |
 | Reedmere | The Long Monsoon | 22–26 | 512 m | `[-2, 2]` | water |
 | The Silted Reach | The Long Monsoon | 24–28 | 512 m | `[-2, 3]` | water |
 | Drownfast | The Long Monsoon | 26–30 | 512 m | `[-1, 3]` | water |

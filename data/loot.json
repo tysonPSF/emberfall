@@ -226,6 +226,7 @@
     "cult_weapons": {"cultist_staff": 1, "iron_dagger": 2, "oak_staff": 2},
     "cult_chest": {"sunburnt_robe": 1, "patchwork_tunic": 2},
     "raider_weapons": {"raider_scimitar": 1, "iron_short_sword": 2, "steel_dirk": 1},
-    "raider_head": {"sandwrap_hood": 1, "leather_cap": 2}
+    "raider_head": {"sandwrap_hood": 1, "leather_cap": 2},
+    "troll_weapons": {"troll_club": 4, "steel_war_axe": 1, "tidesteel_war_axe": 1}
   }
 }

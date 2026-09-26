@@ -316,7 +316,8 @@ func recalc_stats() -> void:
 	var caster_stat := str(cls.get("caster_stat", ""))
 	if max_mana > 0 and caster_stat != "":
 		max_mana += int(attr.get(caster_stat, 0))
-	attack_delay /= 1.0 + minf(int(attr.get("haste", 0)), 40) / 100.0
+	var haste := minf(int(attr.get("haste", 0)), 40) + buff_total("haste")  # gear haste caps at 40%; a buff (Battle Fury) goes over it
+	attack_delay /= 1.0 + haste / 100.0
 	attributes = attr
 	ac += buff_total("ac")
 	max_hp += buff_total("hp")
@@ -329,9 +330,9 @@ func recalc_stats() -> void:
 		off_dmg_min = dmg_min
 		off_dmg_max = maxi(off_dmg_min + 1, int((off_weapon_dmg * 2 + level) * skill * World.OFFHAND_DAMAGE) + int(attr.get("str", 0)) / 5
 				+ buff_total("dmg") + int(GameData.deity_bonus(deity, "dmg")))
-		off_delay /= 1.0 + minf(int(attr.get("haste", 0)), 40) / 100.0
-	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen")) + int(attr.get("hp_regen", 0))
-	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0))
+		off_delay /= 1.0 + haste / 100.0
+	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen")) + int(attr.get("hp_regen", 0)) + buff_total("hp_regen")
+	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0)) + buff_total("mana_regen")
 	# Every lever that could lengthen a run lands in max_stamina, so nothing else
 	# has to change to grant more. STA is the gear route: it is already the
 	# endurance stat, so a stamina-heavy set both toughens you and lets you run

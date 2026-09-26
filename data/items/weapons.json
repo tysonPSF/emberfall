@@ -6,5 +6,5 @@
   "iron_short_sword": {"name": "Iron Short Sword", "slot": "primary", "dmg": 5, "delay": 2.6, "verb": ["slash", "slashes"], "model": "sword_1handed", "value": 140, "classes": ["warrior", "rogue"], "skill": "1h_slashing"},
   "iron_hand_axe": {"name": "Iron Hand Axe", "slot": "primary", "dmg": 6, "delay": 3.0, "verb": ["hack", "hacks"], "model": "axe_1handed", "value": 150, "classes": ["warrior"], "skill": "1h_slashing"},
   "oak_staff": {"name": "Oak Staff", "slot": "primary", "dmg": 5, "delay": 2.5, "verb": ["crush", "crushes"], "model": "staff", "value": 110, "skill": "2h_blunt"},
-  "fishing_pole": {"name": "Fishing Pole", "slot": "primary", "dmg": 1, "delay": 4.0, "verb": ["whip", "whips"], "model": "fishing_pole", "value": 25, "skill": "2h_blunt"}
+  "fishing_pole": {"name": "Fishing Pole", "slot": "primary", "dmg": 1, "delay": 4.0, "verb": ["whip", "whips"], "model": "fishing_pole", "value": 25, "skill": "2h_blunt", "click": {"spell": "fish", "recast": 5}}
 }
