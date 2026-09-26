@@ -2,7 +2,8 @@
 #   sudo cp tools/server/emberfall.service /etc/systemd/system/
 #   (edit User, WorkingDirectory and GODOT below)
 #   sudo systemctl enable --now emberfall
-# After a `git pull`: sudo systemctl restart emberfall
+# Updates: emberfall-update.timer pulls main and has the server restart itself
+# (docs/server-updates.md); by hand: git pull, then sudo systemctl restart emberfall
 # Logs: journalctl -u emberfall -f
 
 [Unit]
@@ -16,7 +17,8 @@ Environment=GODOT=/usr/local/bin/godot
 Environment=PORT=7777
 Environment=DATA=/home/emberfall/emberfall-data
 ExecStart=/home/emberfall/emberfall/tools/server/run_server.sh
-Restart=on-failure
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target

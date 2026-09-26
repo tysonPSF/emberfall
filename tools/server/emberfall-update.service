@@ -1,0 +1,15 @@
+# Runs tools/server/auto_update.sh once; emberfall-update.timer runs it every few minutes.
+# Install both with the server's own unit (edit User, WorkingDirectory, DATA to match it):
+#   sudo cp tools/server/emberfall-update.service tools/server/emberfall-update.timer /etc/systemd/system/
+#   sudo systemctl enable --now emberfall-update.timer
+# See what it did: journalctl -u emberfall-update
+
+[Unit]
+Description=Emberfall server: update from GitHub main
+
+[Service]
+Type=oneshot
+User=emberfall
+WorkingDirectory=/home/emberfall/emberfall
+Environment=DATA=/home/emberfall/emberfall-data
+ExecStart=/home/emberfall/emberfall/tools/server/auto_update.sh

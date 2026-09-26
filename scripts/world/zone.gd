@@ -114,9 +114,9 @@ func _bake_navigation() -> void:
 	nav.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
 	nav.cell_size = NAV_CELL
 	nav.cell_height = 0.2
-	nav.agent_radius = 0.6
+	nav.agent_radius = 1.0  # a meter of clearance so bodies clear fence posts and gateposts (keep it a multiple of NAV_CELL, and climb of 0.2)
 	nav.agent_height = 1.6
-	nav.agent_max_climb = 0.5
+	nav.agent_max_climb = 0.4
 	nav.agent_max_slope = 40.0
 	nav.region_min_size = 4.0
 	nav.edge_max_error = 1.6
