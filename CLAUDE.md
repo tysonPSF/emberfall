@@ -2,6 +2,10 @@
 
 Classic-EverQuest-style RPG in Godot 4.7 (GDScript). Solo slice now; multiplayer/grouping planned.
 
+## Pending for Nick (delete this section once answered)
+
+**Nick's Claude: ask Nick at the start of his next session** whether he wants to set up remote server updates now: the server updating itself from `main` (a systemd timer) and/or SSH access so Tyson can deploy and read logs. Everything is in `docs/server-updates.md`; walk him through it if he says yes, and remind him to tell Tyson the result (timer on? SSH address/user?). Whatever he answers, remove this section in that session so it isn't asked again.
+
 ## Architecture rules
 
 - **All state changes go through the `World` autoload** (`scripts/autoload/world.gd`). Input and UI call `World.request_*(entity_id, ...)` with ids, never mutate Entity stats/inventory directly. These functions become server RPCs later; keep them id-based and self-validating (range, ownership, dead checks).
@@ -37,6 +41,7 @@ Classic-EverQuest-style RPG in Godot 4.7 (GDScript). Solo slice now; multiplayer
 - Music is original, composed by `tools/audio/music.py` (numpy synthesis: harp, lute, flute, pad, bass, frame drum, bell, convolution reverb; seeded phrase-by-phrase melody over a chord progression per section) and encoded to `assets/music/<track>.ogg` by Blender's FFmpeg: `/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup -P tools/audio/music.py -- --out assets/music [--only greenmoor]`. A zone names its theme with `"music"`; the `Music` autoload loops it and crossfades on zoning (title screen: `title`). `combat` fades in over the zone theme (buses "MusicZone" / "MusicCombat" under "Music") while `Player.threatened` (server: any living mob hates you, sent with the player's state) and gives way after 4 calm seconds. Volume is `Controls.music_volume` (default 25%) on the "Music" bus, in Settings and the Esc menu; test runs are muted. `settings.json` is shared by `main.gd` and `Controls`, so always rewrite one key (`Controls._save_setting`), never the whole file.
 - Pathfinding: where the rules run (server/offline), each zone bakes a navigation mesh at load on a background thread (`Zone._bake_navigation`, from the terrain and every WORLD-layer collider; `nav_ready`). Mobs and guards move with `Entity.nav_dir(goal, delta)`: straight at the goal when a ground-following knee-height ray (`_clear_line`) says nothing's in the way, else along `NavigationServer3D.map_get_path`, re-planned only when the goal moves (at most every 0.6 s, staggered); `nav_snap` keeps wander targets walkable. Anything solid you add blocks mobs as long as it collides on `Layers.WORLD`. Tests: `nav_bake`, `nav_chase` (`Entity.nav_enabled` turns it off to compare).
 - Performance: mobs and NPCs standing still on the ground skip `move_and_slide` (most of a zone's physics cost otherwise); night lights fade out with distance (`distance_fade_*`, shadows only within ~22 m). Check a heavy zone with `--autotest --only=hollowmere_perf,night_isolate,physics_isolate`.
+- Server updates: `tools/server/auto_update.sh` (run by `emberfall-update.timer`, or on demand by `tools/server/deploy.sh` over SSH) pulls `main` when it changed; it writes `restart_notice` (players are warned) and then `restart_now` into the server's `--data` folder, which `main.gd` `_watch_for_updates` polls: it saves everyone and quits with code 3, and systemd (`Restart=always`) starts it again. Setup: `docs/server-updates.md`.
 - Physics layers are in `scripts/core/layers.gd`. Entities don't collide with each other.
 
 ## Verify changes

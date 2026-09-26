@@ -38,7 +38,7 @@ tools/server/run_server.sh                 # GODOT=/path/to/godot PORT=7777 to o
 ```
 
 - It listens on **UDP port 7777**. Open that port in the server's firewall and, if it's behind a router, forward it.
-- `tools/server/emberfall.service` is a systemd unit that keeps it running and restarts it on failure.
+- `tools/server/emberfall.service` is a systemd unit that keeps it running. With `emberfall-update.timer` the server also updates itself from `main` (players get a minute's warning); `tools/server/deploy.sh` updates it now over SSH. Setup: `docs/server-updates.md`.
 - Players must run the same version as the server; after pulling on the server, restart it and have everyone pull too. An older client is turned away with a message.
 - Options: `--port=7777`, `--data=<dir>` (accounts and characters; the run script defaults to `~/emberfall-data`: **back this folder up**), `--zone=greenmoor` (where new characters start; default is the starting city).
 - The server saves everyone every 30 seconds and whenever they camp, zone or disconnect.

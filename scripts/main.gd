@@ -303,6 +303,40 @@ func _start_server(args: PackedStringArray) -> void:
 	if err != OK:
 		push_error("Could not open UDP port %d: %s" % [port, error_string(err)])
 		get_tree().quit(1)
+		return
+	_watch_for_updates(data_dir)
+
+
+## Updates (tools/server/auto_update.sh): a "restart_notice" file in the data
+## folder (its text: seconds to go) warns everyone online; a "restart_now"
+## file saves everyone and quits, and systemd starts the server again on the
+## new code. No admin rights needed.
+func _watch_for_updates(data_dir: String) -> void:
+	var notice := data_dir.path_join("restart_notice")
+	var now := data_dir.path_join("restart_now")
+	for stale: String in [notice, now]:  # left from before this start
+		if FileAccess.file_exists(stale):
+			DirAccess.remove_absolute(stale)
+	var warned := false
+	var timer := Timer.new()
+	timer.wait_time = 3.0
+	timer.autostart = true
+	add_child(timer)
+	timer.timeout.connect(func() -> void:
+		if FileAccess.file_exists(notice) and not warned:
+			warned = true
+			var secs := int(FileAccess.get_file_as_string(notice).strip_edges())
+			for p in World.get_players():
+				World.say(p, "The server will restart in %d seconds for an update. You can log right back in afterward." % maxi(secs, 10), World.C_SYSTEM)
+		if FileAccess.file_exists(now):
+			DirAccess.remove_absolute(now)
+			if FileAccess.file_exists(notice):
+				DirAccess.remove_absolute(notice)
+			for p in World.get_players():
+				World.say(p, "The server is restarting for an update.", World.C_SYSTEM)
+				Net.save_player(p)
+			print("Restarting for an update")
+			get_tree().quit(3))
 
 
 ## A server keeps every zone someone has visited running, each inside its own
