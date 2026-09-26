@@ -138,6 +138,7 @@ var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
 var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
+var _compass: Compass
 var _pet_name: Label
 var _pet_bar: ProgressBar
 var _pet_text: Label
@@ -185,6 +186,14 @@ func _ready() -> void:
 	_build_trade_window()
 	_build_station_window()
 	_build_pet_window()
+	_compass = Compass.new()
+	_compass.anchor_left = 0.5
+	_compass.anchor_right = 0.5
+	_compass.offset_left = -Compass.WIDTH * 0.5
+	_compass.offset_right = Compass.WIDTH * 0.5
+	_compass.offset_top = 10
+	_compass.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	root.add_child(_compass)
 	_build_service_window()
 	_build_inventory()
 	_build_help()
@@ -215,6 +224,7 @@ func _ready() -> void:
 
 func bind_player(p: Player) -> void:
 	player = p
+	_compass.player = p
 	player.inventory_changed.connect(_refresh_inventory)
 	player.inventory_changed.connect(_refresh_quests)
 	player.quests_changed.connect(_refresh_quests)
@@ -276,7 +286,7 @@ func _bar_row(color: Color, height := 14.0) -> Array:
 
 func _build_target_window() -> void:
 	_target_panel = UIKit.panel()
-	UIKit.place(_target_panel, Vector2(0.5, 0), Vector2(0, 12))
+	UIKit.place(_target_panel, Vector2(0.5, 0), Vector2(0, 84))  # under the compass
 	root.add_child(_target_panel)
 	var v := VBoxContainer.new()
 	_target_panel.add_child(v)
@@ -1382,7 +1392,7 @@ func _on_station_opened(kind: String) -> void:
 ## (also /pet attack, back, follow, guard, sit, taunt, health, leave).
 func _build_pet_window() -> void:
 	_pet_panel = UIKit.panel()
-	UIKit.place(_pet_panel, Vector2(0.5, 0), Vector2(-350, 12))
+	UIKit.place(_pet_panel, Vector2(0.5, 0), Vector2(-350, 84))
 	root.add_child(_pet_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
