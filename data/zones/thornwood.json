@@ -240,21 +240,6 @@
       ]
     },
     {
-      "type": "rockslide",
-      "pos": [
-        -232,
-        40
-      ],
-      "face": [
-        0,
-        40
-      ],
-      "labels": [
-        "Pass closed",
-        "Thornwood Vale"
-      ]
-    },
-    {
       "type": "bridge",
       "pos": [
         3.5,
@@ -440,6 +425,25 @@
       "arrive_face": [
         -159,
         -20
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        40
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "weeping_throat",
+      "arrive": [
+        199,
+        40
+      ],
+      "arrive_face": [
+        159,
+        40
       ]
     }
   ],

@@ -624,6 +624,201 @@ def dawn_tusk_blessing():
 	return p.build()
 
 
+# ---------------------------------------------------------------- The Bleach (monster spells)
+
+def scorpion_venom():
+	p = Prop("scorpion_venom", 445)
+	pts = [(0.35, 0, 0.1), (0.45, 0, 0.55), (0.25, 0, 0.95), (-0.1, 0, 1.05)]            # a stinger's curve
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.14 - i * 0.03, 0.11 - i * 0.03, HIDE, sides=6)
+	p.seg((-0.1, 0, 1.05), (-0.3, 0, 0.8), 0.05, 0.0, STONE_DARK, sides=5)
+	p.blob((0.12, 0.12, 0.16), (-0.32, 0, 0.62), GOLD, segs=(6, 4), glow=1.8)             # a drop of venom
+	return p.build()
+
+
+def salt_gaze():
+	p = Prop("salt_gaze", 447)
+	p.blob((0.75, 0.3, 0.45), (0, 0, 0.6), CLOTH_WHITE, segs=(10, 6), glow=0.4)          # a pale reptile eye
+	p.box((0.08, 0.1, 0.4), (0, -0.14, 0.6), STONE_DARK)
+	for k in range(6):                                                                    # salt crystals round it
+		a = k * math.tau / 6
+		p.seg((math.cos(a) * 0.55, 0, 0.6 + math.sin(a) * 0.45), (math.cos(a) * 0.8, 0, 0.6 + math.sin(a) * 0.62), 0.07, 0.0, STONE_LIGHT, sides=4)
+	return p.build()
+
+
+# ---------------------------------------------------------------- levels 21-25
+
+def shield_slam():
+	p = Prop("shield_slam", 449)
+	p.seg((0, 0.1, 0.55), (0, -0.05, 0.55), 0.45, 0.45, WOOD, sides=14)                   # a round shield
+	p.blob((0.16, 0.1, 0.16), (0, -0.1, 0.55), IRON, segs=(8, 5))
+	for k in range(5):                                                                    # stars of the stun
+		a = k * math.tau / 5 + 0.3
+		p.blob((0.09, 0.09, 0.09), (math.cos(a) * 0.62, -0.15, 1.02 + math.sin(a) * 0.12), GOLD, segs=(5, 4), glow=2.0)
+	return p.build()
+
+
+def battle_fury():
+	p = Prop("battle_fury", 451)
+	for s_ in (-1, 1):                                                                    # two blades in motion
+		p.seg((s_ * 0.4, 0, 0.1), (-s_ * 0.2, 0, 1.0), 0.07, 0.0, IRON, sides=4)
+	for k in range(4):                                                                    # speed lines of fire
+		p.seg((-0.7, -0.1, 0.2 + k * 0.22), (-0.2, -0.1, 0.25 + k * 0.22), 0.04, 0.0, FLAME, sides=4, glow=1.8)
+	p.blob((0.25, 0.2, 0.25), (0, -0.05, 0.55), CLOTH_RED, segs=(8, 5), glow=1.4)
+	return p.build()
+
+
+def whirlwind():
+	p = Prop("whirlwind", 453)
+	for k in range(4):                                                                    # a spiral of cuts
+		_ring(p, 0.3 + k * 0.14, 0.2 + k * 0.22, 0.04, GOLD if k % 2 else CLOTH_WHITE, glow=1.4, sides=14)
+	_sword(p, glow=0.4)
+	return p.build()
+
+
+def healing_tide():
+	p = Prop("healing_tide", 455)
+	for k in range(3):                                                                    # waves
+		for j in range(6):
+			x0, x1 = -0.75 + j * 0.25, -0.5 + j * 0.25
+			z = 0.2 + k * 0.28
+			p.seg((x0, 0, z + (0.08 if j % 2 else 0)), (x1, 0, z + (0 if j % 2 else 0.08)), 0.06, 0.06, WATER, sides=5, glow=1.0)
+	_cross(p, 0.45, GOLD, 2.0)
+	return p.build()
+
+
+def word_of_awe():
+	p = Prop("word_of_awe", 457)
+	p.blob((0.3, 0.3, 0.3), (0, 0, 0.6), CLOTH_WHITE, segs=(8, 6), glow=2.6)               # a burst of holy light
+	for k in range(12):
+		a = k * math.tau / 12
+		r1 = 0.8 if k % 2 else 0.55
+		p.seg((math.cos(a) * 0.3, 0, 0.6 + math.sin(a) * 0.3), (math.cos(a) * r1, 0, 0.6 + math.sin(a) * r1), 0.06, 0.0, GOLD, sides=4, glow=1.8)
+	return p.build()
+
+
+def armor_of_faith():
+	p = Prop("armor_of_faith", 459)
+	p.blob((0.8, 0.45, 0.9), (0, 0, 0.45), STONE_LIGHT, segs=(12, 8), glow=0.3)           # a breastplate
+	_cross(p, 0.45, GOLD, 1.8)
+	for s_ in (-1, 1):
+		p.blob((0.34, 0.3, 0.2), (s_ * 0.44, 0, 0.85), STONE_LIGHT, segs=(8, 5))
+	_ring(p, 0.72, 0.45, 0.03, GOLD, glow=1.4, sides=20, tilt=math.pi / 2)
+	return p.build()
+
+
+def chain_lightning():
+	p = Prop("chain_lightning", 461)
+	for ox, oz, sc in ((0.0, 0.1, 1.0), (-0.5, 0.0, 0.6), (0.5, 0.05, 0.6)):               # a bolt forking to two more
+		pts = [(ox + 0.25 * sc, 0, oz + 1.0 * sc), (ox - 0.05 * sc, 0, oz + 0.62 * sc), (ox + 0.12 * sc, 0, oz + 0.55 * sc), (ox - 0.25 * sc, 0, oz)]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.07 * sc + 0.02, 0.05 * sc + 0.02, CLOTH_WHITE, sides=5, glow=2.4)
+	return p.build()
+
+
+def arcane_harvest():
+	p = Prop("arcane_harvest", 463)
+	p.blob((0.3, 0.3, 0.3), (0, 0, 0.45), RUNE, segs=(10, 8), glow=2.2)                   # mana drawn inward
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.85, 0, 0.45 + math.sin(a) * 0.6), (math.cos(a) * 0.4, 0, 0.45 + math.sin(a) * 0.3), 0.0, 0.06, RUNE, sides=4, glow=1.6)
+	return p.build()
+
+
+def meteor():
+	p = Prop("meteor", 465)
+	p.blob((0.55, 0.5, 0.5), (-0.2, 0, 0.35), STONE_DARK, segs=(10, 8), jitter=0.06)       # a burning stone
+	p.blob((0.45, 0.45, 0.45), (-0.15, -0.05, 0.4), EMBER, segs=(10, 8), glow=1.2)
+	for k in range(4):                                                                    # plunging from high up
+		p.blob((0.3 - k * 0.05,) * 3, (0.2 + k * 0.2, 0, 0.7 + k * 0.2), FLAME, segs=(8, 6), glow=1.8 - k * 0.3)
+	return p.build()
+
+
+def crippling_poison():
+	p = Prop("crippling_poison", 467)
+	p.seg((0.35, 0, 0.1), (-0.3, 0, 1.0), 0.08, 0.0, STONE_LIGHT, sides=4)                 # a blade...
+	for k in range(4):                                                                    # ...dripping pale green
+		p.blob((0.09, 0.09, 0.13), (0.1 - k * 0.1, -0.05, 0.4 + k * 0.12), WATER, segs=(6, 4), glow=1.6)
+	_ring(p, 0.35, 0.08, 0.05, WATER, glow=1.2, sides=12)                                 # binding the feet
+	return p.build()
+
+
+def crippling_venom():
+	p = Prop("crippling_venom", 469)
+	_ring(p, 0.5, 0.15, 0.08, WATER, glow=1.4, sides=16)
+	p.blob((0.4, 0.4, 0.5), (0, 0, 0.55), WATER, segs=(10, 8), glow=1.2)
+	return p.build()
+
+
+def eviscerate():
+	p = Prop("eviscerate", 471)
+	for k in range(3):                                                                    # three raking slashes
+		p.seg((-0.5 + k * 0.3, 0, 1.0), (-0.1 + k * 0.3, 0, 0.1), 0.06, 0.02, CLOTH_RED, sides=4, glow=1.6)
+	p.seg((0.5, 0, 0.9), (0.2, 0, 0.3), 0.06, 0.0, STONE_LIGHT, sides=4)
+	return p.build()
+
+
+def vanish():
+	p = Prop("vanish", 473)
+	for k in range(6):                                                                    # a hood fading to smoke
+		p.blob((0.45 - k * 0.05, 0.35 - k * 0.04, 0.3), (0, 0, 0.3 + k * 0.15), STONE_DARK, segs=(8, 6))
+	for k in range(6):
+		a = k * math.tau / 6
+		p.blob((0.12, 0.12, 0.12), (math.cos(a) * 0.6, 0, 0.7 + math.sin(a) * 0.35), RUNE, segs=(6, 4), glow=1.2)
+	return p.build()
+
+
+# ---------------------------------------------------------------- the Long Monsoon
+
+def storm_bolt():
+	p = Prop("storm_bolt", 475)
+	p.blob((0.9, 0.5, 0.35), (0, 0, 1.0), STONE_DARK, segs=(10, 6))                        # a storm cloud
+	pts = [(0.15, 0, 0.85), (-0.1, 0, 0.5), (0.1, 0, 0.45), (-0.2, 0, 0.0)]
+	for a, b in zip(pts, pts[1:]):
+		p.seg(a, b, 0.08, 0.06, GOLD, sides=5, glow=2.4)
+	return p.build()
+
+
+def frog_poison():
+	p = Prop("frog_poison", 477)
+	p.blob((0.7, 0.55, 0.4), (0, 0, 0.35), GOLD, segs=(10, 6), glow=0.6)                   # a warning-yellow back
+	for (x, y) in ((-0.2, -0.1), (0.15, 0.1), (0.05, -0.18)):
+		p.blob((0.14, 0.14, 0.08), (x, y, 0.55), STONE_DARK, segs=(6, 4))
+	for k in range(3):
+		p.blob((0.08, 0.08, 0.12), (-0.3 + k * 0.3, -0.25, 0.05), LEAF, segs=(6, 4), glow=1.6)
+	return p.build()
+
+
+def death_roll():
+	p = Prop("death_roll", 479)
+	for k in range(3):                                                                    # a rolling swirl of water
+		_ring(p, 0.3 + k * 0.18, 0.55, 0.05, WATER, glow=1.0, sides=16, tilt=math.pi / 2)
+	for s_ in (-1, 1):                                                                    # jaws
+		p.seg((0.0, 0, 0.55), (0.7, 0, 0.55 + s_ * 0.25), 0.1, 0.05, LEAF, sides=5)
+	return p.build()
+
+
+def tide_trunk_blessing():
+	p = Prop("tide_trunk_blessing", 481)
+	p.blob((0.6, 0.5, 0.55), (0, 0, 0.4), STONE_LIGHT, segs=(10, 8))                      # an elephant's head
+	for s_ in (-1, 1):
+		p.blob((0.1, 0.35, 0.4), (s_ * 0.36, 0.05, 0.42), STONE_LIGHT, segs=(6, 5))
+		p.seg((s_ * 0.12, -0.25, 0.25), (s_ * 0.2, -0.45, 0.15), 0.05, 0.02, BONE, sides=5)
+	p.seg((0, -0.3, 0.3), (0, -0.4, 0.85), 0.09, 0.06, STONE_LIGHT, sides=6)               # the trunk, raised...
+	for k in range(5):                                                                    # ...spraying rain
+		p.blob((0.08, 0.08, 0.12), (-0.3 + k * 0.15, -0.45, 1.05 - abs(k - 2) * 0.08), WATER, segs=(6, 4), glow=1.6)
+	return p.build()
+
+
+def fish():
+	p = Prop("fish", 483)
+	p.seg((-0.5, 0, 0.0), (0.5, 0, 1.1), 0.03, 0.015, WOOD, sides=5)                        # a rod
+	p.seg((0.5, 0, 1.1), (0.55, 0, 0.3), 0.008, 0.008, CLOTH_WHITE, sides=3)                # the line
+	p.blob((0.1, 0.1, 0.1), (0.55, 0, 0.3), CLOTH_RED, segs=(6, 4))                         # a float
+	_ring(p, 0.3, 0.2, 0.025, WATER, glow=1.0, sides=16)                                  # ripples
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -677,7 +872,10 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold,
 								  backstab, hide, sneak, evade, envenom_blade, rogue_venom, rake,
 								  provoke, defensive_stance, cleave, greater_healing, divine_aura, sunfire, lightning_bolt, frost_snare,
-								  fireball, assassinate, blind, deadly_poison, deadly_venom, dawn_tusk_blessing]}
+								  fireball, assassinate, blind, deadly_poison, deadly_venom, dawn_tusk_blessing,
+								  scorpion_venom, salt_gaze, shield_slam, battle_fury, whirlwind, healing_tide, word_of_awe,
+								  armor_of_faith, chain_lightning, arcane_harvest, meteor, crippling_poison, crippling_venom, eviscerate, vanish,
+								  storm_bolt, frog_poison, death_roll, tide_trunk_blessing, fish]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

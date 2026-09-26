@@ -789,6 +789,91 @@
         "waist"
       ]
     },
+    "river_troll": {
+      "path": "res://assets/creatures/river_troll_body.glb",
+      "scale": 1.35,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/troll_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/troll_back.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/troll_loincloth.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/troll_fist_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/troll_fist_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "troll_chieftain": {
+      "path": "res://assets/creatures/troll_chieftain_body.glb",
+      "scale": 1.5,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/troll_chief_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/troll_chief_back.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/troll_chief_loincloth.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/troll_chief_fist_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/troll_chief_fist_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "water_elemental": {
+      "path": "res://assets/creatures/water_elemental.glb",
+      "rig": "own"
+    },
+    "storm_elemental": {
+      "path": "res://assets/creatures/storm_elemental.glb",
+      "rig": "own",
+      "scale": 1.3
+    },
+    "giant_frog": {
+      "path": "res://assets/creatures/giant_frog.glb",
+      "rig": "own",
+      "scale": 1.2
+    },
+    "river_croc": {
+      "path": "res://assets/creatures/river_croc.glb",
+      "rig": "own"
+    },
+    "ancient_croc": {
+      "path": "res://assets/creatures/ancient_croc.glb",
+      "rig": "own",
+      "scale": 1.5
+    },
     "stone_guardian": {
       "path": "res://assets/creatures/stone_knight.glb",
       "hide": [
@@ -998,6 +1083,25 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "jungle_tree": {"path": "res://assets/props/jungle_tree.glb"},
+    "jungle_tree_giant": {"path": "res://assets/props/jungle_tree_giant.glb"},
+    "hanging_vines": {"path": "res://assets/props/hanging_vines.glb"},
+    "fern_clump": {"path": "res://assets/props/fern_clump.glb"},
+    "taro_plant": {"path": "res://assets/props/taro_plant.glb"},
+    "jungle_temple": {"path": "res://assets/props/jungle_temple.glb"},
+    "temple_arch_ruin": {"path": "res://assets/props/temple_arch_ruin.glb"},
+    "jalendra_head_fallen": {"path": "res://assets/props/jalendra_head_fallen.glb"},
+    "troll_hut": {"path": "res://assets/props/troll_hut.glb"},
+    "troll_totem": {"path": "res://assets/props/troll_totem.glb"},
+    "waterfall": {"path": "res://assets/props/waterfall.glb"},
+    "waterfall_water": {"path": "res://assets/props/waterfall_water.glb"},
+    "stilt_platform": {"path": "res://assets/props/stilt_platform.glb"},
+    "stilt_walkway": {"path": "res://assets/props/stilt_walkway.glb"},
+    "rope_bridge": {"path": "res://assets/props/rope_bridge.glb"},
+    "stilt_hall": {"path": "res://assets/props/stilt_hall.glb"},
+    "stilt_house": {"path": "res://assets/props/stilt_house.glb"},
+    "jalendra_shrine": {"path": "res://assets/props/jalendra_shrine.glb"},
+    "canoe": {"path": "res://assets/props/canoe.glb"},
     "titan_ribcage": {"path": "res://assets/props/titan_ribcage.glb"},
     "titan_skull": {"path": "res://assets/props/titan_skull.glb"},
     "mesa": {"path": "res://assets/props/mesa.glb"},
@@ -1780,7 +1884,7 @@
     "stone": ""
   },
   "grips": {
-    "bow": {"rot": [0, 180, 0]}, "torch": {"rot": [0, 0, -90]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_2handed": {"rot": [0, 180, 0]},
+    "bow": {"rot": [0, 180, 0]}, "torch": {"rot": [0, 0, -90]}, "fishing_pole": {"rot": [0, 0, 35]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_2handed": {"rot": [0, 180, 0]},
     "shield_round": {
       "bone": "lowerarm.l",
       "orient": "chest",

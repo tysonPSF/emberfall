@@ -266,6 +266,20 @@ TRACKS = {
 		"melody": "flute", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 2, 1, 0], "pad": True, "bass": True,
 		"drum": [0, 1.5], "drum_sections": ["B", "C"], "reverb": 3.8, "sparse": 0.4, "bells": 0.15,
 	},
+	"rainhold": {
+		"key": (57, "dorian"), "bpm": 66, "beats": 3, "seed": 211,
+		"sections": {"A": [0, 3, 6, 0, 0, 3, 4, 4], "B": [5, 3, 0, 6, 5, 3, 4, 0]},
+		"form": ["A", "B", "A", "B"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, 2, 4], "pad": True, "bass": True,
+		"drum": [], "drum_sections": [], "reverb": 3.8, "sparse": 0.3, "bells": 0.4,
+	},
+	"weeping_throat": {
+		"key": (50, "aeolian"), "bpm": 76, "beats": 4, "seed": 229,
+		"sections": {"A": [0, 6, 5, 6], "B": [3, 0, 6, 4], "C": [0, 5, 3, 4]},
+		"form": ["A", "A", "B", "A", "C"],
+		"melody": "flute", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 2, 1, 2], "pad": True, "bass": True,
+		"drum": [0, 1.5, 2.5, 3], "drum_sections": ["A", "B", "C"], "reverb": 3.0, "sparse": 0.3, "bells": 0.1,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},

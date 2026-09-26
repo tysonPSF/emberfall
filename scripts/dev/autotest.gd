@@ -89,6 +89,12 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["monsoon_borders", "greenmoor"],
+	["rainhold", "rainhold"],
+	["fishing", "rainhold"],
+	["weeping_throat", "weeping_throat"],
+	["throat_life", "weeping_throat"],
+	["level25", "weeping_throat"],
 	["bleach_border", "sunward_steps"],
 	["bleach", "the_bleach"],
 	["bleach_life", "the_bleach"],
@@ -3376,8 +3382,6 @@ func _t_level20() -> void:
 	p.recalc_stats()
 
 
-## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
-
 ## Bash can stun (never something more than 3 levels above you); being hit
 ## turns auto attack on; the camera zooms from the keyboard.
 func _t_bash_stun() -> void:
@@ -3439,6 +3443,385 @@ func _t_bash_stun() -> void:
 	p.zoom = 6.0
 	p.equipment = kit
 	p.spells = known
+	p.recalc_stats()
+
+
+## Walks the player across one border: from a spot in the current zone, along
+## a direction, until the next zone loads. Returns false if it started in the
+## wrong zone.
+func _walk_border(tag: String, from_zone: String, start: Vector2, dir: Vector2, to_zone: String) -> bool:
+	var main := get_parent()
+	var p := World.local_player
+	if main.zone.zone_id != from_zone:
+		print("%s: expected to be in %s, in %s" % [tag, from_zone, main.zone.zone_id])
+		return false
+	p.global_position = Vector3(start.x, main.zone.surface_at(start.x, start.y) + 1.0, start.y)
+	for k in 400:
+		if not is_instance_valid(main.zone) or main.zone.zone_id == to_zone:
+			break
+		p.velocity = Vector3(dir.x, 0, dir.y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+		p.move_and_slide()
+		await get_tree().physics_frame
+	await _wait(1.5)
+	for k in 20:
+		if is_instance_valid(main.zone) and main.zone.zone_id == to_zone:
+			break
+		await _wait(0.5)
+	var z: Zone = main.zone
+	print("%s: from %s -> now in %s at %s (on the ground: %s)" % [tag, from_zone, z.zone_id, Vector2(p.global_position.x, p.global_position.z),
+			absf(p.global_position.y - z.surface_at(p.global_position.x, p.global_position.z)) < 1.5])
+	return true
+
+
+## The Long Monsoon's six crossings: Greenmoor - Rainhold - the Weeping Throat
+## - Thornwood, every one both ways.
+func _t_monsoon_borders() -> void:
+	for leg: Array in [["greenmoor", Vector2(-165, 0), Vector2(-1, 0), "rainhold"], ["rainhold", Vector2(1.5, -60), Vector2(0, -1), "weeping_throat"],
+			["weeping_throat", Vector2(190, 40), Vector2(1, 0), "thornwood"], ["thornwood", Vector2(-225, 40), Vector2(-1, 0), "weeping_throat"],
+			["weeping_throat", Vector2(0, 190), Vector2(0, 1), "rainhold"], ["rainhold", Vector2(60, 0), Vector2(1, 0), "greenmoor"]]:
+		if not await _walk_border("monsoon_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## Rainhold: the stilt city over its lagoon. The decks carry you and everyone
+## stands on them; the shrine blesses Jalendra's followers; five quests pay.
+func _t_rainhold() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 11.0
+	# walk in from the Greenmoor road, down the east pier, onto the plaza
+	p.global_position = Vector3(50, z.surface_at(50, 0) + 1.0, 0)
+	var t0 := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - t0 < 7000 and p.global_position.x > 2.0:
+		p.velocity = Vector3(-7, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+		p.move_and_slide()
+		await get_tree().physics_frame
+	var deck := z.surface_at(1.5, 0)
+	print("rainhold: walked the east pier to x %.1f; standing at y %.2f on a deck at %.2f (water %.2f); on floor %s" % [p.global_position.x,
+			p.global_position.y, deck, z.water_level(1.5, 0), p.is_on_floor()])
+	print("rainhold: bind point %s (deck %.2f)" % [z.bind_point, z.surface_at(z.bind_point.x, z.bind_point.z)])
+	var off := []
+	for n: Npc in _npcs().values():
+		if absf(n.global_position.y - z.surface_at(n.global_position.x, n.global_position.z)) > 0.6:
+			off.append("%s at %s (deck %.2f)" % [n.display_name, n.global_position, z.surface_at(n.global_position.x, n.global_position.z)])
+	print("rainhold: %d people, standing off their decks: %s" % [_npcs().size(), off])
+	for view: Array in [[Vector2(58, 4), Vector2(0, 0), "arrival"], [Vector2(1.5, -14), Vector2(-16.5, 2), "shrine"], [Vector2(1.5, 3), Vector2(15, -9), "halls"],
+			[Vector2(1.5, 20), Vector2(1.5, 30), "dock"], [Vector2(8, -52), Vector2(1.5, -10), "north"]]:
+		p.global_position = Vector3(view[0].x, z.surface_at(view[0].x, view[0].y) + 0.1, view[0].y)
+		p.face_toward(Vector3(view[1].x, p.global_position.y, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 10.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zv_rainhold_%s" % view[2])
+	var cam := Camera3D.new()
+	get_tree().root.add_child(cam)
+	cam.global_position = Vector3(70, 70, 80)
+	cam.look_at(Vector3(0, 0, 0))
+	cam.far = 800.0
+	cam.make_current()
+	await _wait(1.0)
+	await _shot("9zv_rainhold_overview")
+	cam.queue_free()
+	World.time_override = 22.5
+	p.global_position = Vector3(1.5, z.surface_at(1.5, -14) + 0.1, -14)
+	p.face_toward(Vector3(-16.5, p.global_position.y, 2))
+	await _wait(1.5)
+	await _shot("9zv_rainhold_night")
+	World.time_override = -1.0
+	# the shrine's blessing, the city's services
+	var npcs := _npcs()
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var saved_deity := p.deity
+	p.deity = "light"
+	p.cooldowns.clear()
+	p.buffs.erase("tide_trunk_blessing")
+	_stand_by(p, npcs["tidepriest_nalini"])
+	World.request_say(p.entity_id, "blessing")
+	var refused := p.buffs.has("tide_trunk_blessing")
+	p.deity = "water"
+	World.request_say(p.entity_id, "blessing")
+	print("rainhold: blessing -> a follower of Prabhagaj blessed: %s; a follower of Jalendra blessed: %s" % [refused, p.buffs.has("tide_trunk_blessing")])
+	p.deity = saved_deity
+	var trains := {}
+	for id: String in ["gm_oruk", "gm_silt", "gm_imani", "gm_veyra"]:
+		trains[id] = str(npcs[id].data["guildmaster"]["class"])
+	print("rainhold: guildmasters %s; banker %s" % [trains, bool(npcs["banker_oduya"].data.get("banker", false))])
+	# the quests
+	p.level = 22
+	p.recalc_stats()
+	p.pack.clear()
+	var asha: Npc = npcs["hunter_asha"]
+	_stand_by(p, asha)
+	for word in ["hail", "trolls", "tusks", "gorrak", "crocodile", "tooth"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("troll_tusk", 4)
+	await _hand_in(p, asha, ["troll_tusk"])
+	p.pack.add("gorraks_crown", 1)
+	await _hand_in(p, asha, ["gorraks_crown"])
+	p.pack.add("graveljaws_tooth", 1)
+	await _hand_in(p, asha, ["graveljaws_tooth"])
+	var nalini: Npc = npcs["tidepriest_nalini"]
+	_stand_by(p, nalini)
+	for word in ["hail", "storm", "heart"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("heart_of_the_storm", 1)
+	await _hand_in(p, nalini, ["heart_of_the_storm"])
+	var oji: Npc = npcs["fisher_oji"]
+	_stand_by(p, oji)
+	for word in ["hail", "fishing", "snapper"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("lagoon_snapper", 4)
+	await _hand_in(p, oji, ["lagoon_snapper"])
+	await _wait(0.3)
+	print("rainhold: rewards: gloves %d, blade %d, leggings %d, charm %d, slicker %d; quests done %s" % [p.pack.count("trollhide_gloves"),
+			p.pack.count("tidewarden_blade"), p.pack.count("crocscale_leggings"), p.pack.count("tide_trunk_charm"), p.pack.count("rain_slicker"),
+			["troll_tusks", "the_stone_crown", "graveljaws_tooth", "heart_of_the_storm", "lagoon_snapper"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	World.log_message.disconnect(listen)
+	p.level = 1
+	p.recalc_stats()
+
+
+## Fishing: a pole, worms, and open water in front of you.
+func _t_fishing() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var kit := p.equipment.duplicate()
+	p.pack.clear()
+	p.equipment["primary"] = "fishing_pole"
+	p.recalc_stats()
+	var cast := func() -> String:
+		p.cooldowns.clear()
+		said.clear()
+		World.request_item_click(p.entity_id, "primary")
+		return " / ".join(said)
+	# on the plaza, looking at planks; on the shore, looking inland; no worms
+	p.global_position = Vector3(1.5, z.surface_at(1.5, 0) + 0.1, 0)
+	p.face_toward(p.global_position + Vector3(0, 0, -5))
+	p.pack.add("fishing_bait", 40)
+	var planks: String = cast.call()
+	p.global_position = Vector3(55, z.surface_at(55, 0) + 0.1, 0)
+	p.face_toward(p.global_position + Vector3(5, 0, 0))
+	var inland: String = cast.call()
+	# at the end of the fishers' dock, facing the lagoon
+	p.global_position = Vector3(1.5, z.surface_at(1.5, 31) + 0.1, 31)
+	p.face_toward(p.global_position + Vector3(0, 0, 5))
+	var caught := {}
+	var skill0 := World.skill_value(p, "fishing")
+	for k in 30:
+		cast.call()
+	for e: Dictionary in p.pack.entries():
+		if e["item"] != "fishing_bait":
+			caught[e["item"]] = int(caught.get(e["item"], 0)) + int(e["count"])
+	var left := p.pack.count("fishing_bait")
+	p.pack.remove("fishing_bait", left)
+	var no_worms: String = cast.call()
+	print("fishing: facing planks -> '%s'; facing land -> '%s'" % [planks, inland])
+	print("fishing: 30 casts from the dock -> %s; worms left %d of 10; skill %d -> %d; without worms -> '%s'" % [caught, left, skill0,
+			World.skill_value(p, "fishing"), no_worms])
+	World.log_message.disconnect(listen)
+	p.equipment = kit
+	p.recalc_stats()
+
+
+## The Weeping Throat: the jungle, the river, the temple of Jalendra, the troll camp.
+func _t_weeping_throat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 11.0
+	for view: Array in [[Vector2(199, 40), Vector2(150, 40), "arrival"], [Vector2(-92, -70), Vector2(-122, -100), "temple"],
+			[Vector2(108, -36), Vector2(135, -58), "trolls"], [Vector2(60, 30), Vector2(20, 62), "river"], [Vector2(-128, 128), Vector2(-160, 160), "swamp"],
+			[Vector2(72, 44), Vector2(40, 20), "giant_tree"], [Vector2(-30, -180), Vector2(-30, -200), "waterfall"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 10.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zw_throat_%s" % view[2])
+	var cam := Camera3D.new()
+	get_tree().root.add_child(cam)
+	cam.global_position = Vector3(-40, 200, 250)
+	cam.look_at(Vector3(10, 0, 0))
+	cam.far = 1200.0
+	cam.make_current()
+	var env: Environment = (z.find_children("*", "WorldEnvironment", false, false)[0] as WorldEnvironment).environment
+	env.fog_enabled = false
+	await _wait(1.0)
+	await _shot("9zw_throat_overview")
+	env.fog_enabled = true
+	cam.queue_free()
+	World.time_override = 22.5
+	p.global_position = z.ground(-92, -70) + Vector3.UP
+	p.face_toward(z.ground(-122, -100))
+	await _wait(1.5)
+	await _shot("9zw_throat_temple_night")
+	World.time_override = -1.0
+
+
+## The Throat's monsters: all spawn, more elementals walk in the rain at night.
+func _t_throat_life() -> void:
+	var p := World.local_player
+	var z: Zone = get_parent().zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("throat_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := World.get_mobs().filter(func(m: Mob) -> bool: return m.mob_id == "water_elemental").size()
+	print("throat_life: water elementals at noon %d, at 23:00 %d" % [int(counts.get("water_elemental", 0)), night])
+	World.time_override = 12.0
+	var troll: Mob = _nearest_mob(p, "river_troll")
+	if troll != null:
+		troll.hp = troll.max_hp / 2
+		var hp0 := troll.hp
+		World._regen_tick()
+		print("throat_life: a troll at half health regenerates %d a tick (hp_regen %d)" % [troll.hp - hp0, troll.hp_regen])
+	for id: String in ["river_troll", "troll_chieftain", "water_elemental", "storm_elemental", "giant_frog", "river_croc", "ancient_croc"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("throat_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 5.0, at.z + 4.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 6.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zx_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
+
+## The abilities for levels 21-25, each checked for what it does.
+func _t_level25() -> void:
+	var p := World.local_player
+	var saved_class := p.char_class
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var target: Mob = _nearest_mob(p, "giant_frog")
+	var other: Mob = null
+	for m in World.get_mobs():
+		if m != target and not m.dead and (other == null or m.distance_to(target) < other.distance_to(target)):
+			other = m
+	for m: Mob in [target, other]:
+		m.set_physics_process(false)
+		m.max_hp = 100000
+		m.hp = m.max_hp
+		m.level = 22
+	other.global_position = target.global_position + Vector3(0, 0.3, 2.5)
+	var ready := func(cls: String, spells: Array) -> void:
+		p.char_class = cls
+		p.level = 25
+		p.spells = spells
+		p.cooldowns.clear()
+		p.buffs.clear()
+		p.equipment.clear()
+		p.recalc_stats()
+		p.hp = p.max_hp
+		p.mana = p.max_mana
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		for m in World.get_mobs():
+			m.hate.clear()
+		target.stun_left = 0.0
+		target.snare_left = 0.0
+		p.global_position = target.global_position + Vector3(2.0, 0.5, 0)
+		World.request_set_target(p.entity_id, target.entity_id)
+	var splashed := func(word: String) -> bool:
+		return said.filter(func(t: String) -> bool: return ("caught in the " + word) in t).size() > 0
+	# warrior
+	await ready.call("warrior", ["shield_slam", "battle_fury", "whirlwind"])
+	p.equipment["secondary"] = "tidesteel_shield"
+	p.recalc_stats()
+	var stuns := 0
+	for k in 20:
+		p.cooldowns.clear()
+		target.stun_left = 0.0
+		World.request_cast(p.entity_id, "shield_slam")
+		if target.stun_left > 0.0:
+			stuns += 1
+	var delay0 := p.attack_delay
+	World.request_cast(p.entity_id, "battle_fury")
+	var delay1 := p.attack_delay
+	said.clear()
+	World.request_cast(p.entity_id, "whirlwind")
+	print("level25: warrior: shield slam stunned %d of 20; battle fury delay %.2f -> %.2f; whirlwind splashed %s" % [stuns, delay0, delay1, splashed.call("whirlwind")])
+	# cleric
+	await ready.call("cleric", ["healing_tide", "word_of_awe", "armor_of_faith"])
+	p.hp = 1
+	World.request_cast(p.entity_id, "healing_tide")
+	await _wait(4.4)
+	var healed := p.hp
+	World.request_cast(p.entity_id, "word_of_awe")
+	await _wait(1.3)
+	var awed := target.stun_left
+	var ac0 := p.ac
+	World.request_cast(p.entity_id, "armor_of_faith")
+	await _wait(5.4)
+	print("level25: cleric: healing tide 1 -> %d hp; word of awe stun %.1f s; armor of faith AC %d -> %d, regen %d" % [healed, awed, ac0, p.ac, p.hp_regen])
+	# wizard
+	await ready.call("wizard", ["chain_lightning", "arcane_harvest", "meteor"])
+	said.clear()
+	var t_hp := target.hp
+	World.request_cast(p.entity_id, "chain_lightning")
+	await _wait(3.2)
+	var chain := t_hp - target.hp
+	var chained: bool = splashed.call("chain lightning")
+	var regen0 := p.mana_regen
+	World.request_cast(p.entity_id, "arcane_harvest")
+	await _wait(2.2)
+	var regen1 := p.mana_regen
+	p.mana = p.max_mana
+	said.clear()
+	t_hp = target.hp
+	World.request_cast(p.entity_id, "meteor")
+	await _wait(5.3)
+	print("level25: wizard: chain lightning %d, spread %s; arcane harvest mana regen %d -> %d; meteor %d, splashed %s" % [chain, chained, regen0, regen1,
+			t_hp - target.hp, splashed.call("meteor")])
+	# rogue
+	await ready.call("rogue", ["crippling_poison", "eviscerate", "vanish"])
+	p.pack.clear()
+	p.pack.add("coral_dirk")
+	World.request_equip(p.entity_id, _where(p, "coral_dirk"))
+	World.request_cast(p.entity_id, "crippling_poison")
+	var procs := 0
+	for k in 40:
+		target.snare_left = 0.0
+		World._try_buff_proc(p, target)
+		if target.snare_left > 0.0:
+			procs += 1
+	t_hp = target.hp
+	World.request_cast(p.entity_id, "eviscerate")
+	var gutted := t_hp - target.hp
+	target.add_hate(p, 500.0)
+	other.add_hate(p, 200.0)
+	World.request_cast(p.entity_id, "vanish")
+	print("level25: rogue: crippling poison snared %d of 40 procs; eviscerate %d; vanish -> hidden %s, still hunted by %d" % [procs, gutted, p.hidden,
+			World.get_mobs().filter(func(m: Mob) -> bool: return m.hate.has(p.entity_id)).size()])
+	World.log_message.disconnect(listen)
+	p.hidden = false
+	for m: Mob in [target, other]:
+		m.hate.clear()
+		m.set_physics_process(true)
+	p.char_class = saved_class
+	p.equipment.clear()
+	p.level = 1
 	p.recalc_stats()
 
 
@@ -3563,6 +3946,7 @@ func _t_bleach_life() -> void:
 		m.set_physics_process(true)
 	World.time_override = -1.0
 
+## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
 func _t_lanternhold_border() -> void:
 	var main := get_parent()
 	var p := World.local_player

@@ -137,5 +137,24 @@
     "on_attack": {
       "salt_traders": -50
     }
+  },
+  "rainhold": {
+    "name": "Citizens of Rainhold",
+    "default": 100,
+    "on_kill": {
+      "rainhold": -200
+    },
+    "on_attack": {
+      "rainhold": -50
+    }
+  },
+  "river_trolls": {
+    "name": "Mudtooth Trolls",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "river_trolls": -10,
+      "rainhold": 6
+    }
   }
 }

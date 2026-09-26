@@ -586,6 +586,47 @@ func _try_proc(e: Entity, t: Entity) -> void:
 	_finish_spell(e, spell_id, t, true)
 
 
+## Fishing, EQ-style: face water with a pole in hand and a can of worms in the
+## pack. Each cast uses a worm; the Fishing skill sets the odds of a bite, and
+## the zone's "fish" table ({item: weight}, else config fish_default) what bites.
+func _fish(p: Player) -> bool:
+	if p == null:
+		return false
+	var z := zone_of(p)
+	var ahead := -p.global_basis.z
+	var water := false
+	for d: float in [2.0, 3.5, 5.0, 6.5]:
+		var at := p.global_position + ahead * d
+		if z.fishable_at(at.x, at.z):
+			water = true
+			break
+	if not water:
+		say(p, "You need to face the water to fish.", C_WARN)
+		return false
+	if p.pack.count("fishing_bait") <= 0:
+		say(p, "You can't fish without bait. Fishers sell cans of worms.", C_WARN)
+		return false
+	p.pack.remove("fishing_bait", 1)
+	say(p, "You cast your line into the water.", C_SPELL)
+	p.animate("attack")
+	var skill := skill_value(p, "fishing")
+	try_skill_up(p, "fishing")
+	if randf() > 0.2 + 0.6 * minf(skill, 100) / 100.0:
+		say(p, "You didn't catch anything." if randf() < 0.7 else "Something took your bait and got away.", C_MISS)
+		p.inventory_changed.emit()
+		return true
+	var table: Dictionary = z.data.get("fish", cfg("fish_default", {}))
+	var catch := _pick_weighted(table)
+	if catch == "" or p.pack.room_for(catch) <= 0:
+		say(p, "You catch something, but have nowhere to put it, and it flops back into the water.", C_WARN)
+		p.inventory_changed.emit()
+		return true
+	p.pack.add(catch, 1)
+	say(p, "You caught %s!" % GameData.item_name(catch), C_LOOT)
+	p.inventory_changed.emit()
+	return true
+
+
 ## Right-clicking an equipped item with a "click": {spell, recast} casts that
 ## spell for free, then the item needs recast seconds to recharge.
 func request_item_click(player_id: int, slot: String) -> void:
@@ -605,6 +646,10 @@ func request_item_click(player_id: int, slot: String) -> void:
 		say(p, "The %s is recharging. Ready in %ds." % [it["name"], ceili(float(p.cooldowns[key]))], C_WARN)
 		return
 	var s: Dictionary = GameData.spells[click["spell"]]
+	if str(s["type"]) == "fish":  # the pole only needs to recover after a real cast
+		if _fish(p):
+			p.cooldowns[key] = float(click.get("recast", 60))
+		return
 	var t := _resolve_spell_target(p, s)
 	if t == null:
 		say(p, "You must first select a target for that.", C_WARN)
@@ -1225,15 +1270,15 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			say(c, "You roar a challenge! %d foes turn on you." % turned if turned > 0 else "You roar a challenge, but no one is near to hear it.", C_SPELL)
 		"snare":
 			t.snare_left = float(s.get("duration", 20))
-			say(c, "%s's legs are bound by frost." % cap(t.display_name), C_SPELL)
+			say(c, str(s.get("snare_text", "%s slows to a crawl.")) % cap(t.display_name), C_SPELL)
 			if t is Player:
-				say(t, "Frost binds your legs; you slow to a crawl.", C_HIT_YOU)
+				say(t, str(s.get("snare_you", "Your legs slow to a crawl.")), C_HIT_YOU)
 			t.add_hate(c, 5.0)
 		"stun":
 			t.stun_left = float(s.get("duration", 4))
-			say(c, "You throw dust in %s's eyes; it staggers, blinded." % t.display_name, C_SPELL)
+			say(c, str(s.get("stun_text", "%s is stunned.")) % t.display_name, C_SPELL)
 			if t is Player:
-				say(t, "You are blinded and can't act!", C_HIT_YOU)
+				say(t, str(s.get("stun_you", "You are stunned and can't act!")), C_HIT_YOU)
 			t.add_hate(c, 8.0)
 		"heal":
 			t.hp = mini(t.max_hp, t.hp + power)
@@ -1292,6 +1337,15 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			else:
 				c.sneaking = true
 				say(c, "You are as quiet as a cat stalking its prey.", C_SPELL)
+		"fish":
+			_fish(c as Player)
+		"vanish":  # everything hunting you forgets you, and you're hidden
+			for m in get_mobs():
+				m.hate.erase(c.entity_id)
+			c.auto_attack = false
+			c.hidden = true
+			c.show_hidden()
+			say(c, "You vanish. Nothing hunting you can find you now.", C_SPELL)
 		"evade":
 			var keep := 0.7 - 0.4 * (skill_frac(c as Player, "hide") if c is Player else 0.5)  # 70% of their anger kept, down to 30% at cap
 			var any := false
@@ -2117,6 +2171,8 @@ func request_chat(player_id: int, text: String) -> void:
 			say(p, "Your location is %d, %d, %d in %s." % [roundi(p.global_position.x), roundi(p.global_position.y), roundi(p.global_position.z), zone_of(p).zone_name], C_SYSTEM)
 		"/camp":
 			request_camp(player_id)
+		"/fish":
+			request_item_click(player_id, "primary")
 		"/g", "/gsay", "/group":
 			if p.group_id == 0:
 				say(p, "You are not in a group.", C_WARN)

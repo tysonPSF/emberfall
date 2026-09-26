@@ -998,14 +998,29 @@ def lily_pads():
 
 def fishing_pole():
 	"""Held item: authored like a KayKit weapon (grip at the origin, pointing
-	up +Z) in KayKit character units, which the game shows at 0.75 scale."""
+	up +Z) in KayKit character units, which the game shows at 0.75 scale.
+	A jointed bamboo rod with a cork grip, a wooden reel, line guides and a
+	short length of line off the tip toward +X (down, in the hand) with a
+	red-and-white float."""
 	p = Prop("fishing_pole", 77)
-	p.seg((0, 0, -0.35), (0, 0, 0.3), 0.045, 0.04, HIDE, sides=6, grad=(0.2, 0.9))  # cork grip
-	p.seg((0, 0, 0.3), (0, 0, 2.9), 0.03, 0.008, WOOD, sides=5, grad=(0.1, 0.8))
-	p.seg((-0.06, 0, 0.42), (0.06, 0, 0.42), 0.09, 0.09, IRON, sides=8)  # reel
-	p.seg((0, 0, 0.42), (0.1, 0, 0.42), 0.012, 0.012, IRON, sides=4)
-	for z in (0.9, 1.6, 2.3):
-		p.seg((0, 0, z), (0.05, 0, z), 0.012, 0.012, IRON, sides=4)
+	p.seg((0, 0, -0.35), (0, 0, 0.3), 0.045, 0.042, HIDE, sides=6, grad=(0.2, 0.9))  # cork grip
+	p.seg((0, 0, -0.38), (0, 0, -0.33), 0.052, 0.052, WOOD, sides=6)  # butt cap
+	joints = [0.3, 0.85, 1.4, 1.95, 2.45, 2.9]
+	for i, (a, b) in enumerate(zip(joints, joints[1:])):  # bamboo, a node at every joint
+		ra = 0.032 - i * 0.005
+		p.seg((0, 0, a), (0, 0, b), ra, ra - 0.004, (1, 3), sides=6, grad=(0.1, 0.8))
+		p.seg((0, 0, a - 0.02), (0, 0, a + 0.02), ra + 0.007, ra + 0.007, (1, 3), sides=6, grad=(0.5, 0.9))
+	p.seg((0, 0, 0.45), (0.07, 0, 0.45), 0.014, 0.014, WOOD, sides=4)  # the reel hangs under the rod
+	p.seg((0.11, -0.035, 0.45), (0.11, 0.035, 0.45), 0.075, 0.075, WOOD, sides=10, grad=(0.2, 0.9))
+	p.seg((0.11, -0.04, 0.45), (0.11, 0.04, 0.45), 0.03, 0.03, IRON, sides=6)
+	p.seg((0.11, 0.035, 0.45), (0.16, 0.08, 0.45), 0.01, 0.01, IRON, sides=4)
+	p.blob((0.03, 0.03, 0.03), (0.16, 0.09, 0.45), WOOD, segs=(5, 3))
+	for z in (0.95, 1.5, 2.05, 2.55):  # line guides
+		p.seg((0, 0, z), (0.045, 0, z), 0.01, 0.01, IRON, sides=4)
+	_chain(p, [(0, 0, 2.9), (0.08, 0, 2.93), (0.25, 0, 2.93), (0.45, 0, 2.9)], 0.008, 0.008, CLOTH_WHITE, sides=3)  # line
+	p.blob((0.05, 0.05, 0.05), (0.48, 0, 2.9), CLOTH_WHITE, segs=(6, 4))  # float
+	p.blob((0.05, 0.05, 0.05), (0.53, 0, 2.9), CLOTH_RED, segs=(6, 4))
+	p.seg((0.55, 0, 2.9), (0.62, 0, 2.9), 0.006, 0.006, IRON, sides=3)  # and hook
 	return p.build()
 
 
@@ -1708,6 +1723,874 @@ def caravan_wagon():
 	return p.build(bevel=0.02)
 
 
+# ---------------------------------------------------------------- The Weeping Throat (rain jungle)
+
+MOSS = (3, 3)      # teal-green: moss on old stone
+BAMBOO = (1, 3)    # gold-brown: bamboo, palm thatch
+
+
+def _fin(p, a, r0, h, reach, t, swatch=WOOD, grad=(0.3, 1.0), z0=-0.3):
+	"""A buttress root: a thin slab in the radial plane at angle `a`, standing
+	`h` high against the trunk and running out `reach` along the ground, its
+	top edge curving in."""
+	d = Vector((math.cos(a), math.sin(a), 0))
+	n = Vector((-math.sin(a), math.cos(a), 0))
+	prof = [(r0 * 0.5, z0), (reach, z0), (reach * 0.85, z0 + 0.25), (r0 + (reach - r0) * 0.3, z0 + h * 0.3), (r0 * 0.5, z0 + h)]
+	verts = []
+	for side, taper in ((-t / 2, 1.0), (t / 2, 1.0)):
+		for i, (r, z) in enumerate(prof):
+			k = taper if i < 2 else taper * 0.7
+			v = d * r + n * side * k
+			verts.append((v.x, v.y, z))
+	k = len(prof)
+	faces = [(0, i, i + 1) for i in range(1, k - 1)] + [(k, k + i + 1, k + i) for i in range(1, k - 1)]
+	for i in range(k):
+		j = (i + 1) % k
+		faces.append((i, j, k + j, k + i))
+	return p.poly(verts, faces, swatch, grad)
+
+
+def _chain(p, pts, r1, r2, swatch, sides=6, grad=(0.1, 0.8), glow=0.0):
+	"""Segments along a polyline, tapering from r1 to r2."""
+	n = len(pts) - 1
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		ra = r1 + (r2 - r1) * i / n
+		rb = r1 + (r2 - r1) * (i + 1) / n
+		p.seg(a, b, ra, rb, swatch, sides=sides, grad=grad, glow=glow)
+
+
+def _vine(p, top, length, rng, leaves=True, r=0.03):
+	"""One vine hanging from `top`, wandering a little, with leaves along it."""
+	x, y, z = top
+	pts = [(x, y, z)]
+	steps = max(2, int(length / 0.7))
+	for k in range(steps):
+		x += rng.uniform(-0.12, 0.12)
+		y += rng.uniform(-0.08, 0.08)
+		z -= length / steps
+		pts.append((x, y, z))
+	_chain(p, pts, r, r * 0.6, LEAF, sides=4, grad=(0.4, 1.0))
+	if leaves:
+		for k in range(1, len(pts)):
+			for j in range(2):
+				a, b = pts[k - 1], pts[k]
+				t = (j + 0.5) / 2
+				c = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t)
+				side = 1 if (k + j) % 2 else -1
+				p.blob((0.24, 0.07, 0.15), (c[0] + side * 0.1, c[1], c[2]), LEAF if rng.random() < 0.6 else PINE,
+					   rot=(rng.uniform(-20, 20), 0, rng.uniform(0, 360)), segs=(5, 3), grad=(0.2, 0.9))
+	return pts[-1]
+
+
+def jungle_tree():
+	"""A tall rainforest tree, about 16 m: a straight grey-brown trunk on flared
+	buttress roots, a few big limbs high up and a broad, layered canopy of dark
+	leaf masses. Its trunk stays slim near the ground, so a zone's "trunk"
+	collider (0.3 m x 3 m) fits it."""
+	p = Prop("jungle_tree", 141)
+	trunk = [(0, 0, -0.3), (0.08, 0.02, 4.0), (0.02, 0.12, 8.0), (0.12, 0.04, 11.0)]
+	_chain(p, trunk, 0.5, 0.3, WOOD_GRAY, sides=8, grad=(0.1, 0.9))
+	for k in range(5):  # buttress roots
+		a = k * math.tau / 5 + p.rng.uniform(-0.3, 0.3)
+		_fin(p, a, 0.45, p.rng.uniform(1.8, 2.6), p.rng.uniform(1.4, 2.0), 0.2, WOOD_GRAY, grad=(0.2, 1.0))
+	limbs = []
+	for k in range(4):  # big limbs, each splitting once
+		a = k * math.tau / 4 + p.rng.uniform(-0.4, 0.4)
+		z0 = 9.0 + k * 0.6
+		mid = (math.cos(a) * 1.8, math.sin(a) * 1.8, z0 + 1.6)
+		tip = (math.cos(a) * 3.6, math.sin(a) * 3.6, z0 + 2.6)
+		_chain(p, [(0.1, 0.05, z0), mid, tip], 0.24, 0.1, WOOD_GRAY, sides=6)
+		b = a + 0.6
+		p.seg(mid, (mid[0] + math.cos(b) * 1.4, mid[1] + math.sin(b) * 1.4, mid[2] + 1.5), 0.12, 0.06, WOOD_GRAY, sides=5)
+		limbs.append(tip)
+		limbs.append((mid[0] + math.cos(b) * 1.4, mid[1] + math.sin(b) * 1.4, mid[2] + 1.5))
+	for i, (x, y, z) in enumerate(limbs):  # the lower canopy layer: masses at every limb's end
+		s = 3.6 if i % 2 == 0 else 2.7
+		p.rock((s, s, s * 0.55), (x, y, z + 0.5), LEAF if i % 3 else PINE, rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.5, 1.0), jitter=0.07)
+		for j in range(2):
+			a = p.rng.uniform(0, math.tau)
+			t = s * 0.6
+			p.rock((t, t, t * 0.6), (x + math.cos(a) * s * 0.4, y + math.sin(a) * s * 0.4, z + 0.2 + j * 0.6), PINE if (i + j) % 2 else LEAF,
+				   rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.45, 1.0), jitter=0.07)
+	p.rock((6.4, 6.2, 3.0), (0.2, 0.1, 14.4), PINE, grad=(0.3, 1.0), jitter=0.07)  # the crown
+	p.rock((4.6, 4.4, 2.4), (0.6, -0.5, 15.6), LEAF, grad=(0.45, 1.0), jitter=0.07)
+	for k in range(3):  # a few vines down from the limbs
+		x, y, z = limbs[k * 2]
+		_vine(p, (x * 0.8, y * 0.8, z - 0.2), p.rng.uniform(3.0, 5.5), p.rng, leaves=False, r=0.035)
+	return p.build()
+
+
+def jungle_tree_giant():
+	"""A strangler fig, about 25 m: a trunk of roots wound round each other, 5 m
+	across at the flare, great limbs with aerial roots dropping to the ground,
+	and a canopy in two tiers. A landmark: collide it as a mesh or a box."""
+	p = Prop("jungle_tree_giant", 142)
+	p.seg((0, 0, -0.3), (0, 0, 17.0), 1.5, 1.0, WOOD_GRAY, sides=10, grad=(0.2, 1.0))  # the host trunk inside
+	for k in range(7):  # strangling roots spiraling up round it
+		a0 = k * math.tau / 7
+		pts = []
+		for j in range(9):
+			t = j / 8
+			a = a0 + t * 1.6
+			r = 2.4 * (1 - t) ** 2 + 1.25
+			pts.append((math.cos(a) * r, math.sin(a) * r, -0.3 + t * 17.0))
+		_chain(p, pts, 0.6, 0.35, WOOD, sides=6, grad=(0.3, 1.0))
+	for k in range(8):  # the flare
+		a = k * math.tau / 8 + 0.2
+		_fin(p, a, 1.3, p.rng.uniform(3.2, 4.4), p.rng.uniform(4.0, 5.2), 0.4, WOOD, grad=(0.3, 1.0))
+	tips = []
+	for k in range(6):  # great limbs
+		a = k * math.tau / 6 + p.rng.uniform(-0.25, 0.25)
+		z0 = 13.5 + (k % 3) * 1.2
+		reach = p.rng.uniform(7.5, 9.5)
+		pts = [(math.cos(a) * 1.0, math.sin(a) * 1.0, z0),
+			   (math.cos(a) * reach * 0.45, math.sin(a) * reach * 0.45, z0 + 2.2),
+			   (math.cos(a) * reach, math.sin(a) * reach, z0 + 3.4)]
+		_chain(p, pts, 0.7, 0.25, WOOD_GRAY, sides=7)
+		tips.append(pts[2])
+		for t in ((0.55, 0.85) if k % 2 else (0.7,)):  # aerial roots dropping to the ground
+			x = math.cos(a) * reach * t + p.rng.uniform(-0.4, 0.4)
+			y = math.sin(a) * reach * t + p.rng.uniform(-0.4, 0.4)
+			ztop = z0 + 2.2 * min(t / 0.45, 1) + (1.2 * (t - 0.45) / 0.55 if t > 0.45 else 0)
+			drop = [(x, y, ztop)]
+			for j in range(4):
+				drop.append((x + p.rng.uniform(-0.25, 0.25), y + p.rng.uniform(-0.25, 0.25), ztop - (ztop + 0.3) * (j + 1) / 4))
+			_chain(p, drop, 0.08, 0.15, WOOD, sides=5, grad=(0.2, 1.0))
+	for i, (x, y, z) in enumerate(tips):  # lower canopy tier
+		p.rock((6.5, 6.5, 3.4), (x * 0.85, y * 0.85, z + 0.6), LEAF if i % 2 else PINE, rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.5, 1.0), jitter=0.07)
+		for j in range(2):
+			a = p.rng.uniform(0, math.tau)
+			p.rock((4.0, 4.0, 2.4), (x * 0.85 + math.cos(a) * 2.6, y * 0.85 + math.sin(a) * 2.6, z + 0.2 + j), PINE if (i + j) % 2 else LEAF,
+				   rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.45, 1.0), jitter=0.07)
+	p.rock((12.0, 11.0, 4.6), (0, 0, 21.0), PINE, grad=(0.3, 1.0), jitter=0.06)  # the crown
+	p.rock((8.0, 7.5, 3.4), (1.0, -0.6, 23.0), LEAF, grad=(0.45, 1.0), jitter=0.06)
+	for k in range(6):  # moss and ferns in the crotches of the roots
+		a = p.rng.uniform(0, math.tau)
+		p.blob((1.0, 1.0, 0.35), (math.cos(a) * 2.2, math.sin(a) * 2.2, p.rng.uniform(1.0, 8.0)), MOSS, grad=(0.2, 0.9))
+	return p.build()
+
+
+def hanging_vines():
+	"""A curtain of vines about 3 m wide and up to 5 m long. The origin is the
+	top, where they hang from: set it at a branch, a ruin's lintel or a cliff's
+	edge. No collision."""
+	p = Prop("hanging_vines", 143)
+	for k in range(9):  # a leafy mat along the top
+		x = -1.5 + k * 3.0 / 8
+		p.blob((0.7, 0.45, 0.3), (x, p.rng.uniform(-0.1, 0.1), -0.05), LEAF if k % 2 else PINE, segs=(6, 4), grad=(0.2, 0.9))
+	for k in range(14):
+		x = -1.45 + k * 2.9 / 13 + p.rng.uniform(-0.08, 0.08)
+		_vine(p, (x, p.rng.uniform(-0.1, 0.1), -0.1), p.rng.uniform(2.4, 5.0), p.rng)
+	return p.build()
+
+
+def fern_clump():
+	"""A big jungle fern, about 1.2 m tall and 2.4 m across: long arching fronds
+	with leaflets down both sides. No collision."""
+	p = Prop("fern_clump", 144)
+	for k in range(10):
+		a = k * math.tau / 10 + p.rng.uniform(-0.2, 0.2)
+		d = Vector((math.cos(a), math.sin(a), 0))
+		n = Vector((-math.sin(a), math.cos(a), 0))
+		length = p.rng.uniform(1.0, 1.3)
+		lift = p.rng.uniform(0.8, 1.2)
+		pts = []
+		for j in range(6):
+			t = j / 5
+			pts.append(d * length * t + Vector((0, 0, lift * math.sin(t * math.pi * 0.8) + 0.05)))
+		_chain(p, [tuple(v) for v in pts], 0.025, 0.01, PINE, sides=4, grad=(0.2, 0.8))
+		for j in range(len(pts) - 1):  # leaflets: a quad either side, shorter toward the tip
+			a_, b_ = pts[j], pts[j + 1]
+			w = 0.22 * (1 - j / 6)
+			for s in (-1, 1):
+				p.poly([tuple(a_), tuple(b_), tuple((a_ + b_) / 2 + n * s * w + Vector((0, 0, -0.06)))], [(0, 1, 2)],
+					   LEAF if j % 2 else PINE, grad=(0.1, 0.8))
+	return p.build()
+
+
+def taro_plant():
+	"""Elephant ears: a clump of big heart-shaped leaves on long stalks, about
+	1.5 m tall. No collision."""
+	p = Prop("taro_plant", 145)
+	for k in range(6):
+		a = k * math.tau / 6 + p.rng.uniform(-0.3, 0.3)
+		d = Vector((math.cos(a), math.sin(a), 0))
+		n = Vector((-math.sin(a), math.cos(a), 0))
+		reach = p.rng.uniform(0.25, 0.5)
+		top = d * reach + Vector((0, 0, p.rng.uniform(0.9, 1.35)))
+		p.seg((0, 0, 0), tuple(top), 0.04, 0.025, LEAF, sides=5, grad=(0.1, 0.9))
+		# the leaf hangs out and down from the stalk's top: a heart with a midrib fold
+		L = p.rng.uniform(0.7, 0.95)
+		tip = top + d * L + Vector((0, 0, -0.45))
+		mid = top + d * L * 0.45 + Vector((0, 0, -0.05))
+		lobe_l = top + n * L * 0.42 + d * -0.05 + Vector((0, 0, -0.12))
+		lobe_r = top - n * L * 0.42 + d * -0.05 + Vector((0, 0, -0.12))
+		side_l = mid + n * L * 0.38 + Vector((0, 0, -0.14))
+		side_r = mid - n * L * 0.38 + Vector((0, 0, -0.14))
+		sw = LEAF if k % 2 else PINE
+		p.poly([tuple(top), tuple(lobe_l), tuple(side_l), tuple(mid)], [(0, 1, 2, 3)], sw, grad=(0.05, 0.7))
+		p.poly([tuple(mid), tuple(side_l), tuple(tip)], [(0, 1, 2)], sw, grad=(0.05, 0.7))
+		p.poly([tuple(top), tuple(mid), tuple(side_r), tuple(lobe_r)], [(0, 1, 2, 3)], sw, grad=(0.05, 0.7))
+		p.poly([tuple(mid), tuple(tip), tuple(side_r)], [(0, 1, 2)], sw, grad=(0.05, 0.7))
+	return p.build()
+
+
+def _elephant_head(p, c, s, swatch=STONE_LIGHT, trunk=None, tusks=(True, True)):
+	"""A carved elephant head at `c` (center), `s` its size in meters, facing -Y.
+	`trunk` is a list of points (relative to c, in units of s) or None."""
+	cx, cy, cz = c
+	p.blob((1.0 * s, 0.9 * s, 1.0 * s), (cx, cy, cz), swatch, segs=(10, 8), grad=(0.05, 0.85))
+	p.blob((0.7 * s, 0.4 * s, 0.35 * s), (cx, cy - 0.28 * s, cz + 0.35 * s), swatch, segs=(8, 6), grad=(0.05, 0.6))  # brow
+	for x in (-1, 1):
+		p.blob((1.0 * s, 0.18 * s, 1.1 * s), (cx + x * 0.72 * s, cy + 0.1 * s, cz - 0.05 * s), swatch,
+			   rot=(0, x * 12, x * -18), segs=(10, 6), grad=(0.1, 0.8))  # ears
+		p.blob((0.12 * s, 0.08 * s, 0.1 * s), (cx + x * 0.26 * s, cy - 0.42 * s, cz + 0.15 * s), IRON, segs=(6, 4))  # eyes
+	pts = trunk or [(0, -0.4, -0.1), (0, -0.52, -0.5), (0, -0.5, -0.95), (0, -0.62, -1.2)]
+	_chain(p, [(cx + a * s, cy + b * s, cz + d * s) for a, b, d in pts], 0.22 * s, 0.12 * s, swatch, sides=8, grad=(0.1, 0.8))
+	for x, keep in zip((-1, 1), tusks):
+		if keep:
+			p.seg((cx + x * 0.25 * s, cy - 0.35 * s, cz - 0.35 * s), (cx + x * 0.36 * s, cy - 0.85 * s, cz - 0.6 * s), 0.08 * s, 0.02 * s, BONE, sides=6)
+
+
+def jungle_temple():
+	"""A ruined stepped temple of Jalendra the Tide-Trunked, about 12 m tall and
+	14 m square (its stair runs 7 m further out), facing -Y: four tiers of mossy stone, a steep stair up the
+	front to a shrine room whose dark doorway has an elephant-head relief over
+	it. Its back-right corner has fallen in; roots and vines crawl over it all.
+	Collide it as a mesh (the stair's 0.4 m steps are for looking at, not climbing)."""
+	p = Prop("jungle_temple", 146)
+	tiers = []
+	TH = 1.8  # tier height
+	for i in range(4):
+		hs = 7.0 - 1.35 * i
+		z0 = TH * i
+		cut = 0.0 if i == 0 else 2.0 + 0.5 * i  # the fallen corner (+X, +Y)
+		tiers.append((hs, z0, cut))
+
+		def ell(grow, zc, h, sw, grad):
+			if cut == 0.0:
+				p.box((2 * hs + grow, 2 * hs + grow, h), (0, 0, zc), sw, grad=grad)
+			else:
+				p.box((2 * hs + grow, 2 * hs - cut + grow / 2, h), (0, -cut / 2 - grow / 4, zc), sw, grad=grad)
+				p.box((2 * hs - cut + grow / 2, cut + grow / 2, h), (-cut / 2 - grow / 4, hs - cut / 2 + grow / 4, zc), sw, grad=grad)
+
+		ell(0.0, z0 + TH / 2, TH, STONE_WARM if i % 2 else STONE_LIGHT, (0.15, 0.95))
+		ell(0.3, z0 + TH - 0.1, 0.25, STONE_LIGHT, (0.0, 0.6))  # cornice
+		ell(0.2, z0 + 0.12, 0.25, STONE_DARK, (0.2, 0.8))  # plinth course
+	top = tiers[3][0]
+	# the stair, 3.2 m wide, eighteen steps of 0.4 m up to the top tier's face
+	n, rise = 18, 0.4
+	y_top = -top
+	run = n * rise
+	for k in range(n):
+		if k in (6, 13) :  # broken steps: shorter, a chunk missing
+			p.box((2.0, run - k * rise, rise), (-0.6, y_top - (run - k * rise) / 2, k * rise + rise / 2), STONE_LIGHT, grad=(0.1, 0.8))
+			continue
+		p.box((3.2, run - k * rise, rise), (0, y_top - (run - k * rise) / 2, k * rise + rise / 2), STONE_LIGHT if k % 2 else STONE_WARM, grad=(0.1, 0.8))
+	zt = 4 * TH
+	ang = math.degrees(math.atan2(zt, run))
+	for s in (-1, 1):  # balustrades up both sides of the stair
+		p.box((0.5, math.hypot(zt, run), 0.5), (s * 1.85, y_top - run / 2, zt / 2 + 0.25), STONE_DARK, rot=(ang, 0, 0), grad=(0.1, 0.8))
+		p.box((0.9, 0.9, 1.1), (s * 1.85, y_top - run - 0.1, 0.55), STONE_DARK, grad=(0.1, 0.8))
+	# the shrine room on top: 4.4 x 4 m, 3.4 m walls, a doorway facing the stair
+	rw, rd, rh = 2.2, 2.0, 3.4
+	fy = -rd + 0.3
+	p.box((0.6, 2 * rd, rh), (-rw + 0.3, 0, zt + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((0.6, 2 * rd, rh - 0.9), (rw - 0.3, 0, zt + (rh - 0.9) / 2), STONE_LIGHT, grad=(0.1, 0.9))  # cracked down on the fallen side
+	p.box((2 * rw, 0.6, rh), (0, rd - 0.3, zt + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	dw, dh = 1.5, 2.2
+	for s in (-1, 1):
+		p.box(((2 * rw - dw) / 2, 0.6, rh), (s * (dw / 2 + (2 * rw - dw) / 4), fy, zt + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((dw, 0.6, rh - dh), (0, fy, zt + dh + (rh - dh) / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((dw + 0.5, 0.75, 0.3), (0, fy - 0.05, zt + dh + 0.12), STONE_DARK, grad=(0.1, 0.7))  # lintel
+	p.box((dw, 0.1, dh), (0, fy + 0.35, zt + dh / 2), IRON, grad=(0.6, 1.0))  # the dark within
+	p.box((2 * rw - 0.6, 2 * rd - 0.6, 0.1), (0, 0, zt + 0.05), IRON, grad=(0.6, 1.0))
+	p.box((2 * rw + 0.4, 2 * rd + 0.4, 0.35), (0, 0, zt + rh + 0.15), STONE_WARM, grad=(0.0, 0.7))  # roof slabs
+	p.box((2 * rw - 0.6, 2 * rd - 0.8, 0.5), (-0.3, 0, zt + rh + 0.55), STONE_LIGHT, grad=(0.0, 0.7))
+	_elephant_head(p, (0, fy - 0.3, zt + dh + 0.75), 0.75, STONE_WARM, trunk=[(0, -0.35, -0.2), (0, -0.45, -0.55), (0.1, -0.5, -0.75)])
+	# the fallen corner: a slope of blocks down to the ground
+	for k in range(16):
+		t = p.rng.random()
+		x = 7.0 - p.rng.uniform(0, 3.5) + t * 1.8
+		y = 7.0 - p.rng.uniform(0, 3.5) + t * 1.8
+		z = (1 - t) * 4.5 + 0.3
+		s = p.rng.uniform(0.7, 1.4)
+		p.box((s, s * 0.8, s * 0.6), (x, y, z), STONE_LIGHT if k % 2 else STONE_WARM, rot=(p.rng.uniform(-25, 25), p.rng.uniform(-25, 25), p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	for k in range(6):
+		a = p.rng.uniform(0, math.tau)
+		p.box((0.8, 0.6, 0.5), (8.8 + math.cos(a) * 1.5, 8.8 + math.sin(a) * 1.5, 0.2), STONE_WARM, rot=(0, 0, p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	# moss along the cornices and on the steps
+	for k in range(26):
+		i = p.rng.randrange(4)
+		hs, z0, cut = tiers[i]
+		side = p.rng.randrange(3)
+		if side == 0:
+			x, y = p.rng.uniform(-hs + 0.5, hs - 0.5), -hs
+			if abs(x) < 2.4:
+				x = math.copysign(2.9, x)
+		elif side == 1:
+			x, y = -hs, p.rng.uniform(-hs + 0.5, hs - 0.5)
+		else:
+			x, y = p.rng.uniform(-hs + 0.5, hs - cut - 0.5), hs
+		p.blob((p.rng.uniform(1.0, 2.2), p.rng.uniform(0.6, 1.0), 0.35), (x, y, z0 + TH + 0.05), MOSS if k % 3 else LEAF,
+			   rot=(0, 0, 0 if side != 1 else 90), segs=(8, 4), grad=(0.1, 0.8))
+	for k in range(5):
+		p.blob((1.0, 0.5, 0.18), (p.rng.uniform(-1.0, 1.0), y_top - run + 1.0 + k * 1.5, k * 0.6 + 0.9), MOSS, segs=(6, 4), grad=(0.1, 0.8))
+	# roots: from a mound of growth on the roof, down over the tiers
+	for k, (x, y, sx) in enumerate(((-1.2, 0.6, 2.0), (0.6, 0.9, 1.5), (-0.3, -0.8, 1.2))):
+		p.blob((sx, sx * 0.9, 0.7), (x, y, zt + rh + 0.85), LEAF if k % 2 else PINE, segs=(8, 5), grad=(0.3, 1.0))
+	p.seg((-1.2, 0.6, zt + rh + 0.6), (-1.5, 0.8, zt + rh + 1.6), 0.18, 0.08, WOOD, sides=6, grad=(0.2, 1.0))
+	p.rock((1.8, 1.7, 1.1), (-1.5, 0.8, zt + rh + 1.9), PINE, grad=(0.3, 1.0))
+	for side, (dx, dy) in enumerate(((-1, 0), (-1, 0), (0, 1), (-1, 0), (0, 1))):
+		off = (-0.8, 1.2, -1.5, -2.6, 0.5)[side]
+		pts = [(-1.2 + off * abs(dy), 0.6 + off * abs(dx), zt + rh + 0.4)]
+		for i in (3, 2, 1, 0):
+			hs, z0, _ = tiers[i]
+			edge = hs + 0.15
+			x = dx * edge if dx else max(-hs + 0.4, min(hs - 0.4, off * 1.6))
+			y = dy * edge if dy else max(-hs + 0.4, min(hs - 0.4, off * 1.6))
+			pts.append((x, y, z0 + TH + 0.15))
+			pts.append((x + dx * 0.15, y + dy * 0.15, z0 + 0.3))
+		pts.append((pts[-1][0] + dx * 1.4, pts[-1][1] + dy * 1.4, -0.2))
+		_chain(p, pts, 0.24, 0.12, WOOD, sides=5, grad=(0.2, 1.0))
+	for k in range(9):  # vines off the cornices
+		i = p.rng.randrange(1, 4)
+		hs, z0, cut = tiers[i]
+		x = p.rng.uniform(-hs + 0.3, hs - cut - 0.3)
+		if abs(x) < 2.4:
+			x = -3.0
+		_vine(p, (x, -hs - 0.2, z0 + TH - 0.1), p.rng.uniform(1.2, 2.4), p.rng, r=0.035)
+	obj = p.build(bevel=0.06)
+	pieces = []
+	for s in (-1, 1):  # KayKit pillars flank the stair's foot
+		pieces += kaykit("pillar", (s * 2.9, y_top - run - 0.4, 0), 0.0, (0.75, 0.75, 0.9))
+	pieces += kaykit("rubble_large", (8.3, 6.5, 0), 0.6)
+	pieces += kaykit("rubble_large", (-6.0, -8.2, 0), 2.1)
+	pieces += kaykit("rubble_half", (5.5, 8.6, 0), 1.2)
+	return join_into(obj, pieces)
+
+
+def temple_arch_ruin():
+	"""A broken stone archway, about 5 m tall and 5 m wide, facing -Y: two
+	block piers, the arch standing on the left and fallen away on the right,
+	its stones in the moss; a root wraps the left pier. Collide it as a mesh."""
+	p = Prop("temple_arch_ruin", 147)
+	for s in (-1, 1):
+		x = s * 1.9
+		p.box((1.3, 1.3, 0.35), (x, 0, 0.17), STONE_DARK, grad=(0.2, 0.9))
+		for k in range(3):
+			if s > 0 and k == 2:
+				p.box((1.0, 1.0, 0.7), (x + 0.05, 0.02, 0.35 + k * 1.05 + 0.35), STONE_LIGHT, rot=(0, 0, 6), grad=(0.1, 0.9))
+				continue
+			p.box((1.05, 1.05, 1.0), (x + p.rng.uniform(-0.04, 0.04), 0, 0.35 + k * 1.05 + 0.5), STONE_WARM if k % 2 else STONE_LIGHT,
+				  rot=(0, 0, p.rng.uniform(-3, 3)), grad=(0.1, 0.9))
+		if s < 0:
+			p.box((1.3, 1.3, 0.25), (x, 0, 3.55), STONE_DARK, grad=(0.1, 0.7))
+	# the arch: voussoirs on a half circle from pier to pier, the right three fallen
+	r, cz = 1.9, 3.7
+	for k in range(7):
+		a = math.pi - (k + 0.5) * math.pi / 7
+		if k >= 4:
+			continue
+		x, z = math.cos(a) * r, cz + math.sin(a) * r
+		p.box((0.62, 1.0, 0.8), (x, 0, z), STONE_LIGHT if k % 2 else STONE_WARM, rot=(0, -math.degrees(a) + 90, 0), grad=(0.05, 0.8))
+	for k, (x, y, rz) in enumerate(((2.8, -1.4, 20), (3.6, 0.6, 70), (1.4, -2.2, 40))):  # the fallen ones
+		p.box((0.62, 1.0, 0.8), (x, y, 0.3), STONE_LIGHT, rot=(p.rng.uniform(-15, 15), 90, rz), grad=(0.05, 0.8))
+	for k in range(6):
+		p.blob((p.rng.uniform(0.6, 1.1), p.rng.uniform(0.5, 0.9), 0.25), (p.rng.uniform(-2.5, 2.5), p.rng.uniform(-0.5, 0.5), [3.7, 5.2, 0.4, 0.4, 5.5, 3.6][k]),
+			   MOSS if k % 2 else LEAF, segs=(6, 4), grad=(0.1, 0.8))
+	pts = []  # a root spiraling down the left pier into the ground
+	for j in range(9):
+		t = j / 8
+		a = t * math.tau * 1.2
+		pts.append((-1.9 + math.cos(a) * 0.62, math.sin(a) * 0.62, 5.3 - t * 5.2))
+	pts.append((-3.4, -0.9, -0.2))
+	_chain(p, pts, 0.18, 0.12, WOOD, sides=5, grad=(0.2, 1.0))
+	for k in range(4):
+		_vine(p, (-1.4 + k * 0.5, 0.0, 5.0 - k * 0.3), p.rng.uniform(1.4, 2.8), p.rng, r=0.03)
+	return p.build(bevel=0.06)
+
+
+def jalendra_head_fallen():
+	"""The head of a colossal statue of Jalendra, fallen and half sunk in the
+	mud: about 4 m tall above the ground, 7 m from ear to ear, facing -Y, its
+	left tusk whole, the right snapped off and lying beside it. Collide as a box
+	or mesh."""
+	p = Prop("jalendra_head_fallen", 148)
+	s = 3.4
+	p.blob((1.25 * s, 1.1 * s, 1.1 * s), (0, 0, 0.9), STONE_LIGHT, rot=(8, 14, 0), segs=(12, 8), grad=(0.05, 0.85))
+	p.blob((0.95 * s, 0.4 * s, 0.4 * s), (0, -0.4 * s, 0.9 + 0.45 * s), STONE_LIGHT, rot=(8, 14, 0), segs=(10, 6), grad=(0.05, 0.6))  # brow
+	for x, tilt in ((-1, -30), (1, 10)):
+		p.blob((1.1 * s, 0.22 * s, 1.2 * s), (x * 0.95 * s, 0.1 * s, 0.9 + x * 0.35), STONE_WARM, rot=(0, tilt, x * -15), segs=(12, 6), grad=(0.1, 0.8))
+		p.blob((0.18 * s, 0.1 * s, 0.13 * s), (x * 0.32 * s, -0.52 * s, 0.9 + 0.2 * s + x * 0.1), IRON, segs=(6, 4))
+	# a headdress band of carved plates, gold worn to stone
+	for k in range(7):
+		a = math.radians(-60 + k * 20)
+		p.box((0.6, 0.35, 0.5), (math.sin(a) * 0.62 * s, -math.cos(a) * 0.45 * s, 0.9 + 0.62 * s), GOLD if k == 3 else STONE_WARM,
+			  rot=(20, 14, -math.degrees(a)), grad=(0.1, 0.7))
+	trunk = [(0, -0.55 * s, 0.9), (0.1, -0.75 * s, 0.35), (0.3, -1.05 * s, 0.1), (0.9, -1.35 * s, 0.15), (1.4, -1.45 * s, 0.35), (1.6, -1.3 * s, 0.5)]
+	_chain(p, trunk, 0.28 * s, 0.1 * s, STONE_LIGHT, sides=8, grad=(0.1, 0.8))
+	_chain(p, [(-0.35 * s, -0.5 * s, 0.6), (-0.55 * s, -0.95 * s, 0.7), (-0.7 * s, -1.25 * s, 1.2), (-0.65 * s, -1.4 * s, 1.8)], 0.1 * s, 0.03 * s, BONE, sides=7)
+	p.seg((0.35 * s, -0.5 * s, 0.6), (0.48 * s, -0.75 * s, 0.62), 0.1 * s, 0.085 * s, BONE, sides=7)  # the snapped tusk
+	p.seg((0.48 * s, -0.75 * s, 0.62), (0.5 * s, -0.78 * s, 0.63), 0.085 * s, 0.04 * s, BONE, sides=7, jitter=0.05)
+	_chain(p, [(2.6, -2.6, 0.2), (3.4, -3.8, 0.25), (3.7, -4.8, 0.4)], 0.28, 0.08, BONE, sides=7)  # its broken end in the mud
+	for k in range(10):  # moss
+		a = p.rng.uniform(-1.2, 1.2)
+		p.blob((p.rng.uniform(0.9, 1.8), p.rng.uniform(0.7, 1.4), 0.3), (math.sin(a) * 0.5 * s, math.cos(a) * 0.35 * s, 0.9 + p.rng.uniform(0.5, 0.95) * s),
+			   MOSS if k % 3 else LEAF, rot=(0, 0, p.rng.uniform(0, 180)), segs=(8, 4), grad=(0.1, 0.8))
+	for k in range(4):
+		p.blob((0.9, 0.7, 0.25), (p.rng.uniform(-0.3, 1.5), -0.8 * s - k * 0.5, 0.2 + k * 0.1), MOSS, segs=(6, 4))
+	for k in range(8):  # the mud it sank into
+		a = k * math.tau / 8
+		p.blob((2.4, 1.8, 0.4), (math.cos(a) * 1.3 * s, math.sin(a) * 1.0 * s, -0.05), WOOD, rot=(0, 0, math.degrees(a)), segs=(8, 4), grad=(0.6, 1.0))
+	return p.build(bevel=0.06)
+
+
+def troll_hut():
+	"""A river-troll's hut: bent poles lashed into a lumpy dome, hung with
+	hides, banked with mud, a rib-bone arch over the doorway (-Y). About 4.3 m
+	tall and 5.4 m across. Collide it as a box."""
+	p = Prop("troll_hut", 149)
+	n, R, H = 10, 2.7, 4.0
+	levels = [(1.0, 0.0), (0.92, 1.4), (0.66, 2.7), (0.3, 3.6), (0.06, 4.0)]
+	poles = []
+	for k in range(n):
+		a = -math.pi / 2 + (k + 0.5) * math.tau / n
+		pts = [(math.cos(a) * R * f + p.rng.uniform(-0.1, 0.1), math.sin(a) * R * f + p.rng.uniform(-0.1, 0.1), z) for f, z in levels]
+		poles.append(pts)
+		tip = (-math.cos(a) * 0.35, -math.sin(a) * 0.35, 4.6)
+		_chain(p, pts + [tip], 0.1, 0.06, WOOD, sides=5, grad=(0.2, 1.0))
+	for k in range(n):  # hides between the poles; the door gap is between the last and first
+		a_, b_ = poles[k], poles[(k + 1) % n]
+		for j in range(len(levels) - 1):
+			if k == n - 1 and j < 2:
+				continue
+			sw = HIDE if (k + j) % 3 else WOOD_GRAY
+			sag = 0.12
+			p.poly([a_[j], b_[j], b_[j + 1], a_[j + 1]], [(0, 1, 2, 3)], sw, grad=(0.3, 1.0))
+			p.poly([tuple(Vector(a_[j]) * (1 - sag * 0.2)), tuple(Vector(b_[j]) * (1 - sag * 0.2)), tuple(Vector(b_[j + 1]) * (1 - sag * 0.2)), tuple(Vector(a_[j + 1]) * (1 - sag * 0.2))],
+				   [(0, 1, 2, 3)], IRON, grad=(0.6, 1.0))  # dark inside
+	for k in range(14):  # the mud bank round the foot
+		a = k * math.tau / 14
+		if abs(math.atan2(math.sin(a + math.pi / 2), math.cos(a + math.pi / 2))) < 0.35:
+			continue
+		p.blob((1.4, 0.9, 0.9), (math.cos(a) * R * 1.02, math.sin(a) * R * 1.02, 0.2), WOOD, rot=(0, 0, math.degrees(a) + 90), segs=(8, 5), grad=(0.3, 1.0))
+	for s in (-1, 1):  # rib bones arched over the door
+		_chain(p, [(s * 0.9, -R - 0.2, -0.1), (s * 1.0, -R - 0.35, 1.5), (s * 0.6, -R - 0.3, 2.5), (s * 0.05, -R - 0.2, 2.9)], 0.13, 0.07, BONE, sides=6, grad=(0.0, 0.6))
+	p.blob((0.55, 0.6, 0.45), (0, -R - 0.35, 2.95), BONE, grad=(0.0, 0.6))  # a skull at the top
+	for x in (-0.13, 0.13):
+		p.blob((0.12, 0.08, 0.1), (x, -R - 0.63, 3.0), IRON, segs=(5, 3))
+	for s in (-1, 1):  # lower tusks
+		p.seg((s * 0.14, -R - 0.55, 2.8), (s * 0.2, -R - 0.7, 3.15), 0.05, 0.01, BONE, sides=4)
+	p.seg((1.6, -R - 0.6, -0.2), (1.6, -R - 0.6, 2.0), 0.06, 0.05, WOOD, sides=5)  # a stake by the door, with a fish skull
+	p.blob((0.3, 0.55, 0.22), (1.6, -R - 0.6, 2.1), BONE, grad=(0.0, 0.6))
+	for k in range(3):
+		p.seg((1.45 + k * 0.15, -R - 0.55, 2.1), (1.45 + k * 0.15, -R - 0.65, 1.7), 0.02, 0.01, BONE, sides=3)
+	for k in range(5):  # bones strung on the side
+		a = -0.3 + k * 0.18
+		p.seg((math.cos(a) * R * 0.95, math.sin(a) * R * 0.95, 1.9), (math.cos(a) * R * 1.0, math.sin(a) * R * 1.0, 1.35), 0.05, 0.04, BONE, sides=4)
+	return p.build(bevel=0.03)
+
+
+def troll_totem():
+	"""A river-troll totem: a thick pole of stacked skulls, a crossbar hung with
+	bones and hide strips, on a heap of river stones. About 3.6 m, facing -Y."""
+	p = Prop("troll_totem", 150)
+	for k in range(7):
+		a = k * math.tau / 7
+		p.rock((0.6, 0.5, 0.4), (math.cos(a) * 0.55, math.sin(a) * 0.55, 0.1), STONE_DARK, jitter=0.05)
+	p.seg((0, 0, -0.2), (0.05, 0, 3.1), 0.2, 0.15, WOOD, sides=6, grad=(0.2, 1.0))
+	p.seg((0, 0, 1.1), (0, 0, 1.35), 0.23, 0.23, CLOTH_RED, sides=6)  # a band of red paint
+	for i, (z, s) in enumerate(((1.8, 0.55), (2.5, 0.6), (3.3, 0.8))):  # skulls, the troll's own on top
+		p.blob((s, s * 0.95, s * 0.85), (0.04, -0.1, z), BONE, segs=(8, 6), grad=(0.0, 0.6))
+		for x in (-1, 1):
+			p.blob((s * 0.2, s * 0.1, s * 0.18), (0.04 + x * s * 0.2, -0.1 - s * 0.45, z + s * 0.08), IRON, segs=(5, 3))
+		p.box((s * 0.6, s * 0.35, s * 0.2), (0.04, -0.1 - s * 0.3, z - s * 0.4), BONE, grad=(0.1, 0.7))  # jaw
+		if i == 2:
+			for x in (-1, 1):
+				p.seg((0.04 + x * 0.22, -0.4, z - 0.35), (0.04 + x * 0.3, -0.55, z + 0.1), 0.06, 0.01, BONE, sides=5)  # tusks
+				p.seg((0.04 + x * 0.3, 0.0, z + 0.25), (0.04 + x * 0.75, 0.1, z + 0.7), 0.07, 0.02, WOOD_GRAY, sides=4)  # antler-like horns
+			p.box((0.5, 0.05, 0.08), (0.04, -0.52, z + 0.25), CLOTH_RED)  # war paint
+	p.seg((-0.9, 0, 2.15), (0.95, 0, 2.2), 0.06, 0.06, WOOD, sides=5)
+	for k, x in enumerate((-0.8, -0.45, 0.5, 0.85)):
+		p.seg((x, 0, 2.15), (x + p.rng.uniform(-0.05, 0.05), 0, 1.5), 0.015, 0.015, HIDE, sides=3)
+		if k % 2:
+			p.seg((x, 0, 1.55), (x, 0, 1.15), 0.05, 0.04, BONE, sides=4)
+		else:
+			p.box((0.18, 0.03, 0.55), (x, 0, 1.3), HIDE, grad=(0.2, 0.9))
+	return p.build(bevel=0.02)
+
+
+def _waterfall(p, water):
+	"""Shared layout of the waterfall: rock (water=False) or water (water=True)."""
+	lip = 8.0
+	if not water:
+		for i, z in enumerate((0.8, 2.6, 4.4, 6.2, 7.6)):  # the cliff: rows of big rocks either side of the chute
+			for x in (-5.0, -3.2, 3.2, 5.0, -1.6, 1.6):
+				if abs(x) < 2 and z > 7:
+					continue
+				sx = p.rng.uniform(2.2, 3.0)
+				y = 1.6 if abs(x) < 2 else 1.0 + p.rng.uniform(-0.3, 0.4)
+				p.rock((sx, 2.8, 2.2), (x + p.rng.uniform(-0.2, 0.2), y, z), STONE_DARK if (i + int(x)) % 2 else STONE_LIGHT,
+					   rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.05, 0.9))
+		for x in (-1.6, 0.0, 1.6):  # the lip the water spills over
+			p.box((1.9, 3.0, 0.8), (x, 1.2, lip - 0.4), STONE_DARK, rot=(0, 0, p.rng.uniform(-6, 6)), grad=(0.1, 0.8))
+		for x in (-1.8, 1.8):  # banks of the stream above
+			p.rock((1.6, 3.4, 1.0), (x, 1.8, lip + 0.2), STONE_LIGHT, grad=(0.05, 0.8))
+		for k in range(12):  # moss on the rocks, ferns on the ledges
+			x = p.rng.choice((-1, 1)) * p.rng.uniform(2.0, 5.5)
+			p.blob((p.rng.uniform(1.0, 1.8), 1.2, 0.35), (x, p.rng.uniform(0.2, 0.9), p.rng.uniform(1.8, 8.6)), MOSS if k % 3 else LEAF, segs=(8, 4), grad=(0.1, 0.8))
+		for k in range(11):  # the rim of the splash pool
+			a = math.pi + k * math.pi / 10
+			x, y = math.cos(a) * 3.4, -2.2 + math.sin(a) * 2.6
+			p.rock((1.3, 1.0, 0.7), (x, y, 0.1), STONE_DARK if k % 2 else STONE_LIGHT, rot=(0, 0, p.rng.uniform(0, 360)), grad=(0.05, 0.9))
+		for k in range(5):
+			_vine(p, (p.rng.choice((-1, 1)) * p.rng.uniform(1.4, 3.5), -0.5, lip - p.rng.uniform(0, 1.0)), p.rng.uniform(1.5, 3.2), p.rng, r=0.03)
+		return
+	# the falling sheet: a strip that leaves the lip, bows out and drops into the pool
+	prof = [(0.0, -0.1, lip + 0.05), (0.1, -0.6, lip - 0.35), (0.25, -0.95, lip - 1.6), (0.5, -1.15, 4.0), (0.8, -1.25, 1.2), (1.0, -1.3, 0.1)]
+	for (ta, ya, za), (tb, yb, zb) in zip(prof, prof[1:]):
+		wa, wb = 1.1 + 0.4 * ta, 1.1 + 0.4 * tb
+		p.poly([(-wa, ya, za), (wa, ya, za), (wb, yb, zb), (-wb, yb, zb)], [(0, 1, 2, 3)], WATER, grad=(0.0, 0.7))
+	for k in range(6):  # foam streaks down the face
+		x = -1.0 + k * 0.4 + p.rng.uniform(-0.1, 0.1)
+		w = p.rng.uniform(0.05, 0.09)
+		for (ta, ya, za), (tb, yb, zb) in zip(prof[1:], prof[2:]):
+			xa, xb = x * (1.1 + 0.4 * ta) / 1.1, x * (1.1 + 0.4 * tb) / 1.1
+			p.poly([(xa - w, ya - 0.03, za), (xa + w, ya - 0.03, za), (xb + w, yb - 0.03, zb), (xb - w, yb - 0.03, zb)], [(0, 1, 2, 3)], CLOTH_WHITE, grad=(0.0, 0.3))
+	p.poly([(-1.1, -0.1, lip + 0.05), (1.1, -0.1, lip + 0.05), (1.1, 3.0, lip + 0.1), (-1.1, 3.0, lip + 0.1)], [(0, 1, 2, 3)], WATER, grad=(0.1, 0.5))  # the stream above
+	p.seg((0, -2.2, 0.0), (0, -2.2, 0.15), 3.2, 3.2, WATER, sides=16, grad=(0.1, 0.6))  # the pool
+	for k in range(9):  # spray where it lands
+		p.blob((p.rng.uniform(0.5, 0.9), p.rng.uniform(0.4, 0.7), p.rng.uniform(0.25, 0.45)), (p.rng.uniform(-1.4, 1.4), -1.3 + p.rng.uniform(-0.5, 0.2), 0.2),
+			   CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.4))
+
+
+def waterfall():
+	"""A small cascade in a cliff face, about 8.6 m tall and 11 m wide, facing
+	-Y: the rock only (cliff, spill lip, splash pool rim). Place
+	`waterfall_water` at the same spot for the water. Collide as a mesh."""
+	p = Prop("waterfall", 151)
+	_waterfall(p, False)
+	return p.build()
+
+
+def waterfall_water():
+	"""The water for `waterfall` (same origin): the falling sheet with foam
+	streaks, the stream above the lip and a 3.2 m splash pool. No collision."""
+	p = Prop("waterfall_water", 151)
+	_waterfall(p, True)
+	return p.build()
+
+
+# ---------------------------------------------------------------- Rainhold (stilt city)
+# Walkable decks follow boardwalk's convention: the walking surface is the
+# prop's origin (local height 0), pilings run 4 m down. Collide them as "mesh".
+
+def _deck_planks(p, hx, hy, across_x=True, n=None):
+	"""Planks covering x in [-hx, hx], y in [-hy, hy], tops exactly at 0."""
+	long_, short = (2 * hx, 2 * hy) if across_x else (2 * hy, 2 * hx)
+	n = n or int(short / 0.3)
+	for k in range(n):
+		c = -short / 2 + (k + 0.5) * short / n
+		sw = WOOD_GRAY if p.rng.random() < 0.3 else WOOD
+		length = long_ + p.rng.uniform(-0.05, 0.0)
+		off = p.rng.uniform(-0.02, 0.02)
+		if across_x:
+			p.box((length, short / n - 0.03, 0.08), (off, c, -0.04), sw, rot=(0, 0, p.rng.uniform(-0.3, 0.3)), grad=(0.1, 0.6))
+		else:
+			p.box((short / n - 0.03, length, 0.08), (c, off, -0.04), sw, rot=(0, 0, p.rng.uniform(-0.3, 0.3)), grad=(0.1, 0.6))
+
+
+def stilt_platform():
+	"""A 9 x 9 m timber deck on pilings, for Rainhold. The deck's top is the
+	origin (where you walk); an edge beam runs round it flush with the deck,
+	pilings go 4 m down into the lagoon. Tiles edge to edge with itself,
+	stilt_walkway and rope_bridge."""
+	p = Prop("stilt_platform", 161)
+	h = 4.5
+	_deck_planks(p, h, h, True)
+	for x in (-3.4, -1.1, 1.1, 3.4):  # joists under the planks
+		p.box((0.16, 2 * h - 0.2, 0.22), (x, 0, -0.19), WOOD, grad=(0.3, 1.0))
+	for s in (-1, 1):  # the edge beam, top flush with the deck
+		p.box((2 * h, 0.2, 0.36), (0, s * (h - 0.1), -0.18), WOOD, grad=(0.2, 0.9))
+		p.box((0.2, 2 * h, 0.36), (s * (h - 0.1), 0, -0.18), WOOD, grad=(0.2, 0.9))
+	posts = (-4.2, -1.4, 1.4, 4.2)
+	for x in posts:
+		for y in posts:
+			p.seg((x, y, -4.0), (x, y, -0.1), 0.15, 0.13, WOOD, sides=6, grad=(0.2, 1.0))
+	for s in (-1, 1):  # cross bracing on the outer rows
+		for i in range(3):
+			a, b = posts[i], posts[i + 1]
+			p.seg((a, s * 4.2, -0.5), (b, s * 4.2, -2.4), 0.06, 0.06, WOOD_GRAY, sides=4)
+			p.seg((s * 4.2, a, -0.5), (s * 4.2, b, -2.4), 0.06, 0.06, WOOD_GRAY, sides=4)
+	return p.build(bevel=0.02)
+
+
+def _rope(p, a, b, sag, r=0.025, n=6, swatch=HIDE):
+	"""A rope from a to b sagging `sag` meters at the middle."""
+	a, b = Vector(a), Vector(b)
+	pts = []
+	for k in range(n + 1):
+		t = k / n
+		v = a.lerp(b, t) - Vector((0, 0, sag * 4 * t * (1 - t)))
+		pts.append(tuple(v))
+	_chain(p, pts, r, r, swatch, sides=4, grad=(0.1, 0.7))
+
+
+def stilt_walkway():
+	"""A 3 x 9 m walkway on pilings, running along Y: planks across, posts and
+	sagging rope rails along both long sides, both ends open. Deck top at the
+	origin, like boardwalk; posts go 4 m down."""
+	p = Prop("stilt_walkway", 162)
+	hx, hy = 1.5, 4.5
+	_deck_planks(p, hx, hy, True)
+	for x in (-1.2, 1.2):
+		p.box((0.16, 2 * hy, 0.2), (x, 0, -0.18), WOOD, grad=(0.3, 1.0))
+	posts = (-4.25, -1.45, 1.45, 4.25)
+	for s in (-1, 1):
+		x = s * 1.38
+		for y in posts:
+			p.seg((x, y, -4.0), (x, y, 1.1), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+			p.seg((x, y, 1.1), (x, y, 1.18), 0.12, 0.12, WOOD_GRAY, sides=6)
+		for a, b in zip(posts, posts[1:]):
+			_rope(p, (x, a, 1.02), (x, b, 1.02), 0.12)
+			_rope(p, (x, a, 0.55), (x, b, 0.55), 0.08)
+	return p.build(bevel=0.02)
+
+
+def rope_bridge():
+	"""A 3 x 12 m rope bridge running along Y between two decks: planks on
+	ropes, rope rails on four end posts. Its ends are at deck height (the
+	origin) and it dips only 8 cm at the middle, so it walks like a floor.
+	No pilings: it spans open water. Collide it as a mesh."""
+	p = Prop("rope_bridge", 163)
+	half, sag = 6.0, 0.08
+
+	def dz(y):
+		return -sag * (1.0 - (y / half) ** 2)
+
+	n = 36
+	for k in range(n):
+		y0 = -half + k * 2 * half / n + 0.03
+		y1 = -half + (k + 1) * 2 * half / n - 0.03
+		ym = (y0 + y1) / 2
+		tilt = math.degrees(math.atan2(dz(y1) - dz(y0), y1 - y0))
+		w = 2.6 + p.rng.uniform(-0.12, 0.05)
+		p.box((w, y1 - y0, 0.07), (p.rng.uniform(-0.04, 0.04), ym, dz(ym) - 0.035), WOOD_GRAY if k % 4 == 0 else WOOD,
+			  rot=(tilt, 0, p.rng.uniform(-1.0, 1.0)), grad=(0.1, 0.6))
+	for x in (-1.2, 1.2):  # the ropes the planks are tied onto
+		pts = [(x, -half + k * half / 6, dz(-half + k * half / 6) - 0.09) for k in range(13)]
+		_chain(p, pts, 0.04, 0.04, HIDE, sides=4)
+	for sx in (-1, 1):
+		x = sx * 1.45
+		for sy in (-1, 1):
+			y = sy * (half - 0.15)
+			p.seg((x, y, -1.2), (x, y, 1.35), 0.13, 0.11, WOOD, sides=6, grad=(0.2, 1.0))
+			p.seg((x, y, 1.35), (x, y, 1.45), 0.15, 0.15, WOOD_GRAY, sides=6)
+			for z in (0.4, 0.9):
+				p.seg((x - 0.1 * sx, y, z), (x + 0.1 * sx, y, z), 0.14, 0.14, HIDE, sides=6)  # lashing
+		top = [(x, -half + 0.15 + k * (2 * half - 0.3) / 10, 0.0) for k in range(11)]
+		top = [(tx, ty, 1.25 - 0.3 * (1 - (ty / half) ** 2)) for tx, ty, _ in top]
+		_chain(p, top, 0.035, 0.035, HIDE, sides=4)
+		for tx, ty, tz in top[1:-1]:  # suspenders from the rail down to the plank ropes
+			p.seg((tx, ty, tz), (sx * 1.2, ty, dz(ty) - 0.09), 0.015, 0.015, HIDE, sides=3)
+	return p.build(bevel=0.015)
+
+
+def _longhouse(p, w, d, porch, wall_h, rise, sweep, door=(1.6, 2.4), windows=True):
+	"""A Rainhold timber house: floor top at the origin (so it stands on a
+	deck), vertical plank walls, an open porch at the front (-Y) under the
+	front slope, and a steep thatched roof whose ridge and eaves sweep up at the
+	ends into horned finials. Ridge along X."""
+	hw, hd = w / 2, d / 2
+	front = -hd + porch
+	ovx, ov = 1.1, 0.7
+	X = hw + ovx
+
+	def lift(x):
+		return (min(abs(x), X) / X) ** 2
+
+	def roof_z(x, y):
+		ridge = wall_h + rise + sweep * lift(x)
+		wall_line = wall_h + sweep * 0.4 * lift(x)
+		return ridge - (ridge - wall_line) * abs(y) / hd
+
+	# floor and its pilings
+	_deck_planks(p, hw, hd, True)
+	for x in [-hw + 0.3 + k * (w - 0.6) / max(1, round(w / 3.0)) for k in range(int(round(w / 3.0)) + 1)]:
+		for y in (-hd + 0.3, front, hd - 0.3):
+			p.seg((x, y, -4.0), (x, y, -0.08), 0.13, 0.12, WOOD, sides=6, grad=(0.2, 1.0))
+	for s in (-1, 1):
+		p.box((w, 0.2, 0.3), (0, s * (hd - 0.1), -0.15), WOOD, grad=(0.2, 0.9))
+		p.box((0.2, d, 0.3), (s * (hw - 0.1), 0, -0.15), WOOD, grad=(0.2, 0.9))
+
+	def wall(x0, x1, fixed, along_x, openings=()):
+		n = max(2, int(abs(x1 - x0) / 0.34))
+		for k in range(n):
+			c = x0 + (k + 0.5) * (x1 - x0) / n
+			x, y = (c, fixed) if along_x else (fixed, c)
+			top = roof_z(x, y) - 0.05
+			sw = WOOD_GRAY if p.rng.random() < 0.3 else WOOD
+			size = (abs(x1 - x0) / n - 0.02, 0.1) if along_x else (0.1, abs(x1 - x0) / n - 0.02)
+			spans = [(0.0, top)]
+			for o0, o1, z0, z1 in openings:
+				if o0 < c < o1:
+					spans = [(0.0, z0), (z1, top)] if z0 > 0 else [(z1, top)]
+			for a, b in spans:
+				if b - a > 0.02:
+					p.box((size[0], size[1], b - a), (x, y, (a + b) / 2), sw, grad=(0.15, 0.9))
+
+	dw, dh = door
+	wall(-hw, hw, front, True, [(-dw / 2, dw / 2, 0.0, dh)] + ([(-hw * 0.6 - 0.5, -hw * 0.6 + 0.5, 1.0, 1.9), (hw * 0.6 - 0.5, hw * 0.6 + 0.5, 1.0, 1.9)] if windows and w > 8 else []))
+	wall(-hw, hw, hd, True, [(-hw * 0.5 - 0.5, -hw * 0.5 + 0.5, 1.0, 1.9), (hw * 0.5 - 0.5, hw * 0.5 + 0.5, 1.0, 1.9)] if windows else [])
+	for s in (-1, 1):
+		wall(front, hd, s * hw, False, [((front + hd) / 2 - 0.5, (front + hd) / 2 + 0.5, 1.0, 1.9)] if windows else [])
+	p.box((dw + 0.4, 0.16, 0.25), (0, front - 0.05, dh + 0.12), WOOD, grad=(0.3, 1.0))  # lintel
+	for s in (-1, 1):
+		p.box((0.18, 0.16, dh), (s * (dw / 2 + 0.09), front - 0.06, dh / 2), WOOD, grad=(0.3, 1.0))
+	for x in (-hw, hw):  # corner posts
+		for y in (front, hd):
+			p.seg((x, y, 0), (x, y, roof_z(x, y)), 0.13, 0.12, WOOD, sides=6, grad=(0.2, 1.0))
+	# the porch: posts at the front edge up to the roof, and a low rail with a gap
+	n_posts = max(2, int(round(w / 3.0)) + 1)
+	px = [-hw + 0.2 + k * (w - 0.4) / (n_posts - 1) for k in range(n_posts)]
+	for x in px:
+		p.seg((x, -hd + 0.2, 0), (x, -hd + 0.2, roof_z(x, -hd + 0.2) - 0.05), 0.12, 0.11, WOOD, sides=6, grad=(0.2, 1.0))
+	for a, b in zip(px, px[1:]):
+		if a < 0 < b or abs((a + b) / 2) < 1.2:
+			continue
+		p.box((b - a, 0.1, 0.1), ((a + b) / 2, -hd + 0.2, 0.85), WOOD_GRAY, grad=(0.2, 0.8))
+	for s in (-1, 1):
+		p.box((0.1, porch - 0.2, 0.1), (s * (hw - 0.0), -hd + porch / 2 + 0.1, 0.85), WOOD_GRAY, grad=(0.2, 0.8))
+	# the roof: a sheet on each side, bundles of thatch in courses, the ridge beam and finials
+	Y = hd + ov
+	nx = 14
+	xs = [-X + k * 2 * X / nx for k in range(nx + 1)]
+	for s in (-1, 1):
+		for a, b in zip(xs, xs[1:]):
+			p.poly([(a, 0, roof_z(a, 0) + 0.02), (b, 0, roof_z(b, 0) + 0.02), (b, s * Y, roof_z(b, Y)), (a, s * Y, roof_z(a, Y))],
+				   [(0, 1, 2, 3)], BAMBOO, grad=(0.2, 0.9))
+		for j in range(7):
+			t = (j + 0.5) / 7
+			y = s * Y * t
+			pts = [(x, y, roof_z(x, y) + 0.06) for x in xs]
+			_chain(p, pts, 0.07, 0.07, HIDE if j % 2 else BAMBOO, sides=4, grad=(0.1, 0.6))
+	ridge = [(x, 0, roof_z(x, 0) + 0.1) for x in xs]
+	_chain(p, ridge, 0.14, 0.14, WOOD, sides=6)
+	for s in (-1, 1):
+		x0, _, z0 = ridge[-1] if s > 0 else ridge[0]
+		_chain(p, [(x0, 0, z0), (x0 + s * 0.5, 0, z0 + 0.6), (x0 + s * 0.6, 0, z0 + 1.3)], 0.13, 0.04, WOOD, sides=6)
+		p.blob((0.2, 0.2, 0.25), (x0 + s * 0.6, 0, z0 + 1.35), GOLD, grad=(0.0, 0.5))
+		for y in (-hd * 0.5, hd * 0.5):  # gable-end braces under the swept eave
+			p.seg((s * hw, y, roof_z(hw, y) - 0.4), (s * (X - 0.1), y, roof_z(X - 0.1, y) - 0.05), 0.06, 0.05, WOOD, sides=4)
+
+
+def stilt_hall():
+	"""Rainhold's great longhouse: 14 x 9 m, a 2.5 m open porch along the front
+	(-Y), plank walls 3 m high with an open doorway, a steep thatch roof about
+	8 m at the ridge sweeping up into horned ends (10 m with finials). Its floor
+	top is the origin: stand it on a stilt_platform (or on its own pilings,
+	which run 4 m down). Collide it as a mesh."""
+	p = Prop("stilt_hall", 164)
+	_longhouse(p, 14.0, 9.0, 2.5, 3.0, 4.3, 1.4)
+	return p.build(bevel=0.03)
+
+
+def stilt_house():
+	"""A Rainhold home, 6 x 6 m with a 1.5 m porch at the front (-Y), the same
+	swept thatch roof as the hall at a smaller scale (about 6 m to the ridge).
+	Floor top at the origin, pilings 4 m down. Collide it as a mesh."""
+	p = Prop("stilt_house", 165)
+	_longhouse(p, 6.0, 6.0, 1.5, 2.5, 2.9, 0.8, door=(1.3, 2.2))
+	return p.build(bevel=0.03)
+
+
+def jalendra_shrine():
+	"""Rainhold's bindstone: Jalendra the Tide-Trunked, a stone elephant about
+	6 m to the top of the head, trunk raised high and pouring an arc of water
+	into the round basin (9 m across) he stands in. Four short pillars on the
+	rim hold bowls of glowing water. Faces -Y. Collide it as a mesh or a box."""
+	p = Prop("jalendra_shrine", 166)
+	R = 4.1  # the rim's outside edge is 4.5 m out: it fits one stilt_platform
+	p.seg((0, 0, -0.2), (0, 0, 0.15), R + 0.2, R + 0.2, STONE_DARK, sides=20, grad=(0.3, 1.0))
+	for k in range(20):  # the basin wall
+		a = k * math.tau / 20
+		p.box((1.5, 0.55, 0.85), (math.cos(a) * R, math.sin(a) * R, 0.42), STONE_LIGHT, rot=(0, 0, math.degrees(a) + 90), grad=(0.1, 0.85))
+		p.box((1.6, 0.75, 0.14), (math.cos(a) * R, math.sin(a) * R, 0.9), STONE_WARM, rot=(0, 0, math.degrees(a) + 90), grad=(0.0, 0.6))
+	p.seg((0, 0, 0.15), (0, 0, 0.62), R - 0.2, R - 0.2, WATER, sides=20, grad=(0.1, 0.6))
+	cy = 1.6  # the statue stands a little back, so the water lands in front of it
+	p.seg((0, cy, 0.0), (0, cy, 1.3), 2.1, 2.0, STONE_WARM, sides=8, grad=(0.1, 0.9), twist=22.5)
+	p.seg((0, cy, 1.3), (0, cy, 1.45), 2.2, 2.2, STONE_LIGHT, sides=8, grad=(0.0, 0.6), twist=22.5)
+	p.blob((2.4, 3.6, 2.2), (0, cy + 0.3, 3.3), STONE_LIGHT, segs=(14, 10), grad=(0.05, 0.8))  # body
+	for x in (-0.75, 0.75):
+		for y in (-1.0, 1.4):
+			p.seg((x, cy + y, 1.4), (x, cy + y, 2.8), 0.46, 0.5, STONE_LIGHT, sides=8, grad=(0.2, 0.9))
+			p.seg((x, cy + y, 1.4), (x, cy + y, 1.55), 0.52, 0.52, STONE_WARM, sides=8)
+	p.box((2.5, 1.8, 0.1), (0, cy + 0.4, 4.4), WATER, grad=(0.0, 0.5))  # a saddle-cloth of blue with a gold hem
+	for s in (-1, 1):
+		p.box((0.1, 1.8, 1.2), (s * 1.22, cy + 0.4, 3.85), WATER, grad=(0.0, 0.5))
+		p.box((0.12, 1.85, 0.12), (s * 1.24, cy + 0.4, 3.25), GOLD, glow=0.2)
+	p.seg((0, cy + 2.0, 3.6), (0.1, cy + 2.4, 2.5), 0.08, 0.04, STONE_LIGHT, sides=5)  # tail
+	hc = (0, cy - 1.85, 4.85)
+	trunk = [(0, -0.45, -0.3), (0, -0.75, -0.1), (0, -0.95, 0.4), (0, -1.1, 0.95), (0, -1.3, 1.35), (0, -1.55, 1.5), (0, -1.75, 1.45)]
+	_elephant_head(p, hc, 1.7, STONE_LIGHT, trunk=trunk)
+	p.seg((0, hc[1] + 0.2, hc[2] + 0.85), (0, hc[1] + 0.05, hc[2] + 1.05), 0.55, 0.3, GOLD, sides=8, glow=0.25)  # a crown
+	# the water: from the trunk's tip, a short rise then a long fall into the basin
+	sx, sy, sz = hc[0], hc[1] - 1.8 * 1.7, hc[2] + 1.42 * 1.7
+	arc = []
+	for k in range(11):
+		t = k / 10
+		arc.append((sx, sy - 0.4 * t, sz + 0.35 * t - (sz + 0.35 - 0.6) * t ** 2))
+	_chain(p, arc, 0.14, 0.26, WATER, sides=7, grad=(0.0, 0.5), glow=0.15)
+	for k in range(6):
+		a = k * math.tau / 6
+		p.blob((0.5, 0.5, 0.3), (arc[-1][0] + math.cos(a) * 0.4, arc[-1][1] + math.sin(a) * 0.4, 0.66), CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.4))
+	for k in range(4):  # pillars with bowls on the rim
+		a = math.pi / 4 + k * math.pi / 2
+		x, y = math.cos(a) * R, math.sin(a) * R
+		p.seg((x, y, 0.95), (x, y, 2.0), 0.3, 0.26, STONE_WARM, sides=8, grad=(0.1, 0.9))
+		p.seg((x, y, 2.0), (x, y, 2.3), 0.18, 0.45, STONE_LIGHT, sides=10, grad=(0.1, 0.8))
+		p.seg((x, y, 2.22), (x, y, 2.29), 0.38, 0.38, RUNE, sides=10, glow=1.2)
+	return p.build(bevel=0.04)
+
+
+def canoe():
+	"""A dugout canoe hollowed from one log, about 5.2 m, bow toward -Y, both
+	ends rising a little; waterline at the origin like rowboat. A paddle lies
+	across it. No collision."""
+	p = Prop("canoe", 167)
+	L, W, D = 2.6, 0.42, 0.36
+	nsec, nu = 16, 8
+
+	def section(y, shrink, lift):
+		t = abs(y) / L
+		w = W * max(0.02, (1 - t ** 2.2)) ** 0.7 * shrink
+		g = 0.24 + 0.22 * t ** 3
+		dep = D * max(0.05, (1 - t ** 2.5)) ** 0.6 * shrink
+		return [(math.cos(math.pi * i / (nu - 1)) * w, y, g - math.sin(math.pi * i / (nu - 1)) * dep + lift) for i in range(nu)]
+
+	ys = [-L + 2 * L * k / nsec for k in range(nsec + 1)]
+	outer = [section(y, 1.0, 0.0) for y in ys]
+	inner = [section(y * 0.94, 0.8, 0.02) for y in ys]
+	for grid, sw, grad in ((outer, WOOD, (0.1, 0.9)), (inner, WOOD_GRAY, (0.4, 1.0))):
+		verts, faces = [], []
+		for sec in grid:
+			verts += sec
+		for k in range(nsec):
+			for i in range(nu - 1):
+				a = k * nu + i
+				faces.append((a, a + 1, a + nu + 1, a + nu))
+		p.poly(verts, faces, sw, grad)
+	for k in range(nsec):  # the gunwales: strips joining the outer and inner rims
+		for i in (0, nu - 1):
+			p.poly([outer[k][i], outer[k + 1][i], inner[k + 1][i], inner[k][i]], [(0, 1, 2, 3)], WOOD, grad=(0.0, 0.4))
+	p.seg((-0.5, 0.3, 0.3), (0.55, -1.2, 0.34), 0.025, 0.025, WOOD, sides=5)  # the paddle
+	p.box((0.22, 0.5, 0.03), (0.63, -1.42, 0.35), WOOD, rot=(0, 0, 35), grad=(0.1, 0.6))
+	for y in (-1.2, 1.0):
+		p.box((0.62, 0.18, 0.05), (0, y, 0.2), WOOD_GRAY, grad=(0.1, 0.6))
+	return p.build(bevel=0.02)
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1782,6 +2665,25 @@ PROPS = {
 	"salt_crystals": salt_crystals,
 	"dead_palm": dead_palm,
 	"caravan_wagon": caravan_wagon,
+	"jungle_tree": jungle_tree,
+	"jungle_tree_giant": jungle_tree_giant,
+	"hanging_vines": hanging_vines,
+	"fern_clump": fern_clump,
+	"taro_plant": taro_plant,
+	"jungle_temple": jungle_temple,
+	"temple_arch_ruin": temple_arch_ruin,
+	"jalendra_head_fallen": jalendra_head_fallen,
+	"troll_hut": troll_hut,
+	"troll_totem": troll_totem,
+	"waterfall": waterfall,
+	"waterfall_water": waterfall_water,
+	"stilt_platform": stilt_platform,
+	"stilt_walkway": stilt_walkway,
+	"rope_bridge": rope_bridge,
+	"stilt_hall": stilt_hall,
+	"stilt_house": stilt_house,
+	"jalendra_shrine": jalendra_shrine,
+	"canoe": canoe,
 }
 
 

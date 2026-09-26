@@ -378,5 +378,107 @@
     "faction": {
       "salt_traders": 25
     }
+  },
+  "lagoon_snapper": {
+    "name": "Snapper for Oji",
+    "giver": "fisher_oji",
+    "start_keyword": "snapper",
+    "wants": {
+      "lagoon_snapper": 4
+    },
+    "reward": {
+      "xp": 4000,
+      "coin": 300
+    },
+    "first_reward_item": "rain_slicker",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Snapper for Oji. Bring Fisher Oji four lagoon snapper.",
+    "ready_text": "Four snapper! Good ones, too. Hand them here, {name}.",
+    "complete_text": "Supper for half the docks. Here's your share.",
+    "first_complete_text": "And the slicker. Keeps the rain off, mostly.",
+    "faction": {
+      "rainhold": 10
+    }
+  },
+  "troll_tusks": {
+    "name": "Troll Tusks",
+    "giver": "hunter_asha",
+    "start_keyword": "tusks",
+    "wants": {
+      "troll_tusk": 4
+    },
+    "reward": {
+      "xp": 7000,
+      "coin": 600
+    },
+    "first_reward_item": "trollhide_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Troll Tusks. Bring Hunter Asha four troll tusks.",
+    "ready_text": "Four tusks. The Mudtooths will feel that. Give them here, {name}.",
+    "complete_text": "Every tusk is one less troll on the river. Here.",
+    "first_complete_text": "And the gloves. Troll hide knits itself; so will you, a little.",
+    "faction": {
+      "rainhold": 15
+    }
+  },
+  "the_stone_crown": {
+    "name": "The Stone Crown",
+    "giver": "hunter_asha",
+    "start_keyword": "gorrak",
+    "wants": {
+      "gorraks_crown": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 2000
+    },
+    "first_reward_item": "tidewarden_blade",
+    "accept_text": "You have taken on a task: The Stone Crown. Bring Hunter Asha the stone crown of Gorrak Mudtooth, chief of the river trolls.",
+    "ready_text": "That's his crown. I can smell the river on it. Give it here, {name}.",
+    "complete_text": "The Mudtooths will be fighting over who's chief for a year. Good.",
+    "first_complete_text": "The Tidewarden's blade. He'd be glad of the hand that holds it now.",
+    "faction": {
+      "rainhold": 30
+    }
+  },
+  "heart_of_the_storm": {
+    "name": "Heart of the Storm",
+    "giver": "tidepriest_nalini",
+    "start_keyword": "heart",
+    "wants": {
+      "heart_of_the_storm": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 2000
+    },
+    "first_reward_item": "tide_trunk_charm",
+    "accept_text": "You have taken on a task: Heart of the Storm. Bring Tidepriest Nalini the heart of the Weeping Storm, at the old temple in the Weeping Throat.",
+    "ready_text": "It's still crackling... give it to me, gently, {name}.",
+    "complete_text": "Rest, storm. Rain softly now.",
+    "first_complete_text": "The Tide-Trunk Charm, blessed at this shrine. Wear it into the rain.",
+    "faction": {
+      "rainhold": 30
+    }
+  },
+  "graveljaws_tooth": {
+    "name": "Graveljaw's Tooth",
+    "giver": "hunter_asha",
+    "start_keyword": "tooth",
+    "wants": {
+      "graveljaws_tooth": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 2000
+    },
+    "first_reward_item": "crocscale_leggings",
+    "accept_text": "You have taken on a task: Graveljaw's Tooth. Bring Hunter Asha the tooth of Old Graveljaw, the ancient crocodile of the Throat's southwestern swamp.",
+    "ready_text": "Ten years I've chased him. Give it here, {name}.",
+    "complete_text": "Ten years. Thank you.",
+    "first_complete_text": "The leggings, as promised.",
+    "faction": {
+      "rainhold": 25
+    }
   }
 }

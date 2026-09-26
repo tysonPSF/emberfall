@@ -1,0 +1,502 @@
+{
+  "river_trout": {
+    "name": "River Trout",
+    "value": 12,
+    "stack": 20
+  },
+  "mud_carp": {
+    "name": "Mud Carp",
+    "value": 8,
+    "stack": 20
+  },
+  "lagoon_snapper": {
+    "name": "Lagoon Snapper",
+    "value": 20,
+    "stack": 20
+  },
+  "monsoon_eel": {
+    "name": "Monsoon Eel",
+    "value": 28,
+    "stack": 20
+  },
+  "jungle_catfish": {
+    "name": "Jungle Catfish",
+    "value": 24,
+    "stack": 20
+  },
+  "rainbow_koi": {
+    "name": "Rainbow Koi",
+    "value": 150,
+    "stack": 20
+  },
+  "tattered_boot": {
+    "name": "Tattered Boot",
+    "value": 1,
+    "stack": 5
+  },
+  "troll_tusk": {
+    "name": "Troll Tusk",
+    "value": 90,
+    "stack": 20
+  },
+  "frog_skin": {
+    "name": "Giant Frog Skin",
+    "value": 70,
+    "stack": 20
+  },
+  "croc_hide": {
+    "name": "Crocodile Hide",
+    "value": 110,
+    "stack": 20
+  },
+  "croc_tooth": {
+    "name": "Crocodile Tooth",
+    "value": 60,
+    "stack": 20
+  },
+  "elemental_essence": {
+    "name": "Essence of Rain",
+    "value": 120,
+    "stack": 20
+  },
+  "gorraks_crown": {
+    "name": "Gorrak's Stone Crown",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "heart_of_the_storm": {
+    "name": "Heart of the Storm",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "graveljaws_tooth": {
+    "name": "Graveljaw's Tooth",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "tidesteel_helm": {
+    "name": "Tidesteel Helm",
+    "slot": "head",
+    "ac": 12,
+    "sta": 3,
+    "value": 2600,
+    "rec_level": 20,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "tidesteel_breastplate": {
+    "name": "Tidesteel Breastplate",
+    "slot": "chest",
+    "ac": 21,
+    "sta": 4,
+    "hp": 20,
+    "value": 4800,
+    "rec_level": 21,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "tidesteel_vambraces": {
+    "name": "Tidesteel Vambraces",
+    "slot": "arms",
+    "ac": 9,
+    "str": 2,
+    "value": 2000,
+    "rec_level": 20,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "tidesteel_gauntlets": {
+    "name": "Tidesteel Gauntlets",
+    "slot": "hands",
+    "ac": 8,
+    "str": 2,
+    "value": 1900,
+    "rec_level": 20,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "tidesteel_greaves": {
+    "name": "Tidesteel Greaves",
+    "slot": "legs",
+    "ac": 14,
+    "sta": 3,
+    "value": 3300,
+    "rec_level": 21,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "tidesteel_boots": {
+    "name": "Tidesteel Boots",
+    "slot": "feet",
+    "ac": 9,
+    "agi": 2,
+    "value": 2000,
+    "rec_level": 20,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "tidesteel_shield": {
+    "name": "Tidesteel Round Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 13,
+    "sta": 3,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 4000,
+    "rec_level": 21
+  },
+  "rainsilk_cap": {
+    "name": "Rainsilk Cap",
+    "slot": "head",
+    "ac": 5,
+    "int": 3,
+    "wis": 3,
+    "mana": 25,
+    "value": 2200,
+    "rec_level": 20,
+    "wear": "cloth_cap"
+  },
+  "rainsilk_robe": {
+    "name": "Rainsilk Robe",
+    "slot": "chest",
+    "ac": 10,
+    "int": 4,
+    "wis": 4,
+    "mana": 45,
+    "value": 4400,
+    "rec_level": 21,
+    "wear": "patchwork_tunic"
+  },
+  "rainsilk_gloves": {
+    "name": "Rainsilk Gloves",
+    "slot": "hands",
+    "ac": 4,
+    "int": 3,
+    "wis": 3,
+    "mana": 15,
+    "value": 1700,
+    "rec_level": 20,
+    "wear": "cloth_gloves"
+  },
+  "rainsilk_slippers": {
+    "name": "Rainsilk Slippers",
+    "slot": "feet",
+    "ac": 4,
+    "int": 2,
+    "wis": 2,
+    "mana": 10,
+    "value": 1600,
+    "rec_level": 20,
+    "wear": "sandals"
+  },
+  "sharkskin_jerkin": {
+    "name": "Sharkskin Jerkin",
+    "slot": "chest",
+    "ac": 15,
+    "agi": 4,
+    "str": 2,
+    "value": 4400,
+    "rec_level": 21,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_tunic"
+  },
+  "sharkskin_leggings": {
+    "name": "Sharkskin Leggings",
+    "slot": "legs",
+    "ac": 10,
+    "agi": 3,
+    "value": 3000,
+    "rec_level": 21,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_leggings"
+  },
+  "sharkskin_gloves": {
+    "name": "Sharkskin Gloves",
+    "slot": "hands",
+    "ac": 6,
+    "agi": 2,
+    "value": 1800,
+    "rec_level": 20,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_gloves"
+  },
+  "sharkskin_boots": {
+    "name": "Sharkskin Boots",
+    "slot": "feet",
+    "ac": 8,
+    "agi": 3,
+    "value": 1900,
+    "rec_level": 20,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_boots"
+  },
+  "tidesteel_sword": {
+    "name": "Tidesteel Sword",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 5200,
+    "rec_level": 21,
+    "classes": [
+      "warrior",
+      "rogue"
+    ]
+  },
+  "coral_dirk": {
+    "name": "Coral Dirk",
+    "slot": "primary",
+    "dmg": 11,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 4600,
+    "rec_level": 21,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard"
+    ]
+  },
+  "tidesteel_war_axe": {
+    "name": "Tidesteel War Axe",
+    "slot": "primary",
+    "dmg": 16,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 5000,
+    "rec_level": 21,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "driftwood_staff": {
+    "name": "Driftwood Staff",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 4,
+    "wis": 4,
+    "mana": 35,
+    "value": 5000,
+    "rec_level": 21,
+    "classes": [
+      "cleric",
+      "wizard"
+    ]
+  },
+  "tidesteel_greataxe": {
+    "name": "Tidesteel Greataxe",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 5600,
+    "rec_level": 22,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "troll_club": {
+    "name": "Troll Club",
+    "slot": "primary",
+    "dmg": 14,
+    "delay": 3.4,
+    "verb": [
+      "bash",
+      "bashes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 2,
+    "value": 900,
+    "rec_level": 18
+  },
+  "mudtooth_maul": {
+    "name": "Mudtooth Maul",
+    "slot": "primary",
+    "dmg": 27,
+    "delay": 4.0,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 6,
+    "sta": 4,
+    "hp_regen": 2,
+    "value": 9000,
+    "rec_level": 23,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "stormcallers_staff": {
+    "name": "Stormcaller's Staff",
+    "slot": "primary",
+    "dmg": 14,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 6,
+    "wis": 6,
+    "mana": 60,
+    "value": 9000,
+    "rec_level": 23,
+    "classes": [
+      "cleric",
+      "wizard"
+    ],
+    "proc": {
+      "spell": "storm_bolt",
+      "chance": 0.06
+    }
+  },
+  "rain_slicker": {
+    "name": "Fisher's Rain Slicker",
+    "slot": "chest",
+    "ac": 9,
+    "sta": 3,
+    "agi": 2,
+    "hp": 15,
+    "value": 1500,
+    "rec_level": 18,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_tunic"
+  },
+  "trollhide_gloves": {
+    "name": "Trollhide Gloves",
+    "slot": "hands",
+    "ac": 8,
+    "str": 3,
+    "sta": 3,
+    "hp_regen": 1,
+    "value": 2600,
+    "rec_level": 20,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "tidewarden_blade": {
+    "name": "Tidewarden's Blade",
+    "slot": "primary",
+    "dmg": 17,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 4,
+    "agi": 3,
+    "hp": 30,
+    "value": 8000,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue"
+    ],
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.07
+    }
+  },
+  "tide_trunk_charm": {
+    "name": "Tide-Trunk Charm",
+    "slot": "neck",
+    "ac": 5,
+    "sta": 4,
+    "wis": 4,
+    "int": 4,
+    "hp": 40,
+    "mana": 40,
+    "value": 8000,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true
+  },
+  "crocscale_leggings": {
+    "name": "Crocscale Leggings",
+    "slot": "legs",
+    "ac": 15,
+    "sta": 4,
+    "agi": 3,
+    "hp": 30,
+    "value": 8000,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_leggings"
+  }
+}
