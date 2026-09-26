@@ -95,6 +95,7 @@ const SECTIONS := [
 	["solid_logs", "greenmoor"],
 	["quest_hints", "greenmoor"],
 	["vale_quests", "thornwood"],
+	["face_path", "harrowfield"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -2980,6 +2981,55 @@ func _t_nav_chase() -> void:
 			boar.hate.clear()
 			boar.state = Mob.State.RETURN
 	Entity.nav_enabled = true
+
+
+## A mob pathing around a fence to reach you walks forward along its path
+## (facing within 45 degrees of where it steps), then faces you in reach.
+func _t_face_path() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	for k in 80:
+		if z.nav_ready:
+			break
+		await _wait(0.25)
+	p.level = 30
+	p.recalc_stats()
+	var boar: Mob = _nearest_mob(p, "wild_boar")
+	for m in World.get_mobs():
+		m.hate.clear()
+	p.global_position = z.ground(85, -30) + Vector3.UP  # inside the east field; the boar starts outside its south fence
+	boar.global_position = z.ground(88, 2) + Vector3.UP
+	boar.home = boar.global_position
+	boar.state = Mob.State.IDLE
+	await _wait(0.3)
+	boar.add_hate(p, 50.0)
+	var moving := 0
+	var off := 0
+	var worst := 0.0
+	var reached := false
+	for k in 1800:  # the way round the field takes about 14 s
+		await get_tree().physics_frame
+		if not is_instance_valid(boar):
+			break
+		var v := Vector2(boar.velocity.x, boar.velocity.z)
+		if v.length() > 0.5:
+			var facing := -boar.global_basis.z
+			var angle := rad_to_deg(absf(Vector2(facing.x, facing.z).angle_to(v)))
+			moving += 1
+			worst = maxf(worst, angle)
+			if angle > 45.0:
+				off += 1
+		if boar.distance_to(p) <= World.melee_range() + 0.5:
+			reached = true
+			break
+	await _wait(0.5)
+	var to_you := (p.global_position - boar.global_position) * Vector3(1, 0, 1)
+	var facing := -boar.global_basis.z
+	print("face_path: reached %s; moving %d frames, %d facing more than 45 deg off its step (worst %.0f deg) -> %s; in reach it faces you within %.0f deg" % [
+			reached, moving, off, worst, "PASS" if off <= moving / 20 else "FAIL", rad_to_deg(absf(Vector2(facing.x, facing.z).angle_to(Vector2(to_you.x, to_you.z))))])
+	boar.hate.clear()
+	boar.state = Mob.State.RETURN
 
 
 ## Dual Wield (warriors, 13) and Double Attack (15): a one-handed weapon goes

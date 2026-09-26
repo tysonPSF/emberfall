@@ -190,8 +190,8 @@ func _physics_process(delta: float) -> void:
 	if root_left > 0.0 or stun_left > 0.0:
 		move = Vector3.ZERO
 	var spd := speed * (0.5 if snare_left > 0.0 else 1.0)
-	if move != Vector3.ZERO and not auto_attack:
-		face_toward(global_position + move)
+	if move != Vector3.ZERO:
+		face_toward(global_position + move)  # walks forward, even on a path around something; faces its target once in reach
 	velocity.x = move.x * spd
 	velocity.z = move.z * spd
 	if move != Vector3.ZERO or not is_on_floor():
