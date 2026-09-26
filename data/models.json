@@ -1099,6 +1099,26 @@
           "path": "res://assets/creatures/necromancer_pauldron.glb"
         }
       ]
+    },
+    "shaman": {
+      "path": "res://assets/creatures/shaman_body.glb",
+      "headgear_parts": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/shaman_mantle.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/shaman_totem.glb"
+        }
+      ]
+    },
+    "spirit_wolf": {
+      "path": "res://assets/creatures/spirit_wolf.glb",
+      "rig": "own"
     }
   },
   "weapons": {

@@ -435,7 +435,7 @@
     "skill": "piercing",
     "value": 120,
     "rec_level": 5,
-    "classes": ["warrior", "wizard", "rogue", "magician", "necromancer"]
+    "classes": ["warrior", "wizard", "rogue", "magician", "necromancer", "shaman"]
   },
   "forged_iron_sword": {
     "name": "Forged Iron Sword",
@@ -464,7 +464,8 @@
     "model": "shield_round",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 220,
     "rec_level": 8
@@ -508,7 +509,8 @@
     "model": "shield_badge",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 2000,
     "rec_level": 16

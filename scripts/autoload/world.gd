@@ -340,6 +340,7 @@ func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
 	e.snare_left = maxf(0.0, e.snare_left - delta)
 	e.stun_left = maxf(0.0, e.stun_left - delta)
+	e.slow_left = maxf(0.0, e.slow_left - delta)
 	e.fear_left = maxf(0.0, e.fear_left - delta)
 	if e is Player:
 		(e as Player).off_swing_timer = maxf(0.0, (e as Player).off_swing_timer - delta)
@@ -386,7 +387,7 @@ func _update_melee(e: Entity) -> void:
 		return
 	var p := e as Player
 	if e.swing_timer <= 0.0:
-		e.swing_timer = e.attack_delay
+		e.swing_timer = e.attack_delay * slow_factor(e)
 		e.sitting = false
 		e.animate("attack")
 		_notice_attacker(t, e)
@@ -398,7 +399,7 @@ func _update_melee(e: Entity) -> void:
 				_swing(e, t, "primary")
 	# Dual Wield: the off-hand weapon on its own timer, when the skill carries it
 	if p != null and p.off_delay > 0.0 and p.off_swing_timer <= 0.0 and not t.dead and skill_cap(p, "dual_wield") > 0:
-		p.off_swing_timer = p.off_delay
+		p.off_swing_timer = p.off_delay * slow_factor(p)
 		try_skill_up(p, "dual_wield", t, 0.5)
 		if randf() < DUAL_WIELD_BASE + DUAL_WIELD_SKILL * skill_frac(p, "dual_wield"):
 			e.sitting = false
@@ -1704,6 +1705,19 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			if t is Player:
 				say(t, str(s.get("snare_you", "Your legs slow to a crawl.")), C_HIT_YOU)
 			t.add_hate(c, 5.0)
+		"slow":  # a shaman's slow: the target's swings come further apart; named foes shrug off half
+			var pct := int(s.get("slow", 25))
+			if t is Mob and (t as Mob).data.get("named", false):
+				pct /= 2
+			if t.slow_left > 0.0 and t.slow_pct > pct:
+				say(c, "%s is already slowed more than that." % cap(t.display_name), C_WARN)
+			else:
+				t.slow_pct = pct
+				t.slow_left = float(s.get("duration", 60))
+				say(c, (str(s.get("slow_text", "%s slows down.")) % cap(t.display_name)) + " (%d%% slower)" % pct, C_SPELL)
+				if t is Player:
+					say(t, str(s.get("slow_you", "Your arms feel heavy.")), C_HIT_YOU)
+			t.add_hate(c, 10.0)
 		"stun":
 			t.stun_left = float(s.get("duration", 4))
 			say(c, str(s.get("stun_text", "%s is stunned.")) % t.display_name, C_SPELL)
@@ -1795,6 +1809,7 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 		"cure":  # an antidote: poisons, bleeding and slowing gone
 			t.dots.clear()
 			t.snare_left = 0.0
+			t.slow_left = 0.0
 			t.stats_changed.emit()
 			say(t, "The poison leaves your blood.", C_SPELL)
 		"vanish":  # everything hunting you forgets you, and you're hidden
@@ -1834,6 +1849,11 @@ static func warded(e: Entity) -> bool:
 
 ## Whether an attacker stands behind its target (outside the arc in front of
 ## its face): where a backstab lands.
+## How much longer an entity's swings take while slowed: 30% slower = 1 / 0.7.
+static func slow_factor(e: Entity) -> float:
+	return 1.0 / (1.0 - clampf(e.slow_pct, 0, 90) / 100.0) if e.slow_left > 0.0 else 1.0
+
+
 static func behind(attacker: Entity, target: Entity) -> bool:
 	var facing := -target.global_transform.basis.z
 	var to_attacker := attacker.global_position - target.global_position

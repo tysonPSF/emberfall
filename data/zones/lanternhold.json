@@ -392,6 +392,15 @@
       "collide": "none"
     },
     {
+      "type": "prop",
+      "id": "troll_totem",
+      "pos": [
+        -16.5,
+        -18.5
+      ],
+      "yaw": 45
+    },
+    {
       "type": "house",
       "pos": [
         -10,
@@ -776,6 +785,17 @@
       "pos": [
         -16,
         30
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_hosa",
+      "pos": [
+        -14,
+        -16
       ],
       "face": [
         0,

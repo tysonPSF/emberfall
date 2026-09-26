@@ -165,7 +165,8 @@
     "model": "shield_round",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 4000,
     "rec_level": 21
@@ -224,7 +225,8 @@
     "rec_level": 21,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_tunic"
   },
@@ -237,7 +239,8 @@
     "rec_level": 21,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_leggings"
   },
@@ -250,7 +253,8 @@
     "rec_level": 20,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_gloves"
   },
@@ -263,7 +267,8 @@
     "rec_level": 20,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_boots"
   },
@@ -298,7 +303,7 @@
     "skill": "piercing",
     "value": 4600,
     "rec_level": 21,
-    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer"]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman"]
   },
   "tidesteel_war_axe": {
     "name": "Tidesteel War Axe",
@@ -333,7 +338,7 @@
     "mana": 35,
     "value": 5000,
     "rec_level": 21,
-    "classes": ["cleric", "wizard", "magician", "necromancer"]
+    "classes": ["cleric", "wizard", "magician", "necromancer", "shaman"]
   },
   "tidesteel_greataxe": {
     "name": "Tidesteel Greataxe",
@@ -403,7 +408,7 @@
     "mana": 60,
     "value": 9000,
     "rec_level": 23,
-    "classes": ["cleric", "wizard", "magician", "necromancer"],
+    "classes": ["cleric", "wizard", "magician", "necromancer", "shaman"],
     "proc": {
       "spell": "storm_bolt",
       "chance": 0.06

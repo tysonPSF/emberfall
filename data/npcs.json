@@ -1486,5 +1486,53 @@
       "hail": "The lagoon gives up its drowned, {name}, and I give them work. Necromancers, I'll teach you what the river taught me.",
       "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
     }
+  },
+  "gm_tuvi": {
+    "name": "Grandmother Tuvi",
+    "title": "Shaman Guildmaster",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "The spirits haven't spoken your name to me, {name}. Try the others round the hearth."
+    },
+    "dialogue": {
+      "hail": "Sit a while, {name}. The spirits walk close to the hearth here. Shamans learn from me: how to slow a beast's blows, how to lend a friend the bear's strength, how to mend a wound slowly and well.",
+      "unknown": "The spirits don't answer that one, {name}. Ask Keeper Maelin at the hearth."
+    }
+  },
+  "gm_hosa": {
+    "name": "Spiritwalker Hosa",
+    "title": "Shaman Guildmaster",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "You don't walk with spirits, {name}. The other guilds are round the plaza."
+    },
+    "dialogue": {
+      "hail": "The dawn wakes more than the sun, {name}. Shamans, come learn what the old spirits of the Dawnstair still teach.",
+      "unknown": "Ask round the plaza, {name}."
+    }
+  },
+  "gm_ekon": {
+    "name": "Rain-Speaker Ekon",
+    "title": "Shaman Guildmaster",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "The rain speaks to shamans, {name}, and you're not one."
+    },
+    "dialogue": {
+      "hail": "Listen: every drop is a voice, {name}. Shamans who hear them come to me, and I teach them to answer.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
   }
 }

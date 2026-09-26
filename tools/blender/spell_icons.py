@@ -1311,6 +1311,262 @@ def action_pet_sit():
 	return p.build()
 
 
+# ---------------------------------------------------------------- shaman
+
+def _paw(p, x, z, s, swatch, glow):
+	"""A paw print standing upright to face the camera: a pad and four toes."""
+	p.blob((0.42 * s, 0.1, 0.36 * s), (x, 0, z), swatch, segs=(10, 6), glow=glow)
+	for k, (dx, dz) in enumerate(((-0.27, 0.3), (-0.1, 0.42), (0.1, 0.42), (0.27, 0.3))):
+		p.blob((0.15 * s, 0.1, 0.18 * s), (x + dx * s, 0, z + dz * s), swatch, segs=(8, 5), glow=glow)
+
+
+def _swarm(p, n, spread, swatch, glow, seed):
+	import random
+	rnd = random.Random(seed)
+	for k in range(n):   # insects: a body and two pale wings each
+		x, z = rnd.uniform(-spread, spread), 0.5 + rnd.uniform(-spread, spread) * 0.8
+		p.blob((0.2, 0.14, 0.13), (x, -0.1, z), swatch, segs=(6, 4), glow=glow)
+		for sx in (-1, 1):
+			p.blob((0.17, 0.03, 0.1), (x + sx * 0.14, -0.14, z + 0.09), CLOTH_WHITE, rot=(0, sx * 30, 0), segs=(5, 3), glow=0.6)
+
+
+def _snowflake(p, cx, cz, r, glow):
+	for k in range(6):
+		a = k * math.tau / 6
+		tip = (cx + math.cos(a) * r, 0, cz + math.sin(a) * r)
+		p.seg((cx, 0, cz), tip, 0.05, 0.02, WATER, sides=5, glow=glow)
+		mid = (cx + math.cos(a) * r * 0.6, 0, cz + math.sin(a) * r * 0.6)
+		for b in (-0.6, 0.6):
+			p.seg(mid, (mid[0] + math.cos(a + b) * r * 0.25, 0, mid[2] + math.sin(a + b) * r * 0.25), 0.03, 0.01, WATER, sides=4, glow=glow)
+
+
+def _moon(p, cx, cz, r, glow):
+	for k in range(9):   # a crescent: blobs along an arc, thinning at the horns
+		a = math.radians(110 + k * 17.5)
+		w = 0.2 * r * math.sin(math.radians(k * 180 / 8)) + 0.05
+		p.blob((w * 2, 0.1, w * 2), (cx + math.cos(a) * r, 0, cz + math.sin(a) * r), GOLD, segs=(8, 5), glow=glow)
+
+
+def _zs(p, x, z, s, glow=0.8):
+	p.box((0.24 * s, 0.04, 0.04 * s), (x, 0, z + 0.1 * s), CLOTH_WHITE, glow=glow)
+	p.box((0.24 * s, 0.04, 0.04 * s), (x, 0, z - 0.1 * s), CLOTH_WHITE, glow=glow)
+	p.box((0.3 * s, 0.04, 0.04 * s), (x, 0, z), CLOTH_WHITE, rot=(0, 45, 0), glow=glow)
+
+
+def frost_rift():
+	p = Prop("frost_rift", 601)
+	for k in range(5):   # a jagged crack in the ground
+		x0, x1 = -0.8 + k * 0.32, -0.48 + k * 0.32
+		p.seg((x0, 0, 0.1 + 0.06 * (k % 2)), (x1, 0, 0.1 + 0.06 * ((k + 1) % 2)), 0.06, 0.06, STONE_DARK, sides=4)
+	for x, h, lean in ((-0.45, 0.55, -15), (-0.1, 0.9, 5), (0.25, 0.7, 12), (0.55, 0.45, 25)):   # ice shards bursting up
+		top = (x + math.sin(math.radians(lean)) * h, 0, 0.1 + math.cos(math.radians(lean)) * h)
+		p.seg((x, 0, 0.1), top, 0.13, 0.0, WATER, sides=5, glow=1.4)
+	return p.build()
+
+
+def sicken():
+	p = Prop("sicken", 603)
+	_swirl(p, 0, 0.55, 0.1, 0.55, 1.6, SICKLY, 1.4, thick=0.08)
+	for x, z in ((-0.55, 0.1), (0.1, 0.02), (0.6, 0.15)):
+		_drop(p, x, z, 0.35, SICKLY, 1.6)
+	return p.build()
+
+
+def strengthen():
+	p = Prop("strengthen", 605)
+	p.blob((0.6, 0.45, 0.55), (0, 0, 0.5), HIDE, segs=(10, 8))   # a clenched fist
+	for k in range(4):
+		p.blob((0.17, 0.2, 0.17), (-0.22 + k * 0.15, -0.2, 0.68), HIDE, segs=(6, 5))
+	p.seg((0, 0, 0.25), (0, 0, -0.2), 0.2, 0.22, HIDE, sides=8)
+	_ring(p, 0.72, 0.5, 0.05, FLAME, glow=1.8, sides=16)
+	return p.build()
+
+
+def inner_fire():
+	p = Prop("inner_fire", 607)
+	_flame(p, 0, 0.3, 0.9, glow=2.2)
+	_ring(p, 0.62, 0.55, 0.06, GOLD, glow=1.2, sides=18)
+	return p.build()
+
+
+def drowsy():
+	p = Prop("drowsy", 609)
+	p.blob((1.2, 0.35, 0.25), (0, 0, 0.12), SICKLY, segs=(12, 6), glow=0.4)   # a slow snail's body
+	p.seg((0.5, 0, 0.15), (0.72, 0, 0.45), 0.1, 0.08, SICKLY, sides=6, glow=0.4)   # its head, up
+	for dx in (0.0, 0.1):   # drooping eye stalks
+		p.seg((0.68 + dx, 0, 0.45), (0.8 + dx, -0.05, 0.62), 0.03, 0.02, SICKLY, sides=4, glow=0.4)
+	_swirl(p, -0.1, 0.55, 0.05, 0.42, 2.0, WOOD, 0.3, thick=0.1)   # its shell
+	p.blob((0.85, 0.3, 0.85), (-0.1, 0.08, 0.55), AMBER, segs=(12, 8))
+	_zs(p, 0.45, 1.05, 0.7)
+	return p.build()
+
+
+def spirit_of_bear():
+	p = Prop("spirit_of_bear", 611)
+	_paw(p, 0, 0.35, 1.35, WOOD, 0.6)
+	for k in range(4):   # claws
+		dx = (-0.36, -0.13, 0.13, 0.36)[k]
+		p.seg((dx, -0.05, 0.95), (dx * 1.1, -0.05, 1.15), 0.05, 0.0, BONE, sides=4)
+	return p.build()
+
+
+def spirit_mend():
+	p = Prop("spirit_mend", 613)
+	p.blob((0.55, 0.12, 0.85), (0, 0, 0.5), LEAF, rot=(0, 25, 0), segs=(10, 6), glow=1.2)   # a leaf
+	p.seg((0.22, -0.02, 0.05), (-0.2, -0.02, 0.9), 0.025, 0.01, PINE, sides=4)
+	for k in range(4):   # slow motes rising round it
+		a = k * math.tau / 4
+		p.blob((0.1, 0.1, 0.1), (math.cos(a) * 0.62, -0.1, 0.5 + math.sin(a) * 0.5), LEAF, segs=(6, 4), glow=2.0)
+	return p.build()
+
+
+def tainted_breath():
+	p = Prop("tainted_breath", 615)
+	_stream(p, -0.8, 0.7, 0.5, 0.18, 0.12, SICKLY, 1.2)
+	for x, z, r in ((0.45, 0.62, 0.3), (0.7, 0.45, 0.25), (0.25, 0.42, 0.22)):
+		p.blob((r, r * 0.8, r), (x, 0, z), LEAF, segs=(8, 6), glow=1.0)
+	return p.build()
+
+
+def feet_like_cat():
+	p = Prop("feet_like_cat", 617)
+	_paw(p, -0.35, 0.25, 0.8, GOLD, 1.0)
+	_paw(p, 0.35, 0.65, 0.8, GOLD, 1.0)
+	return p.build()
+
+
+def frost_strike():
+	p = Prop("frost_strike", 619)
+	p.seg((-0.7, 0, 1.0), (0.45, 0, 0.2), 0.12, 0.12, WATER, sides=6, glow=1.4)   # an ice spear
+	p.seg((0.45, 0, 0.2), (0.7, 0, 0.02), 0.2, 0.0, WATER, sides=6, glow=2.0)
+	for k in range(3):
+		p.seg((-0.7 + k * 0.2, 0.1, 1.0 - k * 0.14), (-0.95 + k * 0.2, 0.1, 1.12 - k * 0.14), 0.03, 0.0, CLOTH_WHITE, sides=4, glow=0.8)
+	return p.build()
+
+
+def walking_sleep():
+	p = Prop("walking_sleep", 621)
+	_moon(p, -0.1, 0.5, 0.5, 1.4)
+	_zs(p, 0.5, 0.85, 0.8)
+	_zs(p, 0.7, 0.45, 0.55)
+	return p.build()
+
+
+def spirit_healing():
+	p = Prop("spirit_healing", 623)
+	_cross(p, 0.9, LEAF, 1.8)
+	_swirl(p, 0, 0.5, 0.55, 0.75, 1.0, CLOTH_WHITE, 0.8, thick=0.04)
+	return p.build()
+
+
+def quickness():
+	p = Prop("quickness", 625)
+	for k in range(3):   # chevrons racing forward
+		x = -0.55 + k * 0.4
+		p.seg((x - 0.2, 0, 0.85), (x + 0.15, 0, 0.5), 0.07, 0.07, GOLD, sides=5, glow=1.4 + k * 0.3)
+		p.seg((x + 0.15, 0, 0.5), (x - 0.2, 0, 0.15), 0.07, 0.07, GOLD, sides=5, glow=1.4 + k * 0.3)
+	return p.build()
+
+
+def talisman_of_the_totem():
+	p = Prop("talisman_of_the_totem", 627)
+	for k, sw in enumerate((WOOD, CLOTH_RED, WOOD)):   # a little totem pole of three faces
+		z = 0.2 + k * 0.36
+		p.box((0.46, 0.4, 0.32), (0, 0, z), sw)
+		for sx in (-1, 1):
+			p.blob((0.08, 0.05, 0.06), (sx * 0.1, -0.21, z + 0.05), CLOTH_WHITE if k != 1 else GOLD, segs=(6, 4), glow=0.8)
+	for sx in (-1, 1):   # its wings at the top
+		p.seg((0, 0, 0.9), (sx * 0.7, 0, 1.05), 0.12, 0.03, STONE_WARM, sides=4)
+	return p.build()
+
+
+def envenomed_breath():
+	p = Prop("envenomed_breath", 629)
+	for x, z, r in ((-0.3, 0.5, 0.5), (0.25, 0.45, 0.55), (0, 0.75, 0.5)):
+		p.blob((r, r * 0.7, r * 0.8), (x, 0, z), PINE, segs=(10, 6), glow=0.8)
+	p.seg((0.05, -0.3, 0.55), (0.12, -0.35, 0.05), 0.12, 0.0, BONE, sides=5)   # a dripping fang
+	_drop(p, 0.14, -0.15, 0.3, SICKLY, 2.0)
+	return p.build()
+
+
+def spirit_regrowth():
+	p = Prop("spirit_regrowth", 631)
+	p.seg((0, 0, 0.0), (0.05, 0, 0.9), 0.05, 0.03, PINE, sides=5, glow=0.6)   # a sprout
+	for k, (z, side) in enumerate(((0.3, -1), (0.52, 1), (0.74, -1))):
+		p.blob((0.4, 0.08, 0.2), (side * 0.2, 0, z), LEAF, rot=(0, side * -25, 0), segs=(8, 4), glow=1.4)
+	_ring(p, 0.7, 0.45, 0.04, LEAF, glow=1.6, sides=18)
+	return p.build()
+
+
+def tagars_insects():
+	p = Prop("tagars_insects", 633)
+	_swarm(p, 7, 0.6, STONE_DARK, 0.4, 7)
+	return p.build()
+
+
+def winters_roar():
+	p = Prop("winters_roar", 635)
+	_snowflake(p, 0, 0.55, 0.62, 1.6)
+	return p.build()
+
+
+def spirit_of_the_wolf():
+	p = Prop("spirit_of_the_wolf", 637)
+	p.blob((0.62, 0.55, 0.58), (0, 0, 0.5), WATER, segs=(10, 8), glow=0.9)   # a spirit wolf's head
+	p.seg((0, -0.25, 0.42), (0, -0.62, 0.32), 0.2, 0.1, WATER, sides=8, glow=0.9)   # muzzle
+	p.blob((0.12, 0.1, 0.1), (0, -0.66, 0.36), STONE_DARK, segs=(6, 4))
+	for sx in (-1, 1):
+		p.seg((sx * 0.2, 0, 0.72), (sx * 0.3, 0.05, 1.08), 0.12, 0.0, WATER, sides=4, glow=0.9)   # ears
+		p.blob((0.09, 0.05, 0.07), (sx * 0.16, -0.26, 0.6), CLOTH_WHITE, segs=(6, 4), glow=2.5)
+	return p.build()
+
+
+def chant_of_the_pack():
+	p = Prop("chant_of_the_pack", 639)
+	for x, z in ((-0.5, 0.2), (0.0, 0.62), (0.5, 0.2)):
+		_paw(p, x, z, 0.6, WOOD_GRAY, 0.9)
+	return p.build()
+
+
+def winters_grasp():
+	p = Prop("winters_grasp", 641)
+	p.blob((0.55, 0.35, 0.35), (0, 0, 0.2), WATER, segs=(10, 6), glow=1.0)   # an icy palm
+	for k in range(5):   # clawed fingers curling up
+		x = -0.36 + k * 0.18
+		pts = [(x, 0, 0.3), (x * 1.2, -0.05, 0.65), (x * 0.9, -0.15, 0.95)]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.07, 0.05, WATER, sides=5, glow=1.3)
+		p.seg(pts[-1], (x * 0.7, -0.25, 1.08), 0.05, 0.0, CLOTH_WHITE, sides=4, glow=1.5)
+	return p.build()
+
+
+def turgurs_insects():
+	p = Prop("turgurs_insects", 643)
+	_swarm(p, 10, 0.7, AMBER, 1.2, 11)
+	return p.build()
+
+
+def kraggs_mending():
+	p = Prop("kraggs_mending", 645)
+	for sx in (-1, 1):   # a glowing heart
+		p.blob((0.5, 0.35, 0.5), (sx * 0.22, 0, 0.66), LEAF, segs=(10, 8), glow=1.8)
+	p.seg((0, 0, 0.6), (0, 0, 0.05), 0.42, 0.0, LEAF, sides=10, glow=1.8)
+	_ring(p, 0.8, 0.5, 0.04, GOLD, glow=1.4, sides=20)
+	return p.build()
+
+
+def ancestral_ward():
+	p = Prop("ancestral_ward", 647)
+	for k in range(3):   # three standing stones, each with a spirit's glowing eyes
+		a = math.radians(210 + k * 60)
+		x = math.cos(a) * 0.6
+		p.box((0.28, 0.25, 0.8 - 0.15 * (k != 1)), (x, 0, 0.4), STONE_LIGHT)
+		for sx in (-1, 1):
+			p.blob((0.06, 0.04, 0.05), (x + sx * 0.06, -0.14, 0.55), GOLD, segs=(5, 3), glow=2.5)
+	_ring(p, 0.85, 0.05, 0.05, GOLD, glow=1.6, sides=20, tilt=1.2)
+	return p.build()
+
+
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
@@ -1325,7 +1581,10 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  storm_bolt, frog_poison, death_roll, tide_trunk_blessing, fish,
 								  call_of_earth, call_of_water, call_of_fire, call_of_air, call_of_the_primal, renew_elements, greater_renewal, burnout, elemental_bond, primal_fury, elemental_aegis,
 								  raise_bones, raise_skeletal_knight, mend_bones, dark_empowerment, lifetap, siphon_life, soul_rend, disease_cloud, venom_bolt,
-								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind]}
+								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
+								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
+								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 

@@ -9,6 +9,7 @@
     "air": {"name": "air elemental", "models": ["air_elemental"], "scales": [0.7, 0.85, 1.0, 1.15], "hp": 1.0, "dmg": 0.85, "ac": 1.0, "delay": 2.0, "speed": 7.2, "verb": ["buffet", "buffets"], "proc": {"spell": "gust_of_wind", "chance": 0.08, "text": "%s knocks the wind out of it with a %s!"}},
     "primal": {"name": "primal elemental", "models": ["storm_elemental"], "scales": [0.8, 0.9, 1.0, 1.05], "hp": 1.35, "dmg": 1.3, "ac": 1.3, "delay": 2.6, "speed": 6.0, "taunt": true, "verb": ["smash", "smashes"], "proc": {"spell": "storm_bolt", "chance": 0.1, "text": "%s calls down a %s!"}},
     "skeleton": {"name": "skeleton", "models": ["skeleton_minion", "skeleton_warrior", "skeleton_rogue", "skeleton_knight"], "weapon": "skeleton_blade", "scales": [0.9, 0.95, 1.0, 1.05], "hp": 1.15, "dmg": 1.0, "ac": 1.1, "delay": 3.0, "speed": 5.8, "taunt": true, "verb": ["slash", "slashes"]},
-    "skeletal_knight": {"name": "skeletal knight", "models": ["skeleton_knight"], "weapon": "skeleton_axe", "scales": [1.05, 1.05, 1.1, 1.15], "hp": 1.4, "dmg": 1.25, "ac": 1.4, "delay": 3.0, "speed": 6.0, "taunt": true, "verb": ["cleave", "cleaves"], "proc": {"spell": "grave_chill", "chance": 0.1, "text": "%s's blade carries %s!"}}
+    "skeletal_knight": {"name": "skeletal knight", "models": ["skeleton_knight"], "weapon": "skeleton_axe", "scales": [1.05, 1.05, 1.1, 1.15], "hp": 1.4, "dmg": 1.25, "ac": 1.4, "delay": 3.0, "speed": 6.0, "taunt": true, "verb": ["cleave", "cleaves"], "proc": {"spell": "grave_chill", "chance": 0.1, "text": "%s's blade carries %s!"}},
+    "spirit_wolf": {"name": "spirit wolf", "models": ["spirit_wolf"], "scales": [0.9, 0.95, 1.0, 1.1], "hp": 0.85, "dmg": 0.85, "ac": 0.9, "delay": 2.4, "speed": 7.2, "verb": ["bite", "bites"]}
   }
 }

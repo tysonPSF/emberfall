@@ -96,6 +96,7 @@ const SECTIONS := [
 	["quest_hints", "greenmoor"],
 	["vale_quests", "thornwood"],
 	["face_path", "harrowfield"],
+	["shaman", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -3889,6 +3890,107 @@ func _t_pets() -> void:
 
 ## The Necromancer: a skeleton pet, lifetaps, a disease that ticks, a draining
 ## bond, fear (not on named foes), root and snare, and Feign Death.
+## The Shaman: a spirit wolf at 20; slows that space out a monster's swings
+## (half as much on a named one); buffs, haste and a heal over time; the
+## guildmasters in all three cities; the caster staves.
+func _t_shaman() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	p.char_class = "shaman"
+	p.level = 25
+	p.spells = []
+	for sid: String in GameData.spells:
+		if GameData.spells[sid].get("classes", {}).has("shaman"):
+			p.spells.append(sid)
+	print("shaman: %d spells from 1 to 25: %s" % [p.spells.size(), ", ".join(p.spells.map(func(s: String) -> String: return "%s %d" % [GameData.spells[s]["name"], int(GameData.spells[s]["classes"]["shaman"])]))])
+	p.recalc_stats()
+	for sk: String in GameData.skills["skills"]:
+		if World.skill_cap(p, sk) > 0:
+			p.skills[sk] = World.skill_cap(p, sk)
+	print("shaman: level 25 -> %d hp, %d mana, ac %d" % [p.max_hp, p.max_mana, p.ac])
+	var cast := func(sid: String) -> void:
+		p.cooldowns.clear()
+		p.mana = p.max_mana
+		World.request_cast(p.entity_id, sid)
+		await _wait(float(GameData.spells[sid]["cast_time"]) + 0.3)
+	p.global_position = z.ground(20, 60) + Vector3.UP
+	await cast.call("spirit_of_the_wolf")
+	var pet := World.get_object(p.pet_id) as Pet
+	print("shaman: called %s (%s, %d hp, hits %d-%d)" % [pet.display_name if pet else "nothing", pet.model_id if pet else "", pet.max_hp if pet else 0, pet.dmg_min if pet else 0, pet.dmg_max if pet else 0])
+	await _wait(0.5)
+	await _shot("9zz_shaman_wolf")
+	World.request_pet(p.entity_id, "leave")
+	# buffs on yourself
+	var str0 := int(p.attributes.get("str", 0))
+	var delay0 := p.attack_delay
+	var hp0 := p.max_hp
+	World.request_set_target(p.entity_id, p.entity_id)
+	for sid: String in ["strengthen", "quickness", "ancestral_ward"]:
+		await cast.call(sid)
+	print("shaman: strengthen str %d -> %d; quickness delay %.2f -> %.2f s; ancestral ward max hp %d -> %d, regen %d" % [str0, int(p.attributes.get("str", 0)), delay0, p.attack_delay, hp0, p.max_hp, p.hp_regen])
+	p.hp = p.max_hp / 3
+	var before := p.hp
+	await cast.call("spirit_mend")
+	await _wait(12.5)
+	print("shaman: spirit mend (+ward) -> %d hp back over 12 s" % (p.hp - before))
+	# slows: count a gnoll's swings at you for 15 s, then again under Turgur's Insects
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 100000
+	mob.hp = mob.max_hp
+	p.max_hp = 100000
+	p.hp = p.max_hp
+	p.global_position = z.ground(mob.global_position.x + 1.5, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	mob.add_hate(p, 100.0)
+	var count_swings := func(seconds: float) -> int:
+		var n := 0
+		var last := mob.swing_timer
+		var until := Time.get_ticks_msec() + int(seconds * 1000.0)
+		while Time.get_ticks_msec() < until:
+			await get_tree().physics_frame
+			if mob.swing_timer > last + 0.05:
+				n += 1
+			last = mob.swing_timer
+		return n
+	await _wait(1.0)
+	var plain: int = await count_swings.call(15.0)
+	await cast.call("turgurs_insects")
+	var slowed_pct := mob.slow_pct
+	var slowed: int = await count_swings.call(15.0)
+	print("shaman: gnoll (delay %.1f s) swung %d times in 15 s; under Turgur's Insects (%d%%, %.0f s) %d times -> %s" % [
+			mob.attack_delay, plain, slowed_pct, mob.slow_left, slowed, "PASS" if slowed < plain else "FAIL"])
+	await cast.call("drowsy")
+	print("shaman: a weaker slow on top -> still %d%%" % mob.slow_pct)
+	mob.hate.clear()
+	var named := _nearest_mob(p, "gnoll_pup")  # stands in for a named one
+	named.data = named.data.duplicate()
+	named.data["named"] = true
+	World.request_set_target(p.entity_id, named.entity_id)
+	p.global_position = z.ground(named.global_position.x + 8.0, named.global_position.z) + Vector3.UP
+	await cast.call("turgurs_insects")
+	print("shaman: Turgur's Insects on a named foe -> %d%%" % named.slow_pct)
+	named.hate.clear()
+	# guildmasters and gear
+	var gms := []
+	for zone_id: String in QuestHints.zones():
+		for n: Dictionary in QuestHints.zones()[zone_id].get("npcs", []):
+			var g: Dictionary = GameData.npcs.get(str(n["id"]), {}).get("guildmaster", {})
+			if str(g.get("class", "")) == "shaman":
+				gms.append("%s in %s" % [GameData.npcs[str(n["id"])]["name"], zone_id])
+	print("shaman: guildmasters %s" % [gms])
+	for id: String in ["worn_staff", "oak_staff", "oak_staff@masterwork", "round_shield", "steel_dirk", "steel_breastplate"]:
+		var it := GameData.item(id)
+		var ok: bool = it.get("classes", []).is_empty() or "shaman" in it.get("classes", [])
+		print("shaman: %s -> int %d wis %d mana %d, a shaman may use it %s" % [it["name"], int(it.get("int", 0)), int(it.get("wis", 0)), int(it.get("mana", 0)), ok])
+	p.char_class = saved_class
+	p.level = 1
+	p.buffs.clear()
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
 func _t_necromancer() -> void:
 	var main := get_parent()
 	var p := World.local_player

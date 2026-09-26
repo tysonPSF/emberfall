@@ -133,5 +133,28 @@
     },
     "model": "necromancer",
     "caster_stat": "int"
+  },
+  "shaman": {
+    "name": "Shaman",
+    "description": "Calls on the spirits: slows a foe's blows to a crawl, strengthens and quickens friends, mends wounds over time, and rots or freezes whatever's left. A spirit wolf answers from level 20.",
+    "color": "#4aa88a",
+    "hp_base": 16,
+    "hp_per_level": 9,
+    "mana_base": 18,
+    "mana_per_level": 12,
+    "ac_base": 8,
+    "melee_skill": 0.75,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "minor_healing",
+      "frost_rift"
+    ],
+    "starting_items": {
+      "primary": "worn_staff",
+      "chest": "patchwork_tunic"
+    },
+    "model": "shaman",
+    "caster_stat": "wis"
   }
 }
