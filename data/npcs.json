@@ -413,5 +413,99 @@
         "slashes"
       ]
     }
+  },
+  "hollow_elder": {
+    "name": "Elder Tamsin",
+    "title": "Elder of the Mere",
+    "level": 18,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "hollowfolk",
+    "dialogue": {
+      "hail": "Mind the planks, {name}; the damp gets into everything out here. Welcome to Hollowmere. We fish, we mend our nets, and we keep one eye on the [water] and the other on the [ruins].",
+      "water": "The mere gives us perch and eel, and takes a boat or two a year. The worst of what lives in it is [Old Snapjaw], and the worst of what lives beside it are the [Mirescale].",
+      "old snapjaw": "A snapping turtle older than my grandmother, and as big as a rowboat. He suns himself on the middle island and bites through our nets like thread. Bring me his [shell] and the village will owe you.",
+      "shell": "The whole shell, {name}, so I know the old brute is truly gone. The first to bring it gets a shield our smith has waited years to make from it.",
+      "snapjaw": "Old Snapjaw, yes. His [shell], if you can get it.",
+      "mirescale": "Lizardfolk from the reed marsh on the western shore. They hunt anything that walks on two legs. Brina pays for their scales, if you've the stomach for it.",
+      "ruins": "There was a village on the south shore before ours. The mere rose one spring and took it, and took the people in their beds. They still walk there, the [drowned], and they walk farther after dark.",
+      "drowned": "Their captain, Maren, rings a [bell] beneath the water on moonless nights. We hear it through the planks. She rises only at night, among the ruins.",
+      "bell": "Bring me Maren's bell, and two of the lockets her people still wear, and we'll give them a proper burial at last. I'll give you a pearl the mere gave me as a girl. It's never brought me luck, but it might bring you some.",
+      "unknown": "I'm an old woman, {name}. Ask Brina; she hears everything that comes along the pier."
+    }
+  },
+  "hollow_netmaker": {
+    "name": "Brina",
+    "title": "Netmaker",
+    "level": 16,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "hollowfolk",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "sling_stone",
+        "fishing_bait",
+        "smoked_mereperch",
+        "leather_sleeves",
+        "leather_gloves",
+        "small_sack"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Oh! Didn't hear you on the boards. Brina, netmaker. If you're buying, I've arrows and bait and the best smoked perch this side of Emberhold. If you're hunting, I'm paying for [scales].",
+      "scales": "Mirescale scales. Tough as horn and they don't rot, so I weave them into the edges of the nets, where the [lizardfolk] and the turtles tear them. Four at a time, and I'll pay you each time.",
+      "lizardfolk": "The Mirescale. Their huts are in the reeds on the west shore, past the old road. Hunters, shamans that throw bog water hot enough to scald, and a chieftain, Ssrakka, who's never been seen to lose.",
+      "unknown": "Couldn't say, {name}. Try the Elder, at the end of the pier."
+    }
+  },
+  "mere_sentry": {
+    "name": "Mere Sentry",
+    "title": "Hollowmere Watch",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "hollowfolk",
+    "dialogue": {
+      "hail": "Stay on the boards after dark, {name}. I walk from the stone to the end of the pier and back; if anything follows you in, run to me.",
+      "unknown": "Ask the Elder, {name}. I just keep the pier."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.8,
+      "patrol_pause": 8,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the village!",
+        "Back into the reeds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 2400,
+      "hp_regen": 40,
+      "ac": 80,
+      "dmg": [
+        14,
+        28
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

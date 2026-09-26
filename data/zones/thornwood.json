@@ -242,21 +242,6 @@
     {
       "type": "rockslide",
       "pos": [
-        232,
-        -20
-      ],
-      "face": [
-        0,
-        -20
-      ],
-      "labels": [
-        "Pass closed",
-        "Thornwood Vale"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
         -232,
         40
       ],
@@ -436,6 +421,25 @@
       "arrive_face": [
         0,
         -100
+      ]
+    },
+    {
+      "pos": [
+        245,
+        -20
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "hollowmere",
+      "arrive": [
+        -199,
+        -20
+      ],
+      "arrive_face": [
+        -159,
+        -20
       ]
     }
   ],

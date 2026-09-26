@@ -38,7 +38,8 @@
     "name": "The Restless Dead",
     "default": -1500,
     "on_kill": {
-      "watch": 2
+      "watch": 2,
+      "hollowfolk": 2
     }
   },
   "bloodtusk": {
@@ -49,6 +50,27 @@
       "bloodtusk": -10,
       "watch": 3,
       "emberhold": 2
+    }
+  },
+  "mirescale": {
+    "name": "Mirescale Tribe",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "mirescale": -10,
+      "hollowfolk": 5,
+      "watch": 1
+    }
+  },
+  "hollowfolk": {
+    "name": "Fishers of Hollowmere",
+    "default": 100,
+    "on_kill": {
+      "hollowfolk": -200,
+      "emberhold": -40
+    },
+    "on_attack": {
+      "hollowfolk": -50
     }
   }
 }

@@ -260,6 +260,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = 0.0
 		velocity.z = 0.0
+		if is_on_floor():
+			return  # standing still on the ground: no need to sweep the collision (most mobs, most of the time)
 	move_and_slide()
 
 

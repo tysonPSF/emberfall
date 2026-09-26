@@ -1110,5 +1110,459 @@
         "table": "knight_weapons"
       }
     ]
+  },
+  "mire_toad": {
+    "name": "a mire toad",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 50,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "attack_delay": 2.8,
+    "ac": 14,
+    "speed": 6.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#5b6b34",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mire_toad_skin",
+        "chance": 0.55
+      }
+    ],
+    "model": "mire_toad"
+  },
+  "bog_leech": {
+    "name": "a bog leech",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 42,
+    "hp_per_level": 13,
+    "dmg_min": 4,
+    "dmg_max": 10,
+    "attack_delay": 2.4,
+    "ac": 12,
+    "speed": 5.2,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#3a2233",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "leech_teeth",
+        "chance": 0.5
+      }
+    ],
+    "model": "bog_leech",
+    "proc": {
+      "spell": "leech_bite",
+      "chance": 0.18,
+      "text": "%s latches on with %s!"
+    }
+  },
+  "snapping_turtle": {
+    "name": "a snapping turtle",
+    "level": [
+      11,
+      13
+    ],
+    "hp_base": 70,
+    "hp_per_level": 16,
+    "dmg_min": 6,
+    "dmg_max": 13,
+    "attack_delay": 3.2,
+    "ac": 26,
+    "speed": 4.6,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "snap at",
+      "snaps at"
+    ],
+    "shape": "beetle",
+    "color": "#3e4a2c",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "turtle_shell_plate",
+        "chance": 0.45
+      }
+    ],
+    "model": "snapping_turtle"
+  },
+  "old_snapjaw": {
+    "name": "Old Snapjaw",
+    "level": [
+      14,
+      14
+    ],
+    "hp_base": 1100,
+    "hp_per_level": 0,
+    "dmg_min": 10,
+    "dmg_max": 22,
+    "attack_delay": 3.2,
+    "ac": 34,
+    "speed": 4.8,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "beetle",
+    "color": "#3e4a2c",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "snapjaws_shell",
+        "chance": 1.0
+      },
+      {
+        "item": "turtle_shell_plate",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "snapping_turtle",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "mirescale_hunter": {
+    "name": "a Mirescale hunter",
+    "level": [
+      11,
+      13
+    ],
+    "hp_base": 48,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.6,
+    "ac": 17,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "mirescale",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#4e7a3a",
+    "scale": 1.0,
+    "coin": [
+      12,
+      45
+    ],
+    "loot": [
+      {
+        "item": "mirescale_scale",
+        "chance": 0.55
+      },
+      {
+        "item": "smoked_mereperch",
+        "chance": 0.1
+      }
+    ],
+    "model": "lizardfolk",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.8,
+        "table": "lizard_weapons"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.15,
+        "table": "lizard_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.12,
+        "table": "lizard_legs"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.05,
+        "table": "rings"
+      }
+    ]
+  },
+  "mirescale_shaman": {
+    "name": "a Mirescale shaman",
+    "level": [
+      11,
+      13
+    ],
+    "hp_base": 40,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "attack_delay": 3.0,
+    "ac": 13,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "mirescale",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#4e7a3a",
+    "scale": 1.0,
+    "coin": [
+      15,
+      55
+    ],
+    "loot": [
+      {
+        "item": "mirescale_scale",
+        "chance": 0.45
+      }
+    ],
+    "model": "lizardfolk_shaman",
+    "proc": {
+      "spell": "marsh_bolt",
+      "chance": 0.3,
+      "text": "%s hurls a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.8,
+        "table": "lizard_shaman_weapons"
+      },
+      {
+        "slot": "neck",
+        "chance": 0.08,
+        "table": "fang_neck"
+      }
+    ]
+  },
+  "ssrakka": {
+    "name": "Chieftain Ssrakka",
+    "level": [
+      15,
+      15
+    ],
+    "hp_base": 1150,
+    "hp_per_level": 0,
+    "dmg_min": 11,
+    "dmg_max": 26,
+    "attack_delay": 2.9,
+    "ac": 32,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "mirescale",
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "shape": "humanoid",
+    "color": "#2f5a2a",
+    "scale": 1.2,
+    "coin": [
+      180,
+      450
+    ],
+    "loot": [
+      {
+        "item": "mirescale_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "lizardfolk_chief",
+    "named": true,
+    "xp_bonus": 2.6,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "table": "ssrakka_weapon"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.6,
+        "item": "scaled_jerkin"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.4,
+        "item": "scaled_leggings"
+      }
+    ]
+  },
+  "drowned_fisher": {
+    "name": "a drowned fisher",
+    "level": [
+      11,
+      13
+    ],
+    "hp_base": 46,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.7,
+    "ac": 16,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#9fc4b8",
+    "scale": 1.0,
+    "coin": [
+      5,
+      30
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 0.5
+      },
+      {
+        "item": "waterlogged_locket",
+        "chance": 0.35
+      }
+    ],
+    "model": "drowned",
+    "spawn_anim": "Spawn_Ground",
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.1,
+      "text": "%s's grip carries %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.45,
+        "table": "drowned_weapons"
+      }
+    ]
+  },
+  "captain_maren": {
+    "name": "Captain Maren the Drowned",
+    "level": [
+      15,
+      15
+    ],
+    "hp_base": 1050,
+    "hp_per_level": 0,
+    "dmg_min": 11,
+    "dmg_max": 24,
+    "attack_delay": 2.6,
+    "ac": 30,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#9fc4b8",
+    "scale": 1.25,
+    "coin": [
+      120,
+      380
+    ],
+    "loot": [
+      {
+        "item": "drowned_bell",
+        "chance": 1.0
+      },
+      {
+        "item": "waterlogged_locket",
+        "chance": 1.0,
+        "count": [
+          1,
+          3
+        ]
+      }
+    ],
+    "model": "drowned_captain",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 2.5,
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.22,
+      "text": "%s's blade carries %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "drowned_cutlass"
+      }
+    ]
   }
 }

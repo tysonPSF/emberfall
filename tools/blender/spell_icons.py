@@ -408,6 +408,38 @@ def spirit_bolt():
 	return p.build()
 
 
+def leech_bite():
+	p = Prop("leech_bite", 397)
+	_ring(p, 0.45, 0.55, 0.12, CLOTH_RED, sides=14, tilt=math.pi / 2)            # the sucker
+	for k in range(9):                                                            # its teeth
+		a = k * math.tau / 9
+		p.seg((math.cos(a) * 0.38, 0, 0.55 + math.sin(a) * 0.38), (math.cos(a) * 0.16, -0.05, 0.55 + math.sin(a) * 0.16), 0.06, 0.0, BONE, sides=4)
+	for k in range(3):                                                            # blood
+		p.blob((0.12, 0.12, 0.18), (0.1 * k - 0.1, 0, 0.05 - k * 0.12), CLOTH_RED, segs=(8, 6), glow=1.2)
+	return p.build()
+
+
+def marsh_bolt():
+	p = Prop("marsh_bolt", 399)
+	for k in range(4):
+		t = k / 4
+		p.blob((0.34 - k * 0.07,) * 3, (0.45 - t * 1.0, 0, 0.5 + t * 0.25), LEAF, segs=(8, 6), glow=1.6 - k * 0.3)
+	for k in range(5):                                                            # stinking bubbles
+		p.blob((0.1, 0.1, 0.1), (0.3 - k * 0.2, 0, 0.85 + (k % 2) * 0.12), WOOD_GRAY, segs=(6, 4))
+	return p.build()
+
+
+def drowning_cold():
+	p = Prop("drowning_cold", 401)
+	p.blob((0.5, 0.46, 0.5), (0, 0, 0.62), BONE, segs=(10, 8))                     # a skull
+	for s_ in (-1, 1):
+		p.blob((0.12, 0.08, 0.12), (s_ * 0.12, -0.22, 0.64), WATER, segs=(6, 4), glow=2.0)
+	p.box((1.4, 1.4, 0.5), (0, 0, 0.25), WATER, glow=0.6)                          # the water rising over it
+	for k in range(4):                                                            # bubbles
+		p.blob((0.1, 0.1, 0.1), (0.3 - k * 0.15, -0.3, 0.95 + k * 0.12), WATER, segs=(6, 4), glow=1.0)
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -458,7 +490,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
 								  heroic_strike, rally, shield_wall, healing, blessed_armor, circle_of_renewal,
 								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet,
-								  thornback_venom, grave_chill, spirit_bolt]}
+								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

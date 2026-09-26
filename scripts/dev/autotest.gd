@@ -66,6 +66,12 @@ const SECTIONS := [
 	["night", "greenmoor"],
 	["night_city", "emberhold"],
 	["night_spawns", "greenmoor"],
+	["hollowmere_border", "thornwood"],
+	["hollowmere", "hollowmere"],
+	["hollowmere_life", "hollowmere"],
+	["hollowmere_perf", "hollowmere"],
+	["night_isolate", "hollowmere"],
+	["physics_isolate", "hollowmere"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2035,24 +2041,41 @@ func _ensure_zone(zone_id: String) -> void:
 		return
 	if p.dead:
 		await _wait(5.0)
-	# step into the zone line that leads there, or toward Greenmoor, which links them all
-	for hop in 3:
+	# step into the zone line that starts the shortest way there
+	for hop in 5:
 		if main.zone.zone_id == zone_id:
 			break
-		var lines: Array = main.zone.data.get("zone_lines", [])
+		var next := _next_hop(main.zone.zone_id, zone_id)
 		var line: Dictionary = {}
-		for zl: Dictionary in lines:
-			if zl["to"] == zone_id:
+		for zl: Dictionary in main.zone.data.get("zone_lines", []):
+			if zl["to"] == next:
 				line = zl
-		if line.is_empty():
-			for zl: Dictionary in lines:
-				if zl["to"] == "greenmoor":
-					line = zl
 		if line.is_empty():
 			break
 		p.global_position = main.zone.ground(line["pos"][0], line["pos"][1]) + Vector3.UP
 		await _wait(2.5)
 	print("zone: %s at %s" % [main.zone.zone_id, p.global_position])
+
+
+## The first zone on the way from one zone to another, following zone lines.
+func _next_hop(from: String, to: String) -> String:
+	var came := {from: ""}
+	var queue: Array = [from]
+	while not queue.is_empty():
+		var at: String = queue.pop_front()
+		if at == to:
+			break
+		for zl: Dictionary in GameData.load_zone(at).get("zone_lines", []):
+			var nxt := str(zl["to"])
+			if not came.has(nxt):
+				came[nxt] = at
+				queue.append(nxt)
+	if not came.has(to):
+		return ""
+	var step := to
+	while came[step] != from:
+		step = came[step]
+	return step
 
 
 ## Where an item is in the pack ("g:2", "b:0:3"), or "".
@@ -2383,3 +2406,284 @@ func _t_night_spawns() -> void:
 	await _wait(0.5)
 	print("night_spawns: after the fight: %d" % up.call())
 	World.time_override = -1.0
+
+
+## The Thornwood-Hollowmere border, walked both ways (east and west zone lines).
+func _t_hollowmere_border() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for leg: Array in [["thornwood", Vector2(225, -20), Vector2(1, 0), "hollowmere"], ["hollowmere", Vector2(-193, -20), Vector2(-1, 0), "thornwood"]]:
+		if main.zone.zone_id != leg[0]:
+			print("hollowmere_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+			return
+		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
+		for k in 400:
+			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
+				break
+			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			p.move_and_slide()
+			await get_tree().physics_frame
+		await _wait(1.5)
+		while not is_instance_valid(main.zone) or main.zone.zone_id != leg[3]:
+			await _wait(0.5)
+			if k_timeout(main):
+				break
+		var z: Zone = main.zone
+		print("hollowmere_border: walked %s from %s -> now in %s at %s (ground %.1f)" % [["east", "west"][0 if leg[2].x > 0 else 1], leg[0], z.zone_id,
+				Vector2(p.global_position.x, p.global_position.z), z.height_at(p.global_position.x, p.global_position.z)])
+
+
+var _patience := 0
+
+
+func k_timeout(_main: Node) -> bool:
+	_patience += 1
+	return _patience > 40
+
+
+## Hollowmere: the mere, the stilt village, the drowned ruins, the lizardfolk camp.
+func _t_hollowmere() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var lake: Dictionary = z._lakes[0]
+	print("hollowmere: lake level %.1f; deck height at the village %.1f (ground there %.1f)" % [lake["level"], z.surface_at(100, -15), z.height_at(100, -15)])
+	World.time_override = 11.0
+	for view: Array in [[Vector2(-195, -20), Vector2(-120, -40), "arrival"], [Vector2(-150, -120), Vector2(0, 0), "mere"], [Vector2(150, -45), Vector2(100, -15), "village"],
+			[Vector2(100, -15), Vector2(123, -15), "on_pier"], [Vector2(22, 138), Vector2(10, 112), "ruins"], [Vector2(-160, 62), Vector2(-170, 85), "camp"]]:
+		p.global_position = Vector3(view[0].x, z.surface_at(view[0].x, view[0].y), view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zj_hollowmere_%s" % view[2])
+	var cam := Camera3D.new()  # a bird's-eye look at the whole mere
+	get_tree().root.add_child(cam)
+	cam.global_position = Vector3(0, 210, 190)
+	cam.look_at(Vector3(0, 0, 10))
+	cam.far = 1200.0
+	cam.make_current()
+	var env: Environment = (z.find_children("*", "WorldEnvironment", false, false)[0] as WorldEnvironment).environment
+	env.fog_enabled = false  # the mist would hide it all from up here
+	await _wait(1.0)
+	await _shot("9zj_hollowmere_overview")
+	env.fog_enabled = true
+	cam.queue_free()
+	await _wait(0.2)
+	World.time_override = 22.5
+	p.global_position = Vector3(150, z.surface_at(150, -45), -45) + Vector3.UP
+	p.face_toward(z.ground(100, -15))
+	await _wait(1.2)
+	await _shot("9zj_hollowmere_village_night")
+	World.time_override = -1.0
+
+
+## Hollowmere's people and monsters: every kind spawns, the villagers stand on
+## the pier, the three quests pay out, the drowned captain rises at night, and a
+## look at each new creature in the world.
+func _t_hollowmere_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("hollowmere_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	var wet: Array = []
+	for sp in z.get_children():
+		if sp is SpawnPoint and z.water_level(sp.position.x, sp.position.z) > -INF:
+			wet.append(Vector2(sp.position.x, sp.position.z))
+	print("hollowmere_life: spawn points in the water: %s" % [wet])
+	var npcs := _npcs()
+	for id: String in ["hollow_elder", "hollow_netmaker", "mere_sentry"]:
+		var n: Npc = npcs[id]
+		print("hollowmere_life: %s at %s, standing %.1f above the lake bed (deck %.1f)" % [n.display_name, Vector2(n.global_position.x, n.global_position.z),
+				n.global_position.y - z.height_at(n.global_position.x, n.global_position.z), z.surface_at(n.global_position.x, n.global_position.z)])
+	# the quests
+	p.level = 14
+	p.recalc_stats()
+	p.pack.clear()
+	var tamsin: Npc = npcs["hollow_elder"]
+	var brina: Npc = npcs["hollow_netmaker"]
+	_stand_by(p, brina)
+	World.request_say(p.entity_id, "hail")
+	World.request_say(p.entity_id, "scales")
+	p.pack.add("mirescale_scale", 4)
+	await _hand_in(p, brina, ["mirescale_scale"])
+	_stand_by(p, tamsin)
+	for word in ["hail", "old snapjaw", "shell", "drowned", "bell"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("snapjaws_shell", 1)
+	await _hand_in(p, tamsin, ["snapjaws_shell"])
+	p.pack.add("drowned_bell", 1)
+	p.pack.add("waterlogged_locket", 2)
+	await _hand_in(p, tamsin, ["drowned_bell", "waterlogged_locket"])
+	await _wait(0.3)
+	print("hollowmere_life: rewards: sleeves %d, shield %d, pearl %d; quests done %s" % [p.pack.count("netmakers_sleeves"), p.pack.count("snapshell_shield"),
+			p.pack.count("pearl_of_the_mere"), ["scales_for_the_nets", "old_snapjaw", "the_drowned_bell"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	# night: the drowned walk and their captain rises
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := {}
+	for m in World.get_mobs():
+		if m.mob_id in ["drowned_fisher", "captain_maren"]:
+			night[m.mob_id] = int(night.get(m.mob_id, 0)) + 1
+	print("hollowmere_life: 23:00 -> %s" % night)
+	await _shot("9zk_hollowmere_village_night2")
+	# the creatures, each seen close up
+	World.time_override = 12.0
+	for id: String in ["mire_toad", "bog_leech", "snapping_turtle", "old_snapjaw", "mirescale_hunter", "mirescale_shaman", "ssrakka", "drowned_fisher"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("hollowmere_life: no %s found" % id)
+			continue
+		m.hate.clear()
+		var at := m.global_position
+		var from := at + Vector3(4.0, 0, 3.0)
+		p.global_position = Vector3(from.x, z.surface_at(from.x, from.z), from.z) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		m.set_physics_process(false)
+		await _wait(0.8)
+		await _shot("9zk_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
+
+## How smooth Hollowmere runs: frame times standing still and walking, and
+## what a height lookup costs now that lakes carve the ground.
+func _t_hollowmere_perf() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var t0 := Time.get_ticks_usec()
+	for k in 5000:
+		z.height_at(randf_range(-200, 200), randf_range(-200, 200))
+	var per_height := float(Time.get_ticks_usec() - t0) / 5000.0
+	t0 = Time.get_ticks_usec()
+	for k in 5000:
+		z.lake_distance(randf_range(-200, 200), randf_range(-200, 200))
+	print("hollowmere_perf: height_at %.1f us, lake_distance %.1f us" % [per_height, float(Time.get_ticks_usec() - t0) / 5000.0])
+	for spot: Array in [[Vector2(150, -45), Vector2(100, -15), "village"], [Vector2(-150, -120), Vector2(0, 0), "north shore"]]:
+		p.global_position = Vector3(spot[0].x, z.surface_at(spot[0].x, spot[0].y), spot[0].y) + Vector3.UP
+		p.face_toward(z.ground(spot[1].x, spot[1].y))
+		await _wait(1.5)
+		var worst := 0.0
+		var total := 0.0
+		for k in 120:
+			var f0 := Time.get_ticks_usec()
+			await get_tree().process_frame
+			var ms := float(Time.get_ticks_usec() - f0) / 1000.0
+			worst = maxf(worst, ms)
+			total += ms
+		print("hollowmere_perf: standing at the %s: %.1f ms a frame, worst %.1f ms, %d fps" % [spot[2], total / 120.0, worst, Engine.get_frames_per_second()])
+	await _walk_stats("hollowmere_perf: walking east")
+
+
+## Frame costs while walking east for 3 seconds: time, draw calls, objects, primitives, script and physics.
+func _walk_stats(label: String) -> void:
+	var p := World.local_player
+	var worst := 0.0
+	var total := 0.0
+	var draws := 0.0
+	var objs := 0.0
+	var prims := 0.0
+	var proc := 0.0
+	var phys := 0.0
+	for k in 360:
+		var f0 := Time.get_ticks_usec()
+		p.velocity = Vector3(9.0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+		p.move_and_slide()
+		await get_tree().process_frame
+		var ms := float(Time.get_ticks_usec() - f0) / 1000.0
+		worst = maxf(worst, ms)
+		total += ms
+		draws += Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+		objs += Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME)
+		prims += Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)
+		proc += Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
+		phys += Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
+	print("%s: %.1f ms a frame (worst %.1f); %d draw calls, %d objects, %dk triangles; process %.1f ms, physics %.1f ms" % [label, total / 360.0, worst,
+			draws / 360.0, objs / 360.0, prims / 360.0 / 1000.0, proc / 360.0, phys / 360.0])
+
+
+## What makes Hollowmere's night slow: measured with each night thing turned off in turn.
+func _t_night_isolate() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+	Engine.max_fps = 0
+	var measure := func(label: String) -> void:
+		await _wait(1.5)
+		var f0 := Time.get_ticks_usec()
+		for k in 180:
+			await get_tree().process_frame
+		print("night_isolate: %s: %.1f ms a frame (script %.1f ms, physics %.1f ms, %d draw calls, %d objects, %d lights... mobs %d)" % [label, float(Time.get_ticks_usec() - f0) / 180000.0,
+				Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0, Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0,
+				Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
+				get_tree().root.find_children("*", "Light3D", true, false).filter(func(l: Node) -> bool: return (l as Light3D).is_visible_in_tree()).size(), World.get_mobs().size()])
+	p.global_position = Vector3(-150, z.surface_at(-150, -120), -120) + Vector3.UP
+	p.face_toward(z.ground(0, 0))
+	World.time_override = 12.0
+	await measure.call("noon")
+	World.time_override = 23.0
+	await measure.call("23:00")
+	await measure.call("23:00 again")
+	var cycle: DayNight = z.find_children("*", "DayNight", false, false)[0]
+	cycle.moon.shadow_enabled = false
+	cycle.set_process(false)
+	await measure.call("23:00, no moon shadow")
+	cycle.set_process(true)
+	for n in get_tree().get_nodes_in_group("night_lights"):
+		(n as Node3D).visible = false
+	cycle.set_process(false)
+	await measure.call("23:00, no moon shadow, night lights off")
+	var night_mobs := 0
+	for sp in z.get_children():
+		if sp is SpawnPoint and (sp as SpawnPoint).when == "night" and sp.mob != null:
+			sp.mob.visible = false
+			night_mobs += 1
+	await measure.call("... and %d night mobs hidden" % night_mobs)
+	for m in World.get_mobs():
+		m.visible = false
+	await measure.call("... and every mob hidden")
+	cycle.set_process(true)
+	World.time_override = -1.0
+
+
+## Whose physics is heavy in Hollowmere: switched off group by group.
+func _t_physics_isolate() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	p.global_position = Vector3(-150, z.surface_at(-150, -120), -120) + Vector3.UP
+	var measure := func(label: String) -> void:
+		await _wait(1.0)
+		var phys := 0.0
+		for k in 120:
+			await get_tree().physics_frame
+			phys += Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
+		print("physics_isolate: %s: physics %.2f ms a tick" % [label, phys / 120.0])
+	await measure.call("everything")
+	for m in World.get_mobs():
+		m.set_physics_process(false)
+	await measure.call("mobs off")
+	for n: Npc in _npcs().values():
+		n.set_physics_process(false)
+	await measure.call("mobs and npcs off")
+	World.set_physics_process(false)
+	await measure.call("... and World off")
+	p.set_physics_process(false)
+	await measure.call("... and the player off")
+	World.set_physics_process(true)
+	p.set_physics_process(true)
+	for m in World.get_mobs():
+		m.set_physics_process(true)
+	for n: Npc in _npcs().values():
+		n.set_physics_process(true)

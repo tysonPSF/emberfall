@@ -127,5 +127,69 @@
     "faction": {
       "emberhold": 10
     }
+  },
+  "scales_for_the_nets": {
+    "name": "Scales for the Nets",
+    "giver": "hollow_netmaker",
+    "start_keyword": "scales",
+    "wants": {
+      "mirescale_scale": 4
+    },
+    "reward": {
+      "xp": 700,
+      "coin": 120
+    },
+    "first_reward_item": "netmakers_sleeves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Scales for the Nets. Bring Brina four Mirescale scales.",
+    "ready_text": "Scales! Four good ones. Hand them over, {name}.",
+    "complete_text": "Tough as horn. These'll hold the net edges for a season. Here's your coin.",
+    "first_complete_text": "And take these. I wove scales into the cuffs myself; they'll turn a lizard's spear better than leather.",
+    "faction": {
+      "hollowfolk": 15,
+      "mirescale": -5
+    }
+  },
+  "old_snapjaw": {
+    "name": "Old Snapjaw",
+    "giver": "hollow_elder",
+    "start_keyword": "shell",
+    "wants": {
+      "snapjaws_shell": 1
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 300
+    },
+    "first_reward_item": "snapshell_shield",
+    "accept_text": "You have taken on a task: Old Snapjaw. Bring Elder Tamsin the shell of Old Snapjaw, the great turtle of the middle island.",
+    "ready_text": "Is that... it is. Old Snapjaw's shell. Give it here, {name}; let me see it.",
+    "complete_text": "Sixty years he's bitten our nets. The mere is quieter already.",
+    "first_complete_text": "Our smith has waited half his life to work this shell. Here, the first shield from it, and it's yours.",
+    "faction": {
+      "hollowfolk": 25
+    }
+  },
+  "the_drowned_bell": {
+    "name": "The Drowned Bell",
+    "giver": "hollow_elder",
+    "start_keyword": "bell",
+    "wants": {
+      "drowned_bell": 1,
+      "waterlogged_locket": 2
+    },
+    "reward": {
+      "xp": 1900,
+      "coin": 400
+    },
+    "first_reward_item": "pearl_of_the_mere",
+    "accept_text": "You have taken on a task: The Drowned Bell. Bring Elder Tamsin Captain Maren's bell and two waterlogged lockets from the drowned.",
+    "ready_text": "The bell... I'd know that sound anywhere. And the lockets. Give them to me, {name}, gently.",
+    "complete_text": "We'll bury them on the hill, above the water where it can't reach them again. Thank you.",
+    "first_complete_text": "Here: the pearl. The mere gave it to me when I was a girl. Wear it; perhaps it will be kinder to you.",
+    "faction": {
+      "hollowfolk": 30,
+      "emberhold": 5
+    }
   }
 }

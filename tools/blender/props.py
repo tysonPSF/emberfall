@@ -1215,6 +1215,176 @@ def cave_entrance():
 	return p.build(bevel=0.04)
 
 
+# ---------------------------------------------------------------- Hollowmere
+
+def boardwalk():
+	"""A 3 x 3 m section of plank walkway on stilts, for villages over water.
+	The deck's top is the origin; posts run 3 m down into the water. Sections
+	tile edge to edge along Y."""
+	p = Prop("boardwalk", 91)
+	n = 10
+	for k in range(n):
+		y = -1.5 + (k + 0.5) * 3.0 / n
+		sw = WOOD_GRAY if p.rng.random() < 0.3 else WOOD
+		p.box((3.0 + p.rng.uniform(-0.08, 0.08), 3.0 / n - 0.03, 0.08), (p.rng.uniform(-0.03, 0.03), y, -0.04),
+			  sw, rot=(0, 0, p.rng.uniform(-1.2, 1.2)), grad=(0.1, 0.6))
+	for x in (-1.2, 1.2):  # stringers
+		p.box((0.16, 3.0, 0.18), (x, 0, -0.17), WOOD, grad=(0.3, 1.0))
+	for x in (-1.35, 1.35):
+		for y in (-1.2, 1.2):
+			p.seg((x, y, -3.0), (x, y, -0.05), 0.11, 0.1, WOOD, sides=6, grad=(0.2, 1.0))
+	return p.build(bevel=0.02)
+
+
+def boardwalk_ramp():
+	"""Planks sloping from a boardwalk's deck (origin) down 0.9 m over 3 m of
+	shore toward -Y, so you can walk up onto the stilts."""
+	p = Prop("boardwalk_ramp", 92)
+	n = 10
+	for k in range(n):
+		t = (k + 0.5) / n
+		y = -t * 3.0
+		z = -t * 0.9
+		p.box((2.4, 3.0 / n + 0.02, 0.08), (0, y, z - 0.04), WOOD if k % 3 else WOOD_GRAY, rot=(math.degrees(math.atan2(0.9, 3.0)), 0, 0), grad=(0.1, 0.6))
+	for x in (-1.0, 1.0):
+		p.seg((x, 0, -0.2), (x, -3.0, -1.1), 0.08, 0.08, WOOD, sides=5)
+		p.seg((x, -0.2, -2.5), (x, -0.2, -0.1), 0.1, 0.09, WOOD, sides=6)
+	return p.build(bevel=0.02)
+
+
+def stilt_hut():
+	"""A fisher's hut for the boardwalk: plank walls, a steep reed-thatch roof,
+	a doorway at the front (-Y) and a shuttered window each side. Floor at the
+	origin (set it on a boardwalk deck); about 4 x 4 m."""
+	p = Prop("stilt_hut", 93)
+	w, d, wall_h = 4.0, 4.0, 2.3
+	hw, hd = w / 2, d / 2
+	# walls of vertical planks, leaving a doorway in the front and windows at the sides
+	def planks(x0, x1, y, along_x, skip=None):
+		n = int(abs(x1 - x0) / 0.32)
+		for k in range(n):
+			c = x0 + (k + 0.5) * (x1 - x0) / n
+			if skip and skip[0] < c < skip[1]:
+				continue
+			h = wall_h + p.rng.uniform(-0.08, 0.05)
+			sw = WOOD_GRAY if p.rng.random() < 0.35 else WOOD
+			if along_x:
+				p.box((abs(x1 - x0) / n - 0.02, 0.1, h), (c, y, h / 2), sw, grad=(0.15, 0.9))
+			else:
+				p.box((0.1, abs(x1 - x0) / n - 0.02, h), (y, c, h / 2), sw, grad=(0.15, 0.9))
+	planks(-hw, hw, -hd, True, skip=(-0.55, 0.55))  # front, with the door
+	planks(-hw, hw, hd, True)
+	planks(-hd, hd, -hw, False, skip=(-0.5, 0.5))  # sides, with windows
+	planks(-hd, hd, hw, False, skip=(-0.5, 0.5))
+	p.box((1.2, 0.12, 0.3), (0, -hd, 2.05), WOOD, grad=(0.3, 1.0))  # lintel
+	for s in (-1, 1):
+		p.box((0.12, 1.1, 0.95), (s * hw, 0, 0.5), WOOD_GRAY, grad=(0.2, 0.9))  # under the window
+		p.box((0.12, 1.1, 0.35), (s * hw, 0, 2.1), WOOD, grad=(0.2, 0.9))  # over it
+		p.box((0.06, 0.55, 0.9), (s * (hw + 0.05), -0.62, 1.45), WOOD_GRAY, rot=(0, 0, s * 25), grad=(0.1, 0.8))  # open shutter
+	for x in (-hw, hw):
+		for y in (-hd, hd):
+			p.seg((x, y, 0), (x, y, wall_h + 0.1), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+	# thatch: two steep slopes of reed bundles overhanging the walls, and gable ends
+	ridge = wall_h + 1.9
+	for s in (-1, 1):
+		p.poly([(s * (hw + 0.5), -hd - 0.45, wall_h - 0.2), (0, -hd - 0.45, ridge), (0, hd + 0.45, ridge), (s * (hw + 0.5), hd + 0.45, wall_h - 0.2)],
+			   [(0, 1, 2, 3)], HIDE, grad=(0.0, 0.7))
+		for k in range(6):  # bundle ridges across the slope
+			t = (k + 0.5) / 6
+			x = s * (hw + 0.5) * (1 - t)
+			z = wall_h - 0.2 + (ridge - wall_h + 0.2) * t
+			p.seg((x, -hd - 0.5, z + 0.04), (x, hd + 0.5, z + 0.04), 0.06, 0.06, HIDE, sides=4, grad=(0.1, 0.6))
+	for y in (-hd, hd):
+		p.poly([(-hw, y, wall_h), (0, y, ridge - 0.15), (hw, y, wall_h)], [(0, 1, 2)], WOOD_GRAY, grad=(0.2, 0.9))
+	p.seg((0, -hd - 0.6, ridge + 0.05), (0, hd + 0.6, ridge + 0.05), 0.09, 0.09, WOOD, sides=6)
+	# a net hung by the door and a lantern hook
+	p.box((0.9, 0.05, 1.1), (1.3, -hd - 0.08, 1.2), CLOTH_WHITE, grad=(0.5, 1.0))
+	p.seg((-0.9, -hd - 0.1, 2.1), (-0.9, -hd - 0.45, 2.1), 0.03, 0.03, IRON, sides=4)
+	return p.build(bevel=0.02)
+
+
+def rowboat():
+	"""A small fishing boat to moor by the piers: about 3.2 m, bow toward -Y,
+	floating with its waterline at the origin."""
+	p = Prop("rowboat", 94)
+	L, W = 3.2, 1.2
+	# hull: a few stacked, narrowing plank rings
+	rings = [(0.0, 0.55), (0.18, 0.9), (0.36, 1.0)]
+	for z, f in rings:
+		pts = []
+		for k in range(12):
+			a = k / 12 * math.tau
+			x = math.cos(a) * W / 2 * f
+			y = math.sin(a) * L / 2 * f
+			if y < 0:
+				x *= 1.0 + y / (L / 2) * 0.6  # the bow narrows to a point
+			pts.append((x, y, z - 0.25))
+		for k in range(12):
+			a, b = pts[k], pts[(k + 1) % 12]
+			p.poly([a, b, (b[0], b[1], b[2] + 0.2), (a[0], a[1], a[2] + 0.2)], [(0, 1, 2, 3)], WOOD, grad=(0.2, 0.9))
+	p.box((W * 0.5, L * 0.6, 0.06), (0, 0.1, -0.22), WOOD_GRAY, grad=(0.3, 1.0))  # floor
+	for y in (-0.3, 0.6):
+		p.box((W * 0.85, 0.22, 0.05), (0, y, 0.05), WOOD, grad=(0.1, 0.6))  # thwarts
+	p.seg((0.35, 0.1, 0.12), (1.3, 1.2, -0.1), 0.03, 0.03, WOOD, sides=4)  # an oar left out
+	p.box((0.12, 0.35, 0.02), (1.32, 1.28, -0.12), WOOD, rot=(0, 0, 40))
+	return p.build(bevel=0.01)
+
+
+def reed_hut():
+	"""Lizardfolk hut: a squat dome of bundled marsh reeds on a ring of bent
+	poles, a low doorway at the front (-Y). About 3.6 m across."""
+	p = Prop("reed_hut", 95)
+	r, h = 1.8, 2.4
+	n = 14
+	for k in range(n):
+		a = k / n * math.tau
+		if abs(math.atan2(math.sin(a + math.pi / 2), math.cos(a + math.pi / 2))) < 0.35:
+			continue  # the doorway faces -Y
+		prev = None
+		for j in range(6):
+			t = j / 5
+			rr = r * math.cos(t * math.pi / 2 * 0.95)
+			z = h * math.sin(t * math.pi / 2)
+			pt = (math.cos(a) * rr, math.sin(a) * rr, z)
+			if prev:
+				p.seg(prev, pt, 0.17, 0.15, HIDE, sides=5, grad=(0.0, 0.8))
+			prev = pt
+	for k in range(4):  # binding rings
+		z = 0.4 + k * 0.5
+		rr = r * math.cos(math.asin(min(z / h, 0.99))) + 0.1
+		for j in range(n):
+			a0, a1 = j / n * math.tau, (j + 1) / n * math.tau
+			if abs(math.atan2(math.sin(a0 + math.pi / 2), math.cos(a0 + math.pi / 2))) < 0.5:
+				continue
+			p.seg((math.cos(a0) * rr, math.sin(a0) * rr, z), (math.cos(a1) * rr, math.sin(a1) * rr, z), 0.035, 0.035, WOOD, sides=4)
+	p.blob((r * 1.9, r * 1.9, h * 1.95), (0, 0, 0), HIDE, segs=(14, 8), grad=(0.25, 1.0))  # the packed thatch under the bundles
+	p.box((1.0, 0.3, 1.5), (0, -r + 0.05, 0.7), SHADE, grad=(0.95, 1.0))  # the dark doorway
+	p.seg((0, 0, h - 0.1), (0, 0, h + 0.7), 0.2, 0.0, HIDE, sides=6, grad=(0.0, 0.6))  # topknot
+	for s in (-1, 1):  # door poles with a skull
+		p.seg((s * 0.55, -r - 0.05, 0), (s * 0.5, -r - 0.05, 1.6), 0.06, 0.05, WOOD, sides=5)
+	p.blob((0.28, 0.24, 0.24), (0, -r - 0.1, 1.72), BONE, grad=(0.0, 0.5))
+	return p.build(bevel=0.01)
+
+
+def bone_totem():
+	"""A lizardfolk totem: a crooked pole hung with a beast skull, bones and
+	feathers. About 2.8 m."""
+	p = Prop("bone_totem", 96)
+	p.seg((0, 0, 0), (0.08, 0.04, 2.6), 0.12, 0.08, WOOD, sides=6, grad=(0.2, 1.0))
+	p.blob((0.42, 0.5, 0.36), (0.08, -0.12, 2.45), BONE, grad=(0.0, 0.5))  # skull
+	p.seg((0.08, -0.4, 2.42), (0.08, -0.75, 2.35), 0.1, 0.05, BONE, sides=5)  # snout
+	for s in (-1, 1):
+		p.seg((0.08 + s * 0.16, -0.05, 2.6), (0.08 + s * 0.45, 0.05, 2.95), 0.05, 0.01, BONE, sides=4)  # horns
+		p.box((0.12, 0.12, 0.08), (0.08 + s * 0.12, -0.33, 2.5), EMBER, glow=0.4)  # eyes painted
+	p.seg((-0.5, 0, 1.8), (0.6, 0.05, 1.8), 0.04, 0.04, WOOD, sides=4)  # crossbar
+	for x in (-0.45, -0.15, 0.25, 0.55):
+		p.seg((x, 0, 1.78), (x + p.rng.uniform(-0.05, 0.05), 0, 1.3), 0.02, 0.02, HIDE, sides=3)
+		p.blob((0.1, 0.1, 0.16), (x, 0, 1.25), BONE if x < 0 else CLOTH_RED, grad=(0.0, 0.6))
+	for k in range(3):
+		p.box((0.05, 0.02, 0.35), (0.22, 0.05 * k, 2.1 - k * 0.1), CLOTH_RED, rot=(0, 20 - k * 15, 0))  # feathers
+	return p.build(bevel=0.01)
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1264,6 +1434,12 @@ PROPS = {
 	"reeds": reeds,
 	"lily_pads": lily_pads,
 	"fishing_pole": fishing_pole,
+	"boardwalk": boardwalk,
+	"boardwalk_ramp": boardwalk_ramp,
+	"stilt_hut": stilt_hut,
+	"rowboat": rowboat,
+	"reed_hut": reed_hut,
+	"bone_totem": bone_totem,
 }
 
 

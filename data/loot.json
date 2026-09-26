@@ -215,6 +215,12 @@
     "raider_bows": {
       "hunting_shortbow": 3,
       "ashwood_recurve": 1
-    }
+    },
+    "lizard_weapons": {"mirescale_warstaff": 4, "iron_dagger": 1, "iron_short_sword": 1},
+    "lizard_chest": {"scaled_jerkin": 1, "leather_tunic": 2},
+    "lizard_legs": {"scaled_leggings": 1, "leather_leggings": 2},
+    "lizard_shaman_weapons": {"reed_wand": 2, "oak_staff": 1},
+    "ssrakka_weapon": {"ssrakkas_glaive": 1},
+    "drowned_weapons": {"iron_short_sword": 2, "iron_dagger": 2, "iron_hand_axe": 1}
   }
 }
