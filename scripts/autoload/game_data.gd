@@ -108,6 +108,44 @@ func item(item_id: String) -> Dictionary:
 
 
 ## The item id without its quality ("iron_dagger@fine" -> "iron_dagger").
+## How much one of an item weighs: its own "weight", or a sensible default for
+## what it is (a dagger 1.5, a sword 4, plate much more than cloth, a pelt
+## 1.5, jewelry and arrows next to nothing).
+func item_weight(item_id: String) -> float:
+	var it := item(item_id)
+	if it.has("weight"):
+		return float(it["weight"])
+	var slot := str(it.get("slot", ""))
+	var name_ := str(it.get("name", "")).to_lower()
+	var skill := str(it.get("skill", ""))
+	if it.has("bag"):
+		return 0.6 if int(it["bag"]) <= 4 else 1.5
+	if it.has("ammo_type"):
+		return 0.1
+	if slot == "primary":
+		if skill == "piercing":
+			return 1.5
+		if skill.begins_with("2h") or "staff" in name_:
+			return 6.0
+		return 5.0 if "axe" in name_ or "cleaver" in name_ else 4.0
+	if slot == "range":
+		return 3.0 if str(it.get("skill", "")) == "archery" else 0.5
+	if slot == "secondary":
+		return 8.0 if "kite" in name_ or "steel" in name_ else 6.0
+	if slot in ["neck", "ring"]:
+		return 0.1
+	if slot != "":
+		var wear := str(it.get("wear", ""))
+		var heavy := "iron" in wear or "steel" in name_ or "iron" in name_ or "plate" in name_
+		var light := "cloth" in wear or "patchwork" in wear or "robe" in name_ or "weave" in name_ or "floppy" in wear or "sandal" in wear or "rope" in wear
+		var base: float = {"chest": 5.0, "legs": 4.0, "arms": 2.0, "head": 1.5, "hands": 1.0, "feet": 2.0, "waist": 0.5}.get(slot, 1.0)
+		return base * (2.4 if heavy else (0.4 if light else 1.0))
+	for bulky: String in ["pelt", "hide", "fleece", "shell", "skin"]:
+		if bulky in name_:
+			return 1.5
+	return 0.2
+
+
 func base_item(item_id: String) -> String:
 	return item_id.get_slice("@", 0)
 

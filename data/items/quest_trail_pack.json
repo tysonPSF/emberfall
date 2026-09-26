@@ -21,6 +21,7 @@
     "bag": 10,
     "value": 60,
     "lore": true,
-    "no_drop": true
+    "no_drop": true,
+    "weight_reduction": 0.5
   }
 }

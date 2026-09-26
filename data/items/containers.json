@@ -1,6 +1,6 @@
 {
   "small_sack": {"name": "Small Sack", "bag": 4, "value": 15},
-  "worn_backpack": {"name": "Worn Backpack", "bag": 8, "value": 30},
-  "gnollhide_satchel": {"name": "Gnollhide Satchel", "bag": 6, "value": 60},
-  "leather_backpack": {"name": "Leather Backpack", "bag": 8, "value": 140}
+  "worn_backpack": {"name": "Worn Backpack", "bag": 8, "value": 30, "weight_reduction": 0.1},
+  "gnollhide_satchel": {"name": "Gnollhide Satchel", "bag": 6, "value": 60, "weight_reduction": 0.2},
+  "leather_backpack": {"name": "Leather Backpack", "bag": 8, "value": 140, "weight_reduction": 0.25}
 }
