@@ -167,7 +167,11 @@
         "leather_sling",
         "sling_stone",
         "small_sack",
-        "leather_backpack", "hardened_leather_jerkin", "hardened_leather_leggings", "hardened_leather_gloves", "hardened_leather_boots"
+        "leather_backpack",
+        "hardened_leather_jerkin",
+        "hardened_leather_leggings",
+        "hardened_leather_gloves",
+        "hardened_leather_boots"
       ],
       "buy_rate": 0.5
     },
@@ -199,7 +203,17 @@
         "round_shield",
         "iron_kite_shield",
         "iron_gauntlets",
-        "iron_boots", "tempered_dirk", "tempered_longsword", "tempered_war_axe", "tempered_helm", "tempered_breastplate", "tempered_vambraces", "tempered_gauntlets", "tempered_greaves", "tempered_boots", "tempered_kite_shield"
+        "iron_boots",
+        "tempered_dirk",
+        "tempered_longsword",
+        "tempered_war_axe",
+        "tempered_helm",
+        "tempered_breastplate",
+        "tempered_vambraces",
+        "tempered_gauntlets",
+        "tempered_greaves",
+        "tempered_boots",
+        "tempered_kite_shield"
       ],
       "buy_rate": 0.5
     },
@@ -348,9 +362,10 @@
       "worse": "Spiders, west of here, where the trees grow thick: [thornbacks]. Orcs to the east, the [Bloodtusk]. And in the north, the old [watchtower], where nothing living keeps the watch anymore.",
       "thornbacks": "Their bite burns like nettle-fire. Their broodmother, Silkfang, nests in the deep woods west of the road. If you're brave enough to go near, bring me three lengths of [spider silk] and a venom sac.",
       "spider silk": "Three lengths of thornback silk and one of their venom sacs. Silk that strong makes the finest gloves you'll ever wear, and the venom... well. A hermit has her uses for venom.",
-      "bloodtusk": "A clan of orcs camped east along the road. Raiders. Their warchief, Grolthar, wears the tusks of everything he's killed. Don't wander into that camp alone.",
-      "watchtower": "The Hollow Watch. Men of Emberhold once kept that tower. Now their bones keep it for them, and their captain, Veyl, still walks the walls. Something holds them there.",
-      "unknown": "The trees say many things, {name}. That isn't one of them."
+      "bloodtusk": "A clan of orcs camped east along the road. Raiders. Their warchief, Grolthar, wears the tusks of everything he's killed. Don't wander into that camp alone. Sergeant Harlan, on the road, pays for every orc tusk you bring him.",
+      "watchtower": "The Hollow Watch. Men of Emberhold once kept that tower. Now their bones keep it for them, and their captain, Veyl, still walks the walls. Something holds them there. I think it is his oath, sealed in the [signet] he wears.",
+      "unknown": "The trees say many things, {name}. That isn't one of them.",
+      "signet": "The captain's signet, the seal of the Watch. Take it from Veyl and bring it to me, {name}, and I'll bury it where the Watch can finally rest. I have something of his to give you in return."
     },
     "merchant": {
       "sells": [
@@ -372,8 +387,11 @@
     "faction": "watch",
     "dialogue": {
       "hail": "Keep moving, {name}, and keep your blade loose. I walk this road from the obelisk to the [crossroads] and back, as far as the Watch reaches up here. Anything chases you, run to me.",
-      "crossroads": "Where the road splits east and west, past the river. East is Bloodtusk country. West, the trees close in and the spiders hang their webs. North is the old watchtower, and I don't go north.",
-      "unknown": "Ask the hermit, {name}. I just walk the road."
+      "crossroads": "Where the road splits east and west, past the river. East is [Bloodtusk] country. West, the trees close in and the spiders hang their webs. North is the old watchtower, and I don't go north.",
+      "unknown": "Ask the hermit, {name}. I just walk the road.",
+      "bloodtusk": "Orc raiders, camped east of the crossroads. The Watch pays for their [tusks]: every four you bring me is four fewer blades on my road. And their warchief, [Grolthar]... that's another matter.",
+      "tusks": "Four Bloodtusk tusks, {name}. Their raiders and shamans carry them. Bring me four and I'll pay you, every time.",
+      "grolthar": "Warchief Grolthar wears a necklace of tusks, one for everything he's killed. Some of those were Watchmen. Bring me that necklace and I'll give you my own blade for it."
     },
     "guard": {
       "radius": 20,

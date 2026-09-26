@@ -1,5 +1,6 @@
 {
   "name": "Thornwood Vale",
+  "levels": [6, 14],
   "music": "thornwood",
   "seed": 4127,
   "size": 512,

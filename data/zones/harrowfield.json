@@ -1,5 +1,6 @@
 {
   "name": "Harrowfield",
+  "levels": [3, 9],
   "music": "harrowfield",
   "seed": 6421,
   "size": 384,

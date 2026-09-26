@@ -2,7 +2,8 @@ class_name Compass
 extends Control
 ## The compass across the top of the screen: a strip of headings that scrolls
 ## as you turn (N in ember, the rest in gold, ticks every 15 degrees), the
-## zone's name on a ribbon beneath it, and live marks on the strip: your
+## zone's name on a ribbon beneath it (with its levels, from the zone's
+## "levels"), and live marks on the strip: your
 ## target (in its con color), your pet, the zone's exits (a gold diamond,
 ## named when you face one), and the sun or the moon where they are in the sky.
 ## Everything is drawn here; the HUD only sets `player`.
@@ -17,17 +18,18 @@ const INK := Color(0.04, 0.04, 0.06)
 var player: Player
 var _heading := 0.0
 var _zone_name := ""
+var _levels := ""  # "Levels 6 - 14"; empty for cities and interiors
 var _exits: Array = []  # [Vector2 position, "Thornwood Vale"]
 var _exits_zone: Zone
 
 
 func _init() -> void:
-	custom_minimum_size = Vector2(WIDTH, BAND + 40.0)
+	custom_minimum_size = Vector2(WIDTH, BAND + 54.0)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _process(_delta: float) -> void:
-	if player == null or not is_instance_valid(player) or player.camera == null:
+	if player == null or not is_instance_valid(player) or player.camera == null or not player.camera.is_inside_tree():
 		return
 	var fwd := -player.camera.global_basis.z
 	var h := rad_to_deg(atan2(fwd.x, -fwd.z))  # 0 north (-z), 90 east (+x)
@@ -36,6 +38,8 @@ func _process(_delta: float) -> void:
 		_exits_zone = z
 		_exits.clear()
 		_zone_name = z.zone_name if z != null else ""
+		var lv: Array = z.data.get("levels", []) if z != null else []
+		_levels = "Levels %d \u2013 %d" % [int(lv[0]), int(lv[1])] if lv.size() == 2 else ""
 		if z != null:
 			for zl: Dictionary in z.data.get("zone_lines", []):
 				var to := str(zl.get("to", ""))
@@ -169,6 +173,22 @@ func _draw() -> void:
 			draw_colored_polygon(PackedVector2Array([d + Vector2(0, -3), d + Vector2(3, 0), d + Vector2(0, 3), d + Vector2(-3, 0)]), Color(GOLD, 0.8))
 		draw_string_outline(font, Vector2(mid - w * 0.5, y), _zone_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 5, Color(0, 0, 0, 0.9))
 		draw_string(font, Vector2(mid - w * 0.5, y), _zone_name, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(0.95, 0.88, 0.7))
+		if _levels != "":
+			var lw := font.get_string_size(_levels, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			draw_string_outline(font, Vector2(mid - lw * 0.5, y + 15), _levels, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 4, Color(0, 0, 0, 0.85))
+			draw_string(font, Vector2(mid - lw * 0.5, y + 15), _levels, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, _level_color())
+
+
+## The levels in gold when the zone suits you, dimmer when you've outgrown
+## it, reddish when it's still above you.
+func _level_color() -> Color:
+	var z := World.zone_of(player)
+	var lv: Array = z.data.get("levels", []) if z != null else []
+	if lv.size() != 2 or player.level > int(lv[1]):
+		return Color(0.7, 0.68, 0.62)
+	if player.level < int(lv[0]):
+		return Color(1.0, 0.55, 0.42)
+	return GOLD
 
 
 ## The sun's (or, at night, the moon's) compass bearing, and which it is; [] indoors.

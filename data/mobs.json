@@ -964,6 +964,10 @@
       {
         "item": "orc_tusk",
         "chance": 1.0
+      },
+      {
+        "item": "grolthars_tusk_necklace",
+        "chance": 1.0
       }
     ],
     "model": "orc",
@@ -1107,7 +1111,7 @@
       },
       {
         "item": "hollow_watch_signet",
-        "chance": 0.5
+        "chance": 1.0
       }
     ],
     "model": "wraith",

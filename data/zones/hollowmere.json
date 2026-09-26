@@ -1,5 +1,6 @@
 {
   "name": "Hollowmere",
+  "levels": [10, 15],
   "music": "hollowmere",
   "seed": 5309,
   "size": 448,

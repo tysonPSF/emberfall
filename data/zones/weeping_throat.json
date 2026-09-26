@@ -1,5 +1,6 @@
 {
   "name": "The Weeping Throat",
+  "levels": [20, 24],
   "music": "weeping_throat",
   "seed": 7719,
   "size": 448,
