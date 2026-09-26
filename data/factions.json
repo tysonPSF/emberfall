@@ -117,5 +117,25 @@
     "on_attack": {
       "lanternhold": -50
     }
+  },
+  "salt_raiders": {
+    "name": "Salt Raiders",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "salt_raiders": -10,
+      "salt_traders": 6,
+      "lanternhold": 2
+    }
+  },
+  "salt_traders": {
+    "name": "Salt Traders",
+    "default": 100,
+    "on_kill": {
+      "salt_traders": -200
+    },
+    "on_attack": {
+      "salt_traders": -50
+    }
   }
 }

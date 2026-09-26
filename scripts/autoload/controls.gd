@@ -30,6 +30,9 @@ const BINDINGS := {
 	"settings_music_up": [KEY_BRACKETRIGHT],
 	"consider": [KEY_C],
 	"sit": [KEY_X],
+	"zoom_in": [KEY_EQUAL, KEY_PAGEUP],  # the mouse wheel does it too
+	"zoom_out": [KEY_MINUS, KEY_PAGEDOWN],
+	"first_person": [KEY_HOME],
 	"loot": [KEY_L],
 	"hail": [KEY_E],
 	"trade": [KEY_G],

@@ -86,7 +86,8 @@ func load_zone(id: String) -> void:
 	_build_terrain()
 	_build_landmarks()
 	for river: Dictionary in _rivers:
-		_build_river(river)
+		if not river.get("dry", false):
+			_build_river(river)
 	for lake: Dictionary in _lakes:
 		_build_lake(lake)
 	for f: Array in _fields:
@@ -189,6 +190,13 @@ func height_at(x: float, z: float) -> float:
 				h = bed
 			else:  # the banks slope from just above the water back up (or down) to the land
 				h = lerpf(level + 0.35, h, smoothstep(0.0, bank, d))
+	for patch: Dictionary in data.get("ground_patches", []):
+		var f := float(patch.get("flatten", 0.0))
+		if f > 0.0:
+			var d := Vector2(x, z).distance_to(Vector2(patch["pos"][0], patch["pos"][1]))
+			var r := float(patch["radius"])
+			if d < r + 12.0:
+				h = lerpf(h, h * (1.0 - f), 1.0 - smoothstep(r * 0.6, r + 12.0, d))
 	h += terrace_rise(x, z)
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
@@ -227,7 +235,7 @@ func _add_river(river: Dictionary) -> void:
 		var h := height_at(pts[i].x, pts[i].y) - 0.3  # before this river exists
 		levels.append(minf(h, levels[i - 1]) if i > 0 else h)
 	_rivers.append({"points": pts, "levels": levels, "width": float(river.get("width", 10.0)),
-			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0))})
+			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0)), "dry": bool(river.get("dry", false))})
 
 
 ## [distance from the river's centerline, its water level at the nearest point].
@@ -486,10 +494,21 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 		var r: float = pond["radius"]
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(r - 1.5, r + 2.0, pd))  # muddy bank
 		c = c.lerp(Color(0.22, 0.21, 0.15), 1.0 - smoothstep(r * 0.4, r - 1.0, pd))  # silt on the bottom
+	for patch: Dictionary in data.get("ground_patches", []):  # salt flats and the like
+		var pd := Vector2(x, z).distance_to(Vector2(patch["pos"][0], patch["pos"][1]))
+		var pr := float(patch["radius"])
+		if pd < pr + 8.0:
+			c = c.lerp(Color.html(str(patch["color"])), (1.0 - smoothstep(pr - 6.0, pr + 8.0, pd)) * (0.85 + 0.15 * n))
 	var face := terrace_face(x, z)
 	if face > 0.05:
 		c = c.lerp(Color(0.66, 0.6, 0.5), smoothstep(0.05, 0.5, face))  # sandstone retaining walls
-	var wet := minf(river_distance(x, z), lake_distance(x, z))
+	var wet := lake_distance(x, z)
+	for river: Dictionary in _rivers:
+		var rd := float(_river_at(river, x, z)[0]) - float(river["width"]) * 0.5
+		if not river["dry"]:
+			wet = minf(wet, rd)
+		elif rd < float(river["bank"]):  # a dry wash: sun-cracked clay, blended over the whole bank so the grid doesn't show
+			c = c.lerp(Color(0.72, 0.62, 0.46).lerp(Color(0.62, 0.52, 0.38), n), (1.0 - smoothstep(-4.0, float(river["bank"]), rd)) * 0.8)
 	if wet < 3.0:
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(0.5, 3.0, wet))  # muddy bank
 		c = c.lerp(Color(0.24, 0.23, 0.17), 1.0 - smoothstep(-3.0, 0.0, wet))  # silt on the bed
@@ -611,6 +630,14 @@ func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
 	_prop("torch_lit", xf * Vector3(1.2, 1.72, end - 0.3), yaw, 1.0, "none")
 	_light(xf * Vector3(1.2, 2.3, end - 0.3), Color(1.0, 0.6, 0.25), 7.0, 0.9)
 	_prop("rowboat", (xf * Vector3(-2.4, 0, end + 1.5)) - Vector3.UP * 0.8, yaw + PI / 2.0, 1.0, "none")
+
+
+## On a ground patch marked "bare" (a salt flat): no grass or flowers there.
+func on_bare_patch(x: float, z: float) -> bool:
+	for patch: Dictionary in data.get("ground_patches", []):
+		if patch.get("bare", false) and Vector2(x, z).distance_to(Vector2(patch["pos"][0], patch["pos"][1])) < float(patch["radius"]):
+			return true
+	return false
 
 
 ## Whether a point is inside a crop field (grown by `margin` meters).
@@ -1628,7 +1655,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
 			return false
-	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0 or in_field(x, z, 1.0):
+	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0 or in_field(x, z, 1.0) or on_bare_patch(x, z):
 		return false
 	for spot in _flat_spots:
 		if p.distance_to(spot) < 12.5:

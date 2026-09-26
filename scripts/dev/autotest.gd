@@ -88,6 +88,10 @@ const SECTIONS := [
 	["level20", "sunward_steps"],
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
+	["bash_stun", "greenmoor"],
+	["bleach_border", "sunward_steps"],
+	["bleach", "the_bleach"],
+	["bleach_life", "the_bleach"],
 	["encumbrance", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
@@ -3373,6 +3377,192 @@ func _t_level20() -> void:
 
 
 ## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
+
+## Bash can stun (never something more than 3 levels above you); being hit
+## turns auto attack on; the camera zooms from the keyboard.
+func _t_bash_stun() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var kit := p.equipment.duplicate()
+	var known := p.spells.duplicate()
+	p.char_class = "warrior"
+	p.level = 10
+	p.spells = ["bash"]
+	p.equipment["secondary"] = "round_shield"
+	p.recalc_stats()
+	var mob := _nearest_mob(p, "gnoll_pup")
+	mob.set_physics_process(false)
+	mob.max_hp = 100000
+	mob.hp = mob.max_hp
+	p.global_position = main.zone.ground(mob.global_position.x + 2.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	for over: int in [0, 5]:
+		mob.level = p.level + over
+		var stuns := 0
+		for k in 40:
+			p.cooldowns.clear()
+			mob.stun_left = 0.0
+			World.request_cast(p.entity_id, "bash")
+			if mob.stun_left > 0.0:
+				stuns += 1
+		print("bash_stun: a target %d levels over you: stunned %d of 40 bashes" % [over, stuns])
+	World.kill(mob, p)
+	# a rat bites you from behind with nothing targeted and auto attack off
+	World.request_set_target(p.entity_id, -1)
+	p.auto_attack = false
+	var rat := _nearest_mob(p, "large_rat")
+	rat.max_hp = 100000
+	rat.hp = rat.max_hp
+	p.global_position = main.zone.ground(rat.global_position.x + 1.5, rat.global_position.z) + Vector3.UP
+	p.face_toward(p.global_position + (p.global_position - rat.global_position))
+	rat.add_hate(p, 5.0)
+	await _wait(4.0)
+	print("bash_stun: bitten from behind -> target %s, auto attack %s" % [p.target.display_name if p.target != null else "nothing", p.auto_attack])
+	World.request_toggle_attack(p.entity_id)
+	if is_instance_valid(rat) and not rat.dead:
+		World.kill(rat, p)
+	# zoom from the keyboard
+	var press := func(action: String) -> void:
+		var ev := InputEventAction.new()
+		ev.action = action
+		ev.pressed = true
+		p._unhandled_input(ev)
+	p.zoom = 6.0
+	press.call("zoom_in")
+	var z1 := p.zoom
+	press.call("first_person")
+	var z2 := p.zoom
+	press.call("first_person")
+	var z3 := p.zoom
+	press.call("zoom_out")
+	print("bash_stun: zoom 6 -> in %.0f -> Home %.0f -> Home %.0f -> out %.0f" % [z1, z2, z3, p.zoom])
+	p.zoom = 6.0
+	p.equipment = kit
+	p.spells = known
+	p.recalc_stats()
+
+
+func _t_bleach_border() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for leg: Array in [["sunward_steps", Vector2(0, -196), Vector2(0, -1), "the_bleach"], ["the_bleach", Vector2(0, 226), Vector2(0, 1), "sunward_steps"]]:
+		if main.zone.zone_id != leg[0]:
+			print("bleach_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+			return
+		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
+		for k in 400:
+			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
+				break
+			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			p.move_and_slide()
+			await get_tree().physics_frame
+		await _wait(1.5)
+		for k in 20:
+			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
+				break
+			await _wait(0.5)
+		var z: Zone = main.zone
+		print("bleach_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
+				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
+
+
+## The Bleach: the salt flats, the caravan camp, the titan's bones, the raider camp.
+func _t_bleach() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 11.0
+	print("bleach: salt flat %s, mud %s, open ground %s" % [z.on_bare_patch(0, -20), z.on_bare_patch(-150, 90), z.on_bare_patch(-180, 180)])
+	for view: Array in [[Vector2(0, 228), Vector2(0, 150), "arrival"], [Vector2(40, 195), Vector2(26, 208), "caravan"], [Vector2(20, 40), Vector2(0, -40), "flats"],
+			[Vector2(-15, -95), Vector2(-42, -125), "ribcage"], [Vector2(125, -10), Vector2(155, -40), "raiders"], [Vector2(-130, 70), Vector2(-165, 95), "oasis"],
+			[Vector2(100, -115), Vector2(135, -145), "queen"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 10.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zt_bleach_%s" % view[2])
+	var cam := Camera3D.new()
+	get_tree().root.add_child(cam)
+	cam.global_position = Vector3(-40, 200, 250)
+	cam.look_at(Vector3(10, 0, 0))
+	cam.far = 1200.0
+	cam.make_current()
+	var env: Environment = (z.find_children("*", "WorldEnvironment", false, false)[0] as WorldEnvironment).environment
+	env.fog_enabled = false
+	await _wait(1.0)
+	await _shot("9zt_bleach_overview")
+	env.fog_enabled = true
+	cam.queue_free()
+	World.time_override = 22.5
+	p.global_position = z.ground(-15, -95) + Vector3.UP
+	p.face_toward(z.ground(-42, -125))
+	await _wait(1.5)
+	await _shot("9zt_bleach_ribcage_night")
+	World.time_override = -1.0
+
+
+## The Bleach's people and monsters: all spawn, the three quests pay out,
+## more bones walk at night.
+func _t_bleach_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("bleach_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	p.level = 20
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var suri: Npc = npcs["caravan_master_suri"]
+	var ibrem: Npc = npcs["saltmaster_ibrem"]
+	_stand_by(p, suri)
+	for word in ["hail", "scorpions", "stingers", "raiders", "vashti"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("scorpion_stinger", 4)
+	await _hand_in(p, suri, ["scorpion_stinger"])
+	p.pack.add("scorpion_stinger", 4)
+	await _hand_in(p, suri, ["scorpion_stinger"])
+	p.pack.add("raider_warhorn", 1)
+	await _hand_in(p, suri, ["raider_warhorn"])
+	_stand_by(p, ibrem)
+	for word in ["hail", "bones", "titan", "heart"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("titans_heart", 1)
+	await _hand_in(p, ibrem, ["titans_heart"])
+	await _wait(0.3)
+	print("bleach_life: rewards: boots %d, blade %d, talisman %d; quests done %s" % [p.pack.count("sandstrider_boots"), p.pack.count("caravan_guards_blade"),
+			p.pack.count("bone_talisman"), ["stingers_for_the_road", "the_salt_wolf", "heart_of_the_titan"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := 0
+	for m in World.get_mobs():
+		if m.mob_id == "bone_giant":
+			night += 1
+	print("bleach_life: bone giants at noon %d, at 23:00 %d" % [int(counts.get("bone_giant", 0)), night])
+	World.time_override = 12.0
+	for id: String in ["giant_scorpion", "scorpion_queen", "salt_basilisk", "bone_giant", "bone_titan", "salt_raider", "raider_chief"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("bleach_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 4.0, at.z + 3.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zu_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
 func _t_lanternhold_border() -> void:
 	var main := get_parent()
 	var p := World.local_player

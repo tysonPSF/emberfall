@@ -2381,5 +2381,363 @@
         "item": "sunburnt_robe"
       }
     ]
+  },
+  "giant_scorpion": {
+    "name": "a giant scorpion",
+    "level": [
+      16,
+      19
+    ],
+    "hp_base": 110,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 21,
+    "attack_delay": 2.5,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#d8c090",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "scorpion_stinger",
+        "chance": 0.5
+      },
+      {
+        "item": "chitin_plate",
+        "chance": 0.35
+      }
+    ],
+    "model": "giant_scorpion",
+    "proc": {
+      "spell": "scorpion_venom",
+      "chance": 0.15,
+      "text": "%s's sting carries %s!"
+    }
+  },
+  "scorpion_queen": {
+    "name": "the Salt Queen",
+    "level": [
+      21,
+      21
+    ],
+    "hp_base": 3000,
+    "hp_per_level": 0,
+    "dmg_min": 18,
+    "dmg_max": 38,
+    "attack_delay": 2.6,
+    "ac": 52,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#b04a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "queens_stinger",
+        "chance": 1.0
+      },
+      {
+        "item": "chitin_plate",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "scorpion_queen",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "scorpion_venom",
+      "chance": 0.3,
+      "text": "%s's sting carries %s!"
+    }
+  },
+  "salt_basilisk": {
+    "name": "a salt basilisk",
+    "level": [
+      17,
+      20
+    ],
+    "hp_base": 130,
+    "hp_per_level": 21,
+    "dmg_min": 11,
+    "dmg_max": 22,
+    "attack_delay": 2.9,
+    "ac": 34,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#d8d8d0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "salt_crystal",
+        "chance": 0.5
+      }
+    ],
+    "model": "salt_basilisk",
+    "proc": {
+      "spell": "salt_gaze",
+      "chance": 0.15,
+      "text": "%s fixes you with its %s!"
+    }
+  },
+  "bone_giant": {
+    "name": "a bone giant",
+    "level": [
+      18,
+      21
+    ],
+    "hp_base": 180,
+    "hp_per_level": 24,
+    "dmg_min": 14,
+    "dmg_max": 28,
+    "attack_delay": 3.4,
+    "ac": 36,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "skeleton",
+    "color": "#ece4d0",
+    "scale": 1.0,
+    "coin": [
+      10,
+      60
+    ],
+    "loot": [
+      {
+        "item": "bleached_bone",
+        "chance": 0.55
+      }
+    ],
+    "model": "bone_giant",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "bone_titan": {
+    "name": "the Bone Titan",
+    "level": [
+      21,
+      21
+    ],
+    "hp_base": 3400,
+    "hp_per_level": 0,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 3.6,
+    "ac": 50,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "skeleton",
+    "color": "#ece4d0",
+    "scale": 1.0,
+    "coin": [
+      200,
+      600
+    ],
+    "loot": [
+      {
+        "item": "titans_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "bleached_bone",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "titanbone_maul",
+        "chance": 0.35
+      }
+    ],
+    "model": "bone_titan",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.2,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "salt_raider": {
+    "name": "a salt raider",
+    "level": [
+      16,
+      19
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "salt_raiders",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a870",
+    "scale": 1.0,
+    "coin": [
+      30,
+      110
+    ],
+    "loot": [
+      {
+        "item": "raider_scarf",
+        "chance": 0.5
+      }
+    ],
+    "model": "salt_raider",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.85,
+        "table": "raider_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.12,
+        "table": "raider_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.12,
+        "table": "light_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.1,
+        "table": "light_legs"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.06,
+        "table": "rings"
+      }
+    ]
+  },
+  "raider_chief": {
+    "name": "Vashti the Salt-Wolf",
+    "level": [
+      21,
+      21
+    ],
+    "hp_base": 3000,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 40,
+    "attack_delay": 2.5,
+    "ac": 48,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "salt_raiders",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#a86a3a",
+    "scale": 1.15,
+    "coin": [
+      300,
+      800
+    ],
+    "loot": [
+      {
+        "item": "raider_warhorn",
+        "chance": 1.0
+      },
+      {
+        "item": "raider_scarf",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "raider_chief",
+    "named": true,
+    "xp_bonus": 3.0,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "raider_scimitar"
+      },
+      {
+        "slot": "head",
+        "chance": 0.6,
+        "item": "sandwrap_hood"
+      }
+    ]
   }
 }

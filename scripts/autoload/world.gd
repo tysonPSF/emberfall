@@ -962,14 +962,17 @@ func has_shield(p: Player) -> bool:
 ## Being attacked turns you toward it, so you can fight back at once: with
 ## nothing hostile targeted (nothing, yourself, a friend, a corpse), whoever
 ## swings, shoots or casts at you becomes your target. A fight you already
-## picked keeps its target.
+## picked keeps its target. Auto attack comes on too, so a monster that jumps
+## you from behind gets hit back without a key press.
 func _notice_attacker(d: Entity, a: Entity) -> void:
 	if not (d is Player) or a == null or a == d or a.dead or d.dead:
 		return
 	var cur := d.valid_target_entity()
-	if cur != null and cur != d and can_attack(d, cur):
-		return
-	d.target = a
+	if cur == null or cur == d or not can_attack(d, cur):
+		d.target = a
+	if not d.auto_attack and d.stun_left <= 0.0 and can_attack(d, d.valid_target_entity()):
+		d.auto_attack = true  # hit from behind or out of nowhere: you fight back
+		say(d, "Auto attack is on.")
 
 
 ## The first ammunition of a kind ("arrow", "stone") carried anywhere in the pack.
@@ -1195,6 +1198,14 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(c, "%s was hit by non-melee for %d points of damage." % [cap(t.display_name), power], C_SPELL)
 				say(t, "You were hit by non-melee for %d points of damage." % power, C_HIT_YOU)
 			damage(t, power, c)
+			if s.has("stun_chance") and not t.dead:  # Bash: a chance to stagger, never something much stronger than you
+				if t.level > c.level + int(s.get("stun_max_over", 3)):
+					pass
+				elif randf() < float(s["stun_chance"]):
+					t.stun_left = maxf(t.stun_left, float(s.get("stun", 2.0)))
+					say(c, "%s is stunned!" % cap(t.display_name), C_SPELL)
+					if t is Player:
+						say(t, "You are stunned!", C_HIT_YOU)
 			if s.has("splash"):  # Cleave, Fireball: every other foe near the target
 				var hurt := roundi(power * float(s.get("splash_pct", 1.0)))
 				for m in get_mobs():

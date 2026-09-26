@@ -5,7 +5,7 @@ extends CanvasLayer
 ## through World.request_*, the same as keyboard input.
 
 const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
-[b]Camera[/b]   Move the mouse to look · Wheel to zoom (all the way in = first person)
+[b]Camera[/b]   Move the mouse to look · Wheel or - / = (Page Up / Down) to zoom (all the way in = first person) · Home: first person and back
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.

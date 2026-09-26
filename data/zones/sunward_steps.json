@@ -309,21 +309,6 @@
         "The Bleach",
         "Lanternhold"
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Sunward Steps"
-      ]
     }
   ],
   "passes": [
@@ -444,6 +429,25 @@
       "arrive_face": [
         0,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "the_bleach",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
       ]
     }
   ],

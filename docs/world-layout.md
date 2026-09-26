@@ -75,7 +75,7 @@ it means moving a zone.
 | Hollowmere **(built)** | The Emberlands | 10–15 | 448 m | `[1, 2]` | water |
 | Lanternhold **(built)** | The Dawnstair | city | 224 m | `[3, 2]` | city |
 | Sunward Steps **(built)** | The Dawnstair | 14–18 | 448 m | `[2, 2]` | terrace |
-| The Bleach | The Dawnstair | 16–21 | 512 m | `[2, 3]` | waste |
+| The Bleach **(built)** | The Dawnstair | 16–21 | 512 m | `[2, 3]` | waste |
 | High Terrace | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |
 | Mirror Flats | The Dawnstair | 20–24 | 512 m | `[2, 4]` | waste |
 | Dawnwatch | The Dawnstair | 22–24 | 448 m | `[1, 4]` | outpost |

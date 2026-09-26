@@ -1,0 +1,142 @@
+{
+  "chitin_plate": {
+    "name": "Scorpion Chitin Plate",
+    "value": 90,
+    "stack": 20
+  },
+  "scorpion_stinger": {
+    "name": "Scorpion Stinger",
+    "value": 80,
+    "stack": 100
+  },
+  "bleached_bone": {
+    "name": "Bleached Bone",
+    "value": 60,
+    "stack": 20
+  },
+  "salt_crystal": {
+    "name": "Salt Crystal",
+    "value": 70,
+    "stack": 100
+  },
+  "raider_scarf": {
+    "name": "Raider's Sand Scarf",
+    "value": 55,
+    "stack": 20
+  },
+  "queens_stinger": {
+    "name": "The Queen's Stinger",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "raider_warhorn": {
+    "name": "Vashti's Warhorn",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "titans_heart": {
+    "name": "Heart of the Titan",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "raider_scimitar": {
+    "name": "Raider's Scimitar",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 2.7,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "agi": 2,
+    "value": 2400,
+    "rec_level": 17
+  },
+  "sandwrap_hood": {
+    "name": "Sandwrap Hood",
+    "slot": "head",
+    "ac": 6,
+    "agi": 2,
+    "sta": 2,
+    "value": 1600,
+    "rec_level": 17,
+    "wear": "leather_cap"
+  },
+  "sandstrider_boots": {
+    "name": "Sandstrider Boots",
+    "slot": "feet",
+    "ac": 9,
+    "agi": 3,
+    "sta": 2,
+    "value": 3200,
+    "rec_level": 18,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "caravan_guards_blade": {
+    "name": "Caravan Guard's Blade",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "agi": 3,
+    "hp": 20,
+    "value": 6000,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue"
+    ],
+    "proc": {
+      "spell": "scorpion_venom",
+      "chance": 0.07
+    }
+  },
+  "bone_talisman": {
+    "name": "Bleached Bone Talisman",
+    "slot": "neck",
+    "ac": 4,
+    "sta": 4,
+    "wis": 3,
+    "int": 3,
+    "hp": 35,
+    "mana": 30,
+    "value": 6000,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true
+  },
+  "titanbone_maul": {
+    "name": "Titanbone Maul",
+    "slot": "primary",
+    "dmg": 20,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 5,
+    "sta": 3,
+    "value": 8000,
+    "rec_level": 20,
+    "classes": [
+      "warrior"
+    ]
+  }
+}
