@@ -570,6 +570,46 @@
         0
       ],
       "size": 2
+    },
+    {
+      "type": "prop",
+      "id": "forge",
+      "pos": [
+        -43,
+        -30
+      ],
+      "yaw": 90,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "oven",
+      "pos": [
+        -36,
+        -37
+      ],
+      "yaw": 0,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "loom",
+      "pos": [
+        -29,
+        -30
+      ],
+      "yaw": -90,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "brew_barrel",
+      "pos": [
+        -36,
+        -23
+      ],
+      "yaw": 180,
+      "collide": "box"
     }
   ],
   "npcs": [
@@ -707,6 +747,17 @@
       "face": [
         30,
         10
+      ]
+    },
+    {
+      "id": "provisioner_sunniva",
+      "pos": [
+        -34.5,
+        -28.5
+      ],
+      "face": [
+        -30,
+        -30
       ]
     }
   ],

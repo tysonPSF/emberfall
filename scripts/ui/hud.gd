@@ -133,6 +133,8 @@ var _toasts: VBoxContainer  # "+3 Wolf Pelt" notes over the bag bar
 var _owned: Dictionary = {}  # item id -> how many you own, to notice what's new
 var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
+var _station_panel: PanelContainer  # a crafting station's combine window
+var _station_title: Label
 var _doll_view: SubViewport
 var _doll_stage: Node3D
 var _doll_key := ""
@@ -174,6 +176,7 @@ func _ready() -> void:
 	_build_skills_window()
 	_build_loot_window()
 	_build_trade_window()
+	_build_station_window()
 	_build_service_window()
 	_build_inventory()
 	_build_help()
@@ -198,6 +201,8 @@ func _ready() -> void:
 	World.trade_opened.connect(_on_trade_opened)
 	World.trade_changed.connect(_refresh_trade)
 	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
+	World.station_opened.connect(_on_station_opened)
+	World.station_closed.connect(func() -> void: _station_panel.visible = false; _refresh_inventory())
 
 
 func bind_player(p: Player) -> void:
@@ -1182,6 +1187,51 @@ func _build_trade_window() -> void:
 	_trade_panel.visible = false
 
 
+## A crafting station's combine window (oven, forge, loom, brew barrel,
+## campfire): ten slots of your own, Combine, and Close (which hands back
+## whatever is left in it).
+func _build_station_window() -> void:
+	_station_panel = UIKit.panel()
+	UIKit.place(_station_panel, Vector2(0.5, 0.5), Vector2(-150, -40))
+	root.add_child(_station_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 250
+	v.add_theme_constant_override("separation", 6)
+	_station_panel.add_child(v)
+	_station_title = UIKit.label("", 15, UIKit.GOLD)
+	v.add_child(_station_title)
+	var hint := UIKit.label("Put the ingredients in (shift-click them in your bags) and press Combine. Recipe books list what goes where.", 12, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size.x = 240
+	v.add_child(hint)
+	var grid := GridContainer.new()
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	v.add_child(grid)
+	for i in World.STATION_SLOTS:
+		grid.add_child(_make_slot("c:%d" % i, ""))
+	var row := HBoxContainer.new()
+	var combine := UIKit.button("Combine")
+	combine.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	combine.pressed.connect(func() -> void: World.request_combine(player.entity_id, "c"))
+	var close := UIKit.button("Close")
+	close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	close.pressed.connect(func() -> void: World.request_station_close(player.entity_id))
+	row.add_child(combine)
+	row.add_child(close)
+	v.add_child(row)
+	_station_panel.visible = false
+
+
+func _on_station_opened(kind: String) -> void:
+	_station_title.text = World.container_name(kind)
+	_station_panel.visible = true
+	_inv_panel.visible = true
+	_help_panel.visible = false
+	_refresh_inventory()
+
+
 ## Merchant shop or bank, whichever the npc offers.
 func _build_service_window() -> void:
 	_service_panel = UIKit.panel()
@@ -1499,6 +1549,8 @@ func _make_slot(place: String, empty_text: String, size := 44) -> Button:
 			var e := World._entry_at(player, place)
 			if e.has("contents") and place.begins_with("g:"):
 				_toggle_bag(int(place.get_slice(":", 1)))
+			elif not e.is_empty() and GameData.item(str(e["item"])).has("use") and (place.begins_with("g:") or place.begins_with("b:")):
+				World.request_use_item(player.entity_id, place)  # eat it, drink it
 			elif not e.is_empty():
 				show_item(e["item"])
 			b.accept_event())
@@ -1544,7 +1596,7 @@ func _fill_slot(b: Button, e: Dictionary) -> void:
 		icon.texture = GameData.item_icon(id)
 		b.text = "" if icon.texture != null else GameData.item_name(id)
 		count.text = str(e["count"]) if int(e.get("count", 1)) > 1 else ""
-		b.tooltip_text = _item_tooltip(id) + ("\nRight-click to open." if e.has("contents") else "\nRight-click for details.")
+		b.tooltip_text = _item_tooltip(id) + ("\nRight-click to open." if e.has("contents") else "\nRight-click to use." if GameData.item(id).has("use") else "\nRight-click for details.")
 		for w: String in wants:
 			b.tooltip_text += "\n" + w
 		sb.border_color = GameData.item_color(id) if GameData.quality_tier(id).get("id", "") != "" else Color(0.55, 0.45, 0.25)
@@ -1568,6 +1620,10 @@ func _quick_action(place: String) -> void:
 		World.request_click(id, place)
 	elif player.trade_npc_id >= 0:
 		World.request_trade_add(id, place)
+	elif player.station_kind != "" and kind != "c":
+		World.request_station_add(id, place)
+	elif kind == "c":
+		World.request_click(id, place)
 	elif player.service == "shop":
 		World.request_sell(id, place)
 	elif player.service == "bank":
@@ -1603,6 +1659,10 @@ func _toggle_bag(g: int) -> void:
 	v.add_child(grid)
 	for i in (e["contents"] as Array).size():
 		grid.add_child(_make_slot("b:%d:%d" % [g, i], ""))
+	if GameData.item(str(e["item"])).has("combine"):  # a sewing kit, a mortar: a container you craft in
+		var combine := UIKit.button("Combine")
+		combine.pressed.connect(func() -> void: World.request_combine(player.entity_id, "g:%d" % g))
+		v.add_child(combine)
 	panel.set_meta("bag_item", e["item"])
 	_bag_windows[g] = panel
 	_refresh_inventory()
@@ -1886,7 +1946,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
+	return (_inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -2332,6 +2392,20 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	var click: Dictionary = it.get("click", {})
 	if not click.is_empty():
 		lines.append("Click effect: %s  (recharges in %ds)" % [GameData.spells[click["spell"]]["name"], int(click.get("recast", 60))])
+	var use: Dictionary = it.get("use", {})
+	if not use.is_empty() and GameData.spells.has(str(use["spell"])):
+		lines.append("Use: %s" % str(GameData.spells[use["spell"]].get("desc", "")))
+	if it.has("combine"):
+		lines.append("A %s: put ingredients inside and press Combine." % World.container_name(str(it["combine"])).to_lower())
+	for rid: String in it.get("recipes", []):  # a recipe book
+		var r: Dictionary = GameData.recipes["recipes"].get(rid, {})
+		if r.is_empty():
+			continue
+		var parts: Array = (r["in"] as Dictionary).keys().map(func(k: String) -> String:
+			return ("%d %s" % [int(r["in"][k]), GameData.item_name(k)]) if int(r["in"][k]) > 1 else GameData.item_name(k))
+		var made: Array = (r["out"] as Dictionary).keys().map(func(k: String) -> String: return GameData.item_name(k))
+		lines.append("%s: %s  (%s, trivial %d)" % [", ".join(made), " + ".join(parts),
+				" or ".join((r["containers"] as Array).map(func(c: String) -> String: return World.container_name(c))), int(r["trivial"])])
 	var classes: Array = it.get("classes", [])
 	if not classes.is_empty():
 		lines.append("Class: %s" % " ".join(classes.map(func(c: String) -> String: return str(GameData.classes[c]["name"]))))
@@ -2449,6 +2523,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif _trade_panel.visible:
 			World.request_trade_cancel(player.entity_id)
+			get_viewport().set_input_as_handled()
+		elif _station_panel.visible:
+			World.request_station_close(player.entity_id)
 			get_viewport().set_input_as_handled()
 		elif _loot_panel.visible:
 			World.request_loot_close(player.entity_id)

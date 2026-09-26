@@ -657,7 +657,8 @@ func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
 ## "boardwalk_ramp" steps down to the shore; "lamp" is a lit torch post.
 const STILT_DECKS := {"stilt_platform": Vector2(4.5, 4.5), "stilt_walkway": Vector2(1.5, 4.5), "rope_bridge": Vector2(1.5, 6.0),
 		"boardwalk": Vector2(1.5, 1.5)}
-const STILT_ON_DECK := ["stilt_hall", "stilt_house", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack"]
+const STILT_ON_DECK := ["stilt_hall", "stilt_house", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack",
+		"oven", "loom", "brew_barrel", "forge"]
 
 
 func _build_stilt_city(lm: Dictionary) -> void:
@@ -1796,7 +1797,41 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 			cs.position = bounds.get_center()
 		root.add_child(cs)
 	add_child(root)
+	if id in STATION_PROPS:
+		_add_station(id, root, _prop_bounds(id, model), s)
 	return root
+
+
+## Crafting stations: every oven, loom, brew barrel, forge and campfire is one,
+## wherever it was placed. The prop (and a click box a little bigger than it)
+## carry meta "station" so a click opens its combine window; `stations` is
+## what the server checks you're standing by.
+const STATION_PROPS := ["oven", "loom", "brew_barrel", "forge", "campfire"]
+var stations: Array = []  # [kind, Vector3]
+
+
+func _add_station(kind: String, root: Node3D, raw: AABB, s: float) -> void:
+	stations.append([kind, root.global_position])
+	root.set_meta("station", kind)
+	var click := StaticBody3D.new()
+	click.collision_layer = Layers.CORPSES  # clickable, never in the way
+	click.collision_mask = 0
+	click.set_meta("station", kind)
+	var cs := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = raw.size * s + Vector3(0.3, 0.3, 0.3)
+	cs.shape = box
+	cs.position = raw.get_center() * s
+	click.add_child(cs)
+	root.add_child(click)
+
+
+## Whether a station of a kind stands within reach of a point.
+func station_near(kind: String, at: Vector3, reach := 5.0) -> bool:
+	for st: Array in stations:
+		if st[0] == kind and Vector2(at.x, at.z).distance_to(Vector2((st[1] as Vector3).x, (st[1] as Vector3).z)) <= reach:
+			return true
+	return false
 
 
 ## Unscaled triangles of a prop's meshes, cached per id.

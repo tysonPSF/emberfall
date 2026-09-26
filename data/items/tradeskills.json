@@ -1,0 +1,538 @@
+{
+  "bag_of_flour": {
+    "name": "Bag of Flour",
+    "value": 4,
+    "stack": 20
+  },
+  "jar_of_spices": {
+    "name": "Jar of Spices",
+    "value": 6,
+    "stack": 20
+  },
+  "vial_of_water": {
+    "name": "Vial of Clear Water",
+    "value": 2,
+    "stack": 20
+  },
+  "tanning_salts": {
+    "name": "Tanning Salts",
+    "value": 8,
+    "stack": 20
+  },
+  "spool_of_thread": {
+    "name": "Spool of Thread",
+    "value": 5,
+    "stack": 20
+  },
+  "bundle_of_herbs": {
+    "name": "Bundle of Herbs",
+    "value": 6,
+    "stack": 20
+  },
+  "small_brick_of_ore": {
+    "name": "Small Brick of Ore",
+    "value": 20,
+    "stack": 20,
+    "weight": 1.0
+  },
+  "large_brick_of_ore": {
+    "name": "Large Brick of Ore",
+    "value": 80,
+    "stack": 20,
+    "weight": 2.0
+  },
+  "water_flask": {
+    "name": "Water Flask",
+    "value": 3,
+    "stack": 20
+  },
+  "bundle_of_shafts": {
+    "name": "Bundle of Arrow Shafts",
+    "value": 10,
+    "stack": 20
+  },
+  "smithy_hammer": {
+    "name": "Smithy Hammer",
+    "value": 40,
+    "weight": 2.0,
+    "desc": "A tool: it stays in the forge when you combine."
+  },
+  "sewing_kit": {
+    "name": "Sewing Kit",
+    "bag": 10,
+    "combine": "sewing_kit",
+    "value": 60,
+    "desc": "A tailoring kit: put hides, cloth and thread inside and press Combine."
+  },
+  "mortar_and_pestle": {
+    "name": "Mortar and Pestle",
+    "bag": 8,
+    "combine": "mortar",
+    "value": 60,
+    "desc": "An alchemy kit: put herbs, water and reagents inside and press Combine."
+  },
+  "hearthside_cookbook": {
+    "name": "The Hearthside Cookbook",
+    "value": 20,
+    "recipes": [
+      "bake_bread",
+      "roast_meat",
+      "grilled_trout",
+      "fish_stew",
+      "hunters_pie",
+      "frog_legs_saute",
+      "lagoon_feast",
+      "koi_platter"
+    ]
+  },
+  "tailors_pattern_book": {
+    "name": "A Tailor's Pattern Book",
+    "value": 20,
+    "recipes": [
+      "tan_wolf_pelt",
+      "tan_boar_hide",
+      "tan_bear_hide",
+      "spin_wool",
+      "weave_silk",
+      "tan_croc_hide",
+      "hide_pouch",
+      "handsewn_cap",
+      "handsewn_gloves",
+      "handsewn_boots",
+      "handsewn_leggings",
+      "handsewn_tunic",
+      "wool_satchel",
+      "silkweave_mitts",
+      "silkweave_robe",
+      "frogskin_gloves",
+      "crocskin_backpack",
+      "crocscale_jerkin"
+    ]
+  },
+  "alchemists_notes": {
+    "name": "An Alchemist's Notes",
+    "value": 20,
+    "recipes": [
+      "minor_healing_potion",
+      "antidote",
+      "healing_potion",
+      "clarity_tonic",
+      "draught_of_toughness",
+      "troll_tonic",
+      "draught_of_swiftness",
+      "greater_healing_potion"
+    ]
+  },
+  "smiths_handbook": {
+    "name": "The Smith's Handbook",
+    "value": 20,
+    "recipes": [
+      "smelt_iron",
+      "iron_tipped_arrows",
+      "forged_iron_dagger",
+      "forged_iron_sword",
+      "forged_iron_shield",
+      "smelt_steel",
+      "forged_steel_axe",
+      "forged_steel_helm",
+      "forged_steel_shield",
+      "forged_steel_greataxe"
+    ]
+  },
+  "raw_meat": {
+    "name": "Slab of Raw Meat",
+    "value": 4,
+    "stack": 20
+  },
+  "frog_legs": {
+    "name": "Frog Legs",
+    "value": 6,
+    "stack": 20
+  },
+  "tanned_leather": {
+    "name": "Tanned Leather",
+    "value": 15,
+    "stack": 20
+  },
+  "thick_leather": {
+    "name": "Thick Crocodile Leather",
+    "value": 60,
+    "stack": 20
+  },
+  "wool_cloth": {
+    "name": "Bolt of Wool",
+    "value": 15,
+    "stack": 20
+  },
+  "silk_cloth": {
+    "name": "Bolt of Spider Silk",
+    "value": 30,
+    "stack": 20
+  },
+  "iron_bar": {
+    "name": "Iron Bar",
+    "value": 25,
+    "stack": 20,
+    "weight": 1.0
+  },
+  "steel_bar": {
+    "name": "Steel Bar",
+    "value": 90,
+    "stack": 20,
+    "weight": 1.5
+  },
+  "roast_meat": {
+    "name": "Roast Meat",
+    "value": 8,
+    "stack": 20,
+    "use": {
+      "spell": "meal_roast_meat"
+    }
+  },
+  "grilled_trout": {
+    "name": "Grilled Trout",
+    "value": 12,
+    "stack": 20,
+    "use": {
+      "spell": "meal_grilled_trout"
+    }
+  },
+  "fish_stew": {
+    "name": "Fish Stew",
+    "value": 25,
+    "stack": 20,
+    "use": {
+      "spell": "meal_fish_stew"
+    }
+  },
+  "hunters_pie": {
+    "name": "Hunter's Pie",
+    "value": 40,
+    "stack": 20,
+    "use": {
+      "spell": "meal_hunters_pie"
+    }
+  },
+  "frog_legs_saute": {
+    "name": "Sauteed Frog Legs",
+    "value": 60,
+    "stack": 20,
+    "use": {
+      "spell": "meal_frog_legs_saute"
+    }
+  },
+  "lagoon_feast": {
+    "name": "Lagoon Feast",
+    "value": 120,
+    "stack": 20,
+    "use": {
+      "spell": "meal_lagoon_feast"
+    }
+  },
+  "koi_platter": {
+    "name": "Rainbow Koi Platter",
+    "value": 300,
+    "stack": 20,
+    "use": {
+      "spell": "meal_koi_platter"
+    }
+  },
+  "minor_healing_potion": {
+    "name": "Minor Healing Potion",
+    "value": 10,
+    "stack": 20,
+    "use": {
+      "spell": "potion_minor_healing_potion",
+      "recast": 10,
+      "group": "potion"
+    }
+  },
+  "antidote": {
+    "name": "Antidote",
+    "value": 20,
+    "stack": 20,
+    "use": {
+      "spell": "potion_antidote"
+    }
+  },
+  "healing_potion": {
+    "name": "Healing Potion",
+    "value": 40,
+    "stack": 20,
+    "use": {
+      "spell": "potion_healing_potion",
+      "recast": 10,
+      "group": "potion"
+    }
+  },
+  "clarity_tonic": {
+    "name": "Clarity Tonic",
+    "value": 60,
+    "stack": 20,
+    "use": {
+      "spell": "potion_clarity_tonic",
+      "recast": 10,
+      "group": "potion"
+    }
+  },
+  "draught_of_toughness": {
+    "name": "Draught of Toughness",
+    "value": 70,
+    "stack": 20,
+    "use": {
+      "spell": "potion_draught_of_toughness"
+    }
+  },
+  "troll_tonic": {
+    "name": "Troll Tonic",
+    "value": 90,
+    "stack": 20,
+    "use": {
+      "spell": "potion_troll_tonic"
+    }
+  },
+  "draught_of_swiftness": {
+    "name": "Draught of Swiftness",
+    "value": 100,
+    "stack": 20,
+    "use": {
+      "spell": "potion_draught_of_swiftness"
+    }
+  },
+  "greater_healing_potion": {
+    "name": "Greater Healing Potion",
+    "value": 150,
+    "stack": 20,
+    "use": {
+      "spell": "potion_greater_healing_potion",
+      "recast": 10,
+      "group": "potion"
+    }
+  },
+  "stitched_hide_pouch": {
+    "name": "Stitched Hide Pouch",
+    "bag": 6,
+    "value": 40
+  },
+  "wool_satchel": {
+    "name": "Wool Satchel",
+    "bag": 8,
+    "value": 120,
+    "weight_reduction": 0.15
+  },
+  "crocskin_backpack": {
+    "name": "Crocskin Backpack",
+    "bag": 10,
+    "value": 600,
+    "weight_reduction": 0.35
+  },
+  "handsewn_leather_cap": {
+    "name": "Handsewn Leather Cap",
+    "slot": "head",
+    "ac": 3,
+    "agi": 1,
+    "value": 70,
+    "rec_level": 6,
+    "wear": "leather_cap"
+  },
+  "handsewn_leather_gloves": {
+    "name": "Handsewn Leather Gloves",
+    "slot": "hands",
+    "ac": 3,
+    "agi": 1,
+    "value": 70,
+    "rec_level": 7,
+    "wear": "leather_gloves"
+  },
+  "handsewn_leather_boots": {
+    "name": "Handsewn Leather Boots",
+    "slot": "feet",
+    "ac": 3,
+    "agi": 2,
+    "value": 90,
+    "rec_level": 8,
+    "wear": "leather_boots"
+  },
+  "handsewn_leather_leggings": {
+    "name": "Handsewn Leather Leggings",
+    "slot": "legs",
+    "ac": 5,
+    "sta": 1,
+    "value": 120,
+    "rec_level": 9,
+    "wear": "leather_leggings"
+  },
+  "handsewn_leather_tunic": {
+    "name": "Handsewn Leather Tunic",
+    "slot": "chest",
+    "ac": 7,
+    "sta": 1,
+    "agi": 1,
+    "value": 160,
+    "rec_level": 10,
+    "wear": "leather_tunic"
+  },
+  "silkweave_mitts": {
+    "name": "Silkweave Mitts",
+    "slot": "hands",
+    "ac": 3,
+    "int": 2,
+    "wis": 2,
+    "mana": 10,
+    "value": 200,
+    "rec_level": 11,
+    "wear": "cloth_gloves"
+  },
+  "silkweave_robe": {
+    "name": "Silkweave Robe",
+    "slot": "chest",
+    "ac": 7,
+    "int": 3,
+    "wis": 3,
+    "mana": 25,
+    "value": 420,
+    "rec_level": 12,
+    "wear": "patchwork_tunic"
+  },
+  "frogskin_gloves": {
+    "name": "Frogskin Gloves",
+    "slot": "hands",
+    "ac": 7,
+    "agi": 4,
+    "value": 1400,
+    "rec_level": 20,
+    "wear": "leather_gloves"
+  },
+  "crocscale_jerkin": {
+    "name": "Crocscale Jerkin",
+    "slot": "chest",
+    "ac": 17,
+    "agi": 3,
+    "sta": 3,
+    "hp": 20,
+    "value": 4200,
+    "rec_level": 21,
+    "wear": "leather_tunic"
+  },
+  "iron_tipped_arrow": {
+    "name": "Iron-Tipped Arrow",
+    "ammo_type": "arrow",
+    "dmg": 3,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 2
+  },
+  "forged_iron_dagger": {
+    "name": "Forged Iron Dagger",
+    "slot": "primary",
+    "dmg": 5,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 120,
+    "rec_level": 5,
+    "classes": [
+      "warrior",
+      "wizard",
+      "rogue"
+    ]
+  },
+  "forged_iron_sword": {
+    "name": "Forged Iron Sword",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 2.7,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 200,
+    "rec_level": 8,
+    "classes": [
+      "warrior",
+      "rogue"
+    ]
+  },
+  "forged_iron_shield": {
+    "name": "Forged Iron Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 5,
+    "sta": 1,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 220,
+    "rec_level": 8
+  },
+  "forged_steel_axe": {
+    "name": "Forged Steel Axe",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 3.0,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 1400,
+    "rec_level": 15,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "forged_steel_helm": {
+    "name": "Forged Steel Helm",
+    "slot": "head",
+    "ac": 10,
+    "sta": 2,
+    "value": 1300,
+    "rec_level": 15,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "forged_steel_shield": {
+    "name": "Forged Steel Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 11,
+    "sta": 2,
+    "model": "shield_badge",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 2000,
+    "rec_level": 16
+  },
+  "forged_steel_greataxe": {
+    "name": "Forged Steel Greataxe",
+    "slot": "primary",
+    "dmg": 23,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 3,
+    "value": 4000,
+    "rec_level": 20,
+    "classes": [
+      "warrior"
+    ]
+  }
+}

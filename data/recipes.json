@@ -1,0 +1,686 @@
+{
+ "_about": "Tradeskill recipes, EQ combine: put exactly the ingredients ('in') into a container of one of the recipe's kinds (a station: oven, campfire, loom, brew_barrel, forge; or a kit bag's \"combine\": sewing_kit, mortar) and press Combine. Success rises with skill against 'trivial'; below it, each try may raise the skill. A failure loses the ingredients except 'keep' (tools).",
+ "containers": {
+  "oven": "Oven",
+  "campfire": "Campfire",
+  "loom": "Loom",
+  "brew_barrel": "Brew Barrel",
+  "forge": "Forge",
+  "sewing_kit": "Sewing Kit",
+  "mortar": "Mortar and Pestle"
+ },
+ "recipes": {
+  "bake_bread": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 8,
+   "in": {
+    "bag_of_flour": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "loaf_of_bread": 2
+   }
+  },
+  "roast_meat": {
+   "skill": "cooking",
+   "containers": [
+    "oven",
+    "campfire"
+   ],
+   "trivial": 12,
+   "in": {
+    "raw_meat": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "roast_meat": 1
+   }
+  },
+  "grilled_trout": {
+   "skill": "cooking",
+   "containers": [
+    "oven",
+    "campfire"
+   ],
+   "trivial": 18,
+   "in": {
+    "river_trout": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "grilled_trout": 1
+   }
+  },
+  "fish_stew": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 32,
+   "in": {
+    "mud_carp": 1,
+    "river_trout": 1,
+    "vial_of_water": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "fish_stew": 1
+   }
+  },
+  "hunters_pie": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 45,
+   "in": {
+    "raw_meat": 2,
+    "bag_of_flour": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "hunters_pie": 1
+   }
+  },
+  "frog_legs_saute": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 62,
+   "in": {
+    "frog_legs": 2,
+    "bag_of_flour": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "frog_legs_saute": 1
+   }
+  },
+  "lagoon_feast": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 78,
+   "in": {
+    "lagoon_snapper": 1,
+    "monsoon_eel": 1,
+    "bag_of_flour": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "lagoon_feast": 1
+   }
+  },
+  "koi_platter": {
+   "skill": "cooking",
+   "containers": [
+    "oven"
+   ],
+   "trivial": 92,
+   "in": {
+    "rainbow_koi": 1,
+    "jungle_catfish": 1,
+    "jar_of_spices": 1
+   },
+   "out": {
+    "koi_platter": 2
+   }
+  },
+  "tan_wolf_pelt": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 10,
+   "in": {
+    "wolf_pelt": 1,
+    "tanning_salts": 1
+   },
+   "out": {
+    "tanned_leather": 1
+   }
+  },
+  "tan_boar_hide": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 10,
+   "in": {
+    "boar_hide": 1,
+    "tanning_salts": 1
+   },
+   "out": {
+    "tanned_leather": 1
+   }
+  },
+  "tan_bear_hide": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 28,
+   "in": {
+    "bear_hide": 1,
+    "tanning_salts": 1
+   },
+   "out": {
+    "tanned_leather": 2
+   }
+  },
+  "spin_wool": {
+   "skill": "tailoring",
+   "containers": [
+    "loom"
+   ],
+   "trivial": 30,
+   "in": {
+    "ram_fleece": 2
+   },
+   "out": {
+    "wool_cloth": 1
+   }
+  },
+  "weave_silk": {
+   "skill": "tailoring",
+   "containers": [
+    "loom"
+   ],
+   "trivial": 38,
+   "in": {
+    "spider_silk": 3
+   },
+   "out": {
+    "silk_cloth": 1
+   }
+  },
+  "tan_croc_hide": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 64,
+   "in": {
+    "croc_hide": 1,
+    "tanning_salts": 2
+   },
+   "out": {
+    "thick_leather": 1
+   }
+  },
+  "hide_pouch": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 16,
+   "in": {
+    "tanned_leather": 1,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "stitched_hide_pouch": 1
+   }
+  },
+  "handsewn_cap": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 20,
+   "in": {
+    "tanned_leather": 1,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "handsewn_leather_cap": 1
+   }
+  },
+  "handsewn_gloves": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 24,
+   "in": {
+    "tanned_leather": 1,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "handsewn_leather_gloves": 1
+   }
+  },
+  "handsewn_boots": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 30,
+   "in": {
+    "tanned_leather": 2,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "handsewn_leather_boots": 1
+   }
+  },
+  "handsewn_leggings": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 36,
+   "in": {
+    "tanned_leather": 2,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "handsewn_leather_leggings": 1
+   }
+  },
+  "handsewn_tunic": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 42,
+   "in": {
+    "tanned_leather": 3,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "handsewn_leather_tunic": 1
+   }
+  },
+  "wool_satchel": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit",
+    "loom"
+   ],
+   "trivial": 44,
+   "in": {
+    "wool_cloth": 2,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "wool_satchel": 1
+   }
+  },
+  "silkweave_mitts": {
+   "skill": "tailoring",
+   "containers": [
+    "loom"
+   ],
+   "trivial": 52,
+   "in": {
+    "silk_cloth": 1,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "silkweave_mitts": 1
+   }
+  },
+  "silkweave_robe": {
+   "skill": "tailoring",
+   "containers": [
+    "loom"
+   ],
+   "trivial": 58,
+   "in": {
+    "silk_cloth": 3,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "silkweave_robe": 1
+   }
+  },
+  "frogskin_gloves": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 72,
+   "in": {
+    "frog_skin": 2,
+    "tanned_leather": 1,
+    "spool_of_thread": 1
+   },
+   "out": {
+    "frogskin_gloves": 1
+   }
+  },
+  "crocskin_backpack": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 80,
+   "in": {
+    "thick_leather": 2,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "crocskin_backpack": 1
+   }
+  },
+  "crocscale_jerkin": {
+   "skill": "tailoring",
+   "containers": [
+    "sewing_kit"
+   ],
+   "trivial": 88,
+   "in": {
+    "thick_leather": 3,
+    "spool_of_thread": 2
+   },
+   "out": {
+    "crocscale_jerkin": 1
+   }
+  },
+  "minor_healing_potion": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 10,
+   "in": {
+    "bundle_of_herbs": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "minor_healing_potion": 1
+   }
+  },
+  "antidote": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 28,
+   "in": {
+    "venom_sac": 1,
+    "bundle_of_herbs": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "antidote": 2
+   }
+  },
+  "healing_potion": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 40,
+   "in": {
+    "bundle_of_herbs": 2,
+    "beetle_eye": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "healing_potion": 1
+   }
+  },
+  "clarity_tonic": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 52,
+   "in": {
+    "bundle_of_herbs": 1,
+    "sunhawk_feather": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "clarity_tonic": 1
+   }
+  },
+  "draught_of_toughness": {
+   "skill": "alchemy",
+   "containers": [
+    "brew_barrel"
+   ],
+   "trivial": 60,
+   "in": {
+    "chitin_plate": 1,
+    "bundle_of_herbs": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "draught_of_toughness": 2
+   }
+  },
+  "troll_tonic": {
+   "skill": "alchemy",
+   "containers": [
+    "brew_barrel"
+   ],
+   "trivial": 72,
+   "in": {
+    "troll_tusk": 1,
+    "bundle_of_herbs": 2,
+    "vial_of_water": 1
+   },
+   "out": {
+    "troll_tonic": 2
+   }
+  },
+  "draught_of_swiftness": {
+   "skill": "alchemy",
+   "containers": [
+    "brew_barrel"
+   ],
+   "trivial": 76,
+   "in": {
+    "salt_crystal": 1,
+    "bundle_of_herbs": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "draught_of_swiftness": 2
+   }
+  },
+  "greater_healing_potion": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 88,
+   "in": {
+    "bundle_of_herbs": 2,
+    "elemental_essence": 1,
+    "vial_of_water": 1
+   },
+   "out": {
+    "greater_healing_potion": 1
+   }
+  },
+  "smelt_iron": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 12,
+   "in": {
+    "small_brick_of_ore": 1,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "iron_bar": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "iron_tipped_arrows": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 22,
+   "in": {
+    "iron_bar": 1,
+    "bundle_of_shafts": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "iron_tipped_arrow": 20
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_iron_dagger": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 26,
+   "in": {
+    "iron_bar": 1,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_iron_dagger": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_iron_sword": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 34,
+   "in": {
+    "iron_bar": 2,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_iron_sword": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_iron_shield": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 42,
+   "in": {
+    "iron_bar": 3,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_iron_shield": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "smelt_steel": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 50,
+   "in": {
+    "large_brick_of_ore": 1,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "steel_bar": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_steel_axe": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 62,
+   "in": {
+    "steel_bar": 2,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_steel_axe": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_steel_helm": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 66,
+   "in": {
+    "steel_bar": 2,
+    "water_flask": 2,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_steel_helm": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_steel_shield": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 74,
+   "in": {
+    "steel_bar": 3,
+    "water_flask": 1,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_steel_shield": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  },
+  "forged_steel_greataxe": {
+   "skill": "smithing",
+   "containers": [
+    "forge"
+   ],
+   "trivial": 90,
+   "in": {
+    "steel_bar": 4,
+    "water_flask": 2,
+    "smithy_hammer": 1
+   },
+   "out": {
+    "forged_steel_greataxe": 1
+   },
+   "keep": [
+    "smithy_hammer"
+   ]
+  }
+ }
+}

@@ -23,13 +23,13 @@ import os
 import sys
 
 import bpy
-from mathutils import Matrix, Vector
+from mathutils import Euler, Matrix, Vector
 
 sys.path.insert(0, os.path.dirname(__file__))
 import gear  # noqa: E402
 import props  # noqa: E402
-from props import (BONE, CLAY, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, STONE_WARM, WATER,  # noqa: E402
-				   STONE_LIGHT, WOOD, WOOD_GRAY)
+from props import (BONE, CLAY, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, PETAL_PURPLE, PINE, Prop, RUNE, STONE_DARK,  # noqa: E402
+				   STONE_WARM, STONE_LIGHT, WATER, WOOD, WOOD_GRAY)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -811,6 +811,659 @@ def tide_trunk_charm():
 	return p.build()
 
 
+# ---------------------------------------------------------------- tradeskills
+
+AMBER = (1, 3)       # baked crust, fried food
+ORANGE = (4, 2)      # spice, broth
+PINK = (2, 2)        # raw meat
+MOSS = PINE
+LAVENDER = PETAL_PURPLE
+
+
+def _frame(p, lo, hi):
+	"""Two specks at opposite corners, too small to see, so a set of icons
+	(small and large ore, the three healing potions) share one framing and
+	their sizes compare."""
+	p.blob((0.001, 0.001, 0.001), lo, STONE_DARK, segs=(3, 3))
+	p.blob((0.001, 0.001, 0.001), hi, STONE_DARK, segs=(3, 3))
+
+
+def _loop(p, center, radius, z_axis, r, swatch, n=14, squash=1.0, glow=0.0):
+	"""A ring of segments round `center`, in the xy plane (z_axis) or the xz plane."""
+	cx, cy, cz = center
+	for k in range(n):
+		a0, a1 = k * math.tau / n, (k + 1) * math.tau / n
+		if z_axis:
+			a = (cx + math.cos(a0) * radius, cy + math.sin(a0) * radius * squash, cz)
+			b = (cx + math.cos(a1) * radius, cy + math.sin(a1) * radius * squash, cz)
+		else:
+			a = (cx + math.cos(a0) * radius, cy, cz + math.sin(a0) * radius * squash)
+			b = (cx + math.cos(a1) * radius, cy, cz + math.sin(a1) * radius * squash)
+		p.seg(a, b, r, r, swatch, sides=5, glow=glow)
+
+
+# supplies
+
+def bag_of_flour():
+	p = Prop("bag_of_flour", 401)
+	p.blob((0.95, 0.8, 0.8), (0, 0, 0.4), CLOTH_WHITE, segs=(12, 8), grad=(0.15, 0.95))
+	_loop(p, (0, 0, 0.74), 0.36, True, 0.07, STONE_WARM, n=14, squash=0.85)       # rolled-down rim
+	p.blob((0.62, 0.52, 0.26), (0, 0, 0.78), CLOTH_WHITE, segs=(10, 6), grad=(0.0, 0.3), glow=0.25)  # the flour heap
+	for k in range(4):                                                             # a wheat sprig stamped on the front
+		z = 0.22 + k * 0.1
+		p.blob((0.08, 0.03, 0.12), (-0.05, -0.4, z), GOLD, rot=(0, 30, 0), segs=(6, 4))
+		p.blob((0.08, 0.03, 0.12), (0.05, -0.4, z), GOLD, rot=(0, -30, 0), segs=(6, 4))
+	p.box((0.025, 0.02, 0.5), (0, -0.39, 0.3), GOLD)
+	return p.build()
+
+
+def jar_of_spices():
+	p = Prop("jar_of_spices", 403)
+	p.seg((0, 0, 0), (0, 0, 0.55), 0.3, 0.38, CLAY, sides=12, grad=(0.1, 0.8))
+	p.seg((0, 0, 0.55), (0, 0, 0.7), 0.38, 0.26, CLAY, sides=12)
+	p.blob((0.62, 0.62, 0.22), (0, 0, 0.74), CLOTH_RED, segs=(12, 6), grad=(0.0, 0.6))  # cloth over the lid
+	p.seg((0, 0, 0.66), (0, 0, 0.7), 0.29, 0.29, GOLD, sides=12)                   # its tie
+	for k in range(5):                                                             # a pinch spilled in front
+		a = k * 1.25
+		p.rock((0.2, 0.18, 0.12), (0.45 + math.cos(a) * 0.12, -0.35 + math.sin(a) * 0.1, 0.05), ORANGE, jitter=0.1)
+	p.seg((0.25, -0.55, 0.04), (0.75, -0.2, 0.04), 0.05, 0.05, WOOD, sides=6)       # a cinnamon stick
+	return p.build()
+
+
+def vial_of_water():
+	p = Prop("vial_of_water", 405)
+	p.seg((0, 0, 0.12), (0, 0, 1.0), 0.16, 0.16, RUNE, sides=10, grad=(0.0, 0.5), glow=0.35)  # a thin tube of water
+	p.blob((0.32, 0.32, 0.26), (0, 0, 0.13), RUNE, segs=(10, 6), grad=(0.3, 0.6), glow=0.35)
+	p.seg((0, 0, 0.95), (0, 0, 1.02), 0.2, 0.2, CLOTH_WHITE, sides=10)              # the lip
+	p.seg((0, 0, 1.0), (0, 0, 1.16), 0.13, 0.15, WOOD, sides=8)                     # cork
+	p.box((0.05, 0.02, 0.5), (-0.07, -0.16, 0.55), CLOTH_WHITE, glow=0.6)           # the glint on the glass
+	return p.build()
+
+
+def tanning_salts():
+	p = Prop("tanning_salts", 407)
+	p.seg((0, 0, 0), (0, 0, 0.42), 0.48, 0.55, WOOD, sides=14, grad=(0.1, 0.8))    # a little tub
+	for z in (0.08, 0.34):
+		p.seg((0, 0, z), (0, 0, z + 0.05), 0.5 + z * 0.16 + 0.01, 0.5 + z * 0.16 + 0.02, STONE_DARK, sides=14)
+	for k in range(9):                                                             # heaped with coarse white salt
+		a = k * 2.4
+		r = 0.1 + (k % 3) * 0.14
+		p.rock((0.28, 0.26, 0.22), (math.cos(a) * r, math.sin(a) * r, 0.48 + (0.12 if k < 3 else 0.0)), CLOTH_WHITE,
+			   grad=(0.0, 0.5), jitter=0.12)
+	return p.build()
+
+
+def spool_of_thread():
+	p = Prop("spool_of_thread", 409)
+	p.seg((0, 0, 0), (0, 0, 0.1), 0.42, 0.42, WOOD, sides=14)                       # flanges
+	p.seg((0, 0, 0.8), (0, 0, 0.9), 0.42, 0.42, WOOD, sides=14)
+	p.seg((0, 0, 0.1), (0, 0, 0.8), 0.33, 0.33, CLOTH_RED, sides=14, grad=(0.0, 0.6))  # the thread
+	for k in range(6):                                                             # wound turns
+		z = 0.16 + k * 0.11
+		p.seg((0, 0, z), (0, 0, z + 0.02), 0.345, 0.345, CLOTH_RED, sides=14, grad=(0.9, 1.0))
+	pts = [(0.3, -0.18, 0.55), (0.55, -0.35, 0.35), (0.6, -0.5, 0.1), (0.45, -0.65, 0.02)]  # a loose end
+	for a, b in zip(pts, pts[1:]):
+		p.seg(a, b, 0.025, 0.025, CLOTH_RED, sides=4)
+	p.seg((-0.2, -0.28, 0.25), (-0.05, -0.3, 0.95), 0.025, 0.008, STONE_LIGHT, sides=4, glow=0.4)  # a needle stuck in
+	return p.build()
+
+
+def bundle_of_herbs():
+	p = Prop("bundle_of_herbs", 411)
+	tops = [(-0.45, 0.0, 0.95), (-0.2, 0.05, 1.1), (0.05, 0.0, 1.15), (0.3, 0.05, 1.05), (0.5, 0.0, 0.85), (-0.1, -0.1, 0.95), (0.2, -0.1, 0.9)]
+	for k, t in enumerate(tops):
+		p.seg((t[0] * 0.08, 0, 0), t, 0.03, 0.02, LEAF, sides=4)
+		for j in range(3):                                                         # leaves up the stem
+			f = 0.55 + j * 0.2
+			x, y, z = t[0] * f, t[1] * f, t[2] * f
+			sw = MOSS if (k + j) % 2 else LEAF
+			p.blob((0.2, 0.06, 0.12), (x + (0.08 if j % 2 else -0.08), y - 0.05, z), sw, rot=(0, 35 if j % 2 else -35, 0), segs=(6, 4))
+		if k in (1, 3, 5):                                                         # a few in flower
+			p.blob((0.1, 0.1, 0.16), (t[0], t[1], t[2] + 0.05), LAVENDER, segs=(6, 4), grad=(0.0, 0.4))
+	p.seg((0, 0, 0.2), (0, 0, 0.3), 0.1, 0.1, WOOD_GRAY, sides=8)                   # the twine
+	return p.build()
+
+
+def _ore(p, size, loc, seed_off, glints):
+	p.rock(size, loc, STONE_DARK, grad=(0.0, 0.45), jitter=0.12)
+	for k in range(glints):
+		a = (k + seed_off) * 2.3
+		x = loc[0] + math.cos(a) * size[0] * 0.3
+		z = loc[2] + (0.1 + (k % 3) * 0.12) * size[2]
+		p.blob((0.1, 0.06, 0.1), (x, loc[1] - size[1] * 0.42, z), EMBER, segs=(5, 4), glow=1.0)
+
+
+def small_brick_of_ore():
+	p = Prop("small_brick_of_ore", 413)
+	_ore(p, (0.85, 0.7, 0.6), (0, 0, 0.3), 0, 4)
+	_frame(p, (-0.7, -0.5, 0.0), (0.7, 0.5, 0.85))
+	return p.build()
+
+
+def large_brick_of_ore():
+	p = Prop("large_brick_of_ore", 415)
+	p.box((1.3, 0.95, 0.55), (0, 0, 0.3), STONE_DARK, grad=(0.0, 0.5), jitter=0.06)   # a squared block
+	for k in range(6):
+		x = -0.45 + k * 0.18
+		p.blob((0.12, 0.07, 0.12), (x, -0.48, 0.15 + (k % 3) * 0.13), EMBER, segs=(5, 4), glow=1.0)
+		p.blob((0.12, 0.12, 0.07), (x + 0.05, -0.2 + (k % 2) * 0.3, 0.58), EMBER, segs=(5, 4), glow=1.0)
+	_ore(p, (0.45, 0.4, 0.35), (0.25, 0.1, 0.72), 2, 2)                               # a lump on top
+	_frame(p, (-0.7, -0.5, 0.0), (0.7, 0.5, 0.85))
+	return p.build()
+
+
+def water_flask():
+	p = Prop("water_flask", 417)
+	p.seg((0, -0.15, 0.45), (0, 0.15, 0.45), 0.42, 0.42, STONE_LIGHT, sides=18, grad=(0.0, 0.7))  # a round tin canteen
+	p.seg((0, -0.17, 0.45), (0, -0.13, 0.45), 0.22, 0.22, WATER, sides=16, glow=0.3)             # a blue boss on its face
+	p.seg((0, -0.04, 0.45), (0, 0.04, 0.45), 0.45, 0.45, HIDE, sides=18)                          # stitched leather band
+	p.seg((0, 0, 0.85), (0, 0, 1.0), 0.1, 0.12, STONE_LIGHT, sides=8)
+	p.seg((0, 0, 1.0), (0, 0, 1.12), 0.09, 0.11, WOOD, sides=8)                                  # cork
+	pts = [(-0.44, 0, 0.5), (-0.5, 0, 0.95), (-0.3, 0, 1.25), (0.0, 0, 1.33), (0.3, 0, 1.25), (0.5, 0, 0.95), (0.44, 0, 0.5)]
+	for a, b in zip(pts, pts[1:]):                                                                # carrying strap
+		p.seg(a, b, 0.035, 0.035, HIDE, sides=5)
+	return p.build()
+
+
+def bundle_of_shafts():
+	p = Prop("bundle_of_shafts", 419)
+	for k in range(9):
+		dy = (k % 3 - 1) * 0.1
+		dz = (k // 3 - 1) * 0.1
+		p.seg((-0.7 + (k % 4) * 0.04, dy, 0.1 + dz), (0.62 - (k % 3) * 0.04, dy, 0.85 + dz), 0.05, 0.05, WOOD, sides=6, grad=(0.1, 0.5))
+	for t in (0.28, 0.72):                                                         # two ties
+		x, z = -0.68 + t * 1.3, 0.1 + t * 0.75
+		p.seg((x - 0.04, 0, z - 0.03), (x + 0.04, 0, z + 0.03), 0.22, 0.22, CLOTH_RED, sides=10)
+	return p.build()
+
+
+def smithy_hammer():
+	p = Prop("smithy_hammer", 421)
+	p.seg((-0.25, 0, 0.0), (0.05, 0, 1.0), 0.06, 0.07, WOOD, sides=8, grad=(0.1, 0.6))      # haft
+	p.seg((-0.24, 0, 0.03), (-0.17, 0, 0.3), 0.08, 0.08, HIDE, sides=8)                    # grip wrap
+	p.box((0.62, 0.24, 0.24), (0.08, 0, 1.02), STONE_DARK, rot=(0, 16.7, 0), grad=(0.0, 0.6))  # the head
+	p.seg((0.36, 0, 0.94), (0.46, 0, 0.91), 0.17, 0.17, STONE_LIGHT, sides=8)               # striking face
+	p.seg((-0.2, 0, 1.12), (-0.38, 0, 1.18), 0.1, 0.02, STONE_DARK, sides=4)                # the peen
+	return p.build()
+
+
+def sewing_kit():
+	p = Prop("sewing_kit", 423)
+	p.box((1.05, 0.65, 0.34), (0, 0, 0.17), WOOD, grad=(0.1, 0.8))                         # a little box
+	p.box((1.05, 0.06, 0.62), (0, 0.36, 0.58), WOOD, rot=(-18, 0, 0), grad=(0.1, 0.7))       # its lid, open
+	p.box((0.12, 0.06, 0.1), (0, -0.34, 0.26), GOLD)                                         # latch
+	for k, sw in enumerate((CLOTH_RED, RUNE, GOLD)):                                         # spools inside
+		x = -0.3 + k * 0.22
+		p.seg((x, 0.05, 0.3), (x, 0.05, 0.5), 0.09, 0.09, sw, sides=10)
+		p.seg((x, 0.05, 0.49), (x, 0.05, 0.53), 0.11, 0.11, WOOD_GRAY, sides=10)
+	p.blob((0.3, 0.3, 0.24), (0.33, -0.05, 0.42), CLOTH_RED, segs=(10, 6), grad=(0.0, 0.6))  # pincushion
+	for k in range(3):
+		a = k * 1.1 - 1.1
+		p.seg((0.33 + math.sin(a) * 0.05, -0.05, 0.5), (0.33 + math.sin(a) * 0.25, -0.1, 0.8), 0.02, 0.006, STONE_LIGHT, sides=4, glow=0.4)
+		p.blob((0.05, 0.05, 0.05), (0.33 + math.sin(a) * 0.25, -0.1, 0.8), CLOTH_WHITE, segs=(5, 4))
+	return p.build()
+
+
+def mortar_and_pestle():
+	p = Prop("mortar_and_pestle", 425)
+	p.seg((0, 0, 0), (0, 0, 0.1), 0.32, 0.36, STONE_LIGHT, sides=14)
+	p.seg((0, 0, 0.1), (0, 0, 0.5), 0.36, 0.55, STONE_LIGHT, sides=14, grad=(0.0, 0.8))    # the bowl
+	p.seg((0, 0, 0.49), (0, 0, 0.51), 0.46, 0.46, STONE_DARK, sides=14)                    # its dark hollow
+	for k in range(5):                                                                     # herbs being ground
+		a = k * 1.3
+		p.blob((0.14, 0.1, 0.06), (math.cos(a) * 0.22, math.sin(a) * 0.2, 0.52), LEAF, segs=(6, 4))
+	p.seg((-0.15, 0.05, 0.42), (0.35, -0.05, 1.1), 0.07, 0.1, STONE_WARM, sides=10, grad=(0.0, 0.6))  # pestle
+	p.blob((0.22, 0.22, 0.22), (0.36, -0.05, 1.12), STONE_WARM, segs=(8, 6))
+	return p.build()
+
+
+# recipe books: a standing book, cover to the camera, pages on the right
+
+def _book(p, cover, trim=GOLD):
+	p.box((0.84, 0.05, 1.08), (0, -0.12, 0.54), cover, grad=(0.1, 0.7))    # front cover
+	p.box((0.84, 0.05, 1.08), (0, 0.12, 0.54), cover, grad=(0.2, 0.8))     # back cover
+	p.box((0.08, 0.29, 1.08), (-0.4, 0, 0.54), cover, grad=(0.1, 0.8))     # spine
+	p.box((0.78, 0.2, 1.0), (0.0, 0, 0.54), CLOTH_WHITE, grad=(0.2, 0.7))  # pages
+	for x in (-0.36, 0.36):                                                 # metal corners
+		for z in (0.06, 1.02):
+			p.box((0.14, 0.07, 0.14), (x, -0.13, z), trim)
+	p.box((0.84, 0.07, 0.05), (0, -0.13, 0.2), trim)                        # bands across the cover
+	p.box((0.84, 0.07, 0.05), (0, -0.13, 0.88), trim)
+
+
+def hearthside_cookbook():
+	p = Prop("hearthside_cookbook", 427)
+	_book(p, CLOTH_RED)
+	p.blob((0.46, 0.08, 0.28), (0, -0.17, 0.55), AMBER, segs=(10, 6), grad=(0.0, 0.6))     # a loaf
+	for k in range(3):
+		p.box((0.04, 0.03, 0.18), (-0.12 + k * 0.12, -0.21, 0.58), CLOTH_WHITE, rot=(0, 25, 0))
+	return p.build()
+
+
+def tailors_pattern_book():
+	p = Prop("tailors_pattern_book", 429)
+	_book(p, WATER, trim=STONE_LIGHT)
+	p.seg((-0.22, -0.17, 0.3), (0.22, -0.17, 0.8), 0.035, 0.008, CLOTH_WHITE, sides=5, glow=0.5)  # a needle
+	_loop(p, (0.19, -0.17, 0.72), 0.045, False, 0.012, CLOTH_WHITE, n=6)
+	pts = [(0.19, -0.18, 0.72), (0.3, -0.18, 0.6), (0.05, -0.18, 0.45), (0.25, -0.18, 0.32)]  # its thread
+	for a, b in zip(pts, pts[1:]):
+		p.seg(a, b, 0.02, 0.02, GOLD, sides=4)
+	return p.build()
+
+
+def alchemists_notes():
+	p = Prop("alchemists_notes", 431)
+	_book(p, MOSS, trim=GOLD)
+	p.blob((0.3, 0.08, 0.26), (0, -0.17, 0.46), RUNE, segs=(10, 6), glow=1.2)       # a flask
+	p.box((0.09, 0.07, 0.2), (0, -0.17, 0.66), CLOTH_WHITE)
+	p.box((0.14, 0.07, 0.04), (0, -0.17, 0.76), CLOTH_WHITE)
+	for s_ in (-1, 1):                                                           # loose papers
+		p.box((0.3, 0.02, 0.4), (0.3 * s_ + 0.1, -0.02, 0.9), CLOTH_WHITE, rot=(0, s_ * 20, 0))
+	return p.build()
+
+
+def smiths_handbook():
+	p = Prop("smiths_handbook", 433)
+	_book(p, STONE_DARK, trim=EMBER)
+	p.seg((-0.12, -0.17, 0.3), (0.08, -0.17, 0.72), 0.03, 0.03, WOOD, sides=5)          # a hammer
+	p.box((0.34, 0.08, 0.14), (0.1, -0.18, 0.72), EMBER, rot=(0, 25, 0), glow=0.9)
+	return p.build()
+
+
+# drops
+
+def raw_meat():
+	p = Prop("raw_meat", 435)
+	tilt = Euler((math.radians(50), 0, math.radians(8)))
+
+	def at(x, y, z):
+		return tuple(tilt.to_matrix() @ Vector((x, y, z)) + Vector((0, 0, 0.45)))
+	rot = (50, 0, 8)
+	p.blob((1.15, 0.9, 0.3), at(0, 0, -0.04), CLOTH_WHITE, rot=rot, segs=(14, 6), grad=(0.1, 0.5))      # fat rind
+	p.blob((1.05, 0.8, 0.32), at(-0.03, -0.02, 0.04), CLOTH_RED, rot=rot, segs=(14, 6), grad=(0.0, 0.7), jitter=0.02)
+	for k in range(4):                                                               # marbling
+		p.box((0.28, 0.05, 0.03), at(-0.32 + k * 0.17, -0.18 + (k % 2) * 0.28, 0.2), PINK, rot=(50, 0, 30 + k * 20))
+	p.seg(at(0.24, 0.08, 0.1), at(0.24, 0.08, 0.26), 0.14, 0.14, BONE, sides=10)          # the bone
+	p.seg(at(0.24, 0.08, 0.25), at(0.24, 0.08, 0.28), 0.07, 0.07, STONE_WARM, sides=8)
+	return p.build()
+
+
+def _frog_pair(p, swatch, flat=False, lift=0.0):
+	"""Two frog legs joined at the hip: thigh, shin and a webbed foot each."""
+	def at(x, h):
+		return (x, h * 0.7 - 0.45, 0.14 + lift + (0.02 if h > 0.5 else 0.0)) if flat else (x, 0, h)
+	p.blob((0.3, 0.22, 0.2) if not flat else (0.3, 0.2, 0.18), at(0, 1.0), swatch, segs=(8, 5))
+	for s_ in (-1, 1):
+		hip, knee, ankle = at(s_ * 0.08, 0.98), at(s_ * 0.42, 0.55), at(s_ * 0.18, 0.18)
+		p.seg(hip, knee, 0.14, 0.1, swatch, sides=8, grad=(0.1, 0.7))
+		p.blob((0.2, 0.18, 0.18), knee, swatch, segs=(6, 4))
+		p.seg(knee, ankle, 0.09, 0.05, swatch, sides=7, grad=(0.1, 0.7))
+		toes = [at(s_ * 0.12, -0.05), at(s_ * 0.28, -0.08), at(s_ * 0.4, 0.0)]
+		for t in toes:
+			p.seg(ankle, t, 0.03, 0.02, swatch, sides=4)
+		p.poly([ankle] + toes, [(0, 1, 2), (0, 2, 3)], swatch)
+
+
+def frog_legs():
+	p = Prop("frog_legs", 437)
+	_frog_pair(p, LEAF)
+	return p.build()
+
+
+# intermediates
+
+def tanned_leather():
+	p = Prop("tanned_leather", 439)
+	p.poly([(-0.5, 0.0, 0.05), (0.5, 0.0, 0.05), (0.55, -0.35, 0.03), (0.35, -0.7, 0.02), (-0.2, -0.75, 0.02), (-0.55, -0.4, 0.03)],
+		   [(0, 1, 2, 3, 4, 5)], HIDE, grad=(0.0, 0.3))                                     # the sheet, unrolled
+	p.seg((-0.55, 0.1, 0.28), (0.55, 0.1, 0.28), 0.26, 0.26, HIDE, sides=14, grad=(0.0, 0.8))  # rolled up behind
+	p.seg((0.55, 0.1, 0.28), (0.57, 0.1, 0.28), 0.18, 0.18, WOOD, sides=12)               # the end of the roll
+	for x in (-0.3, 0.3):
+		p.seg((x - 0.03, 0.1, 0.28), (x + 0.03, 0.1, 0.28), 0.28, 0.28, WOOD, sides=12)      # ties
+	return p.build()
+
+
+def thick_leather():
+	p = Prop("thick_leather", 441)
+	for k in range(3):                                                               # a folded stack
+		p.box((1.1 - k * 0.06, 0.8 - k * 0.04, 0.14), (k * 0.03, k * 0.02, 0.07 + k * 0.15), MOSS, rot=(0, 0, k * 4 - 4), grad=(0.1, 0.7))
+	for r in range(3):                                                               # rows of scutes on top
+		for c in range(4):
+			p.blob((0.18, 0.14, 0.1), (-0.36 + c * 0.24 + 0.06, -0.24 + r * 0.24 + 0.04, 0.43), LEAF, segs=(6, 4), grad=(0.0, 0.5))
+	p.seg((-0.1, -0.45, 0.25), (-0.1, 0.45, 0.25), 0.05, 0.05, HIDE, sides=5)              # strap round the stack
+	p.box((0.08, 0.9, 0.52), (-0.1, 0.0, 0.26), HIDE)
+	return p.build()
+
+
+def _bolt(p, cloth, grad=(0.0, 0.7), glow=0.0, stripe=None):
+	p.seg((-0.6, 0.15, 0.36), (0.6, 0.15, 0.36), 0.34, 0.34, cloth, sides=16, grad=grad, glow=glow)   # the roll
+	for x in (-0.62, 0.62):                                                               # the board it's wound on
+		p.box((0.04, 0.2, 0.2), (x, 0.15, 0.36), WOOD)
+	p.box((1.2, 0.5, 0.03), (0, -0.3, 0.02), cloth, grad=grad, glow=glow)                  # a length unrolled
+	if stripe:
+		for x in (-0.45, 0.45):
+			p.seg((x, 0.15, 0.36), (x + 0.04, 0.15, 0.36), 0.35, 0.35, stripe, sides=16)
+			p.box((0.04, 0.5, 0.035), (x, -0.3, 0.025), stripe)
+
+
+def wool_cloth():
+	p = Prop("wool_cloth", 443)
+	_bolt(p, CLOTH_RED, stripe=CLOTH_WHITE)
+	return p.build()
+
+
+def silk_cloth():
+	p = Prop("silk_cloth", 445)
+	_bolt(p, LAVENDER, grad=(0.0, 0.3), glow=0.35, stripe=CLOTH_WHITE)
+	return p.build()
+
+
+def _ingot(p, swatch, grad=(0.0, 0.5)):
+	w0, d0, w1, d1, h = 0.55, 0.26, 0.42, 0.17, 0.26
+	vs = [(-w0, -d0, 0), (w0, -d0, 0), (w0, d0, 0), (-w0, d0, 0), (-w1, -d1, h), (w1, -d1, h), (w1, d1, h), (-w1, d1, h)]
+	faces = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+	p.poly(vs, faces, swatch, grad=grad)
+	p.box((0.18, 0.1, 0.01), (0, 0, h + 0.005), STONE_DARK if swatch != STONE_DARK else IRON)  # a maker's stamp
+
+
+def iron_bar():
+	p = Prop("iron_bar", 447)
+	_ingot(p, WOOD_GRAY, grad=(0.0, 0.7))
+	for (x, y) in ((-0.3, -0.27), (0.2, -0.27), (0.45, 0.0)):                             # rust
+		p.blob((0.12, 0.04, 0.08), (x, y, 0.12), EMBER, segs=(6, 4), grad=(0.6, 0.9))
+	return p.build()
+
+
+def steel_bar():
+	p = Prop("steel_bar", 449)
+	_ingot(p, STONE_LIGHT, grad=(0.0, 0.45))
+	p.box((0.7, 0.02, 0.04), (0, -0.22, 0.14), CLOTH_WHITE, glow=0.8)                       # a bright edge
+	return p.build()
+
+
+# food
+
+def roast_meat():
+	p = Prop("roast_meat", 451)
+	p.blob((0.75, 0.62, 0.9), (-0.12, 0, 0.42), WOOD, rot=(0, 35, 0), segs=(12, 8), grad=(0.0, 0.9))  # the haunch
+	p.blob((0.5, 0.42, 0.55), (-0.2, -0.12, 0.5), AMBER, rot=(0, 35, 0), segs=(10, 6), grad=(0.0, 0.8))  # glazed
+	p.seg((0.15, 0, 0.65), (0.55, 0, 1.05), 0.09, 0.08, BONE, sides=8)                        # the bone
+	for s_ in (-1, 1):
+		p.blob((0.16, 0.16, 0.16), (0.58 + s_ * 0.05, s_ * 0.06, 1.08 - s_ * 0.05), BONE, segs=(7, 5))
+	for k in range(3):                                                                    # char lines
+		p.box((0.3, 0.03, 0.03), (-0.25 + k * 0.12, -0.36, 0.3 + k * 0.14), STONE_DARK, rot=(0, -30, 0))
+	return p.build()
+
+
+def _fish_at(p, body, fin, loc, s=1.0, fat=0.3):
+	x0, y0, z0 = loc
+	def at(x, y, z):
+		return (x0 + x * s, y0 + y * s, z0 + z * s)
+	p.blob((s, fat * 0.8 * s, fat * 1.6 * s), at(0, 0, 0), body, segs=(12, 6), grad=(0.1, 0.8))
+	p.poly([at(0.45, 0, 0), at(0.75, 0, 0.27), at(0.75, 0, -0.27)], [(0, 1, 2)], fin)
+	p.poly([at(-0.15, 0, fat * 0.7), at(0.2, 0, fat * 0.7), at(0.05, 0, fat * 1.2)], [(0, 1, 2)], fin)
+	p.blob((0.09 * s, 0.05 * s, 0.09 * s), at(-0.36, -fat * 0.3, 0.07), STONE_DARK, segs=(6, 4))
+
+
+def grilled_trout():
+	p = Prop("grilled_trout", 453)
+	p.box((1.5, 0.6, 0.08), (0.05, 0, 0.04), WOOD, grad=(0.1, 0.5))                             # a plank
+	_fish_at(p, AMBER, EMBER, (0, 0, 0.35), fat=0.28)
+	for k in range(4):                                                                     # grill marks
+		p.box((0.04, 0.02, 0.36), (-0.25 + k * 0.17, -0.115, 0.36), STONE_DARK, rot=(0, 25, 0))
+	p.blob((0.22, 0.14, 0.12), (-0.55, -0.15, 0.13), GOLD, segs=(8, 5), glow=0.3)             # a wedge of lemon
+	p.blob((0.2, 0.1, 0.05), (0.55, -0.18, 0.1), LEAF, segs=(6, 4))                            # and a sprig
+	return p.build()
+
+
+def _bowl(p, swatch=WOOD, r=0.62, h=0.45):
+	p.seg((0, 0, 0), (0, 0, 0.08), r * 0.45, r * 0.5, swatch, sides=14)
+	p.seg((0, 0, 0.08), (0, 0, h), r * 0.55, r, swatch, sides=16, grad=(0.1, 0.8))
+
+
+def fish_stew():
+	p = Prop("fish_stew", 455)
+	_bowl(p)
+	p.seg((0, 0, 0.4), (0, 0, 0.43), 0.56, 0.56, ORANGE, sides=16, grad=(0.1, 0.3))          # the broth
+	for k in range(6):                                                                     # fish and herbs in it
+		a = k * 1.05
+		sw = CLOTH_WHITE if k % 2 else LEAF
+		p.blob((0.16, 0.12, 0.07), (math.cos(a) * 0.3, math.sin(a) * 0.3, 0.45), sw, segs=(6, 4))
+	p.seg((0.1, 0.1, 0.42), (0.6, 0.35, 0.95), 0.04, 0.05, WOOD_GRAY, sides=6)             # a spoon
+	for k in range(2):                                                                     # steam
+		x = -0.15 + k * 0.3
+		p.seg((x, 0, 0.55), (x + 0.08, 0, 0.8), 0.05, 0.02, CLOTH_WHITE, sides=5, glow=0.3)
+		p.seg((x + 0.08, 0, 0.8), (x, 0, 1.0), 0.02, 0.0, CLOTH_WHITE, sides=5, glow=0.3)
+	return p.build()
+
+
+def hunters_pie():
+	p = Prop("hunters_pie", 457)
+	p.seg((0, 0, 0), (0, 0, 0.2), 0.62, 0.72, CLAY, sides=18)                                  # the dish
+	p.blob((1.3, 1.3, 0.4), (0, 0, 0.22), AMBER, segs=(16, 8), grad=(0.0, 0.7))              # the crust
+	_loop(p, (0, 0, 0.24), 0.64, True, 0.07, GOLD, n=16)                                      # crimped edge
+	for k in range(3):                                                                     # vents
+		a = k * math.tau / 3 + 0.3
+		p.box((0.2, 0.04, 0.04), (math.cos(a) * 0.2, math.sin(a) * 0.2, 0.42), WOOD, rot=(0, 0, math.degrees(a)))
+	p.blob((0.16, 0.12, 0.08), (0, 0, 0.43), LEAF, segs=(6, 4))                                # a sprig on top
+	return p.build()
+
+
+def _plate(p, swatch=STONE_LIGHT, r=0.7):
+	p.seg((0, 0, 0), (0, 0, 0.05), r * 0.8, r, swatch, sides=18, grad=(0.0, 0.6))
+	p.seg((0, 0, 0.05), (0, 0, 0.07), r, r * 1.02, swatch, sides=18, grad=(0.0, 0.4))
+
+
+def frog_legs_saute():
+	p = Prop("frog_legs_saute", 459)
+	_plate(p, STONE_WARM, r=0.62)
+	_frog_pair(p, AMBER, flat=True, lift=0.0)
+	for k in range(5):                                                                     # herbs
+		a = k * 1.3
+		p.blob((0.1, 0.08, 0.04), (math.cos(a) * 0.5, math.sin(a) * 0.5, 0.1), LEAF, segs=(5, 4))
+	return p.build()
+
+
+def lagoon_feast():
+	p = Prop("lagoon_feast", 461)
+	p.blob((1.9, 1.2, 0.12), (0, 0, 0.06), WOOD, segs=(18, 6), grad=(0.1, 0.6))                # a wide board
+	for k in range(4):                                                                     # banana leaves
+		p.blob((0.7, 0.22, 0.03), (-0.3 + k * 0.2, 0.1, 0.13), LEAF, rot=(0, 0, -30 + k * 20), segs=(8, 4))
+	_fish_at(p, CLOTH_RED, EMBER, (-0.15, 0.1, 0.32), s=0.8, fat=0.3)                           # a snapper
+	p.blob((0.34, 0.34, 0.24), (0.6, -0.25, 0.2), WOOD, segs=(10, 6), grad=(0.3, 0.9))          # half a coconut
+	p.seg((0.6, -0.25, 0.3), (0.6, -0.25, 0.32), 0.15, 0.15, CLOTH_WHITE, sides=10)
+	for k in range(3):                                                                     # fruit
+		p.blob((0.2, 0.2, 0.2), (-0.65 + k * 0.17, -0.35 + (k % 2) * 0.08, 0.22), ORANGE, segs=(8, 6), grad=(0.0, 0.5))
+	for k in range(3):                                                                     # prawns
+		x = 0.25 + k * 0.14
+		p.seg((x, 0.35, 0.16), (x + 0.08, 0.4, 0.3), 0.06, 0.03, PINK, sides=6)
+	return p.build()
+
+
+def koi_platter():
+	p = Prop("koi_platter", 463)
+	_plate(p, WATER, r=0.8)
+	for k in range(5):                                                                     # a bed of leaves
+		a = k * math.tau / 5
+		p.blob((0.45, 0.18, 0.03), (math.cos(a) * 0.3, math.sin(a) * 0.3, 0.09), LEAF, rot=(0, 0, math.degrees(a)), segs=(8, 4))
+	_fish_at(p, CLOTH_WHITE, EMBER, (0, 0, 0.3), s=0.95, fat=0.3)
+	for (x, z, sw) in ((0.0, 0.08, CLOTH_RED), (0.2, -0.03, EMBER), (-0.17, -0.05, GOLD), (0.05, -0.08, CLOTH_RED)):  # koi patches
+		p.blob((0.2, 0.04, 0.15), (x, -0.12, 0.3 + z), sw, segs=(6, 4))
+	p.blob((0.12, 0.03, 0.1), (0.1, -0.13, 0.36), WATER, segs=(6, 4), glow=0.8)                  # the rainbow sheen
+	for k in range(4):                                                                     # jeweled garnish round the rim
+		a = k * math.tau / 4 + 0.6
+		p.blob((0.1, 0.1, 0.1), (math.cos(a) * 0.68, math.sin(a) * 0.68, 0.12), (RUNE, LAVENDER, LEAF, EMBER)[k], segs=(6, 4), glow=0.8)
+	return p.build()
+
+
+# potions: the liquid is the bottle; glass shows as neck, lip, a glint and a cork
+
+def _potion(p, top, neck=0.28, neck_r=0.1, cork=WOOD):
+	"""Glass neck, lip and cork on a bottle whose shoulder ends at `top`."""
+	p.seg((0, 0, top - 0.05), (0, 0, top + neck), neck_r, neck_r * 0.9, CLOTH_WHITE, sides=10, grad=(0.1, 0.5))
+	p.seg((0, 0, top + neck - 0.02), (0, 0, top + neck + 0.04), neck_r * 1.3, neck_r * 1.3, CLOTH_WHITE, sides=10)
+	p.seg((0, 0, top + neck + 0.03), (0, 0, top + neck + 0.16), neck_r * 0.85, neck_r, cork, sides=8)
+	return top + neck
+
+
+POTION_FRAME = ((-0.5, -0.5, 0.0), (0.5, 0.5, 1.38))
+
+
+def minor_healing_potion():
+	p = Prop("minor_healing_potion", 465)
+	p.blob((0.62, 0.62, 0.62), (0, 0, 0.31), CLOTH_RED, segs=(12, 8), grad=(0.0, 0.6), glow=0.9)
+	_potion(p, 0.58, neck=0.16, neck_r=0.08)
+	p.box((0.04, 0.02, 0.16), (-0.12, -0.3, 0.38), CLOTH_WHITE, glow=0.8)
+	_frame(p, *POTION_FRAME)
+	return p.build()
+
+
+def healing_potion():
+	p = Prop("healing_potion", 467)
+	p.blob((0.8, 0.8, 0.8), (0, 0, 0.4), CLOTH_RED, segs=(14, 8), grad=(0.0, 0.6), glow=1.0)
+	_potion(p, 0.76, neck=0.24, neck_r=0.09)
+	p.box((0.05, 0.02, 0.22), (-0.16, -0.38, 0.5), CLOTH_WHITE, glow=0.8)
+	_frame(p, *POTION_FRAME)
+	return p.build()
+
+
+def greater_healing_potion():
+	p = Prop("greater_healing_potion", 469)
+	p.blob((1.0, 1.0, 0.86), (0, 0, 0.43), CLOTH_RED, segs=(16, 10), grad=(0.0, 0.6), glow=1.2)
+	p.seg((0, 0, 0.74), (0, 0, 0.95), 0.26, 0.13, CLOTH_RED, sides=12, glow=1.2)            # a pear-shaped shoulder
+	p.seg((0, 0, 0.9), (0, 0, 1.12), 0.13, 0.12, CLOTH_WHITE, sides=10)
+	p.seg((0, 0, 0.98), (0, 0, 1.03), 0.16, 0.16, GOLD, sides=10)                           # gold collar
+	p.seg((0, 0, 1.1), (0, 0, 1.3), 0.1, 0.14, GOLD, sides=8, glow=0.3)                      # gold stopper
+	p.blob((0.12, 0.12, 0.12), (0, 0, 1.32), GOLD, segs=(6, 4))
+	p.box((0.06, 0.02, 0.28), (-0.22, -0.46, 0.5), CLOTH_WHITE, glow=0.8)
+	_frame(p, *POTION_FRAME)
+	return p.build()
+
+
+def antidote():
+	p = Prop("antidote", 471)
+	p.seg((0, 0, 0.05), (0, 0, 0.85), 0.2, 0.2, LEAF, sides=12, grad=(0.0, 0.6), glow=0.9)    # a tall slim vial
+	p.seg((0, 0, 0.0), (0, 0, 0.06), 0.18, 0.2, LEAF, sides=12, glow=0.9)
+	p.seg((0, 0, 0.85), (0, 0, 0.92), 0.2, 0.12, CLOTH_WHITE, sides=12)
+	_potion(p, 0.95, neck=0.12, neck_r=0.08)
+	p.box((0.26, 0.02, 0.3), (0, -0.21, 0.45), CLOTH_WHITE, grad=(0.1, 0.4))                  # a paper label
+	p.box((0.16, 0.025, 0.04), (0, -0.22, 0.5), LEAF)
+	p.box((0.04, 0.025, 0.16), (0, -0.22, 0.5), LEAF)
+	return p.build()
+
+
+def clarity_tonic():
+	p = Prop("clarity_tonic", 473)
+	p.seg((0, 0, 0.05), (0, 0, 0.45), 0.2, 0.46, RUNE, sides=6, grad=(0.0, 0.5), glow=1.1)    # a cut-crystal bottle
+	p.seg((0, 0, 0.45), (0, 0, 0.8), 0.46, 0.14, RUNE, sides=6, grad=(0.0, 0.5), glow=1.1)
+	_potion(p, 0.8, neck=0.12, neck_r=0.1, cork=STONE_LIGHT)
+	p.blob((0.12, 0.12, 0.12), (0, 0, 1.12), RUNE, segs=(6, 4), glow=1.5)                     # a crystal on the stopper
+	p.box((0.05, 0.02, 0.26), (-0.18, -0.36, 0.45), CLOTH_WHITE, glow=0.8)
+	return p.build()
+
+
+def draught_of_toughness():
+	p = Prop("draught_of_toughness", 475)
+	p.box((0.62, 0.5, 0.62), (0, 0, 0.31), HIDE, grad=(0.0, 0.7), glow=0.4)                    # a square-shouldered jug
+	p.seg((0, 0, 0.6), (0, 0, 0.75), 0.24, 0.12, HIDE, sides=8, glow=0.4)
+	_potion(p, 0.72, neck=0.1, neck_r=0.1)
+	p.box((0.66, 0.54, 0.1), (0, 0, 0.18), IRON)                                               # an iron band
+	for x in (-0.2, 0.2):
+		p.blob((0.07, 0.04, 0.07), (x, -0.27, 0.18), STONE_LIGHT, segs=(5, 4))                 # rivets
+	_loop(p, (0.36, 0, 0.42), 0.14, False, 0.04, HIDE, n=8)                                     # a handle
+	return p.build()
+
+
+def troll_tonic():
+	p = Prop("troll_tonic", 477)
+	p.blob((0.7, 0.66, 0.6), (0, 0, 0.3), MOSS, segs=(12, 8), grad=(0.0, 0.7), glow=0.8)       # a gourd
+	p.blob((0.42, 0.4, 0.4), (0.05, 0, 0.72), MOSS, segs=(10, 6), grad=(0.0, 0.7), glow=0.8)
+	p.seg((0.05, 0, 0.88), (0.1, 0, 1.05), 0.08, 0.07, WOOD, sides=6)                           # a stick for a stopper
+	p.seg((0.05, 0, 0.55), (0.05, 0, 0.6), 0.23, 0.23, WOOD_GRAY, sides=10)                     # twine round the waist
+	for k in range(5):                                                                     # clinging moss
+		a = k * 1.4
+		p.blob((0.16, 0.08, 0.12), (math.cos(a) * 0.3, math.sin(a) * 0.3 - 0.05, 0.12 + (k % 3) * 0.14), LEAF, segs=(5, 4))
+	p.seg((0.3, -0.1, 0.62), (0.45, -0.1, 0.4), 0.06, 0.0, BONE, sides=5)                       # a troll tooth tied on
+	return p.build()
+
+
+def draught_of_swiftness():
+	p = Prop("draught_of_swiftness", 479)
+	p.seg((0, 0, 0.0), (0, 0, 0.7), 0.46, 0.1, CLOTH_WHITE, sides=14, grad=(0.0, 0.5), glow=1.0)  # a cone flask
+	p.seg((0, 0, 0.0), (0, 0, 0.04), 0.46, 0.46, RUNE, sides=14, glow=0.6)
+	_potion(p, 0.7, neck=0.14, neck_r=0.1)
+	p.poly([(0.1, -0.05, 0.8), (0.55, -0.05, 1.2), (0.62, -0.05, 1.05), (0.2, -0.05, 0.76)], [(0, 1, 2, 3)], GOLD)  # a feather at the neck
+	p.seg((0.1, -0.05, 0.78), (0.6, -0.05, 1.14), 0.015, 0.01, WOOD, sides=4)
+	p.box((0.05, 0.02, 0.24), (-0.18, -0.3, 0.25), RUNE, rot=(0, 25, 0), glow=0.8)
+	return p.build()
+
+
+# bags
+
+def stitched_hide_pouch():
+	p = Prop("stitched_hide_pouch", 481)
+	p.blob((0.75, 0.62, 0.7), (0, 0, 0.35), HIDE, segs=(12, 8), grad=(0.1, 0.9))
+	p.seg((0, 0, 0.64), (0, 0, 0.9), 0.1, 0.2, HIDE, sides=8)                                   # gathered neck
+	p.seg((0, 0, 0.7), (0, 0, 0.75), 0.13, 0.13, WOOD, sides=8)                                 # drawstring
+	p.seg((0.1, -0.1, 0.72), (0.3, -0.2, 0.45), 0.025, 0.025, WOOD, sides=4)
+	p.blob((0.06, 0.06, 0.06), (0.3, -0.2, 0.43), WOOD, segs=(5, 4))
+	for k in range(6):                                                                     # a stitched seam down the front
+		z = 0.12 + k * 0.09
+		p.seg((-0.05, -0.34, z), (0.05, -0.34, z + 0.03), 0.018, 0.018, CLOTH_WHITE, sides=4)
+	p.seg((0, -0.33, 0.1), (0, -0.33, 0.6), 0.012, 0.012, WOOD, sides=4)
+	return p.build()
+
+
+def wool_satchel():
+	p = Prop("wool_satchel", 483)
+	_bag(p, CLOTH_RED, 0.95, 0.35, 0.65, strap=HIDE)
+	p.box((0.8, 0.03, 0.04), (0, -0.17, 0.18), CLOTH_WHITE)                                   # a woven stripe
+	p.blob((0.1, 0.06, 0.1), (0, -0.21, 0.5), GOLD, segs=(6, 4))                               # button
+	pts = []
+	for k in range(9):                                                                     # a long shoulder strap
+		a = math.pi * k / 8
+		pts.append((-math.cos(a) * 0.45, 0, 0.55 + math.sin(a) * 0.55))
+	for a, b in zip(pts, pts[1:]):
+		p.seg(a, b, 0.04, 0.04, HIDE, sides=5)
+	return p.build()
+
+
+def crocskin_backpack():
+	p = Prop("crocskin_backpack", 485)
+	_bag(p, MOSS, 0.85, 0.55, 1.0, strap=HIDE)
+	for r in range(3):                                                                     # scutes
+		for c in range(3):
+			p.blob((0.14, 0.06, 0.1), (-0.2 + c * 0.2, -0.28, 0.2 + r * 0.14), LEAF, segs=(6, 4), grad=(0.0, 0.5))
+	p.box((0.1, 0.06, 0.12), (0, -0.33, 0.62), GOLD)                                           # buckle
+	for x in (-1, 1):
+		p.blob((0.22, 0.28, 0.34), (x * 0.46, -0.02, 0.36), HIDE, segs=(8, 6))                 # side pouches
+	p.seg((0.3, 0.2, 1.0), (0.45, 0.25, 1.12), 0.06, 0.0, BONE, sides=5)                       # a croc tooth toggle
+	return p.build()
+
+
+def iron_tipped_arrow():
+	p = Prop("iron_tipped_arrow", 487)
+	a, b = (-0.6, 0, 0.05), (0.5, 0, 0.95)
+	p.seg(a, b, 0.035, 0.035, WOOD, sides=6)                                                   # shaft
+	p.seg(b, (0.66, 0, 1.08), 0.09, 0.0, STONE_LIGHT, sides=4, glow=0.2)                         # iron head
+	p.seg((0.46, 0, 0.92), (0.51, 0, 0.96), 0.06, 0.06, STONE_DARK, sides=6)                     # its socket
+	d = (Vector(b) - Vector(a)).normalized()
+	for off, sw in (((-d.z, 0, d.x), CLOTH_WHITE), ((d.z, 0, -d.x), CLOTH_RED), ((0, -1, 0), CLOTH_RED)):  # fletching
+		n = Vector(off) * 0.13
+		root, tip = Vector(a) + d * 0.04, Vector(a) + d * 0.3
+		p.poly([tuple(root), tuple(tip), tuple(tip - d * 0.06 + n), tuple(root + n * 0.9)], [(0, 1, 2, 3)], sw)
+	p.seg((-0.62, 0, 0.02), (-0.58, 0, 0.06), 0.04, 0.04, CLOTH_RED, sides=5)                    # nock
+	return p.build()
+
+
+TRADESKILLS = [bag_of_flour, jar_of_spices, vial_of_water, tanning_salts, spool_of_thread, bundle_of_herbs, small_brick_of_ore,
+			   large_brick_of_ore, water_flask, bundle_of_shafts, smithy_hammer, sewing_kit, mortar_and_pestle, hearthside_cookbook,
+			   tailors_pattern_book, alchemists_notes, smiths_handbook, raw_meat, frog_legs, tanned_leather, thick_leather, wool_cloth,
+			   silk_cloth, iron_bar, steel_bar, roast_meat, grilled_trout, fish_stew, hunters_pie, frog_legs_saute, lagoon_feast,
+			   koi_platter, minor_healing_potion, antidote, healing_potion, clarity_tonic, draught_of_toughness, troll_tonic,
+			   draught_of_swiftness, greater_healing_potion, stitched_hide_pouch, wool_satchel, crocskin_backpack, iron_tipped_arrow]
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
@@ -824,7 +1477,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm]}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS}
 
 
 # ---------------------------------------------------------------- rendering

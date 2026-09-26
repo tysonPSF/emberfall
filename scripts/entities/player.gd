@@ -39,6 +39,9 @@ var equipment: Dictionary = {}
 var quests: Dictionary = {}  # quest id -> {active, completions}
 var trade_npc_id := -1  # npc entity id while a trade window is open
 var trade_items: Array = []  # entries offered in the open trade
+var station_kind := ""  # the crafting station whose combine window is open ("oven", "forge"...), "" when none
+var station_pos := Vector3.ZERO
+var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var camp_left := 0.0  # seconds until a camp finishes; 0 when not camping
 var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
@@ -202,14 +205,14 @@ func setup_remote(info: Dictionary) -> void:
 
 ## Client: our own player's state as the server holds it.
 func apply_self(d: Dictionary) -> void:
-	var bags_before := [pack.slots.duplicate(true), equipment, coin, bank, bank_coin, trade_items, cursor]
+	var bags_before := [pack.slots.duplicate(true), equipment, coin, bank, bank_coin, trade_items, cursor, station_items]
 	var quests_before := quests
 	var level_before := level
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened", "sneaking", "snare_left"]:
+			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -230,7 +233,7 @@ func apply_self(d: Dictionary) -> void:
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
 	look = lk
 	pack.slots = (d["pack"] as Array).duplicate(true)
-	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor]:
+	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor, station_items]:
 		inventory_changed.emit()
 	if quests_before != quests:
 		quests_changed.emit()
@@ -243,7 +246,7 @@ func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
-		"pack": pack.to_save(), "trade_items": trade_items, "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
+		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z],
 	}
 
@@ -257,7 +260,7 @@ func room_for(item_id: String) -> bool:
 ## cursor, worn, banked and offered in a trade. (Lore checks, quest counts.)
 func owned_item_ids() -> Array:
 	var out: Array = pack.item_ids() + equipment.values()
-	for e: Dictionary in bank + trade_items + [cursor]:
+	for e: Dictionary in bank + trade_items + station_items + [cursor]:
 		if e.is_empty():
 			continue
 		for k in int(e.get("count", 1)):
@@ -308,6 +311,8 @@ func recalc_stats() -> void:
 			weapon_model = str(item.get("model", ""))
 			attack_delay = float(item.get("delay", 3.0))
 			attack_verb = item.get("verb", ["hit", "hits"])
+	for stat: String in ["str", "sta", "agi", "wis", "int"]:  # a meal can raise them too
+		attr[stat] = int(attr.get(stat, 0)) + buff_total(stat)
 	var skill := float(cls["melee_skill"])
 	dmg_min = 1 + level / 4 + int(attr.get("str", 0)) / 10
 	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill) + int(attr.get("str", 0)) / 5)
@@ -323,6 +328,8 @@ func recalc_stats() -> void:
 	max_hp += buff_total("hp")
 	dmg_min += buff_total("dmg")
 	dmg_max += buff_total("dmg")
+	if max_mana > 0:
+		max_mana += buff_total("mana")
 	max_mana += int(max_mana * GameData.deity_bonus(deity, "mana_pct") / 100.0)
 	dmg_min += int(GameData.deity_bonus(deity, "dmg"))
 	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
@@ -673,6 +680,8 @@ func _crosshair_target() -> void:
 		World.request_set_target(entity_id, (col as Corpse).object_id)
 	elif col is GroundItem:
 		World.request_pickup(entity_id, (col as GroundItem).object_id)
+	elif col is Node and (col as Node).has_meta("station"):
+		World.request_station_open(entity_id, str((col as Node).get_meta("station")))
 
 
 ## Left click in mouselook: start swinging at the target you already picked.
@@ -722,6 +731,9 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 		return
 	if col is GroundItem:
 		World.request_pickup(entity_id, (col as GroundItem).object_id)
+		return
+	if col is Node and (col as Node).has_meta("station"):  # an oven, forge, loom...: open its combine window
+		World.request_station_open(entity_id, str((col as Node).get_meta("station")))
 		return
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)
