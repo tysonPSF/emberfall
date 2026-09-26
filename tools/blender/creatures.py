@@ -416,10 +416,10 @@ def _quad_legs(t_wave, amp):
 			"leg_fr": {"rot": (-a, 0, 0)}, "leg_bl": {"rot": (-a, 0, 0)}}
 
 
-def build_wolf(name="wolf", fur_hex="6f6a63", back_hex="4a4642", belly_hex="b8ae9f", eye_hex="e8c040"):
-	fur = material(f"{name}_fur", fur_hex, 0.9)
-	back = material(f"{name}_back", back_hex, 0.95)
-	belly = material(f"{name}_belly", belly_hex, 0.9)
+def build_wolf(name="wolf", fur_hex="6f6a63", back_hex="4a4642", belly_hex="b8ae9f", eye_hex="e8c040", glow=0.0):
+	fur = material(f"{name}_fur", fur_hex, 0.9, emit=glow)
+	back = material(f"{name}_back", back_hex, 0.95, emit=glow)
+	belly = material(f"{name}_belly", belly_hex, 0.9, emit=glow)
 	dark = material(f"{name}_dark", "1c1a19", 0.5)
 	eye = material(f"{name}_eye", eye_hex, 0.3, emit=1.2)
 	b = Builder(name)
@@ -503,6 +503,11 @@ def build_wolf(name="wolf", fur_hex="6f6a63", back_hex="4a4642", belly_hex="b8ae
 
 def build_dire_wolf():
 	return build_wolf("dire_wolf", "403c39", "26221f", "7a7068", "ff6a2a")
+
+
+def build_spirit_wolf():
+	"""The shaman's pet: a pale blue wolf that glows faintly, eyes like ice."""
+	return build_wolf("spirit_wolf", "a8d4f0", "6a9ec8", "e4f4ff", "e8ffff", glow=0.35)
 
 
 # ---------------------------------------------------------------- black bear
@@ -4215,6 +4220,60 @@ def build_magician_amulet():
 	return b.build_static()
 
 
+def shaman_materials():
+	return {
+		"fur": material("shaman_fur", "7a6a58", 0.95),
+		"fur_d": material("shaman_fur_dark", "4a3e32", 0.95),
+		"fur_l": material("shaman_fur_light", "c8baa2", 0.9),
+		"cord": material("shaman_cord", "5a3a22", 0.8),
+		"bone": material("shaman_bone", "ece2c6", 0.6),
+		"teal": material("shaman_teal", "2aa88a", 0.4, emit=0.6),
+		"red": material("shaman_red", "b83a2a", 0.7),
+		"feather": material("shaman_feather", "e8e0d0", 0.8),
+		"tip": material("shaman_tip", "2a2a30", 0.8),
+	}
+
+
+def build_shaman_mantle():
+	"""A wolf pelt over the shoulders (pinned to the chest): a shaggy ring of fur
+	with the wolf's head resting on the right shoulder and its ears up."""
+	m = shaman_materials()
+	b = Builder("shaman_mantle")
+	for k in range(18):   # a soft collar of fur lying on the shoulders, sloping down to them at the sides
+		a = k * math.tau / 18
+		x, y = 0.34 * math.sin(a), 0.25 * math.cos(a)
+		side = abs(math.sin(a))
+		b.blob((0.13 + 0.05 * side, 0.12, 0.08), (x, y, 1.02 - 0.07 * side), (m["fur"], m["fur_l"], m["fur_d"])[k % 3], "x", segs=(7, 5))
+	h = Vector((-0.34, -0.02, 1.02))   # the wolf's head riding the right shoulder, looking forward
+	b.blob((0.16, 0.19, 0.14), tuple(h), m["fur"], "x", segs=(8, 6))
+	b.blob((0.12, 0.12, 0.1), tuple(h + Vector((0, 0.1, -0.02))), m["fur_d"], "x", segs=(7, 5))   # its neck, into the collar
+	b.seg(tuple(h + Vector((0, -0.13, -0.02))), tuple(h + Vector((0, -0.28, -0.05))), 0.07, 0.035, m["fur_l"], "x", sides=6)   # muzzle
+	b.blob((0.035, 0.03, 0.028), tuple(h + Vector((0, -0.29, -0.03))), m["tip"], "x", segs=(5, 3))
+	for s in (1, -1):
+		b.seg(tuple(h + Vector((0.06 * s, 0.03, 0.09))), tuple(h + Vector((0.08 * s, 0.05, 0.21))), 0.04, 0.0, m["fur_d"], "x", sides=4)   # ears
+		b.blob((0.024, 0.016, 0.018), tuple(h + Vector((0.055 * s, -0.13, 0.04))), m["teal"], "x", segs=(4, 3))   # eyes glint
+	return b.build_static()
+
+
+def build_shaman_totem():
+	"""A totem necklace at the collar: a carved bone charm with a teal spirit-stone,
+	two feathers and a red bead either side."""
+	m = shaman_materials()
+	b = Builder("shaman_totem")
+	c = Vector((0, -0.335, 1.0))
+	for s in (1, -1):   # the cord up to the collar
+		b.seg((0.05 * s, -0.33, 1.08), (0.16 * s, -0.3, 1.17), 0.012, 0.012, m["cord"], "x", sides=4)
+		b.seg((0.05 * s, -0.33, 1.08), tuple(c + Vector((0.02 * s, 0, 0.06))), 0.012, 0.012, m["cord"], "x", sides=4)
+		b.blob((0.022, 0.022, 0.022), (0.1 * s, -0.33, 1.12), m["red"], "x", segs=(5, 4))
+	b.seg(tuple(c + Vector((0, 0, 0.05))), tuple(c + Vector((0, -0.01, -0.12))), 0.05, 0.035, m["bone"], "x", sides=6)   # the charm
+	b.blob((0.035, 0.02, 0.035), tuple(c + Vector((0, -0.045, -0.02))), m["teal"], "x", segs=(6, 4))
+	for s in (1, -1):   # feathers hanging from it
+		top = c + Vector((0.035 * s, -0.01, -0.04))
+		b.seg(tuple(top), tuple(top + Vector((0.04 * s, -0.01, -0.16))), 0.02, 0.012, m["feather"], "x", sides=4)
+		b.seg(tuple(top + Vector((0.04 * s, -0.01, -0.16))), tuple(top + Vector((0.05 * s, -0.01, -0.2))), 0.012, 0.0, m["tip"], "x", sides=4)
+	return b.build_static()
+
+
 def necro_materials():
 	return {
 		"bone": material("necro_bone", "ece2c6", 0.6),
@@ -4347,6 +4406,11 @@ MAGICIAN_CELLS = {(0, 1): ("b82a2c", "3e0a10"), (1, 1): ("b82a2c", "3e0a10"), (2
 				  (3, 0): ("f8da78", "9a6a1a"), (4, 0): ("f8da78", "9a6a1a"), (5, 0): ("e8a038", "7a3a10"),
 				  (2, 2): ("ffb040", "b8400c"), (7, 1): ("6a1a14", "220606"), (0, 2): ("fff0c4", "d8a850"),
 				  (3, 2): ("8a4a2a", "3a180c")}
+# the shaman: the Mage in deep spirit-teal, a wolf-gray cape, bone trim, leather belt and boots
+SHAMAN_CELLS = {(0, 1): ("2e7a6a", "0c2a24"), (1, 1): ("2e7a6a", "0c2a24"), (2, 1): ("8a7a66", "3a3024"),
+				(3, 0): ("e6dcc0", "8e8266"), (4, 0): ("e6dcc0", "8e8266"), (5, 0): ("8a5a34", "3a2210"),
+				(2, 2): ("b08a5a", "5a3e20"), (7, 1): ("3a2a1c", "140c06"), (0, 2): ("efe4c8", "a89a78"),
+				(3, 2): ("7a5232", "2e1c0e")}
 NECROMANCER_CELLS = {(0, 1): ("48424e", "0e0c12"), (1, 1): ("48424e", "0e0c12"), (2, 1): ("7e44a0", "240c34"),
 					 (3, 0): ("efe6cc", "8e8468"), (4, 0): ("efe6cc", "8e8468"), (5, 0): ("5a4a62", "1a1220"),
 					 (2, 2): ("a8e070", "2a5a24"), (7, 1): ("4a2a62", "140a20"), (0, 2): ("f2ead4", "b8ac90"),
@@ -4377,6 +4441,7 @@ BODIES = {
 	# the pet classes: the Mage in crimson, ember-orange cape and gold trim; and in black, bone and grave-purple
 	"magician_body": (KAYKIT + "Mage.glb", "magician_texture", MAGICIAN_CELLS, None),
 	"necromancer_body": (KAYKIT + "Mage.glb", "necromancer_texture", NECROMANCER_CELLS, None),
+	"shaman_body": (KAYKIT + "Mage.glb", "shaman_texture", SHAMAN_CELLS, None),
 }
 
 
@@ -4406,14 +4471,15 @@ ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail, "
 			   "troll_chief_loincloth": build_troll_chief_loincloth, "troll_fist_l": build_troll_fist_l,
 			   "troll_fist_r": build_troll_fist_r, "troll_chief_fist_l": build_troll_chief_fist_l,
 			   "troll_chief_fist_r": build_troll_chief_fist_r, "magician_amulet": build_magician_amulet,
-			   "necromancer_clasp": build_necromancer_clasp, "necromancer_pauldron": build_necromancer_pauldron}
+			   "necromancer_clasp": build_necromancer_clasp, "necromancer_pauldron": build_necromancer_pauldron,
+			   "shaman_mantle": build_shaman_mantle, "shaman_totem": build_shaman_totem}
 CREATURES = {"rat": build_rat, "fire_beetle": build_beetle, "wolf": build_wolf, "dire_wolf": build_dire_wolf,
 			 "bear": build_bear, "spider": build_spider, "mire_toad": build_toad, "snapping_turtle": build_turtle,
 			 "bog_leech": build_leech, "boar": build_boar, "mountain_ram": build_ram, "sunhawk": build_sunhawk,
 			 "giant_scorpion": build_scorpion, "scorpion_queen": build_scorpion_queen, "salt_basilisk": build_basilisk,
 			 "water_elemental": build_elemental, "storm_elemental": build_storm_elemental, "giant_frog": build_frog,
 			 "river_croc": build_croc, "ancient_croc": build_ancient_croc, "earth_elemental": build_earth_elemental,
-			 "fire_elemental": build_fire_elemental, "air_elemental": build_air_elemental}
+			 "fire_elemental": build_fire_elemental, "air_elemental": build_air_elemental, "spirit_wolf": build_spirit_wolf}
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

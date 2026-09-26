@@ -22,7 +22,7 @@ const MOBS := {  # typical even-level monsters, forced to the test level
 	25: ["river_croc", "water_elemental", "river_troll"],
 }
 const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""], ["magician", "earth"], ["magician", "fire"],
-		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"]]
+		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"]]
 const FIGHTS := 2
 const TIME_LIMIT := 150.0
 const TRAVEL := 15.0  # seconds to find and pull the next one
@@ -92,14 +92,16 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	# long buffs, on you and (after summoning) on the pet
 	for sid: String in p.spells:
 		var s: Dictionary = GameData.spells[sid]
-		if str(s["type"]) == "buff" and float(s.get("duration", 0)) >= 600 and str(s.get("target", "")) in ["self", "group"] and not s.get("meal", false):
+		if str(s["type"]) == "buff" and float(s.get("duration", 0)) >= 600 and str(s.get("target", "")) in ["self", "group", "friendly"] and not s.get("meal", false):
 			World._finish_spell(p, sid, p, true)
+	var had_pet := false  # a shaman has no wolf before 20
 	if pet_kind != "":
 		var summon := ""
 		for sid: String in p.spells:
 			if str(GameData.spells[sid].get("pet", "")) == pet_kind or (pet_kind == "skeleton" and str(GameData.spells[sid].get("pet", "")) in ["skeleton", "skeletal_knight"]):
 				summon = sid  # the last (highest) one learned
 		if summon != "":
+			had_pet = true
 			World.summon_pet(p, summon)
 			var pet := World.get_object(p.pet_id) as Pet
 			for sid: String in p.spells:
@@ -152,7 +154,7 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	var out := {"mob": mob_id, "time": t, "won": is_instance_valid(mob) and mob.dead, "died": died,
 			"hp_lost": 1.0 - float(p.hp) / p.max_hp if not died else 1.0,
 			"mana_used": (float(mana0 - p.mana) / p.max_mana) if p.max_mana > 0 else 0.0,
-			"pet_died": pet_kind != "" and World.get_object(p.pet_id) == null}
+			"pet_died": had_pet and World.get_object(p.pet_id) == null}
 	out["rest"] = _rest_seconds(p, out)
 	# clean up: the monster, its corpse, the pet
 	if is_instance_valid(mob):
@@ -220,6 +222,16 @@ func _decide(p: Player, mob: Mob) -> void:
 			World.request_cast(p.entity_id, ph)
 			return
 	World.request_set_target(p.entity_id, mob.entity_id)
+	# a shaman slows first: the strongest slow it knows, whenever the foe isn't slowed
+	if mob.slow_left <= 0.0:
+		var slow := ""
+		for sid: String in p.spells:
+			var s: Dictionary = GameData.spells[sid]
+			if str(s["type"]) == "slow" and _ready(p, sid) and (slow == "" or int(s.get("slow", 0)) > int(GameData.spells[slow].get("slow", 0))):
+				slow = sid
+		if slow != "" and p.distance_to(mob) <= float(GameData.spells[slow].get("range", 0)):
+			World.request_cast(p.entity_id, slow)
+			return
 	# the strongest damage it has ready: dots kept up, then direct damage and lifetaps
 	var pick := ""
 	var best := -1.0
@@ -309,7 +321,7 @@ func _kit(cls: String, lvl: int) -> Dictionary:
 		var classes: Array = it.get("classes", [])
 		if not classes.is_empty() and not cls in classes:
 			continue
-		if slot == "secondary" and not (cls in ["warrior", "cleric"] and it.get("shield", false)):
+		if slot == "secondary" and not (cls in ["warrior", "cleric", "shaman"] and it.get("shield", false)):
 			continue
 		var score := float(it.get("ac", 0)) + float(it.get("hp", 0)) / 5.0 + float(it.get("mana", 0)) / 5.0
 		for stat: String in ["str", "sta", "agi", "wis", "int"]:

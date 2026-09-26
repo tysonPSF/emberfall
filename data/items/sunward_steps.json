@@ -84,7 +84,8 @@
     "model": "shield_badge",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 4200,
     "rec_level": 17

@@ -86,7 +86,8 @@
     "model": "shield_badge",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 2200,
     "rec_level": 16
@@ -134,7 +135,8 @@
     "rec_level": 16,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_tunic"
   },
@@ -147,7 +149,8 @@
     "rec_level": 15,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_boots"
   },
@@ -182,7 +185,7 @@
     "skill": "piercing",
     "value": 2400,
     "rec_level": 16,
-    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer"]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman"]
   },
   "steel_war_axe": {
     "name": "Steel War Axe",
@@ -217,6 +220,6 @@
     "mana": 25,
     "value": 2600,
     "rec_level": 16,
-    "classes": ["cleric", "wizard", "magician", "necromancer"]
+    "classes": ["cleric", "wizard", "magician", "necromancer", "shaman"]
   }
 }

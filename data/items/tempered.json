@@ -52,7 +52,8 @@
       "rogue",
       "wizard",
       "magician",
-      "necromancer"
+      "necromancer",
+      "shaman"
     ]
   },
   "tempered_helm": {
@@ -140,7 +141,8 @@
     "model": "shield_badge",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 900,
     "rec_level": 10
@@ -154,7 +156,8 @@
     "rec_level": 10,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_tunic"
   },
@@ -167,7 +170,8 @@
     "rec_level": 9,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_leggings"
   },
@@ -180,7 +184,8 @@
     "rec_level": 8,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_gloves"
   },
@@ -193,7 +198,8 @@
     "rec_level": 8,
     "classes": [
       "rogue",
-      "warrior"
+      "warrior",
+      "shaman"
     ],
     "wear": "leather_boots"
   }

@@ -148,7 +148,8 @@
     "model": "shield_round",
     "classes": [
       "warrior",
-      "cleric"
+      "cleric",
+      "shaman"
     ],
     "value": 1400,
     "rec_level": 12,
