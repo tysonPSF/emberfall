@@ -78,6 +78,7 @@ const SECTIONS := [
 	["sign_fit", "hollowmere"],
 	["nav_bake", "greenmoor"],
 	["nav_chase", "harrowfield"],
+	["dual_wield", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2904,3 +2905,64 @@ func _t_nav_chase() -> void:
 			boar.hate.clear()
 			boar.state = Mob.State.RETURN
 	Entity.nav_enabled = true
+
+
+## Dual Wield (warriors, 13) and Double Attack (15): a one-handed weapon goes
+## in the off hand only once learned, a staff never; then half a minute of
+## swings counted, with the skills fresh and then at their cap.
+func _t_dual_wield() -> void:
+	var p := World.local_player
+	var saved_class := p.char_class
+	p.char_class = "warrior"
+	p.level = 12
+	p.recalc_stats()
+	p.pack.clear()
+	p.equipment.clear()
+	p.pack.add("iron_short_sword")
+	p.pack.add("iron_dagger")
+	p.pack.add("oak_staff")
+	World.request_equip(p.entity_id, _where(p, "iron_short_sword"))
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	World.request_click(p.entity_id, _where(p, "iron_dagger"))  # onto the cursor
+	World.request_click(p.entity_id, "e:secondary")
+	print("dual_wield: level 12 -> off hand %s (%s)" % [p.equipment.get("secondary", "empty"), said.back()])
+	p.level = 15
+	p.recalc_stats()
+	World.request_click(p.entity_id, "e:secondary")  # the dagger, still on the cursor
+	print("dual_wield: level 15 -> off hand %s; sheet off hand %d-%d every %.1fs; skills open: dual wield cap %d, double attack cap %d" % [
+			p.equipment.get("secondary", "empty"), p.off_dmg_min, p.off_dmg_max, p.off_delay, World.skill_cap(p, "dual_wield"), World.skill_cap(p, "double_attack")])
+	World.request_click(p.entity_id, _where(p, "oak_staff"))
+	World.request_click(p.entity_id, "e:secondary")
+	print("dual_wield: a staff in the off hand -> off hand %s (%s)" % [p.equipment.get("secondary", "empty"), said.back()])
+	World.request_stow_cursor(p.entity_id)
+	var mob: Mob = _nearest_mob(p, "")
+	for trained: bool in [false, true]:
+		p.skills["dual_wield"] = World.skill_cap(p, "dual_wield") if trained else 0
+		p.skills["double_attack"] = World.skill_cap(p, "double_attack") if trained else 0
+		mob.level = 15
+		mob.max_hp = 100000
+		mob.hp = mob.max_hp
+		mob.dmg_min = 0
+		mob.dmg_max = 1
+		p.hp = p.max_hp
+		p.global_position = mob.global_position + Vector3(1.5, 0.5, 0)
+		p.face_toward(mob.global_position)
+		World.request_set_target(p.entity_id, mob.entity_id)
+		said.clear()
+		p.swing_timer = 0.0
+		p.off_swing_timer = 0.0
+		World.request_toggle_attack(p.entity_id)
+		await _wait(30.0)
+		World.request_toggle_attack(p.entity_id)
+		var main := said.filter(func(t: String) -> bool: return t.begins_with("You slash") or t.begins_with("You try to slash")).size()
+		var off := said.filter(func(t: String) -> bool: return t.begins_with("You pierce") or t.begins_with("You try to pierce")).size()
+		print("dual_wield: 30 s, skills %s: %d main-hand swings (%.0f timers), %d off-hand swings (%.0f timers)" % [
+				"at cap" if trained else "fresh", main, 30.0 / p.attack_delay, off, 30.0 / p.off_delay])
+	World.log_message.disconnect(listen)
+	mob.hate.clear()
+	p.char_class = saved_class
+	p.equipment.clear()
+	p.level = 1
+	p.recalc_stats()

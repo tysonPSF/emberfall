@@ -21,6 +21,11 @@ const AIM_CEILING := 0.2  # and never higher up the screen than this fraction of
 const ATTRIBUTES: Array[String] = ["str", "sta", "agi", "wis", "int", "haste", "hp_regen", "mana_regen"]
 
 var char_class := "warrior"
+var off_dmg_min := 0  # the off-hand weapon (Dual Wield); off_delay 0 = none there
+var off_dmg_max := 0
+var off_delay := 0.0
+var off_verb: Array = ["hit", "hits"]
+var off_swing_timer := 0.0
 var attributes: Dictionary = {}  # totals from gear, for the character sheet
 var deity := ""  # data/deities.json id, chosen at creation; "" for none
 var xp := 0
@@ -270,11 +275,13 @@ func recalc_stats() -> void:
 	max_stamina = int(World.cfg("stamina_base", 100)) + int(World.cfg("stamina_per_level", 4)) * (level - 1)
 	ac = int(cls["ac_base"]) + level
 	var weapon_dmg := 2
+	var off_weapon_dmg := 0
 	var weapon_model := ""
 	var offhand_model := ""
 	var attr := {}  # str, sta, agi, wis, int, haste, hp_regen, mana_regen from gear
 	attack_delay = 3.0
 	attack_verb = ["hit", "hits"]
+	off_delay = 0.0
 	for slot: String in equipment:
 		var item: Dictionary = GameData.item(equipment[slot])
 		var eff := item_effectiveness(item)
@@ -285,6 +292,10 @@ func recalc_stats() -> void:
 			attr[stat] = int(attr.get(stat, 0)) + roundi(int(item.get(stat, 0)) * eff)
 		if slot == "secondary":
 			offhand_model = str(item.get("model", ""))
+			if item.has("dmg"):  # a weapon in the off hand (Dual Wield)
+				off_weapon_dmg = maxi(1, roundi(int(item.get("dmg", 2)) * eff))
+				off_delay = float(item.get("delay", 3.0))
+				off_verb = item.get("verb", ["hit", "hits"])
 		if slot == "primary":
 			weapon_dmg = maxi(1, roundi(int(item.get("dmg", 2)) * eff))
 			weapon_model = str(item.get("model", ""))
@@ -307,6 +318,11 @@ func recalc_stats() -> void:
 	max_mana += int(max_mana * GameData.deity_bonus(deity, "mana_pct") / 100.0)
 	dmg_min += int(GameData.deity_bonus(deity, "dmg"))
 	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
+	if off_weapon_dmg > 0:  # the off hand hits a little lighter than the main; buffs and deity count the same
+		off_dmg_min = dmg_min
+		off_dmg_max = maxi(off_dmg_min + 1, int((off_weapon_dmg * 2 + level) * skill * World.OFFHAND_DAMAGE) + int(attr.get("str", 0)) / 5
+				+ buff_total("dmg") + int(GameData.deity_bonus(deity, "dmg")))
+		off_delay /= 1.0 + minf(int(attr.get("haste", 0)), 40) / 100.0
 	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen")) + int(attr.get("hp_regen", 0))
 	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0))
 	# Every lever that could lengthen a run lands in max_stamina, so nothing else
@@ -386,6 +402,9 @@ func add_xp(amount: int, party := false) -> void:
 		World.say(self, "You have gained a level! Welcome to level %d!" % level, World.C_XP)
 		if level == int(World.cfg("elders_blessing", {}).get("until_level", 10)):
 			World.say(self, "The Blessing of the Elders fades from you. The elders have seen you grown; the rest of the road is yours.", World.C_SPELL)
+		for skill_id: String in GameData.skills.get("skills", {}):  # skills that open at this level (Dual Wield at 13)
+			if int(GameData.skills["skills"][skill_id].get("from", {}).get(char_class, 0)) == level:
+				World.say(self, "You have learned %s!" % GameData.skill_name(skill_id), World.C_XP)
 		for entry: Dictionary in World.class_spells(char_class):
 			if entry["level"] == level:
 				World.say(self, "Your guildmaster in Emberhold can now teach you %s." % GameData.spells[entry["spell"]]["name"], World.C_XP)

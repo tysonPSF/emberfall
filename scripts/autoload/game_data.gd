@@ -54,7 +54,10 @@ func load_zone(zone_id: String) -> Dictionary:
 ## How high a class can raise a skill at a level: per_level x (level + 1),
 ## never above the table's max; 0 if the class can't learn it.
 func skill_cap(cls: String, skill_id: String, level: int) -> int:
-	var per := int(skills.get("skills", {}).get(skill_id, {}).get("caps", {}).get(cls, 0))
+	var spec: Dictionary = skills.get("skills", {}).get(skill_id, {})
+	if level < int(spec.get("from", {}).get(cls, 0)):
+		return 0  # learned later (Dual Wield at 13)
+	var per := int(spec.get("caps", {}).get(cls, 0))
 	return mini(per * (level + 1), int(skills["tuning"]["max"]))
 
 

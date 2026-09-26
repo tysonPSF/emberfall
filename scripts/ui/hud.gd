@@ -1961,7 +1961,10 @@ func _process(delta: float) -> void:
 		if player.max_mana > 0:
 			sheet.append("Mana  %d / %d" % [player.mana, player.max_mana])
 		sheet.append("Stamina  %d / %d" % [int(player.stamina), player.max_stamina])
-		sheet.append_array(["", "AC  %d" % player.ac, "Damage  %d-%d" % [player.dmg_min, player.dmg_max], "Delay  %.1fs" % player.attack_delay, ""])
+		sheet.append_array(["", "AC  %d" % player.ac, "Damage  %d-%d" % [player.dmg_min, player.dmg_max], "Delay  %.1fs" % player.attack_delay])
+		if player.off_delay > 0.0:
+			sheet.append("Off hand  %d-%d, %.1fs" % [player.off_dmg_min, player.off_dmg_max, player.off_delay])
+		sheet.append("")
 		for stat: String in ["str", "sta", "agi", "wis", "int"]:
 			sheet.append("%s  %+d" % [ATTR_NAMES[stat], int(player.attributes.get(stat, 0))])
 		if int(player.attributes.get("haste", 0)) != 0:
@@ -2291,6 +2294,8 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())
 	if it.has("dmg") and it.has("delay"):
 		lines.append("Damage %d   Delay %.1fs" % [int(it["dmg"]), float(it["delay"])])
+		if World.offhand_weapon(item_id):
+			lines.append("One-handed: can be wielded in the off hand (Dual Wield)")
 	elif it.has("ammo_type"):
 		lines.append("Ammunition (%s)%s" % [it["ammo_type"], "   Damage +%d" % int(it["dmg"]) if int(it.get("dmg", 0)) > 0 else ""])
 	if it.has("range"):

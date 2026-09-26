@@ -80,6 +80,12 @@ const CALL_FOR_HELP_RADIUS := 14.0
 const EQUIP_SLOTS: Array[String] = ["primary", "secondary", "range", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
 ## Item "slot" values that fit more than one equipment slot.
 const SLOT_FITS := {"ring": ["ring1", "ring2"]}
+const OFFHAND_SKILLS: Array[String] = ["1h_slashing", "1h_blunt", "piercing"]  # weapons light enough for the off hand
+const OFFHAND_DAMAGE := 0.85  # an off-hand weapon's damage, against the same weapon in the main hand
+const DUAL_WIELD_BASE := 0.3  # chance an off-hand swing comes off: this, plus the next times the skill's share of its cap
+const DUAL_WIELD_SKILL := 0.6  # (at 80% of cap: 78%; at cap: 90%)
+const DOUBLE_ATTACK_BASE := 0.05  # chance the main hand swings twice: this, plus the next times the skill's share of its cap
+const DOUBLE_ATTACK_SKILL := 0.25  # (at 80% of cap: 25%; at cap: 30%)
 
 var objects: Dictionary = {}  # id -> Entity or Corpse
 var next_id := 1
@@ -322,6 +328,8 @@ func _client_timers(delta: float) -> void:
 
 func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
+	if e is Player:
+		(e as Player).off_swing_timer = maxf(0.0, (e as Player).off_swing_timer - delta)
 	e.root_left = maxf(0.0, e.root_left - delta)
 	for spell_id: String in e.cooldowns.keys():
 		e.cooldowns[spell_id] -= delta
@@ -360,34 +368,71 @@ func _update_melee(e: Entity) -> void:
 			e.set_meta("range_warn_at", Time.get_ticks_msec() + 2500)
 			say(e, "Your target is too far away, get closer!", C_WARN)
 		return
-	if e.swing_timer > 0.0:
-		return
-	e.swing_timer = e.attack_delay
-	e.sitting = false
-	e.animate("attack")
-	_notice_attacker(t, e)
+	var p := e as Player
+	if e.swing_timer <= 0.0:
+		e.swing_timer = e.attack_delay
+		e.sitting = false
+		e.animate("attack")
+		_notice_attacker(t, e)
+		_swing(e, t, "primary")
+		# Double Attack: now and then the main hand swings again at once
+		if p != null and not t.dead and skill_cap(p, "double_attack") > 0:
+			try_skill_up(p, "double_attack", t, 0.5)
+			if randf() < DOUBLE_ATTACK_BASE + DOUBLE_ATTACK_SKILL * skill_frac(p, "double_attack"):
+				_swing(e, t, "primary")
+	# Dual Wield: the off-hand weapon on its own timer, when the skill carries it
+	if p != null and p.off_delay > 0.0 and p.off_swing_timer <= 0.0 and not t.dead and skill_cap(p, "dual_wield") > 0:
+		p.off_swing_timer = p.off_delay
+		try_skill_up(p, "dual_wield", t, 0.5)
+		if randf() < DUAL_WIELD_BASE + DUAL_WIELD_SKILL * skill_frac(p, "dual_wield"):
+			e.sitting = false
+			_notice_attacker(t, e)
+			_swing(e, t, "secondary")
+
+
+## One swing at a target with the weapon in a hand ("primary" or
+## "secondary"): the target may avoid it, then it hits or misses.
+func _swing(e: Entity, t: Entity, hand: String) -> void:
 	if t is Player:
 		var avoided := _try_avoid(t as Player, e)
 		if avoided != "":
 			_avoid_msg(e, t as Player, avoided)
 			return
+	var p := e as Player
+	var skill := ""
+	if p != null:
+		skill = weapon_skill(p) if hand == "primary" else str(GameData.item(p.equipment.get("secondary", "")).get("skill", "hand_to_hand"))
 	var chance := 0.72 + (e.level - t.level) * 0.04 - t.ac * 0.004
-	if e is Player:  # weapon skill and offense against 80% of cap
-		var p := e as Player
-		chance += 0.12 * ((skill_frac(p, weapon_skill(p)) + skill_frac(p, "offense")) * 0.5 - _neutral())
-		try_skill_up(p, weapon_skill(p), t)
+	if p != null:  # weapon skill and offense against 80% of cap
+		chance += 0.12 * ((skill_frac(p, skill) + skill_frac(p, "offense")) * 0.5 - _neutral())
+		try_skill_up(p, skill, t)
 		try_skill_up(p, "offense", t, 0.5)
 	if t is Player:
 		chance -= 0.12 * (skill_frac(t as Player, "defense") - _neutral())
 		try_skill_up(t as Player, "defense", e, 0.5)
 	chance = clampf(chance, 0.12, 0.95)
-	var dmg := randi_range(e.dmg_min, e.dmg_max) if randf() < chance else 0
-	if dmg > 0 and e is Player:
-		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(e as Player, weapon_skill(e as Player)) - _neutral())))
-	_combat_msg(e, t, e.attack_verb, dmg)
+	var lo := e.dmg_min if hand == "primary" else p.off_dmg_min
+	var hi := e.dmg_max if hand == "primary" else p.off_dmg_max
+	var dmg := randi_range(lo, hi) if randf() < chance else 0
+	if dmg > 0 and p != null:
+		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
+	_combat_msg(e, t, e.attack_verb if hand == "primary" else p.off_verb, dmg)
 	if dmg > 0:
 		damage(t, dmg, e)
-		_try_proc(e, t)
+		if hand == "primary":
+			_try_proc(e, t)
+		else:
+			_try_offhand_proc(p, t)
+
+
+## An off-hand weapon's own "proc", as the main hand's does in _try_proc.
+func _try_offhand_proc(p: Player, t: Entity) -> void:
+	var item := GameData.item(str(p.equipment.get("secondary", "")))
+	var proc: Dictionary = item.get("proc", {})
+	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)) or not GameData.spells.has(str(proc["spell"])):
+		return
+	say(p, "Your %s flares with power!" % item["name"], C_SPELL)
+	_finish_spell(p, str(proc["spell"]), t, true)
 
 
 ## Which players a living monster hates right now: the combat music follows it.
@@ -1326,6 +1371,14 @@ func request_equip(player_id: int, place: String) -> void:
 func _equip_slot_for(p: Player, item_id: String, wanted := "") -> String:
 	var slot: String = GameData.item(item_id).get("slot", "")
 	var fits: Array = SLOT_FITS.get(slot, [slot])
+	if wanted == "secondary" and slot == "primary":
+		if not offhand_weapon(item_id):
+			say(p, "That weapon is too heavy for your off hand.", C_WARN)
+			return ""
+		if skill_cap(p, "dual_wield") <= 0:
+			say(p, "You don't know how to fight with a weapon in each hand.", C_WARN)
+			return ""
+		fits = ["secondary"]
 	if slot == "" or (wanted != "" and not wanted in fits):
 		say(p, "That doesn't go there." if wanted != "" and slot != "" else "You cannot equip that.", C_WARN)
 		return ""
@@ -1339,6 +1392,12 @@ func _equip_slot_for(p: Player, item_id: String, wanted := "") -> String:
 		if not p.equipment.has(s):
 			return s
 	return fits[0]
+
+
+## A one-handed weapon, light enough to wield in the off hand (with Dual Wield).
+static func offhand_weapon(item_id: String) -> bool:
+	var item := GameData.item(item_id)
+	return str(item.get("slot", "")) == "primary" and str(item.get("skill", "")) in OFFHAND_SKILLS
 
 
 ## EQ's cursor. With nothing held, clicking a place picks up what's there; with
