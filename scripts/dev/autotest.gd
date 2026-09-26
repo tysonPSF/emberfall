@@ -3471,11 +3471,28 @@ func _t_zone_map() -> void:
 	var hud: Node = main.hud
 	var m: MapWindow = hud._map
 	var t0 := Time.get_ticks_msec()
+	print("zone_map: when you open it, already painted: %s" % m._painted.has(main.zone.zone_id))
+	var z0: Zone = main.zone
+	var step := z0.size / MapWindow.RES
+	var u := Time.get_ticks_usec()
+	for i in MapWindow.RES + 2:
+		z0.height_at(-z0.half + i * step, 10.0)
+	var h_row := Time.get_ticks_usec() - u
+	u = Time.get_ticks_usec()
+	for i in MapWindow.RES:
+		z0._ground_color(-z0.half + i * step, 10.0, 1.0)
+	print("zone_map: one row of heights %.1f ms, one row of colors %.1f ms" % [h_row / 1000.0, (Time.get_ticks_usec() - u) / 1000.0])
+	var worst := 0.0
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:  # the slowest frame while it paints
+		await get_tree().process_frame
+		worst = maxf(worst, get_process_delta_time())
+	print("zone_map: painting in the background finished %d ms into the section; slowest frame meanwhile %.1f ms" % [Time.get_ticks_msec() - t0, worst * 1000.0])
+	t0 = Time.get_ticks_msec()
 	for spot: Vector2 in [Vector2(0, 0), Vector2(0, -80), Vector2(0, -170), Vector2(60, 20)]:  # a walk up the road
 		p.global_position = main.zone.ground(spot.x, spot.y) + Vector3.UP
 		m._reveal(main.zone)
 	m.toggle()
-	while m._row < MapWindow.RES and Time.get_ticks_msec() - t0 < 20000:
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:
 		await get_tree().process_frame
 	var cells: PackedByteArray = m._fog.get(main.zone.zone_id, PackedByteArray())
 	var seen := 0
@@ -3505,7 +3522,7 @@ func _t_zone_map_town() -> void:
 	m._fog[main.zone.zone_id] = cells
 	m._fog_dirty = true
 	var t0 := Time.get_ticks_msec()
-	while m._row < MapWindow.RES and Time.get_ticks_msec() - t0 < 20000:
+	while not m._painted.has(main.zone.zone_id) and Time.get_ticks_msec() - t0 < 20000:
 		await get_tree().process_frame
 	for i in m._marks.size():
 		if m._marks[i][0] == "bank":

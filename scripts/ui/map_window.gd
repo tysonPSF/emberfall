@@ -23,9 +23,14 @@ const INK := Color(0.23, 0.16, 0.1)
 
 var player: Player
 var _zone: Zone
-var _image: Image
+var _image: Image  # the painting in progress
 var _texture: ImageTexture
-var _row := 0
+var _painting: Zone  # the zone being painted, in the background from the moment you arrive
+var _heights := PackedFloat32Array()
+var _hrow := 0  # height rows done (RES + 2 of them: a border for the shading)
+var _row := 0  # color rows done
+var _painted := {}  # zone id -> finished ImageTexture, for going back
+const PAINT_BUDGET_USEC := 2000  # per frame, so painting never shows as a stutter
 var _fog: Dictionary = {}  # zone id -> PackedByteArray (FOG_CELLS^2), 1 = explored
 var _fog_texture: ImageTexture
 var _fog_dirty := true
@@ -108,18 +113,14 @@ func _process(delta: float) -> void:
 	if _save_timer <= 0.0:
 		_save_timer = 15.0
 		_save_fog()
+	_paint_some(z)  # always, a little a frame: the map is ready before you open it
 	if not visible:
 		return
 	position = ((get_parent() as Control).size - size) * 0.5  # always in the middle of the screen
 	if z != _zone:
 		_prepare()
-	if _image != null and _row < RES:  # painting: a few rows a frame
-		for k in 8:
-			if _row >= RES:
-				break
-			_paint_row(_row)
-			_row += 1
-		_texture.update(_image)
+	if _texture == null and _painted.has(z.zone_id):
+		_texture = _painted[z.zone_id]
 	_canvas.queue_redraw()
 
 
@@ -133,14 +134,7 @@ func _prepare() -> void:
 		_zone = z
 		_highlight = -1
 		_title.text = z.zone_name
-		if bool(z.data.get("interior", false)):
-			_image = null
-			_texture = null
-		else:
-			_image = Image.create(RES, RES, false, Image.FORMAT_RGB8)
-			_image.fill(PARCHMENT)
-			_texture = ImageTexture.create_from_image(_image)
-			_row = 0
+		_texture = _painted.get(z.zone_id)  # null until it's painted: the shapes and marks show meanwhile
 		_load_fog(z.zone_id)
 		_fog_dirty = true
 		_build_marks(z)
@@ -152,16 +146,49 @@ func _prepare() -> void:
 	_canvas.queue_redraw()
 
 
-func _paint_row(j: int) -> void:
-	var z := _zone
+## Paints the zone's land into an image, a slice at a time within a small
+## time budget per frame: first every point's height (once each), then the
+## colors, hill-shaded from the heights around them.
+func _paint_some(z: Zone) -> void:
+	if bool(z.data.get("interior", false)) or _painted.has(z.zone_id):
+		return
+	if z != _painting:
+		_painting = z
+		_image = Image.create(RES, RES, false, Image.FORMAT_RGB8)
+		_heights = PackedFloat32Array()
+		_heights.resize((RES + 2) * (RES + 2))
+		_hrow = 0
+		_row = 0
 	var step := z.size / RES
+	var started := Time.get_ticks_usec()
+	while Time.get_ticks_usec() - started < PAINT_BUDGET_USEC:
+		if _hrow < RES + 2:
+			var y := -z.half + (_hrow - 0.5) * step
+			for i in RES + 2:
+				_heights[_hrow * (RES + 2) + i] = z.height_at(-z.half + (i - 0.5) * step, y)
+			_hrow += 1
+		elif _row < RES:
+			_paint_row(z, _row, step)
+			_row += 1
+		else:
+			_painted[z.zone_id] = ImageTexture.create_from_image(_image)
+			if z == _zone:
+				_texture = _painted[z.zone_id]
+			_image = null
+			_heights = PackedFloat32Array()
+			return
+
+
+func _paint_row(z: Zone, j: int, step: float) -> void:
 	var sun := Vector2(-0.6, -0.8).normalized()  # light from the northwest, as on old maps
+	var w := RES + 2
 	for i in RES:
 		var x := -z.half + (i + 0.5) * step
 		var y := -z.half + (j + 0.5) * step
-		var h := z.height_at(x, y)
-		var hx := z.height_at(x + step, y) - z.height_at(x - step, y)
-		var hy := z.height_at(x, y + step) - z.height_at(x, y - step)
+		var k := (j + 1) * w + (i + 1)
+		var h := _heights[k]
+		var hx := _heights[k + 1] - _heights[k - 1]
+		var hy := _heights[k + w] - _heights[k - w]
 		var shade := clampf(1.0 - (hx * sun.x + hy * sun.y) / (step * 2.0) * 0.55, 0.55, 1.35)
 		var ground := z._ground_color(x, y, h)
 		var c := PARCHMENT.lerp(Color(ground.r, ground.g, ground.b), 0.5)
@@ -372,11 +399,14 @@ func _draw_map() -> void:
 	_canvas.draw_rect(rect, PARCHMENT)
 	if _zone == null:
 		return
-	if _texture == null:
+	if bool(_zone.data.get("interior", false)):
 		var msg := "No map of indoor places."
 		_canvas.draw_string(font, Vector2(0, VIEW * 0.5), msg, HORIZONTAL_ALIGNMENT_CENTER, VIEW, 16, INK)
 		return
-	_draw_zone_texture(_texture)
+	if _texture != null:
+		_draw_zone_texture(_texture)
+	else:  # still being charted: the shapes and marks are there already
+		_canvas.draw_string(font, Vector2(0, VIEW - 14), "Charting the land...", HORIZONTAL_ALIGNMENT_CENTER, VIEW, 12, Color(INK, 0.6))
 	_draw_shapes()
 	_draw_zone_texture(_fog_tex())  # soft clouds over what you haven't seen
 	# a thin gold frame and a compass rose in the corner
