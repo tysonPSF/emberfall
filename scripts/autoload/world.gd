@@ -55,7 +55,7 @@ const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
 const C_CHAT_GROUP := Color(0.55, 0.78, 1.0)
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
-const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /time  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
 const GROUP_MAX := 6
 const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
 const LOOT_RIGHTS_SECONDS := 180.0
@@ -222,10 +222,65 @@ func con_of(viewer_level: int, other_level: int) -> int:
 
 # --- simulation -------------------------------------------------------------
 
+# --- time of day ------------------------------------------------------------
+# EverQuest time: a game day takes config "day_seconds" (72 real minutes), read
+# off the wall clock, so the server and every player agree without sending it.
+
+var time_override := -1.0  # a pinned hour (tests), or -1 for the clock
+var _hour_shift := _launch_hour_shift()  # --hour=22 starts the clock at 22:00 (it keeps running)
+var _was_night := false
+var _time_known := false
+
+
+## The hour of the game day, 0 to 24 (fractional).
+func game_hour() -> float:
+	if time_override >= 0.0:
+		return time_override
+	var day := float(cfg("day_seconds", 4320.0))
+	return fposmod(Time.get_unix_time_from_system() / day * 24.0 + _hour_shift, 24.0)
+
+
+static func _launch_hour_shift() -> float:
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--hour="):
+			var day := 4320.0
+			var now := fposmod(Time.get_unix_time_from_system() / day * 24.0, 24.0)
+			return float(a.substr(7)) - now
+	return 0.0
+
+
+## Night is config "night_hours" [start, end]: 21:00 to 5:00.
+func is_night() -> bool:
+	var h := game_hour()
+	var span: Array = cfg("night_hours", [21, 5])
+	return h >= float(span[0]) or h < float(span[1])
+
+
+## "9:40 PM"
+func time_text() -> String:
+	var h := game_hour()
+	var hour := int(h)
+	var minute := int((h - hour) * 60.0)
+	return "%d:%02d %s" % [12 if hour % 12 == 0 else hour % 12, minute, "AM" if hour < 12 else "PM"]
+
+
+## Tells everyone outdoors when the sun goes down or comes up.
+func _watch_nightfall() -> void:
+	var night := is_night()
+	if _time_known and night != _was_night:
+		for p in get_players():
+			var z := zone_of(p)
+			if z != null and not bool(z.data.get("interior", false)):
+				say(p, "The sun sinks below the hills, and night falls." if night else "The sun rises over the hills.", C_SYSTEM)
+	_was_night = night
+	_time_known = true
+
+
 func _physics_process(delta: float) -> void:
 	if not Net.is_authority():
 		_client_timers(delta)
 		return
+	_watch_nightfall()  # the server says it, once per player
 	_group_view_timer += delta
 	if _group_view_timer >= 0.2:
 		_group_view_timer = 0.0
@@ -1840,6 +1895,8 @@ func request_chat(player_id: int, text: String) -> void:
 			for q in get_players():
 				if q.distance_to(p) <= SAY_RANGE:
 					say(q, "**A Magic Die is rolled by %s. It could have been any number from 0 to %d, but this time it turned up a %d." % [p.display_name, top, roll], C_SYSTEM)
+		"/time":
+			say(p, "It is %s, %s." % [time_text(), "night" if is_night() else "day"], C_SYSTEM)
 		"/loc":
 			say(p, "Your location is %d, %d, %d in %s." % [roundi(p.global_position.x), roundi(p.global_position.y), roundi(p.global_position.z), zone_of(p).zone_name], C_SYSTEM)
 		"/camp":

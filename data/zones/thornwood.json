@@ -1272,6 +1272,126 @@
       },
       "respawn": 60,
       "wander": 14
+    },
+    {
+      "pos": [
+        20,
+        160
+      ],
+      "pool": {
+        "timber_wolf": 1
+      },
+      "respawn": 50,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -50,
+        165
+      ],
+      "pool": {
+        "timber_wolf": 1
+      },
+      "respawn": 50,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        90,
+        130
+      ],
+      "pool": {
+        "timber_wolf": 1
+      },
+      "respawn": 50,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -100,
+        120
+      ],
+      "pool": {
+        "timber_wolf": 1
+      },
+      "respawn": 50,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        0,
+        40
+      ],
+      "pool": {
+        "dire_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -60,
+        0
+      ],
+      "pool": {
+        "dire_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        90,
+        -10
+      ],
+      "pool": {
+        "dire_wolf": 1
+      },
+      "respawn": 60,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -10,
+        -120
+      ],
+      "pool": {
+        "skeleton_knight": 1
+      },
+      "respawn": 75,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -50,
+        -125
+      ],
+      "pool": {
+        "skeleton_knight": 1
+      },
+      "respawn": 75,
+      "wander": 18,
+      "when": "night"
+    },
+    {
+      "pos": [
+        25,
+        -130
+      ],
+      "pool": {
+        "skeleton_knight": 1
+      },
+      "respawn": 75,
+      "wander": 18,
+      "when": "night"
     }
   ],
   "groves": 0.85,
