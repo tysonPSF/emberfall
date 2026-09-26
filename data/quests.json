@@ -191,5 +191,68 @@
       "hollowfolk": 30,
       "emberhold": 5
     }
+  },
+  "tusks_for_oswin": {
+    "name": "Tusks for Oswin",
+    "giver": "farmer_oswin",
+    "start_keyword": "tusks",
+    "wants": {
+      "boar_tusk": 4
+    },
+    "reward": {
+      "xp": 220,
+      "coin": 40
+    },
+    "first_reward_item": "farmhands_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Tusks for Oswin. Bring Farmer Oswin four boar tusks.",
+    "ready_text": "Tusks! Four of them. Let's have them, {name}.",
+    "complete_text": "That's four fewer pigs in my rows. Here's your coin.",
+    "first_complete_text": "And the gloves I promised. Worn in, but good leather.",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "the_stolen_harvest": {
+    "name": "The Stolen Harvest",
+    "giver": "farmer_oswin",
+    "start_keyword": "ledger",
+    "wants": {
+      "garricks_ledger": 1,
+      "brigand_armband": 2
+    },
+    "reward": {
+      "xp": 520,
+      "coin": 120
+    },
+    "first_reward_item": "harvest_band",
+    "accept_text": "You have taken on a task: The Stolen Harvest. Bring Farmer Oswin Garrick's ledger and two brigand armbands.",
+    "ready_text": "That's his ledger, all right, and their armbands with it. Give them here, {name}.",
+    "complete_text": "Every sack of seed, every hoe. Written down like he meant to pay for them. Well, he's paid now.",
+    "first_complete_text": "My father wore this ring every harvest of his life. The Rest owes you; wear it.",
+    "faction": {
+      "emberhold": 15,
+      "watch": 10
+    }
+  },
+  "old_tatters": {
+    "name": "Old Tatters",
+    "giver": "widow_marta",
+    "start_keyword": "heart",
+    "wants": {
+      "straw_heart": 1
+    },
+    "reward": {
+      "xp": 560,
+      "coin": 100
+    },
+    "first_reward_item": "tatters_hat",
+    "accept_text": "You have taken on a task: Old Tatters. Bring Widow Marta the heart of straw from Old Tatters, who walks the south field at night.",
+    "ready_text": "Red thread. That's his stitching. Give it to me, {name}.",
+    "complete_text": "There. He can rest now, and so can I.",
+    "first_complete_text": "His hat. He wore it in the fields every summer. Take it; he'd have liked you.",
+    "faction": {
+      "emberhold": 10
+    }
   }
 }

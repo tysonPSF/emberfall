@@ -22,7 +22,15 @@ import numpy as np
 from scipy import ndimage
 from skimage import measure
 
-W = json.load(open('/mnt/user-data/outputs/emberfall_world_layout.json'))
+def _outdir():
+    """Write beside the repo's docs/ when run in the repo, else the render box."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    d = os.path.join(root, 'docs')
+    return d if os.path.isdir(d) else os.environ.get('EMBERFALL_OUT', '/mnt/user-data/outputs')
+
+OUT = _outdir()
+
+W = json.load(open(os.path.join(OUT, 'world-layout.json')))
 AREAS = W['areas']
 ZONES = {z['id']: z for z in W['zones']}
 LINKS = W['links']
@@ -514,7 +522,7 @@ def legend(d):
     reaches gx 3, and Forgehold and Lanternhold sit under where the crests
     were. The empty water below them is the only clear space big enough.
     """
-    w, h = 470, 556
+    w, h = 470, 604
     x = Wpx - w - 118
     y = Hpx - h - 150
     d.rectangle([(x * S, y * S), ((x + w) * S, (y + h) * S)],
@@ -537,6 +545,11 @@ def legend(d):
     stroke(d, [(x + 60, ry + 2), (x + w - 60, ry + 2)], INK_SOFT, 0.9, 190)
     text(d, (x + 94, ry + 24), 'The Emberlands', 'bold', 18, PEN['emberlands'], 'lm')
     text(d, (x + 94, ry + 45), 'no god claims it', 'label', 15, INK_SOFT, 'lm')
+    n = sum(1 for z in ZONES.values() if z.get('built') and z['cell'])
+    d.ellipse([((x + 44) * S, (ry + 74) * S), ((x + 62) * S, (ry + 92) * S)],
+              fill=PEN['emberlands'] + (70,), outline=INK_SOFT + (140,), width=int(0.8 * S))
+    text(d, (x + 94, ry + 83), f'coloured ground: built, {n} of '
+         f'{sum(1 for z in ZONES.values() if z["cell"])}', 'label', 15, INK_SOFT, 'lm')
 
 def compass(d, x, y, r):
     """A plain rose. North is up, which is worth stating on a map whose engine
@@ -602,7 +615,39 @@ def build():
             poly(d, ex, ey, outline=INK_SOFT + (a,), width=wd)
         poly(d, jx, jy, outline=INK + (240,), width=1.8)
 
-    for z in ZONES.values():                   # terrain, under everything
+    # THE WASH: a built zone is tinted with its element, and nothing else is.
+    #
+    # Faint on purpose - it should answer "how far along are we" at a glance
+    # without competing with the ink or turning the map into a chart. Blurred
+    # so the edges are weather rather than borders, and multiplied by the land
+    # mask so no colour reaches the sea.
+    wash = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    dw = ImageDraw.Draw(wash)
+    any_built = False
+    for i, z in enumerate(ZONES.values()):
+        if not z.get('built') or not z['cell']:
+            continue
+        any_built = True
+        cx, cy = to_px(*at(z))
+        r = 0.70 * P * (z['size'] / 512.0) ** 0.30
+        bx, by = blob(cx, cy, r * 0.97, 900 + list(ZONES).index(z['id']) * 7)
+        wx, wy = warp(bx, by)
+        poly(dw, wx, wy, fill=PEN[z["area"]] + (40,))
+    if any_built:
+        wash = wash.filter(ImageFilter.GaussianBlur(15 * S))
+        wa = np.asarray(wash).astype(np.float32)
+        land = ndimage.zoom(MASK, (img.size[1] / MASK.shape[0], img.size[0] / MASK.shape[1]),
+                            order=1)
+        land = np.clip(land, 0, 1)[:wa.shape[0], :wa.shape[1]]
+        if land.shape != wa.shape[:2]:
+            land = np.pad(land, ((0, wa.shape[0] - land.shape[0]),
+                                 (0, wa.shape[1] - land.shape[1])), mode='edge')
+        wa[..., 3] *= land
+        wash = Image.fromarray(np.clip(wa, 0, 255).astype('uint8'))
+        img = Image.alpha_composite(img, wash)
+        d = ImageDraw.Draw(img, 'RGBA')
+
+    for z in ZONES.values():                   # terrain, over the wash
         scatter(d, z)
 
     for i, l in enumerate(LINKS):              # the walls, and the notch in each
@@ -667,5 +712,5 @@ def build():
 
 if __name__ == '__main__':
     out = build().convert('RGB').resize((Wpx, Hpx), Image.LANCZOS)
-    out.save('/mnt/user-data/outputs/emberfall_atlas.png')
+    out.save(os.path.join(OUT, 'world-atlas.png'))
     print('atlas', out.size)

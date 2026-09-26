@@ -494,6 +494,154 @@
         "head",
         "chest"
       ]
+    },
+    "boar": {
+      "path": "res://assets/creatures/boar.glb",
+      "rig": "own"
+    },
+    "brigand": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
+      "hide": [
+        "Ranger_Quiver"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/brigand_hood.glb"
+        }
+      ],
+      "tint": {
+        "Ranger_Body": "#8e7c66",
+        "Ranger_Cape": "#8a6a5a",
+        "Ranger_Head": "#e8d4c0",
+        "Ranger_LegLeft": "#7a6a5a",
+        "Ranger_LegRight": "#7a6a5a",
+        "Ranger_ArmLeft": "#c8b098",
+        "Ranger_ArmRight": "#c8b098"
+      },
+      "gear_parts": {
+        "chest": [
+          "Ranger_Cape"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "brigand_captain": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
+      "scale": 0.86,
+      "hide": [
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/brigand_captain_hat.glb"
+        }
+      ],
+      "tint": {
+        "Barbarian_Body": "#7a6450",
+        "Barbarian_LegLeft": "#6a5a4c",
+        "Barbarian_LegRight": "#6a5a4c",
+        "Barbarian_ArmLeft": "#c8aa90",
+        "Barbarian_ArmRight": "#c8aa90",
+        "Barbarian_Head": "#e0c4aa"
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "scarecrow": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
+      "hide": [
+        "Ranger_Head",
+        "Ranger_Cape",
+        "Ranger_Quiver"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/scarecrow_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/scarecrow_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/scarecrow_hips.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/scarecrow_cuff_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/scarecrow_cuff_r.glb"
+        }
+      ],
+      "tint": {
+        "Ranger_Body": "#a08a66",
+        "Ranger_ArmLeft": "#e0c070",
+        "Ranger_ArmRight": "#e0c070",
+        "Ranger_LegLeft": "#8a7c6a",
+        "Ranger_LegRight": "#8a7c6a"
+      },
+      "wearable_slots": []
+    },
+    "scarecrow_elder": {
+      "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb",
+      "scale": 0.86,
+      "hide": [
+        "Ranger_Head",
+        "Ranger_Cape",
+        "Ranger_Quiver"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/scarecrow_head_elder.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/scarecrow_chest.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/scarecrow_crow.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/scarecrow_hips.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/scarecrow_cuff_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/scarecrow_cuff_r.glb"
+        }
+      ],
+      "tint": {
+        "Ranger_Body": "#6e6252",
+        "Ranger_ArmLeft": "#c8a860",
+        "Ranger_ArmRight": "#c8a860",
+        "Ranger_LegLeft": "#5e5448",
+        "Ranger_LegRight": "#5e5448"
+      },
+      "wearable_slots": []
     }
   },
   "weapons": {
@@ -518,6 +666,14 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "windmill": {"path": "res://assets/props/windmill.glb"},
+    "windmill_sails": {"path": "res://assets/props/windmill_sails.glb"},
+    "fence_wood": {"path": "res://assets/props/fence_wood.glb"},
+    "hay_bale": {"path": "res://assets/props/hay_bale.glb"},
+    "haystack": {"path": "res://assets/props/haystack.glb"},
+    "farm_cart": {"path": "res://assets/props/farm_cart.glb"},
+    "wheat": {"path": "res://assets/props/wheat.glb"},
+    "scarecrow_post": {"path": "res://assets/props/scarecrow_post.glb"},
     "boardwalk": {"path": "res://assets/props/boardwalk.glb"},
     "boardwalk_ramp": {"path": "res://assets/props/boardwalk_ramp.glb"},
     "stilt_hut": {"path": "res://assets/props/stilt_hut.glb"},

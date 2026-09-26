@@ -27,6 +27,7 @@ var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
+var _fields: Array = []  # [Transform3D (center, facing), half size Vector2]: fenced crops, kept clear of trees and grass
 var _decks: Array = []  # [Transform3D (center, deck top), half size Vector2]: boardwalks you stand on over the water
 var _lakes: Array = []  # [{shore: PackedVector2Array, level, depth, shelf, bank, islands: [[Vector2, radius]]}]
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
@@ -67,6 +68,10 @@ func load_zone(id: String) -> void:
 		_add_river(river)
 	for lake: Dictionary in data.get("lakes", []):
 		_add_lake(lake)
+	for f: Dictionary in data.get("fields", []):
+		var at := Vector2(f["pos"][0], f["pos"][1])
+		_fields.append([Transform3D(Basis(Vector3.UP, deg_to_rad(float(f.get("yaw", 0.0)))), Vector3(at.x, 0, at.y)),
+				Vector2(float(f["size"][0]) * 0.5, float(f["size"][1]) * 0.5), f])
 	for road: Dictionary in data.get("roads", []):
 		var pts: Array[Vector2] = []
 		for pt: Array in road["points"]:
@@ -83,6 +88,8 @@ func load_zone(id: String) -> void:
 		_build_river(river)
 	for lake: Dictionary in _lakes:
 		_build_lake(lake)
+	for f: Array in _fields:
+		_build_field(f)
 	_build_props()
 	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
 		_build_clutter()
@@ -468,6 +475,10 @@ func _build_landmarks() -> void:
 				_build_stilt_village(p, _landmark_yaw(lm), int(lm.get("length", 10)))
 			"lizard_camp":
 				_build_lizard_camp(p)
+			"windmill":
+				_build_windmill(p, _landmark_yaw(lm))
+			"orchard":
+				_build_orchard(p, _landmark_yaw(lm), int(lm.get("rows", 4)), int(lm.get("cols", 5)))
 			"sunken_ruins":
 				_build_ruins(p)
 				for k in 10:
@@ -524,6 +535,93 @@ func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
 	_prop("torch_lit", xf * Vector3(1.2, 1.72, end - 0.3), yaw, 1.0, "none")
 	_light(xf * Vector3(1.2, 2.3, end - 0.3), Color(1.0, 0.6, 0.25), 7.0, 0.9)
 	_prop("rowboat", (xf * Vector3(-2.4, 0, end + 1.5)) - Vector3.UP * 0.8, yaw + PI / 2.0, 1.0, "none")
+
+
+## Whether a point is inside a crop field (grown by `margin` meters).
+func in_field(x: float, z: float, margin := 0.0) -> bool:
+	for f: Array in _fields:
+		var local := (f[0] as Transform3D).affine_inverse() * Vector3(x, 0, z)
+		if absf(local.x) <= (f[1] as Vector2).x + margin and absf(local.z) <= (f[1] as Vector2).y + margin:
+			return true
+	return false
+
+
+## A crop field: rows of wheat (one MultiMesh, cheap to draw however big),
+## a split-rail fence round it with a gap on the side facing "gate" (degrees
+## from its facing), and a scarecrow in the middle if "scarecrow" is true.
+func _build_field(f: Array) -> void:
+	var xf: Transform3D = f[0]
+	var hs: Vector2 = f[1]
+	var spec: Dictionary = f[2]
+	var source := _clutter_source("wheat", 0.18)
+	if not source.is_empty():
+		var xforms: Array[Transform3D] = []
+		var row := 1.1
+		var x := -hs.x + 0.6
+		while x < hs.x - 0.4:
+			var z := -hs.y + 0.6
+			while z < hs.y - 0.4:
+				var at := xf * Vector3(x + _rng.randf_range(-0.15, 0.15), 0, z + _rng.randf_range(-0.2, 0.2))
+				var s := _rng.randf_range(0.85, 1.2)
+				xforms.append(Transform3D(Basis(Vector3.UP, _rng.randf() * TAU).scaled(Vector3.ONE * s), Vector3(at.x, height_at(at.x, at.z) - 0.03, at.z)))
+				z += 0.55
+			x += row
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_colors = true
+		mm.mesh = source["mesh"]
+		mm.instance_count = xforms.size()
+		for i in xforms.size():
+			mm.set_instance_transform(i, xforms[i])
+			mm.set_instance_color(i, Color.WHITE * _rng.randf_range(0.9, 1.08))
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = source["material"]
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mmi.visibility_range_end = 140.0
+		add_child(mmi)
+	if bool(spec.get("fence", true)):
+		var gate := deg_to_rad(float(spec.get("gate", 0.0)))
+		for side in 4:
+			var along_x := side % 2 == 0
+			var length := hs.x * 2.0 if along_x else hs.y * 2.0
+			var n := maxi(1, int(length / 3.0))
+			var sgn := -1.0 if side < 2 else 1.0
+			var side_angle: float = [PI, -PI / 2.0, 0.0, PI / 2.0][side]  # which way this side faces, from the field's front (+Z)
+			for k in n:
+				var t := -length * 0.5 + (k + 0.5) * length / n
+				if absf(angle_difference(side_angle, gate)) < 0.1 and absf(t) < 3.0:
+					continue  # the gate
+				var local := Vector3(t, 0, sgn * hs.y) if along_x else Vector3(sgn * hs.x, 0, t)
+				var at := xf * local
+				var yaw := xf.basis.get_euler().y + (0.0 if along_x else PI / 2.0)
+				_prop("fence_wood", Vector3(at.x, height_at(at.x, at.z), at.z), yaw, length / n / 3.0, "box")
+	if bool(spec.get("scarecrow", false)):
+		var c := xf.origin
+		_prop("scarecrow_post", Vector3(c.x, height_at(c.x, c.z), c.z), xf.basis.get_euler().y + _rng.randf_range(-0.4, 0.4), 1.0, "trunk")
+
+
+## A windmill on a rise, its sails slowly turning, and a few sacks and bales at its door.
+func _build_windmill(p: Vector3, yaw: float) -> void:
+	_prop("windmill", p, yaw, 1.0, "box")
+	var hub := p + Basis(Vector3.UP, yaw) * Vector3(0, 7.6, 2.1)
+	var sails := _prop("windmill_sails", hub, yaw, 1.0, "none")
+	var tw := sails.create_tween().set_loops()
+	tw.tween_property(sails, "rotation:z", TAU, 24.0).from(0.0)
+	_prop("hay_bale", p + Basis(Vector3.UP, yaw) * Vector3(2.6, 0, 3.0), yaw + 0.4)
+	_prop("farm_cart", p + Basis(Vector3.UP, yaw) * Vector3(-3.4, 0, 3.6), yaw + 1.2)
+
+
+## An orchard: fruit trees in rows, fenced, with windfall under them.
+func _build_orchard(p: Vector3, yaw: float, rows: int, cols: int) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	for r in rows:
+		for c in cols:
+			var local := Vector3((c - (cols - 1) * 0.5) * 7.0 + _rng.randf_range(-0.8, 0.8), 0, (r - (rows - 1) * 0.5) * 7.0 + _rng.randf_range(-0.8, 0.8))
+			var at := xf * local
+			_prop("tree_round", Vector3(at.x, height_at(at.x, at.z), at.z), _rng.randf() * TAU, _rng.randf_range(0.75, 0.95), "trunk")
+			if _rng.randf() < 0.4:
+				_prop("mushrooms", Vector3(at.x + 1.2, height_at(at.x + 1.2, at.z), at.z), _rng.randf() * TAU, 1.0, "none")
 
 
 ## The height to stand at: a boardwalk's deck where there is one, else the ground.
@@ -1160,14 +1258,16 @@ func _near_flat_spot(p: Vector2, r: float) -> bool:
 
 func _build_signpost(p: Vector3, yaw: float, labels: Array) -> void:
 	var post := _prop("signpost", p, yaw, 1.0, "none")
-	var boards := [[Vector3(0.5, 2.25, 0.11), 0.0], [Vector3(-0.45, 1.75, -0.11), PI]]
+	# [middle of the lettering, facing, room for it in meters between the post and the arrow tip]
+	var boards := [[Vector3(0.98, 2.25, 0.11), 0.0, 1.6], [Vector3(-0.93, 1.75, -0.11), PI, 1.5]]
 	for i in mini(labels.size(), boards.size()):
 		for face: int in [1, -1]:  # painted on both faces, so it reads from either side of the road
 			var at: Vector3 = boards[i][0]
 			var l := Label3D.new()
 			l.text = str(labels[i])
 			l.font_size = 40
-			l.pixel_size = 0.0045
+			var wide := ThemeDB.fallback_font.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, l.font_size).x
+			l.pixel_size = minf(0.0045, float(boards[i][2]) / maxf(wide, 1.0))  # shrinks a long name to fit its board
 			l.modulate = Color(0.2, 0.13, 0.08)
 			l.outline_size = 0
 			l.double_sided = false
@@ -1383,7 +1483,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
 			return false
-	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0:
+	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0 or in_field(x, z, 1.0):
 		return false
 	for spot in _flat_spots:
 		if p.distance_to(spot) < 12.5:
@@ -1409,7 +1509,7 @@ func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
 		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
-				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0:
+				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0 or in_field(xz.x, xz.y, 4.0):
 			continue
 		var clear := true
 		for spot in _flat_spots:

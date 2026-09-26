@@ -1,4 +1,12 @@
 {
+ "built": [
+  "emberhold",
+  "emberhold_tavern",
+  "greenmoor",
+  "harrowfield",
+  "hollowmere",
+  "thornwood"
+ ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
  "areas": {
   "emberlands": {
@@ -47,6 +55,7 @@
     0
    ],
    "kind": "city",
+   "built": true,
    "existing": true,
    "reached": "foot"
   },
@@ -64,6 +73,7 @@
     1
    ],
    "kind": "field",
+   "built": true,
    "existing": true,
    "reached": "foot"
   },
@@ -78,6 +88,7 @@
    "size": 256,
    "cell": null,
    "kind": "sanctuary",
+   "built": false,
    "existing": false,
    "reached": "teleport"
   },
@@ -95,7 +106,8 @@
     1
    ],
    "kind": "field",
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -112,6 +124,7 @@
     2
    ],
    "kind": "wood",
+   "built": true,
    "existing": true,
    "reached": "foot"
   },
@@ -129,6 +142,7 @@
     2
    ],
    "kind": "water",
+   "built": true,
    "existing": true,
    "reached": "foot"
   },
@@ -146,6 +160,7 @@
     2
    ],
    "kind": "terrace",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -163,6 +178,7 @@
     3
    ],
    "kind": "terrace",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -180,6 +196,7 @@
     3
    ],
    "kind": "waste",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -197,6 +214,7 @@
     4
    ],
    "kind": "outpost",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -214,6 +232,7 @@
     4
    ],
    "kind": "waste",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -231,6 +250,7 @@
     2
    ],
    "kind": "city",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -248,6 +268,7 @@
     2
    ],
    "kind": "water",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -265,6 +286,7 @@
     2
    ],
    "kind": "water",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -282,6 +304,7 @@
     3
    ],
    "kind": "water",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -299,6 +322,7 @@
     3
    ],
    "kind": "water",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -316,6 +340,7 @@
     4
    ],
    "kind": "outpost",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -333,6 +358,7 @@
     1
    ],
    "kind": "city",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -350,6 +376,7 @@
     3
    ],
    "kind": "burn",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -367,6 +394,7 @@
     4
    ],
    "kind": "burn",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -384,6 +412,7 @@
     5
    ],
    "kind": "burn",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -401,6 +430,7 @@
     5
    ],
    "kind": "wood",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -418,6 +448,7 @@
     5
    ],
    "kind": "burn",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -435,6 +466,7 @@
     5
    ],
    "kind": "city",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -452,6 +484,7 @@
     4
    ],
    "kind": "plain",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -469,6 +502,7 @@
     5
    ],
    "kind": "plain",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -486,6 +520,7 @@
     5
    ],
    "kind": "plain",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -503,6 +538,7 @@
     6
    ],
    "kind": "plain",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -520,6 +556,7 @@
     6
    ],
    "kind": "outpost",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -537,6 +574,7 @@
     5
    ],
    "kind": "city",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -554,6 +592,7 @@
     6
    ],
    "kind": "fog",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -571,6 +610,7 @@
     6
    ],
    "kind": "fog",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -588,6 +628,7 @@
     6
    ],
    "kind": "fog",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -605,6 +646,7 @@
     7
    ],
    "kind": "fog",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -622,6 +664,7 @@
     7
    ],
    "kind": "fog",
+   "built": false,
    "existing": false,
    "reached": "foot"
   },
@@ -639,6 +682,7 @@
     7
    ],
    "kind": "city",
+   "built": false,
    "existing": false,
    "reached": "foot"
   }

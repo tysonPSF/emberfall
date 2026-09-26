@@ -1564,5 +1564,433 @@
         "item": "drowned_cutlass"
       }
     ]
+  },
+  "wild_boar": {
+    "name": "a wild boar",
+    "level": [
+      3,
+      6
+    ],
+    "hp_base": 24,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.8,
+    "ac": 9,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#5a4636",
+    "scale": 0.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "boar_tusk",
+        "chance": 0.5
+      },
+      {
+        "item": "boar_hide",
+        "chance": 0.3
+      }
+    ],
+    "model": "boar"
+  },
+  "tusked_boar": {
+    "name": "a tusked boar",
+    "level": [
+      6,
+      9
+    ],
+    "hp_base": 34,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.7,
+    "ac": 12,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 9,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#4a3a2c",
+    "scale": 1.05,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "boar_tusk",
+        "chance": 0.6
+      },
+      {
+        "item": "boar_hide",
+        "chance": 0.35
+      }
+    ],
+    "model": "boar"
+  },
+  "old_bristleback": {
+    "name": "Old Bristleback",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 520,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.8,
+    "ac": 20,
+    "speed": 6.8,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#3e3228",
+    "scale": 1.55,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "boar_tusk",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      },
+      {
+        "item": "boar_hide",
+        "chance": 1.0
+      }
+    ],
+    "model": "boar",
+    "named": true,
+    "xp_bonus": 2.0
+  },
+  "brigand_cutpurse": {
+    "name": "a brigand cutpurse",
+    "level": [
+      4,
+      7
+    ],
+    "hp_base": 30,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 7,
+    "attack_delay": 2.4,
+    "ac": 10,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": true,
+    "faction": "brigands",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#7a4a3a",
+    "scale": 1.0,
+    "coin": [
+      8,
+      30
+    ],
+    "loot": [
+      {
+        "item": "brigand_armband",
+        "chance": 0.5
+      },
+      {
+        "item": "loaf_of_bread",
+        "chance": 0.1
+      }
+    ],
+    "model": "brigand",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "brigand_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.12,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.12,
+        "table": "light_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.1,
+        "table": "light_legs"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.08,
+        "table": "light_hands"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.08,
+        "table": "light_feet"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "brigand_thug": {
+    "name": "a brigand thug",
+    "level": [
+      6,
+      9
+    ],
+    "hp_base": 40,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "attack_delay": 2.7,
+    "ac": 13,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": true,
+    "faction": "brigands",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#7a4a3a",
+    "scale": 1.05,
+    "coin": [
+      12,
+      40
+    ],
+    "loot": [
+      {
+        "item": "brigand_armband",
+        "chance": 0.55
+      }
+    ],
+    "model": "brigand",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.85,
+        "table": "brigand_weapons"
+      },
+      {
+        "slot": "secondary",
+        "chance": 0.15,
+        "table": "scout_shield"
+      },
+      {
+        "slot": "head",
+        "chance": 0.12,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.12,
+        "table": "light_chest"
+      },
+      {
+        "slot": "legs",
+        "chance": 0.1,
+        "table": "light_legs"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.08,
+        "table": "light_hands"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.08,
+        "table": "light_feet"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "garrick_the_red": {
+    "name": "Garrick the Red",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 560,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 15,
+    "attack_delay": 2.5,
+    "ac": 20,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "brigands",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a2a2a",
+    "scale": 1.15,
+    "coin": [
+      80,
+      220
+    ],
+    "loot": [
+      {
+        "item": "garricks_ledger",
+        "chance": 1.0
+      },
+      {
+        "item": "brigand_armband",
+        "chance": 1.0,
+        "count": [
+          1,
+          2
+        ]
+      }
+    ],
+    "model": "brigand_captain",
+    "named": true,
+    "xp_bonus": 2.2,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "garricks_cutlass"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.5,
+        "item": "leather_tunic"
+      }
+    ]
+  },
+  "walking_scarecrow": {
+    "name": "a walking scarecrow",
+    "level": [
+      5,
+      8
+    ],
+    "hp_base": 32,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.8,
+    "ac": 11,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#b89a5a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      5
+    ],
+    "loot": [
+      {
+        "item": "loaf_of_bread",
+        "chance": 0.05
+      }
+    ],
+    "model": "scarecrow",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "old_tatters": {
+    "name": "Old Tatters",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 540,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.6,
+    "ac": 18,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#b89a5a",
+    "scale": 1.25,
+    "coin": [
+      30,
+      120
+    ],
+    "loot": [
+      {
+        "item": "straw_heart",
+        "chance": 1.0
+      }
+    ],
+    "model": "scarecrow_elder",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.15,
+      "text": "%s's touch carries %s!"
+    }
   }
 }
