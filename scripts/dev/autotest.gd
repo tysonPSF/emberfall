@@ -92,6 +92,8 @@ const SECTIONS := [
 	["zone_map", "greenmoor"],
 	["zone_map_town", "rainhold"],
 	["compass", "greenmoor"],
+	["solid_logs", "greenmoor"],
+	["quest_hints", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -3554,6 +3556,63 @@ func _t_compass() -> void:
 		print("compass: %s -> heading %.0f, zone '%s', exits %s, sky %s" % [view[2], c._heading, c._zone_name, c._exits.map(func(e: Array) -> String: return e[1]), c._sky_mark()])
 		await _shot("9zz_compass_%s" % view[2])
 	World.time_override = -1.0
+
+
+## Fallen logs block you like rocks: walking square at one stops at it.
+func _t_solid_logs() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var counts := {}
+	var log_shape: CollisionShape3D
+	for body in z.get_children():
+		if body is StaticBody3D and body.has_meta("clutter"):
+			var id: String = body.get_meta("clutter")
+			counts[id] = int(counts.get(id, 0)) + body.get_child_count()
+			if id == "log_fallen" and log_shape == null:
+				for cs: CollisionShape3D in body.get_children():
+					if cs.global_position.length() > 40.0 and absf(z.height_at(cs.global_position.x, cs.global_position.z) - cs.global_position.y) < 1.5:
+						log_shape = cs
+						break
+	print("solid_logs: solid clutter pieces %s" % counts)
+	if log_shape == null:
+		print("solid_logs: FAIL no log found")
+		return
+	var box := (log_shape.shape as BoxShape3D).size
+	var b := log_shape.global_basis
+	var long_axis := b.x if box.x >= box.z else b.z  # the log's length
+	var across := long_axis.cross(Vector3.UP).normalized()  # walk into its side
+	var center := log_shape.global_position
+	var start := center + across * 4.0
+	p.global_position = z.ground(start.x, start.z) + Vector3.UP * 0.3
+	p.face_toward(center)
+	p.camera_pivot.rotation.y = 0.0
+	await _wait(0.5)
+	Input.action_press("move_forward")
+	await _wait(2.5)
+	Input.action_release("move_forward")
+	var past := (p.global_position - center).dot(across)  # > 0 still on our side
+	print("solid_logs: log %.1f x %.1f x %.1f m, start 4.0 m out, now %.2f m out on the near side -> %s" % [box.x, box.y, box.z, past, "PASS blocked" if past > 0.2 else "FAIL walked through"])
+	await _shot("9zz_solid_log")
+
+
+## Quest hints: every item every quest wants says where it's found, every
+## quest where its giver stands; a click on the tracker writes one to chat.
+func _t_quest_hints() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var here := World.zone_of(p).zone_id
+	for quest_id: String in GameData.quests:
+		print("quest_hints: " + QuestHints.giver_hint(quest_id, here, p.global_position))
+		for item_id: String in GameData.quests[quest_id]["wants"]:
+			for line in QuestHints.item_hint(quest_id, item_id, here, p.global_position):
+				print("quest_hints:   " + line)
+	p.quests["fang_bounty"] = {"active": true}
+	main.hud._refresh_quests()
+	main.hud._quest_label.meta_clicked.emit("item:fang_bounty:gnoll_fang")
+	main.hud._quest_label.meta_clicked.emit("giver:fang_bounty")
+	await _wait(0.5)
+	await _shot("9zz_quest_hints")
 
 
 ## The two customizable hotbars: a new character's spells on the main bar;

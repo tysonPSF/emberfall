@@ -1627,7 +1627,7 @@ func _build_props() -> void:
 ## {prop_id: {density (per m²), patch (0-1 clumping), sway, range, shadow,
 ## tint ("ground" to match the terrain), scale [min, max], city (density
 ## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk so
-## far chunks are skipped; nothing collides.
+## far chunks are skipped. Only logs and stumps collide (SOLID_CLUTTER).
 func _build_clutter() -> void:
 	var table: Dictionary = data.get("clutter", {})
 	if table.is_empty():
@@ -1683,6 +1683,8 @@ func _build_clutter() -> void:
 				for i in xforms.size():
 					mm.set_instance_transform(i, xforms[i])
 					mm.set_instance_color(i, colors[i])
+				if id in SOLID_CLUTTER:  # a log or a stump is in the way, like a rock
+					_solid_clutter(id, source["mesh"] as Mesh, xforms)
 				var mmi := MultiMeshInstance3D.new()
 				mmi.multimesh = mm
 				mmi.material_override = source["material"]
@@ -1691,6 +1693,30 @@ func _build_clutter() -> void:
 				mmi.visibility_range_end_margin = 10.0
 				mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 				add_child(mmi)
+
+
+## Clutter you can't walk through: fallen logs and stumps. Grass and flowers
+## stay walk-through. One static body per chunk, a box per piece sized from
+## the model and turned the way it lies.
+const SOLID_CLUTTER := ["log_fallen", "stump"]
+
+
+func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:
+	var box := mesh.get_aabb()
+	var body := StaticBody3D.new()
+	body.set_meta("clutter", id)
+	body.collision_layer = Layers.WORLD
+	body.collision_mask = 0
+	for xf: Transform3D in xforms:
+		var s := xf.basis.get_scale().x  # clutter scales evenly; the box takes it, not the shape
+		var turn := xf.basis.orthonormalized()
+		var cs := CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = box.size * s
+		cs.shape = shape
+		cs.transform = Transform3D(turn, xf.origin + turn * (box.get_center() * s))
+		body.add_child(cs)
+	add_child(body)
 
 
 ## The mesh and a wind-aware material for one clutter prop.
