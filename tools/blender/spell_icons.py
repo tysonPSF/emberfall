@@ -440,6 +440,65 @@ def drowning_cold():
 	return p.build()
 
 
+def backstab():
+	p = Prop("backstab", 403)
+	p.seg((0.45, 0, 1.0), (-0.25, 0, 0.25), 0.07, 0.0, STONE_LIGHT, sides=4, glow=0.4)     # a dagger driving down
+	p.box((0.36, 0.1, 0.08), (0.48, 0, 1.02), GOLD, rot=(0, 45, 0))                       # its guard
+	p.seg((0.52, 0, 1.08), (0.72, 0, 1.28), 0.06, 0.05, WOOD, sides=6)                    # grip
+	p.blob((0.9, 0.35, 0.7), (-0.2, 0.15, 0.2), CLOTH_RED, segs=(10, 6))                  # a back, struck
+	return p.build()
+
+
+def hide():
+	p = Prop("hide", 405)
+	p.blob((0.7, 0.6, 0.9), (0, 0, 0.55), STONE_DARK, segs=(10, 8), glow=0.0)             # a hooded shape
+	p.blob((0.46, 0.3, 0.4), (0, -0.22, 0.7), IRON, segs=(8, 6))                          # the dark under the hood
+	for s_ in (-1, 1):
+		p.blob((0.08, 0.05, 0.05), (s_ * 0.1, -0.36, 0.72), LEAF, segs=(6, 4), glow=2.0)    # two eyes
+	return p.build()
+
+
+def sneak():
+	p = Prop("sneak", 407)
+	for k in range(3):                                                                    # soft footprints
+		for s_ in (-1, 1):
+			p.blob((0.2, 0.3, 0.05), (s_ * 0.2 + k * 0.05, -0.6 + k * 0.55 + (0.2 if s_ > 0 else 0), 0.05), STONE_LIGHT, segs=(8, 4), glow=0.3 - k * 0.1)
+	return p.build()
+
+
+def evade():
+	p = Prop("evade", 409)
+	for k in range(3):                                                                    # a figure fading out of a swirl
+		p.blob((0.5 - k * 0.1, 0.3, 0.8 - k * 0.15), (-0.4 + k * 0.35, 0, 0.5), CLOTH_WHITE if k == 0 else STONE_LIGHT, segs=(8, 6), glow=0.6 - k * 0.2)
+	_ring(p, 0.6, 0.5, 0.04, CLOTH_WHITE, glow=0.8, sides=16, tilt=math.pi / 2)
+	return p.build()
+
+
+def envenom_blade():
+	p = Prop("envenom_blade", 411)
+	p.seg((0, 0, 0.1), (0, 0, 1.1), 0.1, 0.0, STONE_LIGHT, sides=4)                       # a blade point up
+	p.box((0.4, 0.1, 0.08), (0, 0, 0.1), GOLD)
+	for k in range(4):                                                                    # green drips down it
+		p.blob((0.1, 0.1, 0.16), (0.05 * (k % 2 * 2 - 1), 0, 0.9 - k * 0.2), LEAF, segs=(6, 4), glow=1.6)
+	return p.build()
+
+
+def rogue_venom():
+	p = Prop("rogue_venom", 413)
+	p.blob((0.55, 0.55, 0.7), (0, 0, 0.4), LEAF, segs=(10, 8), glow=1.2)                   # a vial of it
+	p.seg((0, 0, 0.72), (0, 0, 0.95), 0.12, 0.12, STONE_LIGHT, sides=8)
+	p.seg((0, 0, 0.95), (0, 0, 1.05), 0.14, 0.14, WOOD, sides=8)
+	return p.build()
+
+
+def rake():
+	p = Prop("rake", 415)
+	for k in range(3):                                                                    # three claw-slashes
+		x = -0.3 + k * 0.3
+		p.seg((x - 0.25, 0, 1.0), (x + 0.25, 0, 0.1), 0.06, 0.02, CLOTH_RED, sides=4, glow=1.2)
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -490,7 +549,8 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
 								  heroic_strike, rally, shield_wall, healing, blessed_armor, circle_of_renewal,
 								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet,
-								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold]}
+								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold,
+								  backstab, hide, sneak, evade, envenom_blade, rogue_venom, rake]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

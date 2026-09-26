@@ -2042,7 +2042,8 @@ func _update_hotbar() -> void:
 			slot.gem = HotSlot.GEMS[_gem_kind(s)]
 			slot.queue_redraw()
 		var cd := float(player.cooldowns.get(spell_id, 0.0))
-		slot.show_state(_sweep(spell_id, cd), cd, _spell_usable(s, t), false)
+		var on := (str(s["type"]) == "hide" and player.hidden) or (str(s["type"]) == "sneak" and player.sneaking)  # toggles glow while on
+		slot.show_state(_sweep(spell_id, cd), cd, _spell_usable(s, t), on)
 
 
 ## What kind of gem a spell sits on: damage red, heals green, buffs blue,

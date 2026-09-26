@@ -305,6 +305,7 @@ func _physics_process(delta: float) -> void:
 			_update_camp(obj, delta)
 		if obj is Player and is_instance_valid(obj):
 			_update_stamina(obj, delta)
+			_check_hidden(obj as Player)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -425,8 +426,17 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 			_try_offhand_proc(p, t)
 
 
+## A buff that coats the weapon (Envenom Blade): its "proc" rides every hit, either hand.
+func _try_buff_proc(e: Entity, t: Entity) -> void:
+	for spell_id: String in e.buffs:
+		var proc: Dictionary = GameData.spells.get(spell_id, {}).get("proc", {})
+		if not proc.is_empty() and not t.dead and randf() < float(proc.get("chance", 0.0)) and GameData.spells.has(str(proc["spell"])):
+			_finish_spell(e, str(proc["spell"]), t, true)
+
+
 ## An off-hand weapon's own "proc", as the main hand's does in _try_proc.
 func _try_offhand_proc(p: Player, t: Entity) -> void:
+	_try_buff_proc(p, t)
 	var item := GameData.item(str(p.equipment.get("secondary", "")))
 	var proc: Dictionary = item.get("proc", {})
 	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)) or not GameData.spells.has(str(proc["spell"])):
@@ -552,6 +562,7 @@ static func weapon_item(e: Entity) -> Dictionary:
 
 ## A weapon's "proc": {spell, chance} sometimes fires its spell on a hit, free.
 func _try_proc(e: Entity, t: Entity) -> void:
+	_try_buff_proc(e, t)
 	var proc: Dictionary = weapon_item(e).get("proc", {})
 	var natural := proc.is_empty() and e is Mob  # a monster's own: a spider's venom, a shaman's bolt
 	if natural:
@@ -849,6 +860,7 @@ func request_toggle_attack(entity_id: int) -> void:
 		e.auto_attack = false
 		say(e, "Auto attack is off.")
 		return
+	unhide(e)
 	var t := e.valid_target_entity()
 	if e is Player and t is Npc and not can_attack(e, t):
 		var p := e as Player
@@ -1060,6 +1072,9 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if s.get("requires", "") == "shield" and c is Player and not has_shield(c as Player):
 		say(c, "You need a shield equipped to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
+	if s.get("requires", "") == "piercing" and c is Player and weapon_skill(c as Player) != "piercing":
+		say(c, "You need a piercing weapon in your main hand to %s." % str(s["name"]).to_lower(), C_WARN)
+		return
 	var t := _resolve_spell_target(c, s)
 	if t == null:
 		say(c, "You must first select a target for this spell!", C_WARN)
@@ -1067,6 +1082,13 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if t != c and c.distance_to(t) > float(s.get("range", 0)):
 		say(c, "Your target is out of range, get closer!", C_WARN)
 		return
+	if s.get("from_behind", false) and not behind(c, t):
+		say(c, "You must be behind your target to %s." % str(s["name"]).to_lower(), C_WARN)
+		return
+	if c.hidden and not str(s["type"]) in ["hide", "sneak"]:
+		if s.has("ambush"):
+			c.set_meta("ambush", float(s["ambush"]))  # an opener from the shadows hits harder
+		unhide(c)
 	c.sitting = false
 	if c is Player and _fizzles(c as Player, s):
 		return
@@ -1130,6 +1152,10 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		c.mana -= int(s.get("mana", 0))
 		c.cooldowns[spell_id] = float(s.get("recast", 0))
 	var power := randi_range(int(s.get("min", 0)), int(s.get("max", 0))) + int(float(s.get("per_level", 0)) * (c.level - 1))
+	if c.has_meta("ambush"):
+		power = roundi(power * float(c.get_meta("ambush")))
+		c.remove_meta("ambush")
+		say(c, "You strike from the shadows!", C_YOU_HIT)
 	if c is Player and not from_item and s.has("skill"):
 		var skill := str(s["skill"])
 		if s.get("ability", false) and skill != "taunt":  # kick, bash, bind wound grow with the skill
@@ -1192,6 +1218,35 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			t.root_left = float(s.get("duration", 10))
 			say(c, "%s's feet adhere to the ground." % cap(t.display_name), C_SPELL)
 			t.add_hate(c, 5.0)
+		"hide":
+			if c.hidden:
+				unhide(c, "You step out of the shadows.")
+			elif get_mobs().any(func(m: Mob) -> bool: return m.hate.has(c.entity_id) and not m.dead):
+				say(c, "You can't hide with something hunting you. Evade first.", C_WARN)
+			elif c is Player and randf() > 0.55 + 0.45 * skill_frac(c as Player, "hide"):
+				say(c, "You failed to hide yourself.", C_WARN)
+			else:
+				c.hidden = true
+				c.auto_attack = false
+				c.show_hidden()
+				say(c, "You have hidden yourself from view.", C_SPELL)
+		"sneak":
+			if c.sneaking:
+				c.sneaking = false
+				say(c, "You stop sneaking.", C_SPELL)
+			elif c is Player and randf() > 0.55 + 0.45 * skill_frac(c as Player, "sneak"):
+				say(c, "You are as quiet as a herd of running elephants.", C_WARN)
+			else:
+				c.sneaking = true
+				say(c, "You are as quiet as a cat stalking its prey.", C_SPELL)
+		"evade":
+			var keep := 0.7 - 0.4 * (skill_frac(c as Player, "hide") if c is Player else 0.5)  # 70% of their anger kept, down to 30% at cap
+			var any := false
+			for m in get_mobs():
+				if m.hate.has(c.entity_id):
+					m.hate[c.entity_id] = float(m.hate[c.entity_id]) * keep
+					any = true
+			say(c, "You slip out of sight for a moment; your attackers lose track of you." if any else "No one is hunting you.", C_SPELL)
 		"taunt":
 			if c is Player and randf() > 0.5 + 0.5 * skill_frac(c as Player, "taunt"):
 				say(c, "Your taunt fails to get %s's attention." % t.display_name, C_WARN)
@@ -1202,6 +1257,34 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			t.add_hate(c, top + 10.0 - float(t.hate.get(c.entity_id, 0.0)))
 			say(c, "You taunt %s to ignore others and attack you!" % t.display_name, C_SPELL)
 	c.stats_changed.emit()
+
+
+## Whether an attacker stands behind its target (outside the arc in front of
+## its face): where a backstab lands.
+static func behind(attacker: Entity, target: Entity) -> bool:
+	var facing := -target.global_transform.basis.z
+	var to_attacker := attacker.global_position - target.global_position
+	facing.y = 0.0
+	to_attacker.y = 0.0
+	return facing.normalized().dot(to_attacker.normalized()) < -0.25
+
+
+## A hidden rogue who walks off without sneaking is seen.
+func _check_hidden(p: Player) -> void:
+	var at := Vector2(p.global_position.x, p.global_position.z)
+	var was: Vector2 = p.get_meta("hide_at", at)
+	p.set_meta("hide_at", at)
+	if p.hidden and not p.sneaking and at.distance_to(was) > 0.05:
+		unhide(p)
+
+
+## Hide ends: moving without Sneak, attacking, or using another ability.
+func unhide(e: Entity, text := "You are no longer hidden.") -> void:
+	if not e.hidden:
+		return
+	e.hidden = false
+	e.show_hidden()
+	say(e, text, C_SPELL)
 
 
 func call_for_help(caller: Mob, enemy: Entity) -> void:

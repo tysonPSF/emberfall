@@ -271,7 +271,7 @@ func _scan_for_aggro(delta: float) -> void:
 		return
 	_scan_timer = 0.5
 	for p in World.get_players():
-		if p.dead or World.con_of(p.level, level) == World.Con.GRAY:
+		if p.dead or p.hidden or World.con_of(p.level, level) == World.Con.GRAY:
 			continue
 		# aggressive mobs attack anyone close; others only those their faction hates
 		var radius := aggro_radius if aggressive else (12.0 if World.mob_kos(p, faction) else 0.0)
