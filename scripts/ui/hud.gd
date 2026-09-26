@@ -376,13 +376,16 @@ func _build_hotbar() -> void:
 	book.add_theme_font_size_override("font_size", 11)
 	book.tooltip_text = "Spellbook (P)\nEverything you know, and the actions: drag them onto your hotbars."
 	book.pressed.connect(_toggle_spellbook)
+	UIKit.frame(book)
 	_hot_lock = UIKit.button("", Vector2(0, 22))
 	_hot_lock.add_theme_font_size_override("font_size", 11)
 	_hot_lock.tooltip_text = "Locks the hotbars so nothing gets dragged off or swapped by accident."
 	_hot_lock.pressed.connect(func() -> void:
 		Controls.set_hotbar_locked(not Controls.hotbar_locked)
-		_hot_lock.text = "Locked" if Controls.hotbar_locked else "Lock")
+		_hot_lock.text = "Locked" if Controls.hotbar_locked else "Lock"
+		UIKit.frame(_hot_lock, Controls.hotbar_locked))
 	_hot_lock.text = "Locked" if Controls.hotbar_locked else "Lock"
+	UIKit.frame(_hot_lock, Controls.hotbar_locked)
 	tools.add_child(book)
 	tools.add_child(_hot_lock)
 	top.add_child(tools)
@@ -1281,7 +1284,9 @@ func _build_quest_tracker() -> void:
 	_quest_label.custom_minimum_size = Vector2(240, 0)
 	_quest_label.add_theme_font_size_override("normal_font_size", 13)
 	_quest_label.add_theme_font_size_override("bold_font_size", 13)
-	_quest_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_quest_label.meta_underlined = false
+	_quest_label.tooltip_text = "Click a quest or an item for a hint"
+	_quest_label.meta_clicked.connect(_on_quest_hint)
 	_quest_panel.add_child(_quest_label)
 	_quest_panel.visible = false
 
@@ -2474,16 +2479,31 @@ func _refresh_quests() -> void:
 		if not player.quests[quest_id].get("active", false) or not GameData.quests.has(quest_id):
 			continue
 		var q: Dictionary = GameData.quests[quest_id]
-		lines.append("[b][color=#%s]%s[/color][/b]" % [UIKit.GOLD.to_html(false), q["name"]])
+		lines.append("[url=giver:%s][b][color=#%s]%s[/color][/b][/url]" % [quest_id, UIKit.GOLD.to_html(false), q["name"]])
 		var have := World.quest_progress(player, quest_id)
 		for item_id: String in q["wants"]:
 			var need := int(q["wants"][item_id])
 			var done := int(have[item_id]) >= need
-			lines.append("[color=#%s]  %s  %d/%d[/color]" % ["8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
+			lines.append("[url=item:%s:%s][color=#%s]  %s  %d/%d[/color][/url]" % [quest_id, item_id, "8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
 		if World.quest_items_ready(player, quest_id):
 			lines.append("[color=#8fe08f]  Trade them to %s (G)[/color]" % GameData.npcs[q["giver"]]["name"])
 	_quest_label.text = "\n".join(lines)
 	_quest_panel.visible = not lines.is_empty()
+
+
+## A click on the quest tracker: an item says where it's found, a quest's
+## name where its giver stands. Written to your own chat only.
+func _on_quest_hint(meta: Variant) -> void:
+	var parts := str(meta).split(":")
+	var z := World.zone_of(player)
+	var here := z.zone_id if z != null else ""
+	var lines: PackedStringArray = []
+	if parts[0] == "item" and parts.size() == 3:
+		lines = QuestHints.item_hint(parts[1], parts[2], here, player.global_position)
+	elif parts[0] == "giver" and parts.size() == 2:
+		lines = [QuestHints.giver_hint(parts[1], here, player.global_position)]
+	for line in lines:
+		add_log(line, World.C_XP)
 
 
 func _on_loot_opened(c: Corpse) -> void:

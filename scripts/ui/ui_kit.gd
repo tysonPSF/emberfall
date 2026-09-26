@@ -53,6 +53,27 @@ static func button(text: String, min_size := Vector2(0, 30)) -> Button:
 	return b
 
 
+## Gives a button a framed face: dark with a gold edge, lighter under the
+## mouse, sunk when pressed. `lit` keeps it glowing (a toggle that's on).
+static func frame(b: Button, lit := false) -> void:
+	var looks := {"normal": [0.13, 0.55], "hover": [0.2, 0.9], "pressed": [0.07, 0.9], "disabled": [0.1, 0.3]}
+	for state: String in looks:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.3, 0.22, 0.1, 0.9) if lit and state != "hover" else Color(looks[state][0], looks[state][0] * 0.95, looks[state][0] * 0.85, 0.92)
+		sb.border_color = Color(GOLD, 1.0 if lit else looks[state][1])
+		sb.set_border_width_all(1)
+		sb.border_width_bottom = 1 if state == "pressed" else 2
+		sb.set_corner_radius_all(4)
+		sb.content_margin_left = 10
+		sb.content_margin_right = 10
+		sb.content_margin_top = 2
+		sb.content_margin_bottom = 2
+		b.add_theme_stylebox_override(state, sb)
+	b.add_theme_color_override("font_color", GOLD if lit else TEXT)
+	b.add_theme_color_override("font_hover_color", Color(1, 0.95, 0.8))
+	b.add_theme_color_override("font_pressed_color", GOLD)
+
+
 ## Anchors a control to a point on screen (0..1 on each axis) plus a pixel
 ## offset, growing away from the nearest edge as its content sizes it.
 static func place(c: Control, anchor: Vector2, offset: Vector2) -> void:
