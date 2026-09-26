@@ -66,6 +66,7 @@ const INVITE_SECONDS := 60.0
 
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
+const BIND_RANGE := 16.0  # how near a city's bindstone you must stand to bind
 const TRADE_SLOTS := 4
 ## EQ faction tiers: lowest standing for each, and how that NPC regards you.
 const STANDING_TIERS: Array = [
@@ -1030,6 +1031,15 @@ func request_use_item(player_id: int, place: String) -> void:
 			if GameData.spells.get(b, {}).get("meal", false):
 				p.buffs.erase(b)
 		p.recalc_stats()
+	if float(s.get("cast_time", 0)) > 0.0:  # a real cast (the Homeward Stone, a Draught of Homecoming): the item pays when it lands
+		if not p.cast.is_empty():
+			return
+		p.sitting = false
+		p.cast = {"spell": spell_id, "target_id": p.entity_id, "time": 0.0, "total": float(s["cast_time"]),
+				"start_pos": p.global_position, "item": GameData.base_item(str(e["item"])), "item_key": key,
+				"recast": float(use.get("recast", 0)), "keep": bool(use.get("keep", false))}
+		say(p, "You begin to use your %s." % str(it["name"]).to_lower(), C_SPELL)
+		return
 	if use.has("recast"):
 		p.cooldowns[key] = float(use["recast"])
 	e["count"] = int(e["count"]) - 1
@@ -1590,6 +1600,49 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	say(c, "You begin casting %s." % s["name"], C_SPELL)
 
 
+## The zone a player is bound to: their bindstone city, or the starting city.
+func bind_zone_of(p: Player) -> String:
+	if p.bind_zone != "" and FileAccess.file_exists("res://data/zones/%s.json" % p.bind_zone):
+		return p.bind_zone
+	return str(cfg("starting_zone", "emberhold"))
+
+
+## Gate: to the bindstone in your bind city, zoning there when it's elsewhere.
+func _go_home(p: Player) -> void:
+	var home := bind_zone_of(p)
+	var z := zone_of(p)
+	if z != null and z.zone_id == home:
+		p.global_position = z.bind_point + Vector3.UP
+		p.velocity = Vector3.ZERO
+		Net.teleport(p, p.global_position)
+		return
+	request_trade_cancel(p.entity_id)
+	request_service_close(p.entity_id)
+	request_loot_close(p.entity_id)
+	p.auto_attack = false
+	p.target = null
+	p.sitting = false
+	p.hostile_npcs.clear()
+	zone_change.emit(p, home, Vector2.INF, Vector2.INF)  # INF: arrive at that zone's bindstone
+
+
+## Binds your soul to the city you stand in: near its bindstone (/bind), or by
+## asking one of its priests ("bind").
+func request_bind(player_id: int) -> void:
+	if _remote(&"request_bind", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	var z := zone_of(p)
+	if p == null or p.dead or z == null:
+		return
+	var stone := Vector2(z.bind_point.x, z.bind_point.z)
+	if not z.data.get("bindstone", false) or Vector2(p.global_position.x, p.global_position.z).distance_to(stone) > BIND_RANGE:
+		say(p, "You can only bind your soul at a city's bindstone.", C_WARN)
+		return
+	p.bind_zone = z.zone_id
+	say(p, "You feel your soul bind to %s." % z.zone_name, C_SPELL)
+
+
 func request_interrupt(entity_id: int) -> void:
 	if _remote(&"request_interrupt", [entity_id]):
 		return
@@ -1625,7 +1678,20 @@ func _update_cast(c: Entity, delta: float) -> void:
 	var spell_id: String = c.cast["spell"]
 	var s: Dictionary = GameData.spells[spell_id]
 	var t := get_object(c.cast["target_id"]) as Entity
+	var cast := c.cast
 	c.cast = {}
+	if cast.has("item"):  # from an item: it recharges (or is used up) now, and costs no mana
+		var p := c as Player
+		if not cast["keep"] and p.pack.count(str(cast["item"])) <= 0:
+			say(p, "You no longer have it.", C_WARN)
+			return
+		if float(cast["recast"]) > 0.0:
+			p.cooldowns[str(cast["item_key"])] = float(cast["recast"])
+		if not cast["keep"]:
+			p.pack.remove(str(cast["item"]), 1)
+			p.inventory_changed.emit()
+		_finish_spell(c, spell_id, t, true)
+		return
 	if t == null or t.dead:
 		say(c, "Your target is gone.", C_WARN)
 	elif t != c and c.distance_to(t) > float(s.get("range", 0)) + 2.0:
@@ -1737,11 +1803,11 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 		"gate":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
-			c.global_position = zone_of(c).bind_point + Vector3.UP
-			c.velocity = Vector3.ZERO
-			if c is Player:
-				Net.teleport(c as Player, c.global_position)
 			say(c, "You feel yourself pulled back to your bind point.", C_SPELL)
+			if c is Player:
+				_go_home(c as Player)
+			else:
+				c.global_position = zone_of(c).bind_point + Vector3.UP
 		"buff":
 			t.buffs[spell_id] = {"left": float(s.get("duration", 60)), "stats": s.get("stats", {})}
 			t.recalc_stats()
@@ -2667,6 +2733,8 @@ func request_chat(player_id: int, text: String) -> void:
 				say(p, "Pet commands: /pet attack, back, follow, guard, sit, taunt, health, leave.", C_SYSTEM)
 		"/fish":
 			request_item_click(player_id, "primary")
+		"/bind":
+			request_bind(player_id)
 		"/g", "/gsay", "/group":
 			if p.group_id == 0:
 				say(p, "You are not in a group.", C_WARN)
@@ -2766,6 +2834,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
 			_accept_quest(p, quest_id)
+	if key == "bind" and npc.data.get("binds", false):
+		request_bind(p.entity_id)
 	var bless: Dictionary = npc.data.get("blesses", {})
 	if not bless.is_empty() and key == str(bless.get("keyword", "blessing")):
 		_shrine_blessing(p, npc, bless)

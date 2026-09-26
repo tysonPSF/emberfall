@@ -412,6 +412,21 @@
     "antidote": 2
    }
   },
+  "draught_of_homecoming": {
+   "skill": "alchemy",
+   "containers": [
+    "mortar"
+   ],
+   "trivial": 35,
+   "in": {
+    "bundle_of_herbs": 2,
+    "vial_of_water": 1,
+    "salt_crystal": 1
+   },
+   "out": {
+    "draught_of_homecoming": 1
+   }
+  },
   "healing_potion": {
    "skill": "alchemy",
    "containers": [

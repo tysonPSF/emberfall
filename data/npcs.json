@@ -138,8 +138,10 @@
     "level": 40,
     "model": "mage",
     "weapon": "staff",
+    "binds": true,
     "dialogue": {
-      "hail": "Welcome to Emberhold, {name}. Warm your hands at the [hearth]. It has burned since the [Emberfall], and it will burn long after us.",
+      "bind": "Hold out your hands to the flame, {name}. There: your soul knows the hearth now. Gate, or your Homeward Stone, will bring you back here.",
+      "hail": "Welcome to Emberhold, {name}. Warm your hands at the [hearth]. It has burned since the [Emberfall], and it will burn long after us. Ask, and I'll [bind] your soul to it, so you always find your way back.",
       "hearth": "No wood feeds it and no rain drowns it. The Keepers tend it all the same. Those who fall in these lands wake beside a [bindstone], drawn back to warmth.",
       "emberfall": "The night the sky burned, a star came down into this hollow and would not cool. The first settlers raised walls around its heat. That ember is the one before you.",
       "bindstone": "The hearth here, and the old obelisk in Greenmoor. When you fall, you wake at the bindstone of the land you fell in. Your belongings, sadly, stay where you dropped.",
@@ -758,8 +760,10 @@
       "wait": "You've had his blessing within the hour, {name}. Let it wear off before you ask again.",
       "give": "Kneel, {name}. ...There. Go into the day."
     },
+    "binds": true,
     "dialogue": {
-      "hail": "Welcome to Lanternhold, {name}, and to the shrine of [Prabhagaj]. The lamps of the city are lit from the sun-disc in his trunk every dusk, and none has gone out in four hundred years.",
+      "bind": "Kneel, {name}, under the sun-disc. It is done: Prabhagaj will guide you home to Lanternhold.",
+      "hail": "Welcome to Lanternhold, {name}, and to the shrine of [Prabhagaj]. The lamps of the city are lit from the sun-disc in his trunk every dusk, and none has gone out in four hundred years. I can [bind] your soul to his shrine, if you'd have Lanternhold be your home.",
       "prabhagaj": "The Dawn-Tusk, the elephant of first light. On the first morning he lifted the sun out of the dark in his trunk, and he has held it up every morning since. Nothing is hidden from him for long. Those who follow him may ask his [blessing] here.",
       "blessing": "Only his followers may receive it.",
       "bindstone": "This shrine is the bindstone of the Dawnstair. Fall anywhere in these lands and you wake at the elephant's feet.",
@@ -1047,8 +1051,10 @@
       "wait": "You've had her blessing within the hour, {name}. Let it wear off before you ask again.",
       "give": "Stand in the spray, {name}. ...There. Go gently."
     },
+    "binds": true,
     "dialogue": {
-      "hail": "Welcome to Rainhold, {name}, and to the shrine of Jalendra, the Tide-Trunked. The rain never stops here; we stopped minding. Followers of hers may ask for her [blessing]. And if you're strong, there's a [storm] in the Throat I need quieted.",
+      "bind": "Let her water touch your brow, {name}. There. Jalendra will carry you home to Rainhold when you call.",
+      "hail": "Welcome to Rainhold, {name}, and to the shrine of Jalendra, the Tide-Trunked. The rain never stops here; we stopped minding. Followers of hers may ask for her [blessing]. And if you're strong, there's a [storm] in the Throat I need quieted. I'll [bind] your soul to her basin, too, if you ask.",
       "storm": "The Weeping Storm. A spirit of the monsoon gone wild, raging at the old temple in the Weeping Throat, north of the city. Bring me its [heart] and I'll give you a charm blessed at this shrine.",
       "heart": "The Heart of the Storm. It will crackle in your hands. Bring it anyway.",
       "unknown": "Ask the guildmasters, {name}, or Hunter Asha on the east pier."
@@ -1285,6 +1291,7 @@
     "faction": "emberhold",
     "merchant": {
       "sells": [
+        "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
         "vial_of_water",
@@ -1323,6 +1330,7 @@
     "faction": "lanternhold",
     "merchant": {
       "sells": [
+        "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
         "vial_of_water",
@@ -1361,6 +1369,7 @@
     "faction": "rainhold",
     "merchant": {
       "sells": [
+        "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
         "vial_of_water",

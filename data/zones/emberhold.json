@@ -8,6 +8,7 @@
     0,
     4
   ],
+  "bindstone": true,
   "flat_radius": 70,
   "clear_radius": 64,
   "trees": 60,
