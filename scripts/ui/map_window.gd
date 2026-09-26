@@ -11,11 +11,14 @@ extends PanelContainer
 ## The painting is made the first time you open the map in a zone, a few rows
 ## a frame so the game never stalls, and kept for as long as you stay.
 
-const RES := 176  # painted samples across the zone
+const RES := 256  # painted samples across the zone (the land only: water, roads and decks are drawn as shapes on top)
 const VIEW := 560.0  # the map's size on screen
 const FOG_CELLS := 40  # the fog grid across the zone
 const REVEAL := 45.0  # meters around you that you've "seen"
-const PARCHMENT := Color(0.86, 0.78, 0.6)
+const PARCHMENT := Color(0.9, 0.85, 0.72)
+const WATER := Color(0.45, 0.62, 0.7)
+const ROAD := Color(0.55, 0.37, 0.2)
+const WOOD := Color(0.6, 0.43, 0.27)
 const INK := Color(0.23, 0.16, 0.1)
 
 var player: Player
@@ -161,17 +164,11 @@ func _paint_row(j: int) -> void:
 		var hy := z.height_at(x, y + step) - z.height_at(x, y - step)
 		var shade := clampf(1.0 - (hx * sun.x + hy * sun.y) / (step * 2.0) * 0.55, 0.55, 1.35)
 		var ground := z._ground_color(x, y, h)
-		var c := PARCHMENT.lerp(Color(ground.r, ground.g, ground.b).lerp(Color(ground.v, ground.v, ground.v), 0.35), 0.42)
+		var c := PARCHMENT.lerp(Color(ground.r, ground.g, ground.b), 0.5)
 		c = Color(c.r * shade, c.g * shade, c.b * shade)
-		if z.surface_at(x, y) > h + 0.05:  # boardwalks and stilt decks
-			c = Color(0.55, 0.38, 0.22).lerp(PARCHMENT, 0.3)
-		elif z.water_level(x, y) > -INF or z.fishable_at(x, y):  # lakes and running rivers
-			c = Color(0.42, 0.56, 0.62).lerp(PARCHMENT, 0.25)
-		elif z.road_distance(x, y) < 1.2:
-			c = c.lerp(Color(0.5, 0.34, 0.18), 0.65)
 		var edge := maxf(absf(x), absf(y)) - (z.half - 30.0)
 		if edge > 0.0 and h > z.amp * 0.6:  # the mountain ring, darker toward the rim
-			c = c.lerp(Color(0.36, 0.3, 0.24), clampf(edge / 30.0, 0.0, 0.8))
+			c = c.lerp(Color(0.42, 0.37, 0.32), clampf(edge / 30.0, 0.0, 0.75))
 		_image.set_pixel(i, j, c)
 
 
@@ -339,12 +336,15 @@ func _explored(world: Vector2) -> bool:
 func _fog_tex() -> ImageTexture:
 	if _fog_dirty or _fog_texture == null:
 		_fog_dirty = false
-		var img := Image.create(FOG_CELLS, FOG_CELLS, false, Image.FORMAT_RGBA8)
 		var cells: PackedByteArray = _fog.get(_zone.zone_id, PackedByteArray())
+		var img := Image.create(FOG_CELLS + 2, FOG_CELLS + 2, false, Image.FORMAT_RGBA8)
+		img.fill(Color(0.86, 0.8, 0.66, 0.94))  # a fogged border, so the edge of the map fades too
 		for j in FOG_CELLS:
 			for i in FOG_CELLS:
-				var seen := not cells.is_empty() and cells[j * FOG_CELLS + i] == 1
-				img.set_pixel(i, j, Color(0.8, 0.72, 0.55, 0.0 if seen else 0.93))
+				if not cells.is_empty() and cells[j * FOG_CELLS + i] == 1:
+					img.set_pixel(i + 1, j + 1, Color(0.86, 0.8, 0.66, 0.0))
+		img.resize(FOG_CELLS * 2, FOG_CELLS * 2, Image.INTERPOLATE_BILINEAR)  # soften twice: clouds, not squares
+		img.resize(FOG_CELLS * 8, FOG_CELLS * 8, Image.INTERPOLATE_CUBIC)
 		_fog_texture = ImageTexture.create_from_image(img)
 	return _fog_texture
 
@@ -377,14 +377,16 @@ func _draw_map() -> void:
 		_canvas.draw_string(font, Vector2(0, VIEW * 0.5), msg, HORIZONTAL_ALIGNMENT_CENTER, VIEW, 16, INK)
 		return
 	_draw_zone_texture(_texture)
-	_draw_zone_texture(_fog_tex())  # smooth: the fog's edges blur as it's stretched
-	# the frame: an inked border and a compass rose in the corner
-	_canvas.draw_rect(rect.grow(-3), Color(INK, 0.8), false, 2.0)
-	var rose := Vector2(VIEW - 38, 38)
-	_canvas.draw_colored_polygon(PackedVector2Array([rose + Vector2(0, -22), rose + Vector2(5, 0), rose + Vector2(0, 22), rose + Vector2(-5, 0)]), Color(INK, 0.75))
-	_canvas.draw_colored_polygon(PackedVector2Array([rose + Vector2(-22, 0), rose + Vector2(0, 4), rose + Vector2(22, 0), rose + Vector2(0, -4)]), Color(INK, 0.45))
-	_canvas.draw_colored_polygon(PackedVector2Array([rose + Vector2(0, -22), rose + Vector2(5, 0), rose + Vector2(-5, 0)]), Color(0.7, 0.2, 0.12, 0.9))
-	_canvas.draw_string(font, rose + Vector2(-5, -26), "N", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, INK)
+	_draw_shapes()
+	_draw_zone_texture(_fog_tex())  # soft clouds over what you haven't seen
+	# a thin gold frame and a compass rose in the corner
+	_canvas.draw_rect(rect.grow(-1), Color(0.75, 0.6, 0.32, 0.9), false, 1.5)
+	var rose := Vector2(VIEW - 34, 34)
+	_canvas.draw_circle(rose, 17.0, Color(PARCHMENT, 0.75))
+	_canvas.draw_arc(rose, 17.0, 0, TAU, 32, Color(INK, 0.5), 1.0, true)
+	_canvas.draw_colored_polygon(PackedVector2Array([rose + Vector2(0, -14), rose + Vector2(4, 0), rose + Vector2(0, 14), rose + Vector2(-4, 0)]), Color(INK, 0.7))
+	_canvas.draw_colored_polygon(PackedVector2Array([rose + Vector2(0, -14), rose + Vector2(4, 0), rose + Vector2(-4, 0)]), Color(0.78, 0.22, 0.14))
+	_canvas.draw_string(font, rose + Vector2(-4, -20), "N", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
 	# marks, only where you've been (exits always: you know where the passes are)
 	for i in _marks.size():
 		var m: Array = _marks[i]
@@ -394,23 +396,32 @@ func _draw_map() -> void:
 		var p := _to_view(world)
 		var col := _mark_color(str(m[0]))
 		var big := i == _highlight
-		var r := 9.0 if big else 6.5
-		if m[0] == "exit":
-			_canvas.draw_colored_polygon(PackedVector2Array([p + Vector2(0, -r), p + Vector2(r, 0), p + Vector2(0, r), p + Vector2(-r, 0)]), col)
+		var r := 10.0 if big else 7.5
+		if m[0] == "exit":  # a chevron pointing out of the zone
+			var out := (world - Vector2.ZERO).normalized()
+			var side := Vector2(-out.y, out.x)
+			var tip := p + out * 7.0
+			var chevron := PackedVector2Array([tip, p - out * 5.0 + side * 7.0, p - out * 1.0, p - out * 5.0 - side * 7.0])
+			_canvas.draw_colored_polygon(chevron + PackedVector2Array(), Color(0, 0, 0, 0.25))
+			_canvas.draw_colored_polygon(chevron, col)
 		elif m[0] == "landmark":
-			_canvas.draw_circle(p, r * 0.55, Color(INK, 0.85))
-		else:
-			_canvas.draw_circle(p, r, Color(PARCHMENT, 0.95))
-			_canvas.draw_arc(p, r, 0, TAU, 20, col, 1.6)
+			_canvas.draw_circle(p + Vector2(0, 1.5), 4.5, Color(0, 0, 0, 0.2))
+			_canvas.draw_circle(p, 4.0, Color(INK, 0.85))
+			_canvas.draw_circle(p, 1.6, Color(PARCHMENT, 0.9))
+		else:  # a pin: soft shadow, a light disc, a colored ring, the glyph
+			_canvas.draw_circle(p + Vector2(0, 2), r + 1.0, Color(0, 0, 0, 0.22))
+			_canvas.draw_circle(p, r, Color(1, 0.98, 0.93))
+			_canvas.draw_arc(p, r - 1.0, 0, TAU, 24, col, 2.2, true)
 			var g := _glyph(str(m[0]))
-			_canvas.draw_string(font, p + Vector2(-4, 4), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, col)
+			var gw := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+			_canvas.draw_string(font, p + Vector2(-gw * 0.5, 4.5), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, col)
 		if big or m[0] in ["exit", "landmark"]:
 			var label: String = m[2]
 			var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
-			var at := p + Vector2(-w * 0.5, -r - 4)
-			at.x = clampf(at.x, 4, VIEW - w - 4)
-			at.y = clampf(at.y, 14, VIEW - 4)
-			_canvas.draw_string_outline(font, at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color(PARCHMENT, 0.9))
+			var at := p + Vector2(-w * 0.5, -r - 5)
+			at.x = clampf(at.x, 6, VIEW - w - 6)
+			at.y = clampf(at.y, 16, VIEW - 6)
+			_canvas.draw_string_outline(font, at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 4, Color(1, 0.97, 0.9, 0.85))
 			_canvas.draw_string(font, at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK if not big else col)
 	# your group and your pet
 	for g: Dictionary in player.group:
@@ -431,6 +442,46 @@ func _draw_map() -> void:
 	var arrow := PackedVector2Array([me + dir * 11.0, me - dir * 7.0 + side * 7.0, me - dir * 3.0, me - dir * 7.0 - side * 7.0])
 	_canvas.draw_colored_polygon(arrow, Color(0.75, 0.12, 0.08))
 	_canvas.draw_polyline(arrow + PackedVector2Array([arrow[0]]), Color(PARCHMENT, 0.9), 1.5)
+
+
+## Water, roads and decks as smooth shapes from the zone's own data, so their
+## edges stay sharp at any zoom.
+func _draw_shapes() -> void:
+	var k := VIEW / _span  # pixels per meter
+	for lake: Dictionary in _zone._lakes:
+		var shore := PackedVector2Array()
+		for pt: Vector2 in lake["shore"]:
+			shore.append(_to_view(pt))
+		_canvas.draw_colored_polygon(shore, WATER)
+		_canvas.draw_polyline(shore + PackedVector2Array([shore[0]]), WATER.darkened(0.3), 1.5, true)
+		for isl: Array in lake.get("islands", []):
+			_canvas.draw_circle(_to_view(isl[0]), float(isl[1]) * k, PARCHMENT.lerp(Color(0.55, 0.62, 0.4), 0.35))
+	for river: Dictionary in _zone._rivers:
+		var line := PackedVector2Array()
+		for pt: Vector2 in river["points"]:
+			line.append(_to_view(pt))
+		var w := maxf(2.0, float(river["width"]) * k)
+		if river["dry"]:
+			_canvas.draw_polyline(line, Color(0.62, 0.5, 0.36, 0.7), w, true)
+		else:
+			_canvas.draw_polyline(line, WATER.darkened(0.25), w + 1.5, true)
+			_canvas.draw_polyline(line, WATER, w, true)
+	for road: Dictionary in _zone._roads:
+		var line := PackedVector2Array()
+		for pt: Vector2 in road["points"]:
+			line.append(_to_view(pt))
+		var w := maxf(2.2, float(road["width"]) * k)
+		_canvas.draw_polyline(line, ROAD.darkened(0.2), w + 1.0, true)
+		_canvas.draw_polyline(line, ROAD.lightened(0.15), w * 0.55, true)
+	for deck: Array in _zone._decks:
+		var xf: Transform3D = deck[0]
+		var hs: Vector2 = deck[1]
+		var corners := PackedVector2Array()
+		for c: Vector2 in [Vector2(-hs.x, -hs.y), Vector2(hs.x, -hs.y), Vector2(hs.x, hs.y), Vector2(-hs.x, hs.y)]:
+			var w3 := xf * Vector3(c.x, 0, c.y)
+			corners.append(_to_view(Vector2(w3.x, w3.z)))
+		_canvas.draw_colored_polygon(corners, WOOD)
+		_canvas.draw_polyline(corners + PackedVector2Array([corners[0]]), WOOD.darkened(0.3), 1.0, true)
 
 
 func _canvas_input(ev: InputEvent) -> void:
