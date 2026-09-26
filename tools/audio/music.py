@@ -251,6 +251,13 @@ TRACKS = {
 		"melody": "flute", "arp": "lute", "arp_pattern": [0, 2, 1], "pad": True, "bass": True,
 		"drum": [0], "drum_sections": ["B"], "reverb": 2.2, "sparse": 0.2, "bells": 0.1,
 	},
+	"sunward_steps": {
+		"key": (62, "mixolydian"), "bpm": 72, "beats": 4, "seed": 163,
+		"sections": {"A": [0, 4, 3, 0], "B": [5, 3, 6, 4], "C": [0, 3, 4, 4]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "horn", "arp": "harp", "arp_pattern": [0, 2, 4, 2, 1, 2, 4, 2], "pad": True, "bass": True,
+		"drum": [0, 2], "drum_sections": ["B", "C"], "reverb": 3.4, "sparse": 0.25, "bells": 0.35,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},

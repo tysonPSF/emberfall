@@ -254,5 +254,67 @@
     "faction": {
       "emberhold": 10
     }
+  },
+  "tokens_of_the_fallen": {
+    "name": "Tokens of the Fallen",
+    "giver": "pilgrim_mother",
+    "start_keyword": "tokens",
+    "wants": {
+      "pilgrim_token": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 300
+    },
+    "first_reward_item": "pilgrims_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Tokens of the Fallen. Bring Pilgrim-Mother Ysolde four pilgrims' tokens.",
+    "ready_text": "Four tokens. Four names I can say at the dawn rite. Give them here, {name}.",
+    "complete_text": "The Dawn-Tusk remembers them now. Take this, for the road.",
+    "first_complete_text": "And my boots. They climbed every step of the way up; let them climb the rest with you.",
+    "faction": {
+      "dawn_pilgrims": 15
+    }
+  },
+  "the_unrisen": {
+    "name": "The Unrisen",
+    "giver": "pilgrim_mother",
+    "start_keyword": "scarab",
+    "wants": {
+      "sun_scarab": 1
+    },
+    "reward": {
+      "xp": 7500,
+      "coin": 900
+    },
+    "first_reward_item": "dawn_tusk_pendant",
+    "accept_text": "You have taken on a task: The Unrisen. Bring Pilgrim-Mother Ysolde the golden scarab of Sahkrin, who rises at night in the Pilgrims' Rest.",
+    "ready_text": "His scarab. It's warm, even now. Give it to me, {name}.",
+    "complete_text": "Sleep, Sahkrin. The sun you promised them came up without you.",
+    "first_complete_text": "The Dawn-Tusk's pendant. Wear it into the light.",
+    "faction": {
+      "dawn_pilgrims": 30
+    }
+  },
+  "the_false_sun": {
+    "name": "The False Sun",
+    "giver": "quartermaster_dov",
+    "start_keyword": "hierophant",
+    "wants": {
+      "hierophants_mask": 1,
+      "cult_sigil": 3
+    },
+    "reward": {
+      "xp": 7500,
+      "coin": 1000
+    },
+    "first_reward_item": "sunbreaker",
+    "accept_text": "You have taken on a task: The False Sun. Bring Dov the Hierophant's mask and three False-Sun sigils.",
+    "ready_text": "That's his mask, all right, and their sigils. Hand them over, {name}.",
+    "complete_text": "The pilgrims will sleep easier. So will I.",
+    "first_complete_text": "Sunbreaker. I've kept it for someone who'd earn it. That's you.",
+    "faction": {
+      "dawn_pilgrims": 25
+    }
   }
 }

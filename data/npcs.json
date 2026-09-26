@@ -628,5 +628,100 @@
       "sneak": "Slow and quiet. Hidden and moving, you choose the fight, and the first blade goes in their back. That first strike from the dark hits twice as hard. Remember it.",
       "unknown": "Couldn't say, {name}. Buy a drink and ask the keeper."
     }
+  },
+  "pilgrim_mother": {
+    "name": "Pilgrim-Mother Ysolde",
+    "title": "Priestess of the Dawn-Tusk",
+    "level": 24,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "The Dawn-Tusk sees you, {name}. Few climb the Steps any more: the [shrines] above are guarded, and too many [pilgrims] never came down.",
+      "shrines": "Prabhagaj raised the sun in his trunk on the first morning, and his priests built a shrine on every step of the climb. The [guardians] they carved still keep them, and no longer know a pilgrim from a thief.",
+      "guardians": "Stone given a purpose and no judgment. At the Great Temple on the highest step stands the Dawn Colossus. Nothing living has passed it in a hundred years.",
+      "pilgrims": "They died on the climb and the sun dried them where they fell. Now they walk the old graveyard, the [Pilgrims' Rest], and their [tokens] are all that's left of who they were. Bring me four and I'll say their names at the dawn rite.",
+      "tokens": "Four pilgrims' tokens, {name}, as many times as you find them. The first time, take the boots I walked up here in; I won't be walking down.",
+      "pilgrims' rest": "The graveyard northwest of here. By day the dead are few. At night their high priest, [Sahkrin], rises among them.",
+      "sahkrin": "He led them up the Steps and promised them the sunrise. He's still leading them. Bring me his [scarab] and let them rest.",
+      "scarab": "A golden scarab he carried on his breast. Bring it to me and I'll give you the Dawn-Tusk's own pendant.",
+      "unknown": "I only know the Steps, {name}. Ask Dov about anything that can be bought."
+    }
+  },
+  "quartermaster_dov": {
+    "name": "Dov",
+    "title": "Waystation Quartermaster",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "dawn_pilgrims",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "smoked_mereperch",
+        "leather_backpack",
+        "leather_boots",
+        "leather_gloves",
+        "iron_short_sword",
+        "iron_dagger"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Supplies up the Steps cost double, {name}; blame the [cult]. Press G if you're buying.",
+      "cult": "Fanatics in orange on the south terraces, worshipping a sun of their own making. They burn pilgrims who won't bow. Their leader, the [Hierophant], wears a mask like a burning sun.",
+      "hierophant": "Hierophant Vaur. Bring me that mask of his and three of their sigils, so the pilgrims know he's gone, and you can have the axe I've been saving for someone worth it.",
+      "unknown": "Couldn't say. Ask the Pilgrim-Mother."
+    }
+  },
+  "dawnwatch_sentry": {
+    "name": "Dawnwatch Sentry",
+    "title": "Pilgrims of the Dawn",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "Keep to the road, {name}. I walk from the stone to the first terrace; if anything follows you down, run to me.",
+      "unknown": "Ask the Pilgrim-Mother."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the pilgrims!",
+        "Back up the Steps with you!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

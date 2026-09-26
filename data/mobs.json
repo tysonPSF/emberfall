@@ -1992,5 +1992,394 @@
       "chance": 0.15,
       "text": "%s's touch carries %s!"
     }
+  },
+  "mountain_ram": {
+    "name": "a mountain ram",
+    "level": [
+      14,
+      16
+    ],
+    "hp_base": 90,
+    "hp_per_level": 18,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.9,
+    "ac": 24,
+    "speed": 6.6,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "butt",
+      "butts"
+    ],
+    "shape": "beetle",
+    "color": "#d8c8a0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ram_horn",
+        "chance": 0.45
+      },
+      {
+        "item": "ram_fleece",
+        "chance": 0.35
+      }
+    ],
+    "model": "mountain_ram"
+  },
+  "sunhawk": {
+    "name": "a sunhawk",
+    "level": [
+      15,
+      18
+    ],
+    "hp_base": 80,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 18,
+    "attack_delay": 2.4,
+    "ac": 22,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#b08040",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sunhawk_feather",
+        "chance": 0.55
+      }
+    ],
+    "model": "sunhawk"
+  },
+  "stone_guardian": {
+    "name": "a stone guardian",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 3.2,
+    "ac": 38,
+    "speed": 4.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#b8a888",
+    "scale": 1.1,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sunstone_shard",
+        "chance": 0.45
+      }
+    ],
+    "model": "stone_guardian"
+  },
+  "stone_colossus": {
+    "name": "the Dawn Colossus",
+    "level": [
+      18,
+      18
+    ],
+    "hp_base": 2400,
+    "hp_per_level": 0,
+    "dmg_min": 16,
+    "dmg_max": 34,
+    "attack_delay": 3.4,
+    "ac": 50,
+    "speed": 4.8,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#b8a888",
+    "scale": 1.35,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sunstone_shard",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "dawnguard_shield",
+        "chance": 0.5
+      }
+    ],
+    "model": "stone_colossus",
+    "named": true,
+    "xp_bonus": 2.8
+  },
+  "sun_mummy": {
+    "name": "a sun-scorched pilgrim",
+    "level": [
+      14,
+      17
+    ],
+    "hp_base": 90,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.8,
+    "ac": 22,
+    "speed": 5.2,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#e0d0b0",
+    "scale": 1.0,
+    "coin": [
+      10,
+      40
+    ],
+    "loot": [
+      {
+        "item": "linen_wrappings",
+        "chance": 0.5
+      },
+      {
+        "item": "pilgrim_token",
+        "chance": 0.35
+      }
+    ],
+    "model": "sun_mummy",
+    "spawn_anim": "Spawn_Ground",
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.12,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "mummy_priest": {
+    "name": "Sahkrin the Unrisen",
+    "level": [
+      18,
+      18
+    ],
+    "hp_base": 2000,
+    "hp_per_level": 0,
+    "dmg_min": 14,
+    "dmg_max": 30,
+    "attack_delay": 2.8,
+    "ac": 40,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "skeleton",
+    "color": "#e0d0b0",
+    "scale": 1.25,
+    "coin": [
+      150,
+      420
+    ],
+    "loot": [
+      {
+        "item": "sun_scarab",
+        "chance": 1.0
+      },
+      {
+        "item": "pilgrim_token",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      },
+      {
+        "item": "unrisen_wrap",
+        "chance": 0.4
+      }
+    ],
+    "model": "mummy_priest",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 2.6,
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.2,
+      "text": "%s's curse carries %s!"
+    }
+  },
+  "sun_cultist": {
+    "name": "a cultist of the false sun",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 80,
+    "hp_per_level": 16,
+    "dmg_min": 7,
+    "dmg_max": 16,
+    "attack_delay": 2.8,
+    "ac": 20,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": true,
+    "faction": "sun_cult",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#d88a2a",
+    "scale": 1.0,
+    "coin": [
+      25,
+      80
+    ],
+    "loot": [
+      {
+        "item": "cult_sigil",
+        "chance": 0.5
+      }
+    ],
+    "model": "sun_cultist",
+    "proc": {
+      "spell": "sunfire",
+      "chance": 0.12,
+      "text": "%s calls down %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "cult_weapons"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.12,
+        "table": "cult_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.06,
+        "table": "rings"
+      }
+    ]
+  },
+  "cult_hierophant": {
+    "name": "Hierophant Vaur",
+    "level": [
+      18,
+      18
+    ],
+    "hp_base": 2100,
+    "hp_per_level": 0,
+    "dmg_min": 14,
+    "dmg_max": 30,
+    "attack_delay": 2.8,
+    "ac": 38,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sun_cult",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#b8401a",
+    "scale": 1.2,
+    "coin": [
+      200,
+      500
+    ],
+    "loot": [
+      {
+        "item": "hierophants_mask",
+        "chance": 1.0
+      },
+      {
+        "item": "cult_sigil",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "cult_hierophant",
+    "named": true,
+    "xp_bonus": 2.6,
+    "proc": {
+      "spell": "sunfire",
+      "chance": 0.22,
+      "text": "%s calls down %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "cultist_staff"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.6,
+        "item": "sunburnt_robe"
+      }
+    ]
   }
 }

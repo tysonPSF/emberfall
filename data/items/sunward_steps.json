@@ -1,0 +1,155 @@
+{
+  "ram_horn": {
+    "name": "Curled Ram Horn",
+    "value": 55,
+    "stack": 20
+  },
+  "ram_fleece": {
+    "name": "Ram Fleece",
+    "value": 40,
+    "stack": 20
+  },
+  "sunhawk_feather": {
+    "name": "Sunhawk Feather",
+    "value": 60,
+    "stack": 100
+  },
+  "sunstone_shard": {
+    "name": "Sunstone Shard",
+    "value": 75,
+    "stack": 100
+  },
+  "linen_wrappings": {
+    "name": "Sun-bleached Wrappings",
+    "value": 35,
+    "stack": 20
+  },
+  "pilgrim_token": {
+    "name": "Pilgrim's Token",
+    "value": 45,
+    "stack": 20
+  },
+  "cult_sigil": {
+    "name": "False-Sun Sigil",
+    "value": 50,
+    "stack": 20
+  },
+  "sun_scarab": {
+    "name": "The Unrisen Scarab",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "hierophants_mask": {
+    "name": "The Hierophant's Mask",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "cultist_staff": {
+    "name": "Cultist's Staff",
+    "slot": "primary",
+    "dmg": 10,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "wis": 2,
+    "int": 2,
+    "mana": 15,
+    "value": 900,
+    "rec_level": 14
+  },
+  "sunburnt_robe": {
+    "name": "Sunburnt Robe",
+    "slot": "chest",
+    "ac": 8,
+    "wis": 2,
+    "int": 2,
+    "mana": 15,
+    "value": 800,
+    "rec_level": 14,
+    "wear": "patchwork_tunic"
+  },
+  "dawnguard_shield": {
+    "name": "Dawnguard Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 13,
+    "sta": 4,
+    "hp": 30,
+    "model": "shield_badge",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 4200,
+    "rec_level": 17
+  },
+  "unrisen_wrap": {
+    "name": "Unrisen Wrap",
+    "slot": "waist",
+    "ac": 5,
+    "wis": 3,
+    "int": 3,
+    "mana": 25,
+    "value": 2600,
+    "rec_level": 16,
+    "wear": "rope_belt"
+  },
+  "pilgrims_boots": {
+    "name": "Pilgrim's Walking Boots",
+    "slot": "feet",
+    "ac": 6,
+    "sta": 2,
+    "agi": 2,
+    "value": 900,
+    "rec_level": 14,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "dawn_tusk_pendant": {
+    "name": "Dawn-Tusk Pendant",
+    "slot": "neck",
+    "ac": 3,
+    "wis": 3,
+    "int": 3,
+    "hp": 20,
+    "mana": 20,
+    "value": 3200,
+    "rec_level": 16,
+    "no_drop": true,
+    "lore": true
+  },
+  "sunbreaker": {
+    "name": "Sunbreaker",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 3.0,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "sta": 2,
+    "value": 4000,
+    "rec_level": 17,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue",
+      "cleric"
+    ],
+    "proc": {
+      "spell": "sunfire",
+      "chance": 0.06
+    }
+  }
+}

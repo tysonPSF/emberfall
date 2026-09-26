@@ -39,6 +39,8 @@ var hate: Dictionary = {}  # entity_id -> float (used by mobs)
 var buffs: Dictionary = {}  # spell_id -> {left, stats: {ac, hp, dmg}}
 var dots: Array = []  # [{spell, caster_id, damage, ticks, next}]
 var root_left := 0.0  # seconds this entity can't move
+var snare_left := 0.0  # seconds at half speed (Frost Snare)
+var stun_left := 0.0  # seconds unable to move or fight (Blind)
 var hidden := false  # a rogue's Hide: unseen by monsters (and other players) until it breaks
 var sneaking := false  # a rogue's Sneak: half speed, and walking keeps Hide
 

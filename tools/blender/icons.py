@@ -28,7 +28,7 @@ from mathutils import Matrix, Vector
 sys.path.insert(0, os.path.dirname(__file__))
 import gear  # noqa: E402
 import props  # noqa: E402
-from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, WATER,  # noqa: E402
+from props import (BONE, CLOTH_RED, CLOTH_WHITE, EMBER, GOLD, HIDE, IRON, LEAF, Prop, RUNE, STONE_DARK, STONE_WARM, WATER,  # noqa: E402
 				   STONE_LIGHT, WOOD, WOOD_GRAY)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -500,6 +500,97 @@ def harvest_band():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Sunward Steps
+
+def ram_horn():
+	p = Prop("ram_horn", 305)
+	pts = []
+	for k in range(9):  # a curling spiral
+		a = k * 0.8
+		r = 0.5 - k * 0.04
+		pts.append((math.cos(a) * r, 0, 0.55 + math.sin(a) * r))
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.17 - i * 0.015, 0.155 - i * 0.015, BONE, sides=7, grad=(0.1, 0.7))
+	return p.build()
+
+
+def ram_fleece():
+	p = Prop("ram_fleece", 307)
+	for k in range(9):
+		p.blob((0.4, 0.35, 0.22), (math.cos(k * 2.1) * 0.35 * (k % 3) / 2.0, math.sin(k * 2.1) * 0.3 * (k % 3) / 2.0, 0.12), CLOTH_WHITE, segs=(8, 5), grad=(0.1, 0.6))
+	return p.build()
+
+
+def sunhawk_feather():
+	p = Prop("sunhawk_feather", 309)
+	p.seg((0, 0, 0), (0.1, 0, 1.1), 0.03, 0.01, WOOD, sides=4)
+	p.poly([(0.02, 0, 0.25), (0.35, 0, 0.55), (0.28, 0, 1.0), (0.1, 0, 1.12), (-0.18, 0, 0.8), (-0.12, 0, 0.35)], [(0, 1, 2, 3, 4, 5)], GOLD, grad=(0.0, 0.8))
+	p.box((0.3, 0.02, 0.15), (0.12, 0, 1.0), EMBER)
+	return p.build()
+
+
+def sunstone_shard():
+	p = Prop("sunstone_shard", 311)
+	p.seg((0, 0, 0), (0.1, 0, 0.9), 0.3, 0.0, GOLD, sides=5, glow=1.4)
+	p.seg((0.25, 0.1, 0), (0.35, 0.1, 0.5), 0.18, 0.0, GOLD, sides=5, glow=1.2)
+	return p.build()
+
+
+def linen_wrappings():
+	p = Prop("linen_wrappings", 313)
+	for k in range(4):
+		p.seg((-0.4, 0, 0.1 + k * 0.14), (0.4, 0, 0.14 + k * 0.14), 0.12, 0.12, CLOTH_WHITE, sides=8, grad=(0.2, 0.7))
+	p.box((0.12, 0.3, 0.7), (0.45, 0, 0.2), CLOTH_WHITE, rot=(0, 20, 0))  # a loose end
+	return p.build()
+
+
+def pilgrim_token():
+	p = Prop("pilgrim_token", 315)
+	p.seg((0, -0.05, 0.45), (0, 0.05, 0.45), 0.42, 0.42, STONE_WARM, sides=14)
+	p.seg((0, -0.08, 0.45), (0, -0.1, 0.45), 0.2, 0.2, GOLD, sides=12, glow=0.4)
+	p.seg((0, 0, 0.9), (0, 0, 1.1), 0.04, 0.04, WOOD_GRAY, sides=4)
+	return p.build()
+
+
+def cult_sigil():
+	p = Prop("cult_sigil", 317)
+	p.seg((0, -0.04, 0.5), (0, 0.04, 0.5), 0.3, 0.3, CLOTH_RED, sides=12)
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.3, 0, 0.5 + math.sin(a) * 0.3), (math.cos(a) * 0.55, 0, 0.5 + math.sin(a) * 0.55), 0.07, 0.0, EMBER, sides=3)
+	return p.build()
+
+
+def sun_scarab():
+	p = Prop("sun_scarab", 319)
+	p.blob((0.7, 0.9, 0.35), (0, 0, 0.18), GOLD, segs=(10, 6), glow=0.6)
+	p.blob((0.4, 0.3, 0.25), (0, -0.5, 0.18), GOLD, segs=(8, 5), glow=0.4)
+	p.box((0.03, 0.8, 0.02), (0, 0.05, 0.36), STONE_DARK)
+	for s_ in (-1, 1):
+		for k in range(3):
+			p.seg((s_ * 0.3, -0.2 + k * 0.25, 0.1), (s_ * 0.55, -0.25 + k * 0.3, 0.0), 0.04, 0.03, GOLD, sides=4)
+	return p.build()
+
+
+def hierophants_mask():
+	p = Prop("hierophants_mask", 321)
+	p.blob((0.7, 0.2, 0.85), (0, 0, 0.55), GOLD, segs=(10, 8), glow=0.5)
+	for s_ in (-1, 1):
+		p.blob((0.14, 0.1, 0.1), (s_ * 0.16, -0.1, 0.62), STONE_DARK, segs=(6, 4))
+	for k in range(12):
+		a = k * math.tau / 12
+		p.seg((math.cos(a) * 0.42, 0.02, 0.55 + math.sin(a) * 0.48), (math.cos(a) * 0.72, 0.02, 0.55 + math.sin(a) * 0.8), 0.06, 0.0, EMBER, sides=3)
+	return p.build()
+
+
+def dawn_tusk_pendant():
+	p = Prop("dawn_tusk_pendant", 323)
+	_cord(p, 0.5, 0.75, GOLD)
+	p.seg((0, -0.3, 0.55), (0.15, -0.34, 0.1), 0.1, 0.02, BONE, sides=6)  # a tusk
+	p.seg((0, -0.32, 0.62), (0, -0.36, 0.62), 0.16, 0.16, GOLD, sides=12, glow=0.6)  # and a small sun
+	return p.build()
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
@@ -508,7 +599,9 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet,
 									 mire_toad_skin, leech_teeth, turtle_shell_plate, mirescale_scale, waterlogged_locket,
 									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings,
-									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band]}
+									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band,
+									 ram_horn, ram_fleece, sunhawk_feather, sunstone_shard, linen_wrappings, pilgrim_token, cult_sigil,
+									 sun_scarab, hierophants_mask, dawn_tusk_pendant]}
 
 
 # ---------------------------------------------------------------- rendering

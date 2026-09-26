@@ -222,6 +222,8 @@
     "lizard_shaman_weapons": {"reed_wand": 2, "oak_staff": 1},
     "ssrakka_weapon": {"ssrakkas_glaive": 1},
     "drowned_weapons": {"iron_short_sword": 2, "iron_dagger": 2, "iron_hand_axe": 1},
-    "brigand_weapons": {"rusty_short_sword": 3, "rusty_dagger": 2, "iron_dagger": 2, "iron_short_sword": 1}
+    "brigand_weapons": {"rusty_short_sword": 3, "rusty_dagger": 2, "iron_dagger": 2, "iron_short_sword": 1},
+    "cult_weapons": {"cultist_staff": 1, "iron_dagger": 2, "oak_staff": 2},
+    "cult_chest": {"sunburnt_robe": 1, "patchwork_tunic": 2}
   }
 }

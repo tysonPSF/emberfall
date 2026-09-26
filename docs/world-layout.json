@@ -5,6 +5,7 @@
   "greenmoor",
   "harrowfield",
   "hollowmere",
+  "sunward_steps",
   "thornwood"
  ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
@@ -160,8 +161,8 @@
     2
    ],
    "kind": "terrace",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

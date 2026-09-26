@@ -39,7 +39,8 @@
     "default": -1500,
     "on_kill": {
       "watch": 2,
-      "hollowfolk": 2
+      "hollowfolk": 2,
+      "dawn_pilgrims": 2
     }
   },
   "bloodtusk": {
@@ -81,6 +82,29 @@
       "brigands": -10,
       "emberhold": 4,
       "watch": 3
+    }
+  },
+  "guardians": {
+    "name": "Temple Guardians",
+    "default": -1500
+  },
+  "sun_cult": {
+    "name": "Cult of the False Sun",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "sun_cult": -10,
+      "dawn_pilgrims": 5
+    }
+  },
+  "dawn_pilgrims": {
+    "name": "Pilgrims of the Dawn",
+    "default": 100,
+    "on_kill": {
+      "dawn_pilgrims": -200
+    },
+    "on_attack": {
+      "dawn_pilgrims": -50
     }
   }
 }
