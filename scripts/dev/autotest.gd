@@ -76,6 +76,8 @@ const SECTIONS := [
 	["harrowfield", "harrowfield"],
 	["harrowfield_life", "harrowfield"],
 	["sign_fit", "hollowmere"],
+	["nav_bake", "greenmoor"],
+	["nav_chase", "harrowfield"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2827,3 +2829,78 @@ func _t_sign_fit() -> void:
 				await _shot("9zn_sign_%s_%d_%s" % [zone_id, int(at.x), "front" if side > 0 else "back"])
 			break
 	World.time_override = -1.0
+
+
+## Navigation: every zone bakes its walkable map, and a path through
+## Greenmoor's obelisk ring goes round the stones.
+func _t_nav_bake() -> void:
+	var main := get_parent()
+	for zone_id: String in ["greenmoor", "thornwood", "hollowmere", "harrowfield", "emberhold"]:
+		await _ensure_zone(zone_id)
+		var z: Zone = main.zone
+		for k in 120:
+			if z.nav_ready:
+				break
+			await _wait(0.25)
+		print("nav_bake: %s ready %s" % [zone_id, z.nav_ready])
+		if zone_id == "greenmoor" and z.nav_ready:
+			await _wait(0.3)
+			var map := z.get_world_3d().navigation_map
+			var a := z.ground(0, -14)
+			var b := z.ground(0, 14)
+			var path := NavigationServer3D.map_get_path(map, a, b, true)
+			var nearest := INF
+			var length := 0.0
+			for i in path.size():
+				nearest = minf(nearest, Vector2(path[i].x, path[i].z).length())
+				if i > 0:
+					length += path[i].distance_to(path[i - 1])
+			print("nav_bake: path through the obelisk ring: %d points, %.1f m (straight 28 m), closest to the obelisk %.1f m" % [path.size(), length, nearest])
+		if z.nav_ready:
+			var map2 := z.get_world_3d().navigation_map
+			var t0 := Time.get_ticks_usec()
+			for k in 200:
+				var a2 := z.ground(randf_range(-100, 100), randf_range(-100, 100))
+				NavigationServer3D.map_get_path(map2, a2, a2 + Vector3(randf_range(-15, 15), 0, randf_range(-15, 15)), true)
+			var short := float(Time.get_ticks_usec() - t0) / 200.0
+			t0 = Time.get_ticks_usec()
+			for k in 50:
+				NavigationServer3D.map_get_path(map2, z.ground(randf_range(-100, 100), randf_range(-100, 100)), z.ground(randf_range(-100, 100), randf_range(-100, 100)), true)
+			print("nav_bake: %s path query: %.0f us for a 15 m hop, %.0f us across the zone" % [zone_id, short, float(Time.get_ticks_usec() - t0) / 50.0])
+
+
+## A boar outside a fenced field goes round to the gate to reach you inside,
+## instead of pushing at the fence; the same chase with pathfinding off, to compare.
+func _t_nav_chase() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	for k in 80:
+		if z.nav_ready:
+			break
+		await _wait(0.25)
+	p.level = 30
+	p.recalc_stats()
+	for on: bool in [true, false]:
+		Entity.nav_enabled = on
+		var boar: Mob = _nearest_mob(p, "wild_boar")
+		for m in World.get_mobs():
+			m.hate.clear()
+		p.hp = p.max_hp
+		p.global_position = z.ground(85, -30) + Vector3.UP  # the middle of the east field (gate on its north side)
+		boar.global_position = z.ground(88, 2) + Vector3.UP  # outside its south fence
+		boar.home = boar.global_position
+		boar.state = Mob.State.IDLE
+		await _wait(0.3)
+		boar.add_hate(p, 50.0)
+		var reached := -1.0
+		for k in 60:
+			await _wait(0.25)
+			if is_instance_valid(boar) and boar.distance_to(p) <= World.melee_range() + 0.5:
+				reached = k * 0.25
+				break
+		print("nav_chase: pathfinding %s: the boar %s" % ["on" if on else "off", ("reached you in %.1f s" % reached) if reached >= 0.0 else "never reached you in 15 s (stuck at %s)" % Vector2(boar.global_position.x, boar.global_position.z)])
+		if is_instance_valid(boar):
+			boar.hate.clear()
+			boar.state = Mob.State.RETURN
+	Entity.nav_enabled = true

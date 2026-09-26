@@ -28,6 +28,7 @@ var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
 var _fields: Array = []  # [Transform3D (center, facing), half size Vector2]: fenced crops, kept clear of trees and grass
+var nav_ready := false  # the navigation mesh is baked (Zone._bake_navigation)
 var _decks: Array = []  # [Transform3D (center, deck top), half size Vector2]: boardwalks you stand on over the water
 var _lakes: Array = []  # [{shore: PackedVector2Array, level, depth, shelf, bank, islands: [[Vector2, radius]]}]
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
@@ -95,9 +96,45 @@ func load_zone(id: String) -> void:
 		_build_clutter()
 	_build_road_lamps()
 	if Net.is_authority():  # a client's mobs and npcs come from the server
+		_bake_navigation.call_deferred()
 		_build_spawns()
 		_build_npcs()
 		_build_zone_lines()
+
+
+## Where mobs and guards can walk: a navigation mesh baked from the terrain
+## and every solid prop (the WORLD physics layer), on a background thread, so
+## they path around trees, rocks, walls, fences and huts. Only where the rules
+## run (a client's mobs don't move themselves). Until it's done,
+## Entity.nav_dir walks straight, as before.
+func _bake_navigation() -> void:
+	var nav := NavigationMesh.new()
+	nav.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	nav.geometry_collision_mask = Layers.WORLD
+	nav.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
+	nav.cell_size = NAV_CELL
+	nav.cell_height = 0.2
+	nav.agent_radius = 0.6
+	nav.agent_height = 1.6
+	nav.agent_max_climb = 0.5
+	nav.agent_max_slope = 40.0
+	nav.region_min_size = 4.0
+	nav.edge_max_error = 1.6
+	nav.filter_baking_aabb = AABB(Vector3(-half, -60.0, -half), Vector3(size, 160.0, size))
+	var region := NavigationRegion3D.new()
+	region.name = "Navigation"
+	add_child(region)
+	NavigationServer3D.map_set_cell_size(get_world_3d().navigation_map, NAV_CELL)
+	NavigationServer3D.map_set_cell_height(get_world_3d().navigation_map, 0.2)
+	var source := NavigationMeshSourceGeometryData3D.new()
+	var t0 := Time.get_ticks_msec()
+	NavigationServer3D.parse_source_geometry_data(nav, source, self)
+	var parsed := Time.get_ticks_msec() - t0
+	NavigationServer3D.bake_from_source_geometry_data_async(nav, source, func() -> void:
+		if is_instance_valid(region):
+			region.navigation_mesh = nav
+			nav_ready = true
+			print("zone %s: navigation baked (%d ms parsing, %d ms in all, %d polygons)" % [zone_id, parsed, Time.get_ticks_msec() - t0, nav.get_polygon_count()]))
 
 
 func height_at(x: float, z: float) -> float:
@@ -1612,6 +1649,7 @@ func _ring(center: Vector3, angle: float, radius: float) -> Vector3:
 	return ground(center.x + cos(angle) * radius, center.z + sin(angle) * radius)
 
 
+const NAV_CELL := 0.5  # navigation mesh cell size, meters (also the map's)
 const WINDOW_HEIGHT := 1.6  # the middle of a KayKit window, at our 0.75 scale
 
 ## Yaw that turns a prop's front (+Z) toward the center of a ring it sits on.

@@ -123,7 +123,7 @@ scripts/ui        HUD, title screen, shared UI styling
 ## Roadmap
 
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
-2. ~~Night and darkness~~ (done), more quest givers, mob pathfinding.
+2. ~~Night and darkness~~ and ~~mob pathfinding~~ (done: monsters and guards path around trees, rocks, walls, fences and huts), more quest givers.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
 4. **Multiplayer**: done through EQ grouping (dedicated server, zones side by side, accounts and characters on the server, chat, groups). Later: corpse dragging and consent, raids.
 5. Persistence server (Postgres), accounts, more classes and zones.
