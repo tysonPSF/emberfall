@@ -2880,6 +2880,532 @@ def forge():
 	return join_into(obj, pieces)
 
 
+# ---------------------------------------------------------------- the Necromancers' crypt (Emberhold)
+
+def _skull(p, c, s=1.0, yaw=0.0, swatch=BONE):
+	"""A skull sitting on c, looking along yaw (0 = toward -Y, like a prop's front)."""
+	c = Vector(c)
+	f = Vector((math.sin(yaw), -math.cos(yaw), 0))
+	r = Vector((math.cos(yaw), math.sin(yaw), 0))
+	up = Vector((0, 0, 1))
+	deg = math.degrees(yaw)
+	p.blob((0.2 * s, 0.24 * s, 0.2 * s), c + up * 0.11 * s - f * 0.02 * s, swatch, rot=(0, 0, deg), segs=(8, 6), grad=(0.0, 0.6))
+	p.blob((0.15 * s, 0.1 * s, 0.11 * s), c + f * 0.08 * s + up * 0.06 * s, swatch, rot=(0, 0, deg), segs=(6, 4), grad=(0.1, 0.7))
+	p.box((0.12 * s, 0.08 * s, 0.04 * s), c + f * 0.08 * s + up * 0.02 * s, swatch, rot=(0, 0, deg), grad=(0.2, 0.8))
+	for side in (-1, 1):
+		p.blob((0.055 * s, 0.03 * s, 0.05 * s), c + f * 0.125 * s + r * side * 0.045 * s + up * 0.11 * s, IRON,
+			   rot=(0, 0, deg), segs=(5, 4), grad=(1.0, 1.0))
+	p.blob((0.03 * s, 0.03 * s, 0.035 * s), c + f * 0.135 * s + up * 0.065 * s, IRON, rot=(0, 0, deg), segs=(4, 3), grad=(1.0, 1.0))
+
+
+def _bone(p, a, b, r=0.022):
+	"""A long bone: a shaft with a knuckle at each end."""
+	a, b = Vector(a), Vector(b)
+	p.seg(a, b, r, r * 0.85, BONE, sides=5, grad=(0.0, 0.6))
+	for e in (a, b):
+		p.blob((r * 3.2, r * 3.2, r * 2.6), e, BONE, segs=(5, 4), grad=(0.0, 0.5))
+
+
+def _candle(p, base, h=0.18, r=0.035):
+	"""A wax candle standing on base with a small lit flame; returns the flame's position."""
+	base = Vector(base)
+	top = base + Vector((0, 0, h))
+	p.seg(base, top, r, r * 0.92, CLOTH_WHITE, sides=6, grad=(0.0, 0.45))
+	p.blob((r * 2.6, r * 2.6, r * 0.9), base + Vector((0, 0, 0.012)), CLOTH_WHITE, segs=(6, 3), grad=(0.1, 0.5))  # a drip pool
+	p.seg(top, top + Vector((0, 0, 0.1)), 0.022, 0.0, FLAME, sides=5, grad=(0.1, 0.9), glow=2.2)
+	p.blob((0.03, 0.03, 0.04), top + Vector((0, 0, 0.025)), EMBER, segs=(5, 4), grad=(0.0, 0.3), glow=2.6)
+	return top + Vector((0, 0, 0.05))
+
+
+def _candle_stand(p, x, y, h=1.2):
+	"""A wrought iron candle stand on three feet, one fat candle on its drip pan."""
+	for k in range(3):
+		a = k * math.tau / 3 + 0.3
+		p.seg((x, y, 0.22), (x + math.cos(a) * 0.26, y + math.sin(a) * 0.26, 0.0), 0.02, 0.018, IRON, sides=4, grad=(0.1, 0.8))
+	p.seg((x, y, 0.0), (x, y, h), 0.028, 0.024, IRON, sides=6, grad=(0.1, 0.8))
+	p.seg((x, y, h - 0.02), (x, y, h + 0.03), 0.15, 0.13, IRON, sides=10, grad=(0.0, 0.6))
+	return _candle(p, (x, y, h + 0.03), h=0.22, r=0.05)
+
+
+def _corner_web(p, corner, d1, d2, down, r):
+	"""Cobweb strung across a corner: strands from the corner to an arc through
+	the two walls and down, laced with cross threads."""
+	corner, d1, d2, down = Vector(corner), Vector(d1), Vector(d2), Vector(down)
+	dirs = []
+	for k in range(7):
+		t = k / 6
+		if t <= 0.5:
+			d = d1.lerp(down, t * 2)
+		else:
+			d = down.lerp(d2, (t - 0.5) * 2)
+		dirs.append(d.normalized() * r * p.rng.uniform(0.85, 1.05))
+	for d in dirs:
+		p.seg(corner, corner + d, 0.012, 0.008, CLOTH_WHITE, sides=3, grad=(0.0, 0.3))
+	for frac in (0.3, 0.5, 0.7, 0.9):
+		for a, b in zip(dirs, dirs[1:]):
+			p.seg(corner + a * frac, corner + b * (frac + 0.02), 0.008, 0.008, CLOTH_WHITE, sides=3, grad=(0.0, 0.3))
+
+
+def _bone_pile(p, x, y, radius):
+	"""A heap of bones and skulls swept into a corner, low enough to see over."""
+	p.blob((radius * 2.0, radius * 1.8, 0.3), (x, y, 0.0), STONE_DARK, segs=(10, 5), grad=(0.3, 0.9))
+	for k in range(int(radius * 22)):
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(0, radius * 0.9)
+		cx, cy = x + math.cos(a) * d, y + math.sin(a) * d
+		z = 0.05 + (1 - d / radius) * 0.28
+		b = p.rng.uniform(0, math.tau)
+		ln = p.rng.uniform(0.18, 0.34)
+		lift = p.rng.uniform(-0.08, 0.1)
+		_bone(p, (cx - math.cos(b) * ln, cy - math.sin(b) * ln, z - lift), (cx + math.cos(b) * ln, cy + math.sin(b) * ln, z + lift),
+			  r=p.rng.uniform(0.018, 0.026))
+	for k in range(max(2, int(radius * 4))):
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(0, radius * 0.7)
+		_skull(p, (x + math.cos(a) * d, y + math.sin(a) * d, 0.1 + (1 - d / radius) * 0.2), s=0.95,
+			   yaw=p.rng.uniform(0, math.tau))
+
+
+def _merge_materials(obj):
+	"""Every KayKit piece imports its own copy of the pack's material; point
+	them all at the first so a big joined prop draws in a few surfaces."""
+	mats = obj.data.materials
+	first = {}
+	remap = {}
+	for i, m in enumerate(mats):
+		base = m.name.split(".")[0] if m else ""
+		key = m.name if base.startswith("dungeon") else base   # glows differ in strength: keep those apart
+		remap[i] = first.setdefault(key, i)
+	for poly in obj.data.polygons:
+		poly.material_index = remap[poly.material_index]
+	bpy.ops.object.select_all(action="DESELECT")
+	obj.select_set(True)
+	bpy.context.view_layer.objects.active = obj
+	bpy.ops.object.material_slot_remove_unused()
+	return obj
+
+
+def crypt_entrance():
+	"""The way down to Emberhold's hidden Necromancer guild: a small stone
+	mausoleum, 4.5 m wide and 5.2 m deep (4.4 m of walls plus a pillared
+	portico), 4.5 m to the ridge of its peaked stone roof. It stands on a
+	0.45 m plinth with a ramp up to the portico at the front (-Y, +Z in game).
+
+	The doorway is open, 1.5 m wide and 2.25 m tall, its sill at 0.45 m.
+	Behind it a short landing drops by steps into a black stairwell under a
+	ceiling that slopes down, so it reads as a stair going on down into the
+	dark. The pit's black floor sits at 0.03 m: keep the ground under the
+	building at or below the origin, or grass shows in it. A zone line goes in
+	the doorway: centred on (0, 0.45, 1.6) in game, the opening spans x +/-0.75
+	and z 1.3..1.9. A skull is carved in the pediment over the door and an iron
+	lantern hangs either side of it (glow at about (+/-1.85, 2.2, 2.25) in game).
+	"""
+	p = Prop("crypt_entrance", 181)
+	d = Prop("crypt_entrance_detail", 182)   # skulls and small bits: no bevel
+	plinth = 0.45
+	wall_top = plinth + 2.6
+	# --- plinth, built around the stairwell pit (x +/-1.65, y -1.0..1.9) -------
+	p.box((5.3, 5.8, 0.2), (0, 0.0, 0.1), STONE_DARK, grad=(0.4, 1.0))                 # footing course
+	p.box((4.9, 1.7, plinth), (0, -1.85, plinth / 2), STONE_LIGHT, grad=(0.2, 0.9))    # portico + landing
+	for s in (-1, 1):
+		p.box((0.8, 3.7, plinth), (s * 2.05, 0.85, plinth / 2), STONE_LIGHT, grad=(0.2, 0.9))
+	p.box((3.3, 0.8, plinth), (0, 2.3, plinth / 2), STONE_LIGHT, grad=(0.2, 0.9))
+	# the ramp up to the portico, laid as four slabs so it reads as worn steps
+	y_top, y_foot, rw = -2.7, -4.1, 1.1
+	n = 4
+	for k in range(n):
+		ya = y_foot + (y_top - y_foot) * k / n
+		yb = y_foot + (y_top - y_foot) * (k + 1) / n
+		za, zb = plinth * k / n, plinth * (k + 1) / n
+		p.poly([(-rw, ya, za), (rw, ya, za), (rw, yb, zb), (-rw, yb, zb), (-rw, ya, -0.05), (rw, ya, -0.05), (rw, yb, -0.05), (-rw, yb, -0.05)],
+			   [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)],
+			   STONE_LIGHT if k % 2 else STONE_WARM, grad=(0.1, 0.8))
+	for s in (-1, 1):   # kerbs either side of the ramp
+		p.box((0.35, 1.4, 0.3), (s * (rw + 0.18), (y_top + y_foot) / 2, 0.12), STONE_DARK, grad=(0.2, 0.9))
+		p.box((0.4, 0.4, 0.25), (s * (rw + 0.18), y_foot + 0.2, 0.3), STONE_LIGHT, grad=(0.1, 0.7))
+	# --- the stairwell: a landing, three steps down, then black ----------------
+	for k, (y0, y1, z) in enumerate(((-1.0, -0.65, 0.34), (-0.65, -0.3, 0.23), (-0.3, 0.05, 0.12))):
+		sw, gr = ((STONE_DARK, (0.4, 0.9)), (STONE_DARK, (0.8, 1.0)), (IRON, (0.6, 1.0)))[k]
+		p.box((3.3, y1 - y0, z), (0, (y0 + y1) / 2, z / 2), sw, grad=gr)
+	p.box((3.3, 1.9, 0.06), (0, 0.97, 0.0), IRON, grad=(1.0, 1.0))                     # the dark below
+	for s in (-1, 1):   # the pit's walls, lined dark so the light dies inside
+		p.box((0.06, 3.3, 3.0), (s * 1.6, 0.3, 1.5), IRON, grad=(0.55, 1.0))
+	p.box((3.3, 0.06, 3.0), (0, 1.85, 1.5), IRON, grad=(0.7, 1.0))
+	# a ceiling sloping down over the stair, as if it runs on underground
+	ya, za, yb, zb = -1.3, plinth + 2.25, 1.9, 0.9
+	ang = math.degrees(math.atan2(za - zb, yb - ya))
+	p.box((3.3, math.hypot(yb - ya, za - zb) + 0.1, 0.12), (0, (ya + yb) / 2, (za + zb) / 2), IRON,
+		  rot=(-ang, 0, 0), grad=(0.75, 1.0))
+	# --- door frame, lintel and the portico ---------------------------------
+	door_w, door_h = 1.5, 2.25
+	for s in (-1, 1):
+		p.box((0.22, 0.72, door_h), (s * (door_w / 2 + 0.11), -1.6, plinth + door_h / 2), STONE_LIGHT, grad=(0.1, 0.8))
+	p.box((door_w + 0.7, 0.8, 0.42), (0, -1.6, plinth + door_h + 0.2), STONE_LIGHT, grad=(0.05, 0.7))
+	p.box((door_w + 0.2, 0.2, 0.08), (0, -1.95, plinth + door_h - 0.02), STONE_DARK, grad=(0.3, 0.9))   # drip edge
+	for s in (-1, 1):   # two short pillars carrying the pediment
+		x, y = s * 1.3, -2.35
+		p.box((0.5, 0.5, 0.2), (x, y, plinth + 0.1), STONE_DARK, grad=(0.1, 0.8))
+		p.seg((x, y, plinth + 0.2), (x, y, wall_top - 0.3), 0.2, 0.17, STONE_LIGHT, sides=10, grad=(0.05, 0.85))
+		p.seg((x, y, wall_top - 0.3), (x, y, wall_top - 0.15), 0.19, 0.27, STONE_LIGHT, sides=10, grad=(0.1, 0.7))
+		p.box((0.58, 0.58, 0.16), (x, y, wall_top - 0.08), STONE_DARK, grad=(0.1, 0.7))
+	# frieze: a stone course round the top of the walls and along the portico
+	p.box((4.75, 4.65, 0.3), (0, 0.3, wall_top + 0.15), STONE_DARK, grad=(0.1, 0.8))
+	p.box((4.95, 0.95, 0.3), (0, -2.33, wall_top + 0.15), STONE_DARK, grad=(0.1, 0.8))
+	eave = wall_top + 0.3
+	# --- peaked stone roof: ridge front to back, the pediment facing the door
+	half, rise, y0r, y1r = 2.6, 1.0, -2.95, 2.75
+	slope = math.hypot(half, rise)
+	ang = math.atan2(rise, half)
+	for s in (1, -1):
+		dn = Vector((math.cos(ang) * s, 0, -math.sin(ang)))
+		out = Vector((math.sin(ang) * s, 0, math.cos(ang)))
+		base = Vector((0, (y0r + y1r) / 2, eave + rise))
+		p.box((slope, y1r - y0r, 0.2), base + dn * slope / 2, STONE_DARK, rot=(0, math.degrees(ang) * s, 0), grad=(0.2, 0.9))
+		for i in range(4):   # stone slab courses
+			c = base + dn * slope * (i + 0.55) / 4 + out * 0.13
+			p.box((slope / 4 * 1.12, y1r - y0r + 0.1, 0.1), c, STONE_LIGHT if i % 2 else STONE_WARM,
+				  rot=(0, math.degrees(ang) * s, 0), grad=(0.0, 0.9))
+	p.box((0.34, y1r - y0r + 0.25, 0.22), (0, (y0r + y1r) / 2, eave + rise + 0.12), STONE_DARK, grad=(0.1, 0.7))   # ridge cap
+	for y, t in ((y0r + 0.15, 0.3), (y1r - 0.15, 0.3)):   # pediment front and gable back
+		tri = [(-half + 0.1, eave), (half - 0.1, eave), (0, eave + rise - 0.05)]
+		verts = [(x, y - t / 2, z) for x, z in tri] + [(x, y + t / 2, z) for x, z in tri]
+		p.poly(verts, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], STONE_LIGHT, grad=(0.05, 0.7))
+	for s in (-1, 1):   # a raking cornice on the pediment
+		p.seg((s * (half - 0.05), y0r - 0.02, eave + 0.02), (0, y0r - 0.02, eave + rise + 0.02), 0.09, 0.09, STONE_DARK, sides=4)
+	p.box((half * 2, 0.22, 0.14), (0, y0r - 0.02, eave + 0.02), STONE_DARK, grad=(0.1, 0.7))
+	p.blob((0.2, 0.2, 0.2), (0, y0r + 0.1, eave + rise + 0.12), STONE_DARK, segs=(8, 6))   # finial
+	# --- the skull carved over the door, on crossed bones ---------------------
+	sk = Vector((0, y0r - 0.02, eave + 0.3))
+	for s in (-1, 1):
+		d.seg(sk + Vector((-0.42 * s, -0.02, -0.2)), sk + Vector((0.42 * s, -0.02, 0.36)), 0.045, 0.045, BONE, sides=6, grad=(0.1, 0.7))
+		for e in (Vector((-0.42 * s, -0.02, -0.2)), Vector((0.42 * s, -0.02, 0.36))):
+			d.blob((0.13, 0.1, 0.11), sk + e, BONE, segs=(6, 4), grad=(0.1, 0.6))
+	_skull(d, sk + Vector((0, -0.05, -0.12)), s=2.4, swatch=BONE)
+	# --- iron lanterns either side of the door --------------------------------
+	for s in (-1, 1):
+		x, y, z = s * 1.85, -1.9, 2.55
+		d.seg((x, y + 0.02, z + 0.25), (x, y - 0.38, z + 0.25), 0.03, 0.03, IRON, sides=4, grad=(0.1, 0.7))
+		d.seg((x, y + 0.02, z + 0.02), (x, y - 0.2, z + 0.24), 0.02, 0.02, IRON, sides=4, grad=(0.1, 0.7))
+		d.seg((x, y - 0.35, z + 0.25), (x, y - 0.35, z + 0.08), 0.012, 0.012, IRON, sides=4)
+		lx, ly, lz = x, y - 0.35, z - 0.12
+		d.seg((lx, ly, lz + 0.18), (lx, ly, lz + 0.3), 0.14, 0.03, IRON, sides=4, grad=(0.0, 0.6), twist=45)   # cap
+		d.box((0.24, 0.24, 0.04), (lx, ly, lz + 0.17), IRON, grad=(0.1, 0.6))
+		d.box((0.22, 0.22, 0.05), (lx, ly, lz - 0.17), IRON, grad=(0.1, 0.6))
+		for cx in (-1, 1):
+			for cy in (-1, 1):
+				d.box((0.03, 0.03, 0.34), (lx + cx * 0.1, ly + cy * 0.1, lz), IRON, grad=(0.1, 0.7))
+		d.box((0.17, 0.17, 0.3), (lx, ly, lz), EMBER, glow=3.0, grad=(0.1, 0.4))
+	# --- a little dressing: urns on the kerbs, a bone at the door ---------------
+	for s in (-1, 1):
+		x, y = s * (rw + 0.18), y_foot + 0.2
+		d.seg((x, y, 0.42), (x, y, 0.72), 0.12, 0.2, STONE_DARK, sides=8, grad=(0.1, 0.8))
+		d.seg((x, y, 0.72), (x, y, 0.8), 0.2, 0.14, STONE_DARK, sides=8, grad=(0.0, 0.6))
+		d.seg((x, y, 0.79), (x, y, 0.81), 0.13, 0.13, IRON, sides=8, grad=(1.0, 1.0))
+	_bone(d, (0.7, -2.2, plinth + 0.03), (0.35, -2.45, plinth + 0.04), r=0.025)
+	_skull(d, (-0.95, -2.5, plinth), s=0.9, yaw=0.4)
+	obj = p.build(bevel=0.05)
+	obj = join_into(obj, [d.build()])
+	# --- walls: KayKit's own stone, as in the houses ---------------------------
+	wall_h = wall_top - plinth
+	zs = wall_h / 4.0
+	pieces = []
+	for s in (-1, 1):
+		pieces += kaykit("wall", (s * 1.95, 0.3, plinth), math.pi / 2 * -s, (4.4 / 4.0, 0.6, zs))
+		pieces += kaykit("wall", (s * 1.525, -1.6, plinth), 0.0, (1.45 / 4.0, 0.6, zs))
+	pieces += kaykit("wall", (0, 2.2, plinth), math.pi, (4.5 / 4.0, 0.6, zs))
+	for x in (-2.0, 2.0):
+		for y in (-1.65, 2.25):
+			pieces += kaykit("pillar", (x, y, plinth), 0.0, (0.42, 0.42, zs))
+	return _merge_materials(join_into(obj, pieces))
+
+
+def _niche_row(p, d, start, n, count, pitch, fills, h=0.46, depth=0.3):
+	"""A row of burial niches (loculi) along a wall: a continuous stone sill and
+	lintel with posts between, standing out from the wall around a black back,
+	so each bay reads as a recess. start is the first bay's sill centre on the
+	wall face, n the wall's inward normal; the row runs along n turned left
+	(+90 degrees). fills names what lies in each bay. Returns the flames of the
+	bays holding a candle."""
+	start, n = Vector(start), Vector((n[0], n[1], 0)).normalized()
+	t = Vector((-n.y, n.x, 0))
+	rz = math.degrees(math.atan2(t.y, t.x))
+	up = Vector((0, 0, 1))
+	run = count * pitch
+	mid = start + t * (run / 2 - pitch / 2)
+	p.box((run + 0.12, depth, 0.1), mid + n * depth / 2 - up * 0.05, STONE_LIGHT, rot=(0, 0, rz), grad=(0.05, 0.7))
+	p.box((run + 0.12, depth, 0.12), mid + n * depth / 2 + up * (h + 0.06), STONE_LIGHT, rot=(0, 0, rz), grad=(0.05, 0.7))
+	p.box((run, 0.04, h), mid + n * 0.02 + up * h / 2, IRON, rot=(0, 0, rz), grad=(0.8, 1.0))
+	for i in range(count + 1):
+		p.box((0.12, depth, h), start + t * (i * pitch - pitch / 2) + n * depth / 2 + up * h / 2, STONE_WARM, rot=(0, 0, rz), grad=(0.1, 0.9))
+	yaw = math.atan2(n.x, -n.y)   # skulls look out of the wall
+	flames = []
+	w = pitch - 0.12
+	for i, fill in enumerate(fills[:count]):
+		c = start + t * (i * pitch) + n * (depth * 0.5)
+		if fill == "skull":
+			_skull(d, c + t * d.rng.uniform(-0.2, 0.2), s=1.0, yaw=yaw + d.rng.uniform(-0.3, 0.3))
+			_bone(d, c + t * 0.1 + n * 0.08 + up * 0.03, c + t * 0.42 - n * 0.02 + up * 0.03, r=0.02)
+		elif fill == "skulls":
+			for k, off in enumerate((-0.28, 0.0, 0.28)):
+				_skull(d, c + t * off, s=0.85 if k != 1 else 0.95, yaw=yaw + d.rng.uniform(-0.4, 0.4))
+		elif fill == "bones":
+			for k in range(4):
+				off = (k - 1.5) * 0.06
+				_bone(d, c - t * (w / 2 - 0.08) + n * off + up * (0.03 + (k % 2) * 0.04),
+					  c + t * (w / 2 - 0.08) + n * off + up * (0.03 + (k % 2) * 0.04), r=0.022)
+			_skull(d, c + t * 0.2 + up * 0.08, s=0.8, yaw=yaw)
+		elif fill == "shroud":   # one laid to rest whole, wrapped
+			d.blob((w - 0.1, depth * 0.75, 0.2), c + up * 0.1, CLOTH_WHITE, rot=(0, 0, rz), segs=(10, 6), grad=(0.3, 0.9))
+			d.blob((0.22, depth * 0.62, 0.18), c - t * (w / 2 - 0.16) + up * 0.14, CLOTH_WHITE, rot=(0, 0, rz), segs=(6, 4), grad=(0.3, 0.9))
+		elif fill == "candle":
+			_skull(d, c - t * 0.2, s=0.9, yaw=yaw)
+			flames.append(_candle(d, c + t * 0.22 + n * 0.02, h=0.14, r=0.03))
+			_candle(d, c + t * 0.34 - n * 0.04, h=0.08, r=0.025)
+	return flames
+
+
+def _sarcophagus(p, d, x, y, yaw_deg, ajar=False):
+	"""A stone coffin with a carved effigy on its lid, long axis along yaw."""
+	rot = (0, 0, yaw_deg)
+	a = math.radians(yaw_deg)
+	ax = Vector((math.cos(a), math.sin(a), 0))
+	side = Vector((-math.sin(a), math.cos(a), 0))
+	c = Vector((x, y, 0))
+	up = Vector((0, 0, 1))
+	p.box((2.35, 1.1, 0.14), c + up * 0.07, STONE_DARK, rot=rot, grad=(0.2, 0.9))
+	p.box((2.15, 0.92, 0.66), c + up * 0.47, STONE_LIGHT, rot=rot, grad=(0.1, 0.9))
+	for s in (-1, 1):   # carved panels on the long sides
+		for k in (-1, 0, 1):
+			p.box((0.5, 0.04, 0.32), c + ax * k * 0.62 + side * s * 0.47 + up * 0.46, STONE_WARM, rot=rot, grad=(0.1, 0.8))
+	if ajar:
+		p.box((1.9, 0.72, 0.04), c + up * 0.78, IRON, rot=rot, grad=(1.0, 1.0))   # the dark inside
+		lid_c = c + ax * 0.25 + side * 0.28 + up * 0.88
+		lrot = (0, 0, yaw_deg + 14)
+	else:
+		lid_c = c + up * 0.86
+		lrot = rot
+	p.box((2.3, 1.04, 0.16), lid_c, STONE_WARM, rot=lrot, grad=(0.0, 0.7))
+	la = math.radians(lrot[2])
+	lax = Vector((math.cos(la), math.sin(la), 0))
+	# the effigy: a robed figure, head toward -ax, hands folded
+	p.blob((1.45, 0.5, 0.22), lid_c + lax * 0.12 + up * 0.1, STONE_LIGHT, rot=lrot, segs=(10, 6), grad=(0.0, 0.7))
+	p.blob((0.3, 0.3, 0.24), lid_c - lax * 0.78 + up * 0.14, STONE_LIGHT, rot=lrot, segs=(8, 6), grad=(0.0, 0.6))
+	p.blob((0.22, 0.28, 0.14), lid_c - lax * 0.2 + up * 0.2, STONE_LIGHT, rot=lrot, segs=(6, 4), grad=(0.0, 0.6))
+
+
+def crypt_room():
+	"""The Necromancers' crypt under Emberhold, the whole interior in one piece.
+
+	Walls on centrelines 21 m (x) by 16.5 m (y), so the clear floor is about
+	20.2 x 15.7 m; ceiling at 4.5 m. The floor's walking surface is at 0
+	everywhere and closed underneath; the walls are closed but for an open
+	doorway (1.4 m wide, about 3 m tall) in the middle of the south wall (-Y,
+	+Z in game), behind which a stair climbs away into the dark (the steps are
+	0.22 m risers, not meant to be walked: the zone line goes in the doorway).
+
+	In game coordinates (x, y, z) = (blender x, z, -blender y):
+	  doorway, floor level ....... (0, 0, 8.25)
+	  ritual circle centre ....... (0, 0, -2.6), radius 2.3
+	  altar ...................... (0, 0, -6.7), 2 m wide
+	Burial niches line the walls, stone coffins stand against the east and west
+	walls, bones pile in the corners, candles burn on stands, in niches, on the
+	altar and on the coffins, and cobwebs hang in the corners.
+	"""
+	p = Prop("crypt_room", 191)
+	d = Prop("crypt_room_detail", 192)
+	hw, hd = 10.5, 8.25          # wall centrelines
+	fx, fy = hw - 0.375, hd - 0.375   # inner wall faces
+	top = 4.5
+	flames = {}
+
+	# --- under the tiles: a slab, so the floor is closed whatever the seams ---
+	p.box((hw * 2 + 0.8, hd * 2 + 0.8, 0.3), (0, 0, -0.2), STONE_DARK, grad=(0.6, 1.0))
+
+	# --- the doorway: a stone frame, a lintel and a skull over it --------------
+	door_w, door_h = 1.6, 2.8
+	for sx in (-1, 1):
+		p.box((0.24, 0.95, door_h), (sx * (door_w / 2 + 0.1), -hd, door_h / 2), STONE_LIGHT, grad=(0.1, 0.8))
+		p.box((0.36, 1.0, 0.2), (sx * (door_w / 2 + 0.1), -hd, 0.1), STONE_DARK, grad=(0.2, 0.9))
+	p.box((door_w + 0.7, 1.0, 0.36), (0, -hd, door_h + 0.18), STONE_LIGHT, grad=(0.05, 0.7))
+	_skull(d, (0, -fy + 0.3, door_h + 0.44), s=1.6, yaw=math.pi)
+	p.box((0.8, 0.5, 0.08), (0, -fy + 0.2, door_h + 0.4), STONE_DARK, grad=(0.1, 0.7))   # a ledge for it
+
+	# --- the stair behind the doorway, climbing south into the dark ----------
+	p.box((2.4, 1.2, 0.3), (0, -hd - 0.45, -0.15), STONE_DARK, grad=(0.3, 0.9))   # threshold
+	rise, tread, steps = 0.22, 0.32, 14
+	y_start = -hd - 0.7
+	for k in range(steps):
+		y1 = y_start - k * tread
+		zt = rise * (k + 1)
+		if k < 3:
+			sw, gr = STONE_DARK, (0.2 + k * 0.2, 0.9)
+		elif k < 7:
+			sw, gr = IRON, (0.4 + (k - 3) * 0.12, 1.0)
+		else:
+			sw, gr = IRON, (1.0, 1.0)
+		p.box((1.9, tread, zt + 0.2), (0, y1 - tread / 2, (zt - 0.2) / 2), sw, grad=gr)
+		p.box((1.9, 0.06, 0.04), (0, y1 - 0.03, zt + 0.01), STONE_LIGHT if k < 3 else IRON, grad=(0.3, 0.9) if k < 3 else (1.0, 1.0))
+	y_end = y_start - steps * tread
+	stretches = [(-hd - 0.35, -hd - 1.6, STONE_DARK, (0.5, 1.0)), (-hd - 1.6, -hd - 3.0, IRON, (0.5, 1.0)),
+				 (-hd - 3.0, y_end - 0.3, IRON, (1.0, 1.0))]
+	for ya, yb, sw, gr in stretches:
+		for s in (-1, 1):
+			p.box((0.4, ya - yb, 7.8), (s * 1.15, (ya + yb) / 2, 3.7), sw, grad=gr)
+	p.box((2.7, 0.4, 7.8), (0, y_end - 0.4, 3.7), IRON, grad=(1.0, 1.0))   # where it goes, you can't see
+	# its ceiling climbs with the steps, 2.9 m above them
+	ya, za = -hd - 0.35, 3.05
+	yb, zb = y_end - 0.2, 3.05 + (ya - yb) * rise / tread
+	ang = math.degrees(math.atan2(zb - za, ya - yb))
+	p.box((2.7, math.hypot(ya - yb, zb - za) + 0.2, 0.3), (0, (ya + yb) / 2, (za + zb) / 2 + 0.15), IRON,
+		  rot=(-ang, 0, 0), grad=(0.8, 1.0))
+
+	# --- ritual circle near the north end ------------------------------------
+	cx, cy, R = 0.0, 2.6, 2.3
+	d.seg((cx, cy, -0.01), (cx, cy, 0.008), R + 0.25, R + 0.25, IRON, sides=40, grad=(0.6, 0.9))  # a dark inlay
+	for rr, wdt in ((R, 0.09), (R - 0.45, 0.06)):
+		nseg = 48
+		for k in range(nseg):
+			a0, a1 = k * math.tau / nseg, (k + 1) * math.tau / nseg
+			am = (a0 + a1) / 2
+			ln = rr * (a1 - a0) + 0.02
+			d.box((ln, wdt, 0.016), (cx + math.cos(am) * rr, cy + math.sin(am) * rr, 0.012), PETAL_PURPLE,
+				  rot=(0, 0, math.degrees(am) + 90), grad=(0.1, 0.4), glow=0.9)
+	pts = [(cx + math.cos(math.radians(-90 + k * 72)) * (R - 0.45), cy + math.sin(math.radians(-90 + k * 72)) * (R - 0.45)) for k in range(5)]
+	for k in range(5):   # the star, tip toward the door
+		a, b = pts[k], pts[(k + 2) % 5]
+		mx, my = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+		ln = math.hypot(b[0] - a[0], b[1] - a[1])
+		d.box((ln, 0.05, 0.016), (mx, my, 0.014), PETAL_PURPLE, rot=(0, 0, math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))),
+			  grad=(0.1, 0.4), glow=0.9)
+	for k in range(15):   # runes in the band between the rings
+		a = k * math.tau / 15 + 0.1
+		rx, ry = cx + math.cos(a) * (R - 0.225), cy + math.sin(a) * (R - 0.225)
+		rz = math.degrees(a)
+		d.box((0.2, 0.04, 0.016), (rx, ry, 0.014), PETAL_PURPLE, rot=(0, 0, rz), grad=(0.1, 0.4), glow=0.7)
+		d.box((0.04, 0.16, 0.016), (rx, ry, 0.014), PETAL_PURPLE, rot=(0, 0, rz + (25 if k % 2 else -25)), grad=(0.1, 0.4), glow=0.7)
+	_skull(d, (cx, cy, 0.02), s=1.3, yaw=0.0)                       # a skull at its heart
+	for k in range(5):   # candle stands at the star's points, outside the ring
+		a = math.radians(-90 + k * 72)
+		flames[f"circle_{k}"] = _candle_stand(d, cx + math.cos(a) * (R + 0.7), cy + math.sin(a) * (R + 0.7), h=1.15)
+
+	# --- the altar against the north wall ------------------------------------
+	ay = fy - 1.2
+	p.box((2.3, 1.1, 0.2), (0, ay, 0.1), STONE_DARK, grad=(0.2, 0.9))
+	p.box((2.0, 0.85, 0.75), (0, ay, 0.575), STONE_DARK, grad=(0.1, 0.95))
+	p.box((2.2, 1.0, 0.14), (0, ay, 1.02), STONE_LIGHT, grad=(0.0, 0.6))
+	for s in (-1, 1):
+		p.box((0.1, 0.04, 0.5), (s * 0.55, ay - 0.44, 0.58), PETAL_PURPLE, grad=(0.1, 0.5), glow=0.6)   # runes on its face
+	d.box((0.5, 0.36, 0.08), (0.45, ay - 0.05, 1.13), CLOTH_RED, rot=(0, 0, 8), grad=(0.2, 0.9))          # a tome
+	d.box((0.46, 0.32, 0.02), (0.45, ay - 0.05, 1.18), CLOTH_WHITE, rot=(0, 0, 8), grad=(0.1, 0.5))
+	d.seg((-0.4, ay, 1.09), (-0.4, ay, 1.22), 0.12, 0.2, IRON, sides=10, grad=(0.1, 0.8))                # a bowl, glowing
+	d.seg((-0.4, ay, 1.2), (-0.4, ay, 1.215), 0.17, 0.17, PETAL_PURPLE, sides=10, grad=(0.1, 0.3), glow=1.4)
+	_skull(d, (0.0, ay + 0.15, 1.09), s=1.2, yaw=0.0)
+	for k, x in enumerate((-0.9, 0.95)):
+		flames[f"altar_{k}"] = _candle(d, (x, ay + 0.2, 1.09), h=0.26, r=0.045)
+	flames["altar_2"] = _candle(d, (0.8, ay + 0.32, 1.09), h=0.16, r=0.04)
+	for s in (-1, 1):
+		flames[f"altar_stand_{0 if s < 0 else 1}"] = _candle_stand(d, s * 1.75, ay, h=1.35)
+
+	# --- pillars' feet dressed with a skull or two, set later with the pillars
+	pillars = [(-5.5, -3.0), (5.5, -3.0), (-5.5, 3.0), (5.5, 3.0)]
+	# stone ribs along the ceiling over the pillar rows
+	for x in (-5.5, 5.5):
+		p.box((0.7, hd * 2 - 0.6, 0.35), (x, 0, top - 0.18), STONE_DARK, grad=(0.1, 0.8))
+	p.box((hw * 2 - 0.6, 0.7, 0.35), (0, 3.0, top - 0.18), STONE_DARK, grad=(0.1, 0.8))
+	p.box((hw * 2 - 0.6, 0.7, 0.35), (0, -3.0, top - 0.18), STONE_DARK, grad=(0.1, 0.8))
+
+	# --- coffins against the east and west walls -----------------------------
+	for s in (-1, 1):
+		for k, y in enumerate((-4.9, -0.8, 3.4)):
+			_sarcophagus(p, d, s * (fx - 1.3), y, 0.0 if s < 0 else 180.0, ajar=(k == 1 and s > 0) or (k == 2 and s < 0))
+	# melted candles on two of the lids
+	flames["coffin_w"] = _candle(d, (-(fx - 2.1), -4.9 + 0.3, 1.02), h=0.12, r=0.04)
+	flames["coffin_e"] = _candle(d, (fx - 2.1, 3.4 - 0.3, 1.02), h=0.1, r=0.04)
+
+	# --- burial niches: three rows on the long walls, two on the ends ---------
+	cycle = ["skull", "bones", "shroud", "skulls", "skull", "shroud", "bones", "skull", "skulls", "shroud", "skull", "bones", "skull"]
+	def fills(seed, count, candles):
+		out = [cycle[(seed + k * 5) % len(cycle)] for k in range(count)]
+		for k in candles:
+			out[k] = "candle"
+		return out
+	niche_candles = []
+	for s in (-1, 1):   # west and east (the west rows run north, the east rows south)
+		for i, z in enumerate((1.4, 2.35, 3.3)):
+			cand = ((5,), (2, 8), (4,))[i] if s < 0 else ((3, 9), (6,), (1,))[i]
+			niche_candles += _niche_row(p, d, (s * fx, 5.75 * s, z), (-s, 0), 11, 1.15, fills(i * 3 + (s > 0), 11, cand))
+	for i, z in enumerate((1.4, 2.35)):   # north wall, behind the altar: rows running outward from it
+		niche_candles += _niche_row(p, d, (2.6, fy, z), (0, -1), 6, 1.15, fills(i * 4 + 1, 6, (2,) if i == 0 else ()))
+		niche_candles += _niche_row(p, d, (-8.35, fy, z), (0, -1), 6, 1.15, fills(i * 4 + 7, 6, () if i == 0 else (3,)))
+	for i, z in enumerate((1.4, 2.35)):   # south wall, either side of the door
+		niche_candles += _niche_row(p, d, (-3.75, -fy, z), (0, 1), 5, 1.15, fills(i * 2 + 5, 5, (1,) if i == 0 else ()))
+		niche_candles += _niche_row(p, d, (8.35, -fy, z), (0, 1), 5, 1.15, fills(i * 2 + 9, 5, () if i == 0 else (2,)))
+	# a great arch-niche behind the altar, with an effigy skull in it
+	p.box((1.9, 0.4, 0.14), (0, fy - 0.2, 1.33), STONE_LIGHT, grad=(0.05, 0.7))
+	p.box((1.9, 0.4, 0.16), (0, fy - 0.2, 3.15), STONE_LIGHT, grad=(0.05, 0.7))
+	for sx in (-1, 1):
+		p.box((0.2, 0.4, 1.8), (sx * 0.85, fy - 0.2, 2.25), STONE_WARM, grad=(0.1, 0.9))
+	p.box((1.5, 0.04, 1.7), (0, fy - 0.02, 2.25), IRON, grad=(0.8, 1.0))
+	_skull(d, (0, fy - 0.2, 1.4), s=3.0, yaw=0.0)
+	p.box((1.4, 0.06, 0.08), (0, fy - 0.03, 3.0), PETAL_PURPLE, grad=(0.1, 0.4), glow=0.8)
+
+	# --- bone piles in the corners, one by the ajar coffin ---------------------
+	for x, y, r in ((-(fx - 1.0), -(fy - 0.9), 0.9), (fx - 1.0, -(fy - 0.9), 0.8), (-(fx - 1.0), fy - 0.9, 0.85),
+					(fx - 1.0, fy - 0.9, 0.95), (fx - 1.5, 1.35, 0.55)):
+		_bone_pile(d, x, y, r)
+
+	# --- cobwebs in the corners, high and low ------------------------------------
+	for sx in (-1, 1):
+		for sy in (-1, 1):
+			corner = (sx * (fx - 0.55), sy * (fy - 0.55), top - 0.2)
+			_corner_web(d, corner, (-sx, 0, 0), (0, -sy, 0), (0, 0, -1), 1.3)
+	for x, y in pillars:   # webs strung from the pillar heads to the ceiling ribs
+		sx = 1 if x > 0 else -1
+		_corner_web(d, (x - sx * 0.6, y + (0.6 if y > 0 else -0.6), top - 0.35), (-sx, 0, 0), (0, 1 if y < 0 else -1, 0), (0, 0, -1), 0.9)
+
+	# --- a few candles on the floor by the doorway, to light the way in -------
+	for s in (-1, 1):
+		flames[f"door_stand_{0 if s < 0 else 1}"] = _candle_stand(d, s * 1.9, -fy + 1.1, h=1.2)
+
+	# report where the light comes from (blender -> game: x, z, -y)
+	for name, f in flames.items():
+		print(f"crypt_room flame {name}: game ({f.x:.2f}, {f.z:.2f}, {-f.y:.2f})")
+	for f in niche_candles:
+		print(f"crypt_room niche candle: game ({f.x:.2f}, {f.z:.2f}, {-f.y:.2f})")
+
+	obj = p.build(bevel=0.04)
+	obj = join_into(obj, [d.build()])
+
+	# --- the shell: KayKit floor, walls, pillars and ceiling ---------------------
+	pieces = []
+	tall = top / 4.0
+	sy_side = (hd * 2 / 6) / 4.0   # six wall pieces down each 16.5 m side
+	for i in range(7):
+		x = -9.0 + i * 3.0
+		for j in range(6):
+			y = -hd + 1.375 + j * 2.75
+			pieces += kaykit("floor_tile_large", (x, y, -0.0375), 0.0, (0.75, 0.6875, 0.75))
+			pieces += kaykit("ceiling_tile", (x, y, top + 0.02), 0.0, (0.75, 0.6875, 0.75))
+		pieces += kaykit("wall", (x, hd, 0), math.pi, (0.75, 0.75, tall))
+		if i != 3:
+			pieces += kaykit("wall", (x, -hd, 0), 0.0, (0.75, 0.75, tall))
+	# the doorway's bay: wall either side of the opening and over it (KayKit's
+	# own doorway pieces carry a door, or side walls reaching 1.5 m into the room)
+	for s in (-1, 1):
+		pieces += kaykit("wall", (s * (door_w / 2 + 0.35), -hd, 0), 0.0, ((1.5 - door_w / 2) / 4.0, 0.75, tall))
+	pieces += kaykit("wall", (0, -hd, door_h), 0.0, (door_w / 4.0, 0.75, (top - door_h) / 4.0))
+	for j in range(6):
+		y = -hd + 1.375 + j * 2.75
+		for s in (-1, 1):
+			pieces += kaykit("wall", (s * hw, y, 0), math.pi / 2 * -s, (sy_side, 0.75, tall))
+	for x in (-hw, hw):
+		for y in (-hd, hd):
+			pieces += kaykit("pillar", (x, y, 0), 0.0, (0.75, 0.75, tall))
+	for x, y in pillars:
+		pieces += kaykit("pillar", (x, y, 0), 0.0, (0.6, 0.6, tall))
+	return _merge_materials(join_into(obj, pieces))
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -2977,6 +3503,8 @@ PROPS = {
 	"loom": loom,
 	"brew_barrel": brew_barrel,
 	"forge": forge,
+	"crypt_entrance": crypt_entrance,
+	"crypt_room": crypt_room,
 }
 
 

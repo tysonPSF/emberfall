@@ -134,6 +134,10 @@ var _owned: Dictionary = {}  # item id -> how many you own, to notice what's new
 var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
+var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
+var _pet_name: Label
+var _pet_bar: ProgressBar
+var _pet_text: Label
 var _station_title: Label
 var _doll_view: SubViewport
 var _doll_stage: Node3D
@@ -177,6 +181,7 @@ func _ready() -> void:
 	_build_loot_window()
 	_build_trade_window()
 	_build_station_window()
+	_build_pet_window()
 	_build_service_window()
 	_build_inventory()
 	_build_help()
@@ -1232,6 +1237,52 @@ func _on_station_opened(kind: String) -> void:
 	_refresh_inventory()
 
 
+## Your pet's window, EverQuest style: its name and health, and the commands
+## (also /pet attack, back, follow, guard, sit, taunt, health, leave).
+func _build_pet_window() -> void:
+	_pet_panel = UIKit.panel()
+	UIKit.place(_pet_panel, Vector2(0.5, 0), Vector2(-350, 12))
+	root.add_child(_pet_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	_pet_panel.add_child(v)
+	_pet_name = UIKit.label("", 13, Color(0.75, 0.95, 0.75))
+	v.add_child(_pet_name)
+	var row := HBoxContainer.new()
+	_pet_bar = UIKit.bar(Color(0.3, 0.7, 0.3), 200.0)
+	_pet_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_pet_text = UIKit.label("", 11)
+	_pet_text.custom_minimum_size.x = 36
+	row.add_child(_pet_bar)
+	row.add_child(_pet_text)
+	v.add_child(row)
+	var cmds := GridContainer.new()
+	cmds.columns = 4
+	cmds.add_theme_constant_override("h_separation", 3)
+	cmds.add_theme_constant_override("v_separation", 3)
+	v.add_child(cmds)
+	for c: Array in [["Attack", "attack"], ["Back Off", "back"], ["Follow", "follow"], ["Guard", "guard"], ["Sit", "sit"], ["Taunt", "taunt"], ["Leave", "leave"]]:
+		var b := UIKit.button(c[0], Vector2(58, 22))
+		b.add_theme_font_size_override("font_size", 11)
+		var cmd: String = c[1]
+		b.pressed.connect(func() -> void: World.request_pet(player.entity_id, cmd))
+		cmds.add_child(b)
+		if cmd == "taunt":
+			b.tooltip_text = "Turns your pet's taunting on or off (it tells you which)."
+	_pet_panel.visible = false
+
+
+func _update_pet() -> void:
+	var pet := World.get_object(player.pet_id) as Pet if player.pet_id >= 0 else null
+	_pet_panel.visible = pet != null and not pet.dead
+	if not _pet_panel.visible:
+		return
+	_pet_name.text = "%s  (level %d)" % [pet.display_name, pet.level]
+	_pet_bar.max_value = maxi(pet.max_hp, 1)
+	_pet_bar.value = pet.hp
+	_pet_text.text = " %d%%" % roundi(100.0 * pet.hp / maxf(1.0, pet.max_hp))
+
+
 ## Merchant shop or bank, whichever the npc offers.
 func _build_service_window() -> void:
 	_service_panel = UIKit.panel()
@@ -1968,6 +2019,7 @@ func _process(delta: float) -> void:
 		_crosshair.queue_redraw()
 	_ring_drawn = player.auto_attack
 	_update_buffs()
+	_update_pet()
 	_layout_bag_bar()
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]

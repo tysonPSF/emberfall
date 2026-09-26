@@ -478,6 +478,10 @@ func _process(delta: float) -> void:
 		_loop("walk")
 	elif _one_shot_left > 0.0:
 		return
+	elif e.feigning and _clip("dead") != "":  # Feign Death: down as if slain
+		if anim.current_animation != _clip("dead") and anim.current_animation != _clip("death"):
+			anim.play(_clip("death"), BLEND)
+			anim.queue(_clip("dead"))
 	elif not e.cast.is_empty():
 		_loop("cast")
 	elif e.sitting and _clip("sit") != "":

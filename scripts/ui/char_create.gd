@@ -107,8 +107,10 @@ func _build_new_character(v: VBoxContainer) -> void:
 	_name_edit.text_submitted.connect(func(_t: String) -> void: _create())
 	v.add_child(_name_edit)
 
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
+	var row := GridContainer.new()  # three to a row: six classes don't fit in one
+	row.columns = 3
+	row.add_theme_constant_override("h_separation", 8)
+	row.add_theme_constant_override("v_separation", 6)
 	var group := ButtonGroup.new()
 	for class_id: String in GameData.classes:
 		var b := UIKit.button(GameData.classes[class_id]["name"], Vector2(0, 40))

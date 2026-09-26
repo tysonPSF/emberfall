@@ -1,0 +1,61 @@
+{
+  "name": "The Crypt",
+  "interior": true,
+  "seed": 91,
+  "size": 200,
+  "height_amplitude": 0,
+  "flat_radius": 90,
+  "clear_radius": 90,
+  "trees": 0,
+  "rocks": 0,
+  "bind_point": [
+    0,
+    4
+  ],
+  "ambient_color": "#8a7a9a",
+  "ambient_energy": 0.12,
+  "landmarks": [
+    {
+      "type": "crypt_room",
+      "pos": [
+        0,
+        0
+      ]
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        8.1
+      ],
+      "size": [
+        1.6,
+        1.0
+      ],
+      "to": "emberhold",
+      "arrive": [
+        -32,
+        -26
+      ],
+      "arrive_face": [
+        -32,
+        -18
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "gm_morvath",
+      "pos": [
+        0,
+        -5.45
+      ],
+      "face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "spawns": []
+}

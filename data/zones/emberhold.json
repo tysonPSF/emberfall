@@ -361,6 +361,16 @@
       ],
       "yaw": 180,
       "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "crypt_entrance",
+      "pos": [
+        -32,
+        -32
+      ],
+      "yaw": 0,
+      "collide": "mesh"
     }
   ],
   "passes": [
@@ -461,6 +471,25 @@
       "arrive_face": [
         -3.4,
         2
+      ]
+    },
+    {
+      "pos": [
+        -32,
+        -31.0
+      ],
+      "size": [
+        1.4,
+        1.0
+      ],
+      "to": "emberhold_crypt",
+      "arrive": [
+        0,
+        6.3
+      ],
+      "arrive_face": [
+        0,
+        0
       ]
     }
   ],
@@ -599,6 +628,17 @@
       "face": [
         -26,
         30
+      ]
+    },
+    {
+      "id": "gm_corvane",
+      "pos": [
+        -8,
+        -22
+      ],
+      "face": [
+        0,
+        0
       ]
     }
   ],

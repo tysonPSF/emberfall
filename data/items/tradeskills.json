@@ -435,11 +435,7 @@
     "skill": "piercing",
     "value": 120,
     "rec_level": 5,
-    "classes": [
-      "warrior",
-      "wizard",
-      "rogue"
-    ]
+    "classes": ["warrior", "wizard", "rogue", "magician", "necromancer"]
   },
   "forged_iron_sword": {
     "name": "Forged Iron Sword",

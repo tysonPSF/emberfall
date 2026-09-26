@@ -223,7 +223,7 @@ func _look_for_trouble() -> void:
 		_shout("shouts", victim.display_name, best.display_name)
 		return
 	for p in World.get_players():  # players this faction wants dead, or who attacked townsfolk
-		if p.dead or p.hidden or distance_to(p) > radius:
+		if p.dead or p.hidden or p.feigning or distance_to(p) > radius:
 			continue
 		if World.npc_kos(p, faction) or not p.hostile_npcs.is_empty():
 			fight(p, true)

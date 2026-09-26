@@ -1371,5 +1371,102 @@
       "forge": "Keep the hammer in the forge with the ore and a flask of water; it stays, the rest becomes metal. Bars first, then blades. The Smith's Handbook will set you straight.",
       "unknown": "Ask round Rainhold, {name}."
     }
+  },
+  "gm_corvane": {
+    "name": "Elementalist Corvane",
+    "title": "Magician Guildmaster",
+    "level": 40,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "The elements don't speak to everyone, {name}. Try the other guilds."
+    },
+    "dialogue": {
+      "hail": "Earth, water, fire and air, {name}: each will answer a magician who asks properly. If you're one of mine, I'll teach you the asking. Your elementals will need [tending], too.",
+      "tending": "Renew Elements mends your elemental; Burnout makes it quicker and harder-hitting. Tell it what to do from its window, or say /pet attack, back, follow, guard, sit, taunt. Earth holds a monster's attention, fire burns it down, water chills it, air staggers it.",
+      "unknown": "Ask Keeper Maelin, {name}."
+    }
+  },
+  "gm_morvath": {
+    "name": "Morvath the Pale",
+    "title": "Necromancer Guildmaster",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "The dead have nothing to say to you, {name}. Go back up the stairs."
+    },
+    "dialogue": {
+      "hail": "You found the crypt, {name}. Good. The dead listen to those who are patient with them. Necromancers learn here, quietly, and the Watch pretends not to know.",
+      "unknown": "The dead keep their own counsel, {name}."
+    }
+  },
+  "gm_aurelia": {
+    "name": "Sunforger Aurelia",
+    "title": "Magician Guildmaster",
+    "level": 40,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "Not a magician? Then the flame is only warmth to you, {name}."
+    },
+    "dialogue": {
+      "hail": "Up here the fire comes easily, {name}. Magicians, come: the higher callings are mine to teach.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "gm_vesk": {
+    "name": "Mortician Vesk",
+    "title": "Necromancer Guildmaster",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "I prepare the dead, {name}. You aren't one of mine, and you aren't dead. Yet."
+    },
+    "dialogue": {
+      "hail": "I lay out the city's dead, {name}. Some of them get up again, for the right teacher. Necromancer? Then sit.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "gm_nuru": {
+    "name": "Tidecaller Nuru",
+    "title": "Magician Guildmaster",
+    "level": 40,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "The tide answers magicians, {name}, and you're not one."
+    },
+    "dialogue": {
+      "hail": "The rain is full of water elementals, {name}, if you know how to call them out. Magicians, I'll teach you the deeper calls.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
+  },
+  "gm_ilo": {
+    "name": "Bonewright Ilo",
+    "title": "Necromancer Guildmaster",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "Bones are for necromancers, {name}. Move along."
+    },
+    "dialogue": {
+      "hail": "The lagoon gives up its drowned, {name}, and I give them work. Necromancers, I'll teach you what the river taught me.",
+      "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
+    }
   }
 }

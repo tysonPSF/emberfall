@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 12  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 13  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -571,7 +571,7 @@ func _replicate(peer: int) -> void:
 		if obj is Entity and id != own:
 			var e := obj as Entity
 			var p := e.global_position
-			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0) | (8 if e.hidden else 0)
+			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0) | (8 if e.hidden else 0) | (16 if e.feigning else 0)
 			var row := PackedFloat32Array([id, p.x, p.y, p.z, e.rotation.y, e.hp, e.max_hp, e.level, flags])
 			if _keyframe or sent.get(id) != row:
 				sent[id] = row
@@ -608,6 +608,8 @@ func _spawn_info(obj: Node3D) -> Dictionary:
 		info.merge({"kind": "mob", "mob_id": (e as Mob).mob_id}, true)
 	elif e is Npc:
 		info.merge({"kind": "npc", "npc_id": (e as Npc).npc_id}, true)
+	elif e is Pet:
+		info.merge({"kind": "pet", "owner": (e as Pet).owner_id}, true)
 	return info
 
 
@@ -640,6 +642,10 @@ func _s_spawn(list: Array) -> void:
 				var m := Mob.new()
 				m.setup_remote(info)
 				node = m
+			"pet":
+				var pet := Pet.new()
+				pet.setup_remote(info)
+				node = pet
 			"npc":
 				var n := Npc.new()
 				n.setup(str(info["npc_id"]), str(info["name"]))
@@ -678,7 +684,7 @@ func _s_state(s: PackedFloat32Array) -> void:
 		e.max_hp = int(s[i + 6])
 		e.level = int(s[i + 7])
 		var flags := int(s[i + 8])
-		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0)
+		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0, flags & 16 != 0)
 
 
 # --- the player's own state (server -> its client) ------------------------------
@@ -700,7 +706,7 @@ func _send_self(peer: int) -> void:
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
 		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
-		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items,
+		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "feigning": p.feigning,
 	}
 	_s_self.rpc_id(peer, d)
 
