@@ -136,8 +136,10 @@ BUILT = discover_built()
 EXISTING = BUILT
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
-# Thornwood's three unused passes, which CLAUDE.md reserves: "a future zone
-# replaces one with a zone line"
+# The passes CLAUDE.md reserved for future zones ("a future zone replaces one
+# with a zone line"). This is NOT a list of passes still closed: the check below
+# only makes sure the layout gives each of them a neighbour. Thornwood's east
+# pass stays listed though Hollowmere now opens it.
 ROCKSLIDES = {'thornwood': ['north', 'east', 'west']}
 
 DIRS = {'north': (0, 1), 'south': (0, -1), 'east': (1, 0), 'west': (-1, 0)}
