@@ -308,6 +308,7 @@
     }
   },
   "weapons": {
+    "torch": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/torch_lit.gltf",
     "dagger": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/dagger.gltf",
     "sword_1handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/sword_1handed.gltf",
     "axe_1handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/axe_1handed.gltf",
@@ -1085,7 +1086,7 @@
     "stone": ""
   },
   "grips": {
-    "bow": {"rot": [0, 180, 0]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_2handed": {"rot": [0, 180, 0]},
+    "bow": {"rot": [0, 180, 0]}, "torch": {"rot": [0, 0, -90]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_2handed": {"rot": [0, 180, 0]},
     "shield_round": {
       "bone": "lowerarm.l",
       "orient": "chest",

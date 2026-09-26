@@ -63,6 +63,9 @@ const SECTIONS := [
 	["buy_bundle", "thornwood"],
 	["corwin_route", "greenmoor"],
 	["remember_login", "greenmoor"],
+	["night", "greenmoor"],
+	["night_city", "emberhold"],
+	["night_spawns", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -2308,3 +2311,75 @@ func _t_remember_login() -> void:
 	Net.leave()
 	ls.queue_free()
 	await _wait(0.3)
+
+
+## Night and day: the sky at a few hours, looking across Greenmoor at the obelisk.
+func _t_night() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.global_position = main.zone.ground(-14, 22) + Vector3.UP
+	p.face_toward(main.zone.ground(0, 0))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.12
+	for h: float in [12.0, 19.5, 20.5, 23.0, 5.5]:
+		World.time_override = h
+		await _wait(0.6)
+		await _shot("9zh_night_%02d%02d" % [int(h), int((h - int(h)) * 60)])
+	World.time_override = -1.0
+
+
+## Emberhold after dark: lit windows and the guards' torches, then morning.
+func _t_night_city() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	World.time_override = 23.0
+	for view: Array in [[Vector2(0, -24), Vector2(0, -50), "gate"], [Vector2(22, -2), Vector2(34, -10), "houses"], [Vector2(-8, 8), Vector2(0, 0), "plaza"]]:
+		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(main.zone.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 6.0
+		p.pitch = -0.1
+		await _wait(1.3)
+		await _shot("9zi_city_night_%s" % view[2])
+	var lit := get_tree().get_nodes_in_group("night_lights").filter(func(n: Node) -> bool: return (n as Node3D).visible).size()
+	var torches := 0
+	for npc: Npc in _npcs().values():
+		torches += 1 if npc._torch_light != null else 0
+	p.global_position = main.zone.ground(0, -10) + Vector3.UP  # the middle of town, looking over it
+	p.face_toward(main.zone.ground(0, 30))
+	await _wait(2.0)
+	var night_fps := Engine.get_frames_per_second()
+	print("night_city: 23:00 -> %d night lights on, a guard with a torch: %s; %d fps" % [lit, torches > 0, night_fps])
+	World.time_override = 12.0
+	await _wait(1.3)
+	lit = get_tree().get_nodes_in_group("night_lights").filter(func(n: Node) -> bool: return (n as Node3D).visible).size()
+	torches = 0
+	for npc: Npc in _npcs().values():
+		torches += 1 if npc._torch_light != null else 0
+	print("night_city: noon -> %d night lights on, guards with torches %d; %d fps" % [lit, torches, Engine.get_frames_per_second()])
+	World.time_override = -1.0
+
+
+## Night-only spawns: up after dark, gone at dawn unless they're in a fight.
+func _t_night_spawns() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var night: Array = main.zone.get_children().filter(func(n: Node) -> bool: return n is SpawnPoint and (n as SpawnPoint).when == "night")
+	var up := func() -> int: return night.filter(func(sp: SpawnPoint) -> bool: return sp.mob != null and is_instance_valid(sp.mob)).size()
+	World.time_override = 12.0
+	await _wait(0.5)
+	print("night_spawns: %d night spawn points; up at noon: %d" % [night.size(), up.call()])
+	World.time_override = 23.0
+	await _wait(0.5)
+	print("night_spawns: up at 23:00: %d" % up.call())
+	var fighter: Mob = (night[0] as SpawnPoint).mob
+	fighter.add_hate(p, 5.0)
+	World.time_override = 7.0
+	await _wait(0.5)
+	print("night_spawns: up at 7:00: %d (the one fighting stays: %s)" % [up.call(), is_instance_valid(fighter) and not fighter.is_queued_for_deletion()])
+	fighter.hate.clear()
+	fighter.state = Mob.State.IDLE
+	await _wait(0.5)
+	print("night_spawns: after the fight: %d" % up.call())
+	World.time_override = -1.0

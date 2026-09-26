@@ -185,6 +185,12 @@
     {"pos": [-118, -68], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
     {"pos": [-102, -112], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
     {"pos": [-62, -122], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 20},
+    {"pos": [-80, -50], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-120, -40], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-70, -100], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-130, -110], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-95, -20], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-50, -70], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
 
     {"pos": [104, -88], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
     {"pos": [126, -106], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},

@@ -33,6 +33,8 @@ var patrol: Array[Vector3] = []  # waypoints walked end to end and back; empty f
 var _leg := 1  # waypoint being walked to
 var _leg_step := 1
 var _pause := 0.0
+var _torch_check := 0.0
+var _torch_light: OmniLight3D  # the guard's torch, lit at night
 var _anchor := Vector3.ZERO  # where the current fight began; the leash is measured from here
 
 
@@ -81,6 +83,30 @@ func _ready() -> void:
 func greet(who: Entity) -> void:
 	face_toward(who.global_position)
 	_face_timer = 12.0
+
+
+## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
+## Only a picture, so every machine decides from its own clock.
+func _process(delta: float) -> void:
+	_torch_check -= delta
+	if _torch_check > 0.0 or guard.is_empty() or not (visual is CharacterModel):
+		return
+	_torch_check = 1.0
+	var z := World.zone_of(self)
+	var want := not dead and z != null and not bool(z.data.get("interior", false)) and DayNight.sun_height(World.game_hour()) < 0.0
+	if want == (_torch_light != null):
+		return
+	(visual as CharacterModel).set_offhand("torch" if want else "")
+	if want:
+		_torch_light = OmniLight3D.new()
+		_torch_light.light_color = Color(1.0, 0.62, 0.3)
+		_torch_light.light_energy = 1.3
+		_torch_light.omni_range = 7.0
+		_torch_light.position = Vector3(0, 1.9, 0)
+		add_child(_torch_light)
+	else:
+		_torch_light.queue_free()
+		_torch_light = null
 
 
 func _physics_process(delta: float) -> void:

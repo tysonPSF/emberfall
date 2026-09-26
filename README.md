@@ -99,6 +99,7 @@ For testing on one machine: run the server (add `--data=/tmp/efdata` to keep tes
 - **Spell effects**: spells show where they land (frost and fire bursts, rising heals, golden buff rings, lingering embers and venom, roots at the feet, a swirling gate) and casters glow while casting, for everyone watching. Kick and Bash have their own moves: a front kick and a shield-first lunge.
 - **Buff window**: your buffs on the right of the screen, each with its icon, name and time left (hover for what it does); it moves aside when the inventory is open.
 - **Debuff window**: under it, in red, whatever is hurting or holding you: poison, burns, frost, roots, with time left and the damage per tick; each tick names its source in the log ("You take 3 damage from Thornback Venom").
+- **Night and day**: a game day lasts 72 real minutes (3 minutes an hour, EverQuest's pace), read off the real clock so everyone online shares it. The sun rises around 6:00 and sets around 20:00, crossing east to west with golden dawns and dusks; from 21:00 to 5:00 a blue moon lights the land. After dusk Emberhold's windows glow and the Watch carries torches. Some spawns come out only at night (skeletons roaming Greenmoor's western fields, wolf packs and skeleton knights in Thornwood) and go back at dawn unless they're in a fight. `/time` tells the hour.
 - **Bow shots**: firing a bow puts the sword and shield away, raises the bow in your left hand, draws and looses (`Bow_Shoot`, built in `tools/blender/anims.py`); a sling throws with an empty hand. Everyone nearby sees it.
 - **Bag bar**: your eight general slots sit over the hotbar, so you rarely need the inventory window: they work just like it (click, Ctrl-click to split, Shift-click, right-click a bag to open it). Each bag shows how full it is (4/6) and the bar how many slots are free; rest the mouse on a bag to peek inside; "+3 Wolf Pelt" notes float up when loot comes in; items a quest of yours wants carry a gold "!" (and "Warden Holt wants 4 (you have 2)" in the tooltip); the Ranged button counts your arrows or stones.
 - **Hotbar**: one row of square gems for your spells and abilities (1-8) plus Attack (Q), Ranged (R) and Sit (X). Each shows a cooldown sweep, dims when you can't use it (mana, target, range) and glows while a toggle is on. Consider, Skills and Inventory are the small icons beside the gear, top right.
@@ -120,7 +121,7 @@ scripts/ui        HUD, title screen, shared UI styling
 ## Roadmap
 
 1. **Now**: play it, tune numbers in `data/*.json` until the loop feels right.
-2. Night and darkness, more quest givers, mob pathfinding.
+2. ~~Night and darkness~~ (done), more quest givers, mob pathfinding.
 3. Real art: swap `Entity.make_visual` for models; navmesh pathing for mobs.
 4. **Multiplayer**: done through EQ grouping (dedicated server, zones side by side, accounts and characters on the server, chat, groups). Later: corpse dragging and consent, raids.
 5. Persistence server (Postgres), accounts, more classes and zones.

@@ -262,6 +262,9 @@ func _build_environment() -> void:
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 110.0
 	add_child(sun)
+	var cycle := DayNight.new()
+	add_child(cycle)
+	cycle.setup(env, sky_mat, sun)
 
 
 func _build_terrain() -> void:
@@ -556,10 +559,18 @@ func _build_house(p: Vector3, yaw: float, size: int, furnish: bool) -> Transform
 		for side: float in [-1.0, 1.0]:
 			var id := "wall_window_open" if _rng.randf() < 0.45 else "wall"
 			put.call(id, Vector3(side * half_w, 0, c), PI / 2.0, "mesh")
+			if id == "wall_window_open":
+				_window_glow(xf * Transform3D(Basis(Vector3.UP, PI / 2.0), Vector3(side * (half_w - 0.25), WINDOW_HEIGHT, c)))
 	for x: float in [-half_w, half_w]:
 		for z: float in [-half_w, half_w]:
 			put.call("pillar", Vector3(x, 0, z))
 	put.call("roof_gable", Vector3(0, 3.0, 0), 0.0, "mesh", size / 2.0)  # solid so the camera can't slip inside
+	var hearth := OmniLight3D.new()  # lamplight inside after dark, spilling out of the windows and door
+	hearth.light_color = Color(1.0, 0.66, 0.36)
+	hearth.omni_range = half_w + 3.0
+	hearth.shadow_enabled = true  # stays in the house but for the openings
+	hearth.position = xf * Vector3(0, 1.9, 0)
+	_night_light(hearth, 1.4)
 	if furnish:
 		put.call("table_medium", Vector3(-half_w + 1.8, 0.06, -half_w + 1.8))
 		put.call("chair", Vector3(-half_w + 1.8, 0.06, -half_w + 3.0), PI, "none")
@@ -1159,6 +1170,7 @@ func _build_spawns() -> void:
 		sp.pool = entry["pool"]
 		sp.respawn_time = float(entry.get("respawn", 60))
 		sp.wander_radius = float(entry.get("wander", 8))
+		sp.when = str(entry.get("when", ""))
 		sp.position = ground(entry["pos"][0], entry["pos"][1])
 		add_child(sp)
 
@@ -1272,9 +1284,38 @@ func _ring(center: Vector3, angle: float, radius: float) -> Vector3:
 	return ground(center.x + cos(angle) * radius, center.z + sin(angle) * radius)
 
 
+const WINDOW_HEIGHT := 1.6  # the middle of a KayKit window, at our 0.75 scale
+
 ## Yaw that turns a prop's front (+Z) toward the center of a ring it sits on.
 func _face_center(angle: float) -> float:
 	return atan2(-cos(angle), -sin(angle))
+
+
+## A light that comes on at dusk and goes out at dawn (DayNight fades it).
+func _night_light(light: Light3D, energy: float) -> void:
+	light.set_meta("full_energy", energy)
+	light.light_energy = 0.0
+	light.visible = false
+	light.add_to_group("night_lights")
+	add_child(light)
+
+
+## A warm pane just inside an open window, lit after dark.
+func _window_glow(xf: Transform3D) -> void:
+	var pane := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(1.6, 1.4)
+	pane.mesh = quad
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1.0, 0.72, 0.38)
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	pane.material_override = mat
+	pane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	pane.transform = xf
+	pane.visible = false
+	pane.add_to_group("night_lights")
+	add_child(pane)
 
 
 func _light(pos: Vector3, color: Color, light_range: float, energy := 2.0) -> void:
