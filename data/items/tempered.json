@@ -1,0 +1,200 @@
+{
+  "tempered_longsword": {
+    "name": "Tempered Iron Longsword",
+    "slot": "primary",
+    "dmg": 9,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 700,
+    "rec_level": 9,
+    "classes": [
+      "warrior",
+      "rogue"
+    ]
+  },
+  "tempered_war_axe": {
+    "name": "Tempered Iron War Axe",
+    "slot": "primary",
+    "dmg": 10,
+    "delay": 3.0,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 720,
+    "rec_level": 10,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "tempered_dirk": {
+    "name": "Tempered Iron Dirk",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 650,
+    "rec_level": 9,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer"
+    ]
+  },
+  "tempered_helm": {
+    "name": "Tempered Iron Helm",
+    "slot": "head",
+    "ac": 6,
+    "sta": 1,
+    "value": 520,
+    "rec_level": 9,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "tempered_breastplate": {
+    "name": "Tempered Iron Breastplate",
+    "slot": "chest",
+    "ac": 11,
+    "sta": 2,
+    "value": 1100,
+    "rec_level": 10,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "tempered_vambraces": {
+    "name": "Tempered Iron Vambraces",
+    "slot": "arms",
+    "ac": 5,
+    "value": 480,
+    "rec_level": 9,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "tempered_gauntlets": {
+    "name": "Tempered Iron Gauntlets",
+    "slot": "hands",
+    "ac": 4,
+    "str": 1,
+    "value": 460,
+    "rec_level": 8,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "tempered_greaves": {
+    "name": "Tempered Iron Greaves",
+    "slot": "legs",
+    "ac": 8,
+    "sta": 1,
+    "value": 760,
+    "rec_level": 10,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "tempered_boots": {
+    "name": "Tempered Iron Boots",
+    "slot": "feet",
+    "ac": 5,
+    "value": 470,
+    "rec_level": 8,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "tempered_kite_shield": {
+    "name": "Tempered Iron Kite Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 7,
+    "sta": 1,
+    "model": "shield_badge",
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "value": 900,
+    "rec_level": 10
+  },
+  "hardened_leather_jerkin": {
+    "name": "Hardened Leather Jerkin",
+    "slot": "chest",
+    "ac": 9,
+    "agi": 2,
+    "value": 900,
+    "rec_level": 10,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_tunic"
+  },
+  "hardened_leather_leggings": {
+    "name": "Hardened Leather Leggings",
+    "slot": "legs",
+    "ac": 6,
+    "agi": 1,
+    "value": 620,
+    "rec_level": 9,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_leggings"
+  },
+  "hardened_leather_gloves": {
+    "name": "Hardened Leather Gloves",
+    "slot": "hands",
+    "ac": 4,
+    "agi": 1,
+    "value": 420,
+    "rec_level": 8,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_gloves"
+  },
+  "hardened_leather_boots": {
+    "name": "Hardened Leather Boots",
+    "slot": "feet",
+    "ac": 4,
+    "agi": 1,
+    "value": 430,
+    "rec_level": 8,
+    "classes": [
+      "rogue",
+      "warrior"
+    ],
+    "wear": "leather_boots"
+  }
+}
