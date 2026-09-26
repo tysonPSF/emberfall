@@ -5,7 +5,7 @@ extends CanvasLayer
 ## through World.request_*, the same as keyboard input.
 
 const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
-[b]Camera[/b]   Move the mouse to look · Wheel or - / = (Page Up / Down) to zoom (all the way in = first person) · Home: first person and back
+[b]Camera[/b]   Move the mouse to look · Wheel or - / = (Page Up / Down) to zoom (all the way in = first person) · Home: first person and back · M the zone map (fog lifts as you explore) · Ctrl+M mouse controls on or off
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
@@ -139,6 +139,7 @@ var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
 var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
 var _compass: Compass
+var _map: MapWindow
 var _pet_name: Label
 var _pet_bar: ProgressBar
 var _pet_text: Label
@@ -194,6 +195,8 @@ func _ready() -> void:
 	_compass.offset_top = 10
 	_compass.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_compass)
+	_map = MapWindow.new()
+	root.add_child(_map)
 	_build_service_window()
 	_build_inventory()
 	_build_help()
@@ -225,6 +228,7 @@ func _ready() -> void:
 func bind_player(p: Player) -> void:
 	player = p
 	_compass.player = p
+	_map.player = p
 	player.inventory_changed.connect(_refresh_inventory)
 	player.inventory_changed.connect(_refresh_quests)
 	player.quests_changed.connect(_refresh_quests)
@@ -2003,7 +2007,7 @@ func _refresh_settings() -> void:
 	for c in _settings_rows.get_children():
 		_settings_rows.remove_child(c)
 		c.queue_free()
-	var b := UIKit.button("[M]   Mouse controls:   %s" % ("On" if Controls.mouse_look else "Off"), Vector2(0, 34))
+	var b := UIKit.button("[Ctrl+M]   Mouse controls:   %s" % ("On" if Controls.mouse_look else "Off"), Vector2(0, 34))
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(_toggle_mouse_look)
 	_settings_rows.add_child(b)
@@ -2148,7 +2152,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
+	return (_map.visible or _book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible)
 
@@ -2750,8 +2754,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("settings"):
 		_show_settings(not _settings_panel.visible)
 		get_viewport().set_input_as_handled()
-	elif _settings_panel.visible and event.is_action_pressed("settings_mouse_look"):
+	elif event.is_action_pressed("settings_mouse_look", false, true):  # Ctrl+M, anywhere
 		_toggle_mouse_look()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("map", false, true):
+		_map.toggle()
 		get_viewport().set_input_as_handled()
 	elif _settings_panel.visible and (event.is_action_pressed("settings_music_down", true) or event.is_action_pressed("settings_music_up", true)):
 		Controls.set_music_volume(Controls.music_volume + (0.05 if event.is_action("settings_music_up") else -0.05))
@@ -2762,7 +2769,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		World.request_loot_all(player.entity_id, _loot_corpse.object_id)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
-		if _book_panel.visible:
+		if _map.visible:
+			_map.visible = false
+			get_viewport().set_input_as_handled()
+		elif _book_panel.visible:
 			_book_panel.visible = false
 			get_viewport().set_input_as_handled()
 		elif _skills_panel.visible:
