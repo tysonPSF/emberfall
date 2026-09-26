@@ -290,7 +290,7 @@ func _bar_row(color: Color, height := 14.0) -> Array:
 
 func _build_target_window() -> void:
 	_target_panel = UIKit.panel()
-	UIKit.place(_target_panel, Vector2(0.5, 0), Vector2(0, 84))  # under the compass
+	UIKit.place(_target_panel, Vector2(0.5, 0), Vector2(0, 98))  # under the compass
 	root.add_child(_target_panel)
 	var v := VBoxContainer.new()
 	_target_panel.add_child(v)
@@ -1401,7 +1401,7 @@ func _on_station_opened(kind: String) -> void:
 ## (also /pet attack, back, follow, guard, sit, taunt, health, leave).
 func _build_pet_window() -> void:
 	_pet_panel = UIKit.panel()
-	UIKit.place(_pet_panel, Vector2(0.5, 0), Vector2(-350, 84))
+	UIKit.place(_pet_panel, Vector2(0.5, 0), Vector2(-350, 98))
 	root.add_child(_pet_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)

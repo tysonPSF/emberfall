@@ -480,5 +480,71 @@
     "faction": {
       "rainhold": 25
     }
+  },
+  "bloodtusk_tusks": {
+    "name": "Tusks for the Watch",
+    "giver": "vale_patrol",
+    "start_keyword": "tusks",
+    "wants": {
+      "orc_tusk": 4
+    },
+    "reward": {
+      "xp": 600,
+      "coin": 120
+    },
+    "first_reward_item": "vale_patrol_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Tusks for the Watch. Bring Sergeant Harlan four Bloodtusk tusks.",
+    "ready_text": "Bloodtusk tusks. You've been up the east road, {name}. Hand them here.",
+    "complete_text": "Four fewer raiders on my road. The Watch pays for every four you bring me.",
+    "first_complete_text": "And take this bracer. Patrol issue; it's turned more orc blades than I can count.",
+    "faction": {
+      "watch": 10,
+      "emberhold": 5,
+      "bloodtusk": -10
+    }
+  },
+  "grolthars_necklace": {
+    "name": "The Warchief's Trophies",
+    "giver": "vale_patrol",
+    "start_keyword": "grolthar",
+    "wants": {
+      "grolthars_tusk_necklace": 1
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 350
+    },
+    "first_reward_item": "harlans_watch_blade",
+    "accept_text": "You have taken on a task: The Warchief's Trophies. Bring Sergeant Harlan the tusk necklace Warchief Grolthar wears.",
+    "ready_text": "Is that... Grolthar's necklace? Then the warchief is dead. Give it here, {name}.",
+    "complete_text": "Every tusk on this string was a life. They'll be buried properly now, and the Bloodtusk will know their warchief fell to Emberhold.",
+    "first_complete_text": "Take my old blade. I carried it up this road for twelve years. It's earned a better arm than mine.",
+    "faction": {
+      "watch": 25,
+      "emberhold": 10,
+      "bloodtusk": -25
+    }
+  },
+  "the_hollow_watch": {
+    "name": "Rest for the Hollow Watch",
+    "giver": "elowen",
+    "start_keyword": "signet",
+    "wants": {
+      "hollow_watch_signet": 1
+    },
+    "reward": {
+      "xp": 1300,
+      "coin": 300
+    },
+    "first_reward_item": "hollow_watch_pendant",
+    "accept_text": "You have taken on a task: Rest for the Hollow Watch. Bring Elowen the signet Captain Veyl wears.",
+    "ready_text": "That ring. Veyl's signet, the Watch's seal. You've set him free, {name}. Give it to me.",
+    "complete_text": "I'll bury it under the obelisk, where the Watch can see the road they swore to guard. They'll rest now.",
+    "first_complete_text": "The captain wore this pendant with his signet. I kept it all these years. It's yours now; wear it for the Watch.",
+    "faction": {
+      "emberhold": 15,
+      "watch": 10
+    }
   }
 }

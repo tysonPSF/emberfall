@@ -1,5 +1,6 @@
 {
   "name": "The Bleach",
+  "levels": [16, 21],
   "music": "the_bleach",
   "seed": 9133,
   "size": 512,

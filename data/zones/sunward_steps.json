@@ -1,5 +1,6 @@
 {
   "name": "Sunward Steps",
+  "levels": [14, 18],
   "music": "sunward_steps",
   "seed": 7717,
   "size": 448,

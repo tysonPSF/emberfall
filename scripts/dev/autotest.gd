@@ -94,6 +94,7 @@ const SECTIONS := [
 	["compass", "greenmoor"],
 	["solid_logs", "greenmoor"],
 	["quest_hints", "greenmoor"],
+	["vale_quests", "thornwood"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -1622,6 +1623,41 @@ func _t_elowen() -> void:
 	World.request_interact(p.entity_id)
 	print("elowen: G with nothing to give -> shop open %s" % (p.service_npc_id == elowen.entity_id and p.service == "shop"))
 	World.request_service_close(p.entity_id)
+
+
+## Thornwood's Bloodtusk and watchtower quests: Harlan's tusks (repeatable,
+## a bracer the first time) and Grolthar's necklace (his blade), Elowen's
+## signet (the Watch's pendant); the drops that feed them.
+func _t_vale_quests() -> void:
+	var p := World.local_player
+	var harlan: Npc = _npcs()["vale_patrol"]
+	var elowen: Npc = _npcs()["elowen"]
+	print("vale_quests: Grolthar drops %s, Veyl drops %s" % [GameData.mobs["grolthar"]["loot"], GameData.mobs["captain_veyl"]["loot"]])
+	_stand_by(p, harlan)
+	for word in ["hail", "crossroads", "bloodtusk", "tusks", "grolthar"]:
+		World.request_say(p.entity_id, word)
+	print("vale_quests: Harlan's quests taken %s" % [["bloodtusk_tusks", "grolthars_necklace"].map(func(q: String) -> bool: return p.quests.get(q, {}).get("active", false))])
+	for round in 2:
+		p.pack.add("orc_tusk", 4)
+		_stand_by(p, harlan)
+		await _hand_in(p, harlan, ["orc_tusk"])
+		print("vale_quests: tusks round %d -> tusks left %d, bracers %d, still active %s" % [round + 1, p.pack.count("orc_tusk"), p.pack.count("vale_patrol_bracer"), p.quests["bloodtusk_tusks"].get("active", false)])
+	p.pack.add("grolthars_tusk_necklace", 1)
+	_stand_by(p, harlan)
+	await _hand_in(p, harlan, ["grolthars_tusk_necklace"])
+	print("vale_quests: necklace -> blade %d, quest done %s" % [p.pack.count("harlans_watch_blade"), not p.quests["grolthars_necklace"].get("active", true)])
+	_stand_by(p, elowen)
+	for word in ["watchtower", "signet"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("hollow_watch_signet", 1)
+	await _hand_in(p, elowen, ["hollow_watch_signet"])
+	print("vale_quests: signet -> pendant %d, signet kept %d, quest done %s" % [p.pack.count("hollow_watch_pendant"), p.pack.count("hollow_watch_signet"), not p.quests["the_hollow_watch"].get("active", true)])
+	var here := World.zone_of(p).zone_id
+	for q: String in ["bloodtusk_tusks", "grolthars_necklace", "the_hollow_watch"]:
+		print("vale_quests: hint " + QuestHints.giver_hint(q, here, p.global_position))
+		for item_id: String in GameData.quests[q]["wants"]:
+			print("vale_quests: hint " + " / ".join(QuestHints.item_hint(q, item_id, here, p.global_position)))
+	await _shot("9zz_vale_quests")
 
 
 ## Which way each signpost board points, in every zone (compare with where

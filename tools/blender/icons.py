@@ -342,6 +342,26 @@ def hollow_watch_signet():
 	return p.build()
 
 
+
+def grolthars_tusk_necklace():
+	p = Prop("grolthars_tusk_necklace", 267)
+	_cord(p, 0.55, 0.6, HIDE)
+	for k in range(7):  # a string of long curved tusks
+		a = math.radians(-75 + k * 25)
+		x, y = math.sin(a) * 0.5, -math.cos(a) * 0.3
+		p.seg((x, y, 0.45), (x * 1.12, y * 1.12, 0.05), 0.07, 0.0, BONE, sides=6, grad=(0.0, 0.6))
+	p.blob((0.12, 0.1, 0.12), (0, -0.33, 0.47), CLOTH_RED, segs=(8, 6))  # a red bead at the middle
+	return p.build()
+
+
+def hollow_watch_pendant():
+	p = Prop("hollow_watch_pendant", 269)
+	_cord(p, 0.5, 0.75, IRON)
+	p.seg((0, -0.32, 0.64), (0, -0.36, 0.64), 0.2, 0.2, IRON, sides=6)  # an iron hexagon
+	p.blob((0.12, 0.08, 0.12), (0, -0.4, 0.64), WATER, segs=(8, 6), glow=0.6)  # the Watch's pale stone
+	return p.build()
+
+
 # ---------------------------------------------------------------- Hollowmere
 
 def mire_toad_skin():
@@ -1469,7 +1489,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
 									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,
 									 patchwork_pants, leather_leggings, iron_greaves, wolf_pelt, dire_wolf_fang, bear_claw,
-									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet,
+									 bear_hide, spider_silk, venom_sac, orc_tusk, hollow_watch_signet, grolthars_tusk_necklace, hollow_watch_pendant,
 									 mire_toad_skin, leech_teeth, turtle_shell_plate, mirescale_scale, waterlogged_locket,
 									 snapjaws_shell, drowned_bell, smoked_mereperch, pearl_of_the_mere, scaled_leggings,
 									 boar_tusk, boar_hide, brigand_armband, garricks_ledger, straw_heart, loaf_of_bread, harvest_band,
