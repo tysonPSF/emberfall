@@ -127,6 +127,19 @@ func _run() -> void:
 		print("[Sprinter] ran %.1f m in 2 s (walk would be 14); sprinting=%s stamina %.0f -> %.0f; snapped back=%s" % [
 				Vector2(p.global_position.x - start.x, p.global_position.z - start.z).length(), mid_sprinting, stam0, mid_stam,
 				Vector2(p.global_position.x - start.x, p.global_position.z - start.z).length() < 5.0])
+	elif who == "Zoner" and "--north" in OS.get_cmdline_user_args():
+		# Greenmoor's north pass into Thornwood Vale, watching the height the whole way
+		await _walk_to(p, Vector3(12, 0, 4))  # around the obelisk
+		await _walk_to(p, Vector3(12, 0, -60))
+		await _walk_to(p, Vector3(6, 0, -150))
+		await _walk_to(p, Vector3(0, 0, -170))
+		p.face_toward(Vector3(0, p.global_position.y, -300))
+		Input.action_press("move_forward")  # run on through the zone line as a player would, while the server thinks
+		for k in 60:
+			print("[Zoner] t=%.2f zone %s pos %s on_floor %s" % [k * 0.25, World.zone.zone_id if World.zone != null else "-", p.global_position, p.is_on_floor()])
+			if World.zone != null and World.zone.zone_id == "thornwood":
+				Input.action_release("move_forward")
+			await _wait(0.25)
 	elif who == "Zoner":
 		# walk into the pass to Emberhold; for now the whole server follows
 		await _walk_to(p, Vector3(0, 0, 150))

@@ -1555,9 +1555,9 @@ func _build_zone_lines() -> void:
 		var area := Area3D.new()
 		area.collision_layer = 0
 		area.collision_mask = Layers.ENTITIES
-		area.position = ground(zl["pos"][0], zl["pos"][1]) + Vector3.UP * 2.0
+		area.position = ground(zl["pos"][0], zl["pos"][1]) + Vector3.UP * 10.0
 		var box := BoxShape3D.new()
-		box.size = Vector3(zl["size"][0], 6.0, zl["size"][1])
+		box.size = Vector3(zl["size"][0], 40.0, zl["size"][1])  # tall: a jump, a fall or a floating player still counts
 		var cs := CollisionShape3D.new()
 		cs.shape = box
 		area.add_child(cs)
@@ -1567,13 +1567,15 @@ func _build_zone_lines() -> void:
 		add_child(area)
 
 
-## The zone line a position is standing in, or -1.
-func zone_line_at(pos: Vector3) -> int:
+## The zone line a position is standing in, or -1 (within `margin` meters of
+## its box: the server allows a little slack; a client holding still waits
+## until it's truly inside).
+func zone_line_at(pos: Vector3, margin := 1.0) -> int:
 	var lines: Array = data.get("zone_lines", [])
 	for i in lines.size():
 		var zl: Dictionary = lines[i]
-		if absf(pos.x - float(zl["pos"][0])) <= float(zl["size"][0]) * 0.5 + 1.0 \
-				and absf(pos.z - float(zl["pos"][1])) <= float(zl["size"][1]) * 0.5 + 1.0:
+		if absf(pos.x - float(zl["pos"][0])) <= float(zl["size"][0]) * 0.5 + margin \
+				and absf(pos.z - float(zl["pos"][1])) <= float(zl["size"][1]) * 0.5 + margin:
 			return i
 	return -1
 

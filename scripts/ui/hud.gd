@@ -2293,7 +2293,7 @@ func _update_hotbar() -> void:
 func _show_hot_slot(slot: HotSlot, entry: String, t: Entity) -> void:
 	var kind := entry.get_slice(":", 0)
 	var arg := entry.get_slice(":", 1)
-	if slot.get_meta("entry", null) != entry:
+	if str(slot.get_meta("entry", "<unset>")) != entry:
 		slot.set_meta("entry", entry)
 		slot.set_meta("spell", arg if kind == "spell" else "-")
 		slot.empty_look = entry == ""
