@@ -89,6 +89,10 @@ const SECTIONS := [
 	["lanternhold_border", "sunward_steps"],
 	["lanternhold", "lanternhold"],
 	["bash_stun", "greenmoor"],
+	["tradeskills", "emberhold"],
+	["crafters_emberhold", "emberhold"],
+	["crafters_lanternhold", "lanternhold"],
+	["crafters_rainhold", "rainhold"],
 	["monsoon_borders", "greenmoor"],
 	["rainhold", "rainhold"],
 	["fishing", "rainhold"],
@@ -3444,6 +3448,184 @@ func _t_bash_stun() -> void:
 	p.equipment = kit
 	p.spells = known
 	p.recalc_stats()
+
+
+## Tradeskills: every recipe names real items and containers; stations open
+## only up close; cooking, tailoring (in a kit), smithing (the hammer stays)
+## and alchemy combine; a wrong mix is refused; meals and potions are used,
+## one meal at a time; walking away hands back what's left in a station.
+func _t_tradeskills() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var bad := []
+	var containers: Dictionary = GameData.recipes["containers"]
+	for rid: String in GameData.recipes["recipes"]:
+		var r: Dictionary = GameData.recipes["recipes"][rid]
+		for id: String in (r["in"] as Dictionary).keys() + (r["out"] as Dictionary).keys():
+			if not GameData.items.has(id):
+				bad.append("%s: no item %s" % [rid, id])
+		for c: String in r["containers"]:
+			if not containers.has(c):
+				bad.append("%s: no container %s" % [rid, c])
+		if not GameData.skills["skills"].has(str(r["skill"])):
+			bad.append("%s: no skill %s" % [rid, r["skill"]])
+	var kinds := {}
+	for st: Array in z.stations:
+		kinds[st[0]] = int(kinds.get(st[0], 0)) + 1
+	print("tradeskills: %d recipes, problems %s; stations in %s: %s" % [GameData.recipes["recipes"].size(), bad, z.zone_id, kinds])
+	p.pack.clear()
+	p.level = 10
+	p.recalc_stats()
+	var oven: Vector3 = z.stations.filter(func(st: Array) -> bool: return st[0] == "oven")[0][1]
+	var fill := func(entries: Array) -> void:  # onto the cursor and into the station's slots, as a player would
+		for i in entries.size():
+			p.pack.add(entries[i][0], entries[i][1])
+			World.request_click(p.entity_id, _where(p, entries[i][0]))
+			World.request_click(p.entity_id, "c:%d" % i)
+	# too far, then up close
+	p.global_position = z.ground(oven.x + 20.0, oven.z) + Vector3.UP
+	said.clear()
+	World.request_station_open(p.entity_id, "oven")
+	var far: String = said.back() if not said.is_empty() else ""
+	p.global_position = z.ground(oven.x, oven.z + 2.5) + Vector3.UP
+	World.request_station_open(p.entity_id, "oven")
+	print("tradeskills: from 20 m -> '%s'; up close -> window %s" % [far, p.station_kind])
+	# bread, then a wrong mix
+	p.skills["cooking"] = 0
+	fill.call([["bag_of_flour", 1], ["vial_of_water", 1]])
+	said.clear()
+	World.request_combine(p.entity_id, "c")
+	print("tradeskills: flour + water -> '%s'; the oven holds %s" % [said.back() if not said.is_empty() else "", p.station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty())])
+	World.request_station_close(p.entity_id)
+	World.request_station_open(p.entity_id, "oven")
+	fill.call([["raw_meat", 1], ["vial_of_water", 1]])
+	said.clear()
+	World.request_combine(p.entity_id, "c")
+	print("tradeskills: meat + water -> '%s'" % [said.back() if not said.is_empty() else ""])
+	World.request_station_close(p.entity_id)
+	# fifty roasts: the skill climbs until the recipe is trivial
+	var made := 0
+	for k in 50:
+		p.pack.clear()
+		World.request_station_open(p.entity_id, "oven")
+		fill.call([["raw_meat", 1], ["jar_of_spices", 1]])
+		World.request_combine(p.entity_id, "c")
+		for e: Dictionary in p.station_items:
+			if not e.is_empty() and e["item"] == "roast_meat":
+				made += 1
+		World.request_station_close(p.entity_id)
+	print("tradeskills: 50 roasts -> %d made, cooking skill %d (trivial 12)" % [made, World.skill_value(p, "cooking")])
+	# tailoring in a sewing kit
+	p.pack.clear()
+	p.pack.add_entry(Pack.entry("sewing_kit"))
+	var kit := _where(p, "sewing_kit")
+	p.pack.add("wolf_pelt", 1)
+	World.request_click(p.entity_id, _where(p, "wolf_pelt"))
+	World.request_click(p.entity_id, "b:%s:0" % kit.get_slice(":", 1))
+	p.pack.add("tanning_salts", 1)
+	World.request_click(p.entity_id, _where(p, "tanning_salts"))
+	World.request_click(p.entity_id, "b:%s:1" % kit.get_slice(":", 1))
+	p.skills["tailoring"] = 40
+	World.request_combine(p.entity_id, kit)
+	print("tradeskills: a wolf pelt and salts in the sewing kit -> %s" % [(p.pack.get_at(kit)["contents"] as Array).filter(func(e: Dictionary) -> bool: return not e.is_empty())])
+	# smithing: the hammer stays in the forge
+	var forge: Vector3 = z.stations.filter(func(st: Array) -> bool: return st[0] == "forge")[0][1]
+	p.global_position = z.ground(forge.x + 2.5, forge.z) + Vector3.UP
+	World.request_station_open(p.entity_id, "forge")
+	p.skills["smithing"] = 60
+	fill.call([["small_brick_of_ore", 1], ["water_flask", 1], ["smithy_hammer", 1]])
+	World.request_combine(p.entity_id, "c")
+	print("tradeskills: ore + flask + hammer in the forge -> %s" % [p.station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()).map(func(e: Dictionary) -> String: return e["item"])])
+	# walking away hands everything back
+	p.global_position = z.ground(forge.x + 20.0, forge.z) + Vector3.UP
+	await _wait(0.3)
+	print("tradeskills: walked away -> window %s; bar and hammer back in the pack: %d, %d" % ["open" if p.station_kind != "" else "closed", p.pack.count("iron_bar"), p.pack.count("smithy_hammer")])
+	# eating and drinking
+	p.pack.clear()
+	p.buffs.clear()
+	p.pack.add("roast_meat", 1)
+	p.pack.add("hunters_pie", 1)
+	p.pack.add("healing_potion", 2)
+	p.pack.add("antidote", 1)
+	World.request_use_item(p.entity_id, _where(p, "roast_meat"))
+	var str0: int = p.attributes.get("str", 0)
+	World.request_use_item(p.entity_id, _where(p, "hunters_pie"))
+	var meals: Array = p.buffs.keys().filter(func(b: String) -> bool: return b.begins_with("meal_"))
+	p.hp = 1
+	World.request_use_item(p.entity_id, _where(p, "healing_potion"))
+	var healed := p.hp
+	said.clear()
+	World.request_use_item(p.entity_id, _where(p, "healing_potion"))
+	var again: String = said.back() if not said.is_empty() else ""
+	p.dots.append({"spell": "rogue_venom", "caster_id": -1, "damage": 5, "ticks": 5, "next": 3.0})
+	p.snare_left = 10.0
+	World.request_use_item(p.entity_id, _where(p, "antidote"))
+	print("tradeskills: meals -> %s (STR %d -> %d); a healing potion 1 -> %d hp; a second at once -> '%s'; antidote -> dots %d, snare %.0f" % [meals, str0,
+			p.attributes.get("str", 0), healed, again, p.dots.size(), p.snare_left])
+	# a recipe book's tooltip
+	var tip: String = main.hud._item_tooltip("hearthside_cookbook")
+	print("tradeskills: the cookbook reads:\n%s" % "\n".join(tip.split("\n").slice(0, 5)))
+	World.log_message.disconnect(listen)
+	p.pack.clear()
+	p.buffs.clear()
+	p.level = 1
+	p.recalc_stats()
+
+
+## The crafters' corners: the stations, the provisioner, the combine window
+## and a sewing kit, to look at.
+func _t_crafters_emberhold() -> void:
+	await _crafters()
+
+
+func _t_crafters_lanternhold() -> void:
+	await _crafters()
+
+
+func _t_crafters_rainhold() -> void:
+	await _crafters()
+
+
+func _crafters() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	var c := Vector3.ZERO
+	for st: Array in z.stations:
+		if st[0] != "campfire":
+			c += (st[1] as Vector3) / 4.0
+	var view := Vector3(c.x + 9.0, 0, c.z + 9.0)
+	p.global_position = Vector3(view.x, z.surface_at(view.x, view.z) + 0.1, view.z)
+	p.face_toward(Vector3(c.x, p.global_position.y, c.z))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 8.0
+	p.pitch = -0.35
+	await _wait(1.2)
+	await _shot("9zy_crafters_%s" % z.zone_id)
+	var oven: Vector3 = z.stations.filter(func(st: Array) -> bool: return st[0] == "oven")[0][1]
+	var fwd := Vector3(oven.x - c.x, 0, oven.z - c.z).normalized()
+	var at := Vector3(c.x, 0, c.z) + fwd * 2.0
+	p.global_position = Vector3(at.x, z.surface_at(at.x, at.z) + 0.1, at.z)
+	p.face_toward(Vector3(oven.x, p.global_position.y, oven.z))
+	p.pack.clear()
+	p.pack.add_entry(Pack.entry("sewing_kit"))
+	p.pack.add("raw_meat", 3)
+	p.pack.add("jar_of_spices", 3)
+	p.pack.add("hearthside_cookbook", 1)
+	World.request_station_open(p.entity_id, "oven")
+	World.request_station_add(p.entity_id, _where(p, "raw_meat"))
+	main.hud._toggle_bag(int(_where(p, "sewing_kit").get_slice(":", 1)))
+	await _wait(0.8)
+	await _shot("9zy_combine_%s" % z.zone_id)
+	main.hud._close_all_bags()
+	World.request_station_close(p.entity_id)
+	p.pack.clear()
+	World.time_override = -1.0
 
 
 ## Walks the player across one border: from a spot in the current zone, along

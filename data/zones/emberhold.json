@@ -321,6 +321,46 @@
         42
       ],
       "size": 2
+    },
+    {
+      "type": "prop",
+      "id": "forge",
+      "pos": [
+        -39,
+        30
+      ],
+      "yaw": 90,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "oven",
+      "pos": [
+        -32,
+        23
+      ],
+      "yaw": 0,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "loom",
+      "pos": [
+        -25,
+        30
+      ],
+      "yaw": -90,
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "id": "brew_barrel",
+      "pos": [
+        -32,
+        37
+      ],
+      "yaw": 180,
+      "collide": "box"
     }
   ],
   "passes": [
@@ -548,6 +588,17 @@
       "face": [
         -19.6,
         0
+      ]
+    },
+    {
+      "id": "provisioner_hesta",
+      "pos": [
+        -30.5,
+        31.5
+      ],
+      "face": [
+        -26,
+        30
       ]
     }
   ],

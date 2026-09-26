@@ -1257,5 +1257,119 @@
         "slashes"
       ]
     }
+  },
+  "provisioner_hesta": {
+    "name": "Provisioner Hesta",
+    "title": "Provisioner",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "emberhold",
+    "merchant": {
+      "sells": [
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}: flour and spices for the [oven], thread and salts for [tailoring], herbs and vials for [alchemy], ore and a hammer for the [forge]. Press G to see.",
+      "oven": "Ovens bake, campfires roast. Put your ingredients in, press Combine. The Hearthside Cookbook tells you what goes with what.",
+      "tailoring": "A sewing kit's a bag you can combine in: tan your hides with salts, then stitch the leather with thread. Cloth wants the loom. My pattern book has the rest.",
+      "alchemy": "A mortar and pestle for potions, the brew barrel for the big draughts. Herbs and clear water in everything. The Alchemist's Notes are cheap.",
+      "forge": "Keep the hammer in the forge with the ore and a flask of water; it stays, the rest becomes metal. Bars first, then blades. The Smith's Handbook will set you straight.",
+      "unknown": "Ask round Emberhold, {name}."
+    }
+  },
+  "provisioner_sunniva": {
+    "name": "Provisioner Sunniva",
+    "title": "Provisioner",
+    "level": 20,
+    "model": "mage",
+    "weapon": "",
+    "faction": "lanternhold",
+    "merchant": {
+      "sells": [
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}: flour and spices for the [oven], thread and salts for [tailoring], herbs and vials for [alchemy], ore and a hammer for the [forge]. Press G to see.",
+      "oven": "Ovens bake, campfires roast. Put your ingredients in, press Combine. The Hearthside Cookbook tells you what goes with what.",
+      "tailoring": "A sewing kit's a bag you can combine in: tan your hides with salts, then stitch the leather with thread. Cloth wants the loom. My pattern book has the rest.",
+      "alchemy": "A mortar and pestle for potions, the brew barrel for the big draughts. Herbs and clear water in everything. The Alchemist's Notes are cheap.",
+      "forge": "Keep the hammer in the forge with the ore and a flask of water; it stays, the rest becomes metal. Bars first, then blades. The Smith's Handbook will set you straight.",
+      "unknown": "Ask round Lanternhold, {name}."
+    }
+  },
+  "provisioner_tamu": {
+    "name": "Provisioner Tamu",
+    "title": "Provisioner",
+    "level": 20,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}: flour and spices for the [oven], thread and salts for [tailoring], herbs and vials for [alchemy], ore and a hammer for the [forge]. Press G to see.",
+      "oven": "Ovens bake, campfires roast. Put your ingredients in, press Combine. The Hearthside Cookbook tells you what goes with what.",
+      "tailoring": "A sewing kit's a bag you can combine in: tan your hides with salts, then stitch the leather with thread. Cloth wants the loom. My pattern book has the rest.",
+      "alchemy": "A mortar and pestle for potions, the brew barrel for the big draughts. Herbs and clear water in everything. The Alchemist's Notes are cheap.",
+      "forge": "Keep the hammer in the forge with the ore and a flask of water; it stays, the rest becomes metal. Bars first, then blades. The Smith's Handbook will set you straight.",
+      "unknown": "Ask round Rainhold, {name}."
+    }
   }
 }

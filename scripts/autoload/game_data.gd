@@ -11,6 +11,7 @@ var items: Dictionary = {}
 var models: Dictionary = {}
 var npcs: Dictionary = {}
 var quests: Dictionary = {}
+var recipes: Dictionary = {}  # data/recipes.json: "recipes" and "containers"
 var factions: Dictionary = {}
 var deities: Dictionary = {}
 var loot: Dictionary = {}
@@ -27,6 +28,7 @@ func _ready() -> void:
 	models = _load("res://data/models.json")
 	npcs = _load("res://data/npcs.json")
 	quests = _load("res://data/quests.json")
+	recipes = _load("res://data/recipes.json")
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
 	loot = _load("res://data/loot.json")
@@ -55,6 +57,8 @@ func load_zone(zone_id: String) -> Dictionary:
 ## never above the table's max; 0 if the class can't learn it.
 func skill_cap(cls: String, skill_id: String, level: int) -> int:
 	var spec: Dictionary = skills.get("skills", {}).get(skill_id, {})
+	if spec.has("flat"):  # tradeskills: the same cap for everyone at every level
+		return int(spec["flat"])
 	if level < int(spec.get("from", {}).get(cls, 0)):
 		return 0  # learned later (Dual Wield at 13)
 	var per := int(spec.get("caps", {}).get(cls, 0))

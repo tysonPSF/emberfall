@@ -18,6 +18,8 @@ signal camped(player: Player)
 signal service_opened(npc: Npc, kind: String)  # kind: "shop" or "bank"
 signal service_changed
 signal service_closed
+signal station_opened(kind: String)  # a crafting station's combine window
+signal station_closed
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
 signal shot_fired(from: Entity, to: Entity, projectile: String)
@@ -301,6 +303,8 @@ func _physics_process(delta: float) -> void:
 			_check_trade(obj)
 		if obj is Player and (obj as Player).service_npc_id >= 0:
 			_check_service(obj)
+		if obj is Player and (obj as Player).station_kind != "":
+			_check_station(obj)
 		if obj is Player and (obj as Player).camp_left > 0.0:
 			_update_camp(obj, delta)
 		if obj is Player and is_instance_valid(obj):
@@ -625,6 +629,205 @@ func _fish(p: Player) -> bool:
 	say(p, "You caught %s!" % GameData.item_name(catch), C_LOOT)
 	p.inventory_changed.emit()
 	return true
+
+
+# ---------------------------------------------------------------- tradeskills
+
+const STATION_SLOTS := 10
+
+
+## Clicked an oven, forge, loom, brew barrel or campfire: its combine window
+## opens with ten empty slots of your own (closing it hands back what's left).
+func request_station_open(player_id: int, kind: String) -> void:
+	if _remote(&"request_station_open", [player_id, kind]):
+		return
+	var p := get_object(player_id) as Player
+	var z := zone_of(p)
+	if p == null or p.dead or z == null or not GameData.recipes.get("containers", {}).has(kind):
+		return
+	if not z.station_near(kind, p.global_position):
+		say(p, "You need to be closer to use that.", C_WARN)
+		return
+	if p.station_kind != "":
+		_close_station(p)
+	p.station_kind = kind
+	p.station_pos = p.global_position
+	p.station_items = []
+	for i in STATION_SLOTS:
+		p.station_items.append({})
+	_ui(p, &"station_opened", [kind])
+	p.inventory_changed.emit()
+
+
+func request_station_close(player_id: int) -> void:
+	if _remote(&"request_station_close", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p != null and p.station_kind != "":
+		_close_station(p)
+
+
+func _close_station(p: Player) -> void:
+	var left := p.station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty())
+	p.station_items = []
+	p.station_kind = ""
+	for e: Dictionary in left:
+		if not p.pack.add_entry(e):
+			if p.cursor.is_empty():
+				p.cursor = e
+			else:
+				p.trade_items.append(e)  # held for you until there's room, like a trade's leftovers
+	_ui(p, &"station_closed")
+	p.inventory_changed.emit()
+
+
+func _check_station(p: Player) -> void:
+	if p.dead or p.global_position.distance_to(p.station_pos) > 6.0:
+		say(p, "You walked away from the %s." % container_name(p.station_kind).to_lower(), C_WARN)
+		_close_station(p)
+
+
+## Shift-click with a station open: the item goes into its first free slot.
+func request_station_add(player_id: int, place: String) -> void:
+	if _remote(&"request_station_add", [player_id, place]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or p.station_kind == "" or not (place.begins_with("g:") or place.begins_with("b:")):
+		return
+	var e := _entry_at(p, place)
+	if e.is_empty() or e.has("contents"):
+		return
+	var free := p.station_items.find({})
+	if free < 0:
+		say(p, "The %s is full." % container_name(p.station_kind).to_lower(), C_WARN)
+		return
+	p.station_items[free] = e
+	_set_entry_at(p, place, {})
+	p.inventory_changed.emit()
+
+
+static func container_name(kind: String) -> String:
+	return str(GameData.recipes.get("containers", {}).get(kind, kind.capitalize()))
+
+
+## EQ's Combine: whatever sits in the container is matched against every
+## recipe for that kind of container. "c" is the open station; "g:<n>" a kit
+## (a bag with "combine") in a general slot. Success: the ingredients become
+## the result, in the container. Failure: they're lost, except tools ("keep").
+## Below the recipe's trivial each try may raise the skill.
+func request_combine(player_id: int, where: String) -> void:
+	if _remote(&"request_combine", [player_id, where]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var kind := ""
+	var slots: Array
+	if where == "c":
+		if p.station_kind == "":
+			return
+		kind = p.station_kind
+		slots = p.station_items
+	elif where.begins_with("g:"):
+		var kit := p.pack.get_at(where)
+		kind = str(GameData.item(str(kit.get("item", ""))).get("combine", ""))
+		if kind == "" or not kit.has("contents"):
+			return
+		slots = kit["contents"]
+	else:
+		return
+	var have := {}
+	for e: Dictionary in slots:
+		if not e.is_empty():
+			var id := GameData.base_item(str(e["item"]))
+			have[id] = int(have.get(id, 0)) + int(e.get("count", 1))
+	if have.is_empty():
+		say(p, "There's nothing in the %s to combine." % container_name(kind).to_lower(), C_WARN)
+		return
+	var recipe_id := ""
+	for rid: String in GameData.recipes["recipes"]:
+		var r: Dictionary = GameData.recipes["recipes"][rid]
+		if kind in (r["containers"] as Array) and _same_counts(have, r["in"]):
+			recipe_id = rid
+			break
+	if recipe_id == "":
+		say(p, "You cannot combine these items in this container type!", C_WARN)
+		return
+	var r: Dictionary = GameData.recipes["recipes"][recipe_id]
+	var skill := str(r["skill"])
+	var value := skill_value(p, skill)
+	var trivial := int(r["trivial"])
+	var chance := 0.95 if value >= trivial else clampf(0.95 - (trivial - value) * 0.015, 0.1, 0.95)
+	if value < trivial:
+		try_skill_up(p, skill)
+	var keep: Array = r.get("keep", [])
+	for i in slots.size():  # the ingredients are used up either way; tools stay
+		var e: Dictionary = slots[i]
+		if not e.is_empty() and not GameData.base_item(str(e["item"])) in keep:
+			slots[i] = {}
+	if randf() < chance:
+		for out_id: String in r["out"]:
+			var n := int(r["out"][out_id])
+			var entry := Pack.entry(out_id, n)
+			var free := slots.find({})
+			if free >= 0:
+				slots[free] = entry
+			elif not p.pack.add_entry(entry):
+				p.trade_items.append(entry)
+		var names: Array = (r["out"] as Dictionary).keys().map(func(id: String) -> String: return GameData.item_name(id))
+		say(p, "You have fashioned the items together to create something new: %s." % ", ".join(names), C_LOOT)
+		if value >= trivial:
+			say(p, "This is too easy for you to learn anything more from.", C_SYSTEM)
+	else:
+		say(p, "You lacked the skills to fashion the items together.", C_WARN)
+	p.inventory_changed.emit()
+
+
+static func _same_counts(have: Dictionary, want: Dictionary) -> bool:
+	if have.size() != want.size():
+		return false
+	for id: String in want:
+		if int(have.get(id, 0)) != int(want[id]):
+			return false
+	return true
+
+
+## Right-click on a meal or a potion in your bags: eat it or drink it. Items
+## with "use": {spell[, recast, group]}; one is used up. Meals replace each
+## other (one meal at a time); potions of a "group" share a cooldown.
+func request_use_item(player_id: int, place: String) -> void:
+	if _remote(&"request_use_item", [player_id, place]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or not (place.begins_with("g:") or place.begins_with("b:")):
+		return
+	var e := _entry_at(p, place)
+	if e.is_empty():
+		return
+	var it := GameData.item(str(e["item"]))
+	var use: Dictionary = it.get("use", {})
+	if use.is_empty() or not GameData.spells.has(str(use["spell"])):
+		return
+	var key := "item:" + str(use.get("group", GameData.base_item(str(e["item"]))))
+	if p.cooldowns.has(key):
+		say(p, "You can't use that again yet. Ready in %ds." % ceili(float(p.cooldowns[key])), C_WARN)
+		return
+	var spell_id := str(use["spell"])
+	var s: Dictionary = GameData.spells[spell_id]
+	if s.get("meal", false):
+		for b: String in p.buffs.keys():
+			if GameData.spells.get(b, {}).get("meal", false):
+				p.buffs.erase(b)
+		p.recalc_stats()
+	if use.has("recast"):
+		p.cooldowns[key] = float(use["recast"])
+	e["count"] = int(e["count"]) - 1
+	if int(e["count"]) <= 0:
+		_set_entry_at(p, place, {})
+	if not s.get("meal", false):
+		say(p, "You drink the %s." % str(it["name"]).to_lower(), C_SPELL)
+	_finish_spell(p, spell_id, p, true)
+	p.inventory_changed.emit()
 
 
 ## Right-clicking an equipped item with a "click": {spell, recast} casts that
@@ -1339,6 +1542,15 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(c, "You are as quiet as a cat stalking its prey.", C_SPELL)
 		"fish":
 			_fish(c as Player)
+		"restore_mana":
+			t.mana = mini(t.max_mana, t.mana + power)
+			t.stats_changed.emit()
+			say(t, "You feel your mind clear.", C_SPELL)
+		"cure":  # an antidote: poisons, bleeding and slowing gone
+			t.dots.clear()
+			t.snare_left = 0.0
+			t.stats_changed.emit()
+			say(t, "The poison leaves your blood.", C_SPELL)
 		"vanish":  # everything hunting you forgets you, and you're hidden
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
@@ -1623,7 +1835,7 @@ func request_click(player_id: int, place: String) -> void:
 		return
 	var kind := place.get_slice(":", 0)
 	var here := _entry_at(p, place)
-	if kind == "k" and _service_npc(p, "bank") == null or kind == "t" and p.trade_npc_id < 0:
+	if kind == "k" and _service_npc(p, "bank") == null or kind == "t" and p.trade_npc_id < 0 or kind == "c" and p.station_kind == "":
 		return
 	if p.cursor.is_empty():
 		if here.is_empty():
@@ -1650,6 +1862,9 @@ func request_click(player_id: int, place: String) -> void:
 		if not p.pack.fits(place, held):
 			say(p, "A bag won't go inside another bag." if held.has("contents") else "That won't fit there.", C_WARN)
 			return
+	elif kind == "c" and held.has("contents"):
+		say(p, "A bag won't go in there.", C_WARN)
+		return
 	elif kind == "t":
 		if held.has("contents") and not Pack._bag_empty(held):
 			say(p, "Empty the bag first.", C_WARN)
@@ -1680,9 +1895,9 @@ func request_pick_one(player_id: int, place: String) -> void:
 	if _remote(&"request_pick_one", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.dead or not (place.begins_with("g:") or place.begins_with("b:") or place.begins_with("k:")):
+	if p == null or p.dead or not (place.begins_with("g:") or place.begins_with("b:") or place.begins_with("k:") or place.begins_with("c:")):
 		return
-	if place.begins_with("k:") and _service_npc(p, "bank") == null:
+	if place.begins_with("k:") and _service_npc(p, "bank") == null or place.begins_with("c:") and p.station_kind == "":
 		return
 	var here := _entry_at(p, place)
 	if here.is_empty() or here.has("contents"):
@@ -1778,6 +1993,8 @@ func _entry_at(p: Player, place: String) -> Dictionary:
 			return p.bank[int(arg)] if int(arg) >= 0 and int(arg) < p.bank.size() else {}
 		"t":
 			return p.trade_items[int(arg)] if int(arg) >= 0 and int(arg) < p.trade_items.size() else {}
+		"c":
+			return p.station_items[int(arg)] if int(arg) >= 0 and int(arg) < p.station_items.size() else {}
 	return {}
 
 
@@ -1798,6 +2015,9 @@ func _set_entry_at(p: Player, place: String, e: Dictionary) -> void:
 		"t":
 			if int(arg) >= 0 and int(arg) < p.trade_items.size():
 				p.trade_items[int(arg)] = e
+		"c":
+			if int(arg) >= 0 and int(arg) < p.station_items.size():
+				p.station_items[int(arg)] = e
 
 
 func _compact_trade(p: Player) -> void:

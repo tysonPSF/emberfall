@@ -541,6 +541,10 @@
     ],
     "loot": [
       {
+        "item": "raw_meat",
+        "chance": 0.35
+      },
+      {
         "item": "wolf_pelt",
         "chance": 0.55
       }
@@ -577,6 +581,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.35
+      },
       {
         "item": "wolf_pelt",
         "chance": 0.6
@@ -618,6 +626,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.5
+      },
       {
         "item": "bear_claw",
         "chance": 0.5
@@ -1016,6 +1028,10 @@
     ],
     "loot": [
       {
+        "item": "small_brick_of_ore",
+        "chance": 0.15
+      },
+      {
         "item": "bone_chips",
         "chance": 0.6
       }
@@ -1141,6 +1157,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "frog_legs",
+        "chance": 0.3
+      },
       {
         "item": "mire_toad_skin",
         "chance": 0.55
@@ -1596,6 +1616,10 @@
     ],
     "loot": [
       {
+        "item": "raw_meat",
+        "chance": 0.45
+      },
+      {
         "item": "boar_tusk",
         "chance": 0.5
       },
@@ -1637,6 +1661,10 @@
     ],
     "loot": [
       {
+        "item": "raw_meat",
+        "chance": 0.45
+      },
+      {
         "item": "boar_tusk",
         "chance": 0.6
       },
@@ -1677,6 +1705,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 1.0
+      },
       {
         "item": "boar_tusk",
         "chance": 1.0,
@@ -2024,6 +2056,10 @@
     ],
     "loot": [
       {
+        "item": "raw_meat",
+        "chance": 0.4
+      },
+      {
         "item": "ram_horn",
         "chance": 0.45
       },
@@ -2101,6 +2137,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "large_brick_of_ore",
+        "chance": 0.25
+      },
       {
         "item": "sunstone_shard",
         "chance": 0.45
@@ -2969,6 +3009,10 @@
     ],
     "loot": [
       {
+        "item": "frog_legs",
+        "chance": 0.4
+      },
+      {
         "item": "frog_skin",
         "chance": 0.5
       }
@@ -3010,6 +3054,10 @@
       0
     ],
     "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      },
       {
         "item": "croc_hide",
         "chance": 0.45
