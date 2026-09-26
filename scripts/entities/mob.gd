@@ -211,11 +211,11 @@ func _physics_process(delta: float) -> void:
 				if wander_radius > 0.0 and randf() < 0.6:
 					var a := randf() * TAU
 					var r := randf() * wander_radius
-					_wander_target = home + Vector3(cos(a) * r, 0.0, sin(a) * r)
+					_wander_target = nav_snap(home + Vector3(cos(a) * r, 0.0, sin(a) * r))
 					state = State.WANDER
 			_scan_for_aggro(delta)
 		State.WANDER:
-			move = _dir_to(_wander_target)
+			move = nav_dir(_wander_target, delta)
 			move_speed = speed * 0.35
 			if _flat_dist(_wander_target) < 0.8:
 				state = State.IDLE
@@ -232,7 +232,7 @@ func _physics_process(delta: float) -> void:
 				auto_attack = true
 				face_toward(t.global_position)
 				if distance_to(t) > World.melee_range() * 0.7:
-					move = _dir_to(t.global_position)
+					move = nav_dir(t.global_position, delta)
 		State.FLEE:
 			var t := top_hated()
 			if t == null or _flat_dist(home) > float(World.cfg("mob_leash", 130.0)):
@@ -244,7 +244,7 @@ func _physics_process(delta: float) -> void:
 				move = -_dir_to(t.global_position)
 				move_speed = speed * 0.55
 		State.RETURN:
-			move = _dir_to(home)
+			move = nav_dir(home, delta)
 			if _flat_dist(home) < 1.0:
 				state = State.IDLE
 				hp = max_hp

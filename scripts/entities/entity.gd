@@ -6,6 +6,9 @@ extends CharacterBody3D
 signal stats_changed
 
 const GRAVITY := 22.0
+const NAV_DIRECT := 3.0  # closer than this, walk straight at the goal (melee, the last step)
+const NAV_REPLAN := 0.6  # seconds between re-planning a path to a moving goal
+static var nav_enabled := true  # tests switch pathfinding off to compare
 
 var entity_id := -1
 var display_name := ""
@@ -42,6 +45,10 @@ var visual: Node3D  # CharacterModel when the entity has a rigged model
 var look: Dictionary = {}  # how to draw this entity; corpses copy it
 var worn_gear: Variant = null  # slots whose gear parts show (mobs); null shows the model as authored
 var nameplate: Label3D
+var _path := PackedVector3Array()  # the route being walked (server), from the zone's navigation map
+var _path_goal := Vector3.INF
+var _path_step := 0
+var _path_age := 0.0
 var net_pos := Vector3.INF  # client: where the server last said this entity is
 var net_rot := 0.0
 
@@ -94,6 +101,72 @@ func buff_total(stat: String) -> int:
 	for b: Dictionary in buffs.values():
 		total += int(b["stats"].get(stat, 0))
 	return total
+
+
+
+## Which way to walk to reach a goal around whatever stands in the way. Most
+## of the time nothing does: one ray at knee height says so and the entity
+## walks straight. Only when something blocks it does it ask the zone's
+## navigation map (Zone bakes it at load) for a path, and it plans again only
+## when the goal has moved, at most every NAV_REPLAN seconds. Straight at the
+## goal when close, when the map isn't ready, or when there is no path.
+func nav_dir(goal: Vector3, delta: float) -> Vector3:
+	if Vector2(goal.x - global_position.x, goal.z - global_position.z).length() < NAV_DIRECT:
+		_path = PackedVector3Array()
+		return _flat_dir(goal)
+	var map := get_world_3d().navigation_map
+	if not nav_enabled or NavigationServer3D.map_get_iteration_id(map) == 0:
+		return _flat_dir(goal)
+	_path_age -= delta
+	var moved := goal.distance_to(_path_goal) if _path_goal != Vector3.INF else INF
+	if (_path_age <= 0.0 and moved > 1.5) or moved > 8.0:  # a new goal altogether plans at once
+		_path_age = NAV_REPLAN + randf() * 0.25  # staggered, so a pack doesn't plan on the same frame
+		_path_goal = goal
+		_path_step = 0
+		_path = PackedVector3Array() if _clear_line(goal) else NavigationServer3D.map_get_path(map, global_position, goal, true)
+	if _path.is_empty():
+		return _flat_dir(goal)
+	while _path_step < _path.size() and Vector2(_path[_path_step].x - global_position.x, _path[_path_step].z - global_position.z).length() < 0.7:
+		_path_step += 1
+	if _path_step >= _path.size():
+		return _flat_dir(goal)
+	return _flat_dir(_path[_path_step])
+
+
+## Nothing solid between here and there at knee height (trees, walls, fences,
+## a hill): checked in short hops that follow the ground, since one straight
+## ray between two knees can sail over a fence on a rise.
+func _clear_line(goal: Vector3) -> bool:
+	var zone := World.zone_of(self)
+	if zone == null:
+		return true
+	var space := get_world_3d().direct_space_state
+	var from := Vector2(global_position.x, global_position.z)
+	var to := Vector2(goal.x, goal.z)
+	var hops := maxi(1, ceili(from.distance_to(to) / 6.0))
+	var last := Vector3(from.x, zone.surface_at(from.x, from.y) + 0.6, from.y)
+	for k in hops:
+		var at := from.lerp(to, float(k + 1) / hops)
+		var next := Vector3(at.x, zone.surface_at(at.x, at.y) + 0.6, at.y)
+		if not space.intersect_ray(PhysicsRayQueryParameters3D.create(last, next, Layers.WORLD)).is_empty():
+			return false
+		last = next
+	return true
+
+
+## The nearest point the navigation map calls walkable (a wander target inside
+## a tree or a wall becomes one beside it).
+func nav_snap(pos: Vector3) -> Vector3:
+	var map := get_world_3d().navigation_map
+	if NavigationServer3D.map_get_iteration_id(map) == 0:
+		return pos
+	var p := NavigationServer3D.map_get_closest_point(map, pos)
+	return pos if p == Vector3.ZERO else p
+
+
+func _flat_dir(pos: Vector3) -> Vector3:
+	var d := Vector3(pos.x - global_position.x, 0.0, pos.z - global_position.z)
+	return d.normalized() if d.length_squared() > 0.0001 else Vector3.ZERO
 
 
 func face_toward(pos: Vector3) -> void:

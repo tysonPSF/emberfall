@@ -141,7 +141,7 @@ func _think(delta: float) -> Vector3:
 			target = null
 			return Vector3.ZERO
 		face_toward(t.global_position)
-		return _dir_to(t.global_position) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
+		return nav_dir(t.global_position, delta) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
 	_scan_timer -= delta
 	if not patrol.is_empty():
 		if _scan_timer <= 0.0:
@@ -149,7 +149,7 @@ func _think(delta: float) -> Vector3:
 			_look_for_trouble()
 		return _walk_patrol(delta)
 	if _flat(global_position, _post) > 0.8:
-		var dir := _dir_to(_post)
+		var dir := nav_dir(_post, delta)
 		if _flat(global_position, _post) < 1.5:
 			rotation.y = _post_yaw
 		return dir
@@ -174,7 +174,7 @@ func _walk_patrol(delta: float) -> Vector3:
 			_pause = float(guard.get("patrol_pause", 5.0))
 		_leg += _leg_step
 		return Vector3.ZERO
-	return _dir_to(goal)
+	return nav_dir(goal, delta)
 
 
 ## Hit by someone: fight back (and a townsperson calls the guards).
