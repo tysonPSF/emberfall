@@ -221,6 +221,7 @@ func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2)
 	zone.restore_corpses(_corpses_by_zone.get(zone_id, []))
 	player.global_position = zone.ground(arrive.x, arrive.y) + Vector3.UP
 	player.velocity = Vector3.ZERO
+	player.last_ground = Vector3.INF
 	hud.show_banner("Entering %s" % zone.zone_name)
 	World.say(player, "You have entered %s." % zone.zone_name)
 	_changing_zone = false
@@ -261,6 +262,7 @@ func _on_client_zone_moved(zone_id: String, pos: Vector3) -> void:
 	zone.load_zone(zone_id)
 	zone.add_player(player, pos)
 	player.velocity = Vector3.ZERO
+	player.last_ground = Vector3.INF  # that was the old zone's ground
 	hud.show_banner("Entering %s" % zone.zone_name)
 	_changing_zone = false
 
@@ -361,6 +363,8 @@ func _server_zone(zone_id: String) -> Zone:
 	var z := Zone.new()
 	holder.add_child(z)
 	z.load_zone(zone_id)
+	if OS.get_environment("EMBERFALL_ZONE_DELAY") != "":  # testing: act like a slow server building a zone
+		OS.delay_msec(int(OS.get_environment("EMBERFALL_ZONE_DELAY")))
 	_server_zones[zone_id] = z
 	print("zone up: %s" % zone_id)
 	return z

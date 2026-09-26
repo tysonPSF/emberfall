@@ -45,6 +45,9 @@ var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while i
 var pet_id := -1  # your pet's entity id, -1 with none
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
 var pet_hp := -1  # its health when you last left, to bring it back as it was
+var _zone_hold := 0.0  # online: seconds left standing still in a zone line, waiting for the server to move us
+var _held_line := false
+var last_ground := Vector3.INF  # the last spot we stood on solid ground in this zone
 var hotbar: Array = []  # HOTBAR_SLOTS entries, main bar (keys 1-0) then the Shift bar: "spell:<id>", "item:<id>", "act:<name>" or ""
 
 const HOTBAR_SLOTS := 20
@@ -912,6 +915,20 @@ func _physics_process(delta: float) -> void:
 	if snare_left > 0.0:
 		spd *= 0.5
 	spd *= _load_speed()
+	# Online, walking into a zone line: stand still until the server moves us.
+	# Building a zone it hasn't loaded yet can take it a few seconds, and the
+	# zone's edge is only a few steps past the line: without this you'd run
+	# off the end of the world while it thinks.
+	var line := World.zone.zone_line_at(global_position, -0.5) if not Net.is_authority() and World.zone != null else -1
+	if line < 0:
+		_held_line = false
+		_zone_hold = 0.0
+	elif not _held_line:
+		_held_line = true
+		_zone_hold = 8.0  # then you can walk out, if the server never answers
+	if _zone_hold > 0.0:
+		_zone_hold -= delta
+		dir = Vector3.ZERO
 	if dir != Vector3.ZERO and sitting and _may_ask("stand"):
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd
@@ -919,6 +936,8 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor() and not typing and Input.is_action_just_pressed("jump"):
 		velocity.y = JUMP_VELOCITY
 	move_and_slide()
-	if global_position.y < -60.0:
-		global_position = World.zone_of(self).bind_point + Vector3.UP
+	if is_on_floor():
+		last_ground = global_position
+	if global_position.y < -60.0:  # fell out of the world: back to the last solid ground, not across the map
+		global_position = (last_ground if last_ground != Vector3.INF else World.zone_of(self).bind_point) + Vector3.UP
 		velocity = Vector3.ZERO
