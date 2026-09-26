@@ -642,6 +642,201 @@
         "Ranger_LegRight": "#5e5448"
       },
       "wearable_slots": []
+    },
+    "mountain_ram": {
+      "path": "res://assets/creatures/mountain_ram.glb",
+      "rig": "own"
+    },
+    "sunhawk": {
+      "path": "res://assets/creatures/sunhawk.glb",
+      "rig": "own",
+      "scale": 0.9
+    },
+    "stone_guardian": {
+      "path": "res://assets/creatures/stone_knight.glb",
+      "hide": [
+        "Knight_Head",
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/stone_guardian_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/stone_guardian_chest.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "stone_colossus": {
+      "path": "res://assets/creatures/stone_knight.glb",
+      "scale": 0.95,
+      "hide": [
+        "Knight_Head",
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/stone_colossus_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/stone_guardian_chest.glb"
+        }
+      ],
+      "tint": {
+        "Knight_Body": "#d4ccc0",
+        "Knight_ArmLeft": "#d4ccc0",
+        "Knight_ArmRight": "#d4ccc0",
+        "Knight_LegLeft": "#d4ccc0",
+        "Knight_LegRight": "#d4ccc0",
+        "Knight_Cape": "#d4ccc0"
+      },
+      "wearable_slots": []
+    },
+    "sun_mummy": {
+      "path": "res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Minion.glb",
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mummy_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mummy_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/mummy_hips.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/mummy_arm_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/mummy_arm_r.glb"
+        },
+        {
+          "bone": "lowerleg.l",
+          "path": "res://assets/creatures/mummy_leg_l.glb"
+        },
+        {
+          "bone": "lowerleg.r",
+          "path": "res://assets/creatures/mummy_leg_r.glb"
+        }
+      ],
+      "tint": {
+        "Skeleton_Minion_Body": "#e0cca4",
+        "Skeleton_Minion_ArmLeft": "#e0cca4",
+        "Skeleton_Minion_ArmRight": "#e0cca4",
+        "Skeleton_Minion_LegLeft": "#e0cca4",
+        "Skeleton_Minion_LegRight": "#e0cca4",
+        "Skeleton_Minion_Head": "#e0cca4",
+        "Skeleton_Minion_Jaw": "#e0cca4",
+        "Skeleton_Minion_Cloak": "#e0a050"
+      },
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "mummy_priest": {
+      "path": "res://assets/creatures/mummy_priest_body.glb",
+      "scale": 0.86,
+      "hide": [
+        "Skeleton_Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mummy_priest_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mummy_priest_chest.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/mummy_arm_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/mummy_arm_r.glb"
+        }
+      ],
+      "tint": {
+        "Skeleton_Mage_ArmLeft": "#e0cca4",
+        "Skeleton_Mage_ArmRight": "#e0cca4",
+        "Skeleton_Mage_LegLeft": "#e0cca4",
+        "Skeleton_Mage_LegRight": "#e0cca4",
+        "Skeleton_Mage_Skull": "#e0cca4",
+        "Skeleton_Mage_Jaw": "#e0cca4"
+      },
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "sun_cultist": {
+      "path": "res://assets/creatures/sun_cultist_body.glb",
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/cult_hood.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "cult_hierophant": {
+      "path": "res://assets/creatures/cult_hierophant_body.glb",
+      "scale": 0.86,
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/cult_hierophant_hood.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
     }
   },
   "weapons": {
@@ -666,6 +861,10 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "elephant_statue": {"path": "res://assets/props/elephant_statue.glb"},
+    "sun_pillar": {"path": "res://assets/props/sun_pillar.glb"},
+    "broken_column": {"path": "res://assets/props/broken_column.glb"},
+    "sun_banner": {"path": "res://assets/props/sun_banner.glb"},
     "windmill": {"path": "res://assets/props/windmill.glb"},
     "windmill_sails": {"path": "res://assets/props/windmill_sails.glb"},
     "fence_wood": {"path": "res://assets/props/fence_wood.glb"},

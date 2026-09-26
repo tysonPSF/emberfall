@@ -299,21 +299,6 @@
         "Pass closed",
         "Hollowmere"
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        200,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Hollowmere"
-      ]
     }
   ],
   "passes": [
@@ -420,6 +405,23 @@
         ]
       ],
       "width": 3.0
+    },
+    {
+      "points": [
+        [
+          160,
+          -40
+        ],
+        [
+          190,
+          -12
+        ],
+        [
+          224,
+          0
+        ]
+      ],
+      "width": 3.0
     }
   ],
   "zone_lines": [
@@ -459,6 +461,25 @@
       "arrive_face": [
         0,
         -127
+      ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "sunward_steps",
+      "arrive": [
+        -199,
+        0
+      ],
+      "arrive_face": [
+        -159,
+        0
       ]
     }
   ],

@@ -13,7 +13,7 @@
   "stamina_regen": 8.0,
   "stamina_regen_delay": 1.5,
   "sprint_resume_at": 25.0,
-  "max_level": 15,
+  "max_level": 20,
   "day_seconds": 4320,
   "night_hours": [21, 5],
   "elders_blessing": {"xp_pct": 15, "until_level": 15},

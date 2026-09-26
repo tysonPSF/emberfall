@@ -325,10 +325,13 @@ func _client_timers(delta: float) -> void:
 	for dot: Dictionary in p.dots:
 		dot["next"] = maxf(0.0, float(dot.get("next", 0.0)) - delta)
 	p.root_left = maxf(0.0, p.root_left - delta)
+	p.snare_left = maxf(0.0, p.snare_left - delta)
 
 
 func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
+	e.snare_left = maxf(0.0, e.snare_left - delta)
+	e.stun_left = maxf(0.0, e.stun_left - delta)
 	if e is Player:
 		(e as Player).off_swing_timer = maxf(0.0, (e as Player).off_swing_timer - delta)
 	e.root_left = maxf(0.0, e.root_left - delta)
@@ -359,7 +362,7 @@ func _update_timers(e: Entity, delta: float) -> void:
 
 
 func _update_melee(e: Entity) -> void:
-	if not e.auto_attack:
+	if not e.auto_attack or e.stun_left > 0.0:
 		return
 	var t := e.valid_target_entity()
 	if not can_attack(e, t):
@@ -394,6 +397,9 @@ func _update_melee(e: Entity) -> void:
 ## One swing at a target with the weapon in a hand ("primary" or
 ## "secondary"): the target may avoid it, then it hits or misses.
 func _swing(e: Entity, t: Entity, hand: String) -> void:
+	if warded(t):
+		say(t, "%s's blow glances off your divine aura." % cap(e.display_name), C_SPELL)
+		return
 	if t is Player:
 		var avoided := _try_avoid(t as Player, e)
 		if avoided != "":
@@ -624,7 +630,7 @@ func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
 
 
 func damage(d: Entity, amount: int, src: Entity) -> void:
-	if d.dead:
+	if d.dead or warded(d):
 		return
 	d.hp -= amount
 	d.sitting = false
@@ -1085,6 +1091,9 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if s.get("from_behind", false) and not behind(c, t):
 		say(c, "You must be behind your target to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
+	if s.get("requires_hidden", false) and not c.hidden:
+		say(c, "You must be hidden to %s." % str(s["name"]).to_lower(), C_WARN)
+		return
 	if c.hidden and not str(s["type"]) in ["hide", "sneak"]:
 		if s.has("ambush"):
 			c.set_meta("ambush", float(s["ambush"]))  # an opener from the shadows hits harder
@@ -1182,6 +1191,35 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(c, "%s was hit by non-melee for %d points of damage." % [cap(t.display_name), power], C_SPELL)
 				say(t, "You were hit by non-melee for %d points of damage." % power, C_HIT_YOU)
 			damage(t, power, c)
+			if s.has("splash"):  # Cleave, Fireball: every other foe near the target
+				var hurt := roundi(power * float(s.get("splash_pct", 1.0)))
+				for m in get_mobs():
+					if m != t and not m.dead and can_attack(c, m) and m.distance_to(t) <= float(s["splash"]):
+						say(c, "%s is caught in the %s for %d points of damage." % [cap(m.display_name), str(s["name"]).to_lower(), hurt], C_YOU_HIT)
+						m.add_hate(c, float(hurt))
+						damage(m, hurt, c)
+		"taunt_area":
+			var turned := 0
+			for m in get_mobs():
+				if not m.dead and can_attack(c, m) and m.distance_to(c) <= float(s.get("range", 10)):
+					var top := 0.0
+					for v: float in m.hate.values():
+						top = maxf(top, v)
+					m.add_hate(c, top + 10.0 - float(m.hate.get(c.entity_id, 0.0)))
+					turned += 1
+			say(c, "You roar a challenge! %d foes turn on you." % turned if turned > 0 else "You roar a challenge, but no one is near to hear it.", C_SPELL)
+		"snare":
+			t.snare_left = float(s.get("duration", 20))
+			say(c, "%s's legs are bound by frost." % cap(t.display_name), C_SPELL)
+			if t is Player:
+				say(t, "Frost binds your legs; you slow to a crawl.", C_HIT_YOU)
+			t.add_hate(c, 5.0)
+		"stun":
+			t.stun_left = float(s.get("duration", 4))
+			say(c, "You throw dust in %s's eyes; it staggers, blinded." % t.display_name, C_SPELL)
+			if t is Player:
+				say(t, "You are blinded and can't act!", C_HIT_YOU)
+			t.add_hate(c, 8.0)
 		"heal":
 			t.hp = mini(t.max_hp, t.hp + power)
 			t.stats_changed.emit()
@@ -1257,6 +1295,14 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			t.add_hate(c, top + 10.0 - float(t.hate.get(c.entity_id, 0.0)))
 			say(c, "You taunt %s to ignore others and attack you!" % t.display_name, C_SPELL)
 	c.stats_changed.emit()
+
+
+## Under a ward (Divine Aura): no harm lands.
+static func warded(e: Entity) -> bool:
+	for spell_id: String in e.buffs:
+		if GameData.spells.get(spell_id, {}).get("ward", false):
+			return true
+	return false
 
 
 ## Whether an attacker stands behind its target (outside the arc in front of

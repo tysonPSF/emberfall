@@ -82,6 +82,10 @@ const SECTIONS := [
 	["rogue", "greenmoor"],
 	["rogue_guild", "emberhold_tavern"],
 	["venom_drop", "thornwood"],
+	["sunward_border", "hollowmere"],
+	["sunward", "sunward_steps"],
+	["sunward_life", "sunward_steps"],
+	["level20", "sunward_steps"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -3124,3 +3128,242 @@ func _t_venom_drop() -> void:
 			if sp is SpawnPoint and (sp as SpawnPoint).mob == null:
 				(sp as SpawnPoint).spawn()
 	print("venom_drop: %d thornback spiders killed -> %d venom sacs, %d spider silk on their corpses" % [kills, sacs, silk])
+
+
+## The Hollowmere - Sunward Steps border, walked both ways.
+func _t_sunward_border() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for leg: Array in [["hollowmere", Vector2(200, 0), Vector2(1, 0), "sunward_steps"], ["sunward_steps", Vector2(-196, 0), Vector2(-1, 0), "hollowmere"]]:
+		if main.zone.zone_id != leg[0]:
+			print("sunward_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+			return
+		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
+		for k in 400:
+			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
+				break
+			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+			p.move_and_slide()
+			await get_tree().physics_frame
+		await _wait(1.5)
+		for k in 20:
+			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
+				break
+			await _wait(0.5)
+		var z: Zone = main.zone
+		print("sunward_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
+				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
+
+
+## Sunward Steps: the terraces, the waystation, the shrines, the Great Temple.
+func _t_sunward() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 10.0
+	print("sunward: terraces from %.1f m at the waystation to %.1f m at the Great Temple" % [z.height_at(-170, -30), z.height_at(152, 32)])
+	for view: Array in [[Vector2(-192, 5), Vector2(-120, -5), "arrival"], [Vector2(-175, -10), Vector2(-178, -30), "waystation"], [Vector2(-80, 10), Vector2(40, 0), "terraces"],
+			[Vector2(-27, 95), Vector2(-27, 62), "shrine"], [Vector2(152, 75), Vector2(152, 32), "temple"], [Vector2(-50, -85), Vector2(-72, -112), "graveyard"],
+			[Vector2(18, 90), Vector2(18, 122), "cult"]]:
+		p.global_position = z.ground(view[0].x, view[0].y) + Vector3.UP
+		p.face_toward(z.ground(view[1].x, view[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 10.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zq_sunward_%s" % view[2])
+	var cam := Camera3D.new()
+	get_tree().root.add_child(cam)
+	cam.global_position = Vector3(-60, 190, 230)
+	cam.look_at(Vector3(20, 0, 0))
+	cam.far = 1200.0
+	cam.make_current()
+	var env: Environment = (z.find_children("*", "WorldEnvironment", false, false)[0] as WorldEnvironment).environment
+	env.fog_enabled = false
+	await _wait(1.0)
+	await _shot("9zq_sunward_overview")
+	env.fog_enabled = true
+	cam.queue_free()
+	World.time_override = 22.5
+	p.global_position = z.ground(152, 70) + Vector3.UP
+	p.face_toward(z.ground(152, 32))
+	await _wait(1.5)
+	await _shot("9zq_sunward_temple_night")
+	World.time_override = -1.0
+
+
+## Sunward Steps' people and monsters: all spawn, the three quests pay out,
+## Sahkrin and the dead rise at night.
+func _t_sunward_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("sunward_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	p.level = 18
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var ysolde: Npc = npcs["pilgrim_mother"]
+	var dov: Npc = npcs["quartermaster_dov"]
+	_stand_by(p, ysolde)
+	for word in ["hail", "pilgrims", "tokens", "pilgrims' rest", "sahkrin", "scarab"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("pilgrim_token", 4)
+	await _hand_in(p, ysolde, ["pilgrim_token"])
+	p.pack.add("sun_scarab", 1)
+	await _hand_in(p, ysolde, ["sun_scarab"])
+	_stand_by(p, dov)
+	for word in ["hail", "cult", "hierophant"]:
+		World.request_say(p.entity_id, word)
+	p.pack.add("hierophants_mask", 1)
+	p.pack.add("cult_sigil", 3)
+	await _hand_in(p, dov, ["hierophants_mask", "cult_sigil"])
+	await _wait(0.3)
+	print("sunward_life: rewards: boots %d, pendant %d, sunbreaker %d; quests done %s" % [p.pack.count("pilgrims_boots"), p.pack.count("dawn_tusk_pendant"),
+			p.pack.count("sunbreaker"), ["tokens_of_the_fallen", "the_unrisen", "the_false_sun"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := {}
+	for m in World.get_mobs():
+		if m.mob_id in ["sun_mummy", "mummy_priest"]:
+			night[m.mob_id] = int(night.get(m.mob_id, 0)) + 1
+	print("sunward_life: 23:00 -> %s" % night)
+	World.time_override = 12.0
+	for id: String in ["mountain_ram", "sunhawk", "stone_guardian", "stone_colossus", "sun_cultist", "cult_hierophant"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("sunward_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 4.0, at.z + 3.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zr_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
+
+## The new abilities for levels 16-20, each checked for what it does.
+func _t_level20() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	var said: Array = []
+	var listen := func(text: String, _c: Color) -> void: said.append(text)
+	World.log_message.connect(listen)
+	var target: Mob = _nearest_mob(p, "mountain_ram")
+	var ready := func(cls: String, spells: Array) -> void:
+		p.char_class = cls
+		p.level = 20
+		p.spells = spells
+		p.cooldowns.clear()
+		p.buffs.clear()
+		p.recalc_stats()
+		p.hp = p.max_hp
+		p.mana = p.max_mana
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		for m in World.get_mobs():
+			m.hate.clear()
+		target.max_hp = 100000
+		target.hp = target.max_hp
+		p.global_position = target.global_position + Vector3(2.0, 0.5, 0)
+		World.request_set_target(p.entity_id, target.entity_id)
+	# warrior
+	await ready.call("warrior", ["provoke", "defensive_stance", "cleave"])
+	var other: Mob = null  # a second foe right beside the target, for the area abilities
+	for m in World.get_mobs():
+		if m != target and not m.dead and (other == null or m.distance_to(target) < other.distance_to(target)):
+			other = m
+	other.set_physics_process(false)
+	other.global_position = target.global_position + Vector3(0, 0.3, 2.0)
+	other.max_hp = 100000
+	other.hp = other.max_hp
+	World.request_cast(p.entity_id, "provoke")
+	var ac0 := p.ac
+	World.request_cast(p.entity_id, "defensive_stance")
+	var ac1 := p.ac
+	said.clear()
+	World.request_cast(p.entity_id, "cleave")
+	await _wait(0.3)
+	print("level20: warrior: provoke turned %d; defensive stance AC %d -> %d; cleave splashed %s" % [World.get_mobs().filter(func(m: Mob) -> bool: return m.hate.has(p.entity_id)).size(),
+			ac0, ac1, said.filter(func(t: String) -> bool: return "caught in the cleave" in t).size() > 0])
+	# cleric
+	await ready.call("cleric", ["greater_healing", "divine_aura", "sunfire"])
+	p.hp = 1
+	World.request_set_target(p.entity_id, p.entity_id)
+	World.request_cast(p.entity_id, "greater_healing")
+	await _wait(3.4)
+	var healed := p.hp
+	World.request_cast(p.entity_id, "divine_aura")
+	var before := p.hp
+	World.damage(p, 50, target)
+	print("level20: cleric: greater healing 1 -> %d hp; under divine aura a 50-point blow took %d" % [healed, before - p.hp])
+	World.request_set_target(p.entity_id, target.entity_id)
+	var t_hp := target.hp
+	World.request_cast(p.entity_id, "sunfire")
+	await _wait(3.4)
+	print("level20: cleric: sunfire hit for %d" % (t_hp - target.hp))
+	# wizard
+	await ready.call("wizard", ["lightning_bolt", "frost_snare", "fireball"])
+	other.global_position = target.global_position + Vector3(0, 0.3, 3.0)
+	t_hp = target.hp
+	World.request_cast(p.entity_id, "lightning_bolt")
+	await _wait(3.2)
+	var bolt := t_hp - target.hp
+	World.request_cast(p.entity_id, "frost_snare")
+	await _wait(1.9)
+	var snared := target.snare_left
+	said.clear()
+	World.request_cast(p.entity_id, "fireball")
+	await _wait(3.9)
+	print("level20: wizard: lightning bolt %d; frost snare %.0f s; fireball splashed %s" % [bolt, snared, said.filter(func(t: String) -> bool: return "caught in the fireball" in t).size() > 0])
+	# rogue
+	await ready.call("rogue", ["hide", "assassinate", "blind", "deadly_poison"])
+	p.equipment.clear()
+	p.pack.clear()
+	p.pack.add("iron_dagger")
+	World.request_equip(p.entity_id, _where(p, "iron_dagger"))
+	target.set_physics_process(false)
+	said.clear()
+	World.request_cast(p.entity_id, "assassinate")
+	var refused: String = said.back() if not said.is_empty() else ""
+	var fwd := -target.global_transform.basis.z
+	fwd.y = 0.0
+	p.global_position = target.global_position + fwd.normalized() * 30.0 + Vector3.UP
+	await _wait(0.3)
+	for m in World.get_mobs():
+		m.hate.clear()
+	World.request_cast(p.entity_id, "hide")
+	await _wait(0.1)
+	p.global_position = target.global_position - fwd.normalized() * 2.0 + Vector3.UP * 0.3
+	await _wait(0.05)
+	p.hidden = true  # the teleport counts as walking; we're testing the strike, not the sneak
+	t_hp = target.hp
+	World.request_cast(p.entity_id, "assassinate")
+	await _wait(0.2)
+	var hit := t_hp - target.hp
+	target.set_physics_process(true)
+	World.request_cast(p.entity_id, "blind")
+	var stunned := target.stun_left
+	World.request_cast(p.entity_id, "deadly_poison")
+	print("level20: rogue: assassinate unhidden -> '%s'; from hiding %d damage; blind %.0f s; deadly poison up %s" % [refused, hit, stunned, p.buffs.has("deadly_poison")])
+	World.log_message.disconnect(listen)
+	target.hate.clear()
+	other.hate.clear()
+	other.set_physics_process(true)
+	p.char_class = saved_class
+	p.equipment.clear()
+	p.level = 1
+	p.recalc_stats()

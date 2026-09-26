@@ -1513,6 +1513,67 @@ def scarecrow_post():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Sunward Steps
+
+def elephant_statue():
+	"""Prabhagaj the Dawn-Tusk: a stone elephant standing on a plinth, trunk
+	raised to hold up a gilded sun disc. About 5 m tall, facing -Y."""
+	p = Prop("elephant_statue", 111)
+	p.box((3.2, 4.2, 1.0), (0, 0, 0.5), STONE_WARM, grad=(0.1, 0.9))           # plinth
+	p.box((3.5, 4.5, 0.25), (0, 0, 1.1), STONE_LIGHT, grad=(0.1, 0.7))
+	p.blob((2.1, 3.0, 1.9), (0, 0.2, 2.6), STONE_LIGHT, segs=(12, 8), grad=(0.05, 0.8))   # body
+	for x in (-0.65, 0.65):
+		for y in (-0.9, 1.2):
+			p.seg((x, y, 1.2), (x, y, 2.3), 0.38, 0.4, STONE_LIGHT, sides=8, grad=(0.2, 0.9))   # legs
+	p.blob((1.4, 1.3, 1.4), (0, -1.55, 3.2), STONE_LIGHT, segs=(10, 8), grad=(0.05, 0.8))   # head
+	for x in (-1, 1):
+		p.blob((0.2, 1.1, 1.2), (x * 0.85, -1.35, 3.25), STONE_WARM, segs=(8, 6), grad=(0.1, 0.8))   # ears
+		p.seg((x * 0.35, -2.0, 2.85), (x * 0.5, -2.6, 2.6), 0.13, 0.05, BONE, sides=6)   # tusks
+	pts = [(0, -2.1, 3.0), (0, -2.5, 3.5), (0, -2.55, 4.2), (0, -2.35, 4.8)]   # the trunk, raised
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.3 - i * 0.06, 0.26 - i * 0.06, STONE_LIGHT, sides=8, grad=(0.1, 0.8))
+	p.seg((0, -2.35, 5.3), (0, -2.47, 5.3), 0.75, 0.75, GOLD, sides=16, glow=0.35)   # the sun disc
+	for k in range(12):
+		a = k * math.tau / 12
+		p.seg((math.cos(a) * 0.72, -2.41, 5.3 + math.sin(a) * 0.72), (math.cos(a) * 1.05, -2.41, 5.3 + math.sin(a) * 1.05), 0.08, 0.0, GOLD, sides=4, glow=0.3)
+	return p.build(bevel=0.04)
+
+
+def sun_pillar():
+	"""A tall carved pillar crowned with a gilded sun disc, for shrine approaches."""
+	p = Prop("sun_pillar", 112)
+	p.box((1.1, 1.1, 0.4), (0, 0, 0.2), STONE_WARM)
+	p.seg((0, 0, 0.4), (0, 0, 4.2), 0.42, 0.36, STONE_LIGHT, sides=8, grad=(0.1, 0.9))
+	for z in (1.2, 2.6, 3.8):
+		p.seg((0, 0, z), (0, 0, z + 0.15), 0.46, 0.46, STONE_WARM, sides=8)
+	p.seg((0, 0.05, 4.9), (0, -0.05, 4.9), 0.65, 0.65, GOLD, sides=16, glow=0.35)
+	p.seg((0, 0, 4.2), (0, 0, 4.3), 0.2, 0.2, STONE_WARM, sides=8)
+	return p.build(bevel=0.03)
+
+
+def broken_column():
+	"""A fallen temple's column, snapped partway up, a drum lying beside it."""
+	p = Prop("broken_column", 113)
+	p.box((1.3, 1.3, 0.35), (0, 0, 0.17), STONE_WARM)
+	h = 1.6 + p.rng.uniform(0, 1.2)
+	p.seg((0, 0, 0.35), (0, 0, h), 0.5, 0.48, STONE_LIGHT, sides=10, grad=(0.1, 0.9), jitter=0.02)
+	p.seg((1.3, 0.6, 0.45), (2.3, 1.1, 0.45), 0.45, 0.45, STONE_LIGHT, sides=10, grad=(0.2, 0.9))
+	return p.build(bevel=0.03)
+
+
+def sun_banner():
+	"""The false-sun cult's banner: an orange cloth with a red sun, on a pole."""
+	p = Prop("sun_banner", 114)
+	p.seg((0, 0, 0), (0, 0, 3.4), 0.06, 0.05, WOOD, sides=5)
+	p.seg((-0.7, 0, 3.2), (0.7, 0, 3.2), 0.04, 0.04, WOOD, sides=4)
+	p.box((1.3, 0.05, 1.9), (0, 0, 2.2), EMBER, grad=(0.1, 0.6))
+	p.seg((0, -0.04, 2.45), (0, -0.08, 2.45), 0.38, 0.38, CLOTH_RED, sides=12)
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.4, -0.06, 2.45 + math.sin(a) * 0.4), (math.cos(a) * 0.62, -0.06, 2.45 + math.sin(a) * 0.62), 0.05, 0.0, CLOTH_RED, sides=3)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -1576,6 +1637,10 @@ PROPS = {
 	"farm_cart": farm_cart,
 	"wheat": wheat,
 	"scarecrow_post": scarecrow_post,
+	"elephant_statue": elephant_statue,
+	"sun_pillar": sun_pillar,
+	"broken_column": broken_column,
+	"sun_banner": sun_banner,
 }
 
 

@@ -499,6 +499,120 @@ def rake():
 	return p.build()
 
 
+# ---------------------------------------------------------------- levels 16-20
+
+def provoke():
+	p = Prop("provoke", 417)
+	p.blob((0.5, 0.45, 0.55), (0, 0, 0.55), CLOTH_RED, segs=(10, 8), glow=0.8)            # a roaring face of red
+	for k in range(3):
+		_ring(p, 0.45 + k * 0.22, 0.55, 0.03, CLOTH_RED, glow=1.2 - k * 0.3, sides=16, tilt=math.pi / 2)
+	return p.build()
+
+
+def defensive_stance():
+	p = Prop("defensive_stance", 419)
+	p.blob((0.95, 0.25, 1.05), (0, 0, 0.55), IRON, segs=(12, 8))                         # a tower shield
+	p.box((0.12, 0.3, 0.8), (0, -0.1, 0.55), STONE_LIGHT)
+	p.box((0.6, 0.3, 0.12), (0, -0.1, 0.7), STONE_LIGHT)
+	return p.build()
+
+
+def cleave():
+	p = Prop("cleave", 421)
+	for k in range(5):                                                                    # a wide arc
+		a0, a1 = math.radians(200 + k * 28), math.radians(228 + k * 28)
+		p.seg((math.cos(a0) * 0.7, 0, 0.55 + math.sin(a0) * 0.7), (math.cos(a1) * 0.7, 0, 0.55 + math.sin(a1) * 0.7), 0.08, 0.08, GOLD, sides=4, glow=1.4)
+	p.seg((0.2, 0, 0.1), (0.2, 0, 0.9), 0.05, 0.05, WOOD, sides=5)                        # an axe at the center
+	p.blob((0.4, 0.08, 0.3), (0.38, 0, 0.8), IRON, segs=(8, 4))
+	return p.build()
+
+
+def greater_healing():
+	p = Prop("greater_healing", 423)
+	p.box((0.28, 0.1, 0.95), (0, 0, 0.55), GOLD, glow=1.8)                                 # a bright cross
+	p.box((0.95, 0.1, 0.28), (0, 0, 0.6), GOLD, glow=1.8)
+	_ring(p, 0.6, 0.58, 0.04, CLOTH_WHITE, glow=1.2, sides=18, tilt=math.pi / 2)
+	return p.build()
+
+
+def divine_aura():
+	p = Prop("divine_aura", 425)
+	p.blob((0.4, 0.3, 0.6), (0, 0, 0.5), CLOTH_WHITE, segs=(8, 6))                         # a figure
+	p.blob((1.2, 1.2, 1.3), (0, 0, 0.55), GOLD, segs=(12, 8), glow=0.8)                    # in a golden shell
+	return p.build()
+
+
+def sunfire():
+	p = Prop("sunfire", 427)
+	p.blob((0.55, 0.55, 0.55), (0, 0, 0.6), GOLD, segs=(12, 8), glow=2.4)                  # a small sun
+	for k in range(10):
+		a = k * math.tau / 10
+		p.seg((math.cos(a) * 0.38, 0, 0.6 + math.sin(a) * 0.38), (math.cos(a) * 0.75, 0, 0.6 + math.sin(a) * 0.75), 0.07, 0.0, EMBER, sides=4, glow=1.6)
+	return p.build()
+
+
+def lightning_bolt():
+	p = Prop("lightning_bolt", 429)
+	pts = [(0.3, 0, 1.1), (-0.05, 0, 0.7), (0.15, 0, 0.62), (-0.3, 0, 0.05)]
+	for a, b in zip(pts, pts[1:]):
+		p.seg(a, b, 0.09, 0.07, CLOTH_WHITE, sides=5, glow=2.4)
+	return p.build()
+
+
+def frost_snare():
+	p = Prop("frost_snare", 431)
+	_ring(p, 0.5, 0.2, 0.08, WATER, glow=1.4, sides=16)                                   # a frost ring at the feet
+	for k in range(6):                                                                    # ice spikes rising
+		a = k * math.tau / 6
+		p.seg((math.cos(a) * 0.45, math.sin(a) * 0.45, 0.1), (math.cos(a) * 0.3, math.sin(a) * 0.3, 0.75), 0.09, 0.0, WATER, sides=4, glow=1.0)
+	return p.build()
+
+
+def fireball():
+	p = Prop("fireball", 433)
+	p.blob((0.7, 0.7, 0.7), (0.15, 0, 0.7), EMBER, segs=(12, 8), glow=2.2)
+	for k in range(4):                                                                    # its trail
+		p.blob((0.35 - k * 0.07,) * 3, (-0.35 - k * 0.22, 0, 0.5 - k * 0.12), FLAME, segs=(8, 6), glow=1.6 - k * 0.3)
+	return p.build()
+
+
+def assassinate():
+	p = Prop("assassinate", 435)
+	p.seg((0.35, 0, 1.05), (-0.3, 0, 0.1), 0.08, 0.0, STONE_LIGHT, sides=4, glow=0.5)     # a blade plunging
+	p.box((0.36, 0.1, 0.08), (0.38, 0, 1.08), CLOTH_RED, rot=(0, 45, 0))
+	p.blob((0.1, 0.06, 0.1), (-0.05, 0, 0.35), CLOTH_RED, segs=(6, 4), glow=1.4)           # a drop of blood
+	p.blob((0.08, 0.05, 0.08), (0.1, 0, 0.2), CLOTH_RED, segs=(6, 4), glow=1.4)
+	return p.build()
+
+
+def blind():
+	p = Prop("blind", 437)
+	p.blob((0.7, 0.3, 0.45), (0, 0, 0.6), CLOTH_WHITE, segs=(10, 6))                       # an eye...
+	p.blob((0.25, 0.1, 0.25), (0, -0.14, 0.6), STONE_DARK, segs=(8, 6))
+	for k in range(8):                                                                    # ...in a cloud of dust
+		a = k * math.tau / 8
+		p.blob((0.18, 0.18, 0.18), (math.cos(a) * 0.55, -0.1, 0.6 + math.sin(a) * 0.4), HIDE, segs=(6, 4))
+	return p.build()
+
+
+def deadly_poison():
+	p = Prop("deadly_poison", 439)
+	for s_ in (-1, 1):                                                                    # two blades crossed, dripping
+		p.seg((s_ * 0.45, 0, 0.1), (-s_ * 0.3, 0, 1.0), 0.07, 0.0, STONE_LIGHT, sides=4)
+	for k in range(5):
+		p.blob((0.1, 0.1, 0.15), (0.2 * (k - 2) * 0.5, 0, 0.35 - (k % 2) * 0.1), LEAF, segs=(6, 4), glow=1.8)
+	p.blob((0.3, 0.12, 0.3), (0, -0.1, 0.9), BONE, segs=(8, 5))                            # a small skull
+	return p.build()
+
+
+def deadly_venom():
+	p = Prop("deadly_venom", 441)
+	p.blob((0.6, 0.6, 0.75), (0, 0, 0.42), LEAF, segs=(10, 8), glow=1.6)
+	p.seg((0, 0, 0.78), (0, 0, 1.0), 0.13, 0.13, STONE_LIGHT, sides=8)
+	p.blob((0.3, 0.12, 0.3), (0, -0.28, 0.45), BONE, segs=(8, 5))
+	return p.build()
+
+
 # ---------------------------------------------------------------- actions
 
 def action_attack():
@@ -550,7 +664,9 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  heroic_strike, rally, shield_wall, healing, blessed_armor, circle_of_renewal,
 								  hallowed_strike, frost_lance, emberstorm, greater_shielding, ice_comet,
 								  thornback_venom, grave_chill, spirit_bolt, leech_bite, marsh_bolt, drowning_cold,
-								  backstab, hide, sneak, evade, envenom_blade, rogue_venom, rake]}
+								  backstab, hide, sneak, evade, envenom_blade, rogue_venom, rake,
+								  provoke, defensive_stance, cleave, greater_healing, divine_aura, sunfire, lightning_bolt, frost_snare,
+								  fireball, assassinate, blind, deadly_poison, deadly_venom]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills]}
 
 

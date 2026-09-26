@@ -206,7 +206,7 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened", "sneaking"]:
+			"group", "skills", "threatened", "sneaking", "snare_left"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -744,6 +744,8 @@ func _physics_process(delta: float) -> void:
 		spd *= float(World.cfg("sprint_speed_mult", 1.55))
 	if sneaking:
 		spd *= SNEAK_SPEED
+	if snare_left > 0.0:
+		spd *= 0.5
 	if dir != Vector3.ZERO and sitting and _may_ask("stand"):
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd

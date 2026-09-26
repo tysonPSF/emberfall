@@ -137,6 +137,34 @@ func _bake_navigation() -> void:
 			print("zone %s: navigation baked (%d ms parsing, %d ms in all, %d polygons)" % [zone_id, parsed, Time.get_ticks_msec() - t0, nav.get_polygon_count()]))
 
 
+## Terraced land ("terraces": {start, end, steps, rise, riser, wobble}): the
+## ground climbs along +x in broad flat steps, each ending in a short stone
+## slope up to the next; the step edges wander with the noise so they curve
+## round the hills. 0 where a zone has none.
+func terrace_rise(x: float, z: float) -> float:
+	var t: Dictionary = data.get("terraces", {})
+	if t.is_empty():
+		return 0.0
+	var span := float(t["end"]) - float(t["start"])
+	var steps := int(t.get("steps", 6))
+	var along := (x - float(t["start"]) + _noise.get_noise_2d(z * 0.7, x * 0.3) * float(t.get("wobble", 15))) / span
+	var f := clampf(along, 0.0, 1.0) * steps
+	var k := minf(floorf(f), steps - 1)
+	var frac := f - k
+	var riser := float(t.get("riser", 8)) / (span / steps)  # the slope's share of a step
+	return float(t["rise"]) / steps * (k + smoothstep(1.0 - riser, 1.0, frac) if f < steps else float(steps))
+
+
+## How steep the terrace slope is here (0 on a flat step, up to 1 mid-slope): it's faced in stone.
+func terrace_face(x: float, z: float) -> float:
+	var t: Dictionary = data.get("terraces", {})
+	if t.is_empty():
+		return 0.0
+	var e := 1.5
+	var dh := absf(terrace_rise(x + e, z) - terrace_rise(x - e, z)) / (2.0 * e)
+	return clampf(dh * 1.3, 0.0, 1.0)
+
+
 func height_at(x: float, z: float) -> float:
 	var h := _noise.get_noise_2d(x, z) * amp + _detail.get_noise_2d(x, z) * 0.35
 	h = lerpf(h * 0.1, h, smoothstep(flat_radius, flat_radius + 25.0, Vector2(x, z).distance_to(_bind_xz)))
@@ -161,6 +189,7 @@ func height_at(x: float, z: float) -> float:
 				h = bed
 			else:  # the banks slope from just above the water back up (or down) to the land
 				h = lerpf(level + 0.35, h, smoothstep(0.0, bank, d))
+	h += terrace_rise(x, z)
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
 	# Mountains ring the zone so you can't walk off the edge.
@@ -457,6 +486,9 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 		var r: float = pond["radius"]
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(r - 1.5, r + 2.0, pd))  # muddy bank
 		c = c.lerp(Color(0.22, 0.21, 0.15), 1.0 - smoothstep(r * 0.4, r - 1.0, pd))  # silt on the bottom
+	var face := terrace_face(x, z)
+	if face > 0.05:
+		c = c.lerp(Color(0.66, 0.6, 0.5), smoothstep(0.05, 0.5, face))  # sandstone retaining walls
 	var wet := minf(river_distance(x, z), lake_distance(x, z))
 	if wet < 3.0:
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(0.5, 3.0, wet))  # muddy bank
@@ -465,8 +497,9 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
 	var edge := (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z)
-	if edge > 0.0 or h > amp * 1.2:
-		c = c.lerp(Color(0.44, 0.42, 0.4), clampf(maxf(edge / 10.0, (h - amp * 1.2) / 4.0), 0.0, 1.0))
+	var hill := h - terrace_rise(x, z)  # a terrace's height is built, not a mountain
+	if edge > 0.0 or hill > amp * 1.2:
+		c = c.lerp(Color(0.44, 0.42, 0.4), clampf(maxf(edge / 10.0, (hill - amp * 1.2) / 4.0), 0.0, 1.0))
 	return c
 
 
@@ -514,6 +547,10 @@ func _build_landmarks() -> void:
 				_build_lizard_camp(p)
 			"windmill":
 				_build_windmill(p, _landmark_yaw(lm))
+			"sun_shrine":
+				_build_sun_shrine(p, _landmark_yaw(lm), bool(lm.get("great", false)))
+			"waystation":
+				_build_waystation(p, _landmark_yaw(lm))
 			"orchard":
 				_build_orchard(p, _landmark_yaw(lm), int(lm.get("rows", 4)), int(lm.get("cols", 5)))
 			"sunken_ruins":
@@ -647,6 +684,47 @@ func _build_windmill(p: Vector3, yaw: float) -> void:
 	tw.tween_property(sails, "rotation:z", TAU, 24.0).from(0.0)
 	_prop("hay_bale", p + Basis(Vector3.UP, yaw) * Vector3(2.6, 0, 3.0), yaw + 0.4)
 	_prop("farm_cart", p + Basis(Vector3.UP, yaw) * Vector3(-3.4, 0, 3.6), yaw + 1.2)
+
+
+## A shrine of Prabhagaj, the Dawn-Tusk: a paved platform, the elephant with
+## the sun raised in its trunk, sun pillars flanking the way up, broken
+## columns round the edge. "great" makes the temple at the top of the Steps.
+func _build_sun_shrine(p: Vector3, yaw: float, great: bool) -> void:
+	var xf := Transform3D(Basis(Vector3.UP, yaw), p)
+	var half_w := 4 if great else 2
+	for i in range(-half_w, half_w + 1):
+		for j in range(-half_w, half_w + 1):
+			var at := xf * Vector3(i * 3.0, 0.04, j * 3.0)
+			var tile: String = "floor_tile_large" if _rng.randf() < 0.75 else ["floor_tile_small_broken_A", "floor_tile_small_weeds_A", "floor_tile_large_rocks"][_rng.randi() % 3]
+			_prop(tile, Vector3(at.x, p.y + 0.04, at.z), yaw + _rng.randi() % 4 * PI / 2.0, 1.0, "none")
+	_prop("elephant_statue", xf * Vector3(0, 0.05, -half_w * 1.5 + 1.0), yaw, 1.6 if great else 1.0, "box")
+	for side: float in [-1.0, 1.0]:
+		for k in (3 if great else 2):
+			var at := xf * Vector3(side * (half_w * 3.0 - 1.0), 0, half_w * 3.0 - 1.5 - k * 6.0)
+			_prop("sun_pillar", Vector3(at.x, height_at(at.x, at.z), at.z), yaw, 1.3 if great else 1.0, "trunk")
+	for k in (8 if great else 4):
+		var a := _rng.randf() * TAU
+		var at := xf * Vector3(cos(a) * (half_w * 3.0 + 2.5), 0, sin(a) * (half_w * 3.0 + 2.5))
+		_prop("broken_column", Vector3(at.x, height_at(at.x, at.z), at.z), _rng.randf() * TAU, 1.0, "box")
+	var glow := OmniLight3D.new()  # the sun disc catches the dusk
+	glow.light_color = Color(1.0, 0.8, 0.45)
+	glow.omni_range = 12.0 if great else 8.0
+	glow.position = xf * Vector3(0, 6.0 if great else 4.5, -half_w * 1.5 - 1.5)
+	_night_light(glow, 1.4)
+
+
+## A pilgrims' waystation: tents round a fire, a stall, torches.
+func _build_waystation(p: Vector3, yaw: float) -> void:
+	_prop("campfire", p, 0.0, 1.0, "none")
+	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.6, 0.25), 11.0, 1.2)
+	for k in 3:
+		var a := yaw + PI * 0.75 + k * PI * 0.5
+		_prop("tent", _ring(p, a, 9.0), _face_center(a))
+	var stall := _ring(p, yaw + PI * 0.25, 8.0)
+	_prop("market_stall", stall, _face_center(yaw + PI * 0.25))
+	for s_: float in [-1.0, 1.0]:
+		_torch(_ring(p, yaw + s_ * 0.5, 12.0))
+	_prop("hay_bale", _ring(p, yaw - PI * 0.5, 6.5), yaw)
 
 
 ## An orchard: fruit trees in rows, fenced, with windfall under them.
