@@ -1,5 +1,5 @@
 {
-  "_about": "EQ-style skills. A skill's cap is per_level x (level + 1) for each class (0 = the class can't learn it), never above max. Skills rise through use: each use rolls up_base x (1 - value/cap)^up_curve + up_floor. Effects are measured against 80% of cap, where a character fights exactly as the base rules say.",
+  "_about": "EQ-style skills. A skill's cap is per_level x (level + 1) for each class (0 = the class can't learn it), never above max; \"from\" {class: level} holds a skill back until that level (Dual Wield at 13). Skills rise through use: each use rolls up_base x (1 - value/cap)^up_curve + up_floor. Effects are measured against 80% of cap, where a character fights exactly as the base rules say.",
   "tuning": {"up_base": 0.3, "up_curve": 1.5, "up_floor": 0.015, "neutral": 0.8, "start_fraction": 0.5, "max": 100},
   "groups": ["Weapons", "Combat", "Defense", "Abilities", "Casting"],
   "skills": {
@@ -23,6 +23,8 @@
     "alteration":   {"name": "Alteration",   "group": "Casting",   "caps": {"cleric": 5, "wizard": 4}},
     "abjuration":   {"name": "Abjuration",   "group": "Casting",   "caps": {"cleric": 5, "wizard": 4}},
     "channeling":   {"name": "Channeling",   "group": "Casting",   "caps": {"cleric": 4, "wizard": 5}},
-    "meditate":     {"name": "Meditate",     "group": "Casting",   "caps": {"cleric": 5, "wizard": 5}}
+    "meditate":     {"name": "Meditate",     "group": "Casting",   "caps": {"cleric": 5, "wizard": 5}},
+    "dual_wield": {"name": "Dual Wield", "group": "Combat", "caps": {"warrior": 5}, "from": {"warrior": 13}},
+    "double_attack": {"name": "Double Attack", "group": "Combat", "caps": {"warrior": 5}, "from": {"warrior": 15}}
   }
 }
