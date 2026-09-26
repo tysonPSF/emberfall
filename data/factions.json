@@ -94,7 +94,7 @@
     "kos_at": -750,
     "on_kill": {
       "sun_cult": -10,
-      "dawn_pilgrims": 5
+      "dawn_pilgrims": 5, "lanternhold": 3
     }
   },
   "dawn_pilgrims": {
@@ -105,6 +105,17 @@
     },
     "on_attack": {
       "dawn_pilgrims": -50
+    }
+  },
+  "lanternhold": {
+    "name": "Citizens of Lanternhold",
+    "default": 100,
+    "on_kill": {
+      "lanternhold": -200,
+      "dawn_pilgrims": -50
+    },
+    "on_attack": {
+      "lanternhold": -50
     }
   }
 }

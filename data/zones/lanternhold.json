@@ -1,0 +1,714 @@
+{
+  "name": "Lanternhold",
+  "music": "sunward_steps",
+  "seed": 8841,
+  "size": 224,
+  "height_amplitude": 1.2,
+  "bind_point": [
+    0,
+    12
+  ],
+  "flat_radius": 70,
+  "clear_radius": 64,
+  "trees": 50,
+  "tree_mix": [
+    "tree_round",
+    "tree_round",
+    "pine_a"
+  ],
+  "rocks": 20,
+  "road_lamps": 8,
+  "grass_colors": [
+    "#7d8a3a",
+    "#a39a4e"
+  ],
+  "fog_density": 0.003,
+  "fog_color": "#e0d0a8",
+  "sun_energy": 1.25,
+  "clutter": {
+    "grass_a": {
+      "density": 0.55,
+      "patch": 0.55,
+      "sway": 0.16,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.35
+      ],
+      "city": 0.2
+    },
+    "grass_b": {
+      "density": 0.6,
+      "patch": 0.35,
+      "sway": 0.14,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ],
+      "city": 0.3
+    },
+    "flowers_yellow": {
+      "density": 0.012,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.2
+    },
+    "flowers_purple": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "flowers_white": {
+      "density": 0.01,
+      "patch": 0.9,
+      "sway": 0.12,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.3
+      ],
+      "city": 0.1
+    },
+    "fern": {
+      "density": 0.007,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 65,
+      "scale": [
+        0.9,
+        1.5
+      ]
+    },
+    "bush_a": {
+      "density": 0.0025,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "bush_b": {
+      "density": 0.0018,
+      "patch": 0.6,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.5
+      ]
+    },
+    "mushrooms": {
+      "density": 0.0025,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "pebbles": {
+      "density": 0.005,
+      "patch": 0.4,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.6
+      ],
+      "city": 0.5
+    },
+    "log_fallen": {
+      "density": 0.00035,
+      "patch": 0.3,
+      "range": 120,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "stump": {
+      "density": 0.0005,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
+  },
+  "ground_tint": {
+    "color": "#8a7a58",
+    "radius": 58,
+    "amount": 0.55
+  },
+  "passes": [
+    [
+      -112,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -112,
+          0
+        ],
+        [
+          -17,
+          0
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          17,
+          0
+        ],
+        [
+          52,
+          0
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          0,
+          -17
+        ],
+        [
+          0,
+          -52
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          0,
+          17
+        ],
+        [
+          0,
+          52
+        ]
+      ],
+      "width": 4.5
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "sunward_steps",
+      "arrive": [
+        199,
+        0
+      ],
+      "arrive_face": [
+        159,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "wall_ring",
+      "pos": [
+        0,
+        0
+      ],
+      "radius": 58,
+      "sides": 12,
+      "gates": [
+        180
+      ]
+    },
+    {
+      "type": "dawn_plaza",
+      "pos": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "market",
+      "pos": [
+        24,
+        22
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "market",
+      "pos": [
+        24,
+        -22
+      ],
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "id": "well",
+      "pos": [
+        -24,
+        22
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -66,
+        -5
+      ],
+      "yaw": 180,
+      "labels": [
+        "Lanternhold",
+        "Sunward Steps"
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        -30,
+        0
+      ],
+      "yaw": 90,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        -45,
+        0
+      ],
+      "yaw": 90,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        30,
+        0
+      ],
+      "yaw": 90,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        0,
+        30
+      ],
+      "yaw": 0,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        0,
+        -30
+      ],
+      "yaw": 0,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        0,
+        44
+      ],
+      "yaw": 0,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "lantern_string",
+      "pos": [
+        0,
+        -44
+      ],
+      "yaw": 0,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "sun_banner",
+      "pos": [
+        -58,
+        -8
+      ],
+      "face": [
+        -80,
+        -8
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "id": "sun_banner",
+      "pos": [
+        -58,
+        8
+      ],
+      "face": [
+        -80,
+        8
+      ],
+      "collide": "none"
+    },
+    {
+      "type": "house",
+      "pos": [
+        -10,
+        -42
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        10,
+        -42
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -10,
+        -30
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        10,
+        -30
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        34,
+        -22
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        22,
+        10
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        34,
+        -10
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        34,
+        10
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        45,
+        -10
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        45,
+        10
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -24,
+        12
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -38,
+        12
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        0,
+        32
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 3
+    },
+    {
+      "type": "house",
+      "pos": [
+        14,
+        42
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    },
+    {
+      "type": "house",
+      "pos": [
+        -14,
+        42
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "size": 2
+    }
+  ],
+  "npcs": [
+    {
+      "id": "dawnpriest_amaru",
+      "pos": [
+        4,
+        12
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_idris",
+      "pos": [
+        -22,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_solenne",
+      "pos": [
+        -4,
+        13
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_orrin",
+      "pos": [
+        22,
+        -8
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_kestrel",
+      "pos": [
+        -26,
+        26
+      ],
+      "face": [
+        -24,
+        22
+      ]
+    },
+    {
+      "id": "banker_tamsyn",
+      "pos": [
+        12,
+        24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "armorer_bex",
+      "pos": [
+        21,
+        25
+      ],
+      "face": [
+        21,
+        0
+      ]
+    },
+    {
+      "id": "weaponsmith_varro",
+      "pos": [
+        27,
+        -25
+      ],
+      "face": [
+        27,
+        0
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "name": "Warden Halle",
+      "pos": [
+        -50,
+        -5
+      ],
+      "face": [
+        -60,
+        -5
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "name": "Warden Ostry",
+      "pos": [
+        -50,
+        5
+      ],
+      "face": [
+        -60,
+        5
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "name": "Warden Pell",
+      "pos": [
+        -18,
+        -10
+      ],
+      "face": [
+        -30,
+        -10
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "name": "Warden Ione",
+      "pos": [
+        18,
+        10
+      ],
+      "face": [
+        30,
+        10
+      ]
+    }
+  ],
+  "spawns": []
+}

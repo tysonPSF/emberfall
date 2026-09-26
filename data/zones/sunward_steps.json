@@ -307,7 +307,7 @@
       "yaw": 90,
       "labels": [
         "The Bleach",
-        "Great Temple"
+        "Lanternhold"
       ]
     },
     {
@@ -315,21 +315,6 @@
       "pos": [
         0,
         -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Sunward Steps"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        200,
-        0
       ],
       "face": [
         0,
@@ -439,6 +424,25 @@
       ],
       "arrive_face": [
         159,
+        0
+      ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "lanternhold",
+      "arrive": [
+        -46,
+        0
+      ],
+      "arrive_face": [
+        0,
         0
       ]
     }

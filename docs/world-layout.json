@@ -5,6 +5,7 @@
   "greenmoor",
   "harrowfield",
   "hollowmere",
+  "lanternhold",
   "sunward_steps",
   "thornwood"
  ],
@@ -251,8 +252,8 @@
     2
    ],
    "kind": "city",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

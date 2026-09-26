@@ -723,5 +723,204 @@
         "slashes"
       ]
     }
+  },
+  "dawnpriest_amaru": {
+    "name": "Dawnpriest Amaru",
+    "title": "Keeper of the Dawn Shrine",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "blesses": {
+      "deity": "light",
+      "spell": "dawn_tusk_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The Dawn-Tusk's light falls on everyone, {name}, but his blessing is for those who follow him. Your own god has gifts of their own.",
+      "wait": "You've had his blessing within the hour, {name}. Let it wear off before you ask again.",
+      "give": "Kneel, {name}. ...There. Go into the day."
+    },
+    "dialogue": {
+      "hail": "Welcome to Lanternhold, {name}, and to the shrine of [Prabhagaj]. The lamps of the city are lit from the sun-disc in his trunk every dusk, and none has gone out in four hundred years.",
+      "prabhagaj": "The Dawn-Tusk, the elephant of first light. On the first morning he lifted the sun out of the dark in his trunk, and he has held it up every morning since. Nothing is hidden from him for long. Those who follow him may ask his [blessing] here.",
+      "blessing": "Only his followers may receive it.",
+      "bindstone": "This shrine is the bindstone of the Dawnstair. Fall anywhere in these lands and you wake at the elephant's feet.",
+      "unknown": "The Dawn-Tusk knows, {name}, but he hasn't told me."
+    }
+  },
+  "gm_idris": {
+    "name": "Captain Idris",
+    "title": "Warrior Guildmaster",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my trade, {name}. Try the others round the plaza."
+    },
+    "dialogue": {
+      "hail": "The Steps make warriors or bury them, {name}. If you're one of mine, I've things to teach you.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "gm_solenne": {
+    "name": "High Keeper Solenne",
+    "title": "Cleric Guildmaster",
+    "level": 40,
+    "model": "knight",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "The light calls whom it calls, {name}; not you, not to me."
+    },
+    "dialogue": {
+      "hail": "The Dawn-Tusk's light heals as well as it burns, {name}. Clerics, come and learn both.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "gm_orrin": {
+    "name": "Magus Orrin",
+    "title": "Wizard Guildmaster",
+    "level": 40,
+    "model": "mage",
+    "weapon": "wand",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Hmm? No. I teach wizards. Ask round the plaza."
+    },
+    "dialogue": {
+      "hail": "Lightning and fire, {name}. Up here the air's thin enough to call both. If you're a wizard, sit.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "gm_kestrel": {
+    "name": "Kestrel",
+    "title": "Rogue Guildmaster",
+    "level": 40,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "I don't know you, {name}, and I'd like to keep it that way."
+    },
+    "dialogue": {
+      "hail": "Lanterns everywhere, {name}, and still the shadows under them. Rogues, I'll teach you the rest.",
+      "unknown": "Ask at the shrine, {name}; Dawnpriest Amaru knows the city best."
+    }
+  },
+  "banker_tamsyn": {
+    "name": "Banker Tamsyn",
+    "title": "Lanternhold Exchange",
+    "level": 20,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "banker": true,
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "The Lanternhold Exchange keeps accounts with the Hearthbank of Emberhold, {name}: what you left there, you'll find here.",
+      "unknown": "I only keep the vault."
+    }
+  },
+  "armorer_bex": {
+    "name": "Armorer Bex",
+    "title": "Steel and Leather",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "lanternhold",
+    "merchant": {
+      "sells": [
+        "steel_helm",
+        "steel_breastplate",
+        "steel_vambraces",
+        "steel_gauntlets",
+        "steel_greaves",
+        "steel_boots",
+        "steel_kite_shield",
+        "dawnweave_cap",
+        "dawnweave_robe",
+        "dawnweave_gloves",
+        "shadowleather_jerkin",
+        "shadowleather_boots"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Steel for the ones who hold the line, dawnweave for the ones who stand behind them, shadowleather for the ones behind everybody. Press G.",
+      "unknown": "Couldn't say."
+    }
+  },
+  "weaponsmith_varro": {
+    "name": "Weaponsmith Varro",
+    "title": "Blades of the Dawn",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "merchant": {
+      "sells": [
+        "steel_longsword",
+        "steel_dirk",
+        "steel_war_axe",
+        "sunwood_staff",
+        "crude_arrow",
+        "sling_stone",
+        "ashwood_recurve"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Steel from the mountain forges, {name}, sharpened on sunrise. Press G to see.",
+      "unknown": "Couldn't say."
+    }
+  },
+  "lanternhold_guard": {
+    "name": "a Lanternhold warden",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Welcome to Lanternhold, {name}. The lamps never go out here, and neither do we. Trouble on the Steps? Run for the gate.",
+      "unknown": "Ask at the shrine."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!",
+        "To the gate, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not in Lanternhold!",
+        "Back down the Steps!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Lanternhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

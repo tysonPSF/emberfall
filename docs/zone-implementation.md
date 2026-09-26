@@ -118,7 +118,7 @@ you build the neighbour:
 | north | Cinderpass, The Ashfall (26–30) |
 | east | Hollowmere, The Emberlands (10–15) **(built: the rockslide is gone, zone lines both sides)** |
 
-Hollowmere's south pass opens onto Harrowfield (built) and its east pass onto Sunward Steps (built); Greenmoor gained an east pass to Harrowfield; Hollowmere's north is a rockslide, as are Sunward Steps' north (The Bleach) and east (Lanternhold).
+Hollowmere's south pass opens onto Harrowfield (built) and its east pass onto Sunward Steps (built); Greenmoor gained an east pass to Harrowfield; Hollowmere's north is a rockslide, as is Sunward Steps' north (The Bleach); Sunward Steps' east pass opens onto Lanternhold (built; arrival 66 m in, at the gate, like Emberhold).
 | west | The Weeping Throat, The Long Monsoon (20–24) |
 
 The existing east and west passes sit at `k = -20` and `k = +40`, not 0. Use

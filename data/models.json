@@ -861,6 +861,7 @@
     "res://assets/animations/Rig_Medium_Extra.glb"
   ],
   "props": {
+    "lantern_string": {"path": "res://assets/props/lantern_string.glb"},
     "elephant_statue": {"path": "res://assets/props/elephant_statue.glb"},
     "sun_pillar": {"path": "res://assets/props/sun_pillar.glb"},
     "broken_column": {"path": "res://assets/props/broken_column.glb"},
