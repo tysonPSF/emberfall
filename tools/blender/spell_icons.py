@@ -198,6 +198,15 @@ def gate():
 	return p.build()
 
 
+def homeward():
+	p = Prop("homeward", 649)
+	_ring(p, 0.62, 0.62, 0.07, GOLD, glow=2.0, sides=22, tilt=math.pi / 2)
+	p.box((0.44, 0.3, 0.32), (0, 0, 0.5), STONE_WARM)                                  # a little house in the ring
+	p.poly([(-0.3, -0.16, 0.66), (0.3, -0.16, 0.66), (0.3, 0.16, 0.66), (-0.3, 0.16, 0.66), (0, -0.16, 0.9), (0, 0.16, 0.9)],
+		   [(0, 1, 4), (3, 2, 5), (0, 4, 5, 3), (1, 2, 5, 4)], CLOTH_RED)
+	p.box((0.1, 0.02, 0.14), (0, -0.16, 0.45), FLAME, glow=2.5)                       # its lit door
+	return p.build()
+
 def root():
 	p = Prop("root", 329)
 	p.seg((0, 0, 0), (0, 0, 0.02), 0.7, 0.7, LEAF, sides=16)                        # ground
@@ -1584,7 +1593,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward]}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward]}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 

@@ -2669,6 +2669,8 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	var use: Dictionary = it.get("use", {})
 	if not use.is_empty() and GameData.spells.has(str(use["spell"])):
 		lines.append("Use: %s" % str(GameData.spells[use["spell"]].get("desc", "")))
+	if it.has("desc"):
+		lines.append(str(it["desc"]))
 	if it.has("combine"):
 		lines.append("A %s: put ingredients inside and press Combine." % World.container_name(str(it["combine"])).to_lower())
 	for rid: String in it.get("recipes", []):  # a recipe book

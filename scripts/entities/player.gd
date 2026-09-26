@@ -43,6 +43,7 @@ var station_kind := ""  # the crafting station whose combine window is open ("ov
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var pet_id := -1  # your pet's entity id, -1 with none
+var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
 var pet_hp := -1  # its health when you last left, to bring it back as it was
 var _zone_hold := 0.0  # online: seconds left standing still in a zone line, waiting for the server to move us
@@ -129,6 +130,9 @@ func from_save(d: Dictionary) -> void:
 		if not clean.is_empty() and not pack.add_entry(clean):
 			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
+	bind_zone = str(d.get("bind", ""))
+	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
+		pack.add("homeward_stone", 1)
 	hotbar = (d.get("hotbar", []) as Array).duplicate()
 	if hotbar.is_empty():  # a new character, or one from before the bars were yours to arrange
 		hotbar = default_hotbar(spells)
@@ -279,7 +283,7 @@ func to_save() -> Dictionary:
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
-		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar,
+		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
 	}
 
 

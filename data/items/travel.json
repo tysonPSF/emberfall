@@ -1,0 +1,26 @@
+{
+  "homeward_stone": {
+    "name": "Homeward Stone",
+    "value": 0,
+    "weight": 0.1,
+    "no_drop": true,
+    "lore": true,
+    "use": {
+      "spell": "homeward",
+      "recast": 1800,
+      "keep": true
+    },
+    "desc": "Warm to the touch, like a hearthstone. Right-click it; it recharges in thirty minutes. To choose where it takes you, ask a city's priest to bind you (Keeper Maelin, Dawnpriest Amaru, Tidepriest Nalini), or type /bind beside the bindstone."
+  },
+  "draught_of_homecoming": {
+    "name": "Draught of Homecoming",
+    "value": 60,
+    "weight": 0.2,
+    "stack": 10,
+    "use": {
+      "spell": "homeward",
+      "group": "homecoming"
+    },
+    "desc": "One use. Brewed by alchemists, sold by provisioners."
+  }
+}

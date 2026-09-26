@@ -97,6 +97,7 @@ const SECTIONS := [
 	["vale_quests", "thornwood"],
 	["face_path", "harrowfield"],
 	["shaman", "greenmoor"],
+	["homeward", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -3989,6 +3990,76 @@ func _t_shaman() -> void:
 	p.buffs.clear()
 	p.recalc_stats()
 	p.hp = p.max_hp
+
+
+## Going home: every character carries a Homeward Stone and is bound to
+## Emberhold at first; the stone (10 s, still) takes you there across zones and
+## recharges; moving interrupts it and costs nothing; /bind works only at a
+## city's bindstone, and a priest binds you when asked; Gate follows your bind
+## too, and lands on Rainhold's decks.
+func _t_homeward() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var zone_now := func() -> String: return (main.zone as Zone).zone_id
+	var wait_zone := func(zone_id: String) -> void:
+		for k in 60:
+			if zone_now.call() == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+	print("homeward: carries a stone %s; bound to %s" % ["homeward_stone" in p.owned_item_ids(), World.bind_zone_of(p)])
+	World.request_chat(p.entity_id, "/bind")
+	await _wait(0.2)
+	print("homeward: /bind in Greenmoor -> still bound to %s" % World.bind_zone_of(p))
+	# moving interrupts the stone, and it doesn't recharge
+	World.request_use_item(p.entity_id, _where(p, "homeward_stone"))
+	await _wait(2.0)
+	p.global_position += Vector3(2, 0, 0)
+	await _wait(0.3)
+	print("homeward: moved while using it -> casting %s, recharging %s, still in %s" % [not p.cast.is_empty(), p.cooldowns.has("item:homeward_stone"), zone_now.call()])
+	World.request_use_item(p.entity_id, _where(p, "homeward_stone"))
+	await _wait(10.6)
+	await wait_zone.call("emberhold")
+	var home := main.zone as Zone
+	print("homeward: stone -> now in %s, %.1f m from its bindstone; recharging %ds; still carry it %s" % [zone_now.call(),
+			Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(home.bind_point.x, home.bind_point.z)), int(p.cooldowns.get("item:homeward_stone", 0)), "homeward_stone" in p.owned_item_ids()])
+	await _shot("9zz_homeward_emberhold")
+	World.request_use_item(p.entity_id, _where(p, "homeward_stone"))
+	print("homeward: using it again at once -> casting %s" % (not p.cast.is_empty()))
+	# bind in Rainhold with the priest, then drink a draught from Greenmoor
+	World.zone_change.emit(p, "rainhold", Vector2.INF, Vector2.INF)
+	await wait_zone.call("rainhold")
+	var nalini: Npc = _npcs()["tidepriest_nalini"]
+	_stand_by(p, nalini)
+	World.request_say(p.entity_id, "bind")
+	print("homeward: asked Tidepriest Nalini to bind -> bound to %s" % World.bind_zone_of(p))
+	World.zone_change.emit(p, "greenmoor", Vector2(0, 10), Vector2(0, 0))
+	await wait_zone.call("greenmoor")
+	p.pack.add("draught_of_homecoming", 2)
+	World.request_use_item(p.entity_id, _where(p, "draught_of_homecoming"))
+	await _wait(10.6)
+	await wait_zone.call("rainhold")
+	var rain := main.zone as Zone
+	print("homeward: draught -> in %s at height %.1f (bindstone deck %.1f, ground %.1f); draughts left %d" % [zone_now.call(), p.global_position.y,
+			rain.bind_point.y, rain.height_at(p.global_position.x, p.global_position.z), p.pack.count("draught_of_homecoming")])
+	await _shot("9zz_homeward_rainhold")
+	# Gate follows the bind too (a wizard's)
+	World.zone_change.emit(p, "greenmoor", Vector2(0, 10), Vector2(0, 0))
+	await wait_zone.call("greenmoor")
+	var saved_class := p.char_class
+	p.char_class = "wizard"
+	p.spells.append("gate")
+	p.mana = p.max_mana
+	p.cooldowns.erase("gate")
+	World.request_cast(p.entity_id, "gate")
+	await _wait(float(GameData.spells["gate"]["cast_time"]) + 0.4)
+	await wait_zone.call("rainhold")
+	print("homeward: gate from Greenmoor -> in %s" % zone_now.call())
+	p.spells.erase("gate")
+	p.char_class = saved_class
+	p.bind_zone = ""
+	World.zone_change.emit(p, "greenmoor", Vector2(0, 10), Vector2(0, 0))
+	await wait_zone.call("greenmoor")
 
 
 func _t_necromancer() -> void:

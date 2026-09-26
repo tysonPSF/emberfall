@@ -217,9 +217,10 @@ func _on_zone_change(p: Player, zone_id: String, arrive: Vector2, face: Vector2)
 	zone.queue_free()
 	World.zone = null
 	await get_tree().process_frame
-	_enter_zone(zone_id, Vector3(arrive.x, 0, arrive.y), face)
+	var at := Vector3.INF if arrive == Vector2.INF else Vector3(arrive.x, 0, arrive.y)  # INF: its bindstone (Gate)
+	_enter_zone(zone_id, at, face)
 	zone.restore_corpses(_corpses_by_zone.get(zone_id, []))
-	player.global_position = zone.ground(arrive.x, arrive.y) + Vector3.UP
+	player.global_position = zone.bind_point + Vector3.UP if arrive == Vector2.INF else Vector3(arrive.x, zone.surface_at(arrive.x, arrive.y), arrive.y) + Vector3.UP
 	player.velocity = Vector3.ZERO
 	player.last_ground = Vector3.INF
 	hud.show_banner("Entering %s" % zone.zone_name)
@@ -441,9 +442,12 @@ func _on_server_zone_change(p: Player, zone_id: String, arrive: Vector2, face: V
 	var from := World.zone_of(p)
 	var to := _server_zone(zone_id)
 	from.remove_child(p)
-	to.add_player(p, to.ground(arrive.x, arrive.y) + Vector3.UP)
-	var d := face - arrive
-	p.rotation.y = atan2(-d.x, -d.y)
+	if arrive == Vector2.INF:  # Gate: its bindstone
+		to.add_player(p, to.bind_point + Vector3.UP)
+	else:
+		to.add_player(p, Vector3(arrive.x, to.surface_at(arrive.x, arrive.y), arrive.y) + Vector3.UP)
+		var d := face - arrive
+		p.rotation.y = atan2(-d.x, -d.y)
 	Net.send_zone(p, zone_id)
 	World.say(p, "You have entered %s." % to.zone_name)
 	p.remove_meta("zoning")

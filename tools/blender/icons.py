@@ -1476,12 +1476,35 @@ def iron_tipped_arrow():
 	return p.build()
 
 
+# ---------------------------------------------------------------- travel
+
+def homeward_stone():
+	p = Prop("homeward_stone", 501)
+	p.rock((0.95, 0.5, 0.75), (0, 0, 0.38), STONE_LIGHT, jitter=0.03)          # a smooth, flat hearthstone
+	for k in range(3):   # an ember-glowing rune of a house carved in its face
+		p.seg((-0.2 + k * 0.2, -0.26, 0.25), (-0.2 + k * 0.2, -0.26, 0.45), 0.035, 0.035, EMBER, sides=4, glow=2.2)
+	p.seg((-0.28, -0.26, 0.43), (0.0, -0.26, 0.62), 0.035, 0.035, EMBER, sides=4, glow=2.2)
+	p.seg((0.28, -0.26, 0.43), (0.0, -0.26, 0.62), 0.035, 0.035, EMBER, sides=4, glow=2.2)
+	return p.build()
+
+
+def draught_of_homecoming():
+	p = Prop("draught_of_homecoming", 503)
+	p.blob((0.8, 0.8, 0.8), (0, 0, 0.4), GOLD, segs=(14, 8), grad=(0.0, 0.6), glow=1.2)
+	_potion(p, 0.76, neck=0.24, neck_r=0.09)
+	p.seg((-0.12, -0.38, 0.32), (0.0, -0.4, 0.5), 0.03, 0.03, CLOTH_WHITE, sides=4, glow=0.8)   # a little roof on the label
+	p.seg((0.12, -0.38, 0.32), (0.0, -0.4, 0.5), 0.03, 0.03, CLOTH_WHITE, sides=4, glow=0.8)
+	_frame(p, *POTION_FRAME)
+	return p.build()
+
+
 TRADESKILLS = [bag_of_flour, jar_of_spices, vial_of_water, tanning_salts, spool_of_thread, bundle_of_herbs, small_brick_of_ore,
 			   large_brick_of_ore, water_flask, bundle_of_shafts, smithy_hammer, sewing_kit, mortar_and_pestle, hearthside_cookbook,
 			   tailors_pattern_book, alchemists_notes, smiths_handbook, raw_meat, frog_legs, tanned_leather, thick_leather, wool_cloth,
 			   silk_cloth, iron_bar, steel_bar, roast_meat, grilled_trout, fish_stew, hunters_pie, frog_legs_saute, lagoon_feast,
 			   koi_platter, minor_healing_potion, antidote, healing_potion, clarity_tonic, draught_of_toughness, troll_tonic,
-			   draught_of_swiftness, greater_healing_potion, stitched_hide_pouch, wool_satchel, crocskin_backpack, iron_tipped_arrow]
+			   draught_of_swiftness, greater_healing_potion, stitched_hide_pouch, wool_satchel, crocskin_backpack, iron_tipped_arrow,
+			   homeward_stone, draught_of_homecoming]
 
 
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
