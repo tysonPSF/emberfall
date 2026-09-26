@@ -3526,6 +3526,20 @@ func _t_hotbars() -> void:
 	print("hotbars: key 2 -> casting %s; Shift+1 (a potion) -> %d hp, %d potions left; Shift+2 (sit) -> sitting %s -> %s" % [casting, p.hp,
 			p.pack.count("healing_potion"), sitting0, p.sitting])
 	World.request_sit(p.entity_id, false)
+	# Ctrl+1 fires the top bar's first slot (not also the main bar's): a key press as the player would make it
+	p.cooldowns.clear()
+	p.hp = 1
+	var cast_before := p.cooldowns.duplicate()
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_1
+	key.keycode = KEY_1
+	key.ctrl_pressed = true
+	key.pressed = true
+	p._unhandled_input(key)
+	await _wait(0.1)
+	print("hotbars: Ctrl+1 -> a potion (%d hp, %d potions left); the main bar's key 1 spell fired too: %s" % [p.hp, p.pack.count("healing_potion"),
+			p.cooldowns.has("burning_embers") and not cast_before.has("burning_embers") or not p.cast.is_empty()])
+	World.request_interrupt(p.entity_id)
 	# the HUD: a drop from the spellbook, an item from the cursor
 	hud._hot_drop(Vector2.ZERO, {"hotvalue": "act:hail"}, 12)
 	p.pack.add("roast_meat", 2)

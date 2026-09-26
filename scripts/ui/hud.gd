@@ -9,7 +9,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
-[b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-0 and Shift+1-0 your two hotbars (P opens your spellbook: drag spells and actions onto them; click a slot with an item on the cursor to put it there; right-click or drag a slot off to clear it) · C consider (con colors!) · K skills (they rise as you use them)
+[b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-0 and Ctrl+1-0 (or Shift+1-0) your two hotbars (P opens your spellbook: drag spells and actions onto them; click a slot with an item on the cursor to put it there; right-click or drag a slot off to clear it) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
@@ -343,7 +343,7 @@ func _build_hotbar() -> void:
 	v.add_child(main)
 	for i in Player.HOTBAR_SLOTS:
 		var slot := HotSlot.new()
-		slot.key_text = str((i % 10 + 1) % 10) if i < 10 else "S%d" % ((i % 10 + 1) % 10)
+		slot.key_text = str((i % 10 + 1) % 10) if i < 10 else "^%d" % ((i % 10 + 1) % 10)  # ^ for Ctrl
 		slot.pressed.connect(_hot_pressed.bind(i))
 		slot.gui_input.connect(func(ev: InputEvent) -> void:
 			if ev is InputEventMouseButton and (ev as InputEventMouseButton).pressed and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
