@@ -232,5 +232,15 @@
       "deep_naga": -10,
       "rainhold": 4
     }
+  },
+  "dustpaw": {
+    "name": "The Dustpaw Clan",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "dustpaw": -10,
+      "lanternhold": 4,
+      "dawn_pilgrims": 3
+    }
   }
 }

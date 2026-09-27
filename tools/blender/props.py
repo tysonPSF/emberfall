@@ -5669,6 +5669,449 @@ def naga_shrine():
 	return join_into(p.build(bevel=0.02), [soft.build()])
 
 
+# ---------------------------------------------------------------- Dewstep (Dawnstair, levels 1-10)
+# Lantern-lit tea gardens below Lanternhold: warm timber, clay tiles, paper
+# lanterns in gold and rose; and the Dustpaw jackal-folk's ragged camps of
+# hide and bamboo, sand and ochre.
+
+OCHRE = FLAG_YELLOW     # orange-yellow: the Dustpaw's ochre paint and dyed hides
+
+
+def _paper_lantern(p, x, y, z, swatch=GOLD, s=1.0):
+	"""A round paper lantern hung from (x, y, z): a cord, a dark cap and foot,
+	the glowing paper between. Returns the lantern's center."""
+	p.seg((x, y, z), (x, y, z - 0.22 * s), 0.01, 0.01, WOOD_GRAY, sides=3)
+	c = (x, y, z - 0.47 * s)
+	p.seg((x, y, c[2] + 0.2 * s), (x, y, c[2] + 0.25 * s), 0.08 * s, 0.07 * s, IRON, sides=8, grad=(0.1, 0.6))
+	p.blob((0.34 * s, 0.34 * s, 0.4 * s), c, swatch, segs=(10, 7), grad=(0.05, 0.45), glow=1.7)
+	p.seg((x, y, c[2] - 0.25 * s), (x, y, c[2] - 0.2 * s), 0.07 * s, 0.08 * s, IRON, sides=8, grad=(0.1, 0.6))
+	p.seg((x, y, c[2] - 0.25 * s), (x, y, c[2] - 0.4 * s), 0.012, 0.0, CLOTH_RED, sides=3)   # a red tassel
+	return c
+
+
+def _woven(p, r0, r1, z0, z1, bands, sides=12, swatches=(BAMBOO, HIDE), rim=None):
+	"""A woven basket wall from radius r0 at z0 to r1 at z1, in alternating
+	bands of the two weaves, a rim on top. Returns the top."""
+	for k in range(bands):
+		t0, t1 = k / bands, (k + 1) / bands
+		p.seg((0, 0, z0 + (z1 - z0) * t0), (0, 0, z0 + (z1 - z0) * t1), r0 + (r1 - r0) * t0, r0 + (r1 - r0) * t1,
+			  swatches[k % 2], sides=sides, grad=(0.1, 0.7) if k % 2 else (0.25, 0.9), twist=(k % 2) * 180 / sides)
+	p.seg((0, 0, z1 - 0.01), (0, 0, z1 + 0.035), r1 + 0.02, r1 + 0.02, rim or WOOD, sides=sides, grad=(0.1, 0.6))
+
+
+def tea_house():
+	"""The tea-pickers' house: an open-sided timber pavilion 8 x 6 m on a stone
+	plinth (0.45 m, steps up the front, -Y), a stone back wall with two windows
+	(KayKit walls), knee rails on the sides, under a sweeping tiled roof with
+	upturned eaves, about 5.6 m to the ridge finials. Three paper lanterns hang
+	from the front beam; inside, a low tea table with cushions, a kettle on a
+	brazier, tea chests and baskets. Collide it as a mesh (the front and sides
+	are open)."""
+	p = Prop("tea_house", 401)
+	d = Prop("tea_house_detail", 402)            # small bits, no bevel
+	P = 0.45                                     # plinth top
+	hw, hd = 4.0, 3.0
+	p.box((2 * hw + 0.6, 2 * hd + 0.6, 0.2), (0, 0, 0.1), STONE_DARK, grad=(0.3, 1.0))
+	p.box((2 * hw + 0.3, 2 * hd + 0.3, P - 0.15), (0, 0, 0.2 + (P - 0.2) / 2 - 0.02), STONE_WARM, grad=(0.1, 0.9))
+	p.box((2 * hw + 0.4, 2 * hd + 0.4, 0.1), (0, 0, P - 0.04), STONE_LIGHT, grad=(0.1, 0.6))     # coping
+	for k, (y, z) in enumerate(((-hd - 0.38, 0.3), (-hd - 0.72, 0.15))):                        # steps up the front
+		p.box((2.6 + k * 0.3, 0.36, z), (0, y, z / 2), STONE_LIGHT if k % 2 else STONE_WARM, grad=(0.1, 0.8))
+	for s in (-1, 1):                                                                            # step cheeks with lotus knobs
+		p.box((0.36, 0.72, 0.5), (s * 1.55, -hd - 0.45, 0.25), STONE_LIGHT, grad=(0.1, 0.8))
+		p.blob((0.32, 0.32, 0.26), (s * 1.55, -hd - 0.45, 0.56), SHELL_PEACH, grad=(0.0, 0.6))
+	for k in range(13):                                                                          # plank floor
+		x = -hw + 0.1 + (k + 0.5) * (2 * hw - 0.2) / 13
+		p.box(((2 * hw - 0.2) / 13 - 0.03, 2 * hd - 0.2, 0.06), (x, 0, P + 0.03), WOOD if k % 3 else WOOD_GRAY, grad=(0.25, 0.9))
+	# --- timber frame: posts on stone drums, beams, brackets --------------------
+	top = 2.85
+	posts = [(x, -hd + 0.25) for x in (-hw + 0.25, -1.3, 1.3, hw - 0.25)]
+	posts += [(x, hd - 0.25) for x in (-hw + 0.25, 0.0, hw - 0.25)]
+	posts += [(s * (hw - 0.25), 0.0) for s in (-1, 1)]
+	for x, y in posts:
+		p.seg((x, y, P + 0.06), (x, y, P + 0.26), 0.2, 0.18, STONE_LIGHT, sides=8, grad=(0.1, 0.8))
+		p.seg((x, y, P + 0.26), (x, y, top), 0.12, 0.11, WOOD, sides=8, grad=(0.15, 1.0))
+		p.box((0.36, 0.36, 0.16), (x, y, top + 0.02), WOOD_GRAY, grad=(0.2, 0.9))
+	for y in (-hd + 0.25, hd - 0.25):
+		p.box((2 * hw + 0.3, 0.24, 0.26), (0, y, top + 0.2), CLOTH_RED, grad=(0.1, 0.8))
+		p.box((2 * hw + 0.34, 0.27, 0.06), (0, y, top + 0.06), GOLD, grad=(0.1, 0.5))
+	for x in (-hw + 0.25, hw - 0.25):
+		p.box((0.24, 2 * hd + 0.3, 0.26), (x, 0, top + 0.2), CLOTH_RED, grad=(0.1, 0.8))
+		p.box((0.27, 2 * hd + 0.34, 0.06), (x, 0, top + 0.06), GOLD, grad=(0.1, 0.5))
+	for x in (-hw + 0.25, -1.3, 1.3, hw - 0.25):                                                 # carved brackets under the front beam
+		for s in (-1, 1):
+			if abs(x + s * 0.4) > hw:
+				continue
+			p.seg((x, -hd + 0.25, top - 0.45), (x + s * 0.45, -hd + 0.25, top + 0.06), 0.05, 0.05, WOOD, sides=5)
+	# knee rails between the side posts (the front stays open)
+	for s in (-1, 1):
+		x = s * (hw - 0.25)
+		for y0, y1 in ((-hd + 0.25, 0.0), (0.0, hd - 0.25)):
+			p.box((0.1, y1 - y0, 0.1), (x, (y0 + y1) / 2, P + 0.75), WOOD, grad=(0.2, 0.9))
+			p.box((0.08, y1 - y0, 0.08), (x, (y0 + y1) / 2, P + 0.3), WOOD_GRAY, grad=(0.2, 0.9))
+			for k in range(1, 5):
+				y = y0 + (y1 - y0) * k / 5
+				p.box((0.05, 0.05, 0.45), (x, y, P + 0.52), BAMBOO, grad=(0.1, 0.8))
+	# --- the roof ---------------------------------------------------------------
+	z_eave = top + 0.34
+	ridge_z = z_eave + 1.75
+	_swept_roof(p, (hw + 0.95, hd + 0.9, z_eave), (2.3, 0.12, ridge_z), 0.62, bands=4, thick=0.22, swatch=CLAY)
+	_ridge(p, 2.35, ridge_z, r=0.14, curl=0.55)
+	p.seg((0, 0.05, ridge_z + 0.72), (0, -0.05, ridge_z + 0.72), 0.3, 0.3, GOLD, sides=14, glow=0.3)   # a small dawn sun on the ridge
+	p.seg((0, 0, ridge_z + 0.1), (0, 0, ridge_z + 0.45), 0.07, 0.07, GOLD, sides=6)
+	p.box((2 * hw + 1.2, 2 * hd + 1.0, 0.08), (0, 0, z_eave + 0.02), WOOD_GRAY, grad=(0.3, 0.9))       # the ceiling boards seen from under the eaves
+	obj = p.build(bevel=0.05)
+	# --- the sign, lanterns and things inside (no bevel) --------------------------
+	d.box((1.5, 0.08, 0.5), (0, -hd + 0.1, top - 0.28), WOOD, grad=(0.2, 0.9))                      # the sign board under the beam
+	d.box((1.62, 0.06, 0.6), (0, -hd + 0.14, top - 0.28), CLOTH_RED, grad=(0.1, 0.7))
+	for k, x in enumerate((-0.45, -0.15, 0.15, 0.45)):                                            # gilt letters, a tea leaf in the middle
+		d.box((0.12, 0.04, 0.28), (x, -hd + 0.05, top - 0.28), GOLD, rot=(0, (-1) ** k * 8, 0), grad=(0.0, 0.4))
+	for k, x in enumerate((-2.65, 0.0, 2.65)):                                                   # the paper lanterns under the front eave
+		_paper_lantern(d, x, -hd - 0.35, top + 0.2, GOLD if k != 1 else SHELL_PEACH, s=1.0)
+		d.seg((x, -hd + 0.25, top + 0.2), (x, -hd - 0.35, top + 0.2), 0.02, 0.02, WOOD, sides=4)
+	for x, y in ((-hw - 0.5, -hd - 0.5), (hw + 0.5, -hd - 0.5)):                                 # small lanterns at the roof's front corners
+		_paper_lantern(d, x, y, z_eave + 0.35, SHELL_PEACH, s=0.7)
+	# the tea table, cushions and a kettle
+	tx, ty = -0.6, 0.2
+	d.box((1.8, 1.0, 0.07), (tx, ty, P + 0.36), WOOD, grad=(0.1, 0.8))
+	for sx in (-1, 1):
+		for sy in (-1, 1):
+			d.box((0.08, 0.08, 0.3), (tx + sx * 0.8, ty + sy * 0.4, P + 0.18), WOOD_GRAY, grad=(0.2, 0.9))
+	for k, (x, y, sw) in enumerate(((tx - 1.25, ty, CLOTH_RED), (tx + 1.25, ty, CORAL_PINK), (tx - 0.45, ty - 0.85, SHELL_PEACH),
+								   (tx + 0.45, ty - 0.85, CLOTH_RED), (tx, ty + 0.85, CORAL_PINK))):
+		d.blob((0.6, 0.6, 0.14), (x, y, P + 0.08), sw, segs=(8, 4), grad=(0.1, 0.7))
+	for k in range(5):                                                                            # cups round a pot
+		a = k * math.tau / 5
+		d.seg((tx + math.cos(a) * 0.35, ty + math.sin(a) * 0.25, P + 0.4), (tx + math.cos(a) * 0.35, ty + math.sin(a) * 0.25, P + 0.47), 0.04, 0.05, BONE, sides=6)
+	d.blob((0.26, 0.26, 0.2), (tx, ty, P + 0.49), TEAL, segs=(8, 6), grad=(0.0, 0.6))
+	d.seg((tx + 0.1, ty, P + 0.5), (tx + 0.22, ty, P + 0.57), 0.025, 0.015, TEAL, sides=4)
+	# the brazier and kettle in the back corner
+	bx, by = 2.6, 1.9
+	d.seg((bx, by, P + 0.06), (bx, by, P + 0.45), 0.24, 0.3, CLAY, sides=10, grad=(0.1, 0.8))
+	d.seg((bx, by, P + 0.45), (bx, by, P + 0.48), 0.27, 0.27, EMBER, sides=10, glow=0.9)
+	d.blob((0.36, 0.36, 0.3), (bx, by, P + 0.62), IRON, segs=(10, 6), grad=(0.0, 0.7))
+	d.seg((bx + 0.15, by, P + 0.64), (bx + 0.34, by, P + 0.76), 0.035, 0.02, IRON, sides=5)
+	d.seg((bx - 0.14, by, P + 0.76), (bx + 0.14, by, P + 0.76), 0.012, 0.012, WOOD, sides=4)
+	# tea chests and baskets against the back wall
+	for k, (x, h) in enumerate(((-3.2, 0.5), (-2.6, 0.5), (-2.9, 0.42))):
+		z = P + (h / 2 if k < 2 else 0.5 + h / 2)
+		d.box((0.55, 0.5, h), (x, 2.35, z), WOOD if k % 2 else WOOD_GRAY, grad=(0.2, 0.9))
+		d.box((0.3, 0.02, 0.18), (x, 2.09, z), CLOTH_RED if k != 1 else GOLD, grad=(0.1, 0.6))
+	for k, x in enumerate((0.9, 1.45)):
+		s = Prop("tea_house_basket_%d" % k, 403 + k)
+		_woven(s, 0.2, 0.26, 0.0, 0.55, 5)
+		s.blob((0.42, 0.42, 0.14), (0, 0, 0.56), LEAF, segs=(8, 4), grad=(0.1, 0.5), jitter=0.02)
+		b = s.build()
+		b.data.transform(Matrix.Translation((x, 2.3, P + 0.06)))
+		d.parts.append(b)
+	extra = d.build()
+	# --- the back wall: KayKit stone, two windows, as in the houses --------------
+	pieces = []
+	for x in (-2.0, 2.0):
+		pieces += kaykit("wall_window_open", (x, hd - 0.25 + 0.3, P), math.pi, (1.0, 0.6, 0.66))
+	return _merge_materials(join_into(obj, [extra] + pieces))
+
+
+def tea_drying_rack():
+	"""Bamboo racks for drying tea: a frame 2.6 x 1.1 m and 1.9 m tall, lashed
+	at the joints, holding three shelves of wide flat baskets heaped with
+	leaves (green on top, withering brown below), a slanted reed sunshade on
+	top. The long side faces -Y. Collide it as a box."""
+	p = Prop("tea_drying_rack", 405)
+	hx, hy = 1.3, 0.55
+	for x in (-hx, 0.0, hx):
+		for y in (-hy, hy):
+			p.seg((x, y, 0.0), (x, y, 1.75 + (0.15 if y > 0 else 0.0)), 0.045, 0.04, BAMBOO, sides=6, grad=(0.1, 0.9))
+			for z in (0.45, 1.0, 1.5):
+				p.seg((x, y, z - 0.03), (x, y, z + 0.03), 0.055, 0.055, WOOD, sides=6)   # nodes
+	levels = (0.35, 0.85, 1.35)
+	for z in levels:
+		for y in (-hy, hy):
+			p.seg((-hx - 0.1, y, z), (hx + 0.1, y, z), 0.035, 0.035, BAMBOO, sides=6, grad=(0.1, 0.7))
+		for x in (-hx, 0.0, hx):
+			p.seg((x, -hy - 0.08, z - 0.02), (x, hy + 0.08, z - 0.02), 0.03, 0.03, BAMBOO, sides=6, grad=(0.1, 0.7))
+			for y in (-hy, hy):
+				p.blob((0.1, 0.1, 0.08), (x, y, z), HIDE, segs=(6, 4))                    # lashings
+	for s in (-1, 1):                                                                    # cross braces at the ends
+		p.seg((s * hx, -hy, 0.1), (s * hx, hy, 1.6), 0.025, 0.025, BAMBOO, sides=5)
+	obj = p.build()
+	d = Prop("tea_drying_rack_leaves", 406)
+	for li, z in enumerate(levels):
+		for x in (-0.65, 0.65):
+			r = 0.56
+			d.seg((x, 0, z + 0.03), (x, 0, z + 0.1), r, r + 0.04, BAMBOO, sides=14, grad=(0.05, 0.6) if li % 2 else (0.3, 0.9))
+			d.seg((x, 0, z + 0.095), (x, 0, z + 0.125), r + 0.06, r + 0.06, WOOD, sides=14, grad=(0.1, 0.6))    # the rim
+			leaves = ((PINE, MOSS), (PINE, LEAF), (LEAF, LEAF))[li]   # top baskets fresh, lower ones darkening as they dry
+			for k in range(10):
+				a = k * math.tau / 10 + d.rng.uniform(-0.3, 0.3)
+				rr = d.rng.uniform(0.05, 0.4)
+				d.blob((0.36, 0.3, 0.07), (x + math.cos(a) * rr, math.sin(a) * rr, z + 0.13), leaves[k % 2], rot=(0, 0, d.rng.uniform(0, 180)),
+					   segs=(7, 3), grad=(0.1, 0.6), jitter=0.01)
+	# the sunshade: a slanted reed mat on top
+	for k in range(14):
+		x = -hx - 0.2 + (k + 0.5) * (2 * hx + 0.4) / 14
+		d.seg((x, -hy - 0.3, 1.72), (x, hy + 0.3, 1.95), 0.05, 0.05, BAMBOO if k % 2 else HIDE, sides=4, grad=(0.1, 0.7))
+	d.seg((-hx - 0.2, -hy - 0.1, 1.76), (hx + 0.2, -hy - 0.1, 1.76), 0.03, 0.03, HIDE, sides=4)
+	d.seg((-hx - 0.2, hy + 0.1, 1.9), (hx + 0.2, hy + 0.1, 1.9), 0.03, 0.03, HIDE, sides=4)
+	return join_into(obj, [d.build()])
+
+
+def picker_basket():
+	"""A tea-picker's tall woven back basket, about 0.8 m: narrow at the foot,
+	flaring to the mouth, bands of weave, two shoulder straps, a heap of fresh
+	leaves on top. Small clutter; collide: none."""
+	p = Prop("picker_basket", 407)
+	p.seg((0, 0, 0.0), (0, 0, 0.05), 0.15, 0.17, WOOD, sides=10, grad=(0.2, 0.9))
+	_woven(p, 0.17, 0.27, 0.04, 0.72, 6, sides=10)
+	for k in range(4):                                             # ribs
+		a = k * math.tau / 4 + math.pi / 4
+		p.seg((math.cos(a) * 0.17, math.sin(a) * 0.17, 0.02), (math.cos(a) * 0.28, math.sin(a) * 0.28, 0.74), 0.018, 0.018, WOOD, sides=4)
+	for s in (-1, 1):                                              # the straps, on the back (+Y)
+		p.seg((s * 0.11, 0.24, 0.66), (s * 0.13, 0.32, 0.45), 0.02, 0.02, HIDE, sides=4)
+		p.seg((s * 0.13, 0.32, 0.45), (s * 0.12, 0.22, 0.2), 0.02, 0.02, HIDE, sides=4)
+	for k in range(6):                                             # the leaves
+		a = k * math.tau / 6 + 0.3
+		r = 0.08 if k % 2 else 0.14
+		p.blob((0.2, 0.15, 0.1), (math.cos(a) * r, math.sin(a) * r, 0.78 + (0.04 if k % 2 else 0)), LEAF, rot=(0, 0, math.degrees(a)), segs=(6, 3), grad=(0.1, 0.5))
+	return p.build()
+
+
+def shrine_broken():
+	"""A roadside shrine of the Dawn-Tusk fallen to ruin, facing -Y, about 5.4 x
+	4.6 m: a two-step stone plinth cracked across, its right half sunk and
+	tilted; the carved back stone (a sun in a niche) snapped, its top lying
+	behind; the right pillar standing broken under a creeper, the left one
+	fallen forward in drums; the shrine's elephant toppled off the front onto
+	its side; offering bowls tipped and scattered, moss and weeds in the
+	cracks. Collide it as a mesh."""
+	p = Prop("shrine_broken", 408)
+	for k, (w, dp, z0, h) in enumerate(((3.4, 2.6, 0.0, 0.3), (2.7, 2.0, 0.3, 0.28))):
+		sw = STONE_WARM if k == 0 else STONE_LIGHT
+		p.box((w / 2 - 0.05, dp, h), (-w / 4, 0, z0 + h / 2), sw, grad=(0.1, 0.9))
+		p.box((w / 2 - 0.05, dp, h), (w / 4 + 0.06, 0.02, z0 + h / 2 - 0.08), sw, rot=(3, -5, 4), grad=(0.1, 0.9))
+	p.box((1.2, 0.34, 0.16), (-0.3, -1.45, 0.08), STONE_LIGHT, grad=(0.1, 0.8))                # the step, split
+	p.box((0.9, 0.34, 0.14), (0.75, -1.5, 0.05), STONE_WARM, rot=(0, 3, 12), grad=(0.1, 0.8))
+	# the back stone: a carved stele, a niche with a sun in it, its top snapped off
+	p.box((1.9, 0.5, 1.25), (-0.2, 0.7, 0.58 + 0.62), STONE_WARM, grad=(0.05, 0.9))
+	p.box((2.05, 0.6, 0.18), (-0.2, 0.7, 0.67), STONE_LIGHT, grad=(0.1, 0.7))
+	p.box((1.1, 0.12, 0.85), (-0.2, 0.43, 1.25), STONE_DARK, grad=(0.3, 1.0))                 # the niche
+	p.seg((-0.2, 0.4, 1.3), (-0.2, 0.36, 1.3), 0.34, 0.34, GOLD, sides=14, grad=(0.35, 1.0))     # the sun, tarnished
+	for j in range(8):
+		a = j * math.tau / 8
+		if j in (1, 2):
+			continue                                                                      # rays broken off
+		p.seg((-0.2 + math.cos(a) * 0.34, 0.38, 1.3 + math.sin(a) * 0.34), (-0.2 + math.cos(a) * 0.46, 0.38, 1.3 + math.sin(a) * 0.46), 0.05, 0.0, GOLD, sides=4, grad=(0.35, 1.0))
+	for k in range(4):                                                                        # the broken top edge
+		p.rock((0.55, 0.5, 0.3), (-0.9 + k * 0.46, 0.7, 1.82 + (0.15 if k == 1 else 0) - k * 0.06), STONE_WARM, jitter=0.05)
+	p.box((1.9, 0.5, 1.0), (0.2, 1.95, 0.25), STONE_WARM, rot=(80, 0, 12), grad=(0.05, 0.9))      # the top, fallen behind
+	p.seg((0.2, 1.6, 0.65), (0.2, 1.6, 0.8), 0.5, 0.0, STONE_WARM, sides=4, twist=45)            # its little roof
+	# the right pillar, snapped
+	p.seg((1.15, -0.7, 0.5), (1.15, -0.7, 0.66), 0.25, 0.25, STONE_WARM, sides=8)
+	p.seg((1.15, -0.7, 0.66), (1.15, -0.7, 1.75), 0.18, 0.17, STONE_LIGHT, sides=8, grad=(0.1, 0.9), twist=22.5)
+	p.rock((0.36, 0.36, 0.26), (1.15, -0.7, 1.8), STONE_LIGHT, jitter=0.06)
+	# the left pillar, fallen forward in drums, its capital beyond
+	p.seg((-1.2, -0.7, 0.58), (-1.2, -0.7, 0.8), 0.25, 0.25, STONE_WARM, sides=8)
+	p.rock((0.34, 0.34, 0.2), (-1.2, -0.7, 0.84), STONE_LIGHT, jitter=0.05)
+	p.seg((-1.45, -1.25, 0.2), (-1.85, -1.95, 0.18), 0.18, 0.17, STONE_LIGHT, sides=8, grad=(0.1, 0.9), twist=10)
+	p.seg((-1.95, -2.15, 0.18), (-2.35, -2.7, 0.2), 0.17, 0.16, STONE_LIGHT, sides=8, grad=(0.1, 0.9), twist=40)
+	p.box((0.5, 0.5, 0.2), (-2.6, -3.05, 0.1), STONE_WARM, rot=(0, 0, 38), grad=(0.1, 0.8))
+	for k in range(6):                                                                        # rubble
+		p.rock((p.rng.uniform(0.2, 0.4), p.rng.uniform(0.18, 0.34), 0.18), (p.rng.uniform(-2.2, 2.2), p.rng.uniform(-2.4, -1.4), 0.06), STONE_WARM if k % 2 else STONE_LIGHT)
+	obj = p.build(bevel=0.04)
+	# the elephant: built standing (about 1.1 m long, its own plinth broken
+	# away), scaled up, laid on its side where it fell off the front
+	e = Prop("shrine_broken_elephant", 409)
+	e.blob((0.62, 0.95, 0.6), (0, 0.05, 0.62), STONE_LIGHT, segs=(10, 7), grad=(0.05, 0.8))
+	for x in (-0.2, 0.2):
+		for y in (-0.28, 0.35):
+			e.seg((x, y, 0.18), (x, y, 0.5), 0.11, 0.12, STONE_LIGHT, sides=6, grad=(0.2, 0.9))
+	_elephant_head(e, (0, -0.48, 0.86), 0.36, swatch=STONE_LIGHT, tusks=(True, False))
+	e.box((0.5, 0.4, 0.05), (0, 0.05, 0.93), SHELL_PEACH, grad=(0.1, 0.6))                    # its painted saddle cloth, faded
+	e.blob((0.16, 0.16, 0.16), (0, 0.05, 0.97), GOLD, grad=(0.0, 0.6))
+	el = e.build(bevel=0.02)
+	el.data.transform(Matrix.Translation((1.75, -2.35, 0.55)) @ Matrix.Rotation(math.radians(-35), 4, "Z") @ Matrix.Rotation(math.radians(-80), 4, "Y")
+					  @ Matrix.Scale(1.45, 4) @ Matrix.Translation((0, 0, -0.45)))
+	# offerings, moss, weeds, a creeper (no bevel)
+	d = Prop("shrine_broken_detail", 410)
+	for k, (x, y, z, tilt) in enumerate(((-0.6, -0.4, 0.6, 0), (0.45, -1.0, 0.1, 70), (-0.9, -1.9, 0.05, 85), (0.35, 0.2, 0.52, 20), (0.0, -2.5, 0.02, 90), (-0.2, 0.2, 0.6, 0))):
+		sw = (GOLD, CLAY, CLAY, GOLD, CLAY, CLAY)[k]
+		r = 0.15 if k % 2 else 0.19
+		bowl = [(0.001, 0.0), (r * 0.55, 0.0), (r, r * 0.55), (r * 0.85, r * 0.55), (0.001, r * 0.12)]
+		b0 = len(d.parts)
+		_lathe(d, bowl, 10, sw, grad=(0.1, 0.7))
+		_move_parts(d, b0, Matrix.Translation((x, y, z)) @ Matrix.Rotation(math.radians(k * 67), 4, "Z") @ Matrix.Rotation(math.radians(tilt), 4, "X"))
+	for x, y in ((-0.55, -0.3), (-0.72, -0.5), (0.35, -1.2)):                                   # spilled marigolds, long dried
+		d.blob((0.14, 0.14, 0.06), (x, y, 0.6 if y > -1 else 0.08), FLAG_YELLOW, segs=(6, 3))
+	for x, y, z, sx, sy in ((-0.9, 0.0, 0.6, 0.9, 0.7), (0.9, -0.2, 0.5, 0.7, 0.8), (-0.3, 0.7, 1.92, 0.9, 0.4), (0.5, 1.95, 0.52, 0.9, 0.6), (-1.9, -2.0, 0.34, 0.5, 0.4)):
+		_moss_patch(d, x, y, z, sx, sy)
+	for k in range(10):                                                                       # weeds in the cracks and round the foot
+		x, y = [(0.02, -0.3), (-1.75, 0.6), (1.8, 0.9), (-1.6, -1.2), (0.05, 0.9), (1.8, -1.3), (-0.9, 1.4), (2.3, -2.1), (-2.4, -0.4), (0.9, 1.2)][k]
+		z = 0.58 if k in (0, 4) else 0.0
+		for j in range(5):
+			a = j * math.tau / 5 + d.rng.uniform(-0.3, 0.3)
+			h = d.rng.uniform(0.25, 0.55)
+			d.seg((x, y, z), (x + math.cos(a) * 0.18, y + math.sin(a) * 0.18, z + h), 0.04, 0.0, LEAF if j % 2 else MOSS, sides=3, grad=(0.1, 0.8))
+	pts = [(1.15 + math.cos(t * 7) * 0.2, -0.7 + math.sin(t * 7) * 0.2, 1.85 - t * 1.85) for t in (i / 8 for i in range(9))]
+	_chain(d, pts, 0.03, 0.025, LEAF, sides=4, grad=(0.3, 1.0))                               # a creeper up the standing pillar
+	for q in pts[1::2]:
+		d.blob((0.22, 0.09, 0.15), (q[0] + 0.08, q[1] - 0.05, q[2]), LEAF, rot=(0, 0, d.rng.uniform(0, 360)), segs=(5, 3))
+	for k in range(3):
+		_vine(d, (-0.9 + k * 0.5, 0.95, 1.85), d.rng.uniform(0.5, 1.1), d.rng, r=0.025)           # hanging off the back stone
+	return join_into(obj, [el, d.build()])
+
+
+def dustpaw_hut():
+	"""A Dustpaw lean-to: a bamboo frame 3.6 m wide and 3 m deep, high at the
+	open front (-Y, 2.5 m) and sloping to the ground behind, roofed with
+	ragged patched hides in sand and ochre, a hide flap on each side, a sand
+	bank round the back, a skull over the door, bedding and a pot inside.
+	Collide it as a box."""
+	p = Prop("dustpaw_hut", 411)
+	hw, hd = 1.8, 1.5
+	zf, zb = 2.45, 0.35
+	for x in (-hw, 0.0, hw):
+		p.seg((x, -hd, -0.1), (x + p.rng.uniform(-0.06, 0.06), -hd, zf + 0.25), 0.07, 0.055, BAMBOO, sides=6, grad=(0.1, 0.9))
+		p.seg((x, hd, -0.1), (x, hd, zb + 0.1), 0.06, 0.05, BAMBOO, sides=6)
+		p.seg((x, -hd - 0.15, zf + 0.1), (x, hd + 0.25, zb - 0.05), 0.045, 0.04, WOOD_GRAY, sides=5)   # rafters
+	p.seg((-hw - 0.3, -hd, zf), (hw + 0.35, -hd, zf + 0.05), 0.06, 0.06, BAMBOO, sides=6)          # front beam, lashed
+	for x in (-hw, 0.0, hw):
+		p.blob((0.16, 0.16, 0.14), (x, -hd, zf), HIDE, segs=(6, 4))
+		for z in (0.3, 0.85):                                                              # ochre-banded posts
+			p.seg((x, -hd, z * zf), (x, -hd, z * zf + 0.12), 0.075, 0.075, OCHRE, sides=6)
+	# the hides: overlapping courses, each patch a little skewed, some edges torn
+	cols = (HIDE, OCHRE, HIDE, WOOD_GRAY, HIDE, CORAL_ORANGE)
+	for row in range(4):
+		t0, t1 = row / 4, (row + 1) / 4 + 0.06
+		for c in range(3):
+			x0 = -hw - 0.2 + c * (2 * hw + 0.4) / 3 + p.rng.uniform(-0.1, 0.05)
+			x1 = x0 + (2 * hw + 0.4) / 3 + p.rng.uniform(0.05, 0.2)
+			y0, y1 = -hd - 0.2 + t0 * (2 * hd + 0.4), -hd - 0.2 + t1 * (2 * hd + 0.4)
+			z0, z1 = zf + 0.14 - t0 * (zf - zb), zf + 0.14 - t1 * (zf - zb)
+			lift = row * 0.012 + c * 0.004
+			v = [(x0, y0, z0 + lift + 0.05), (x1, y0 + p.rng.uniform(-0.1, 0.1), z0 + lift + 0.05), (x1, y1, z1 + lift + 0.05), (x0, y1, z1 + lift + 0.05)]
+			v += [(x, y, z - 0.04) for x, y, z in v]
+			p.poly(v, [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)],
+				   cols[(row * 3 + c * 2) % len(cols)], grad=(0.15, 0.9))
+	for k in range(9):                                                                     # torn strips off the front edge
+		x = -hw - 0.1 + k * (2 * hw + 0.2) / 8 + p.rng.uniform(-0.08, 0.08)
+		L = p.rng.uniform(0.2, 0.6)
+		p.box((p.rng.uniform(0.08, 0.16), 0.03, L), (x, -hd - 0.24, zf + 0.12 - L / 2), (HIDE, OCHRE, WOOD_GRAY)[k % 3], rot=(p.rng.uniform(-8, 8), 0, p.rng.uniform(-10, 10)), grad=(0.1, 0.8))
+	for s in (-1, 1):                                                                      # side flaps, ragged, tied off
+		x = s * (hw + 0.05)
+		p.poly([(x, -hd + 0.15, zf - 0.05), (x, hd - 0.1, zb + 0.05), (x, hd - 0.1, 0.0), (x, -hd + 0.6, 0.0), (x, -hd + 0.2, 0.6)],
+			   [(0, 1, 2, 3, 4)], HIDE if s < 0 else OCHRE, grad=(0.2, 0.9))
+		p.poly([(x - s * 0.03, -hd + 0.15, zf - 0.05), (x - s * 0.03, hd - 0.1, zb + 0.05), (x - s * 0.03, hd - 0.1, 0.0), (x - s * 0.03, -hd + 0.6, 0.0), (x - s * 0.03, -hd + 0.2, 0.6)],
+			   [(0, 4, 3, 2, 1)], HIDE, grad=(0.6, 1.0))
+	for k in range(10):                                                                    # the sand bank round the back and sides
+		a = math.pi * 0.1 + k * math.pi * 0.8 / 9
+		p.blob((1.2, 0.8, 0.5), (math.cos(a) * hw * 1.1, math.sin(a) * hd * 0.9 + 0.3, 0.05), HIDE, rot=(0, 0, math.degrees(a)), segs=(8, 5), grad=(0.1, 0.8))
+	obj = p.build(bevel=0.02)
+	d = Prop("dustpaw_hut_detail", 412)
+	_skull(d, (0.0, -hd - 0.1, zf + 0.12), s=1.4)                                           # a skull over the door
+	for s in (-1, 1):
+		for k in range(4):                                                                 # bead strings hanging by the door
+			d.blob((0.06, 0.06, 0.06), (s * 0.55, -hd - 0.12, zf - 0.15 - k * 0.1), (TEAL, CORAL_ORANGE, BONE, CLOTH_RED)[k], segs=(5, 3))
+		d.seg((s * 0.55, -hd - 0.12, zf), (s * 0.55, -hd - 0.12, zf - 0.45), 0.008, 0.008, HIDE, sides=3)
+	for k in range(3):                                                                     # a feather
+		d.box((0.05, 0.02, 0.3), (0.5 + k * 0.06, -hd - 0.14, zf - 0.25), (CLOTH_WHITE, OCHRE, CLOTH_RED)[k], rot=(0, 15 - k * 12, 0), grad=(0.0, 0.6))
+	# inside: a bed of hides, a clay pot, a bundle of spears
+	d.blob((1.3, 1.0, 0.18), (-0.8, 0.5, 0.05), HIDE, segs=(8, 4), grad=(0.1, 0.8))
+	d.blob((1.0, 0.8, 0.14), (-0.7, 0.55, 0.15), OCHRE, segs=(8, 4), grad=(0.1, 0.8))
+	d.seg((0.9, 0.3, 0.0), (0.9, 0.3, 0.35), 0.2, 0.25, CLAY, sides=10, grad=(0.1, 0.8))
+	d.seg((0.9, 0.3, 0.35), (0.9, 0.3, 0.45), 0.25, 0.14, CLAY, sides=10)
+	d.seg((0.9, 0.3, 0.45), (0.9, 0.3, 0.5), 0.15, 0.15, CLAY, sides=10)
+	for k in range(3):
+		d.seg((1.4 + k * 0.08, -0.4, 0.0), (1.2 + k * 0.12, -1.35, 2.0), 0.025, 0.02, WOOD, sides=4)
+		d.seg((1.2 + k * 0.12, -1.35, 2.0), (1.18 + k * 0.12, -1.42, 2.22), 0.04, 0.0, IRON, sides=4)
+	return join_into(obj, [d.build()])
+
+
+def dustpaw_totem():
+	"""A Dustpaw totem: a crooked pole about 3 m tall on a cairn, a jackal's
+	skull on top (long narrow muzzle, hide ears stitched on), ochre bands,
+	a crossbar hung with feathers and strings of clay and bone beads.
+	Faces -Y. Collide it as a box (or not at all)."""
+	p = Prop("dustpaw_totem", 413)
+	for k in range(6):
+		a = k * math.tau / 6
+		p.rock((0.45, 0.4, 0.3), (math.cos(a) * 0.38, math.sin(a) * 0.38, 0.08), STONE_WARM, jitter=0.05)
+	p.rock((0.4, 0.4, 0.3), (0.05, 0.1, 0.3), HIDE, jitter=0.04)
+	_chain(p, [(0, 0, -0.1), (0.05, 0.02, 1.2), (-0.02, 0.0, 2.2), (0.04, 0.0, 2.75)], 0.1, 0.07, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+	for z in (0.9, 1.35, 1.95):
+		p.seg((0.02, 0.01, z), (0.02, 0.01, z + 0.1), 0.105, 0.1, OCHRE if z != 1.35 else CLOTH_RED, sides=6)
+	p.seg((-0.7, 0.0, 2.2), (0.72, 0.0, 2.25), 0.04, 0.04, WOOD, sides=5)                         # crossbar
+	p.blob((0.12, 0.12, 0.12), (0.0, 0.0, 2.22), HIDE, segs=(6, 4))
+	obj = p.build(bevel=0.015)
+	d = Prop("dustpaw_totem_detail", 414)
+	# the jackal skull: a narrow cranium and a long tapering muzzle, looking -Y
+	c = Vector((0.04, 0.0, 2.9))
+	d.blob((0.28, 0.34, 0.26), c, BONE, segs=(8, 6), grad=(0.0, 0.6))
+	d.seg(tuple(c + Vector((0, -0.1, 0.0))), tuple(c + Vector((0, -0.52, -0.08))), 0.1, 0.045, BONE, sides=6, grad=(0.0, 0.6))
+	d.seg(tuple(c + Vector((0, -0.12, -0.1))), tuple(c + Vector((0, -0.5, -0.14))), 0.05, 0.03, BONE, sides=5, grad=(0.1, 0.7))   # the jaw
+	for s in (-1, 1):
+		d.blob((0.07, 0.05, 0.06), tuple(c + Vector((s * 0.09, -0.15, 0.04))), IRON, segs=(5, 3))       # eye sockets
+		d.seg(tuple(c + Vector((s * 0.05, -0.47, -0.1))), tuple(c + Vector((s * 0.055, -0.48, -0.16))), 0.012, 0.0, BONE, sides=3)  # fangs
+		d.poly([tuple(c + Vector((s * 0.07, 0.02, 0.1))), tuple(c + Vector((s * 0.17, 0.05, 0.08))), tuple(c + Vector((s * 0.18, 0.02, 0.42)))],
+			   [(0, 1, 2)], OCHRE, grad=(0.1, 0.8))                                                   # hide ears, big and pointed
+		d.poly([tuple(c + Vector((s * 0.07, 0.035, 0.1))), tuple(c + Vector((s * 0.17, 0.065, 0.08))), tuple(c + Vector((s * 0.18, 0.035, 0.42)))],
+			   [(0, 2, 1)], HIDE, grad=(0.1, 0.8))
+	d.box((0.04, 0.3, 0.02), tuple(c + Vector((0, -0.25, 0.08))), CLOTH_RED, rot=(10, 0, 0))            # a red stripe down the muzzle
+	# feathers and bead strings off the crossbar
+	for k, x in enumerate((-0.62, -0.38, -0.14, 0.2, 0.44, 0.66)):
+		L = 0.35 + (k % 3) * 0.12
+		d.seg((x, 0.0, 2.2), (x, 0.0, 2.2 - L), 0.008, 0.008, HIDE, sides=3)
+		if k % 2:
+			for j in range(int(L / 0.08)):
+				d.blob((0.055, 0.055, 0.05), (x, 0.0, 2.15 - j * 0.08), (TEAL, CORAL_ORANGE, BONE, CLOTH_RED, OCHRE)[(j + k) % 5], segs=(5, 3))
+		else:
+			for j in range(2):
+				d.box((0.06, 0.015, 0.3), (x + j * 0.05 - 0.02, 0.0, 2.2 - L - 0.12), (CLOTH_WHITE, OCHRE, CLOTH_RED, WOOD_GRAY)[(k + j) % 4], rot=(0, (-1) ** j * 14, 0), grad=(0.0, 0.7))
+	for k in range(3):                                                                            # feathers tucked behind the skull
+		d.box((0.06, 0.02, 0.4), (0.04 + (k - 1) * 0.1, 0.18, 3.1), (CLOTH_WHITE, OCHRE, CLOTH_RED)[k], rot=(-20, (k - 1) * 25, 0), grad=(0.0, 0.6))
+	_bone(d, (-0.3, -0.12, 1.55), (0.3, -0.12, 1.45), r=0.025)                                    # a bone lashed across the pole
+	d.blob((0.1, 0.1, 0.1), (0.02, -0.1, 1.5), HIDE, segs=(5, 3))
+	return join_into(obj, [d.build()])
+
+
+def dustpaw_fire():
+	"""The Dustpaw's fire pit: a ring of stones laid with bones and two small
+	skulls, a heap of logs and embers, flames, and a spit on forked sticks with
+	a roasting haunch. About 2.4 m across. Collide: none."""
+	p = Prop("dustpaw_fire", 415)
+	for k in range(10):
+		a = k * math.tau / 10
+		p.rock((0.38, 0.32, 0.26), (math.cos(a) * 0.9, math.sin(a) * 0.9, 0.08), STONE_WARM if k % 2 else STONE_DARK, rot=(0, 0, math.degrees(a)), jitter=0.05)
+	p.blob((2.1, 2.1, 0.12), (0, 0, 0.0), HIDE, segs=(12, 4), grad=(0.3, 1.0))                   # trampled sand
+	p.blob((1.2, 1.2, 0.1), (0, 0, 0.04), CHAR, segs=(10, 4), grad=(0.3, 1.0))
+	for k in range(5):
+		a = k * math.tau / 5 + 0.2
+		p.seg((math.cos(a) * 0.62, math.sin(a) * 0.62, 0.06), (math.cos(a) * 0.08, math.sin(a) * 0.08, 0.45), 0.08, 0.06, WOOD_GRAY if k % 2 else WOOD, sides=5, grad=(0.4, 1.0))
+	p.blob((0.9, 0.9, 0.12), (0, 0, 0.08), EMBER, grad=(0.5, 0.9), glow=0.9)
+	for loc, r, h in (((0, 0, 0.1), 0.34, 1.0), ((0.18, 0.1, 0.1), 0.22, 0.72), ((-0.17, -0.08, 0.1), 0.2, 0.68), ((0.04, -0.2, 0.1), 0.16, 0.5)):
+		p.seg(loc, (loc[0], loc[1], loc[2] + h), r, 0.0, FLAME, sides=6, grad=(0.1, 0.95), glow=1.2, twist=p.rng.uniform(0, 60))
+	# the spit
+	for s in (-1, 1):
+		x = s * 1.05
+		p.seg((x, 0, 0.0), (x, 0, 0.85), 0.035, 0.03, WOOD, sides=5)
+		p.seg((x, 0, 0.8), (x - s * 0.1, 0.08, 1.0), 0.025, 0.02, WOOD, sides=4)
+		p.seg((x, 0, 0.8), (x + s * 0.05, -0.08, 1.0), 0.025, 0.02, WOOD, sides=4)
+	p.seg((-1.25, 0, 0.9), (1.2, 0, 0.9), 0.025, 0.025, WOOD_GRAY, sides=5)
+	p.blob((0.55, 0.3, 0.28), (0.1, 0, 0.88), CLAY, segs=(8, 6), grad=(0.1, 0.9))                 # the haunch
+	p.seg((0.36, 0, 0.88), (0.5, 0, 0.9), 0.05, 0.04, BONE, sides=5)
+	obj = p.build(bevel=0.0)
+	d = Prop("dustpaw_fire_bones", 416)
+	for k in range(10):                                                                           # bones laid between the stones
+		a = (k + 0.5) * math.tau / 10
+		if k in (2, 7):
+			_skull(d, (math.cos(a) * 0.95, math.sin(a) * 0.95, 0.12), s=1.1, yaw=a + math.pi / 2)
+			continue
+		t = Vector((-math.sin(a), math.cos(a), 0)) * 0.15
+		cpt = Vector((math.cos(a) * 0.95, math.sin(a) * 0.95, 0.1))
+		_bone(d, tuple(cpt - t), tuple(cpt + t + Vector((0, 0, 0.03))), r=0.022)
+	_bone(d, (1.3, -0.6, 0.03), (1.6, -0.25, 0.05), r=0.028)                                     # gnawed and tossed aside
+	_bone(d, (-1.4, 0.7, 0.03), (-1.2, 1.05, 0.04), r=0.024)
+	return join_into(obj, [d.build()])
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -5813,6 +6256,13 @@ PROPS = {
 	"shipwreck": shipwreck,
 	"coral_growth": coral_growth,
 	"naga_shrine": naga_shrine,
+	"tea_house": tea_house,
+	"tea_drying_rack": tea_drying_rack,
+	"picker_basket": picker_basket,
+	"shrine_broken": shrine_broken,
+	"dustpaw_hut": dustpaw_hut,
+	"dustpaw_totem": dustpaw_totem,
+	"dustpaw_fire": dustpaw_fire,
 }
 
 

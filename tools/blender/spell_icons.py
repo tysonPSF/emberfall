@@ -2581,8 +2581,47 @@ def drowning_grasp():
 	return p.build()
 
 
+def cobra_venom():
+	p = Prop("cobra_venom", 831)
+	body = (AMBER, (0.4, 0.95))
+	for z, r, k0 in ((0.06, 0.5, 0), (0.2, 0.38, 3)):                                   # a hooded cobra, coiled
+		pts = [(math.cos(a) * r, math.sin(a) * r * 0.7, z + math.sin(a) * 0.02) for a in [k0 * 0.3 + k * math.tau / 16 for k in range(17)]]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.12, 0.12, body[0], sides=7, grad=body[1])
+	neck = [(0.2, 0, 0.28), (0.1, 0, 0.55), (-0.05, 0, 0.8), (-0.02, 0, 0.95)]             # rearing up
+	for a, b in zip(neck, neck[1:]):
+		p.seg(a, b, 0.13, 0.12, body[0], sides=8, grad=body[1])
+	hood = []
+	for k in range(24):                                                                   # its spread hood, narrowing to the neck
+		t = k * math.tau / 24
+		z = 0.93 + math.cos(t) * 0.38
+		hood.append((math.sin(t) * 0.5 * (0.45 + 0.55 * (z - 0.55) / 0.76) ** 0.6, z))
+	icons._slab(p, [(x - 0.04, z) for x, z in hood], 0.04, 0.1, body[0], grad=(0.5, 1.0))
+	for a, b in zip(hood, hood[1:] + hood[:1]):                                           # edged dark
+		p.seg((a[0] - 0.04, 0.02, a[1]), (b[0] - 0.04, 0.02, b[1]), 0.035, 0.035, WOOD, sides=4, grad=(0.6, 1.0))
+	for sx in (-1, 1):                                                                    # dark eye marks on the hood
+		p.blob((0.16, 0.04, 0.2), (sx * 0.3 - 0.04, 0.0, 0.95), WOOD, segs=(8, 5), grad=(0.6, 1.0))
+		p.blob((0.07, 0.04, 0.09), (sx * 0.3 - 0.04, -0.02, 0.95), AMBER, segs=(6, 4), grad=(0.0, 0.3))
+	for k in range(3):                                                                    # pale throat bands
+		z = 0.66 + k * 0.1
+		p.seg((-0.13, -0.08, z), (0.11, -0.08, z + 0.01), 0.03, 0.03, BONE, sides=4)
+	p.seg((-0.02, 0, 0.95), (0.18, -0.2, 1.2), 0.12, 0.11, body[0], sides=8, grad=(0.1, 0.6))   # the head thrust out from the hood
+	p.blob((0.44, 0.34, 0.26), (0.26, -0.26, 1.26), body[0], rot=(0, -15, 0), segs=(12, 8), grad=(0.0, 0.5))
+	p.seg((0.26, -0.3, 1.12), (0.56, -0.36, 1.02), 0.1, 0.04, body[0], sides=6, grad=(0.3, 0.7))   # lower jaw, gaping
+	p.blob((0.24, 0.08, 0.08), (0.4, -0.36, 1.14), CLOTH_RED, segs=(6, 4))                     # the mouth
+	for sy in (-1, 1):
+		p.blob((0.1, 0.05, 0.08), (0.24, -0.26 + sy * 0.13, 1.34), GOLD, segs=(6, 4), glow=2.0)   # slit eyes
+	for dx in (0.0, 0.1):                                                                 # fangs
+		p.seg((0.4 + dx, -0.36, 1.2), (0.42 + dx, -0.38, 1.02), 0.035, 0.0, BONE, sides=5)
+	for k in range(3):                                                                    # green venom dripping
+		_drop(p, 0.52 + k * 0.05, 0.8 - k * 0.26, 0.28 - k * 0.05, LEAF, 2.2)
+	for k in range(4):                                                                    # and spat ahead
+		p.blob((0.07, 0.06, 0.07), (0.72 + k * 0.1, -0.36, 1.1 - k * 0.05), LEAF, segs=(5, 3), glow=2.0)
+	return p.build()
+
+
 MONSOON_WEST = [mud_spit, bog_bolt, eel_shock, bogwing_sting, hex_of_rot, mire_grip, undertow, naga_venom, tidal_bolt, lightning_lash,
-				crushing_claw, drowning_grasp]
+				crushing_claw, drowning_grasp, cobra_venom]
 
 
 NEW_SPELLS = [false_sunfire, aimed_shot, track, flame_lick, ensnare, salve, strength_of_the_wild, icicle, entangle, eagle_eye,

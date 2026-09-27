@@ -47,6 +47,9 @@ var race := ""  # data/races.json id; "" for a character from before races (it c
 var race_changed := false  # a character's one change of race has been used
 var gender := ""  # "male" / "female"; "" for a character from before genders (drawn as its class body was made)
 var gender_changed := false  # a character's one change of gender has been used
+var hair_style := ""  # models.json "hair_styles" id, "" = the head the body and gender give
+var hair_color := ""  # models.json "hair_colors" id, "" = the head's own
+var hair_changed := false  # a character's one restyle has been used
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
@@ -144,6 +147,10 @@ func from_save(d: Dictionary) -> void:
 	race_changed = bool(d.get("race_changed", false))
 	gender = str(d.get("gender", "")) if str(d.get("gender", "")) in ["male", "female"] else ""
 	gender_changed = bool(d.get("gender_changed", false))
+	var hair := clean_hair(d.get("hair", []))
+	hair_style = hair[0]
+	hair_color = hair[1]
+	hair_changed = bool(d.get("hair_changed", false))
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -264,7 +271,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed"]:
+			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -283,9 +290,9 @@ func apply_self(d: Dictionary) -> void:
 		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
-	if str(lk.get("race", "")) != str(look.get("race", "")) or str(lk.get("gender", "")) != str(look.get("gender", "")):
+	if Player.body_changed(lk, look):
 		look = lk
-		dress()  # a new race or gender: a new body
+		dress()  # a new race, gender or hair: a new body
 	look = lk
 	pack.slots = (d["pack"] as Array).duplicate(true)
 	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor, station_items]:
@@ -325,6 +332,7 @@ func to_save() -> Dictionary:
 		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
 		"stats": stat_points if stats_chosen else null, "race": race, "race_changed": race_changed,
 		"gender": gender, "gender_changed": gender_changed,
+		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 	}
 
 
@@ -536,6 +544,23 @@ func bonus(key: String) -> float:
 	return GameData.deity_bonus(deity, key) + GameData.race_bonus(race if race != "" else "human", key)
 
 
+## A saved or sent [style, color], made legal: unknown ids become "".
+static func clean_hair(v: Variant) -> Array:
+	var a: Array = v if v is Array else []
+	var style := str(a[0]) if a.size() > 0 else ""
+	var color := str(a[1]) if a.size() > 1 else ""
+	return [style if GameData.models.get("hair_styles", {}).has(style) else "", color if GameData.models.get("hair_colors", {}).has(color) else ""]
+
+
+## Whether two looks differ in the body itself (race, gender, hair), which
+## means building it again rather than re-dressing it.
+static func body_changed(a: Dictionary, b: Dictionary) -> bool:
+	for key: String in ["race", "gender", "hair"]:
+		if str(a.get(key, "")) != str(b.get(key, "")):
+			return true
+	return false
+
+
 ## "male" or "female": as chosen, or, for a character from before genders, as its class body was made.
 func shown_gender() -> String:
 	if gender != "":
@@ -629,11 +654,14 @@ func _ready() -> void:
 	var looks_race := str(mirrored.get("race", race)) if not mirrored.is_empty() else race
 	build_body("humanoid", body_color, float(GameData.races.get(looks_race, {}).get("scale", 1.0)), GameData.classes[char_class].get("model", ""), weapon)
 	var looks_gender := str(mirrored.get("gender", gender)) if not mirrored.is_empty() else gender
+	var looks_hair: Array = clean_hair(mirrored.get("hair", [hair_style, hair_color]) if not mirrored.is_empty() else [hair_style, hair_color])
 	if visual is CharacterModel:
 		(visual as CharacterModel).set_gender(looks_gender)
+		(visual as CharacterModel).set_hair(looks_hair[0], looks_hair[1])
 		(visual as CharacterModel).set_race(looks_race)
 		look["race"] = looks_race
 		look["gender"] = looks_gender
+		look["hair"] = looks_hair
 	if not mirrored.is_empty() and visual is CharacterModel:
 		look = mirrored
 		(visual as CharacterModel).set_tiers(look.get("tiers", {}))

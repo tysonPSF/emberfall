@@ -72,6 +72,7 @@
     "_finish": "How each tier looks on gear (held and worn): tint multiplies the color, metallic/roughness give a sheen, rim lights the edges, glow adds a faint inner light."
   },
   "tables": {
+    "dustpaw_weapons": {"rusty_dagger": 3, "rusty_short_sword": 3, "worn_staff": 1},
     "pondkin_weapons": {"iron_short_sword": 2, "iron_dagger": 2, "oak_staff": 1},
     "tidesworn_weapons": {"tidesworn_blade": 1, "tidesteel_sword": 2, "tidesteel_war_axe": 1},
     "tidesworn_armor": {"tidesteel_helm": 1, "tidesteel_gauntlets": 1, "tidesteel_boots": 1},

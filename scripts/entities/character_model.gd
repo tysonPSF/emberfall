@@ -34,6 +34,7 @@ var _ranged_left := 0.0
 var _posed_dead := false
 var _race := ""  # data/races.json id: its skin on the outfit's skin cells, its bolt-ons (ears, beards, tusks)
 var _gender := ""  # "male" / "female": a body of the other gender wears models.json "genders" head
+var _hair := ""  # models.json "hair_colors" id painted on the head's hair cells, "" for the head's own
 var _model_id := ""
 static var _race_textures: Dictionary = {}  # "texture path|race" -> the recolored ImageTexture, made once
 
@@ -156,6 +157,15 @@ func set_race(race_id: String) -> void:
 		var part: Node3D = (load(spec["path"]) as PackedScene).instantiate()
 		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
 		slot.add_child(part)
+		if spec.get("hair", false) and _hair != "":  # a beard in the chosen hair color
+			var hair := Color("#" + str(GameData.models["hair_colors"][_hair]["light"]))
+			for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
+				var base := mi.get_active_material(0) as BaseMaterial3D
+				if base != null:
+					var mat := base.duplicate() as BaseMaterial3D
+					mat.albedo_texture = null
+					mat.albedo_color = hair
+					mi.material_override = mat
 		if spec.get("skin", false) and race.get("skin") is Array:
 			var tone := Color("#" + str(race["skin"][0]))
 			for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
@@ -168,10 +178,8 @@ func set_race(race_id: String) -> void:
 
 ## Dresses the body as a man or a woman. Each body is one or the other as
 ## KayKit made it (models.json "genders" "bodies", default male); for the
-## other, its head (face and hair) is swapped for "heads"[gender], a KayKit
-## head skinned onto this skeleton that counts as the body's own Head, so
-## headgear covers it and the race's skin colors it. Call it right after
-## setup, before set_race (beards are "male_only").
+## other, its head (face and hair) is swapped for "heads"[gender]. Call it
+## right after setup, before set_hair and set_race (beards are "male_only").
 func set_gender(gender: String) -> void:
 	if skeleton == null or not gender in ["male", "female"] or gender == _gender:
 		return
@@ -180,9 +188,32 @@ func set_gender(gender: String) -> void:
 	if gender == str(genders.get("bodies", {}).get(_model_id, "male")):
 		return
 	var head: Dictionary = genders.get("heads", {}).get(gender, {})
-	if head.is_empty():
+	if not head.is_empty():
+		_swap_head(str(head["model"]), str(head["part"]))
+
+
+## A chosen hairstyle and color: `style` a models.json "hair_styles" id (one
+## of the KayKit heads, any gender; "" keeps the head the body and gender
+## give), `color` a "hair_colors" id painted over the head's hair cells
+## ("hair_cells", the same palette grid as the skin; "" keeps it) and over
+## hair-colored race parts (beards). After set_gender, before set_race.
+func set_hair(style: String, color: String) -> void:
+	if skeleton == null:
 		return
-	var src := _source(str(head["model"])).find_child(str(head["part"]), true, false) as MeshInstance3D
+	var styles: Dictionary = GameData.models.get("hair_styles", {})
+	if styles.has(style):
+		_swap_head(str(styles[style]["model"]), str(styles[style]["part"]))
+	_hair = color if GameData.models.get("hair_colors", {}).has(color) else ""
+	var ours := _body_parts()
+	if ours.has("Head"):
+		_skin(ours["Head"])
+
+
+## Swaps the body's head for another KayKit model's, skinned onto this
+## skeleton; it counts as the body's own Head, so headgear covers it and the
+## race's skin colors it.
+func _swap_head(model_id: String, part: String) -> void:
+	var src := _source(model_id).find_child(part, true, false) as MeshInstance3D
 	if src == null:
 		return
 	var ours := _body_parts()
@@ -191,7 +222,7 @@ func set_gender(gender: String) -> void:
 		old.get_parent().remove_child(old)
 		old.queue_free()
 	var mi := src.duplicate() as MeshInstance3D
-	mi.name = "Gender_Head"
+	mi.name = "Chosen_Head"
 	skeleton.add_child(mi)
 	mi.skeleton = NodePath("..")
 	mi.skin = _skin_by_name(src)
@@ -199,54 +230,71 @@ func set_gender(gender: String) -> void:
 	Entity.use_entity_layer(mi)
 
 
-## Puts the race's skin on one mesh, if its texture is a KayKit palette with known skin cells.
+## Repaints one mesh's palette texture: the race's skin on the skin cells and,
+## on the head, the chosen hair color on the hair cells. The mesh keeps its
+## original texture (meta "palette") so repaints never stack.
 func _skin(mi: MeshInstance3D) -> void:
-	var race: Dictionary = GameData.races.get(_race, {})
-	if not race.get("skin") is Array:
-		return
 	var base := (mi.material_override if mi.material_override != null else mi.get_active_material(0)) as BaseMaterial3D
-	if base == null or base.albedo_texture == null:
+	if base == null:
 		return
-	var path := base.albedo_texture.resource_path
-	var cells: Array = GameData.models.get("skin_cells", {}).get(path, [])
-	if cells.is_empty():
+	if not mi.has_meta("palette"):
+		if base.albedo_texture == null or base.albedo_texture.resource_path == "":
+			return
+		mi.set_meta("palette", base.albedo_texture)
+	var tex: Texture2D = mi.get_meta("palette")
+	var path := tex.resource_path
+	var race: Dictionary = GameData.races.get(_race, {})
+	var jobs: Array = []  # [[cells, [light, dark]]...]
+	var skin_key := ""
+	var hair_key := ""
+	var skin_cells: Array = GameData.models.get("skin_cells", {}).get(path, [])
+	if race.get("skin") is Array and not skin_cells.is_empty():
+		jobs.append([skin_cells, race["skin"]])
+		skin_key = _race
+	var hair_cells: Array = GameData.models.get("hair_cells", {}).get(path, [])
+	if _hair != "" and _region_of(str(mi.name)) == "Head" and not hair_cells.is_empty():
+		var hc: Dictionary = GameData.models["hair_colors"][_hair]
+		jobs.append([hair_cells, [hc["light"], hc["dark"]]])
+		hair_key = _hair
+	if jobs.is_empty():
 		return
-	var key := "%s|%s" % [path, _race]
+	var key := "%s|%s|%s" % [path, skin_key, hair_key]
 	if not _race_textures.has(key):
-		_race_textures[key] = _recolored(base.albedo_texture, cells, race["skin"])
+		_race_textures[key] = _recolored(tex, jobs)
 	var mat := base.duplicate() as BaseMaterial3D
 	mat.albedo_texture = _race_textures[key]
 	mi.material_override = mat
 
 
-## A copy of a palette texture with its skin cells remapped from their own
-## light-to-dark gradient onto the race's skin (light, dark hex).
-static func _recolored(tex: Texture2D, cells: Array, skin: Array) -> ImageTexture:
+## A copy of a palette texture with some cells remapped from their own
+## light-to-dark gradient onto new colors: jobs [[cells, [light, dark hex]]...].
+static func _recolored(tex: Texture2D, jobs: Array) -> ImageTexture:
 	var img := tex.get_image()
 	if img.is_compressed():
 		img.decompress()
 	img.convert(Image.FORMAT_RGBA8)
-	var light := Color("#" + str(skin[0]))
-	var dark := Color("#" + str(skin[1]))
 	var cw := img.get_width() / 8
 	var ch := img.get_height() / 4
-	for cell: Array in cells:
-		var x0 := int(cell[0]) * cw
-		var y0 := int(cell[1]) * ch  # rows count from the top, like the image
-		var lo := 1.0
-		var hi := 0.0
-		for y in range(y0, y0 + ch, 4):
-			for x in range(x0, x0 + cw, 4):
-				var l := img.get_pixel(x, y).get_luminance()
-				lo = minf(lo, l)
-				hi = maxf(hi, l)
-		var span := maxf(hi - lo, 0.0001)
-		for y in range(y0, y0 + ch):
-			for x in range(x0, x0 + cw):
-				var c := img.get_pixel(x, y)
-				var t := clampf((c.get_luminance() - lo) / span, 0.0, 1.0)
-				var n := dark.lerp(light, t)
-				img.set_pixel(x, y, Color(n.r, n.g, n.b, c.a))
+	for job: Array in jobs:
+		var light := Color("#" + str(job[1][0]))
+		var dark := Color("#" + str(job[1][1]))
+		for cell: Array in job[0]:
+			var x0 := int(cell[0]) * cw
+			var y0 := int(cell[1]) * ch  # rows count from the top, like the image
+			var lo := 1.0
+			var hi := 0.0
+			for y in range(y0, y0 + ch, 4):
+				for x in range(x0, x0 + cw, 4):
+					var l := img.get_pixel(x, y).get_luminance()
+					lo = minf(lo, l)
+					hi = maxf(hi, l)
+			var span := maxf(hi - lo, 0.0001)
+			for y in range(y0, y0 + ch):
+				for x in range(x0, x0 + cw):
+					var c := img.get_pixel(x, y)
+					var t := clampf((c.get_luminance() - lo) / span, 0.0, 1.0)
+					var n := dark.lerp(light, t)
+					img.set_pixel(x, y, Color(n.r, n.g, n.b, c.a))
 	img.generate_mipmaps()
 	return ImageTexture.create_from_image(img)
 

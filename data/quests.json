@@ -1017,5 +1017,194 @@
     "faction": {
       "rainhold": 20
     }
+  },
+  "dewstep_moth_wings": {
+    "name": "Moths in the Lamps",
+    "giver": "headpicker_anjali",
+    "start_keyword": "wings",
+    "wants": {
+      "moth_wing": 4
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 15
+    },
+    "first_reward_item": "teagarden_sandals",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Moths in the Lamps. Bring Headpicker Anjali four lantern moth wings.",
+    "ready_text": "Wings! Let me have them, {name}.",
+    "complete_text": "Four fewer moths in the young leaves. Here's your coin.",
+    "first_complete_text": "And the sandals. They were my daughter's.",
+    "faction": {
+      "lanternhold": 5
+    }
+  },
+  "pilfers_bangle": {
+    "name": "The Troop-King's Bangle",
+    "giver": "headpicker_anjali",
+    "start_keyword": "bangle",
+    "wants": {
+      "pilfers_bangle": 1,
+      "stolen_trinket": 2
+    },
+    "reward": {
+      "xp": 1400,
+      "coin": 180
+    },
+    "first_reward_item": "dawnlight_ring",
+    "accept_text": "You have taken on a task: The Troop-King's Bangle. Bring Headpicker Anjali Pilfer's bangle and two stolen trinkets.",
+    "ready_text": "That's the tea house's bangle! Give it here, {name}.",
+    "complete_text": "The orchard will be quieter now.",
+    "first_complete_text": "Take this ring. It catches the dawn.",
+    "faction": {
+      "lanternhold": 15
+    }
+  },
+  "jackal_pelts": {
+    "name": "Jackal Pelts",
+    "giver": "hunter_kaveri",
+    "start_keyword": "pelts",
+    "wants": {
+      "jackal_pelt": 3
+    },
+    "reward": {
+      "xp": 260,
+      "coin": 30
+    },
+    "first_reward_item": "jackalhide_leggings",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Jackal Pelts. Bring Hunter Kaveri three jackal pelts.",
+    "ready_text": "Good pelts, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And the leggings. Tough hide.",
+    "faction": {
+      "lanternhold": 5
+    }
+  },
+  "cobra_fangs": {
+    "name": "Cobra Fangs",
+    "giver": "hunter_kaveri",
+    "start_keyword": "fangs",
+    "wants": {
+      "cobra_fang": 3
+    },
+    "reward": {
+      "xp": 320,
+      "coin": 36
+    },
+    "first_reward_item": "cobrafang_dagger",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Cobra Fangs. Bring Hunter Kaveri three cobra fangs.",
+    "ready_text": "Careful with those, {name}.",
+    "complete_text": "The healers will thank you.",
+    "first_complete_text": "The dagger, as promised. Mind the point.",
+    "faction": {
+      "lanternhold": 5
+    }
+  },
+  "amberstripes_fang": {
+    "name": "Amberstripe's Fang",
+    "giver": "hunter_kaveri",
+    "start_keyword": "fang",
+    "wants": {
+      "amberstripes_fang": 1
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 260
+    },
+    "first_reward_item": "tigerstripe_mantle",
+    "accept_text": "You have taken on a task: Amberstripe's Fang. Bring Hunter Kaveri the old tigress's fang.",
+    "ready_text": "Her fang. She was a queen of the woods, {name}.",
+    "complete_text": "The pickers can walk the south road again.",
+    "first_complete_text": "Wear her kin's stripes. You earned them.",
+    "faction": {
+      "lanternhold": 15
+    }
+  },
+  "dustpaw_beads": {
+    "name": "Dustpaw Beads",
+    "giver": "warden_tashi",
+    "start_keyword": "strings",
+    "wants": {
+      "dustpaw_beads": 4
+    },
+    "reward": {
+      "xp": 340,
+      "coin": 40
+    },
+    "first_reward_item": "wardens_buckler",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Dustpaw Beads. Bring Warden Tashi four Dustpaw bead strings.",
+    "ready_text": "Four of them. Good work, {name}.",
+    "complete_text": "Lanternhold pays its debts.",
+    "first_complete_text": "Take a buckler from our stores.",
+    "faction": {
+      "lanternhold": 8,
+      "dustpaw": -10
+    }
+  },
+  "rattlejaws_necklace": {
+    "name": "Rattlejaw's Necklace",
+    "giver": "warden_tashi",
+    "start_keyword": "necklace",
+    "wants": {
+      "rattlejaws_necklace": 1
+    },
+    "reward": {
+      "xp": 2400,
+      "coin": 300
+    },
+    "first_reward_item": "dawnsteel_shortsword",
+    "accept_text": "You have taken on a task: Rattlejaw's Necklace. Bring Warden Tashi the trophy necklace of Chief Rattlejaw.",
+    "ready_text": "Rattlejaw's trophies. Let me see, {name}.",
+    "complete_text": "Without their chief the Dustpaw will scatter for a while.",
+    "first_complete_text": "A dawnsteel blade, from the city forges.",
+    "faction": {
+      "lanternhold": 20,
+      "dustpaw": -30
+    }
+  },
+  "wisp_lights": {
+    "name": "Quieting the Wisps",
+    "giver": "brother_ravi",
+    "start_keyword": "lights",
+    "wants": {
+      "wisp_light": 3
+    },
+    "reward": {
+      "xp": 200,
+      "coin": 20
+    },
+    "first_reward_item": "ravis_prayer_beads",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Quieting the Wisps. Bring Brother Ravi three wisp lights.",
+    "ready_text": "Gently, {name}. Put them in the jar.",
+    "complete_text": "They are quieter already.",
+    "first_complete_text": "Take these beads, and pray on them.",
+    "faction": {
+      "dawn_pilgrims": 5
+    }
+  },
+  "widows_lantern": {
+    "name": "The Widow's Lantern",
+    "giver": "brother_ravi",
+    "start_keyword": "lantern",
+    "wants": {
+      "widows_lantern": 1
+    },
+    "reward": {
+      "xp": 2300,
+      "coin": 240
+    },
+    "first_reward_item": "lampwardens_charm",
+    "accept_text": "You have taken on a task: The Widow's Lantern. Bring Brother Ravi the Lantern-Widow's lantern.",
+    "ready_text": "Her lantern. Still warm, {name}.",
+    "complete_text": "I will light it at the shrine, and she can stop waiting.",
+    "first_complete_text": "Take this charm; it was blessed at the Dawn Shrine.",
+    "faction": {
+      "dawn_pilgrims": 15,
+      "lanternhold": 10
+    }
   }
 }

@@ -11,6 +11,7 @@ const WATER_SHADER := preload("res://scripts/world/water.gdshader")
 
 var zone_id := ""
 var data: Dictionary = {}
+var _terrace_wall := Color(0, 0, 0, 0)  # the terraces' face color, read once
 var zone_name := ""
 var size := 384.0
 var half := 192.0
@@ -223,7 +224,7 @@ func height_at(x: float, z: float) -> float:
 		var bank: float = river["bank"]
 		var d: float = at[0] - half_w
 		if d < bank:
-			var level: float = at[1]
+			var level: float = at[1] - terrace_rise(x, z)  # the level counts the terrace step, which is added after this
 			var bed: float
 			if d < 0.0:  # in the channel: deepest in the middle
 				bed = level - float(river["depth"]) * smoothstep(0.0, 1.0, minf(-d / (half_w * 0.6), 1.0))
@@ -598,7 +599,9 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 			c = c.lerp(Color.html(str(patch["color"])), (1.0 - smoothstep(pr - 6.0, pr + 8.0, pd)) * (0.85 + 0.15 * n))
 	var face := terrace_face(x, z)
 	if face > 0.05:
-		c = c.lerp(Color(0.66, 0.6, 0.5), smoothstep(0.05, 0.5, face))  # sandstone retaining walls
+		if _terrace_wall.a == 0.0:  # sandstone retaining walls, or a zone's own "face_color" (Dewstep's grassy banks)
+			_terrace_wall = Color.html(str(data.get("terraces", {}).get("face_color", "a8997f")))
+		c = c.lerp(_terrace_wall, smoothstep(0.05, 0.5, face))
 	var wet := lake_distance(x, z)
 	for river: Dictionary in _rivers:
 		var rd := float(_river_at(river, x, z)[0]) - float(river["width"]) * 0.5

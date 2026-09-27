@@ -407,5 +407,25 @@
   "tidal_bolt": {"name": "Tidal Bolt", "type": "damage", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 22, "min": 34, "max": 52, "per_level": 1.0, "classes": {}, "desc": "A tidecaller's bolt of crushing sea.", "fx": {"kind": "burst", "color": "#3a8ad8"}},
   "lightning_lash": {"name": "Lightning Lash", "type": "damage", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 10, "min": 36, "max": 56, "per_level": 1.0, "classes": {}, "desc": "A tempest spirit's lash of lightning.", "fx": {"kind": "impact", "color": "#d0e0ff"}},
   "crushing_claw": {"name": "Crushing Claw", "type": "damage", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 6, "min": 30, "max": 48, "per_level": 1.0, "classes": {}, "desc": "A giant crab's claw.", "fx": {"kind": "impact", "color": "#c06040"}},
-  "drowning_grasp": {"name": "Drowning Grasp", "type": "dot", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 10, "tick": 20, "ticks": 4, "per_level": 0.8, "classes": {}, "dot_text": "%s chokes on seawater.", "land_text": "Your lungs fill with seawater.", "desc": "The Tideking's grasp.", "fx": {"kind": "dot", "color": "#2a6a9a"}}
+  "drowning_grasp": {"name": "Drowning Grasp", "type": "dot", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 10, "tick": 20, "ticks": 4, "per_level": 0.8, "classes": {}, "dot_text": "%s chokes on seawater.", "land_text": "Your lungs fill with seawater.", "desc": "The Tideking's grasp.", "fx": {"kind": "dot", "color": "#2a6a9a"}},
+  "cobra_venom": {
+    "name": "Cobra Venom",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 3,
+    "ticks": 5,
+    "per_level": 0.4,
+    "classes": {},
+    "dot_text": "%s burns with venom.",
+    "land_text": "The cobra's venom burns in your blood.",
+    "desc": "A hooded cobra's venom.",
+    "fx": {
+      "kind": "dot",
+      "color": "#a0d040"
+    }
+  }
 }

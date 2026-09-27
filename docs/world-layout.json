@@ -1,6 +1,7 @@
 {
  "built": [
   "cinderpass",
+  "dewstep",
   "drownfast",
   "emberhold",
   "emberhold_crypt",
@@ -260,6 +261,24 @@
     2
    ],
    "kind": "city",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "dewstep",
+   "name": "Dewstep",
+   "area": "dawnstair",
+   "levels": [
+    1,
+    10
+   ],
+   "size": 384,
+   "cell": [
+    3,
+    1
+   ],
+   "kind": "field",
    "built": true,
    "existing": true,
    "reached": "foot"
@@ -815,6 +834,13 @@
    "a_edge": "west",
    "b": "sunward_steps",
    "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "dewstep",
+   "a_edge": "north",
+   "b": "lanternhold",
+   "b_edge": "south",
    "cross_area": false
   },
   {

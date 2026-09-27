@@ -1876,6 +1876,181 @@
       "path": "res://assets/creatures/old_chitterjaw.glb",
       "rig": "own",
       "scale": 2.0
+    },
+    "lantern_moth": {
+      "path": "res://assets/creatures/lantern_moth.glb",
+      "rig": "own",
+      "scale": 0.75
+    },
+    "rice_beetle": {
+      "path": "res://assets/creatures/rice_beetle.glb",
+      "rig": "own",
+      "scale": 0.42
+    },
+    "paddy_rat": {
+      "path": "res://assets/creatures/paddy_rat.glb",
+      "rig": "own",
+      "scale": 0.85
+    },
+    "temple_monkey": {
+      "path": "res://assets/creatures/temple_monkey.glb",
+      "rig": "own"
+    },
+    "monkey_troop_king": {
+      "path": "res://assets/creatures/monkey_troop_king.glb",
+      "rig": "own"
+    },
+    "jackal": {
+      "path": "res://assets/creatures/jackal.glb",
+      "rig": "own",
+      "scale": 0.85
+    },
+    "cobra": {
+      "path": "res://assets/creatures/cobra.glb",
+      "rig": "own"
+    },
+    "tiger": {
+      "path": "res://assets/creatures/tiger.glb",
+      "rig": "own"
+    },
+    "tigress": {
+      "path": "res://assets/creatures/tigress.glb",
+      "rig": "own"
+    },
+    "lantern_wisp": {
+      "path": "res://assets/creatures/lantern_wisp.glb",
+      "rig": "own"
+    },
+    "dustpaw": {
+      "path": "res://assets/creatures/dustpaw_body.glb",
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/dustpaw_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/dustpaw_tail.glb"
+        }
+      ],
+      "gear_parts": {
+        "chest": [
+          "Rogue_Cape"
+        ]
+      },
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "dustpaw_shaman": {
+      "path": "res://assets/creatures/dustpaw_shaman_body.glb",
+      "hide": [
+        "Mage_Head",
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/dustpaw_shaman_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/dustpaw_tail.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ]
+    },
+    "dustpaw_chief": {
+      "path": "res://assets/creatures/dustpaw_chief_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/dustpaw_chief_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/dustpaw_chief_trophies.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/dustpaw_chief_tail.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
+    "hungry_ghost": {
+      "path": "res://assets/creatures/hungry_ghost_body.glb",
+      "hide": [
+        "Skeleton_Mage_Skull",
+        "Skeleton_Mage_Jaw",
+        "Skeleton_Mage_Eyes",
+        "Skeleton_Mage_Hat",
+        "Skeleton_Mage_LegLeft",
+        "Skeleton_Mage_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/hungry_ghost_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/hungry_ghost_rags.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/hungry_ghost_tail.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "lantern_widow": {
+      "path": "res://assets/creatures/lantern_widow_body.glb",
+      "scale": 0.85,
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head",
+        "Mage_LegLeft",
+        "Mage_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/lantern_widow_veil.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/lantern_widow_train.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/lantern_widow_lantern.glb"
+        }
+      ],
+      "wearable_slots": []
     }
   },
   "weapons": {
@@ -2399,6 +2574,29 @@
     "naga_shrine": {
       "path": "res://assets/props/naga_shrine.glb",
       "lights": [{"pos": [0, 3.8, 0], "color": "#60b0ff", "energy": 1.4, "range": 7, "night": false}]
+    },
+    "tea_house": {
+      "path": "res://assets/props/tea_house.glb",
+      "lights": [{"pos": [-2.65, 2.58, 3.35], "color": "#ffc070", "energy": 0.9, "range": 6}, {"pos": [0, 2.58, 3.35], "color": "#ffb090", "energy": 0.9, "range": 6}, {"pos": [2.65, 2.58, 3.35], "color": "#ffc070", "energy": 0.9, "range": 6}]
+    },
+    "tea_drying_rack": {
+      "path": "res://assets/props/tea_drying_rack.glb"
+    },
+    "picker_basket": {
+      "path": "res://assets/props/picker_basket.glb"
+    },
+    "shrine_broken": {
+      "path": "res://assets/props/shrine_broken.glb"
+    },
+    "dustpaw_hut": {
+      "path": "res://assets/props/dustpaw_hut.glb"
+    },
+    "dustpaw_totem": {
+      "path": "res://assets/props/dustpaw_totem.glb"
+    },
+    "dustpaw_fire": {
+      "path": "res://assets/props/dustpaw_fire.glb",
+      "lights": [{"pos": [0, 0.8, 0], "color": "#ff8a3a", "energy": 1.4, "range": 8, "night": false}]
     }
   },
   "gear": {
@@ -2918,6 +3116,36 @@
     "res://assets/creatures/shaman_body_shaman_texture.png": [[0, 0], [7, 2]],
     "res://assets/creatures/ranger_class_body_ranger_class_texture.png": [[0, 0]]
   },
+  "hair_styles": {
+    "short": {"name": "Short", "model": "knight", "part": "Knight_Head"},
+    "long": {"name": "Long", "model": "mage", "part": "Mage_Head"},
+    "flowing": {"name": "Flowing", "model": "rogue", "part": "Rogue_Head"},
+    "rugged": {"name": "Rugged", "model": "ranger", "part": "Ranger_Head"},
+    "bald": {"name": "Bald and bearded", "model": "barbarian", "part": "Barbarian_Head"}
+  },
+  "hair_colors": {
+    "black": {"name": "Black", "light": "3a3438", "dark": "141214"},
+    "dark_brown": {"name": "Dark brown", "light": "5e4030", "dark": "2a1a12"},
+    "brown": {"name": "Brown", "light": "9b6a45", "dark": "4a2e1c"},
+    "auburn": {"name": "Auburn", "light": "a85a3c", "dark": "5a2618"},
+    "copper": {"name": "Copper", "light": "d8743a", "dark": "8a3614"},
+    "golden": {"name": "Golden", "light": "f0cc7a", "dark": "a8782e"},
+    "ash_blond": {"name": "Ash blond", "light": "ddd2b0", "dark": "8f8466"},
+    "gray": {"name": "Gray", "light": "b4b0aa", "dark": "5c5854"},
+    "white": {"name": "White", "light": "f4f2ee", "dark": "a8a6a2"},
+    "midnight": {"name": "Midnight blue", "light": "3c4a78", "dark": "141a36"}
+  },
+  "hair_cells": {
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian_barbarian_texture.png": [[1, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight_knight_texture.png": [[1, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage_mage_texture.png": [[1, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger_ranger_texture.png": [[1, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_rogue_texture.png": [[1, 0]],
+    "res://assets/creatures/magician_body_magician_texture.png": [[1, 0]],
+    "res://assets/creatures/necromancer_body_necromancer_texture.png": [[1, 0]],
+    "res://assets/creatures/shaman_body_shaman_texture.png": [[1, 0]],
+    "res://assets/creatures/ranger_class_body_ranger_class_texture.png": [[1, 0]]
+  },
   "genders": {
     "bodies": {"rogue": "female"},
     "heads": {
@@ -2929,9 +3157,11 @@
     "race_ears_elf": {"path": "res://assets/creatures/race_ears_elf.glb", "bone": "head", "skin": true},
     "race_ears_gnome": {"path": "res://assets/creatures/race_ears_gnome.glb", "bone": "head", "skin": true},
     "race_beard_dwarf": {"path": "res://assets/creatures/race_beard_dwarf.glb", "bone": "head", "skin": false,
-      "male_only": true},
+      "male_only": true,
+      "hair": true},
     "race_beard_barbarian": {"path": "res://assets/creatures/race_beard_barbarian.glb", "bone": "head", "skin": false,
-      "male_only": true},
+      "male_only": true,
+      "hair": true},
     "race_tusks_troll": {"path": "res://assets/creatures/race_tusks_troll.glb", "bone": "head", "skin": false},
     "race_troll_face": {"path": "res://assets/creatures/race_troll_face.glb", "bone": "head", "skin": true},
     "race_tusks_ogre": {"path": "res://assets/creatures/race_tusks_ogre.glb", "bone": "head", "skin": false},

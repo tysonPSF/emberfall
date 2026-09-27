@@ -1763,6 +1763,31 @@ func request_change_gender(player_id: int, gender: String) -> void:
 	say(p, "You feel yourself change. You are a %s now." % ("woman" if gender == "female" else "man"), C_SPELL)
 
 
+## A character's one restyle: a hairstyle and color from models.json
+## ("" for the head the body and gender give, or its own color).
+func request_change_hair(player_id: int, style: String, color: String) -> void:
+	if _remote(&"request_change_hair", [player_id, style, color]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	if p.hair_changed:
+		say(p, "You have already restyled your hair once.", C_WARN)
+		return
+	var hair := Player.clean_hair([style, color])
+	if hair[0] != style or hair[1] != color or hair == [p.hair_style, p.hair_color]:
+		say(p, "That's no change.", C_WARN)
+		return
+	p.hair_style = hair[0]
+	p.hair_color = hair[1]
+	p.hair_changed = true
+	p.look["hair"] = hair
+	p.stats_changed.emit()
+	p.dress()
+	Net.broadcast_look(p)
+	say(p, "You look quite different now.", C_SPELL)
+
+
 func request_interrupt(entity_id: int) -> void:
 	if _remote(&"request_interrupt", [entity_id]):
 		return
