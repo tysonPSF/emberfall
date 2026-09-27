@@ -926,21 +926,6 @@
       "id": "jalendra_head_fallen",
       "yaw": 200,
       "collide": "mesh"
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Drownfast"
-      ]
     }
   ],
   "passes": [
@@ -1057,6 +1042,25 @@
       "arrive_face": [
         191,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "windbreak",
+      "arrive": [
+        0,
+        199
+      ],
+      "arrive_face": [
+        0,
+        159
       ]
     }
   ],

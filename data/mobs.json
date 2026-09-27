@@ -6893,12 +6893,12 @@
       22,
       24
     ],
-    "hp_base": 152,
-    "hp_per_level": 22,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 178,
+    "hp_per_level": 24,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.7,
-    "ac": 43,
+    "ac": 48,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -6948,12 +6948,12 @@
       22,
       24
     ],
-    "hp_base": 133,
-    "hp_per_level": 19,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 156,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.7,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -6992,12 +6992,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7040,12 +7040,12 @@
       22,
       24
     ],
-    "hp_base": 133,
-    "hp_per_level": 19,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 156,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.5,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 14,
@@ -7077,12 +7077,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.5,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7124,12 +7124,12 @@
       23,
       24
     ],
-    "hp_base": 139,
-    "hp_per_level": 20,
-    "dmg_min": 14,
-    "dmg_max": 28,
+    "hp_base": 163,
+    "hp_per_level": 22,
+    "dmg_min": 16,
+    "dmg_max": 32,
     "attack_delay": 2.7,
-    "ac": 39,
+    "ac": 43,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7166,12 +7166,12 @@
       22,
       24
     ],
-    "hp_base": 133,
-    "hp_per_level": 19,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 156,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.7,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7208,12 +7208,12 @@
       23,
       24
     ],
-    "hp_base": 167,
-    "hp_per_level": 24,
-    "dmg_min": 14,
-    "dmg_max": 28,
+    "hp_base": 196,
+    "hp_per_level": 27,
+    "dmg_min": 16,
+    "dmg_max": 32,
     "attack_delay": 3.3,
-    "ac": 46,
+    "ac": 51,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7245,12 +7245,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7297,12 +7297,12 @@
       22,
       24
     ],
-    "hp_base": 133,
-    "hp_per_level": 19,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 156,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.7,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7356,12 +7356,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7403,12 +7403,12 @@
       21,
       24
     ],
-    "hp_base": 126,
-    "hp_per_level": 18,
-    "dmg_min": 13,
-    "dmg_max": 25,
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
     "attack_delay": 2.7,
-    "ac": 35,
+    "ac": 39,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7462,12 +7462,12 @@
       20,
       22
     ],
-    "hp_base": 120,
-    "hp_per_level": 18,
-    "dmg_min": 12,
-    "dmg_max": 24,
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 14,
+    "dmg_max": 27,
     "attack_delay": 2.7,
-    "ac": 34,
+    "ac": 38,
     "speed": 6.4,
     "aggressive": false,
     "aggro_radius": 0,
@@ -7499,12 +7499,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7546,12 +7546,12 @@
       20,
       23
     ],
-    "hp_base": 132,
-    "hp_per_level": 19,
-    "dmg_min": 12,
-    "dmg_max": 24,
+    "hp_base": 154,
+    "hp_per_level": 21,
+    "dmg_min": 14,
+    "dmg_max": 27,
     "attack_delay": 2.7,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": false,
     "aggro_radius": 0,
@@ -7583,12 +7583,12 @@
       20,
       22
     ],
-    "hp_base": 84,
-    "hp_per_level": 12,
-    "dmg_min": 12,
-    "dmg_max": 24,
+    "hp_base": 98,
+    "hp_per_level": 13,
+    "dmg_min": 14,
+    "dmg_max": 27,
     "attack_delay": 2.7,
-    "ac": 23,
+    "ac": 25,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 10,
@@ -7615,12 +7615,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 3.0,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7662,12 +7662,12 @@
       21,
       24
     ],
-    "hp_base": 126,
-    "hp_per_level": 18,
-    "dmg_min": 13,
-    "dmg_max": 25,
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
     "attack_delay": 2.7,
-    "ac": 35,
+    "ac": 39,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7717,12 +7717,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7765,12 +7765,12 @@
       20,
       22
     ],
-    "hp_base": 120,
-    "hp_per_level": 18,
-    "dmg_min": 12,
-    "dmg_max": 24,
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 14,
+    "dmg_max": 27,
     "attack_delay": 2.7,
-    "ac": 34,
+    "ac": 38,
     "speed": 6.4,
     "aggressive": false,
     "aggro_radius": 0,
@@ -7802,12 +7802,12 @@
       22,
       24
     ],
-    "hp_base": 133,
-    "hp_per_level": 19,
-    "dmg_min": 13,
-    "dmg_max": 26,
+    "hp_base": 156,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 29,
     "attack_delay": 2.7,
-    "ac": 37,
+    "ac": 41,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 12,
@@ -7839,12 +7839,12 @@
       25,
       25
     ],
-    "hp_base": 3800,
+    "hp_base": 4400,
     "hp_per_level": 0,
-    "dmg_min": 23,
-    "dmg_max": 46,
+    "dmg_min": 25,
+    "dmg_max": 51,
     "attack_delay": 2.7,
-    "ac": 55,
+    "ac": 59,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -7886,12 +7886,12 @@
       24,
       27
     ],
-    "hp_base": 175,
-    "hp_per_level": 25,
-    "dmg_min": 14,
-    "dmg_max": 29,
+    "hp_base": 206,
+    "hp_per_level": 28,
+    "dmg_min": 16,
+    "dmg_max": 33,
     "attack_delay": 2.7,
-    "ac": 48,
+    "ac": 53,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -7945,12 +7945,12 @@
       25,
       28
     ],
-    "hp_base": 198,
-    "hp_per_level": 29,
-    "dmg_min": 15,
-    "dmg_max": 30,
+    "hp_base": 233,
+    "hp_per_level": 32,
+    "dmg_min": 17,
+    "dmg_max": 34,
     "attack_delay": 3.2,
-    "ac": 55,
+    "ac": 61,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 12,
@@ -7982,12 +7982,12 @@
       29,
       29
     ],
-    "hp_base": 4920,
+    "hp_base": 5680,
     "hp_per_level": 0,
-    "dmg_min": 27,
-    "dmg_max": 53,
+    "dmg_min": 30,
+    "dmg_max": 58,
     "attack_delay": 2.7,
-    "ac": 63,
+    "ac": 68,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8030,12 +8030,12 @@
       24,
       27
     ],
-    "hp_base": 146,
-    "hp_per_level": 21,
-    "dmg_min": 14,
-    "dmg_max": 29,
+    "hp_base": 172,
+    "hp_per_level": 23,
+    "dmg_min": 16,
+    "dmg_max": 33,
     "attack_delay": 2.7,
-    "ac": 40,
+    "ac": 44,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -8089,12 +8089,12 @@
       29,
       29
     ],
-    "hp_base": 4920,
+    "hp_base": 5680,
     "hp_per_level": 0,
-    "dmg_min": 27,
-    "dmg_max": 53,
+    "dmg_min": 30,
+    "dmg_max": 58,
     "attack_delay": 2.7,
-    "ac": 63,
+    "ac": 68,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8142,12 +8142,12 @@
       24,
       27
     ],
-    "hp_base": 146,
-    "hp_per_level": 21,
-    "dmg_min": 14,
-    "dmg_max": 29,
+    "hp_base": 172,
+    "hp_per_level": 23,
+    "dmg_min": 16,
+    "dmg_max": 33,
     "attack_delay": 2.7,
-    "ac": 40,
+    "ac": 44,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 12,
@@ -8184,12 +8184,12 @@
       24,
       26
     ],
-    "hp_base": 102,
-    "hp_per_level": 15,
-    "dmg_min": 14,
-    "dmg_max": 29,
+    "hp_base": 120,
+    "hp_per_level": 17,
+    "dmg_min": 16,
+    "dmg_max": 33,
     "attack_delay": 2.7,
-    "ac": 28,
+    "ac": 31,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 12,
@@ -8216,12 +8216,12 @@
       29,
       29
     ],
-    "hp_base": 4920,
+    "hp_base": 5680,
     "hp_per_level": 0,
-    "dmg_min": 27,
-    "dmg_max": 53,
+    "dmg_min": 30,
+    "dmg_max": 58,
     "attack_delay": 2.7,
-    "ac": 63,
+    "ac": 68,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8268,12 +8268,12 @@
       25,
       28
     ],
-    "hp_base": 152,
-    "hp_per_level": 22,
-    "dmg_min": 15,
-    "dmg_max": 30,
+    "hp_base": 179,
+    "hp_per_level": 24,
+    "dmg_min": 17,
+    "dmg_max": 34,
     "attack_delay": 2.7,
-    "ac": 42,
+    "ac": 46,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -8328,12 +8328,12 @@
       29,
       29
     ],
-    "hp_base": 4920,
+    "hp_base": 5680,
     "hp_per_level": 0,
-    "dmg_min": 27,
-    "dmg_max": 53,
+    "dmg_min": 30,
+    "dmg_max": 58,
     "attack_delay": 2.7,
-    "ac": 63,
+    "ac": 68,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8382,12 +8382,12 @@
       28,
       30
     ],
-    "hp_base": 172,
-    "hp_per_level": 25,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 204,
+    "hp_per_level": 28,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 47,
+    "ac": 52,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -8441,12 +8441,12 @@
       31,
       31
     ],
-    "hp_base": 5480,
+    "hp_base": 6320,
     "hp_per_level": 0,
-    "dmg_min": 29,
-    "dmg_max": 57,
+    "dmg_min": 32,
+    "dmg_max": 63,
     "attack_delay": 2.7,
-    "ac": 68,
+    "ac": 73,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8489,12 +8489,12 @@
       28,
       30
     ],
-    "hp_base": 197,
-    "hp_per_level": 28,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 233,
+    "hp_per_level": 31,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 54,
+    "ac": 60,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -8531,12 +8531,12 @@
       31,
       31
     ],
-    "hp_base": 5480,
+    "hp_base": 6320,
     "hp_per_level": 0,
-    "dmg_min": 29,
-    "dmg_max": 57,
+    "dmg_min": 32,
+    "dmg_max": 63,
     "attack_delay": 2.7,
-    "ac": 68,
+    "ac": 73,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8583,12 +8583,12 @@
       28,
       30
     ],
-    "hp_base": 172,
-    "hp_per_level": 25,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 204,
+    "hp_per_level": 28,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 47,
+    "ac": 52,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 14,
@@ -8620,12 +8620,12 @@
       28,
       29
     ],
-    "hp_base": 146,
-    "hp_per_level": 21,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 173,
+    "hp_per_level": 23,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 40,
+    "ac": 44,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 12,
@@ -8657,12 +8657,12 @@
       28,
       29
     ],
-    "hp_base": 172,
-    "hp_per_level": 25,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 204,
+    "hp_per_level": 28,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 47,
+    "ac": 52,
     "speed": 6.4,
     "aggressive": false,
     "aggro_radius": 0,
@@ -8694,12 +8694,12 @@
       31,
       31
     ],
-    "hp_base": 5480,
+    "hp_base": 6320,
     "hp_per_level": 0,
-    "dmg_min": 29,
-    "dmg_max": 57,
+    "dmg_min": 32,
+    "dmg_max": 63,
     "attack_delay": 2.7,
-    "ac": 68,
+    "ac": 73,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8741,12 +8741,12 @@
       28,
       30
     ],
-    "hp_base": 172,
-    "hp_per_level": 25,
-    "dmg_min": 17,
-    "dmg_max": 34,
+    "hp_base": 204,
+    "hp_per_level": 28,
+    "dmg_min": 20,
+    "dmg_max": 38,
     "attack_delay": 2.7,
-    "ac": 47,
+    "ac": 52,
     "speed": 6.4,
     "aggressive": true,
     "aggro_radius": 15,
@@ -8783,12 +8783,12 @@
       31,
       31
     ],
-    "hp_base": 5480,
+    "hp_base": 6320,
     "hp_per_level": 0,
-    "dmg_min": 29,
-    "dmg_max": 57,
+    "dmg_min": 32,
+    "dmg_max": 63,
     "attack_delay": 2.7,
-    "ac": 68,
+    "ac": 73,
     "speed": 6.6,
     "aggressive": true,
     "aggro_radius": 18,
@@ -8828,5 +8828,981 @@
       "chance": 0.3,
       "text": "%s's attack carries %s!"
     }
+  },
+  "gale_spirit": {
+    "name": "a gale spirit",
+    "level": [
+      32,
+      35
+    ],
+    "hp_base": 235,
+    "hp_per_level": 31,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 2.7,
+    "ac": 60,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#c8e0f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gale_essence",
+        "chance": 0.5
+      }
+    ],
+    "model": "gale_spirit",
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.15,
+      "text": "%s hurls %s at you!"
+    }
+  },
+  "dust_devil": {
+    "name": "a dust devil",
+    "level": [
+      32,
+      34
+    ],
+    "hp_base": 200,
+    "hp_per_level": 27,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 2.7,
+    "ac": 51,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "scour",
+      "scours"
+    ],
+    "shape": "beetle",
+    "color": "#c8a070",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gale_essence",
+        "chance": 0.4
+      }
+    ],
+    "model": "dust_devil"
+  },
+  "storm_eye": {
+    "name": "the Storm-Eye",
+    "level": [
+      37,
+      37
+    ],
+    "hp_base": 8240,
+    "hp_per_level": 0,
+    "dmg_min": 38,
+    "dmg_max": 75,
+    "attack_delay": 2.7,
+    "ac": 87,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#a0c0e8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "storm_eye_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "gale_essence",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "storm_eye",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.25,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "giant_eagle": {
+    "name": "a giant eagle",
+    "level": [
+      32,
+      34
+    ],
+    "hp_base": 235,
+    "hp_per_level": 31,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 2.4,
+    "ac": 60,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#8a6a40",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "eagle_talon",
+        "chance": 0.5
+      }
+    ],
+    "model": "giant_eagle"
+  },
+  "thunderbird": {
+    "name": "a thunderbird",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#3a4a6a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "eagle_talon",
+        "chance": 0.3
+      },
+      {
+        "item": "thunder_feather",
+        "chance": 0.4
+      }
+    ],
+    "model": "thunderbird",
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "skarrow_thunderbird": {
+    "name": "Skarrow the Thunderbird",
+    "level": [
+      37,
+      37
+    ],
+    "hp_base": 8240,
+    "hp_per_level": 0,
+    "dmg_min": 38,
+    "dmg_max": 75,
+    "attack_delay": 2.7,
+    "ac": 87,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#e0e8ff",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "skarrows_crest",
+        "chance": 1.0
+      },
+      {
+        "item": "thunder_feather",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "skarrow_thunderbird",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "cliff_drake": {
+    "name": "a cliff drake",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 243,
+    "hp_per_level": 32,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a04a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "eagle_talon",
+        "chance": 0.3
+      }
+    ],
+    "model": "cliff_drake"
+  },
+  "kitewing_bandit": {
+    "name": "a Kitewing bandit",
+    "level": [
+      32,
+      35
+    ],
+    "hp_base": 235,
+    "hp_per_level": 31,
+    "dmg_min": 22,
+    "dmg_max": 44,
+    "attack_delay": 2.7,
+    "ac": 60,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "kitewing",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8a7a5a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "kite_silk",
+        "chance": 0.5
+      }
+    ],
+    "model": "kitewing_bandit",
+    "gear": [
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "ashfall_rings"
+      }
+    ],
+    "weapon": "kite_hook"
+  },
+  "kitewing_chief": {
+    "name": "Chief Tarn Kitewing",
+    "level": [
+      37,
+      37
+    ],
+    "hp_base": 8240,
+    "hp_per_level": 0,
+    "dmg_min": 38,
+    "dmg_max": 75,
+    "attack_delay": 2.7,
+    "ac": 87,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "kitewing",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#9a8a6a",
+    "scale": 1.0,
+    "coin": [
+      700,
+      2000
+    ],
+    "loot": [
+      {
+        "item": "tarns_painted_sail",
+        "chance": 1.0
+      },
+      {
+        "item": "kite_silk",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "kitewing_chief",
+    "named": true,
+    "xp_bonus": 2.3,
+    "gear": [],
+    "weapon": "kite_hook"
+  },
+  "stone_giant": {
+    "name": "a stone giant",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 327,
+    "hp_per_level": 43,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 3.4,
+    "ac": 83,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "stone_giants",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8a8a80",
+    "scale": 1.0,
+    "coin": [
+      80,
+      260
+    ],
+    "loot": [
+      {
+        "item": "giants_standing_stone",
+        "chance": 0.5
+      }
+    ],
+    "model": "stone_giant",
+    "proc": {
+      "spell": "trample",
+      "chance": 0.12,
+      "text": "%s's slab brings down %s!"
+    },
+    "weapon": "stone_slab"
+  },
+  "old_stackstone": {
+    "name": "Old Stackstone",
+    "level": [
+      37,
+      37
+    ],
+    "hp_base": 8240,
+    "hp_per_level": 0,
+    "dmg_min": 38,
+    "dmg_max": 75,
+    "attack_delay": 3.4,
+    "ac": 87,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "stone_giants",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#9a9a8a",
+    "scale": 1.0,
+    "coin": [
+      800,
+      2200
+    ],
+    "loot": [
+      {
+        "item": "stackstones_capstone",
+        "chance": 1.0
+      },
+      {
+        "item": "giants_standing_stone",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "old_stackstone",
+    "named": true,
+    "xp_bonus": 2.3,
+    "weapon": "stackstone_slab"
+  },
+  "grass_stalker": {
+    "name": "a grass stalker",
+    "level": [
+      34,
+      37
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.4,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#c8a060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "stalker_pelt",
+        "chance": 0.5
+      }
+    ],
+    "model": "grass_stalker"
+  },
+  "grass_howler": {
+    "name": "a grass howler",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a09060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "stalker_pelt",
+        "chance": 0.3
+      }
+    ],
+    "model": "grass_howler"
+  },
+  "tawnyjaw": {
+    "name": "Tawnyjaw the Man-Eater",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 41,
+    "dmg_max": 79,
+    "attack_delay": 2.4,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "maul",
+      "mauls"
+    ],
+    "shape": "beetle",
+    "color": "#b88a40",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tawnyjaws_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "stalker_pelt",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "tawnyjaw",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "thunderhoof": {
+    "name": "a thunderhoof",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 337,
+    "hp_per_level": 44,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 3.2,
+    "ac": 86,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#6a5040",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "thunderhoof_horn",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.4
+      }
+    ],
+    "model": "thunderhoof",
+    "proc": {
+      "spell": "trample",
+      "chance": 0.15,
+      "text": "%s tramples you with %s!"
+    }
+  },
+  "dirkhorn": {
+    "name": "a dirkhorn",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#8a7a60",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "thunderhoof_horn",
+        "chance": 0.3
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.4
+      }
+    ],
+    "model": "dirkhorn"
+  },
+  "old_thunderhoof": {
+    "name": "Old Thunderhoof",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 41,
+    "dmg_max": 79,
+    "attack_delay": 3.2,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#d8d0c0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "herd_kings_horn",
+        "chance": 1.0
+      },
+      {
+        "item": "thunderhoof_horn",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "old_thunderhoof",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "trample",
+      "chance": 0.3,
+      "text": "%s tramples you with %s!"
+    }
+  },
+  "hoofborn_rider": {
+    "name": "a Hoofborn rider",
+    "level": [
+      35,
+      38
+    ],
+    "hp_base": 259,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 65,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "hoofborn",
+    "verb": [
+      "spear",
+      "spears"
+    ],
+    "shape": "beetle",
+    "color": "#8a5a3a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "horsetail_braid",
+        "chance": 0.5
+      }
+    ],
+    "model": "hoofborn_rider"
+  },
+  "hoofborn_archer": {
+    "name": "a Hoofborn archer",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 259,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 65,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "hoofborn",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "shape": "beetle",
+    "color": "#7a5a3a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "horsetail_braid",
+        "chance": 0.5
+      }
+    ],
+    "model": "hoofborn_archer"
+  },
+  "khan_oruk": {
+    "name": "Khan Oruk of the Hoofborn",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 41,
+    "dmg_max": 79,
+    "attack_delay": 2.7,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "hoofborn",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "beetle",
+    "color": "#9a6a4a",
+    "scale": 1.0,
+    "coin": [
+      900,
+      2400
+    ],
+    "loot": [
+      {
+        "item": "khans_horsetail_banner",
+        "chance": 1.0
+      },
+      {
+        "item": "horsetail_braid",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "khan_oruk",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "barrow_wight": {
+    "name": "a barrow wight",
+    "level": [
+      35,
+      38
+    ],
+    "hp_base": 259,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 65,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8aa08a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      160
+    ],
+    "loot": [
+      {
+        "item": "barrow_bronze",
+        "chance": 0.5
+      }
+    ],
+    "model": "barrow_wight",
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    },
+    "gear": [],
+    "weapon": "barrow_blade"
+  },
+  "barrow_lord": {
+    "name": "the Barrow Lord",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 41,
+    "dmg_max": 79,
+    "attack_delay": 2.7,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#a0b8a0",
+    "scale": 1.0,
+    "coin": [
+      900,
+      2400
+    ],
+    "loot": [
+      {
+        "item": "barrow_lords_death_mask",
+        "chance": 1.0
+      },
+      {
+        "item": "barrow_bronze",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "barrow_lord",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    },
+    "weapon": "barrow_lord_sword"
   }
 }

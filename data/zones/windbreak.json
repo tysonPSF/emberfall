@@ -1,0 +1,1022 @@
+{
+  "name": "Windbreak",
+  "levels": [
+    32,
+    36
+  ],
+  "music": "windbreak",
+  "seed": 9511,
+  "size": 448,
+  "height_amplitude": 5,
+  "bind_point": [
+    0,
+    150
+  ],
+  "flat_radius": 20,
+  "trees": 40,
+  "tree_mix": [
+    "pine_b",
+    "tree_round",
+    "dead_palm"
+  ],
+  "groves": 0.3,
+  "rocks": 140,
+  "grass_colors": [
+    "#a89060",
+    "#c0a878"
+  ],
+  "fog_density": 0.0035,
+  "fog_color": "#d8c8b0",
+  "sun_energy": 1.15,
+  "clutter": {
+    "grass_b": {
+      "density": 0.12,
+      "patch": 0.6,
+      "sway": 0.3,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.7,
+        1.1
+      ]
+    },
+    "pebbles": {
+      "density": 0.04,
+      "patch": 0.6,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        0
+      ],
+      "radius": 120,
+      "color": "#b0784a",
+      "flatten": 0.2,
+      "bare": true
+    },
+    {
+      "pos": [
+        -130,
+        -110
+      ],
+      "radius": 45,
+      "color": "#a07048",
+      "flatten": 0.4,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      224,
+      9
+    ],
+    [
+      -224,
+      0,
+      9
+    ],
+    [
+      224,
+      0,
+      9
+    ],
+    [
+      0,
+      -224,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          224
+        ],
+        [
+          0,
+          150
+        ],
+        [
+          10,
+          60
+        ],
+        [
+          -10,
+          -60
+        ],
+        [
+          0,
+          -224
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          -224,
+          0
+        ],
+        [
+          -100,
+          10
+        ],
+        [
+          10,
+          0
+        ],
+        [
+          120,
+          -10
+        ],
+        [
+          224,
+          0
+        ]
+      ],
+      "width": 2.8
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "drownfast",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        -213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "tidemouth",
+      "arrive": [
+        199,
+        0
+      ],
+      "arrive_face": [
+        159,
+        0
+      ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_burn",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "the_long_grass",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -60
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -70
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.1
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        40
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.2
+    },
+    {
+      "type": "prop",
+      "pos": [
+        90,
+        60
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.4
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -140
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.2
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -170,
+        -20
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        170,
+        -30
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.1
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        120
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        150
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        -100
+      ],
+      "id": "bandit_lookout",
+      "collide": "mesh",
+      "face": [
+        -120,
+        -80
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        -140
+      ],
+      "id": "bandit_lookout",
+      "collide": "mesh",
+      "face": [
+        -120,
+        -120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -125,
+        -95
+      ],
+      "id": "kite_glider",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        -120
+      ],
+      "id": "kite_glider",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        -125
+      ],
+      "id": "kite_glider",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        -130
+      ],
+      "id": "rope_anchor",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -95,
+        -95
+      ],
+      "id": "rope_anchor",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        -110
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        120,
+        -130
+      ],
+      "id": "giant_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        -100
+      ],
+      "id": "giant_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        -90
+      ],
+      "id": "giant_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        165,
+        -160
+      ],
+      "id": "giant_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -160,
+        140
+      ],
+      "id": "thunderbird_nest",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -125,
+        160
+      ],
+      "id": "thunderbird_nest",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        40
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -20
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        120,
+        10
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -12,
+        150
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        140
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        14,
+        152
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        140
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        140
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        160
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        135
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        190
+      ],
+      "yaw": -90,
+      "labels": [
+        "Drownfast",
+        "Windbreak"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -190,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Tidemouth",
+        "Windbreak"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        190,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "The Burn",
+        "Windbreak"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        -190
+      ],
+      "yaw": 90,
+      "labels": [
+        "The Long Grass",
+        "Windbreak"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "scout_leader_emeka",
+      "pos": [
+        -8,
+        140
+      ],
+      "face": [
+        0,
+        146
+      ]
+    },
+    {
+      "id": "stonecaller_hild",
+      "pos": [
+        10,
+        142
+      ],
+      "face": [
+        0,
+        146
+      ]
+    },
+    {
+      "id": "windwatcher_reyes",
+      "pos": [
+        -16,
+        154
+      ],
+      "face": [
+        0,
+        146
+      ]
+    },
+    {
+      "id": "falconer_ines",
+      "pos": [
+        18,
+        156
+      ],
+      "face": [
+        0,
+        146
+      ]
+    },
+    {
+      "id": "supply_sergeant_pavel",
+      "pos": [
+        0,
+        132
+      ],
+      "face": [
+        0,
+        146
+      ]
+    },
+    {
+      "id": "windbreak_sentry",
+      "pos": [
+        0,
+        125
+      ],
+      "patrol": [
+        [
+          0,
+          125
+        ],
+        [
+          -25,
+          150
+        ],
+        [
+          0,
+          170
+        ],
+        [
+          25,
+          150
+        ],
+        [
+          0,
+          125
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -120,
+        -100
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        -130
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        -150
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -160,
+        -80
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -130,
+        -60
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -90,
+        -110
+      ],
+      "pool": {
+        "kitewing_bandit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -135,
+        -115
+      ],
+      "pool": {
+        "kitewing_chief": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        120,
+        -110
+      ],
+      "pool": {
+        "stone_giant": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        -80
+      ],
+      "pool": {
+        "stone_giant": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        -150
+      ],
+      "pool": {
+        "stone_giant": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        160,
+        -140
+      ],
+      "pool": {
+        "stone_giant": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        135,
+        -125
+      ],
+      "pool": {
+        "old_stackstone": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        40,
+        -20
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        20
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        70,
+        40
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        -10
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        20,
+        -80
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        60
+      ],
+      "pool": {
+        "dust_devil": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        90
+      ],
+      "pool": {
+        "dust_devil": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        0,
+        30
+      ],
+      "pool": {
+        "dust_devil": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        100,
+        20
+      ],
+      "pool": {
+        "dust_devil": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        140,
+        30
+      ],
+      "pool": {
+        "storm_eye": 1
+      },
+      "respawn": 1500,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -150,
+        60
+      ],
+      "pool": {
+        "giant_eagle": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -120,
+        100
+      ],
+      "pool": {
+        "giant_eagle": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -170,
+        20
+      ],
+      "pool": {
+        "giant_eagle": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -160,
+        130
+      ],
+      "pool": {
+        "thunderbird": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -110,
+        150
+      ],
+      "pool": {
+        "thunderbird": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -180,
+        100
+      ],
+      "pool": {
+        "thunderbird": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -150,
+        150
+      ],
+      "pool": {
+        "skarrow_thunderbird": 1
+      },
+      "respawn": 1500,
+      "wander": 10
+    },
+    {
+      "pos": [
+        80,
+        140
+      ],
+      "pool": {
+        "cliff_drake": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        120,
+        110
+      ],
+      "pool": {
+        "cliff_drake": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        50,
+        170
+      ],
+      "pool": {
+        "cliff_drake": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    }
+  ]
+}

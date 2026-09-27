@@ -45,7 +45,7 @@ merchants, a bind point and a long run home.
 | Lanternhold | The Dawnstair | `[3, 2]` | beside Sunward Steps, the zone you arrive in |
 | Rainhold | The Long Monsoon | `[-1, 1]` | the cell the Grove left; touches Greenmoor too |
 | Forgehold | The Ashfall | `[1, 5]` | swapped forward with Smokewood — see below |
-| Galehold | The Standing Sky | `[-3, 5]` | west of Stonesail, mid-area |
+| Galehold | The Standing Sky | `[-2, 5]` | swapped forward with Stonesail — beside Tidemouth |
 | Barrowhold | The Boneyard | `[2, 7]` | touches The Unlit and Timiraj's Table, so two ways in |
 
 ### Rainhold is the interesting one
@@ -64,6 +64,13 @@ five zones deep. When it was built it **swapped cells with Smokewood**. At
 Ivory Field, so it's a hub rather than a dead end, and a city is safe ground,
 so the level gaps across its gates don't count. Smokewood (33–37) went to
 `[3, 5]`, past the Hearth, where it touches only the Hearth.
+
+### Galehold came forward too
+
+Like Forgehold, Galehold first sat past its realm's zones, west of Stonesail,
+three zones up to 41 from anything built. It **swapped cells with Stonesail**:
+at `[-2, 5]` it borders Tidemouth, The Long Grass and Vayuketh's Step, and
+Stonesail (37–41) lies past it at `[-3, 5]`.
 
 ## The zones
 
@@ -94,10 +101,10 @@ so the level gaps across its gates don't count. Smokewood (33–37) went to
 | Blackglass **(built)** | The Ashfall | 31–35 | 512 m | `[0, 5]` | burn |
 | Smokewood | The Ashfall | 33–37 | 512 m | `[3, 5]` | wood |
 | Agnavar's Hearth | The Ashfall | 35–38 | 512 m | `[2, 5]` | burn |
-| Galehold | The Standing Sky | city | 224 m | `[-3, 5]` | city |
-| Windbreak | The Standing Sky | 32–36 | 448 m | `[-1, 4]` | plain |
-| The Long Grass | The Standing Sky | 34–38 | 512 m | `[-1, 5]` | plain |
-| Stonesail | The Standing Sky | 37–41 | 512 m | `[-2, 5]` | plain |
+| Galehold **(built)** | The Standing Sky | city | 224 m | `[-2, 5]` | city |
+| Windbreak **(built)** | The Standing Sky | 32–36 | 448 m | `[-1, 4]` | plain |
+| The Long Grass **(built)** | The Standing Sky | 34–38 | 512 m | `[-1, 5]` | plain |
+| Stonesail | The Standing Sky | 37–41 | 512 m | `[-3, 5]` | plain |
 | Hollow Air | The Standing Sky | 39–43 | 512 m | `[-1, 6]` | plain |
 | Vayuketh's Step | The Standing Sky | 42–44 | 448 m | `[-2, 6]` | outpost |
 | Barrowhold | The Boneyard | city | 224 m | `[2, 7]` | city |
@@ -147,7 +154,7 @@ most places have more than one way in.
 | Blackglass (The Ashfall) | west | The Long Grass (The Standing Sky) |
 | Agnavar's Hearth (The Ashfall) | north | The Unlit (The Boneyard) |
 | Agnavar's Hearth (The Ashfall) | south | Mirror Flats (The Dawnstair) |
-| Stonesail (The Standing Sky) | south | Tidemouth (The Long Monsoon) |
+| Galehold (The Standing Sky) | south | Tidemouth (The Long Monsoon) |
 | Fogfall (The Boneyard) | west | Hollow Air (The Standing Sky) |
 | The Ivory Field (The Boneyard) | south | Forgehold (The Ashfall) |
 

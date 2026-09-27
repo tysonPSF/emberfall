@@ -261,6 +261,25 @@
         -159,
         0
       ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "windbreak",
+      "arrive": [
+        199,
+        0
+      ],
+      "arrive_face": [
+        159,
+        0
+      ]
     }
   ],
   "landmarks": [
@@ -302,21 +321,6 @@
       "yaw": -90,
       "labels": [
         "Cinderpass",
-        "The Burn"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        -232,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
         "The Burn"
       ]
     },

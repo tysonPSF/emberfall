@@ -92,12 +92,16 @@ ZONES = [
     # ---- THE STANDING SKY - Vayuketh. North-west, open and high.
     ('windbreak',       'Windbreak',          'standingsky',(32, 36), 448, (-1, 4), 'plain'),
     ('the_long_grass',  'The Long Grass',     'standingsky',(34, 38), 512, (-1, 5), 'plain'),
-    ('stonesail',       'Stonesail',          'standingsky',(37, 41), 512, (-2, 5), 'plain'),
+    # Stonesail and Galehold swapped cells (2026-09-27), as Forgehold did with
+    # Smokewood: the stones went past the city, and the city came forward.
+    ('stonesail',       'Stonesail',          'standingsky',(37, 41), 512, (-3, 5), 'plain'),
     ('hollow_air',      'Hollow Air',         'standingsky',(39, 43), 512, (-1, 6), 'plain'),
     ('vayukeths_step',  "Vayuketh's Step",    'standingsky',(42, 44), 448, (-2, 6), 'outpost'),
-    # West of Stonesail, mid-area. A permanent town for a god whose faithful
-    # never stay anywhere long is the joke, and it should stay one.
-    ('galehold',        'Galehold',           'standingsky',(32, 44), 224, (-3, 5), 'city'),
+    # FORWARD, like Forgehold. It sat west of Stonesail at first, reachable
+    # only through three zones up to 41; at [-2, 5] it touches Tidemouth, The
+    # Long Grass and Vayuketh's Step, and Stonesail lies past it. A permanent
+    # town for a god whose faithful never stay anywhere long is still the joke.
+    ('galehold',        'Galehold',           'standingsky',(32, 44), 224, (-2, 5), 'city'),
 
     # ---- THE BONEYARD - Timiraj, the Unlit. The top of the world.
     ('fogfall',         'Fogfall',            'boneyard',   (40, 43), 512, (0, 6), 'fog'),

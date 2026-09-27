@@ -3084,5 +3084,507 @@
         "slashes"
       ]
     }
+  },
+  "scout_leader_emeka": {
+    "name": "Scout-Leader Emeka",
+    "level": 45,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Welcome to Windbreak, {name}. Mind the edges; the wind takes the careless. And the [Kitewing] take the rest.",
+      "unknown": "Ask the others in camp.",
+      "kitewing": "Sky-bandits who glide between the mesas on kites. Bring me four scraps of their kite [silk], every time.",
+      "silk": "Four scraps of kite silk. The first time, a sash of it.",
+      "tarn": "Their chief, Tarn Kitewing, flies a painted sail. Bring me the [sail].",
+      "sail": "Tarn's painted sail, {name}."
+    },
+    "title": "Galehold Wind Scouts"
+  },
+  "stonecaller_hild": {
+    "name": "Stonecaller Hild",
+    "level": 45,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The stone [giants] stack their cairns against the wind, {name}, and crush anyone who knocks one down.",
+      "unknown": "Ask Emeka.",
+      "giants": "Bring me four of their hand-[stones], every time.",
+      "stones": "Four giant's hand-stones. The first time, a pendant.",
+      "stackstone": "Old Stackstone, their elder. Bring me his [capstone].",
+      "capstone": "Stackstone's capstone, {name}."
+    },
+    "title": "Galehold Wind Scouts"
+  },
+  "windwatcher_reyes": {
+    "name": "Windwatcher Reyes",
+    "level": 45,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The winds here are alive, {name}: gale [spirits], dust devils, and worse.",
+      "unknown": "Ask Emeka.",
+      "spirits": "Bring me four gale [essences], every time.",
+      "essences": "Four gale essences. The first time, a bracer.",
+      "storm-eye": "The Storm-Eye, the great cyclone of the east mesas. Bring me its [heart].",
+      "heart": "The Storm-Eye's heart, {name}."
+    },
+    "title": "Galehold Wind Scouts"
+  },
+  "falconer_ines": {
+    "name": "Falconer Ines",
+    "level": 45,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Giant eagles and [thunderbirds] nest on the spires, {name}. Beautiful, and deadly.",
+      "unknown": "Ask Emeka.",
+      "thunderbirds": "Bring me four eagle [talons], every time.",
+      "talons": "Four giant eagle talons. The first time, a ring.",
+      "skarrow": "Skarrow, the great thunderbird. Bring me her [crest].",
+      "crest": "Skarrow's crest, {name}."
+    },
+    "title": "Galehold Wind Scouts"
+  },
+  "supply_sergeant_pavel": {
+    "name": "Supply-Sergeant Pavel",
+    "level": 36,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Emeka."
+    },
+    "title": "Wind Scouts' Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "magmasteel_arrow",
+        "windcutter_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "windbreak_sentry": {
+    "name": "a Galehold wind scout",
+    "level": 50,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Keep back from the edge, {name}.",
+      "unknown": "Ask Emeka."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near our camp!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Galehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 70,
+      "ac": 115,
+      "dmg": [
+        26,
+        46
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "windspeaker_sabine": {
+    "name": "Windspeaker Sabine",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Welcome to Galehold, {name}, where the wind never stops and neither do we. This is the shrine of [Vayuketh]; I can [bind] your soul to it.",
+      "vayuketh": "He Who Breathes the Plains. His ears are the sails of the world. His followers may ask for his [blessing] once an hour.",
+      "bind": "Stand in the wind, {name}. There: Vayuketh will blow you home to Galehold.",
+      "unknown": "Ask the guildmasters round the square."
+    },
+    "title": "Keeper of the Sky Shrine",
+    "binds": true,
+    "blesses": {
+      "deity": "wind",
+      "spell": "vayuketh_breath",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The wind blows for everyone, {name}, but Vayuketh's breath is for his own.",
+      "wait": "You've had his breath within the hour, {name}.",
+      "give": "Breathe in, {name}. ...Deeper. Go where the wind takes you."
+    }
+  },
+  "gm_rurik": {
+    "name": "Galecaptain Rurik",
+    "level": 50,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "A warrior has to stand against the wind, {name}. Mine? Then stand.",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Warrior Guildmaster",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_oriane": {
+    "name": "Skypriest Oriane",
+    "level": 50,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Healing on the wind, {name}. Cleric? I have prayers for you.",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Cleric Guildmaster",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_ilya": {
+    "name": "Stormscholar Ilya",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The sky is full of power, {name}, if you know how to pull it down. Wizard?",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Wizard Guildmaster",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_whisper": {
+    "name": "Whisper",
+    "level": 50,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The wind covers every footstep here, {name}. One of mine?",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Rogue Guildmaster",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_juno": {
+    "name": "Aerowright Juno",
+    "level": 50,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Air elementals were born here, {name}. Magician? Let's call yours.",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Magician Guildmaster",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_sable": {
+    "name": "Gravewind Sable",
+    "level": 50,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The barrows of the Long Grass are full, {name}. Necromancer?",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Necromancer Guildmaster",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_nkiru": {
+    "name": "Cloud-Mother Nkiru",
+    "level": 50,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The spirits ride the wind, {name}. Shaman? Sit by me.",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Shaman Guildmaster",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "gm_fen": {
+    "name": "Windrunner Fen",
+    "level": 50,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The plains are the finest hunting in the world, {name}. Ranger?",
+      "unknown": "Ask Windspeaker Sabine at the shrine."
+    },
+    "title": "Ranger Guildmaster",
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "banker_corwin": {
+    "name": "Banker Corwin",
+    "level": 30,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The Counting-House keeps accounts with every bank in the land, {name}.",
+      "unknown": "I only keep the vault."
+    },
+    "title": "The Galehold Counting-House",
+    "banker": true
+  },
+  "provisioner_maelle": {
+    "name": "Provisioner Maelle",
+    "level": 30,
+    "model": "mage",
+    "weapon": "",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Provisioner",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "windcutter_arrow",
+        "greater_healing_potion",
+        "clarity_tonic"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "armorer_dagmar": {
+    "name": "Armorer Dagmar",
+    "level": 45,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Skyforged steel, windrunner leather, galeweave for the casters. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Skyforged and Windrunner",
+    "merchant": {
+      "sells": [
+        "skyforged_helm",
+        "skyforged_breastplate",
+        "skyforged_vambraces",
+        "skyforged_gauntlets",
+        "skyforged_greaves",
+        "skyforged_boots",
+        "skyforged_shield",
+        "windrunner_jerkin",
+        "windrunner_leggings",
+        "windrunner_gloves",
+        "windrunner_boots",
+        "galeweave_cap",
+        "galeweave_robe",
+        "galeweave_gloves",
+        "galeweave_slippers"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "weaponsmith_ansel": {
+    "name": "Weaponsmith Ansel",
+    "level": 45,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Blades that sing in the wind, {name}. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Blades of the Wind",
+    "merchant": {
+      "sells": [
+        "skyforged_sword",
+        "skyforged_war_axe",
+        "skyforged_greataxe",
+        "zephyr_dirk",
+        "stormwood_staff",
+        "galehold_longbow",
+        "windcutter_arrow"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "plainswarden_hakon": {
+    "name": "Plainswarden Hakon",
+    "level": 45,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "East of the gate the grass runs to the sky, {name}, and the [Hoofborn] ride it.",
+      "unknown": "Ask Windspeaker Sabine.",
+      "hoofborn": "Horse-folk raiders. Bring me four horsetail [braids], every time.",
+      "braids": "Four horsetail braids. The first time, a charm.",
+      "oruk": "Khan Oruk, who leads them. Bring me his horsetail [banner].",
+      "banner": "The khan's horsetail banner, {name}."
+    },
+    "title": "Warden of the Long Grass"
+  },
+  "huntress_zawadi": {
+    "name": "Huntress Zawadi",
+    "level": 45,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Things [stalk] the Long Grass, {name}. You won't see them until they want you to.",
+      "unknown": "Ask Windspeaker Sabine.",
+      "stalk": "Grass stalkers and howlers. Bring me four [pelts], every time.",
+      "pelts": "Four grass stalker pelts. The first time, boots.",
+      "tawnyjaw": "Tawnyjaw, the man-eater. Bring me her [fang].",
+      "fang": "Tawnyjaw's fang, {name}."
+    },
+    "title": "Galehold"
+  },
+  "herdmaster_bolat": {
+    "name": "Herdmaster Bolat",
+    "level": 45,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The great [herds] feed half this city, {name}, when they aren't trampling it.",
+      "unknown": "Ask Windspeaker Sabine.",
+      "herds": "Bring me four thunderhoof [horns], every time.",
+      "horns": "Four thunderhoof horns. The first time, gauntlets of horn.",
+      "herd-king": "Old Thunderhoof, the herd-king. Bring me his [horn].",
+      "horn": "The herd-king's horn, {name}."
+    },
+    "title": "Galehold"
+  },
+  "barrowkeeper_moira": {
+    "name": "Barrow-Keeper Moira",
+    "level": 45,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The old horse-lords lie in [barrows] in the north grass, {name}, and at night they rise.",
+      "unknown": "Ask Windspeaker Sabine.",
+      "barrows": "Bring me four pieces of barrow [bronze], every time.",
+      "bronze": "Four pieces of barrow bronze. The first time, greaves.",
+      "lord": "The Barrow Lord, the first of them. Bring me his death [mask].",
+      "mask": "The Barrow Lord's death mask, {name}. At night."
+    },
+    "title": "Galehold"
+  },
+  "galehold_guard": {
+    "name": "a Galehold warden",
+    "level": 55,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Welcome to Galehold, {name}. Hold on to your hat.",
+      "unknown": "Ask at the shrine."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not in Galehold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Galehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 70,
+      "ac": 115,
+      "dmg": [
+        26,
+        46
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

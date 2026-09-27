@@ -9,6 +9,7 @@
   "emberhold_crypt",
   "emberhold_tavern",
   "forgehold",
+  "galehold",
   "greenmoor",
   "harrowfield",
   "high_terrace",
@@ -21,9 +22,11 @@
   "sunward_steps",
   "the_bleach",
   "the_burn",
+  "the_long_grass",
   "thornwood",
   "tidemouth",
-  "weeping_throat"
+  "weeping_throat",
+  "windbreak"
  ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
  "areas": {
@@ -520,8 +523,8 @@
     4
    ],
    "kind": "plain",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -538,8 +541,8 @@
     5
    ],
    "kind": "plain",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -552,7 +555,7 @@
    ],
    "size": 512,
    "cell": [
-    -2,
+    -3,
     5
    ],
    "kind": "plain",
@@ -606,12 +609,12 @@
    ],
    "size": 224,
    "cell": [
-    -3,
+    -2,
     5
    ],
    "kind": "city",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -1012,27 +1015,6 @@
    "cross_area": false
   },
   {
-   "a": "stonesail",
-   "a_edge": "north",
-   "b": "vayukeths_step",
-   "b_edge": "south",
-   "cross_area": false
-  },
-  {
-   "a": "stonesail",
-   "a_edge": "south",
-   "b": "tidemouth",
-   "b_edge": "north",
-   "cross_area": true
-  },
-  {
-   "a": "stonesail",
-   "a_edge": "east",
-   "b": "the_long_grass",
-   "b_edge": "west",
-   "cross_area": false
-  },
-  {
    "a": "hollow_air",
    "a_edge": "south",
    "b": "the_long_grass",
@@ -1048,9 +1030,30 @@
   },
   {
    "a": "galehold",
+   "a_edge": "north",
+   "b": "vayukeths_step",
+   "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "galehold",
+   "a_edge": "south",
+   "b": "tidemouth",
+   "b_edge": "north",
+   "cross_area": true
+  },
+  {
+   "a": "galehold",
    "a_edge": "east",
-   "b": "stonesail",
+   "b": "the_long_grass",
    "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "galehold",
+   "a_edge": "west",
+   "b": "stonesail",
+   "b_edge": "east",
    "cross_area": false
   },
   {

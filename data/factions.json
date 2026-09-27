@@ -349,5 +349,51 @@
       "storm_spirits": -8,
       "rainhold": 3
     }
+  },
+  "galehold": {
+    "name": "Citizens of Galehold",
+    "default": 100,
+    "on_kill": {
+      "galehold": -200
+    },
+    "on_attack": {
+      "galehold": -50
+    }
+  },
+  "sky_spirits": {
+    "name": "Sky Spirits",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "sky_spirits": -8,
+      "galehold": 3
+    }
+  },
+  "kitewing": {
+    "name": "The Kitewing Clan",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "kitewing": -8,
+      "galehold": 3
+    }
+  },
+  "stone_giants": {
+    "name": "Stone Giants",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "stone_giants": -8,
+      "galehold": 3
+    }
+  },
+  "hoofborn": {
+    "name": "The Hoofborn",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "hoofborn": -8,
+      "galehold": 3
+    }
   }
 }

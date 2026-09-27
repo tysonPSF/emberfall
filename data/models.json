@@ -1,5 +1,88 @@
 {
   "characters": {
+    "grass_stalker": {
+      "path": "res://assets/creatures/grass_stalker.glb",
+      "rig": "own"
+    },
+    "tawnyjaw": {
+      "path": "res://assets/creatures/tawnyjaw.glb",
+      "rig": "own"
+    },
+    "grass_howler": {
+      "path": "res://assets/creatures/grass_howler.glb",
+      "rig": "own"
+    },
+    "thunderhoof": {
+      "path": "res://assets/creatures/thunderhoof.glb",
+      "rig": "own"
+    },
+    "old_thunderhoof": {
+      "path": "res://assets/creatures/old_thunderhoof.glb",
+      "rig": "own"
+    },
+    "dirkhorn": {
+      "path": "res://assets/creatures/dirkhorn.glb",
+      "rig": "own"
+    },
+    "hoofborn_rider": {
+      "path": "res://assets/creatures/hoofborn_rider.glb",
+      "rig": "own"
+    },
+    "hoofborn_archer": {
+      "path": "res://assets/creatures/hoofborn_archer.glb",
+      "rig": "own"
+    },
+    "khan_oruk": {
+      "path": "res://assets/creatures/khan_oruk.glb",
+      "rig": "own"
+    },
+    "barrow_wight": {
+      "path": "res://assets/creatures/barrow_wight_body.glb",
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/barrow_wight_circlet.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/barrow_wight_mantle.glb"
+        }
+      ],
+      "wearable_slots": [],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "barrow_lord": {
+      "path": "res://assets/creatures/barrow_lord_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/barrow_lord_helm.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/barrow_lord_mantle.glb"
+        }
+      ],
+      "wearable_slots": [],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
     "barbarian": {
       "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
       "headgear_parts": [
@@ -1959,6 +2042,17 @@
     "smoke_spirit": {"path": "res://assets/creatures/smoke_spirit.glb", "rig": "own"},
     "firebird": {"path": "res://assets/creatures/firebird.glb", "rig": "own", "scale": 0.9},
     "phoenix": {"path": "res://assets/creatures/phoenix.glb", "rig": "own", "scale": 1.25},
+    "gale_spirit": {"path": "res://assets/creatures/gale_spirit.glb", "rig": "own"},
+    "dust_devil": {"path": "res://assets/creatures/dust_devil.glb", "rig": "own"},
+    "storm_eye": {"path": "res://assets/creatures/storm_eye.glb", "rig": "own"},
+    "giant_eagle": {"path": "res://assets/creatures/giant_eagle.glb", "rig": "own"},
+    "thunderbird": {"path": "res://assets/creatures/thunderbird.glb", "rig": "own"},
+    "skarrow_thunderbird": {"path": "res://assets/creatures/skarrow_thunderbird.glb", "rig": "own"},
+    "cliff_drake": {"path": "res://assets/creatures/cliff_drake.glb", "rig": "own"},
+    "kitewing_bandit": {"path": "res://assets/creatures/kitewing_bandit_body.glb", "hide": ["Rogue_Cape"], "attach": [{"bone": "head", "path": "res://assets/creatures/kitewing_goggles.glb"}, {"bone": "chest", "path": "res://assets/creatures/kitewing_rig.glb"}, {"bone": "hips", "path": "res://assets/creatures/kitewing_belt.glb"}], "wearable_slots": []},
+    "kitewing_chief": {"path": "res://assets/creatures/kitewing_chief_body.glb", "scale": 0.95, "hide": ["Rogue_Cape"], "attach": [{"bone": "head", "path": "res://assets/creatures/kitewing_chief_hat.glb"}, {"bone": "chest", "path": "res://assets/creatures/kitewing_chief_coat.glb"}, {"bone": "hips", "path": "res://assets/creatures/kitewing_chief_tails.glb"}], "wearable_slots": []},
+    "stone_giant": {"path": "res://assets/creatures/stone_giant_body.glb", "scale": 1.8, "hide": ["Barbarian_Head", "Barbarian_BearHat"], "attach": [{"bone": "head", "path": "res://assets/creatures/stone_giant_head.glb"}, {"bone": "chest", "path": "res://assets/creatures/stone_giant_chest.glb"}, {"bone": "hips", "path": "res://assets/creatures/stone_giant_kilt.glb"}, {"bone": "upperarm.l", "path": "res://assets/creatures/stone_giant_arm_l.glb"}, {"bone": "upperarm.r", "path": "res://assets/creatures/stone_giant_arm_r.glb"}, {"bone": "lowerarm.l", "path": "res://assets/creatures/stone_giant_bracer_l.glb"}, {"bone": "lowerarm.r", "path": "res://assets/creatures/stone_giant_bracer_r.glb"}], "wearable_slots": []},
+    "old_stackstone": {"path": "res://assets/creatures/old_stackstone_body.glb", "scale": 2.25, "hide": ["Barbarian_Head", "Barbarian_BearHat"], "attach": [{"bone": "head", "path": "res://assets/creatures/old_stackstone_head.glb"}, {"bone": "chest", "path": "res://assets/creatures/old_stackstone_chest.glb"}, {"bone": "hips", "path": "res://assets/creatures/old_stackstone_kilt.glb"}, {"bone": "upperarm.l", "path": "res://assets/creatures/old_stackstone_arm_l.glb"}, {"bone": "upperarm.r", "path": "res://assets/creatures/old_stackstone_arm_r.glb"}, {"bone": "lowerarm.l", "path": "res://assets/creatures/old_stackstone_bracer_l.glb"}, {"bone": "lowerarm.r", "path": "res://assets/creatures/old_stackstone_bracer_r.glb"}], "wearable_slots": []},
     "dustpaw": {
       "path": "res://assets/creatures/dustpaw_body.glb",
       "hide": [
@@ -2668,6 +2762,8 @@
     }
   },
   "weapons": {
+    "barrow_blade": "res://assets/creatures/barrow_blade.glb",
+    "barrow_lord_sword": "res://assets/creatures/barrow_lord_sword.glb",
     "river_trident": "res://assets/creatures/river_trident.glb",
     "driftwood_staff": "res://assets/creatures/driftwood_staff.glb",
     "smuggler_cutlass": "res://assets/creatures/smuggler_cutlass.glb",
@@ -2690,6 +2786,9 @@
     "ember_greathammer": "res://assets/creatures/ember_greathammer.glb",
     "stonebrow_club": "res://assets/creatures/stonebrow_club.glb",
     "stonebrow_skull_staff": "res://assets/creatures/stonebrow_skull_staff.glb",
+    "kite_hook": "res://assets/creatures/kite_hook.glb",
+    "stone_slab": "res://assets/creatures/stone_slab.glb",
+    "stackstone_slab": "res://assets/creatures/stackstone_slab.glb",
     "salt_scimitar": "res://assets/creatures/salt_scimitar.glb"
   },
   "animations": [
@@ -3328,7 +3427,35 @@
     "storm_brazier": {
       "path": "res://assets/props/storm_brazier.glb",
       "lights": [{"pos": [0, 4.0, 0], "color": "#ff9040", "energy": 2.0, "range": 12, "night": false}]
-    }
+    },
+    "galehold_gate": {
+      "path": "res://assets/props/galehold_gate.glb",
+      "lights": [{"pos": [-2.75, 3.0, 2.5], "color": "#ffc070", "energy": 1.5, "range": 8, "night": true}, {"pos": [2.75, 3.0, 2.5], "color": "#ffc070", "energy": 1.5, "range": 8, "night": true}]
+    },
+    "sail_tower": {"path": "res://assets/props/sail_tower.glb"},
+    "sail_tower_rotor": {"path": "res://assets/props/sail_tower_rotor.glb"},
+    "cliff_house": {"path": "res://assets/props/cliff_house.glb"},
+    "wind_chimes": {"path": "res://assets/props/wind_chimes.glb"},
+    "kite_pole": {"path": "res://assets/props/kite_pole.glb"},
+    "vayuketh_shrine": {
+      "path": "res://assets/props/vayuketh_shrine.glb",
+      "lights": [{"pos": [0, 7.0, 2.2], "color": "#bfe4ff", "energy": 1.5, "range": 14, "night": false}]
+    },
+    "cliff_edge_rail": {"path": "res://assets/props/cliff_edge_rail.glb"},
+    "kite_glider": {"path": "res://assets/props/kite_glider.glb"},
+    "bandit_lookout": {"path": "res://assets/props/bandit_lookout.glb"},
+    "rope_anchor": {"path": "res://assets/props/rope_anchor.glb"},
+    "giant_cairn": {"path": "res://assets/props/giant_cairn.glb"},
+    "thunderbird_nest": {
+      "path": "res://assets/props/thunderbird_nest.glb",
+      "lights": [{"pos": [0, 6.8, 0], "color": "#8fd0ff", "energy": 1.2, "range": 9, "night": false}]
+    },
+    "tallgrass": {"path": "res://assets/props/tallgrass.glb"},
+    "lone_tree": {"path": "res://assets/props/lone_tree.glb"},
+    "hoofborn_yurt": {"path": "res://assets/props/hoofborn_yurt.glb"},
+    "horse_totem": {"path": "res://assets/props/horse_totem.glb"},
+    "barrow_mound": {"path": "res://assets/props/barrow_mound.glb"},
+    "herd_bones": {"path": "res://assets/props/herd_bones.glb"}
   },
   "gear": {
     "cloth_cap": {

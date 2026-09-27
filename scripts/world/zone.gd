@@ -670,6 +670,8 @@ func _build_landmarks() -> void:
 				_build_lizard_camp(p)
 			"windmill":
 				_build_windmill(p, _landmark_yaw(lm))
+			"sail_tower":
+				_build_sail_tower(p, _landmark_yaw(lm))
 			"sun_shrine":
 				_build_sun_shrine(p, _landmark_yaw(lm), bool(lm.get("great", false)))
 			"waystation":
@@ -953,6 +955,15 @@ func _build_windmill(p: Vector3, yaw: float) -> void:
 	tw.tween_property(sails, "rotation:z", TAU, 24.0).from(0.0)
 	_prop("hay_bale", p + Basis(Vector3.UP, yaw) * Vector3(2.6, 0, 3.0), yaw + 0.4)
 	_prop("farm_cart", p + Basis(Vector3.UP, yaw) * Vector3(-3.4, 0, 3.6), yaw + 1.2)
+
+
+## A Galehold sail tower: a slender tower whose six-sailed rotor turns in the wind.
+func _build_sail_tower(p: Vector3, yaw: float) -> void:
+	_prop("sail_tower", p, yaw, 1.0, "trunk")
+	var hub := p + Basis(Vector3.UP, yaw) * Vector3(0, 13.3, 2.35)
+	var rotor := _prop("sail_tower_rotor", hub, yaw, 1.0, "none")
+	var tw := rotor.create_tween().set_loops()
+	tw.tween_property(rotor, "rotation:z", TAU, 14.0).from(0.0)
 
 
 ## A shrine of Prabhagaj, the Dawn-Tusk: a paved platform, the elephant with
