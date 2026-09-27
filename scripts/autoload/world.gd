@@ -1682,6 +1682,20 @@ func request_bind(player_id: int) -> void:
 	say(p, "You feel your soul bind to %s." % z.zone_name, C_SPELL)
 
 
+## An older character spends the stat points they never had, once.
+func request_set_stats(player_id: int, points: Dictionary) -> void:
+	if _remote(&"request_set_stats", [player_id, points]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.stats_chosen:
+		return
+	p.stat_points = Player.clean_stat_points(points)
+	p.stats_chosen = true
+	p.recalc_stats()
+	p.stats_changed.emit()
+	say(p, "You feel your training settle into you.", C_SYSTEM)
+
+
 func request_interrupt(entity_id: int) -> void:
 	if _remote(&"request_interrupt", [entity_id]):
 		return

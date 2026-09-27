@@ -189,7 +189,7 @@ func _open_creator() -> void:
 	_creator.server_mode = true
 	_creator.layer = 21
 	_creator.confirmed.connect(func(s: Dictionary) -> void:
-		Net.create_character(str(s["name"]), str(s["class"]), str(s.get("deity", ""))))
+		Net.create_character(str(s["name"]), str(s["class"]), str(s.get("deity", "")), s.get("stats", {})))
 	_creator.canceled.connect(func() -> void:
 		_creator.queue_free()
 		_creator = null)

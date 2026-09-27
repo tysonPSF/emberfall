@@ -55,7 +55,7 @@ func owns(account: String, name: String) -> bool:
 
 ## A brand-new level 1 character, or why not. Offline characters come in
 ## through import_character instead.
-func create_character(account: String, name: String, cls: String, deity: String, start_zone: String) -> String:
+func create_character(account: String, name: String, cls: String, deity: String, start_zone: String, stats: Dictionary = {}) -> String:
 	var why := _name_problem(name)
 	if why != "":
 		return why
@@ -63,7 +63,8 @@ func create_character(account: String, name: String, cls: String, deity: String,
 		return "Unknown class."
 	if not GameData.deities.has(deity):
 		return "Choose a deity."
-	return _add(account, {"name": name.to_lower().capitalize(), "class": cls, "deity": deity, "zone": start_zone})
+	return _add(account, {"name": name.to_lower().capitalize(), "class": cls, "deity": deity, "zone": start_zone,
+			"stats": Player.clean_stat_points(stats)})
 
 
 ## Brings an offline character onto the server once, cleaned up: unknown

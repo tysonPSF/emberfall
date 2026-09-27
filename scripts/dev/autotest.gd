@@ -103,6 +103,7 @@ const SECTIONS := [
 	["cap30", "greenmoor"],
 	["terrace_life", "high_terrace"],
 	["cinder_life", "cinderpass"],
+	["char_stats", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -162,7 +163,7 @@ func _setup() -> void:
 	await _shot("0_title")
 	for c in main.get_children():
 		if c is CharCreate:
-			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "deity": "wind", "zone": "greenmoor"})
+			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "deity": "wind", "zone": "greenmoor", "stats": {}})
 	await _wait(2.0)
 	var p := World.local_player
 	print("player at ", p.global_position, " on_floor=", p.is_on_floor(), " mobs=", World.get_mobs().size())
@@ -4431,6 +4432,65 @@ func _t_cinder_life() -> void:
 		await _shot("9zy_%s" % id)
 		m.set_physics_process(true)
 	World.time_override = -1.0
+
+
+## Starting stats: the creation screen's picker (a class's spread, limits,
+## Enter World refused until all 25 are spent); points really change health,
+## damage and mana; a cheated spread is cut back; a character from before
+## stats gets the one-time window and can spend only once.
+func _t_char_stats() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var cc := CharCreate.new()
+	cc.setup({"name": "Oldhand", "class": "cleric", "level": 12, "deity": "light"})  # with a saved character: the tallest the page gets
+	cc.layer = 30
+	main.add_child(cc)
+	await _wait(0.4)
+	var picker: StatPicker = cc._stats
+	print("char_stats: warrior starts with %s (%d left)" % [picker.points, picker.points_left()])
+	cc._select("wizard")
+	print("char_stats: wizard -> %s" % [picker.points])
+	for k in 20:
+		picker._add("int", 1)
+	print("char_stats: int can't pass +15 -> %d; points left %d" % [int(picker.points.get("int", 0)), picker.points_left()])
+	picker.points = {}
+	picker._refresh()
+	cc._name_edit.text = "Statcheck"
+	cc._deity = "wind"
+	var made := []
+	cc.confirmed.connect(func(s: Dictionary) -> void: made.append(s))
+	cc._create()
+	print("char_stats: enter with 25 unspent -> refused %s ('%s')" % [made.is_empty(), cc._error.text])
+	cc._select("ranger")
+	await _wait(0.3)
+	await _shot("9zz_char_stats_create")
+	cc._create()
+	print("char_stats: with the ranger spread -> created %s" % [made[0].get("stats") if not made.is_empty() else "nothing"])
+	cc.queue_free()
+	var plain := Player.new()
+	plain.from_save({"name": "Plain", "class": "warrior", "stats": {}})
+	var built := Player.new()
+	built.from_save({"name": "Built", "class": "warrior", "stats": {"sta": 15, "str": 10}})
+	var cheat := Player.new()
+	cheat.from_save({"name": "Cheat", "class": "wizard", "stats": {"sta": 99, "str": 50, "int": 7}})
+	print("char_stats: warrior with STA 90, STR 85 -> hp %d vs %d, max damage %d vs %d; sheet STA %d" % [built.max_hp, plain.max_hp, built.dmg_max, plain.dmg_max, built.stat_value("sta")])
+	print("char_stats: a cheated spread %s -> kept %s" % [{"sta": 99, "str": 50, "int": 7}, cheat.stat_points])
+	for x: Player in [plain, built, cheat]:
+		x.free()
+	# a character from before stats
+	p.stats_chosen = false
+	p.stat_points = {}
+	main.hud._stats_later = false
+	await _wait(0.4)
+	print("char_stats: an older character -> the window opens %s" % main.hud._stats_panel.visible)
+	await _shot("9zz_char_stats_window")
+	var mana0 := p.max_mana
+	World.request_set_stats(p.entity_id, {"int": 15, "sta": 10})
+	World.request_set_stats(p.entity_id, {"str": 15, "agi": 10})
+	await _wait(0.3)
+	print("char_stats: spent -> %s (mana %d -> %d); a second spend ignored %s; window closed %s" % [p.stat_points, mana0, p.max_mana, not p.stat_points.has("str"), not main.hud._stats_panel.visible])
+	p.stat_points = {}
+	p.recalc_stats()
 
 
 func _t_necromancer() -> void:

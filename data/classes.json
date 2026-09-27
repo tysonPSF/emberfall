@@ -19,7 +19,17 @@
       "primary": "rusty_short_sword",
       "chest": "patchwork_tunic"
     },
-    "model": "barbarian"
+    "model": "barbarian",
+    "key_stats": [
+      "str",
+      "sta",
+      "agi"
+    ],
+    "stat_preset": {
+      "str": 10,
+      "sta": 10,
+      "agi": 5
+    }
   },
   "cleric": {
     "name": "Cleric",
@@ -42,7 +52,16 @@
       "chest": "patchwork_tunic"
     },
     "model": "knight",
-    "caster_stat": "wis"
+    "caster_stat": "wis",
+    "key_stats": [
+      "wis",
+      "sta"
+    ],
+    "stat_preset": {
+      "wis": 12,
+      "sta": 10,
+      "str": 3
+    }
   },
   "wizard": {
     "name": "Wizard",
@@ -65,7 +84,15 @@
       "head": "cloth_cap"
     },
     "model": "mage",
-    "caster_stat": "int"
+    "caster_stat": "int",
+    "key_stats": [
+      "int",
+      "sta"
+    ],
+    "stat_preset": {
+      "int": 15,
+      "sta": 10
+    }
   },
   "rogue": {
     "name": "Rogue",
@@ -87,7 +114,16 @@
       "primary": "rusty_dagger",
       "chest": "patchwork_tunic"
     },
-    "model": "rogue"
+    "model": "rogue",
+    "key_stats": [
+      "agi",
+      "str"
+    ],
+    "stat_preset": {
+      "agi": 12,
+      "str": 8,
+      "sta": 5
+    }
   },
   "magician": {
     "name": "Magician",
@@ -109,7 +145,15 @@
       "head": "cloth_cap"
     },
     "model": "magician",
-    "caster_stat": "int"
+    "caster_stat": "int",
+    "key_stats": [
+      "int",
+      "sta"
+    ],
+    "stat_preset": {
+      "int": 15,
+      "sta": 10
+    }
   },
   "necromancer": {
     "name": "Necromancer",
@@ -132,7 +176,15 @@
       "chest": "patchwork_tunic"
     },
     "model": "necromancer",
-    "caster_stat": "int"
+    "caster_stat": "int",
+    "key_stats": [
+      "int",
+      "sta"
+    ],
+    "stat_preset": {
+      "int": 15,
+      "sta": 10
+    }
   },
   "shaman": {
     "name": "Shaman",
@@ -155,7 +207,15 @@
       "chest": "patchwork_tunic"
     },
     "model": "shaman",
-    "caster_stat": "wis"
+    "caster_stat": "wis",
+    "key_stats": [
+      "wis",
+      "sta"
+    ],
+    "stat_preset": {
+      "wis": 13,
+      "sta": 12
+    }
   },
   "ranger": {
     "name": "Ranger",
@@ -187,6 +247,16 @@
     "archery": {
       "dmg": 1.35,
       "range": 1.2
+    },
+    "key_stats": [
+      "agi",
+      "str",
+      "wis"
+    ],
+    "stat_preset": {
+      "agi": 10,
+      "str": 10,
+      "wis": 5
     }
   }
 }
