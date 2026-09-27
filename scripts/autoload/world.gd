@@ -45,6 +45,8 @@ const CON_TEXT: Array[String] = [
 const C_YOU_HIT := Color(1, 1, 1)
 const C_HIT_YOU := Color(1, 0.42, 0.36)
 const C_MISS := Color(0.68, 0.68, 0.68)
+const C_PET_HIT := Color(0.72, 0.9, 0.62)  # your pet hitting something
+const C_PET_HURT := Color(0.95, 0.66, 0.55)  # something hitting your pet
 const C_SPELL := Color(0.55, 0.78, 1)
 const C_XP := Color(1, 0.88, 0.35)
 const C_LOOT := Color(0.55, 1, 0.55)
@@ -1099,6 +1101,16 @@ func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
 			say(d, "%s %s YOU for %d points of damage." % [cap(a.display_name), verb[1], dmg], C_HIT_YOU)
 		else:
 			say(d, "%s tries to %s YOU, but misses!" % [cap(a.display_name), verb[0]], C_MISS)
+	# a pet's owner sees its fights, as in EverQuest: its blows and misses, and what hits it
+	var owner := (a as Pet).owner_player() if a is Pet else null
+	if owner != null and owner != d:
+		if dmg > 0:
+			say(owner, "%s %s %s for %d points of damage." % [cap(a.display_name), verb[1], d.display_name, dmg], C_PET_HIT)
+		else:
+			say(owner, "%s tries to %s %s, but misses!" % [cap(a.display_name), verb[0], d.display_name], C_MISS)
+	var keeper := (d as Pet).owner_player() if d is Pet else null
+	if keeper != null and keeper != a and dmg > 0:
+		say(keeper, "%s %s %s for %d points of damage." % [cap(a.display_name), verb[1], d.display_name, dmg], C_PET_HURT)
 
 
 func damage(d: Entity, amount: int, src: Entity) -> void:

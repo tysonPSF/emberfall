@@ -3815,6 +3815,158 @@ LEVEL_40 = [skybreaker, rallying_standard, gale_cleave, sunrise_ward, radiant_sm
 			gale_buffet, thunder_strike, barrow_chill, trample, vayuketh_breath]
 
 
+# ---------------------------------------------------------------- the magician's bolts: each flies out of a summoning ring
+
+def _conjure_ring(p, cx, cz, r, swatch, runes=None, glow=2.0, y=0.12):
+	"""The magician's portal: a ring in the picture plane with four rune studs (one swatch each, or all `swatch`)."""
+	_ring_at(p, cx, cz, r, 0.045, swatch, glow=glow, sides=20, y=y)
+	_ring_at(p, cx, cz, r * 0.7, 0.022, swatch, glow=glow * 0.8, sides=16, y=y)
+	for k in range(4):
+		a = math.radians(45 + k * 90)
+		sw = runes[k] if runes else swatch
+		c = (cx + math.cos(a) * r, y - 0.03, cz + math.sin(a) * r)
+		p.blob((0.1, 0.06, 0.1), c, sw, rot=(0, 45, 0), segs=(4, 2), glow=glow + 0.6)
+	p.blob((r * 1.2, 0.03, r * 1.2), (cx, y + 0.05, cz), STONE_DARK, segs=(12, 6))           # the dark beyond it
+
+
+RING = (-0.55, 0.12, 0.3)   # where the ring stands (x, z, radius): low left, the bolt bursting out of it up and right
+
+
+def cinder_dart():
+	p = Prop("cinder_dart", 1101)
+	_conjure_ring(p, *RING, EMBER)
+	a, b = Vector((-0.5, 0, 0.15)), Vector((0.55, 0, 0.9))
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	root = b - d * 0.75
+	p.seg(tuple(root), tuple(b), 0.17, 0.0, STONE_DARK, sides=4, twist=45)                 # a stubby dart of black cinder
+	p.seg(tuple(root), tuple(root - d * 0.18), 0.17, 0.05, STONE_DARK, sides=4, twist=45)
+	for k in range(3):                                                                    # glowing through its cracks
+		c0 = root + d * (0.1 + k * 0.2) + n * (0.05 if k % 2 else -0.05) - Vector((0, 0.13, 0))
+		p.seg(tuple(c0), tuple(c0 + d * 0.16 + n * (-0.07 if k % 2 else 0.07)), 0.035, 0.02, EMBER, sides=4, glow=3.0)
+	p.blob((0.1, 0.1, 0.1), tuple(b), FLAME, segs=(6, 4), glow=3.2)                         # its hot point
+	for sgn in (-1, 1):                                                                   # fletched with flames
+		p.seg(tuple(root), tuple(root - d * 0.4 + n * sgn * 0.22), 0.1, 0.0, FLAME, sides=5, glow=2.4)
+	p.seg(tuple(root), tuple(root - d * 0.45), 0.09, 0.0, EMBER, sides=5, glow=2.4)
+	for k in range(6):                                                                    # shedding cinders
+		t = k / 5
+		c = root - d * (0.3 + t * 0.55) + n * math.sin(k * 2.1 + 1) * 0.2
+		s = 0.12 - t * 0.05
+		p.rock((s, s, s), tuple(c), STONE_DARK, jitter=0.2)
+		p.blob((s * 0.55, s * 0.55, s * 0.55), tuple(c - Vector((0, s * 0.6, 0))), EMBER if k % 2 else FLAME, segs=(5, 3), glow=3.0)
+	return p.build()
+
+
+def elemental_bolt():
+	p = Prop("elemental_bolt", 1103)
+	_conjure_ring(p, *RING, GOLD, runes=[FLAME, WATER, STONE_WARM, CLOTH_WHITE])
+	head = Vector((0.45, -0.05, 0.8))
+	tail = Vector((-0.55, -0.05, 0.12))
+	d = (head - tail).normalized()
+	n = Vector((-d.z, 0, d.x))
+	L = (head - tail).length
+	for j, sw in enumerate((FLAME, WATER, LEAF, CLOTH_WHITE)):                            # four elements braided into one bolt
+		pts = []
+		for k in range(25):
+			t = k / 24
+			ph = t * 1.6 * math.tau + j * math.tau / 4
+			rr = 0.24 * (1 - t) + 0.05
+			pts.append(tail + d * L * t + n * math.cos(ph) * rr + Vector((0, -1, 0)) * math.sin(ph) * rr)
+		for k, (u, v) in enumerate(zip(pts, pts[1:])):
+			w = 0.035 + 0.045 * k / 24
+			p.seg(tuple(u), tuple(v), w, w, sw, sides=5, glow=2.0)
+	p.blob((0.36, 0.36, 0.36), tuple(head + d * 0.08), CLOTH_WHITE, segs=(10, 8), glow=3.0)   # a white-hot core
+	for j, sw in enumerate((FLAME, WATER, LEAF, GOLD)):                                   # the four orbiting it
+		a = math.radians(45 + j * 90)
+		p.blob((0.15, 0.15, 0.15), tuple(head + d * 0.08 + Vector((math.cos(a) * 0.3, -0.15, math.sin(a) * 0.3))), sw, segs=(6, 4), glow=2.4)
+	return p.build()
+
+
+def earthen_shard():
+	p = Prop("earthen_shard", 1105)
+	_conjure_ring(p, *RING, AMBER)
+	a, b = Vector((-0.4, 0, 0.2)), Vector((0.6, 0, 0.95))
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	ang = -math.degrees(math.atan2(d.z, d.x))
+	mid = (a + b) / 2
+	p.rock((1.05, 0.4, 0.34), tuple(mid), STONE_WARM, rot=(0, ang, 0), jitter=0.12)        # a jagged shard of stone
+	p.seg(tuple(mid + d * 0.3), tuple(b + d * 0.15), 0.16, 0.0, STONE_WARM, sides=4, twist=30)   # its point
+	p.rock((0.36, 0.34, 0.3), tuple(a + d * 0.05 + n * 0.1), CLAY, rot=(0, ang, 0), jitter=0.15)   # torn from the bedrock
+	for k in range(3):                                                                    # amber cracks down its face
+		c0 = a + d * (0.25 + k * 0.22) + n * (0.07 if k % 2 else -0.07) - Vector((0, 0.2, 0))
+		c1 = c0 + d * 0.2 + n * (-0.1 if k % 2 else 0.1)
+		p.seg(tuple(c0), tuple(c1), 0.045, 0.025, AMBER, sides=4, glow=2.8)
+	for k, (t, side, s) in enumerate(((0.05, 1, 0.13), (0.3, -1, 0.11), (0.55, 1, 0.09), (0.2, 1.8, 0.08), (0.45, -1.7, 0.07))):   # pebbles flung alongside
+		p.rock((s, s, s), tuple(a + d * t + n * side * 0.28 - Vector((0, 0.1, 0))), STONE_WARM if k % 2 else CLAY, jitter=0.2)
+	return p.build()
+
+
+def scalding_torrent():
+	p = Prop("scalding_torrent", 1107)
+	_conjure_ring(p, *RING, WATER)
+	pts = []
+	for k in range(15):                                                                   # a gushing jet of water
+		t = k / 14
+		pts.append(Vector((-0.55 + t * 1.15, -0.05, 0.12 + t * 0.5 + math.sin(t * math.pi * 1.5) * 0.1)))
+	for k, (u, v) in enumerate(zip(pts, pts[1:])):
+		w0, w1 = 0.13 + 0.17 * k / 14, 0.13 + 0.17 * (k + 1) / 14
+		p.seg(tuple(u), tuple(v), w0, w1, WATER, sides=8, glow=1.3)
+		if k % 3 == 1:
+			p.seg(tuple(u - Vector((0, w0 * 0.9, 0))), tuple(v - Vector((0, w1 * 0.9, 0))), 0.03, 0.03, CLOTH_WHITE, sides=4, glow=1.8)
+	end = pts[-1]
+	for k in range(6):                                                                    # bursting at its head
+		a = math.radians(-70 + k * 28)
+		p.seg(tuple(end), tuple(end + Vector((math.cos(a) * 0.38, -0.1, math.sin(a) * 0.38))), 0.09, 0.0, WATER, sides=5, glow=1.6)
+	for x, z, s in ((-0.25, 0.55, 0.2), (0.05, 0.8, 0.24), (0.38, 1.0, 0.26)):             # boiling off in billows of steam
+		p.blob((s, s * 0.8, s * 0.8), (x, -0.05, z), CLOTH_WHITE, segs=(8, 5), glow=0.7)
+		p.blob((s * 0.75, s * 0.6, s * 0.65), (x + s * 0.8, -0.05, z + s * 0.35), MIST, segs=(8, 5), glow=0.5)
+		p.blob((s * 0.6, s * 0.5, s * 0.55), (x - s * 0.7, -0.05, z + s * 0.25), CLOTH_WHITE, segs=(8, 5), glow=0.7)
+	return p.build()
+
+
+def spear_of_flame():
+	p = Prop("spear_of_flame", 1109)
+	_conjure_ring(p, *RING, FLAME)
+	a, b = Vector((-0.65, 0, 0.05)), Vector((0.35, 0, 0.9))
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	p.seg(tuple(a), tuple(b), 0.09, 0.11, EMBER, sides=6, glow=2.2)                        # a long haft of living flame
+	p.seg(tuple(b), tuple(b + d * 0.7), 0.24, 0.0, FLAME, sides=4, glow=2.6, twist=45)     # a broad head, white-hot at its heart
+	p.seg(tuple(b - Vector((0, 0.13, 0))), tuple(b + d * 0.45 - Vector((0, 0.13, 0))), 0.08, 0.0, CLOTH_WHITE, sides=4, glow=3.0)
+	p.seg(tuple(b - n * 0.28), tuple(b + n * 0.28), 0.07, 0.07, EMBER, sides=5, glow=2.4)  # its crossguard
+	for k in range(6):                                                                    # flames licking back along the haft
+		t = 0.12 + k * 0.14
+		base = a + (b - a) * t
+		sgn = 1 if k % 2 else -1
+		p.seg(tuple(base), tuple(base - d * 0.3 + n * sgn * 0.28), 0.1, 0.0, FLAME if k % 2 else EMBER, sides=5, glow=2.4)
+	return p.build()
+
+
+def storm_javelin():
+	p = Prop("storm_javelin", 1111)
+	_conjure_ring(p, *RING, RUNE)
+	a, b = Vector((-0.55, 0, 0.15)), Vector((0.4, 0, 0.85))
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	zig = [a]                                                                             # a javelin forked out of lightning
+	for k in range(1, 5):
+		zig.append(a + (b - a) * (k / 5) + n * (0.11 if k % 2 else -0.11))
+	zig.append(b)
+	for u, v in zip(zig, zig[1:]):
+		p.seg(tuple(u), tuple(v), 0.075, 0.075, GOLD, sides=5, glow=2.8)
+	p.seg(tuple(b), tuple(b + d * 0.5), 0.17, 0.0, CLOTH_WHITE, sides=4, glow=3.0, twist=45)   # a white point
+	for sgn in (-1, 1):                                                                   # barbed with sparks
+		p.seg(tuple(b), tuple(b - d * 0.2 + n * sgn * 0.24), 0.05, 0.0, GOLD, sides=4, glow=2.8)
+	for off, up, sw in ((0.3, 1, CLOTH_WHITE), (-0.3, -1, CLOTH_WHITE)):                  # riding two gusts of wind
+		s0, s1 = a + n * off + d * 0.05, b + n * off * 0.55 - d * 0.1
+		_wind(p, (s0.x, s0.z), (s1.x, s1.z), swatch=sw, up=up, y=-0.1, r=0.07, curl=0.14, glow=1.8)
+	return p.build()
+
+
+MAGE_BOLTS = [cinder_dart, elemental_bolt, earthen_shard, scalding_torrent, spear_of_flame, storm_javelin]
+
+
 MONSOON_WEST = [mud_spit, bog_bolt, eel_shock, bogwing_sting, hex_of_rot, mire_grip, undertow, naga_venom, tidal_bolt, lightning_lash,
 				crushing_claw, drowning_grasp, cobra_venom]
 
@@ -3845,7 +3997,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 
