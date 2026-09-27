@@ -21,6 +21,7 @@ var _selected := "warrior"
 var _deity := ""
 var _stats: StatPicker
 var _race := "human"
+var _gender := "male"
 var _race_desc: Label
 var _class_buttons := {}  # class id -> its button (greyed when the race can't be it)
 var _race_buttons := {}
@@ -123,6 +124,20 @@ func _build_new_character(page: VBoxContainer) -> void:
 	_name_edit.custom_minimum_size.y = 36
 	_name_edit.text_submitted.connect(func(_t: String) -> void: _create())
 	v.add_child(_name_edit)
+
+	var genders := HBoxContainer.new()
+	genders.add_theme_constant_override("separation", 6)
+	var gender_group := ButtonGroup.new()
+	for g: Array in [["male", "Male"], ["female", "Female"]]:
+		var gb := UIKit.button(g[1], Vector2(0, 30))
+		gb.toggle_mode = true
+		gb.button_group = gender_group
+		gb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		gb.add_theme_font_size_override("font_size", 13)
+		gb.button_pressed = g[0] == _gender
+		gb.pressed.connect(func() -> void: _gender = g[0])
+		genders.add_child(gb)
+	v.add_child(genders)
 
 	var races := GridContainer.new()  # the race first: it decides which classes are open
 	races.columns = 5
@@ -286,4 +301,4 @@ func _create() -> void:
 		return
 	var home := str(GameData.races[_race].get("home", World.cfg("starting_zone", "emberhold")))
 	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity, "stats": _stats.points.duplicate(),
-			"race": _race, "zone": home, "bind": home})
+			"race": _race, "gender": _gender, "zone": home, "bind": home})

@@ -33,6 +33,8 @@ var _ranged: Node3D  # a bow shown in the left hand for a shot, the usual held g
 var _ranged_left := 0.0
 var _posed_dead := false
 var _race := ""  # data/races.json id: its skin on the outfit's skin cells, its bolt-ons (ears, beards, tusks)
+var _gender := ""  # "male" / "female": a body of the other gender wears models.json "genders" head
+var _model_id := ""
 static var _race_textures: Dictionary = {}  # "texture path|race" -> the recolored ImageTexture, made once
 
 
@@ -64,6 +66,7 @@ func setup(model_id: String, weapon_id: String, body_scale: float, gear: Variant
 	var model: Node3D = (load(spec["path"]) as PackedScene).instantiate()
 	_model = model
 	_spec = spec
+	_model_id = model_id
 	model.rotation.y = PI  # glTF faces +Z; Godot's forward is -Z
 	add_child(model)
 	scale = Vector3.ONE * float(spec.get("scale", 1.0 if own_rig else KAYKIT_SCALE)) * body_scale
@@ -142,6 +145,8 @@ func set_race(race_id: String) -> void:
 	var parts: Dictionary = GameData.models.get("race_parts", {})
 	for part_id: String in race.get("attach", []):
 		var spec: Dictionary = parts.get(part_id, {})
+		if spec.get("male_only", false) and _gender == "female":  # beards
+			continue
 		var bone := skeleton.find_bone(str(spec.get("bone", "head"))) if not spec.is_empty() else -1
 		if bone < 0:
 			continue
@@ -159,6 +164,39 @@ func set_race(race_id: String) -> void:
 					var mat := base.duplicate() as BaseMaterial3D
 					mat.albedo_color = mat.albedo_color * tone
 					mi.material_override = mat
+
+
+## Dresses the body as a man or a woman. Each body is one or the other as
+## KayKit made it (models.json "genders" "bodies", default male); for the
+## other, its head (face and hair) is swapped for "heads"[gender], a KayKit
+## head skinned onto this skeleton that counts as the body's own Head, so
+## headgear covers it and the race's skin colors it. Call it right after
+## setup, before set_race (beards are "male_only").
+func set_gender(gender: String) -> void:
+	if skeleton == null or not gender in ["male", "female"] or gender == _gender:
+		return
+	_gender = gender
+	var genders: Dictionary = GameData.models.get("genders", {})
+	if gender == str(genders.get("bodies", {}).get(_model_id, "male")):
+		return
+	var head: Dictionary = genders.get("heads", {}).get(gender, {})
+	if head.is_empty():
+		return
+	var src := _source(str(head["model"])).find_child(str(head["part"]), true, false) as MeshInstance3D
+	if src == null:
+		return
+	var ours := _body_parts()
+	if ours.has("Head"):
+		var old := ours["Head"] as Node
+		old.get_parent().remove_child(old)
+		old.queue_free()
+	var mi := src.duplicate() as MeshInstance3D
+	mi.name = "Gender_Head"
+	skeleton.add_child(mi)
+	mi.skeleton = NodePath("..")
+	mi.skin = _skin_by_name(src)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	Entity.use_entity_layer(mi)
 
 
 ## Puts the race's skin on one mesh, if its texture is a KayKit palette with known skin cells.
@@ -264,20 +302,7 @@ func set_worn(worn: Dictionary) -> void:
 ## A part replacing one of ours takes on our tint (a gnoll's fur-tinted arms
 ## stay furry in a jerkin's sleeves).
 func _swap_parts(look: Dictionary) -> Array:
-	var entry: Variant = GameData.models["characters"][look["model"]]
-	var path: String = entry["path"] if entry is Dictionary else str(entry)
-	if not _part_sources.has(path):  # kept under GameData so it lives as long as the game does
-		var src_model: Node3D = (load(path) as PackedScene).instantiate()
-		# GameData is an autoload under /root, and /root is a Viewport with the
-		# default World3D - so these sources DO draw, standing at the origin,
-		# unanimated and untargetable. Hide the root (and don't process it);
-		# the parts underneath keep visible = true, so the copies we take from
-		# them still show.
-		src_model.visible = false
-		src_model.process_mode = Node.PROCESS_MODE_DISABLED
-		GameData.add_child(src_model)
-		_part_sources[path] = src_model
-	var source: Node = _part_sources[path]
+	var source := _source(str(look["model"]))
 	var ours := _body_parts()
 	var tints: Dictionary = _spec.get("tint", {})
 	var added: Array = []
@@ -314,6 +339,24 @@ func _swap_parts(look: Dictionary) -> Array:
 		for mi: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false) + ([node] if node is MeshInstance3D else []):
 			_skin(mi)
 	return added
+
+
+## A hidden instance of a models.json character to copy body parts from.
+static func _source(model_id: String) -> Node:
+	var entry: Variant = GameData.models["characters"][model_id]
+	var path: String = entry["path"] if entry is Dictionary else str(entry)
+	if not _part_sources.has(path):  # kept under GameData so it lives as long as the game does
+		var src_model: Node3D = (load(path) as PackedScene).instantiate()
+		# GameData is an autoload under /root, and /root is a Viewport with the
+		# default World3D - so these sources DO draw, standing at the origin,
+		# unanimated and untargetable. Hide the root (and don't process it);
+		# the parts underneath keep visible = true, so the copies we take from
+		# them still show.
+		src_model.visible = false
+		src_model.process_mode = Node.PROCESS_MODE_DISABLED
+		GameData.add_child(src_model)
+		_part_sources[path] = src_model
+	return _part_sources[path]
 
 
 ## A part's skin, bound by bone name: the Skeletons pack numbers the shared

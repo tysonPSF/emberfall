@@ -96,6 +96,7 @@ var _chat: LineEdit
 var _chat_channel := ""  # "" is say; else "/g", "/sh", "/ooc", "/t Name" or "/r": where plain lines go
 var _channel_label: Label
 var _log_lines := 0
+var _log_panel: PanelContainer
 var _group_log_panel: PanelContainer  # group chat, its own window while you're in a group
 var _group_log: RichTextLabel
 var _group_log_lines := 0
@@ -142,6 +143,7 @@ var _stats_panel: PanelContainer  # characters from before starting stats spend 
 var _stats_picker: StatPicker
 var _stats_later := false
 var _race_button: Button  # on the character sheet: the one change of race
+var _gender_button: Button  # on the character sheet: the one change of gender (click twice)
 var _race_panel: PanelContainer
 var _race_pick := ""
 var _race_row: GridContainer
@@ -207,6 +209,7 @@ func _ready() -> void:
 	_build_track_window()
 	_build_stats_window()
 	_build_race_window()
+	_make_draggable.call_deferred()  # once every window is built
 	_compass = Compass.new()
 	_compass.anchor_left = 0.5
 	_compass.anchor_right = 0.5
@@ -596,7 +599,7 @@ func _update_buffs() -> void:
 			right = minf(right, w.position.x - 8.0)
 	var y := 60.0
 	for panel: PanelContainer in [_buff_panel, _debuff_panel]:
-		if not panel.visible:
+		if not panel.visible or UIKit.moved(panel):
 			continue
 		panel.reset_size()
 		panel.position = Vector2(right - panel.size.x, y)
@@ -891,6 +894,7 @@ func _build_log() -> void:
 	var p := UIKit.panel()
 	UIKit.place(p, Vector2(0, 1), Vector2(12, -12))
 	root.add_child(p)
+	_log_panel = p
 	_log = RichTextLabel.new()
 	_log.custom_minimum_size = Vector2(500, 200)
 	_log.scroll_following = true
@@ -1453,6 +1457,7 @@ func _build_pet_window() -> void:
 	_pet_panel.visible = false
 
 
+
 ## The one-time window for a character from before starting stats: spend the
 ## 25 points (the class's spread is filled in), then Confirm. "Later" puts it
 ## off until the next login.
@@ -1514,6 +1519,13 @@ func _build_stats_window() -> void:
 	UIKit.frame(later)
 	v.add_child(row)
 	_stats_panel.visible = false
+
+
+## The windows you can drag where you like (UIKit.draggable; Settings resets them).
+func _make_draggable() -> void:
+	for pair: Array in [[_player_panel, "player"], [_target_panel, "target"], [_pet_panel, "pet"], [_group_panel, "group"], [_buff_panel, "buffs"],
+			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"]]:
+		UIKit.draggable(pair[0], pair[1])
 
 
 ## The one change of race: races the class allows, with what each is and its
@@ -1909,6 +1921,23 @@ func _build_inventory() -> void:
 	_race_button.tooltip_text = "Every character may change its race once."
 	_race_button.pressed.connect(_open_race_change)
 	stats.add_child(_race_button)
+	_gender_button = UIKit.button("", Vector2(0, 22))
+	_gender_button.add_theme_font_size_override("font_size", 11)
+	UIKit.frame(_gender_button)
+	_gender_button.tooltip_text = "Every character may change its gender once. Click twice to confirm."
+	_gender_button.pressed.connect(func() -> void:
+		var to := "male" if player.shown_gender() == "female" else "female"
+		if not _gender_button.has_meta("armed"):
+			_gender_button.set_meta("armed", true)
+			_gender_button.text = "Click again: become %s" % ("a man" if to == "male" else "a woman")
+			get_tree().create_timer(4.0).timeout.connect(func() -> void:
+				if is_instance_valid(_gender_button):
+					_gender_button.remove_meta("armed")
+					_refresh_gender_button())
+			return
+		_gender_button.remove_meta("armed")
+		World.request_change_gender(player.entity_id, to))
+	stats.add_child(_gender_button)
 	_coin_label = UIKit.label("", 12, UIKit.GOLD)
 	stats.add_child(_coin_label)
 	_weight_label = UIKit.label("", 12, UIKit.TEXT)
@@ -2263,6 +2292,10 @@ func _refresh_settings() -> void:
 	note.custom_minimum_size.x = 410
 	_settings_rows.add_child(note)
 	_settings_rows.add_child(_music_row("[ ]   Music"))
+	var reset := UIKit.button("Reset window positions", Vector2(0, 30))
+	reset.tooltip_text = "Puts every window you've dragged back where it started."
+	reset.pressed.connect(func() -> void: UIKit.reset_windows(root))
+	_settings_rows.add_child(reset)
 
 
 ## A music volume slider with its label: in Settings and the Esc menu.
@@ -2447,7 +2480,8 @@ func _process(delta: float) -> void:
 		buffs.append("%s %d:%02d" % [GameData.spells[spell_id]["name"], left / 60, left % 60])
 	_buff_label.text = "  ·  ".join(buffs)
 	_buff_label.visible = not buffs.is_empty()
-	_quest_panel.position.y = _player_panel.position.y + _player_panel.size.y + 8.0  # tracker hangs below, however tall
+	if not UIKit.moved(_quest_panel) and not UIKit.moved(_player_panel):
+		_quest_panel.position.y = _player_panel.position.y + _player_panel.size.y + 8.0  # tracker hangs below, however tall
 	_death_label.visible = player.dead
 
 	_update_target()
@@ -2494,6 +2528,13 @@ func _process(delta: float) -> void:
 			sheet.append("Haste  %d%%" % int(player.attributes["haste"]))
 		_stats_label.text = "\n".join(sheet)
 		_race_button.visible = not player.race_changed and player.race != ""
+		_refresh_gender_button()
+
+
+func _refresh_gender_button() -> void:
+	_gender_button.visible = not player.gender_changed
+	if not _gender_button.has_meta("armed"):
+		_gender_button.text = "Become %s (once)" % ("a man" if player.shown_gender() == "female" else "a woman")
 
 
 func _update_target() -> void:

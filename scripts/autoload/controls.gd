@@ -79,6 +79,15 @@ var music_volume := 0.25
 var hotbar_locked := false
 
 
+## Windows moved by dragging: key -> [x, y], the top-left corner on screen. Saved per machine.
+var window_positions: Dictionary = {}
+
+
+func set_window_position(key: String, pos: Vector2) -> void:
+	window_positions[key] = [roundi(pos.x), roundi(pos.y)]
+	_save_setting("window_positions", window_positions)
+
+
 func set_hotbar_locked(on: bool) -> void:
 	hotbar_locked = on
 	_save_setting("hotbar_locked", on)
@@ -117,6 +126,8 @@ func _load_settings() -> void:
 		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
 		music_volume = clampf(float((parsed as Dictionary).get("music_volume", 0.25)), 0.0, 1.0)
 		hotbar_locked = bool((parsed as Dictionary).get("hotbar_locked", false))
+		var wp: Variant = (parsed as Dictionary).get("window_positions", {})
+		window_positions = wp if wp is Dictionary else {}
 
 
 func _ready() -> void:

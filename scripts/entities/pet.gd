@@ -160,7 +160,10 @@ func _physics_process(delta: float) -> void:
 		return
 	_backoff = maxf(0.0, _backoff - delta)
 	var owner := owner_player()
-	if owner == null or World.zone_of(owner) != World.zone_of(self):
+	if owner == null:
+		queue_free()  # its owner left the world: a pet never stays behind on its own
+		return
+	if World.zone_of(owner) != World.zone_of(self):
 		return  # World moves or dismisses it
 	_think -= delta
 	if _think <= 0.0:

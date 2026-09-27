@@ -2918,11 +2918,20 @@
     "res://assets/creatures/shaman_body_shaman_texture.png": [[0, 0], [7, 2]],
     "res://assets/creatures/ranger_class_body_ranger_class_texture.png": [[0, 0]]
   },
+  "genders": {
+    "bodies": {"rogue": "female"},
+    "heads": {
+      "female": {"model": "rogue", "part": "Rogue_Head"},
+      "male": {"model": "knight", "part": "Knight_Head"}
+    }
+  },
   "race_parts": {
     "race_ears_elf": {"path": "res://assets/creatures/race_ears_elf.glb", "bone": "head", "skin": true},
     "race_ears_gnome": {"path": "res://assets/creatures/race_ears_gnome.glb", "bone": "head", "skin": true},
-    "race_beard_dwarf": {"path": "res://assets/creatures/race_beard_dwarf.glb", "bone": "head", "skin": false},
-    "race_beard_barbarian": {"path": "res://assets/creatures/race_beard_barbarian.glb", "bone": "head", "skin": false},
+    "race_beard_dwarf": {"path": "res://assets/creatures/race_beard_dwarf.glb", "bone": "head", "skin": false,
+      "male_only": true},
+    "race_beard_barbarian": {"path": "res://assets/creatures/race_beard_barbarian.glb", "bone": "head", "skin": false,
+      "male_only": true},
     "race_tusks_troll": {"path": "res://assets/creatures/race_tusks_troll.glb", "bone": "head", "skin": false},
     "race_troll_face": {"path": "res://assets/creatures/race_troll_face.glb", "bone": "head", "skin": true},
     "race_tusks_ogre": {"path": "res://assets/creatures/race_tusks_ogre.glb", "bone": "head", "skin": false},
