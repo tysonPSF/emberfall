@@ -2149,5 +2149,940 @@
         "slashes"
       ]
     }
+  },
+  "warden_dagny": {
+    "name": "Warden Dagny Coalhand",
+    "title": "Ashwatch Camp",
+    "level": 40,
+    "model": "knight",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "You made it through Cinderpass, {name}. Welcome to the Burn, what's left of it. Forgehold holds this camp against the [giants].",
+      "giants": "Ember giants, down from the mountain's heart. They smith in the east, in a hall older than our city. Their hearts burn like forge coal; bring me four heart-[coals] and I'll pay, every time.",
+      "coals": "Four giant's heart-coals, {name}. The first time, gauntlets from my own forge.",
+      "thane": "Their thane, Korrok Emberhand. He wears an iron [crown] that never cools. Bring it to me.",
+      "crown": "The thane's iron crown, {name}. Mind your hands.",
+      "unknown": "Ask Mott about the town, Ilse about the hounds, Omari about the birds."
+    }
+  },
+  "sawyer_mott": {
+    "name": "Old Sawyer Mott",
+    "title": "Late of Tallpine",
+    "level": 34,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Tallpine was my town, {name}. Loggers and sawyers, west of the road. Then the fire came, and the [imps] came with it.",
+      "imps": "Fire imps. They dance in the ruins and cackle while they burn what's left. Bring me four imp [horns]; I'll pay each time.",
+      "horns": "Four imp horns, {name}. The first time, my old signet from the mill.",
+      "smoke": "The smoke that walks. It came out of the vents with them. Bring me three bottles of it, [bottled] smoke, and I'll weave you something.",
+      "bottled": "Three bottles of smoke. Stopper them quick.",
+      "cackleflame": "Their lord, Cackleflame, sits in my sawmill like a king. Bring me his [lordly] crown.",
+      "lordly": "Cackleflame's crown, {name}.",
+      "unknown": "Ask the warden."
+    }
+  },
+  "tracker_ilse": {
+    "name": "Tracker Ilse",
+    "title": "Ashwatch Camp",
+    "level": 36,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Keep to the road, {name}. The [firehounds] run the plains in packs, and ash wolves run with them.",
+      "firehounds": "Their manes burn. Bring me three [manes] and I'll pay every time.",
+      "manes": "Three firehound manes, {name}. The first time, a mantle sewn from them.",
+      "ashmaw": "The pack's alpha, Ashmaw. Bring me his burning [mane] and I'll give you a pendant of his fangs.",
+      "mane": "Ashmaw's burning mane, {name}.",
+      "unknown": "Ask the warden."
+    }
+  },
+  "ashseer_omari": {
+    "name": "Ashseer Omari",
+    "title": "Seer of the Ember-Tusk",
+    "level": 36,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Agnavar's fire burned this forest, {name}, and his [firebirds] nest in what's left. Supplies too, if you need them: press G.",
+      "firebirds": "Birds of living flame. Bring me four [feathers] and I'll pay each time.",
+      "feathers": "Four firebird feathers. The first time, a cap sewn with them.",
+      "phoenix": "Pyrelle the Undying, the great phoenix of the north. Kill her and she burns to [ember], and rises again. Bring me the ember.",
+      "ember": "The phoenix's ember, {name}. Quickly, before she rises.",
+      "unknown": "Ask the warden."
+    },
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "obsidian_arrow",
+        "magmasteel_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ashwatch_sentry": {
+    "name": "an Ashwatch sentry",
+    "level": 45,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Stay by the fires, {name}.",
+      "unknown": "Ask the warden."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! I'm coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the camp!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3600,
+      "hp_regen": 60,
+      "ac": 105,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "flamekeeper_ashani": {
+    "name": "Flamekeeper Ashani",
+    "title": "Keeper of the Eternal Flame",
+    "level": 45,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Welcome to Forgehold, {name}, and to the fire of [Agnavar] that has not gone out since the mountain was young. I can [bind] your soul to his flame.",
+      "agnavar": "The Ember-Tusked. He struck the first spark in the mountain's heart, and we have kept it. His followers may ask for his [blessing] once an hour.",
+      "bind": "Stand in the heat, {name}. There: Agnavar will bring you home to Forgehold.",
+      "unknown": "Ask the guildmasters round the plaza."
+    },
+    "binds": true,
+    "blesses": {
+      "deity": "fire",
+      "spell": "ember_tusk_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "Agnavar's fire warms everyone, {name}, but his blessing is for those who follow him.",
+      "wait": "You've had his blessing within the hour, {name}.",
+      "give": "Hold out your hands, {name}. ...Feel it? Go and burn bright."
+    }
+  },
+  "gm_brandt": {
+    "name": "Forgemaster Brandt",
+    "title": "Warrior Guildmaster",
+    "level": 45,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Steel and fire made this city, {name}. If you fight, I'll teach you.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_oona": {
+    "name": "Hearthpriest Oona",
+    "title": "Cleric Guildmaster",
+    "level": 45,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Healing in a city of forges, {name}: there's never a shortage of burns. Cleric? Come.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_kaelen": {
+    "name": "Magister Kaelen",
+    "title": "Wizard Guildmaster",
+    "level": 45,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Fire is only the first element, {name}. Wizard? I have spells for you.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_soot": {
+    "name": "Soot",
+    "title": "Rogue Guildmaster",
+    "level": 45,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Smoke hides everything here, {name}. One of mine? Then listen.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_zaid": {
+    "name": "Emberwright Zaid",
+    "title": "Magician Guildmaster",
+    "level": 45,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Every forge here has an elemental in it, {name}. Magician? Let's call yours.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_morrow": {
+    "name": "Ashbinder Morrow",
+    "title": "Necromancer Guildmaster",
+    "level": 45,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The dead of Blackglass don't rest, {name}. Neither do we. Necromancer?",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_ngozi": {
+    "name": "Coal-Mother Ngozi",
+    "title": "Shaman Guildmaster",
+    "level": 45,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The spirits of the mountain are loud here, {name}. Shaman? Sit by me.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "gm_dain": {
+    "name": "Ashstalker Dain",
+    "title": "Ranger Guildmaster",
+    "level": 45,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The Burn is a hard hunting ground, {name}. Ranger? I've tricks for it.",
+      "unknown": "Ask Flamekeeper Ashani at the shrine."
+    },
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "Not my craft, {name}. The others are round the plaza."
+    }
+  },
+  "banker_hollis": {
+    "name": "Banker Hollis",
+    "title": "The Forgehold Vault",
+    "level": 30,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The Forgehold Vault keeps accounts with every bank in the land, {name}.",
+      "unknown": "I only keep the vault."
+    },
+    "banker": true
+  },
+  "provisioner_bettany": {
+    "name": "Provisioner Bettany",
+    "title": "Provisioner",
+    "level": 30,
+    "model": "mage",
+    "weapon": "",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}, and the forges are right there. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "magmasteel_arrow",
+        "greater_healing_potion",
+        "clarity_tonic"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "armorer_gunhild": {
+    "name": "Armorer Gunhild",
+    "title": "Magmasteel and Emberhide",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Magmasteel for the front, emberhide for the quick, flameweave for the ones who burn things. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "merchant": {
+      "sells": [
+        "magmasteel_helm",
+        "magmasteel_breastplate",
+        "magmasteel_vambraces",
+        "magmasteel_gauntlets",
+        "magmasteel_greaves",
+        "magmasteel_boots",
+        "magmasteel_shield",
+        "emberhide_jerkin",
+        "emberhide_leggings",
+        "emberhide_gloves",
+        "emberhide_boots",
+        "flameweave_cap",
+        "flameweave_robe",
+        "flameweave_gloves",
+        "flameweave_slippers"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "weaponsmith_teodor": {
+    "name": "Weaponsmith Teodor",
+    "title": "Blades of the Forge",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Forged in Agnavar's own fire, {name}. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "merchant": {
+      "sells": [
+        "magmasteel_sword",
+        "magmasteel_war_axe",
+        "magmasteel_greataxe",
+        "blackglass_dirk",
+        "forgeheart_staff",
+        "forgehold_longbow",
+        "magmasteel_arrow"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "glasswright_uzma": {
+    "name": "Glasswright Uzma",
+    "title": "Master of the Glassworks",
+    "level": 40,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Blackglass is the finest glass in the world, {name}, and the [golems] won't let us near it.",
+      "golems": "Glass golems. Something woke them. Their cores are pure glass; bring me four [cores] and I'll pay every time.",
+      "cores": "Four glass golem cores. The first time, a pair of my own lenses.",
+      "colossus": "The Black Colossus, in the middle of the fields. Bring me its [heart].",
+      "heart": "The Black Colossus's heart, {name}.",
+      "unknown": "Ask Flamekeeper Ashani."
+    }
+  },
+  "drakewarden_solveig": {
+    "name": "Drakewarden Solveig",
+    "title": "Warden of the Western Fields",
+    "level": 42,
+    "model": "knight",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The [drakes] of Blackglass nest among the spires in the northwest, {name}. They take our miners.",
+      "drakes": "Obsidian drakes. Their scales turn blades. Bring me three [scales], every time.",
+      "scales": "Three obsidian drake scales. The first time, leggings of their scales.",
+      "vitrax": "Vitrax, the obsidian wyrm, their mother. Bring me her [eye].",
+      "eye": "Vitrax's eye, {name}.",
+      "unknown": "Ask Flamekeeper Ashani."
+    }
+  },
+  "alchemist_farid": {
+    "name": "Alchemist Farid",
+    "title": "Glass and Venom",
+    "level": 38,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Glass [spiders] spin silk that's half glass, {name}. I make wonders from it, when I can get it.",
+      "spiders": "In the shard spires, northeast. Bring me three spools of their [silk], every time.",
+      "silk": "Three spools of glass spider silk. The first time, gloves woven with it.",
+      "shardmother": "Their queen, the Shardmother. Her [crown] of shards would make a fine blade.",
+      "crown": "The Shardmother's crown, {name}.",
+      "unknown": "Ask Flamekeeper Ashani."
+    }
+  },
+  "captain_ragna": {
+    "name": "Captain Ragna",
+    "title": "Captain of the Gate",
+    "level": 45,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "An old army died in Blackglass, {name}, when the valley melted. At night they [rise] from the glass.",
+      "rise": "The glassbound. Bring me four of their [insignia] and I'll pay each time; their families deserve them back.",
+      "insignia": "Four glassbound insignia. The first time, greaves from our armory.",
+      "aldric": "Captain Aldric led them. He carries their banner still. Bring me his [banner] and let them rest.",
+      "banner": "Aldric's glassbound banner, {name}. At night.",
+      "unknown": "Ask Flamekeeper Ashani."
+    }
+  },
+  "forgehold_guard": {
+    "name": "a Forgehold guard",
+    "level": 45,
+    "model": "knight",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Welcome to Forgehold, {name}. Mind the lava.",
+      "unknown": "Ask at the shrine."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not in Forgehold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Forgehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3600,
+      "hp_regen": 60,
+      "ac": 105,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "hack",
+        "hacks"
+      ]
+    }
+  },
+  "marshal_oyelaran": {
+    "name": "Marshal Oyelaran",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Welcome to Dawnwatch, {name}, the Dawn-Tusk's high fort. We've held these walls through a winter of siege. The [ogres] are at our gates.",
+      "unknown": "Ask the Beacon-Keeper, or the Falconer.",
+      "ogres": "Stonebrow ogres, a whole warband with siege engines. Bring me four of their [tusks] and I'll pay, every time.",
+      "tusks": "Four Stonebrow tusks, {name}. The first time, a bracer from our armory.",
+      "uthrak": "Their warlord, Uthrak Stonebrow. His war horn calls the assault. Bring me his [horn].",
+      "horn": "Uthrak's war horn, {name}."
+    },
+    "title": "Commander of Dawnwatch"
+  },
+  "beacon_keeper_lior": {
+    "name": "Beacon-Keeper Lior",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "The beacon must never go out, {name}. The [spirits] of the mountain want it dark.",
+      "unknown": "Ask the Marshal.",
+      "spirits": "Snow spirits and avalanches that walk. Bring me four breaths of [frozen] air from them; I burn them in the beacon, every time.",
+      "frozen": "Four frozen breaths, {name}. The first time, a ring.",
+      "storm-crowned": "The Storm-Crowned, their lord, on the high snowfields. Bring me a [shard] of its crown.",
+      "shard": "A shard of the Storm Crown, {name}."
+    },
+    "title": "Keeper of the Dawn Beacon"
+  },
+  "falconer_mehr": {
+    "name": "Falconer Mehr",
+    "level": 40,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "The [rocs] and wyverns of these crags take our birds and our sentries, {name}.",
+      "unknown": "Ask the Marshal.",
+      "rocs": "Bring me three roc [feathers], every time.",
+      "feathers": "Three roc feathers. The first time, a cloak of them.",
+      "sunwing": "Sunwing, the great roc of the western crags. Bring me her golden [plume].",
+      "plume": "Sunwing's golden plume, {name}."
+    },
+    "title": "Mews of Dawnwatch"
+  },
+  "chaplain_beatrix": {
+    "name": "Chaplain Beatrix",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Our own dead walk the old outer walls at night, {name}: the [sentinels] who fell when the fort was young.",
+      "unknown": "Ask the Marshal.",
+      "sentinels": "Bring me their sun-[badges], four at a time, and I'll lay them in the chapel.",
+      "badges": "Four sentinels' sun-badges, {name}. The first time, a pendant.",
+      "halvard": "Knight-Commander Halvard leads them still. Bring me his sun [banner] and they'll rest.",
+      "banner": "Halvard's sun banner, {name}. At night."
+    },
+    "title": "Chaplain of the Dawn"
+  },
+  "quartermaster_ide": {
+    "name": "Quartermaster Ide",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Stores for the siege, {name}. Press G.",
+      "unknown": "Ask the Marshal."
+    },
+    "title": "Dawnwatch Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "crude_arrow",
+        "obsidian_arrow",
+        "healing_potion",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "dawnwatch_sentinel": {
+    "name": "a Dawnwatch sentinel",
+    "level": 38,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Keep your head down, {name}; the catapults are loaded.",
+      "unknown": "Ask the Marshal."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not over these walls!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "caravan_guide_rahel": {
+    "name": "Caravan-Guide Rahel",
+    "level": 40,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "The Mirror Flats, {name}: step lightly, the water's only ankle deep. The [skiff] raiders come fast across it.",
+      "unknown": "Ask the others at the camp.",
+      "skiff": "Duneskiff raiders. Bring me four of their [veils], every time.",
+      "veils": "Four nomad veils. The first time, a sash.",
+      "asra": "Their queen, Asra of the Skiffs. Bring me her salt [crown].",
+      "crown": "Asra's salt crown, {name}."
+    },
+    "title": "Salt Traders"
+  },
+  "mirror_scholar_anouk": {
+    "name": "Mirror-Scholar Anouk",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "The flats remember everyone who crosses them, {name}, and sometimes the [reflections] step out.",
+      "unknown": "Ask Rahel.",
+      "reflections": "Mirror images of travelers long gone. Bring me four mirror [shards] from them, every time.",
+      "shards": "Four mirror shards. The first time, gloves.",
+      "reflection": "The oldest of them, the Reflection. Bring me its cracked [face].",
+      "face": "The Reflection's cracked face, {name}."
+    },
+    "title": "Scholar of Reflections"
+  },
+  "saltcutter_bram": {
+    "name": "Saltcutter Bram",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "I cut salt, {name}, and the [crabs] cut me.",
+      "unknown": "Ask Rahel.",
+      "crabs": "Salt crabs, big as carts. Bring me four [claws], every time.",
+      "claws": "Four salt crab claws. The first time, boots.",
+      "saltclaw": "Old Saltclaw, the biggest. There's a salt pearl in him. Bring me the [pearl].",
+      "pearl": "Saltclaw's salt pearl, {name}."
+    },
+    "title": "Salt Traders"
+  },
+  "birdwatcher_kiri": {
+    "name": "Birdwatcher Kiri",
+    "level": 40,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "Waders and sky [rays], {name}; the flats are alive if you look.",
+      "unknown": "Ask Rahel.",
+      "rays": "Bring me four wader [plumes] and I'll pay, every time.",
+      "plumes": "Four wader plumes. The first time, a cap.",
+      "great": "The great sky ray glides the north flats. Bring me its [spine].",
+      "spine": "The great ray's spine, {name}."
+    },
+    "title": "Salt Traders"
+  },
+  "trader_hesper": {
+    "name": "Trader Hesper",
+    "level": 28,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "Salt, water, bread, {name}. Press G.",
+      "unknown": "Ask Rahel."
+    },
+    "title": "Salt and Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "crude_arrow",
+        "healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "riverwarden_sione": {
+    "name": "Riverwarden Sione",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The Reach is Rainhold's rice bowl, {name}, when the [whiskerfolk] let us fish it.",
+      "unknown": "Ask the others at the landing.",
+      "whiskerfolk": "Catfish-folk, and the hippos they herd. Bring me four [barbels], every time.",
+      "barbels": "Four whiskerfolk barbels. The first time, a belt.",
+      "king": "The River King, crowned in pearls. Bring me his pearl [crown].",
+      "crown": "The River King's pearl crown, {name}."
+    },
+    "title": "Rainhold"
+  },
+  "headman_obafemi": {
+    "name": "Headman Obafemi",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The [mudfolk] dam our channels, {name}, and the fish go elsewhere.",
+      "unknown": "Ask Sione.",
+      "mudfolk": "Little diggers of mud. Bring me four mud [charms], every time.",
+      "charms": "Four mud charms. The first time, a bracelet.",
+      "gloop": "Their mud-shaman, Gloop. Bring me his shell [mask].",
+      "mask": "Gloop's shell mask, {name}."
+    },
+    "title": "Silt Landing"
+  },
+  "snakecatcher_anh": {
+    "name": "Snake-Catcher Anh",
+    "level": 40,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Serpents in every channel, {name}, and [swarms] above them.",
+      "unknown": "Ask Sione.",
+      "swarms": "Never mind the swarms. Bring me four serpent [scales], every time.",
+      "scales": "Four delta serpent scales. The first time, gloves.",
+      "coilmother": "Old Coilmother, the great serpent of the east channels. Bring me her [fang].",
+      "fang": "Coilmother's fang, {name}."
+    },
+    "title": "Silt Landing"
+  },
+  "ferryman_cato": {
+    "name": "Ferryman Cato",
+    "level": 40,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The smugglers' barges sank in the silt, {name}, and the [smugglers] never left them.",
+      "unknown": "Ask Sione.",
+      "smugglers": "Drowned smugglers. Bring me four of their [tokens], every time.",
+      "tokens": "Four smuggler's tokens. The first time, coin enough.",
+      "blackwater": "Captain Wren Blackwater kept a ledger of every debt in Rainhold. Bring me the [ledger].",
+      "ledger": "Blackwater's ledger, {name}."
+    },
+    "title": "Silt Landing"
+  },
+  "netmender_lalo": {
+    "name": "Net-Mender Lalo",
+    "level": 26,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Nets, bait, bread, {name}. Press G.",
+      "unknown": "Ask Sione."
+    },
+    "title": "Nets and Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "fishing_bait",
+        "fishing_pole",
+        "crude_arrow",
+        "obsidian_arrow",
+        "greater_healing_potion",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "harbormaster_quilla": {
+    "name": "Harbormaster Quilla",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Tidemouth holds, {name}, for now. The [Saltreavers] come every tide.",
+      "unknown": "Ask around the harbor.",
+      "saltreavers": "Sea raiders from over the horizon. Bring me four of their [arm-rings], every time.",
+      "arm-rings": "Four reaver arm-rings. The first time, one for your own arm.",
+      "saltbeard": "Their king, Harrow Saltbeard. Bring me his whalebone [crown].",
+      "crown": "Saltbeard's whalebone crown, {name}."
+    },
+    "title": "Tidemouth Harbor"
+  },
+  "lamplighter_soren": {
+    "name": "Lamplighter Soren",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The [storms] come off the sea to put out my light, {name}.",
+      "unknown": "Ask the Harbormaster.",
+      "storms": "Storm spirits. Bring me four bottles of [lightning], every time.",
+      "lightning": "Four bottles of lightning. The first time, coin enough.",
+      "tempest": "The Tempest Lord, who rules them. Bring me its [heart].",
+      "heart": "The Tempest Heart, {name}."
+    },
+    "title": "Keeper of the Light"
+  },
+  "diver_makoa": {
+    "name": "Diver Makoa",
+    "level": 40,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "There are [clawfolk] under the docks, {name}, and worse below them.",
+      "unknown": "Ask the Harbormaster.",
+      "clawfolk": "Crab-men. Bring me four [pincers], every time.",
+      "pincers": "Four clawfolk pincers. The first time, a shield of their shell.",
+      "horror": "The Horror Below, in the deep water past the point. Bring me its glowing [lure].",
+      "lure": "The Horror's lure, {name}."
+    },
+    "title": "Pearl Diver"
+  },
+  "harpooner_freya": {
+    "name": "Harpooner Freya",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Sea [serpents] in the bay, gulls the size of dogs, {name}. A harpooner's paradise.",
+      "unknown": "Ask the Harbormaster.",
+      "serpents": "Bring me four sea serpent [scales], every time.",
+      "scales": "Four sea serpent scales. The first time, leggings.",
+      "whitefin": "Leviathan Whitefin, the great serpent of the bay. Bring me its [fin].",
+      "fin": "Whitefin's fin, {name}."
+    },
+    "title": "Tidemouth Harbor"
+  },
+  "chandler_pim": {
+    "name": "Chandler Pim",
+    "level": 30,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Rope, tar, bread, arrows, {name}. Press G.",
+      "unknown": "Ask the Harbormaster."
+    },
+    "title": "Ship Chandler",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "fishing_bait",
+        "obsidian_arrow",
+        "magmasteel_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "tidemouth_marine": {
+    "name": "a Tidemouth marine",
+    "level": 42,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Stay behind the barricades, {name}.",
+      "unknown": "Ask the Harbormaster."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Back into the sea!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

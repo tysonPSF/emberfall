@@ -1,0 +1,1085 @@
+{
+  "name": "The Burn",
+  "levels": [
+    29,
+    33
+  ],
+  "music": "the_burn",
+  "seed": 9311,
+  "size": 512,
+  "height_amplitude": 6,
+  "bind_point": [
+    14,
+    205
+  ],
+  "flat_radius": 20,
+  "trees": 220,
+  "tree_mix": [
+    "charred_tree",
+    "charred_tree_tall",
+    "charred_tree",
+    "charred_tree_tall"
+  ],
+  "groves": 0.7,
+  "rocks": 90,
+  "grass_colors": [
+    "#4e4538",
+    "#5e5042"
+  ],
+  "fog_density": 0.012,
+  "fog_color": "#766858",
+  "sun_energy": 0.8,
+  "rain": {
+    "amount": 1600,
+    "color": "#9a9894dd",
+    "ash": true
+  },
+  "clutter": {
+    "grass_b": {
+      "density": 0.06,
+      "patch": 0.7,
+      "sway": 0.08,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.6,
+        1.0
+      ]
+    },
+    "pebbles": {
+      "density": 0.04,
+      "patch": 0.6,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "charred_log": {
+      "density": 0.0018,
+      "patch": 0.5,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        40,
+        90
+      ],
+      "radius": 70,
+      "color": "#8a8580",
+      "flatten": 0.3,
+      "bare": true
+    },
+    {
+      "pos": [
+        -60,
+        -60
+      ],
+      "radius": 60,
+      "color": "#7e7a76",
+      "flatten": 0.3,
+      "bare": true
+    },
+    {
+      "pos": [
+        90,
+        -150
+      ],
+      "radius": 50,
+      "color": "#86817c",
+      "flatten": 0.2,
+      "bare": true
+    },
+    {
+      "pos": [
+        -140,
+        60
+      ],
+      "radius": 45,
+      "color": "#3a3430",
+      "flatten": 0.4,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ],
+    [
+      -256,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          0,
+          210
+        ],
+        [
+          -10,
+          150
+        ],
+        [
+          10,
+          80
+        ],
+        [
+          -6,
+          20
+        ],
+        [
+          10,
+          -60
+        ],
+        [
+          -8,
+          -140
+        ],
+        [
+          0,
+          -256
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          -6,
+          20
+        ],
+        [
+          -60,
+          40
+        ],
+        [
+          -110,
+          55
+        ]
+      ],
+      "width": 2.6
+    },
+    {
+      "points": [
+        [
+          10,
+          -60
+        ],
+        [
+          60,
+          -60
+        ],
+        [
+          110,
+          -58
+        ]
+      ],
+      "width": 2.6
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "cinderpass",
+      "arrive": [
+        0,
+        -199
+      ],
+      "arrive_face": [
+        0,
+        -159
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "blackglass",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "dawnwatch",
+      "arrive": [
+        -199,
+        0
+      ],
+      "arrive_face": [
+        -159,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "outpost",
+      "pos": [
+        30,
+        196
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        214
+      ],
+      "id": "scout_tent",
+      "face": [
+        10,
+        196
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        18,
+        214
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        230
+      ],
+      "yaw": -90,
+      "labels": [
+        "Cinderpass",
+        "The Burn"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        -232,
+        0
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "The Burn"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        60
+      ],
+      "id": "burned_sawmill",
+      "face": [
+        -100,
+        60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        40
+      ],
+      "id": "burned_cabin",
+      "face": [
+        -140,
+        60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -170,
+        80
+      ],
+      "id": "burned_cabin",
+      "face": [
+        -140,
+        60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        95
+      ],
+      "id": "burned_cabin",
+      "face": [
+        -140,
+        60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -165,
+        30
+      ],
+      "id": "burned_cabin",
+      "face": [
+        -140,
+        60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        60
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        90
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        100
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        130
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        60
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -20
+      ],
+      "id": "smoldering_stump",
+      "collide": "none"
+    },
+    {
+      "type": "vent",
+      "pos": [
+        -100,
+        80
+      ],
+      "scale": 0.9
+    },
+    {
+      "type": "vent",
+      "pos": [
+        -180,
+        50
+      ],
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        145,
+        -70
+      ],
+      "id": "giant_hall_ruin",
+      "face": [
+        100,
+        -60
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        118,
+        -48
+      ],
+      "id": "giant_anvil",
+      "face": [
+        100,
+        -60
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        165,
+        -95
+      ],
+      "id": "giant_anvil",
+      "face": [
+        140,
+        -70
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -150
+      ],
+      "id": "firebird_nest",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -175
+      ],
+      "id": "firebird_nest",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        -168
+      ],
+      "id": "firebird_nest",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        -180
+      ],
+      "id": "firebird_nest",
+      "collide": "trunk"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -8,
+        -225
+      ],
+      "yaw": 90,
+      "labels": [
+        "Blackglass",
+        "The Burn"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "warden_dagny",
+      "pos": [
+        22,
+        190
+      ],
+      "face": [
+        10,
+        200
+      ]
+    },
+    {
+      "id": "sawyer_mott",
+      "pos": [
+        34,
+        205
+      ],
+      "face": [
+        14,
+        205
+      ]
+    },
+    {
+      "id": "tracker_ilse",
+      "pos": [
+        6,
+        190
+      ],
+      "face": [
+        14,
+        205
+      ]
+    },
+    {
+      "id": "ashseer_omari",
+      "pos": [
+        40,
+        184
+      ],
+      "face": [
+        30,
+        196
+      ]
+    },
+    {
+      "id": "ashwatch_sentry",
+      "pos": [
+        0,
+        200
+      ],
+      "patrol": [
+        [
+          0,
+          200
+        ],
+        [
+          -12,
+          160
+        ],
+        [
+          20,
+          150
+        ],
+        [
+          36,
+          200
+        ],
+        [
+          0,
+          200
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        40,
+        120
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -40,
+        100
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        60
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -20,
+        40
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        90,
+        140
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -70,
+        150
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        20,
+        150
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -90,
+        110
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        110,
+        90
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -50,
+        60
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        70,
+        20
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        10,
+        80
+      ],
+      "pool": {
+        "firehound_alpha": 1
+      },
+      "respawn": 1200,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -150,
+        40
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -120,
+        70
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -165,
+        90
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -130,
+        20
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -100,
+        50
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -175,
+        55
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -145,
+        70
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -110,
+        30
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -160,
+        20
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -125,
+        95
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        58
+      ],
+      "pool": {
+        "imp_lord": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        130,
+        -40
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        155,
+        -70
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        120,
+        -85
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        165,
+        -30
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        140,
+        -100
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        105,
+        -55
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        142,
+        -64
+      ],
+      "pool": {
+        "ember_giant_thane": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -60,
+        -140
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        40,
+        -165
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -110,
+        -170
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        90,
+        -150
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -20,
+        -120
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        0,
+        -180
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -10,
+        -160
+      ],
+      "pool": {
+        "phoenix": 1
+      },
+      "respawn": 1500,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -30,
+        -60
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        -40
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        -40
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        70,
+        -110
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        -100
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    }
+  ]
+}

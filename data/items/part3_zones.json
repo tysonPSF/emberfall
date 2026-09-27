@@ -1,0 +1,689 @@
+{
+  "stonebrow_tusk": {
+    "name": "Stonebrow Tusk",
+    "value": 20,
+    "stack": 20
+  },
+  "roc_feather": {
+    "name": "Roc Feather",
+    "value": 20,
+    "stack": 20
+  },
+  "wyvern_barb": {
+    "name": "Wyvern Barb",
+    "value": 20,
+    "stack": 20
+  },
+  "frozen_breath": {
+    "name": "Frozen Breath",
+    "value": 20,
+    "stack": 20
+  },
+  "sentinels_sunbadge": {
+    "name": "Sentinel's Sun-Badge",
+    "value": 24,
+    "stack": 20
+  },
+  "mirror_shard": {
+    "name": "Mirror Shard",
+    "value": 20,
+    "stack": 20
+  },
+  "salt_crab_claw": {
+    "name": "Salt Crab Claw",
+    "value": 20,
+    "stack": 20
+  },
+  "nomad_veil": {
+    "name": "Nomad Veil",
+    "value": 20,
+    "stack": 20
+  },
+  "wader_plume": {
+    "name": "Wader Plume",
+    "value": 20,
+    "stack": 20
+  },
+  "whisker_barbel": {
+    "name": "Whiskerfolk Barbel",
+    "value": 28,
+    "stack": 20
+  },
+  "hippo_tusk": {
+    "name": "Hippo Tusk",
+    "value": 28,
+    "stack": 20
+  },
+  "mud_charm": {
+    "name": "Mud Charm",
+    "value": 26,
+    "stack": 20
+  },
+  "serpent_scale": {
+    "name": "Delta Serpent Scale",
+    "value": 26,
+    "stack": 20
+  },
+  "smugglers_token": {
+    "name": "Smuggler's Token",
+    "value": 30,
+    "stack": 20
+  },
+  "reaver_armring": {
+    "name": "Reaver Arm-Ring",
+    "value": 34,
+    "stack": 20
+  },
+  "clawfolk_pincer": {
+    "name": "Clawfolk Pincer",
+    "value": 32,
+    "stack": 20
+  },
+  "sea_serpent_scale": {
+    "name": "Sea Serpent Scale",
+    "value": 32,
+    "stack": 20
+  },
+  "gull_feather": {
+    "name": "Giant Gull Feather",
+    "value": 28,
+    "stack": 20
+  },
+  "bottled_lightning": {
+    "name": "Bottled Lightning",
+    "value": 34,
+    "stack": 20
+  },
+  "uthraks_war_horn": {
+    "name": "Uthrak's War Horn",
+    "value": 150,
+    "lore": true
+  },
+  "sunwing_plume": {
+    "name": "Sunwing's Golden Plume",
+    "value": 150,
+    "lore": true
+  },
+  "storm_crown_shard": {
+    "name": "A Shard of the Storm Crown",
+    "value": 150,
+    "lore": true
+  },
+  "halvards_sun_banner": {
+    "name": "Halvard's Sun Banner",
+    "value": 150,
+    "lore": true
+  },
+  "cracked_mirror_face": {
+    "name": "The Reflection's Cracked Face",
+    "value": 150,
+    "lore": true
+  },
+  "saltclaws_pearl": {
+    "name": "Saltclaw's Salt Pearl",
+    "value": 150,
+    "lore": true
+  },
+  "asras_salt_crown": {
+    "name": "Asra's Salt Crown",
+    "value": 150,
+    "lore": true
+  },
+  "sky_ray_spine": {
+    "name": "The Great Ray's Spine",
+    "value": 150,
+    "lore": true
+  },
+  "river_kings_pearl_crown": {
+    "name": "The River King's Pearl Crown",
+    "value": 150,
+    "lore": true
+  },
+  "shell_mask": {
+    "name": "Gloop's Shell Mask",
+    "value": 150,
+    "lore": true
+  },
+  "coilmothers_fang": {
+    "name": "Coilmother's Fang",
+    "value": 150,
+    "lore": true
+  },
+  "blackwaters_ledger": {
+    "name": "Blackwater's Ledger",
+    "value": 150,
+    "lore": true
+  },
+  "saltbeards_whalebone_crown": {
+    "name": "Saltbeard's Whalebone Crown",
+    "value": 150,
+    "lore": true
+  },
+  "horror_lure": {
+    "name": "The Horror's Lure",
+    "value": 150,
+    "lore": true
+  },
+  "whitefins_fin": {
+    "name": "Whitefin's Fin",
+    "value": 150,
+    "lore": true
+  },
+  "tempest_heart": {
+    "name": "The Tempest Heart",
+    "value": 150,
+    "lore": true
+  },
+  "dawnwatch_bracer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Dawnwatch Bracer",
+    "slot": "arms",
+    "ac": 9,
+    "str": 3,
+    "sta": 3,
+    "value": 5000,
+    "rec_level": 22,
+    "wear": "leather_sleeves"
+  },
+  "ogrehide_belt": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ogrehide Belt",
+    "slot": "waist",
+    "ac": 6,
+    "str": 4,
+    "sta": 2,
+    "value": 5200,
+    "rec_level": 23,
+    "wear": "leather_belt"
+  },
+  "rocfeather_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Rocfeather Cloak",
+    "slot": "arms",
+    "ac": 10,
+    "agi": 4,
+    "sta": 3,
+    "hp": 20,
+    "value": 8000,
+    "rec_level": 24,
+    "wear": "leather_sleeves"
+  },
+  "frostspirit_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Frostspirit Ring",
+    "slot": "ring",
+    "ac": 4,
+    "int": 4,
+    "wis": 4,
+    "mana": 30,
+    "value": 6000,
+    "rec_level": 23
+  },
+  "stormcrown_circlet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Stormcrown Circlet",
+    "slot": "head",
+    "ac": 9,
+    "int": 5,
+    "wis": 5,
+    "mana": 40,
+    "value": 9000,
+    "rec_level": 25,
+    "wear": "cloth_cap"
+  },
+  "sunbadge_pendant": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Sun-Badge Pendant",
+    "slot": "neck",
+    "ac": 5,
+    "sta": 4,
+    "str": 3,
+    "hp": 25,
+    "value": 6000,
+    "rec_level": 23
+  },
+  "halvards_sunblade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Halvard's Sunblade",
+    "slot": "primary",
+    "dmg": 17,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 4,
+    "agi": 3,
+    "hp": 30,
+    "value": 11000,
+    "rec_level": 25,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "warlords_war_horn": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Warlord's War Horn",
+    "slot": "neck",
+    "ac": 6,
+    "str": 5,
+    "sta": 4,
+    "hp": 35,
+    "value": 9000,
+    "rec_level": 25
+  },
+  "mirrorglass_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mirrorglass Gloves",
+    "slot": "hands",
+    "ac": 6,
+    "int": 4,
+    "wis": 4,
+    "mana": 25,
+    "value": 5000,
+    "rec_level": 22,
+    "wear": "cloth_gloves"
+  },
+  "saltcrust_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Saltcrust Boots",
+    "slot": "feet",
+    "ac": 9,
+    "agi": 3,
+    "sta": 3,
+    "value": 5000,
+    "rec_level": 22,
+    "wear": "leather_boots"
+  },
+  "skiffrunner_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Skiffrunner Sash",
+    "slot": "waist",
+    "ac": 6,
+    "agi": 4,
+    "str": 2,
+    "value": 5200,
+    "rec_level": 23,
+    "wear": "rope_belt"
+  },
+  "waderplume_cap": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Waderplume Cap",
+    "slot": "head",
+    "ac": 7,
+    "int": 4,
+    "wis": 4,
+    "mana": 30,
+    "value": 5200,
+    "rec_level": 22,
+    "wear": "cloth_cap"
+  },
+  "mask_of_the_reflection": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mask of the Reflection",
+    "slot": "head",
+    "ac": 11,
+    "agi": 5,
+    "int": 4,
+    "wis": 4,
+    "hp": 25,
+    "value": 10000,
+    "rec_level": 25,
+    "wear": "cloth_cap"
+  },
+  "saltclaw_pearl_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Saltclaw Pearl Ring",
+    "slot": "ring",
+    "ac": 5,
+    "sta": 5,
+    "hp": 40,
+    "value": 9000,
+    "rec_level": 25
+  },
+  "asras_skiff_blade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Asra's Skiff Blade",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.4,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "agi": 5,
+    "str": 3,
+    "value": 10000,
+    "rec_level": 25,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "rayspine_staff": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Rayspine Staff",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 5,
+    "wis": 5,
+    "mana": 50,
+    "value": 10000,
+    "rec_level": 25,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "barbel_whip_belt": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Barbel-Whip Belt",
+    "slot": "waist",
+    "ac": 7,
+    "str": 4,
+    "sta": 3,
+    "value": 7000,
+    "rec_level": 25,
+    "wear": "leather_belt"
+  },
+  "hippohide_jerkin": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Hippohide Jerkin",
+    "slot": "chest",
+    "ac": 20,
+    "sta": 5,
+    "str": 4,
+    "hp": 30,
+    "value": 10000,
+    "rec_level": 27,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "pearl_crown_of_the_river": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Pearl Crown of the River",
+    "slot": "head",
+    "ac": 12,
+    "wis": 6,
+    "int": 6,
+    "hp": 30,
+    "mana": 50,
+    "value": 14000,
+    "rec_level": 29,
+    "wear": "cloth_cap"
+  },
+  "mudcharm_bracelet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mudcharm Bracelet",
+    "slot": "arms",
+    "ac": 10,
+    "sta": 4,
+    "agi": 3,
+    "value": 7000,
+    "rec_level": 25,
+    "wear": "leather_sleeves"
+  },
+  "shellmask_amulet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Shellmask Amulet",
+    "slot": "neck",
+    "ac": 6,
+    "int": 5,
+    "wis": 5,
+    "mana": 45,
+    "value": 12000,
+    "rec_level": 28
+  },
+  "serpentscale_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Serpentscale Gloves",
+    "slot": "hands",
+    "ac": 10,
+    "agi": 4,
+    "sta": 3,
+    "value": 7000,
+    "rec_level": 26,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "coilmother_fang_dirk": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Coilmother Fang Dirk",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 5,
+    "value": 14000,
+    "rec_level": 29,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.07
+    }
+  },
+  "blackwater_cutlass": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Blackwater Cutlass",
+    "slot": "primary",
+    "dmg": 21,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 5,
+    "agi": 4,
+    "hp": 30,
+    "value": 14000,
+    "rec_level": 29,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "reaver_armring_band": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Reaver Arm-Ring",
+    "slot": "ring",
+    "ac": 5,
+    "str": 4,
+    "sta": 4,
+    "hp": 30,
+    "value": 9000,
+    "rec_level": 28
+  },
+  "saltbeards_axe": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Saltbeard's Whalebone Axe",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 6,
+    "sta": 4,
+    "hp": 40,
+    "value": 18000,
+    "rec_level": 31,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "clawfolk_carapace_shield": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Clawfolk Carapace Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 19,
+    "sta": 5,
+    "hp": 25,
+    "model": "shield_round",
+    "value": 12000,
+    "rec_level": 29,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "lure_of_the_deep": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Lure of the Deep",
+    "slot": "neck",
+    "ac": 7,
+    "int": 6,
+    "wis": 6,
+    "mana": 55,
+    "value": 16000,
+    "rec_level": 31
+  },
+  "serpentskin_leggings": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Serpentskin Leggings",
+    "slot": "legs",
+    "ac": 17,
+    "agi": 5,
+    "sta": 4,
+    "value": 11000,
+    "rec_level": 29,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "whitefin_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Whitefin Cloak",
+    "slot": "arms",
+    "ac": 13,
+    "agi": 5,
+    "sta": 5,
+    "hp": 30,
+    "value": 16000,
+    "rec_level": 31,
+    "wear": "leather_sleeves"
+  },
+  "gullfeather_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Gullfeather Boots",
+    "slot": "feet",
+    "ac": 10,
+    "agi": 4,
+    "sta": 3,
+    "value": 9000,
+    "rec_level": 28,
+    "wear": "leather_boots"
+  },
+  "tempest_heart_staff": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tempest Heart Staff",
+    "slot": "primary",
+    "dmg": 18,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 7,
+    "wis": 7,
+    "mana": 65,
+    "value": 18000,
+    "rec_level": 31,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ],
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.06
+    }
+  }
+}

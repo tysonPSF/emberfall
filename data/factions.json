@@ -196,7 +196,7 @@
     }
   },
   "forgehold": {
-    "name": "Forgehold Scouts",
+    "name": "Forgehold",
     "default": 100,
     "on_kill": {
       "forgehold": -200,
@@ -241,6 +241,113 @@
       "dustpaw": -10,
       "lanternhold": 4,
       "dawn_pilgrims": 3
+    }
+  },
+  "fire_imps": {
+    "name": "Fire Imps",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "fire_imps": -5,
+      "forgehold": 2
+    }
+  },
+  "ember_giants": {
+    "name": "Ember Giants",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "ember_giants": -10,
+      "forgehold": 4
+    }
+  },
+  "glass_constructs": {
+    "name": "Glass Constructs",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "forgehold": 2
+    }
+  },
+  "stonebrow": {
+    "name": "Stonebrow Warband",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "stonebrow": -8,
+      "lanternhold": 3
+    }
+  },
+  "mountain_spirits": {
+    "name": "Mountain Spirits",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "mountain_spirits": -8,
+      "lanternhold": 3
+    }
+  },
+  "reflections": {
+    "name": "Reflections of the Flats",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "reflections": -8,
+      "salt_traders": 3
+    }
+  },
+  "duneskiff": {
+    "name": "Duneskiff Raiders",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "duneskiff": -8,
+      "salt_traders": 3
+    }
+  },
+  "whiskerfolk": {
+    "name": "Whiskerfolk",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "whiskerfolk": -8,
+      "rainhold": 3
+    }
+  },
+  "mudfolk": {
+    "name": "Mudfolk",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "mudfolk": -8,
+      "rainhold": 3
+    }
+  },
+  "saltreavers": {
+    "name": "Saltreavers",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "saltreavers": -8,
+      "rainhold": 3
+    }
+  },
+  "clawfolk": {
+    "name": "Clawfolk",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "clawfolk": -8,
+      "rainhold": 3
+    }
+  },
+  "storm_spirits": {
+    "name": "Storm Spirits",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "storm_spirits": -8,
+      "rainhold": 3
     }
   }
 }

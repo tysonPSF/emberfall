@@ -941,21 +941,6 @@
         -175,
         -160
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "High Terrace"
-      ]
     }
   ],
   "passes": [
@@ -1129,6 +1114,25 @@
       "arrive_face": [
         159,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "dawnwatch",
+      "arrive": [
+        0,
+        199
+      ],
+      "arrive_face": [
+        0,
+        159
       ]
     }
   ],

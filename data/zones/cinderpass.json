@@ -603,21 +603,6 @@
         -60,
         5
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Cinderpass"
-      ]
     }
   ],
   "passes": [
@@ -783,6 +768,25 @@
       "arrive_face": [
         191,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "the_burn",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
       ]
     }
   ],

@@ -1921,6 +1921,44 @@
       "path": "res://assets/creatures/lantern_wisp.glb",
       "rig": "own"
     },
+    "ember_giant": {
+      "path": "res://assets/creatures/ember_giant_body.glb",
+      "scale": 1.8,
+      "hide": ["Barbarian_Head", "Barbarian_BearHat"],
+      "attach": [
+        {"bone": "head", "path": "res://assets/creatures/ember_giant_head.glb"},
+        {"bone": "chest", "path": "res://assets/creatures/ember_giant_chest.glb"},
+        {"bone": "hips", "path": "res://assets/creatures/ember_giant_apron.glb"},
+        {"bone": "upperarm.l", "path": "res://assets/creatures/ember_giant_arm_l.glb"},
+        {"bone": "upperarm.r", "path": "res://assets/creatures/ember_giant_arm_r.glb"},
+        {"bone": "lowerarm.l", "path": "res://assets/creatures/ember_giant_bracer_l.glb"},
+        {"bone": "lowerarm.r", "path": "res://assets/creatures/ember_giant_bracer_r.glb"}
+      ],
+      "wearable_slots": []
+    },
+    "ember_giant_thane": {
+      "path": "res://assets/creatures/ember_thane_body.glb",
+      "scale": 2.1,
+      "hide": ["Barbarian_Head", "Barbarian_BearHat"],
+      "attach": [
+        {"bone": "head", "path": "res://assets/creatures/ember_thane_head.glb"},
+        {"bone": "chest", "path": "res://assets/creatures/ember_thane_chest.glb"},
+        {"bone": "hips", "path": "res://assets/creatures/ember_thane_apron.glb"},
+        {"bone": "upperarm.l", "path": "res://assets/creatures/ember_thane_arm_l.glb"},
+        {"bone": "upperarm.r", "path": "res://assets/creatures/ember_thane_arm_r.glb"},
+        {"bone": "lowerarm.l", "path": "res://assets/creatures/ember_thane_bracer_l.glb"},
+        {"bone": "lowerarm.r", "path": "res://assets/creatures/ember_thane_bracer_r.glb"}
+      ],
+      "wearable_slots": []
+    },
+    "firehound": {"path": "res://assets/creatures/firehound.glb", "rig": "own"},
+    "firehound_alpha": {"path": "res://assets/creatures/firehound_alpha.glb", "rig": "own", "scale": 1.3},
+    "ash_wolf": {"path": "res://assets/creatures/ash_wolf.glb", "rig": "own"},
+    "fire_imp": {"path": "res://assets/creatures/fire_imp.glb", "rig": "own", "scale": 0.8},
+    "imp_lord": {"path": "res://assets/creatures/imp_lord.glb", "rig": "own", "scale": 1.35},
+    "smoke_spirit": {"path": "res://assets/creatures/smoke_spirit.glb", "rig": "own"},
+    "firebird": {"path": "res://assets/creatures/firebird.glb", "rig": "own", "scale": 0.9},
+    "phoenix": {"path": "res://assets/creatures/phoenix.glb", "rig": "own", "scale": 1.25},
     "dustpaw": {
       "path": "res://assets/creatures/dustpaw_body.glb",
       "hide": [
@@ -2051,9 +2089,589 @@
         }
       ],
       "wearable_slots": []
+    },
+    "glass_golem": {
+      "path": "res://assets/creatures/glass_golem.glb",
+      "rig": "own"
+    },
+    "glass_colossus": {
+      "path": "res://assets/creatures/glass_colossus.glb",
+      "rig": "own"
+    },
+    "obsidian_drake": {
+      "path": "res://assets/creatures/obsidian_drake.glb",
+      "rig": "own"
+    },
+    "obsidian_wyrm": {
+      "path": "res://assets/creatures/obsidian_wyrm.glb",
+      "rig": "own"
+    },
+    "glass_spider": {
+      "path": "res://assets/creatures/glass_spider.glb",
+      "rig": "own"
+    },
+    "glass_brood_queen": {
+      "path": "res://assets/creatures/glass_brood_queen.glb",
+      "rig": "own"
+    },
+    "glassbound_dead": {
+      "path": "res://assets/creatures/glassbound_dead_body.glb",
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/glassbound_crust.glb"
+        },
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/glassbound_skull.glb"
+        },
+        {
+          "bone": "lowerleg.l",
+          "path": "res://assets/creatures/glassbound_shin.glb"
+        }
+      ],
+      "wearable_slots": [],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "glassbound_captain": {
+      "path": "res://assets/creatures/glassbound_captain_body.glb",
+      "scale": 0.95,
+      "hide": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Eyes"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/glassbound_crown.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/glassbound_mantle.glb"
+        },
+        {
+          "bone": "lowerleg.l",
+          "path": "res://assets/creatures/glassbound_shin.glb"
+        }
+      ],
+      "wearable_slots": [],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "stonebrow_ogre": {
+      "path": "res://assets/creatures/stonebrow_ogre_body.glb",
+      "scale": 1.15,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/stonebrow_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/stonebrow_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/stonebrow_belly.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/stonebrow_arm_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/stonebrow_arm_r.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/stonebrow_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/stonebrow_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "stonebrow_shaman": {
+      "path": "res://assets/creatures/stonebrow_shaman_body.glb",
+      "scale": 1.1,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/stonebrow_shaman_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/stonebrow_shaman_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/stonebrow_shaman_belly.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/stonebrow_shaman_arm_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/stonebrow_shaman_arm_r.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/stonebrow_shaman_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/stonebrow_shaman_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "stonebrow_warlord": {
+      "path": "res://assets/creatures/stonebrow_warlord_body.glb",
+      "scale": 1.4,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/stonebrow_warlord_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/stonebrow_warlord_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/stonebrow_warlord_belly.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/stonebrow_warlord_arm_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/stonebrow_warlord_arm_r.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/stonebrow_warlord_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/stonebrow_warlord_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "fallen_sentinel": {
+      "path": "res://assets/creatures/fallen_sentinel_body.glb",
+      "hide": [
+        "Knight_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sentinel_eyes.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sentinel_tabard.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "knight_commander": {
+      "path": "res://assets/creatures/knight_commander_body.glb",
+      "scale": 1.0,
+      "hide": [
+        "Knight_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/commander_helm.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sentinel_tabard.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/commander_banner.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "mirror_image": {
+      "path": "res://assets/creatures/mirror_image_body.glb",
+      "wearable_slots": []
+    },
+    "the_reflection": {
+      "path": "res://assets/creatures/the_reflection_body.glb",
+      "scale": 1.0,
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/reflection_face.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "duneskiff_nomad": {
+      "path": "res://assets/creatures/duneskiff_body.glb",
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/duneskiff_wrap.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "nomad_queen": {
+      "path": "res://assets/creatures/nomad_queen_body.glb",
+      "scale": 0.85,
+      "hide": [
+        "Rogue_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/nomad_queen_headdress.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "roc": {"path": "res://assets/creatures/roc.glb", "rig": "own", "scale": 1.3},
+    "great_roc": {"path": "res://assets/creatures/great_roc.glb", "rig": "own", "scale": 1.7},
+    "wyvern": {"path": "res://assets/creatures/wyvern.glb", "rig": "own", "scale": 1.0},
+    "snow_spirit": {"path": "res://assets/creatures/snow_spirit.glb", "rig": "own"},
+    "avalanche_elemental": {"path": "res://assets/creatures/avalanche_elemental.glb", "rig": "own", "scale": 1.15},
+    "storm_crowned_spirit": {"path": "res://assets/creatures/storm_crowned_spirit.glb", "rig": "own", "scale": 1.35},
+    "mirage_wisp": {"path": "res://assets/creatures/mirage_wisp.glb", "rig": "own"},
+    "salt_crab": {"path": "res://assets/creatures/salt_crab.glb", "rig": "own"},
+    "old_saltclaw": {"path": "res://assets/creatures/old_saltclaw.glb", "rig": "own", "scale": 2.0},
+    "brine_swarm": {"path": "res://assets/creatures/brine_swarm.glb", "rig": "own"},
+    "salt_wader": {"path": "res://assets/creatures/salt_wader.glb", "rig": "own", "scale": 1.1},
+    "sky_ray": {"path": "res://assets/creatures/sky_ray.glb", "rig": "own"},
+    "great_sky_ray": {"path": "res://assets/creatures/great_sky_ray.glb", "rig": "own", "scale": 1.8},
+    "whiskerfolk": {
+      "path": "res://assets/creatures/whiskerfolk_body.glb",
+      "scale": 1.5,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/whiskerfolk_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/whiskerfolk_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/whiskerfolk_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "river_king": {
+      "path": "res://assets/creatures/river_king_body.glb",
+      "scale": 2.0,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/river_king_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/river_king_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/river_king_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "mudfolk": {
+      "path": "res://assets/creatures/mudfolk_body.glb",
+      "scale": 0.7,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mudfolk_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mudfolk_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/mudfolk_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "mud_shaman": {
+      "path": "res://assets/creatures/mud_shaman_body.glb",
+      "scale": 0.85,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mud_shaman_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mud_shaman_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/mud_shaman_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "drowned_smuggler": {
+      "path": "res://assets/creatures/drowned_smuggler_body.glb",
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/smuggler_bandana.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/smuggler_rags.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/smuggler_sash.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "smuggler_captain": {
+      "path": "res://assets/creatures/smuggler_captain_body.glb",
+      "scale": 1.2,
+      "hide": [
+        "Rogue_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/smuggler_captain_hat.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/smuggler_captain_coat.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/smuggler_captain_tails.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "saltreaver": {
+      "path": "res://assets/creatures/saltreaver_body.glb",
+      "scale": 1.05,
+      "hide": [
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/saltreaver_helm.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/saltreaver_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/saltreaver_kilt.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/saltreaver_arm_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/saltreaver_arm_r.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/saltreaver_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/saltreaver_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "saltreaver_king": {
+      "path": "res://assets/creatures/saltreaver_king_body.glb",
+      "scale": 1.5,
+      "hide": [
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/saltreaver_king_crown.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/saltreaver_king_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/saltreaver_king_kilt.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/saltreaver_arm_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/saltreaver_arm_r.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/saltreaver_bracer_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/saltreaver_bracer_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "clawfolk": {
+      "path": "res://assets/creatures/clawfolk_body.glb",
+      "scale": 1.25,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/clawfolk_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/clawfolk_shell.glb"
+        },
+        {
+          "bone": "lowerarm.l",
+          "path": "res://assets/creatures/clawfolk_arm_l.glb"
+        },
+        {
+          "bone": "lowerarm.r",
+          "path": "res://assets/creatures/clawfolk_arm_r.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/clawfolk_claw_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/clawfolk_claw_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "river_hippo": {
+      "path": "res://assets/creatures/river_hippo.glb",
+      "rig": "own"
+    },
+    "delta_serpent": {
+      "path": "res://assets/creatures/delta_serpent.glb",
+      "rig": "own"
+    },
+    "great_delta_serpent": {
+      "path": "res://assets/creatures/great_delta_serpent.glb",
+      "rig": "own"
+    },
+    "sea_serpent": {
+      "path": "res://assets/creatures/sea_serpent.glb",
+      "rig": "own"
+    },
+    "great_sea_serpent": {
+      "path": "res://assets/creatures/great_sea_serpent.glb",
+      "rig": "own"
+    },
+    "biting_swarm": {
+      "path": "res://assets/creatures/biting_swarm.glb",
+      "rig": "own"
+    },
+    "deep_horror": {
+      "path": "res://assets/creatures/deep_horror.glb",
+      "rig": "own"
+    },
+    "giant_gull": {
+      "path": "res://assets/creatures/giant_gull.glb",
+      "rig": "own"
+    },
+    "sea_lion": {
+      "path": "res://assets/creatures/sea_lion.glb",
+      "rig": "own"
+    },
+    "tempest_lord": {
+      "path": "res://assets/creatures/tempest_lord.glb",
+      "rig": "own"
     }
   },
   "weapons": {
+    "river_trident": "res://assets/creatures/river_trident.glb",
+    "driftwood_staff": "res://assets/creatures/driftwood_staff.glb",
+    "smuggler_cutlass": "res://assets/creatures/smuggler_cutlass.glb",
+    "whalebone_axe": "res://assets/creatures/whalebone_axe.glb",
     "torch": "res://assets/KayKit_Dungeon_Pack_1.1_FREE/Assets/gltf/torch_lit.gltf",
     "dagger": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/dagger.gltf",
     "sword_1handed": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/sword_1handed.gltf",
@@ -2067,7 +2685,12 @@
     "shield_round": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round.gltf",
     "shield_round_barbarian": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_round_barbarian.gltf",
     "shield_badge": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/shield_badge.gltf",
-    "bow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/bow_withString.gltf"
+    "bow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/bow_withString.gltf",
+    "ember_hammer": "res://assets/creatures/ember_hammer.glb",
+    "ember_greathammer": "res://assets/creatures/ember_greathammer.glb",
+    "stonebrow_club": "res://assets/creatures/stonebrow_club.glb",
+    "stonebrow_skull_staff": "res://assets/creatures/stonebrow_skull_staff.glb",
+    "salt_scimitar": "res://assets/creatures/salt_scimitar.glb"
   },
   "animations": [
     "res://assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
@@ -2597,6 +3220,114 @@
     "dustpaw_fire": {
       "path": "res://assets/props/dustpaw_fire.glb",
       "lights": [{"pos": [0, 0.8, 0], "color": "#ff8a3a", "energy": 1.4, "range": 8, "night": false}]
+    },
+    "burned_cabin": {
+      "path": "res://assets/props/burned_cabin.glb"
+    },
+    "burned_sawmill": {
+      "path": "res://assets/props/burned_sawmill.glb"
+    },
+    "smoldering_stump": {
+      "path": "res://assets/props/smoldering_stump.glb",
+      "lights": [{"pos": [0, 0.8, 0], "color": "#ff7a30", "energy": 0.6, "range": 4, "night": false}]
+    },
+    "giant_anvil": {
+      "path": "res://assets/props/giant_anvil.glb",
+      "lights": [{"pos": [0.2, 1.8, -1.7], "color": "#ff8a3a", "energy": 1.6, "range": 9, "night": false}]
+    },
+    "giant_hall_ruin": {
+      "path": "res://assets/props/giant_hall_ruin.glb",
+      "lights": [{"pos": [0, 0.6, 0], "color": "#ff7030", "energy": 0.8, "range": 7, "night": false}]
+    },
+    "firebird_nest": {
+      "path": "res://assets/props/firebird_nest.glb",
+      "lights": [{"pos": [0.25, 8.1, -0.15], "color": "#ff9040", "energy": 1.2, "range": 8, "night": false}]
+    },
+    "glass_shards": {
+      "path": "res://assets/props/glass_shards.glb"
+    },
+    "glass_crack": {
+      "path": "res://assets/props/glass_crack.glb"
+    },
+    "glass_pool": {
+      "path": "res://assets/props/glass_pool.glb"
+    },
+    "glass_entombed": {
+      "path": "res://assets/props/glass_entombed.glb"
+    },
+    "forge_gate": {
+      "path": "res://assets/props/forge_gate.glb",
+      "lights": [{"pos": [-4.5, 3.6, 3.4], "color": "#ff9040", "energy": 1.6, "range": 11, "night": false}, {"pos": [4.5, 3.6, 3.4], "color": "#ff9040", "energy": 1.6, "range": 11, "night": false}]
+    },
+    "forge_hall": {
+      "path": "res://assets/props/forge_hall.glb",
+      "lights": [{"pos": [-3.5, 1.4, -3.8], "color": "#ff8a3a", "energy": 1.4, "range": 8, "night": false}, {"pos": [3.5, 1.4, -3.8], "color": "#ff8a3a", "energy": 1.4, "range": 8, "night": false}, {"pos": [0, 13.2, -5.3], "color": "#ff7030", "energy": 1.2, "range": 8, "night": false}]
+    },
+    "smelter": {
+      "path": "res://assets/props/smelter.glb",
+      "lights": [{"pos": [0, 0.9, 1.8], "color": "#ff8030", "energy": 1.8, "range": 9, "night": false}, {"pos": [0, 5.8, 0], "color": "#ff8030", "energy": 1.0, "range": 6, "night": false}]
+    },
+    "ore_cart": {
+      "path": "res://assets/props/ore_cart.glb"
+    },
+    "mine_entrance": {
+      "path": "res://assets/props/mine_entrance.glb",
+      "lights": [{"pos": [0.9, 2.5, 0.5], "color": "#ffb060", "energy": 1.0, "range": 7, "night": true}]
+    },
+    "basalt_house": {
+      "path": "res://assets/props/basalt_house.glb",
+      "lights": [{"pos": [0, 1.9, 0], "color": "#ffa050", "energy": 1.0, "range": 6, "night": true}]
+    },
+    "agnavar_shrine": {
+      "path": "res://assets/props/agnavar_shrine.glb",
+      "lights": [{"pos": [0, 3.6, 2.2], "color": "#ff9040", "energy": 3.0, "range": 18, "night": false}]
+    },
+    "great_anvil": {
+      "path": "res://assets/props/great_anvil.glb",
+      "lights": [{"pos": [-0.1, 2.5, 0], "color": "#ff8a3a", "energy": 0.8, "range": 5, "night": false}]
+    },
+    "lava_trough": {
+      "path": "res://assets/props/lava_trough.glb",
+      "lights": [{"pos": [0, 0.6, 0], "color": "#ff6a20", "energy": 0.9, "range": 6, "night": false}]
+    },
+    "fortress_wall": {"path": "res://assets/props/fortress_wall.glb"},
+    "fortress_gatehouse": {"path": "res://assets/props/fortress_gatehouse.glb"},
+    "fortress_keep": {"path": "res://assets/props/fortress_keep.glb"},
+    "dawn_beacon": {
+      "path": "res://assets/props/dawn_beacon.glb",
+      "lights": [{"pos": [0, 13.8, 0], "color": "#ffa040", "energy": 4.0, "range": 30, "night": false}]
+    },
+    "siege_catapult": {"path": "res://assets/props/siege_catapult.glb"},
+    "siege_ram": {"path": "res://assets/props/siege_ram.glb"},
+    "ogre_war_camp_tent": {"path": "res://assets/props/ogre_war_camp_tent.glb"},
+    "snow_drift": {"path": "res://assets/props/snow_drift.glb"},
+    "salt_crust_island": {"path": "res://assets/props/salt_crust_island.glb"},
+    "salt_pillar": {"path": "res://assets/props/salt_pillar.glb"},
+    "sand_skiff": {"path": "res://assets/props/sand_skiff.glb"},
+    "nomad_tent": {"path": "res://assets/props/nomad_tent.glb"},
+    "mirror_obelisk": {
+      "path": "res://assets/props/mirror_obelisk.glb",
+      "lights": [{"pos": [0, 0.9, 0], "color": "#80b0ff", "energy": 0.5, "range": 5, "night": true}]
+    },
+    "mangrove_tree": {"path": "res://assets/props/mangrove_tree.glb"},
+    "mud_dam": {"path": "res://assets/props/mud_dam.glb"},
+    "silt_mound": {"path": "res://assets/props/silt_mound.glb"},
+    "fishing_hut_stilts": {
+      "path": "res://assets/props/fishing_hut_stilts.glb",
+      "lights": [{"pos": [-0.7, 3.38, 0.86], "color": "#ffb060", "energy": 0.8, "range": 5, "night": true}]
+    },
+    "sunken_barge": {"path": "res://assets/props/sunken_barge.glb"},
+    "lighthouse": {
+      "path": "res://assets/props/lighthouse.glb",
+      "lights": [{"pos": [0, 14.9, 0], "color": "#ffd080", "energy": 4.0, "range": 32, "night": true}]
+    },
+    "harbor_warehouse": {"path": "res://assets/props/harbor_warehouse.glb"},
+    "harbor_pier": {"path": "res://assets/props/harbor_pier.glb"},
+    "reaver_longship": {"path": "res://assets/props/reaver_longship.glb"},
+    "harbor_barricade": {"path": "res://assets/props/harbor_barricade.glb"},
+    "storm_brazier": {
+      "path": "res://assets/props/storm_brazier.glb",
+      "lights": [{"pos": [0, 4.0, 0], "color": "#ff9040", "energy": 2.0, "range": 12, "night": false}]
     }
   },
   "gear": {

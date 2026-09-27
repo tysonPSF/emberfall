@@ -941,21 +941,6 @@
         "Pass closed",
         "Drownfast"
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        -232,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Drownfast"
-      ]
     }
   ],
   "passes": [
@@ -1052,6 +1037,25 @@
       ],
       "arrive_face": [
         -159,
+        0
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "silted_reach",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
         0
       ]
     }

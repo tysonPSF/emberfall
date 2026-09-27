@@ -1,0 +1,930 @@
+{
+  "name": "The Silted Reach",
+  "levels": [
+    24,
+    28
+  ],
+  "music": "silted_reach",
+  "seed": 9451,
+  "size": 512,
+  "height_amplitude": 2.5,
+  "bind_point": [
+    0,
+    195
+  ],
+  "flat_radius": 25,
+  "trees": 160,
+  "tree_mix": [
+    "mangrove_tree",
+    "mangrove_tree",
+    "jungle_tree"
+  ],
+  "groves": 0.5,
+  "rocks": 30,
+  "grass_colors": [
+    "#5a7a3a",
+    "#6a8a44"
+  ],
+  "fog_density": 0.009,
+  "fog_color": "#8a9a90",
+  "sun_energy": 0.8,
+  "rain": {
+    "amount": 2600,
+    "color": "#a8b8c8cc"
+  },
+  "rivers": [
+    {
+      "points": [
+        [
+          0,
+          150
+        ],
+        [
+          -10,
+          80
+        ],
+        [
+          -40,
+          0
+        ],
+        [
+          -60,
+          -80
+        ],
+        [
+          -50,
+          -160
+        ],
+        [
+          -20,
+          -215
+        ]
+      ],
+      "width": 12,
+      "depth": 1.2,
+      "bank": 8,
+      "flow": 0.8
+    },
+    {
+      "points": [
+        [
+          -10,
+          80
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          70,
+          -60
+        ],
+        [
+          90,
+          -140
+        ],
+        [
+          80,
+          -215
+        ]
+      ],
+      "width": 9,
+      "depth": 1.0,
+      "bank": 7,
+      "flow": 0.7
+    },
+    {
+      "points": [
+        [
+          -40,
+          0
+        ],
+        [
+          -100,
+          -40
+        ],
+        [
+          -160,
+          -80
+        ],
+        [
+          -190,
+          -150
+        ]
+      ],
+      "width": 8,
+      "depth": 1.0,
+      "bank": 7,
+      "flow": 0.6
+    }
+  ],
+  "lakes": [
+    {
+      "points": [
+        [
+          -30,
+          120
+        ],
+        [
+          30,
+          120
+        ],
+        [
+          45,
+          160
+        ],
+        [
+          0,
+          175
+        ],
+        [
+          -45,
+          160
+        ]
+      ],
+      "depth": 0.6,
+      "shelf": 6,
+      "bank": 5
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          10,
+          200
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          256,
+          0
+        ],
+        [
+          180,
+          10
+        ],
+        [
+          120,
+          -30
+        ]
+      ],
+      "width": 2.6
+    },
+    {
+      "points": [
+        [
+          0,
+          -256
+        ],
+        [
+          10,
+          -200
+        ],
+        [
+          30,
+          -150
+        ]
+      ],
+      "width": 2.6
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "reedmere",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "drownfast",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "tidemouth",
+      "arrive": [
+        0,
+        199
+      ],
+      "arrive_face": [
+        0,
+        159
+      ]
+    }
+  ],
+  "fish": {
+    "river_trout": 3,
+    "mud_carp": 3,
+    "jungle_catfish": 2
+  },
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        20
+      ],
+      "id": "mud_dam",
+      "collide": "mesh",
+      "face": [
+        110,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        -10
+      ],
+      "id": "mud_dam",
+      "collide": "mesh",
+      "face": [
+        150,
+        30
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        70
+      ],
+      "id": "silt_mound",
+      "collide": "box",
+      "face": [
+        110,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        100
+      ],
+      "id": "silt_mound",
+      "collide": "box",
+      "face": [
+        110,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        105,
+        120
+      ],
+      "id": "silt_mound",
+      "collide": "box",
+      "face": [
+        110,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        160,
+        60
+      ],
+      "id": "silt_mound",
+      "collide": "box",
+      "face": [
+        110,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        130
+      ],
+      "id": "sunken_barge",
+      "collide": "mesh",
+      "face": [
+        -40,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        160
+      ],
+      "id": "sunken_barge",
+      "collide": "mesh",
+      "face": [
+        -80,
+        130
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        90
+      ],
+      "id": "shipwreck",
+      "collide": "mesh",
+      "face": [
+        -90,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        200
+      ],
+      "id": "fishing_hut_stilts",
+      "collide": "box",
+      "face": [
+        0,
+        190
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        205
+      ],
+      "id": "fishing_hut_stilts",
+      "collide": "box",
+      "face": [
+        0,
+        190
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        185
+      ],
+      "id": "fishing_hut_stilts",
+      "collide": "box",
+      "face": [
+        0,
+        190
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        170
+      ],
+      "id": "dock",
+      "collide": "box",
+      "face": [
+        0,
+        150
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        12,
+        165
+      ],
+      "id": "rowboat",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        4,
+        196
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        230
+      ],
+      "yaw": -90,
+      "labels": [
+        "Reedmere",
+        "The Silted Reach"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        230,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Drownfast",
+        "The Silted Reach"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -8,
+        -230
+      ],
+      "yaw": 90,
+      "labels": [
+        "Tidemouth",
+        "The Silted Reach"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "riverwarden_sione",
+      "pos": [
+        -10,
+        190
+      ],
+      "face": [
+        0,
+        196
+      ]
+    },
+    {
+      "id": "headman_obafemi",
+      "pos": [
+        16,
+        192
+      ],
+      "face": [
+        4,
+        196
+      ]
+    },
+    {
+      "id": "snakecatcher_anh",
+      "pos": [
+        -16,
+        200
+      ],
+      "face": [
+        4,
+        196
+      ]
+    },
+    {
+      "id": "ferryman_cato",
+      "pos": [
+        8,
+        176
+      ],
+      "face": [
+        4,
+        196
+      ]
+    },
+    {
+      "id": "netmender_lalo",
+      "pos": [
+        26,
+        204
+      ],
+      "face": [
+        4,
+        196
+      ]
+    },
+    {
+      "id": "rainhold_reedwatch",
+      "pos": [
+        0,
+        210
+      ],
+      "patrol": [
+        [
+          0,
+          210
+        ],
+        [
+          -30,
+          185
+        ],
+        [
+          30,
+          185
+        ],
+        [
+          0,
+          210
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -120,
+        -60
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        -90
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        -110
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -160,
+        -40
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -130,
+        -140
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        -40
+      ],
+      "pool": {
+        "river_hippo": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -60,
+        -100
+      ],
+      "pool": {
+        "river_hippo": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -110,
+        10
+      ],
+      "pool": {
+        "river_hippo": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -140,
+        -120
+      ],
+      "pool": {
+        "river_king": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        120,
+        60
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        90
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        110
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        160,
+        30
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        130,
+        130
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        70
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        130,
+        95
+      ],
+      "pool": {
+        "mud_shaman": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        60,
+        -60
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        100,
+        -100
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        140,
+        -60
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        40,
+        -130
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        20,
+        -40
+      ],
+      "pool": {
+        "biting_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        80,
+        -20
+      ],
+      "pool": {
+        "biting_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -20,
+        -80
+      ],
+      "pool": {
+        "biting_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        0,
+        40
+      ],
+      "pool": {
+        "biting_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        120,
+        -120
+      ],
+      "pool": {
+        "great_delta_serpent": 1
+      },
+      "respawn": 1500,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -60,
+        110
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        140
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        150
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        100
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        170
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -85,
+        140
+      ],
+      "pool": {
+        "smuggler_captain": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    }
+  ]
+}

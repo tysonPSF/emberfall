@@ -387,7 +387,7 @@
   "plague": {"name": "Plague", "type": "dot", "classes": {"necromancer": 28}, "target": "enemy", "mana": 70, "cast_time": 2.5, "recast": 2, "range": 25, "tick": 24, "ticks": 6, "per_level": 1.0, "cost": 6400, "skill": "conjuration", "dot_text": "%s is wracked by plague.", "land_text": "A plague rots you from within.", "desc": "A plague: heavy damage every tick for 18 seconds.", "fx": {"kind": "dot", "color": "#8ab030"}},
   "raise_bone_colossus": {"name": "Raise Bone Colossus", "type": "pet", "classes": {"necromancer": 30}, "pet": "bone_colossus", "target": "self", "mana": 120, "cast_time": 7.0, "recast": 6, "range": 0, "cost": 7200, "skill": "conjuration", "desc": "Raises a colossus of bones to fight for you.", "fx": {"kind": "burst", "color": "#e0dcc8"}},
   "glacial_roar": {"name": "Glacial Roar", "type": "damage", "classes": {"shaman": 26}, "target": "enemy", "mana": 70, "cast_time": 3.0, "recast": 3, "range": 30, "min": 120, "max": 160, "per_level": 5.0, "cost": 5600, "skill": "evocation", "desc": "The roar of the winter spirit itself.", "fx": {"kind": "burst", "color": "#d8f8ff"}},
-  "tigirs_swarm": {"name": "Locust Tide", "type": "slow", "classes": {"shaman": 28}, "target": "enemy", "mana": 60, "cast_time": 2.5, "recast": 3, "range": 30, "slow": 60, "duration": 180, "cost": 6400, "skill": "alteration", "slow_text": "Tigir's swarm engulfs %s; its blows barely come.", "slow_you": "A swarm engulfs you; your arms are lead.", "desc": "Your foe attacks 60% slower for three minutes. Named foes shrug off half of it.", "fx": {"kind": "root", "color": "#d0c060"}},
+  "tigirs_swarm": {"name": "Locust Tide", "type": "slow", "classes": {"shaman": 28}, "target": "enemy", "mana": 60, "cast_time": 2.5, "recast": 3, "range": 30, "slow": 60, "duration": 180, "cost": 6400, "skill": "alteration", "slow_text": "The locust tide engulfs %s; its blows barely come.", "slow_you": "A swarm engulfs you; your arms are lead.", "desc": "Your foe attacks 60% slower for three minutes. Named foes shrug off half of it.", "fx": {"kind": "root", "color": "#d0c060"}},
   "ancestral_avatar": {"name": "Ancestral Avatar", "type": "buff", "classes": {"shaman": 30}, "target": "friendly", "mana": 100, "cast_time": 4.0, "recast": 4, "range": 30, "duration": 600, "stats": {"str": 20, "agi": 20, "haste": 25, "dmg": 6}, "cost": 7200, "skill": "alteration", "land_text": "Your ancestors fight through you.", "fade_text": "Your ancestors step back.", "desc": "A friend, for ten minutes: +20 strength, +20 agility, 25% faster attacks and +6 damage.", "fx": {"kind": "buff", "color": "#ffd080"}},
   "harpy_shriek": {"name": "Harpy Shriek", "type": "stun", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 8, "duration": 1.5, "classes": {}, "stun_text": "%s reels from the shriek.", "stun_you": "A piercing shriek leaves you reeling!", "desc": "A harpy's shriek.", "fx": {"kind": "impact", "color": "#e0d8c0"}},
   "monk_palm": {"name": "Palm of the Fallen", "type": "damage", "target": "enemy", "mana": 0, "cast_time": 0, "recast": 0, "range": 6, "min": 20, "max": 34, "per_level": 0.8, "classes": {}, "desc": "A fallen monk's open-palm strike.", "fx": {"kind": "impact", "color": "#e0a040"}},
@@ -426,6 +426,717 @@
     "fx": {
       "kind": "dot",
       "color": "#a0d040"
+    }
+  },
+  "sundering_blow": {
+    "name": "Sundering Blow",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 18,
+    "range": 3.4,
+    "min": 65,
+    "max": 95,
+    "per_level": 2.8,
+    "verb": [
+      "sunder",
+      "sunders"
+    ],
+    "stun_chance": 0.25,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "classes": {
+      "warrior": 31
+    },
+    "cost": 8000,
+    "skill": "offense",
+    "desc": "A blow that splits armor and bone: heavy damage and a chance to stun for 2 seconds (not foes more than 3 levels above you).",
+    "fx": {
+      "kind": "impact",
+      "color": "#e0c8a0"
+    }
+  },
+  "last_stand": {
+    "name": "Last Stand",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 300,
+    "range": 0,
+    "duration": 15,
+    "stats": {
+      "hp": 300,
+      "hp_regen": 20,
+      "ac": 40
+    },
+    "classes": {
+      "warrior": 33
+    },
+    "cost": 8800,
+    "land_text": "You plant your feet for a last stand.",
+    "fade_text": "Your last stand ends.",
+    "desc": "For 15 seconds: +300 health, +40 armor and +20 health every tick. Once every five minutes.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d8b070"
+    }
+  },
+  "earthshaker": {
+    "name": "Earthshaker",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 30,
+    "range": 3.4,
+    "min": 70,
+    "max": 100,
+    "per_level": 2.8,
+    "splash": 8.0,
+    "splash_pct": 0.8,
+    "stun_chance": 0.3,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "verb": [
+      "shake",
+      "shakes"
+    ],
+    "classes": {
+      "warrior": 35
+    },
+    "cost": 9600,
+    "skill": "offense",
+    "desc": "You smash the ground: your target and every foe near it take heavy damage, and your target may be stunned.",
+    "fx": {
+      "kind": "burst",
+      "color": "#a08060"
+    }
+  },
+  "circle_of_dawn": {
+    "name": "Circle of Dawn",
+    "type": "heal",
+    "target": "group",
+    "mana": 110,
+    "cast_time": 4.0,
+    "recast": 10,
+    "range": 30,
+    "min": 120,
+    "max": 150,
+    "per_level": 4.0,
+    "classes": {
+      "cleric": 31
+    },
+    "cost": 8000,
+    "skill": "alteration",
+    "desc": "Dawn's light heals everyone in your group nearby.",
+    "fx": {
+      "kind": "heal",
+      "color": "#ffe8a0"
+    }
+  },
+  "dawnbreak": {
+    "name": "Dawnbreak",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 85,
+    "cast_time": 3.0,
+    "recast": 6,
+    "range": 30,
+    "min": 160,
+    "max": 210,
+    "per_level": 5.5,
+    "classes": {
+      "cleric": 33
+    },
+    "cost": 8800,
+    "skill": "evocation",
+    "desc": "The first light of the Dawn-Tusk breaks over your foe.",
+    "fx": {
+      "kind": "burst",
+      "color": "#fff0b0"
+    }
+  },
+  "dawns_embrace": {
+    "name": "Dawn's Embrace",
+    "type": "heal",
+    "target": "friendly",
+    "mana": 130,
+    "cast_time": 6.0,
+    "recast": 6,
+    "range": 25,
+    "min": 320,
+    "max": 380,
+    "per_level": 8.0,
+    "classes": {
+      "cleric": 35
+    },
+    "cost": 9600,
+    "skill": "alteration",
+    "desc": "A long prayer that mends almost any wound.",
+    "fx": {
+      "kind": "heal",
+      "color": "#fff8d0"
+    }
+  },
+  "obsidian_lance": {
+    "name": "Obsidian Lance",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 100,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 190,
+    "max": 250,
+    "per_level": 6.5,
+    "classes": {
+      "wizard": 31
+    },
+    "cost": 8000,
+    "skill": "evocation",
+    "desc": "A lance of molten black glass.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ff7a2a"
+    }
+  },
+  "frost_prison": {
+    "name": "Frost Prison",
+    "type": "root",
+    "target": "enemy",
+    "mana": 50,
+    "cast_time": 2.0,
+    "recast": 8,
+    "range": 30,
+    "duration": 30,
+    "classes": {
+      "wizard": 33
+    },
+    "cost": 8800,
+    "skill": "alteration",
+    "desc": "Ice locks your target where it stands for 30 seconds.",
+    "fx": {
+      "kind": "root",
+      "color": "#b8f0ff"
+    }
+  },
+  "starfall": {
+    "name": "Starfall",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 180,
+    "cast_time": 5.5,
+    "recast": 18,
+    "range": 30,
+    "min": 240,
+    "max": 300,
+    "per_level": 6.5,
+    "splash": 12.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "wizard": 35
+    },
+    "cost": 9600,
+    "skill": "evocation",
+    "desc": "Stars fall on your target and everything near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8d8ff"
+    }
+  },
+  "throat_cut": {
+    "name": "Throat Cut",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 24,
+    "range": 3.4,
+    "min": 80,
+    "max": 110,
+    "per_level": 3.5,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "stun_chance": 0.4,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "classes": {
+      "rogue": 31
+    },
+    "cost": 8000,
+    "skill": "offense",
+    "desc": "A quick cut at the throat: heavy damage, and a good chance your foe reels for 2 seconds.",
+    "fx": {
+      "kind": "impact",
+      "color": "#d83a3a"
+    }
+  },
+  "shadow_dance": {
+    "name": "Shadow Dance",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 20,
+    "stats": {
+      "haste": 30,
+      "dmg": 8,
+      "ac": 20
+    },
+    "classes": {
+      "rogue": 33
+    },
+    "cost": 8800,
+    "land_text": "You move like a shadow.",
+    "fade_text": "Your dance ends.",
+    "desc": "For 20 seconds: 30% faster attacks, +8 damage and +20 armor.",
+    "fx": {
+      "kind": "buff",
+      "color": "#6a6a80"
+    }
+  },
+  "heartseeker": {
+    "name": "Heartseeker",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 3.4,
+    "min": 120,
+    "max": 160,
+    "per_level": 4.0,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "requires": "piercing",
+    "from_behind": true,
+    "ambush": 2.0,
+    "classes": {
+      "rogue": 35
+    },
+    "cost": 9600,
+    "skill": "backstab",
+    "desc": "A blade for the heart, from behind: huge damage, double from hiding. Needs a piercing weapon.",
+    "fx": {
+      "kind": "impact",
+      "color": "#e0e0e0"
+    }
+  },
+  "forgefire_mantle": {
+    "name": "Forgefire Mantle",
+    "type": "buff",
+    "target": "pet",
+    "mana": 70,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 40,
+    "duration": 900,
+    "stats": {
+      "ac": 40,
+      "hp": 300,
+      "dmg": 6
+    },
+    "classes": {
+      "magician": 31
+    },
+    "cost": 8000,
+    "skill": "alteration",
+    "land_text": "Your pet is wreathed in forgefire.",
+    "fade_text": "The forgefire mantle cools.",
+    "desc": "Your pet, for fifteen minutes: +40 armor, +300 health and +6 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#ff9a3a"
+    }
+  },
+  "forge_flare": {
+    "name": "Forge Flare",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 90,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 170,
+    "max": 220,
+    "per_level": 6.0,
+    "classes": {
+      "magician": 33
+    },
+    "cost": 8800,
+    "skill": "evocation",
+    "desc": "A gout of white-hot flame from the elemental forge.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffc070"
+    }
+  },
+  "elemental_tempest": {
+    "name": "Elemental Tempest",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 160,
+    "cast_time": 5.0,
+    "recast": 16,
+    "range": 30,
+    "min": 200,
+    "max": 250,
+    "per_level": 6.0,
+    "splash": 10.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "magician": 35
+    },
+    "cost": 9600,
+    "skill": "evocation",
+    "desc": "Earth, water, fire and air strike your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffb050"
+    }
+  },
+  "wither": {
+    "name": "Wither",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 75,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 25,
+    "tick": 30,
+    "ticks": 6,
+    "per_level": 1.2,
+    "classes": {
+      "necromancer": 31
+    },
+    "cost": 8000,
+    "skill": "conjuration",
+    "dot_text": "%s withers.",
+    "land_text": "Your flesh withers on your bones.",
+    "desc": "Your foe withers: heavy damage every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#6a8a3a"
+    }
+  },
+  "grave_pact": {
+    "name": "Grave Pact",
+    "type": "buff",
+    "target": "pet",
+    "mana": 60,
+    "cast_time": 1.0,
+    "recast": 120,
+    "range": 40,
+    "duration": 60,
+    "stats": {
+      "haste": 45,
+      "dmg": 12
+    },
+    "classes": {
+      "necromancer": 33
+    },
+    "cost": 8800,
+    "skill": "alteration",
+    "land_text": "Your servant takes up a grave pact.",
+    "fade_text": "The grave pact is spent.",
+    "desc": "Your pet, for a minute: 45% faster attacks and +12 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#8a5ab0"
+    }
+  },
+  "devour_soul": {
+    "name": "Devour Soul",
+    "type": "lifetap",
+    "target": "enemy",
+    "mana": 110,
+    "cast_time": 3.5,
+    "recast": 10,
+    "range": 25,
+    "min": 190,
+    "max": 240,
+    "per_level": 6.0,
+    "classes": {
+      "necromancer": 35
+    },
+    "cost": 9600,
+    "skill": "alteration",
+    "desc": "You devour your foe's soul and drink its life.",
+    "fx": {
+      "kind": "impact",
+      "color": "#6a2a90"
+    }
+  },
+  "frostbite_curse": {
+    "name": "Frostbite Curse",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 70,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 30,
+    "tick": 26,
+    "ticks": 6,
+    "per_level": 1.0,
+    "classes": {
+      "shaman": 31
+    },
+    "cost": 8000,
+    "skill": "conjuration",
+    "dot_text": "%s is bitten by the winter spirit.",
+    "land_text": "Frost bites deep into you.",
+    "desc": "The winter spirit bites your foe every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#b8e8ff"
+    }
+  },
+  "chorus_of_ancestors": {
+    "name": "Chorus of the Ancestors",
+    "type": "buff",
+    "target": "group",
+    "mana": 90,
+    "cast_time": 3.5,
+    "recast": 6,
+    "range": 30,
+    "duration": 60,
+    "stats": {
+      "hp_regen": 20
+    },
+    "classes": {
+      "shaman": 33
+    },
+    "cost": 8800,
+    "skill": "alteration",
+    "land_text": "Your ancestors sing your wounds closed.",
+    "fade_text": "The chorus falls silent.",
+    "desc": "Heals your group over a minute: +20 health every tick.",
+    "fx": {
+      "kind": "buff",
+      "color": "#6ad87a"
+    }
+  },
+  "totem_of_fury": {
+    "name": "Totem of Fury",
+    "type": "buff",
+    "target": "group",
+    "mana": 120,
+    "cast_time": 4.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1200,
+    "stats": {
+      "haste": 20,
+      "str": 15
+    },
+    "classes": {
+      "shaman": 35
+    },
+    "cost": 9600,
+    "skill": "alteration",
+    "land_text": "The fury of the totem runs through you.",
+    "fade_text": "The totem's fury fades.",
+    "desc": "Your group, for twenty minutes: 20% faster attacks and +15 strength.",
+    "fx": {
+      "kind": "buff",
+      "color": "#e87a3a"
+    }
+  },
+  "heartpiercer": {
+    "name": "Heartpiercer",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 0,
+    "shot_mult": 3.0,
+    "classes": {
+      "ranger": 31
+    },
+    "cost": 8000,
+    "skill": "archery",
+    "desc": "An arrow for the heart, for 300% of a normal shot."
+  },
+  "predators_focus": {
+    "name": "Predator's Focus",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 150,
+    "range": 0,
+    "duration": 30,
+    "stats": {
+      "haste": 30,
+      "dmg": 6
+    },
+    "classes": {
+      "ranger": 33
+    },
+    "cost": 8800,
+    "land_text": "The world narrows to your prey.",
+    "fade_text": "Your focus breaks.",
+    "desc": "For 30 seconds: 30% faster attacks and +6 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#8ab050"
+    }
+  },
+  "hailstorm_volley": {
+    "name": "Hailstorm Volley",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 45,
+    "range": 0,
+    "shot_mult": 1.5,
+    "shots": 10,
+    "spread": 14.0,
+    "classes": {
+      "ranger": 35
+    },
+    "cost": 9600,
+    "skill": "archery",
+    "desc": "A hailstorm of arrows: your target and up to nine foes near it, each for 150% of a normal shot."
+  },
+  "burning_bite": {
+    "name": "Burning Bite",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 14,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s burns where the hound bit.",
+    "land_text": "The firehound's bite burns.",
+    "desc": "A firehound's burning bite.",
+    "fx": {
+      "kind": "dot",
+      "color": "#ff7a2a"
+    }
+  },
+  "choking_smoke": {
+    "name": "Choking Smoke",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 13,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s chokes on smoke.",
+    "land_text": "Smoke fills your lungs.",
+    "desc": "A smoke spirit's choking embrace.",
+    "fx": {
+      "kind": "dot",
+      "color": "#5a5654"
+    }
+  },
+  "shard_burst": {
+    "name": "Shard Burst",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "min": 32,
+    "max": 50,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A burst of razor glass.",
+    "fx": {
+      "kind": "impact",
+      "color": "#8a8aa0"
+    }
+  },
+  "obsidian_breath": {
+    "name": "Obsidian Breath",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 8,
+    "tick": 15,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s is cut by molten glass.",
+    "land_text": "Molten glass sprays over you.",
+    "desc": "An obsidian drake's breath of molten glass.",
+    "fx": {
+      "kind": "dot",
+      "color": "#ff5a2a"
+    }
+  },
+  "glass_venom": {
+    "name": "Glass Venom",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 15,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s reels from glass venom.",
+    "land_text": "Venom like splinters runs through your blood.",
+    "desc": "A glass spider's venom.",
+    "fx": {
+      "kind": "dot",
+      "color": "#9ab0d0"
+    }
+  },
+  "ember_tusk_blessing": {
+    "name": "Ember-Tusk's Blessing",
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 0,
+    "duration": 1800,
+    "stats": {
+      "str": 10,
+      "sta": 10,
+      "hp": 50
+    },
+    "classes": {},
+    "land_text": "Heat runs through you: the Ember-Tusk sees you.",
+    "fade_text": "The Ember-Tusk's blessing cools.",
+    "desc": "For half an hour: +10 strength, +10 stamina and +50 hit points. Agnavar's gift to his followers, once an hour at his flame in Forgehold.",
+    "fx": {
+      "kind": "buff",
+      "color": "#ff9a3a"
     }
   }
 }

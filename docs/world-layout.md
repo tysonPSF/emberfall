@@ -44,7 +44,7 @@ merchants, a bind point and a long run home.
 | Emberhold | The Emberlands | `[0, 0]` | already built |
 | Lanternhold | The Dawnstair | `[3, 2]` | beside Sunward Steps, the zone you arrive in |
 | Rainhold | The Long Monsoon | `[-1, 1]` | the cell the Grove left; touches Greenmoor too |
-| Forgehold | The Ashfall | `[3, 5]` | the only free ground beside the area — see below |
+| Forgehold | The Ashfall | `[1, 5]` | swapped forward with Smokewood — see below |
 | Galehold | The Standing Sky | `[-3, 5]` | west of Stonesail, mid-area |
 | Barrowhold | The Boneyard | `[2, 7]` | touches The Unlit and Timiraj's Table, so two ways in |
 
@@ -55,13 +55,15 @@ Weeping Throat. So a level 5 character can run to the water city and live —
 the oldest rite of passage this genre has — and the Monsoon gains a second
 entrance from the start area without a second wilderness border.
 
-### Forgehold is a constraint, not a decision
+### Forgehold came forward
 
-Every cell touching Cinderpass, The Burn, Blackglass and Smokewood is already
-taken, so the only free ground beside the Ashfall is past Agnavar's Hearth. It
-suits the god — his people live at the far end, beside the fire that will not
-go out — but it means the fire city is deep in rather than at the door. Moving
-it means moving a zone.
+The first layout put Forgehold at `[3, 5]`, past Agnavar's Hearth: every cell
+touching Cinderpass, The Burn and Blackglass was taken, so the fire city sat
+five zones deep. When it was built it **swapped cells with Smokewood**. At
+`[1, 5]` it touches Blackglass, Dawnwatch, Agnavar's Hearth and the Boneyard's
+Ivory Field, so it's a hub rather than a dead end, and a city is safe ground,
+so the level gaps across its gates don't count. Smokewood (33–37) went to
+`[3, 5]`, past the Hearth, where it touches only the Hearth.
 
 ## The zones
 
@@ -78,19 +80,19 @@ it means moving a zone.
 | Sunward Steps **(built)** | The Dawnstair | 14–18 | 448 m | `[2, 2]` | terrace |
 | The Bleach **(built)** | The Dawnstair | 16–21 | 512 m | `[2, 3]` | waste |
 | High Terrace **(built)** | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |
-| Mirror Flats | The Dawnstair | 20–24 | 512 m | `[2, 4]` | waste |
-| Dawnwatch | The Dawnstair | 22–24 | 448 m | `[1, 4]` | outpost |
+| Mirror Flats **(built)** | The Dawnstair | 20–24 | 512 m | `[2, 4]` | waste |
+| Dawnwatch **(built)** | The Dawnstair | 22–24 | 448 m | `[1, 4]` | outpost |
 | Rainhold **(built)** | The Long Monsoon | city | 224 m | `[-1, 1]` | city |
 | The Weeping Throat **(built)** | The Long Monsoon | 20–24 | 448 m | `[-1, 2]` | water |
 | Reedmere **(built)** | The Long Monsoon | 22–26 | 512 m | `[-2, 2]` | water |
-| The Silted Reach | The Long Monsoon | 24–28 | 512 m | `[-2, 3]` | water |
+| The Silted Reach **(built)** | The Long Monsoon | 24–28 | 512 m | `[-2, 3]` | water |
 | Drownfast **(built)** | The Long Monsoon | 26–30 | 512 m | `[-1, 3]` | water |
-| Tidemouth | The Long Monsoon | 28–30 | 448 m | `[-2, 4]` | outpost |
-| Forgehold | The Ashfall | city | 224 m | `[3, 5]` | city |
+| Tidemouth **(built)** | The Long Monsoon | 28–30 | 448 m | `[-2, 4]` | outpost |
+| Forgehold **(built)** | The Ashfall | city | 224 m | `[1, 5]` | city |
 | Cinderpass **(built)** | The Ashfall | 26–30 | 448 m | `[0, 3]` | burn |
-| The Burn | The Ashfall | 29–33 | 512 m | `[0, 4]` | burn |
-| Blackglass | The Ashfall | 31–35 | 512 m | `[0, 5]` | burn |
-| Smokewood | The Ashfall | 33–37 | 512 m | `[1, 5]` | wood |
+| The Burn **(built)** | The Ashfall | 29–33 | 512 m | `[0, 4]` | burn |
+| Blackglass **(built)** | The Ashfall | 31–35 | 512 m | `[0, 5]` | burn |
+| Smokewood | The Ashfall | 33–37 | 512 m | `[3, 5]` | wood |
 | Agnavar's Hearth | The Ashfall | 35–38 | 512 m | `[2, 5]` | burn |
 | Galehold | The Standing Sky | city | 224 m | `[-3, 5]` | city |
 | Windbreak | The Standing Sky | 32–36 | 448 m | `[-1, 4]` | plain |
@@ -133,7 +135,7 @@ most places have more than one way in.
 | Thornwood Vale (The Emberlands) | west | The Weeping Throat (The Long Monsoon) |
 | Hollowmere (The Emberlands) | east | Sunward Steps (The Dawnstair) |
 | High Terrace (The Dawnstair) | south | Hollowmere (The Emberlands) |
-| Dawnwatch (The Dawnstair) | north | Smokewood (The Ashfall) |
+| Dawnwatch (The Dawnstair) | north | Forgehold (The Ashfall) |
 | Dawnwatch (The Dawnstair) | west | The Burn (The Ashfall) |
 | Drownfast (The Long Monsoon) | north | Windbreak (The Standing Sky) |
 | Tidemouth (The Long Monsoon) | east | Windbreak (The Standing Sky) |
@@ -147,7 +149,7 @@ most places have more than one way in.
 | Agnavar's Hearth (The Ashfall) | south | Mirror Flats (The Dawnstair) |
 | Stonesail (The Standing Sky) | south | Tidemouth (The Long Monsoon) |
 | Fogfall (The Boneyard) | west | Hollow Air (The Standing Sky) |
-| The Ivory Field (The Boneyard) | south | Smokewood (The Ashfall) |
+| The Ivory Field (The Boneyard) | south | Forgehold (The Ashfall) |
 
 ## Thornwood's three reserved passes
 
