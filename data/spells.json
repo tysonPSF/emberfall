@@ -1815,5 +1815,137 @@
       "kind": "impact",
       "color": "#a08060"
     }
+  },
+  "cinder_dart": {
+    "name": "Cinder Dart",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 16,
+    "cast_time": 2.2,
+    "recast": 3,
+    "range": 30,
+    "min": 13,
+    "max": 18,
+    "per_level": 1.64,
+    "classes": {
+      "magician": 4
+    },
+    "cost": 150,
+    "skill": "evocation",
+    "desc": "A dart of burning cinders from the elemental plane of fire.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ff8a3a"
+    }
+  },
+  "elemental_bolt": {
+    "name": "Elemental Bolt",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 32,
+    "cast_time": 2.5,
+    "recast": 3,
+    "range": 30,
+    "min": 30,
+    "max": 39,
+    "per_level": 2.05,
+    "classes": {
+      "magician": 9
+    },
+    "cost": 500,
+    "skill": "evocation",
+    "desc": "A bolt of raw elemental force.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffb070"
+    }
+  },
+  "earthen_shard": {
+    "name": "Earthen Shard",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 48,
+    "cast_time": 2.8,
+    "recast": 3,
+    "range": 30,
+    "min": 51,
+    "max": 66,
+    "per_level": 2.62,
+    "classes": {
+      "magician": 14
+    },
+    "cost": 1200,
+    "skill": "evocation",
+    "desc": "A shard of stone called up from the earth and hurled at your foe.",
+    "fx": {
+      "kind": "burst",
+      "color": "#b08a5a"
+    }
+  },
+  "scalding_torrent": {
+    "name": "Scalding Torrent",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 63,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 70,
+    "max": 90,
+    "per_level": 3.28,
+    "classes": {
+      "magician": 19
+    },
+    "cost": 2400,
+    "skill": "evocation",
+    "desc": "A torrent of boiling water from the elemental plane of water.",
+    "fx": {
+      "kind": "burst",
+      "color": "#7ac8e8"
+    }
+  },
+  "spear_of_flame": {
+    "name": "Spear of Flame",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 80,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 94,
+    "max": 123,
+    "per_level": 3.94,
+    "classes": {
+      "magician": 24
+    },
+    "cost": 4200,
+    "skill": "evocation",
+    "desc": "A spear of living flame.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ff6a1a"
+    }
+  },
+  "storm_javelin": {
+    "name": "Storm Javelin",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 98,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 119,
+    "max": 156,
+    "per_level": 4.51,
+    "classes": {
+      "magician": 29
+    },
+    "cost": 6400,
+    "skill": "evocation",
+    "desc": "A javelin of wind and lightning from the elemental plane of air.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8e0ff"
+    }
   }
 }

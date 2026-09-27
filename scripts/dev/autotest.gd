@@ -133,6 +133,8 @@ const SECTIONS := [
 	["windbreak_life", "windbreak"],
 	["grass_life", "the_long_grass"],
 	["galehold", "galehold"],
+	["magician_nukes", "greenmoor"],
+	["pet_messages", "greenmoor"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5400,6 +5402,79 @@ func _t_grass_life() -> void:
 			["grass_stalker", "grass_howler", "tawnyjaw", "thunderhoof", "dirkhorn", "old_thunderhoof", "hoofborn_rider", "hoofborn_archer", "khan_oruk", "barrow_wight"])
 	await _zone_views("grass", [[Vector2(-180, 10), Vector2(-100, 30), "entry"], [Vector2(20, 90), Vector2(50, 50), "herds"],
 			[Vector2(110, -70), Vector2(150, -100), "hoofborn"], [Vector2(-90, -90), Vector2(-120, -130), "barrows"]])
+
+
+## The magician's single-target damage line (4 to 29, then Forge Flare at 33):
+## each is taught by the guildmasters, casts and lands.
+func _t_magician_nukes() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	p.char_class = "magician"
+	var line := ["cinder_dart", "elemental_bolt", "earthen_shard", "scalding_torrent", "spear_of_flame", "storm_javelin", "forge_flare"]
+	var taught := World.class_spells("magician").map(func(e: Dictionary) -> String: return str(e["spell"]))
+	print("magician_nukes: the guild teaches them all %s" % line.all(func(id: String) -> bool: return id in taught))
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	var out := PackedStringArray()
+	for id: String in line:
+		p.level = int(GameData.spells[id]["classes"]["magician"])
+		p.spells = [id]
+		p.recalc_stats()
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		p.mana = p.max_mana
+		p.cooldowns.clear()
+		p.global_position = z.ground(mob.global_position.x + 12.0, mob.global_position.z) + Vector3.UP
+		p.face_toward(mob.global_position)
+		World.request_set_target(p.entity_id, mob.entity_id)
+		var hp0 := mob.hp
+		mob.hate.clear()
+		World.request_cast(p.entity_id, id)
+		await _wait(float(GameData.spells[id]["cast_time"]) + 0.4)
+		out.append("L%d %s %d" % [p.level, GameData.spells[id]["name"], hp0 - mob.hp])
+	print("magician_nukes: %s" % ", ".join(out))
+	mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.level = 1
+	p.spells = []
+	p.recalc_stats()
+
+
+## A pet's fight shows in its owner's chat: its hits and misses, and what hits it.
+func _t_pet_messages() -> void:
+	var p := World.local_player
+	var z: Zone = get_parent().zone
+	var saved_class := p.char_class
+	p.char_class = "magician"
+	p.level = 12
+	p.recalc_stats()
+	World.summon_pet(p, "call_of_earth")
+	await _wait(0.4)
+	var pet := World.get_object(p.pet_id) as Pet
+	var lines: Array = []
+	var grab := func(t: String, c: Color) -> void: lines.append([t, c])
+	World.log_message.connect(grab)
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 100000
+	mob.hp = mob.max_hp
+	p.global_position = z.ground(mob.global_position.x + 10.0, mob.global_position.z) + Vector3.UP
+	pet.global_position = z.ground(mob.global_position.x + 2.0, mob.global_position.z) + Vector3.UP
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_pet(p.entity_id, "attack")
+	await _wait(8.0)
+	World.log_message.disconnect(grab)
+	var hits := lines.filter(func(l: Array) -> bool: return str(l[0]).begins_with(pet.display_name) and l[1] == World.C_PET_HIT)
+	var hurt := lines.filter(func(l: Array) -> bool: return str(l[0]).contains(" " + pet.display_name + " for") and l[1] == World.C_PET_HURT)
+	print("pet_messages: %d of the pet's hits, %d hits on it; e.g. '%s' / '%s'" % [hits.size(), hurt.size(), hits[0][0] if hits else "-", hurt[0][0] if hurt else "-"])
+	World.dismiss_pet(p)
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()
 
 
 ## Screenshots from a few spots: [from, looking at, name].
