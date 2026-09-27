@@ -141,6 +141,11 @@ var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
 var _stats_panel: PanelContainer  # characters from before starting stats spend their points here, once
 var _stats_picker: StatPicker
 var _stats_later := false
+var _race_button: Button  # on the character sheet: the one change of race
+var _race_panel: PanelContainer
+var _race_pick := ""
+var _race_row: GridContainer
+var _race_info: Label
 var _stats_race_row: GridContainer
 var _stats_race := ""
 var _stats_race_label: Label
@@ -201,6 +206,7 @@ func _ready() -> void:
 	_build_pet_window()
 	_build_track_window()
 	_build_stats_window()
+	_build_race_window()
 	_compass = Compass.new()
 	_compass.anchor_left = 0.5
 	_compass.anchor_right = 0.5
@@ -673,7 +679,7 @@ func _buff_tooltip(spell_id: String, secs := 0.0) -> String:
 		lines.append("Fades at level %d (you're level %d: %d to go)" % [until, player.level, togo])
 	elif secs > 0.0:
 		lines.append("Time left: %s" % ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs)))
-	return "\n".join(lines)
+	return UIKit.wrap("\n".join(lines))
 
 
 ## The bag bar: your eight general slots over the hotbar, always there. They
@@ -939,7 +945,7 @@ func _build_group_log() -> void:
 	v.add_theme_constant_override("separation", 4)
 	_group_log_panel.add_child(v)
 	var head := HBoxContainer.new()
-	var title := UIKit.label("Group", 13, World.C_CHAT_GROUP)
+	var title := UIKit.label("Group & Tells", 13, World.C_CHAT_GROUP)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title)
 	var talk := UIKit.button("Talk (/g)", Vector2(84, 24))
@@ -1510,6 +1516,73 @@ func _build_stats_window() -> void:
 	_stats_panel.visible = false
 
 
+## The one change of race: races the class allows, with what each is and its
+## trait, then Change (or Cancel).
+func _build_race_window() -> void:
+	_race_panel = UIKit.panel()
+	UIKit.place(_race_panel, Vector2(0.5, 0.5), Vector2(-250, -130))
+	root.add_child(_race_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 500
+	v.add_theme_constant_override("separation", 8)
+	_race_panel.add_child(v)
+	v.add_child(UIKit.label("Change race", 18, UIKit.GOLD))
+	var hint := UIKit.label("Once only. Your starting stats follow your new race; your skills, gear, home and bind stay.", 13, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(hint)
+	_race_row = GridContainer.new()
+	_race_row.columns = 5
+	_race_row.add_theme_constant_override("h_separation", 5)
+	_race_row.add_theme_constant_override("v_separation", 5)
+	var group := ButtonGroup.new()
+	for race_id: String in GameData.races:
+		var rb := UIKit.button(GameData.races[race_id]["name"], Vector2(0, 28))
+		rb.toggle_mode = true
+		rb.button_group = group
+		rb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rb.add_theme_font_size_override("font_size", 12)
+		rb.set_meta("race", race_id)
+		rb.pressed.connect(func() -> void:
+			_race_pick = race_id
+			var r: Dictionary = GameData.races[race_id]
+			var st: Dictionary = r["stats"]
+			_race_info.text = "%s  %s\nSTR %d  STA %d  AGI %d  WIS %d  INT %d, before your points." % [r["description"], r["trait_text"],
+					int(st["str"]), int(st["sta"]), int(st["agi"]), int(st["wis"]), int(st["int"])])
+		_race_row.add_child(rb)
+	v.add_child(_race_row)
+	_race_info = UIKit.label("", 12, UIKit.TEXT)
+	_race_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_race_info.custom_minimum_size.y = 50
+	v.add_child(_race_info)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var ok := UIKit.button("Change", Vector2(0, 34))
+	ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ok.pressed.connect(func() -> void:
+		if _race_pick == "":
+			add_log("Choose a race first.", World.C_WARN)
+			return
+		World.request_change_race(player.entity_id, _race_pick)
+		_race_panel.visible = false)
+	var cancel := UIKit.button("Cancel", Vector2(0, 34))
+	cancel.pressed.connect(func() -> void: _race_panel.visible = false)
+	for b: Button in [ok, cancel]:
+		UIKit.frame(b)
+		row.add_child(b)
+	v.add_child(row)
+	_race_panel.visible = false
+
+
+func _open_race_change() -> void:
+	_race_pick = ""
+	_race_info.text = "Choose a race your class allows."
+	for rb: Button in _race_row.get_children():
+		var id := str(rb.get_meta("race"))
+		rb.disabled = id == player.race or not player.char_class in GameData.races[id].get("classes", [])
+		rb.button_pressed = false
+	_race_panel.visible = true
+
+
 func _update_stats_window() -> void:
 	if (player.stats_chosen and player.race != "") or _stats_later:
 		_stats_panel.visible = false
@@ -1830,6 +1903,12 @@ func _build_inventory() -> void:
 	top.add_child(stats)
 	_stats_label = UIKit.label("", 12, UIKit.TEXT)
 	stats.add_child(_stats_label)
+	_race_button = UIKit.button("Change race (once)", Vector2(0, 22))
+	_race_button.add_theme_font_size_override("font_size", 11)
+	UIKit.frame(_race_button)
+	_race_button.tooltip_text = "Every character may change its race once."
+	_race_button.pressed.connect(_open_race_change)
+	stats.add_child(_race_button)
 	_coin_label = UIKit.label("", 12, UIKit.GOLD)
 	stats.add_child(_coin_label)
 	_weight_label = UIKit.label("", 12, UIKit.TEXT)
@@ -2396,7 +2475,8 @@ func _process(delta: float) -> void:
 		for stat: String in Player.ATTRIBUTES:
 			if int(player.attributes.get(stat, 0)) != 0:
 				attr.append("%s %+d%s" % [ATTR_NAMES[stat], int(player.attributes[stat]), "%" if stat == "haste" else ""])
-		var sheet := PackedStringArray([player.display_name, "Level %d %s" % [player.level, GameData.classes[player.char_class]["name"]]])
+		var race_name := str(GameData.races.get(player.race, {}).get("name", ""))
+		var sheet := PackedStringArray([player.display_name, "Level %d %s%s" % [player.level, race_name + " " if race_name != "" else "", GameData.classes[player.char_class]["name"]]])
 		if GameData.deities.has(player.deity):
 			sheet.append("Follower of %s" % GameData.deities[player.deity]["name"])
 		sheet.append_array(["", "HP  %d / %d" % [maxi(player.hp, 0), player.max_hp]])
@@ -2413,6 +2493,7 @@ func _process(delta: float) -> void:
 		if int(player.attributes.get("haste", 0)) != 0:
 			sheet.append("Haste  %d%%" % int(player.attributes["haste"]))
 		_stats_label.text = "\n".join(sheet)
+		_race_button.visible = not player.race_changed and player.race != ""
 
 
 func _update_target() -> void:
@@ -2588,7 +2669,7 @@ func _has_ammo(kind: String) -> bool:
 ## that keyword to your target, like typing it in EverQuest.
 func add_log(text: String, color: Color) -> void:
 	_log_lines = _write_line(_log, _log_lines, text, color)
-	if color == World.C_CHAT_GROUP and _group_log != null:  # group chat also gets its own window
+	if (color == World.C_CHAT_GROUP or color == World.C_CHAT_TELL) and _group_log != null:  # group chat and tells also get their own window
 		_group_log_lines = _write_line(_group_log, _group_log_lines, text, color)
 
 
@@ -2787,7 +2868,7 @@ func spell_tooltip(spell_id: String) -> String:
 			lines.append("%d damage every 3s, %d times" % [int(s["tick"]), int(s["ticks"])])
 	var cost := "Mana %d" % int(s.get("mana", 0)) if int(s.get("mana", 0)) > 0 else "Ability"
 	lines.append("%s   Cast %.1fs   Recast %.0fs" % [cost, float(s.get("cast_time", 0)), float(s.get("recast", 0))])
-	return "\n".join(lines)
+	return UIKit.wrap("\n".join(lines))
 
 
 func _item_tooltip(item_id: String, colored := false) -> String:
@@ -2864,7 +2945,7 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	if int(it.get("value", 0)) > 0:
 		lines.append("Value: %s" % World.format_coin(int(it["value"])))
 	lines.append_array(_compare_lines(item_id, colored))
-	return "\n".join(lines)
+	return UIKit.wrap("\n".join(lines))
 
 
 ## "Compared to your Cloth Cap: AC +1, STA -1" for gear not being worn.

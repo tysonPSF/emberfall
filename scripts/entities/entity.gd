@@ -294,6 +294,8 @@ static func make_visual(look_: Dictionary) -> Node3D:
 	elif str(look_.get("model", "")) != "":
 		var m := CharacterModel.new()
 		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale, look_.get("gear"))
+		if str(look_.get("race", "")) != "":  # a player's race: skin and bolt-ons (the portrait and corpses too)
+			m.set_race(str(look_["race"]))
 		m.set_tiers(look_.get("tiers", {}))
 		m.set_offhand(str(look_.get("offhand", "")))
 		if look_.has("worn"):

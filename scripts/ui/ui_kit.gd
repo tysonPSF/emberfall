@@ -53,6 +53,23 @@ static func button(text: String, min_size := Vector2(0, 30)) -> Button:
 	return b
 
 
+## Breaks long lines at spaces so a tooltip stays a readable column
+## (Godot's tooltips never wrap on their own). Words longer than the width
+## stay whole; BBCode tags have no spaces, so they survive.
+static func wrap(text: String, width := 60) -> String:
+	var out := PackedStringArray()
+	for line in text.split("\n"):
+		var cur := ""
+		for word in line.split(" "):
+			if cur != "" and cur.length() + 1 + word.length() > width:
+				out.append(cur)
+				cur = word
+			else:
+				cur = word if cur == "" else cur + " " + word
+		out.append(cur)
+	return "\n".join(out)
+
+
 ## Gives a button a framed face: dark with a gold edge, lighter under the
 ## mouse, sunk when pressed. `lit` keeps it glowing (a toggle that's on).
 static func frame(b: Button, lit := false) -> void:

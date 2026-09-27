@@ -44,6 +44,7 @@ var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var pet_id := -1  # your pet's entity id, -1 with none
 var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
+var race_changed := false  # a character's one change of race has been used
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
@@ -138,6 +139,7 @@ func from_save(d: Dictionary) -> void:
 	bank_coin = int(d.get("bank_coin", 0))
 	bind_zone = str(d.get("bind", ""))
 	race = str(d.get("race", "")) if GameData.races.has(str(d.get("race", ""))) else ""
+	race_changed = bool(d.get("race_changed", false))
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -258,7 +260,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race"]:
+			"stat_points", "stats_chosen", "race", "race_changed"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -277,6 +279,9 @@ func apply_self(d: Dictionary) -> void:
 		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
+	if str(lk.get("race", "")) != str(look.get("race", "")):
+		look = lk
+		dress()  # a new race: a new body
 	look = lk
 	pack.slots = (d["pack"] as Array).duplicate(true)
 	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor, station_items]:
@@ -314,7 +319,7 @@ func to_save() -> Dictionary:
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
-		"stats": stat_points if stats_chosen else null, "race": race,
+		"stats": stat_points if stats_chosen else null, "race": race, "race_changed": race_changed,
 	}
 
 
@@ -524,6 +529,28 @@ func xp_to_next() -> int:
 ## A deity's blessing plus the race's trait, for one key (see GameData.race_bonus).
 func bonus(key: String) -> float:
 	return GameData.deity_bonus(deity, key) + GameData.race_bonus(race if race != "" else "human", key)
+
+
+## Rebuilds the body from `look` (after a change of race: new skin, height,
+## ears or tusks), keeping what it holds and wears.
+func dress() -> void:
+	if not visual is CharacterModel:
+		return
+	var race_id := str(look.get("race", race))
+	look["scale"] = float(GameData.races.get(race_id, {}).get("scale", 1.0))
+	var shown := visual.visible
+	var old := visual
+	visual = Entity.make_visual(look)
+	add_child(visual)
+	old.queue_free()
+	var m := visual as CharacterModel
+	if m == null:
+		return
+	m.set_race(race_id)
+	m.set_tiers(look.get("tiers", {}))
+	m.set_offhand(str(look.get("offhand", "")))
+	m.set_worn(look.get("worn", {}))
+	visual.visible = shown
 
 
 func elders_blessing() -> bool:

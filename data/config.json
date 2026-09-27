@@ -14,6 +14,7 @@
   "stamina_regen_delay": 1.5,
   "sprint_resume_at": 25.0,
   "max_level": 30,
+  "group_xp_level_gap": 10,
   "stat_base": 75,
   "stat_points": 25,
   "stat_point_max": 15,

@@ -10,7 +10,7 @@
       "recast": 1800,
       "keep": true
     },
-    "desc": "Warm to the touch, like a hearthstone. Right-click it; it recharges in thirty minutes. To choose where it takes you, ask a city's priest to bind you (Keeper Maelin, Dawnpriest Amaru, Tidepriest Nalini), or type /bind beside the bindstone."
+    "desc": "Recharges in 30 minutes. Bind with a city priest or /bind at a bindstone."
   },
   "draught_of_homecoming": {
     "name": "Draught of Homecoming",
