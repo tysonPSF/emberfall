@@ -141,6 +141,10 @@ var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
 var _stats_panel: PanelContainer  # characters from before starting stats spend their points here, once
 var _stats_picker: StatPicker
 var _stats_later := false
+var _stats_race_row: GridContainer
+var _stats_race := ""
+var _stats_race_label: Label
+var _stats_block: Control
 var _track_panel: PanelContainer  # a ranger's Track: what walks within reach, nearest first
 var _track_list: VBoxContainer
 var _track_title: Label
@@ -1454,10 +1458,31 @@ func _build_stats_window() -> void:
 	v.custom_minimum_size.x = 500
 	v.add_theme_constant_override("separation", 8)
 	_stats_panel.add_child(v)
-	v.add_child(UIKit.label("Your training", 18, UIKit.GOLD))
-	var hint := UIKit.label("Every stat starts at 75. Spend 25 points to make this character your own; your class's key stats are in gold. You choose once.", 13, UIKit.DIM)
+	v.add_child(UIKit.label("Your race and training", 18, UIKit.GOLD))
+	var hint := UIKit.label("Choose what this character was born and trained to be. Your race sets your starting stats; spend 25 points on top, your class's key stats in gold. You choose once.", 13, UIKit.DIM)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(hint)
+	_stats_race_row = GridContainer.new()
+	_stats_race_row.columns = 5
+	_stats_race_row.add_theme_constant_override("h_separation", 5)
+	_stats_race_row.add_theme_constant_override("v_separation", 5)
+	var group := ButtonGroup.new()
+	for race_id: String in GameData.races:
+		var rb := UIKit.button(GameData.races[race_id]["name"], Vector2(0, 28))
+		rb.toggle_mode = true
+		rb.button_group = group
+		rb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rb.add_theme_font_size_override("font_size", 12)
+		rb.set_meta("race", race_id)
+		rb.pressed.connect(func() -> void:
+			_stats_race = race_id
+			_stats_picker.set_race(race_id)
+			_stats_race_label.text = "%s  %s" % [GameData.races[race_id]["description"], GameData.races[race_id]["trait_text"]])
+		_stats_race_row.add_child(rb)
+	v.add_child(_stats_race_row)
+	_stats_race_label = UIKit.label("", 12, UIKit.TEXT)
+	_stats_race_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_stats_race_label)
 	_stats_picker = StatPicker.new()
 	v.add_child(_stats_picker)
 	var row := HBoxContainer.new()
@@ -1465,10 +1490,13 @@ func _build_stats_window() -> void:
 	var ok := UIKit.button("Confirm", Vector2(0, 34))
 	ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	ok.pressed.connect(func() -> void:
-		if _stats_picker.points_left() > 0:
+		if player.race == "" and _stats_race == "":
+			add_log("Choose your race first.", World.C_WARN)
+			return
+		if not player.stats_chosen and _stats_picker.points_left() > 0:
 			add_log("Spend all your stat points first (%d left)." % _stats_picker.points_left(), World.C_WARN)
 			return
-		World.request_set_stats(player.entity_id, _stats_picker.points.duplicate())
+		World.request_set_stats(player.entity_id, _stats_picker.points.duplicate(), _stats_race)
 		_stats_panel.visible = false)
 	var later := UIKit.button("Later", Vector2(0, 34))
 	later.pressed.connect(func() -> void:
@@ -1483,11 +1511,18 @@ func _build_stats_window() -> void:
 
 
 func _update_stats_window() -> void:
-	if player.stats_chosen or _stats_later:
+	if (player.stats_chosen and player.race != "") or _stats_later:
 		_stats_panel.visible = false
 		return
 	if not _stats_panel.visible:
 		_stats_picker.set_class(player.char_class, true)
+		_stats_picker.set_race(player.race if player.race != "" else "human")
+		_stats_picker.visible = not player.stats_chosen
+		_stats_race_row.visible = player.race == ""
+		_stats_race_label.visible = player.race == ""
+		_stats_race_label.text = "Choose a race your class allows."
+		for rb: Button in _stats_race_row.get_children():
+			rb.disabled = not player.char_class in GameData.races[str(rb.get_meta("race"))].get("classes", [])
 		_stats_panel.visible = true
 
 

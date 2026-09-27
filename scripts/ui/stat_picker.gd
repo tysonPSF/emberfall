@@ -14,6 +14,7 @@ const NAMES := {"str": "Strength", "sta": "Stamina", "agi": "Agility", "wis": "W
 
 var points := {}
 var class_id := "warrior"
+var race_id := "human"  # the race's stats are where each row starts
 var _rows := {}  # stat -> [name label, value label, minus, plus, effect label]
 var _left: Label
 
@@ -80,6 +81,16 @@ func set_class(id: String, preset := false) -> void:
 		_refresh()
 
 
+func set_race(id: String) -> void:
+	race_id = id if GameData.races.has(id) else "human"
+	if is_inside_tree() and not _rows.is_empty():
+		_refresh()
+
+
+func base(stat: String) -> int:
+	return int(GameData.races.get(race_id, {}).get("stats", {}).get(stat, World.cfg("stat_base", 75)))
+
+
 func points_left() -> int:
 	var spent := 0
 	for n: int in points.values():
@@ -101,7 +112,6 @@ func _add(stat: String, by: int) -> void:
 func _refresh() -> void:
 	var cls: Dictionary = GameData.classes.get(class_id, {})
 	var key: Array = cls.get("key_stats", [])
-	var base := int(World.cfg("stat_base", 75))
 	var cap := int(World.cfg("stat_point_max", 15))
 	_left.text = "Points to spend: %d" % points_left()
 	for stat: String in STATS:
@@ -109,7 +119,7 @@ func _refresh() -> void:
 		var n := int(points.get(stat, 0))
 		(r[0] as Label).add_theme_color_override("font_color", UIKit.GOLD if stat in key else UIKit.TEXT)
 		(r[0] as Label).tooltip_text = "A key stat for your class." if stat in key else ""
-		(r[1] as Label).text = "%d%s" % [base + n, "  (+%d)" % n if n > 0 else ""]
+		(r[1] as Label).text = "%d%s" % [base(stat) + n, "  (+%d)" % n if n > 0 else ""]
 		(r[2] as Button).disabled = n <= 0
 		(r[3] as Button).disabled = n >= cap or points_left() <= 0
 		(r[4] as Label).text = effect_text(stat, n, cls)

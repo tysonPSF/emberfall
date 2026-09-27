@@ -1,0 +1,297 @@
+{
+  "human": {
+    "name": "Human",
+    "description": "The people of the Emberlands: adaptable, stubborn, found everywhere. Any path is open to them.",
+    "stats": {
+      "str": 75,
+      "sta": 75,
+      "agi": 75,
+      "wis": 75,
+      "int": 75
+    },
+    "classes": [
+      "warrior",
+      "cleric",
+      "wizard",
+      "rogue",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ],
+    "home": "emberhold",
+    "scale": 1.0,
+    "skin": null,
+    "attach": [],
+    "trait": {
+      "xp_pct": 5
+    },
+    "trait_text": "Adaptable: 5% more experience."
+  },
+  "barbarian": {
+    "name": "Barbarian",
+    "description": "Tall northerners, strong and hard to kill, who trust steel and the old spirits more than books.",
+    "stats": {
+      "str": 85,
+      "sta": 82,
+      "agi": 76,
+      "wis": 68,
+      "int": 64
+    },
+    "classes": [
+      "warrior",
+      "rogue",
+      "shaman"
+    ],
+    "home": "emberhold",
+    "scale": 1.1,
+    "skin": [
+      "f2c8a8",
+      "b07a5a"
+    ],
+    "attach": [
+      "race_beard_barbarian"
+    ],
+    "trait": {
+      "hp_pct": 5
+    },
+    "trait_text": "Northern blood: 5% more health."
+  },
+  "wood_elf": {
+    "name": "Wood Elf",
+    "description": "Quick, quiet folk of the deep jungle, at home in the canopy with a bow in hand.",
+    "stats": {
+      "str": 68,
+      "sta": 70,
+      "agi": 88,
+      "wis": 79,
+      "int": 70
+    },
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "home": "rainhold",
+    "scale": 0.95,
+    "skin": [
+      "e8b890",
+      "9a6a48"
+    ],
+    "attach": [
+      "race_ears_elf"
+    ],
+    "trait": {
+      "run_speed_pct": 5
+    },
+    "trait_text": "Fleet: 5% faster on foot."
+  },
+  "high_elf": {
+    "name": "High Elf",
+    "description": "Proud, long-lived scholars and priests, wise in the old magics of light.",
+    "stats": {
+      "str": 65,
+      "sta": 70,
+      "agi": 77,
+      "wis": 85,
+      "int": 78
+    },
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician"
+    ],
+    "home": "emberhold",
+    "scale": 1.0,
+    "skin": [
+      "fff0e4",
+      "c8a898"
+    ],
+    "attach": [
+      "race_ears_elf"
+    ],
+    "trait": {
+      "mana_regen": 2
+    },
+    "trait_text": "Deep wells: +2 mana every tick."
+  },
+  "dark_elf": {
+    "name": "Dark Elf",
+    "description": "Cunning, gray-skinned elves of the shadowed places; many serve darker gods.",
+    "stats": {
+      "str": 66,
+      "sta": 70,
+      "agi": 82,
+      "wis": 70,
+      "int": 87
+    },
+    "classes": [
+      "warrior",
+      "cleric",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer"
+    ],
+    "home": "rainhold",
+    "scale": 1.0,
+    "skin": [
+      "8a90b0",
+      "3a3e58"
+    ],
+    "attach": [
+      "race_ears_elf"
+    ],
+    "trait": {
+      "night_vision": true
+    },
+    "trait_text": "Ultravision: they see in the dark."
+  },
+  "dwarf": {
+    "name": "Dwarf",
+    "description": "Short, broad and bearded, as tough as the stone they carve, loyal to the end.",
+    "stats": {
+      "str": 82,
+      "sta": 84,
+      "agi": 68,
+      "wis": 78,
+      "int": 63
+    },
+    "classes": [
+      "warrior",
+      "cleric",
+      "rogue"
+    ],
+    "home": "emberhold",
+    "scale": 0.85,
+    "skin": [
+      "f0b894",
+      "a86848"
+    ],
+    "attach": [
+      "race_beard_dwarf"
+    ],
+    "trait": {
+      "night_vision": true
+    },
+    "trait_text": "Infravision: they see in the dark."
+  },
+  "halfling": {
+    "name": "Halfling",
+    "description": "Small, cheerful and far harder to notice than they have any right to be.",
+    "stats": {
+      "str": 68,
+      "sta": 74,
+      "agi": 88,
+      "wis": 78,
+      "int": 67
+    },
+    "classes": [
+      "warrior",
+      "cleric",
+      "rogue",
+      "ranger"
+    ],
+    "home": "emberhold",
+    "scale": 0.75,
+    "skin": [
+      "f4c8a4",
+      "b07e5a"
+    ],
+    "attach": [],
+    "trait": {
+      "notice_pct": -25
+    },
+    "trait_text": "Unassuming: monsters notice them a quarter later."
+  },
+  "gnome": {
+    "name": "Gnome",
+    "description": "Tiny tinkerers with sharp minds and sharper tongues; many turn to magic.",
+    "stats": {
+      "str": 65,
+      "sta": 70,
+      "agi": 80,
+      "wis": 72,
+      "int": 88
+    },
+    "classes": [
+      "warrior",
+      "cleric",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer"
+    ],
+    "home": "emberhold",
+    "scale": 0.72,
+    "skin": [
+      "f4d0b4",
+      "b88a6a"
+    ],
+    "attach": [
+      "race_ears_gnome"
+    ],
+    "trait": {
+      "mana_pct": 10
+    },
+    "trait_text": "Clever: 10% more mana."
+  },
+  "troll": {
+    "name": "Troll",
+    "description": "Huge, green-gray and hungry; their wounds close almost as fast as they're made.",
+    "stats": {
+      "str": 86,
+      "sta": 88,
+      "agi": 75,
+      "wis": 66,
+      "int": 60
+    },
+    "classes": [
+      "warrior",
+      "shaman"
+    ],
+    "home": "rainhold",
+    "scale": 1.2,
+    "skin": [
+      "98ac86",
+      "4e6044"
+    ],
+    "attach": [
+      "race_troll_face",
+      "race_tusks_troll"
+    ],
+    "trait": {
+      "hp_regen": 3
+    },
+    "trait_text": "Regeneration: +3 health every tick."
+  },
+  "ogre": {
+    "name": "Ogre",
+    "description": "The biggest folk of all: slow to anger, slower to fall, and impossible to knock off their feet.",
+    "stats": {
+      "str": 92,
+      "sta": 90,
+      "agi": 68,
+      "wis": 65,
+      "int": 60
+    },
+    "classes": [
+      "warrior",
+      "shaman"
+    ],
+    "home": "rainhold",
+    "scale": 1.25,
+    "skin": [
+      "c8b494",
+      "7a6a52"
+    ],
+    "attach": [
+      "race_ogre_face",
+      "race_tusks_ogre"
+    ],
+    "trait": {
+      "stun_immune": true
+    },
+    "trait_text": "Unshakable: they can't be stunned."
+  }
+}

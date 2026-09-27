@@ -295,6 +295,7 @@ func _scan_for_aggro(delta: float) -> void:
 			continue
 		# aggressive mobs attack anyone close; others only those their faction hates
 		var radius := aggro_radius if aggressive else (12.0 if World.mob_kos(p, faction) else 0.0)
+		radius *= 1.0 + p.bonus("notice_pct") / 100.0  # a halfling is noticed later
 		if radius > 0.0 and distance_to(p) <= radius:
 			add_hate(p, 1.0)
 			return

@@ -134,8 +134,8 @@ func login_hashed(account: String, pw_hash: String, create := false) -> void:
 	_c_login.rpc_id(1, account.strip_edges(), pw_hash, PROTOCOL, create)
 
 
-func create_character(name: String, cls: String, deity: String, stats: Dictionary = {}) -> void:
-	_c_create_character.rpc_id(1, name, cls, deity, stats)
+func create_character(name: String, cls: String, deity: String, stats: Dictionary = {}, race := "human") -> void:
+	_c_create_character.rpc_id(1, name, cls, deity, stats, race)
 
 
 ## Client: bring an offline character onto the server (once).
@@ -196,11 +196,11 @@ func _c_login(account: String, pw_hash: String, protocol: int, create: bool) -> 
 
 
 @rpc("any_peer", "reliable")
-func _c_create_character(name: String, cls: String, deity: String, stats: Dictionary) -> void:
+func _c_create_character(name: String, cls: String, deity: String, stats: Dictionary, race: String) -> void:
 	var peer := multiplayer.get_remote_sender_id()
 	if not _sessions.has(peer):
 		return
-	var why := accounts.create_character(_sessions[peer], name, cls, deity, start_zone, stats)
+	var why := accounts.create_character(_sessions[peer], name, cls, deity, start_zone, stats, race)
 	if why != "":
 		_s_message.rpc_id(peer, why, true)
 		return
@@ -345,7 +345,7 @@ func _c_move(pos: Vector3, rot: float, seq: int) -> void:
 	var dt := maxf(0.05, (now - int(_last_move.get(p.entity_id, now))) / 1000.0)
 	_last_move[p.entity_id] = now
 	var flat := Vector2(pos.x - p.global_position.x, pos.z - p.global_position.z).length()
-	var top := Player.RUN_SPEED * (1.0 + GameData.deity_bonus(p.deity, "run_speed_pct") / 100.0) * float(World.cfg("sprint_speed_mult", 1.55))
+	var top := Player.RUN_SPEED * (1.0 + p.bonus("run_speed_pct") / 100.0) * float(World.cfg("sprint_speed_mult", 1.55))
 	var allowed := top * 1.3 * dt + 2.0
 	if flat > allowed:
 		teleport(p, p.global_position)  # too fast: put them back
@@ -723,7 +723,7 @@ func _send_self(peer: int) -> void:
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
 		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
 		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "feigning": p.feigning, "hotbar": p.hotbar,
-		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen,
+		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race,
 	}
 	_s_self.rpc_id(peer, d)
 

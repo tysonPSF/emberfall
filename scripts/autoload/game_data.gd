@@ -15,6 +15,7 @@ var recipes: Dictionary = {}  # data/recipes.json: "recipes" and "containers"
 var pets: Dictionary = {}  # data/pets.json: tiers, base stats, kinds
 var factions: Dictionary = {}
 var deities: Dictionary = {}
+var races: Dictionary = {}  # data/races.json: base stats, classes, home city, looks, trait
 var loot: Dictionary = {}
 var skills: Dictionary = {}
 var _icons: Dictionary = {}  # base item id -> Texture2D or null
@@ -33,11 +34,20 @@ func _ready() -> void:
 	pets = _load("res://data/pets.json")
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
+	races = _load("res://data/races.json")
 	loot = _load("res://data/loot.json")
 	skills = _load("res://data/skills.json")
 
 
 ## A deity's benefit, or 0 when the player has none or it grants something else.
+## A race's trait value for a key (xp_pct, hp_pct, mana_pct, hp_regen,
+## mana_regen, run_speed_pct, notice_pct), or 0; true-or-false traits
+## (night_vision, stun_immune) come back as 1 or 0.
+func race_bonus(race_id: String, key: String) -> float:
+	var v: Variant = races.get(race_id, {}).get("trait", {}).get(key, 0)
+	return (1.0 if v else 0.0) if v is bool else float(v)
+
+
 func deity_bonus(deity_id: String, key: String) -> float:
 	return float(deities.get(deity_id, {}).get("bonus", {}).get(key, 0))
 

@@ -55,7 +55,7 @@ func owns(account: String, name: String) -> bool:
 
 ## A brand-new level 1 character, or why not. Offline characters come in
 ## through import_character instead.
-func create_character(account: String, name: String, cls: String, deity: String, start_zone: String, stats: Dictionary = {}) -> String:
+func create_character(account: String, name: String, cls: String, deity: String, start_zone: String, stats: Dictionary = {}, race := "human") -> String:
 	var why := _name_problem(name)
 	if why != "":
 		return why
@@ -63,8 +63,13 @@ func create_character(account: String, name: String, cls: String, deity: String,
 		return "Unknown class."
 	if not GameData.deities.has(deity):
 		return "Choose a deity."
-	return _add(account, {"name": name.to_lower().capitalize(), "class": cls, "deity": deity, "zone": start_zone,
-			"stats": Player.clean_stat_points(stats)})
+	if not GameData.races.has(race):
+		return "Choose a race."
+	if not cls in GameData.races[race].get("classes", []):
+		return "A %s can't be a %s." % [GameData.races[race]["name"], GameData.classes[cls]["name"]]
+	var home := str(GameData.races[race].get("home", start_zone))  # every race starts, and is bound, in its home city
+	return _add(account, {"name": name.to_lower().capitalize(), "class": cls, "deity": deity, "zone": home, "bind": home,
+			"stats": Player.clean_stat_points(stats), "race": race})
 
 
 ## Brings an offline character onto the server once, cleaned up: unknown
@@ -94,6 +99,9 @@ func import_character(account: String, save: Dictionary) -> String:
 		if cap > 0:
 			skills[id] = clampi(int(imported[id]), 0, cap)
 	d["skills"] = skills
+	var race := str(d.get("race", ""))
+	if race != "" and not (GameData.races.has(race) and str(d["class"]) in GameData.races[race].get("classes", [])):
+		d.erase("race")  # a race that can't be this class: they choose again in the game
 	var eq: Dictionary = d.get("equipment", {})
 	for slot: String in eq.keys():
 		if not known.call(eq[slot]):

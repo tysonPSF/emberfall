@@ -32,6 +32,8 @@ var _one_shot_left := 0.0
 var _ranged: Node3D  # a bow shown in the left hand for a shot, the usual held gear hidden meanwhile
 var _ranged_left := 0.0
 var _posed_dead := false
+var _race := ""  # data/races.json id: its skin on the outfit's skin cells, its bolt-ons (ears, beards, tusks)
+static var _race_textures: Dictionary = {}  # "texture path|race" -> the recolored ImageTexture, made once
 
 
 static func library() -> AnimationLibrary:
@@ -120,6 +122,95 @@ func _customize(model: Node3D, spec: Dictionary) -> void:
 		var part: Node3D = (load(a["path"]) as PackedScene).instantiate()
 		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
 		slot.add_child(part)
+
+
+## Dresses the body as a race: its skin on every skin cell of the outfit's
+## texture (models.json "skin_cells": {texture path: [[col, row]...]}, the
+## same 8x4 palette grid the Blender repaints use), and its bolt-ons
+## (models.json "race_parts": {id: {path, bone, skin}}) pinned to their bones,
+## tinted to the skin when "skin" is set. Height is the caller's (the body's
+## scale). Call it right after setup, before tiers and worn gear.
+func set_race(race_id: String) -> void:
+	if race_id == _race or not GameData.races.has(race_id):
+		return
+	_race = race_id
+	var race: Dictionary = GameData.races[race_id]
+	for mi: MeshInstance3D in _model.find_children("*", "MeshInstance3D", true, false):
+		_skin(mi)
+	if skeleton == null:
+		return
+	var parts: Dictionary = GameData.models.get("race_parts", {})
+	for part_id: String in race.get("attach", []):
+		var spec: Dictionary = parts.get(part_id, {})
+		var bone := skeleton.find_bone(str(spec.get("bone", "head"))) if not spec.is_empty() else -1
+		if bone < 0:
+			continue
+		var slot := BoneAttachment3D.new()
+		slot.bone_name = str(spec.get("bone", "head"))
+		skeleton.add_child(slot)
+		var part: Node3D = (load(spec["path"]) as PackedScene).instantiate()
+		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
+		slot.add_child(part)
+		if spec.get("skin", false) and race.get("skin") is Array:
+			var tone := Color("#" + str(race["skin"][0]))
+			for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
+				var base := mi.get_active_material(0) as BaseMaterial3D
+				if base != null:
+					var mat := base.duplicate() as BaseMaterial3D
+					mat.albedo_color = mat.albedo_color * tone
+					mi.material_override = mat
+
+
+## Puts the race's skin on one mesh, if its texture is a KayKit palette with known skin cells.
+func _skin(mi: MeshInstance3D) -> void:
+	var race: Dictionary = GameData.races.get(_race, {})
+	if not race.get("skin") is Array:
+		return
+	var base := (mi.material_override if mi.material_override != null else mi.get_active_material(0)) as BaseMaterial3D
+	if base == null or base.albedo_texture == null:
+		return
+	var path := base.albedo_texture.resource_path
+	var cells: Array = GameData.models.get("skin_cells", {}).get(path, [])
+	if cells.is_empty():
+		return
+	var key := "%s|%s" % [path, _race]
+	if not _race_textures.has(key):
+		_race_textures[key] = _recolored(base.albedo_texture, cells, race["skin"])
+	var mat := base.duplicate() as BaseMaterial3D
+	mat.albedo_texture = _race_textures[key]
+	mi.material_override = mat
+
+
+## A copy of a palette texture with its skin cells remapped from their own
+## light-to-dark gradient onto the race's skin (light, dark hex).
+static func _recolored(tex: Texture2D, cells: Array, skin: Array) -> ImageTexture:
+	var img := tex.get_image()
+	if img.is_compressed():
+		img.decompress()
+	img.convert(Image.FORMAT_RGBA8)
+	var light := Color("#" + str(skin[0]))
+	var dark := Color("#" + str(skin[1]))
+	var cw := img.get_width() / 8
+	var ch := img.get_height() / 4
+	for cell: Array in cells:
+		var x0 := int(cell[0]) * cw
+		var y0 := int(cell[1]) * ch  # rows count from the top, like the image
+		var lo := 1.0
+		var hi := 0.0
+		for y in range(y0, y0 + ch, 4):
+			for x in range(x0, x0 + cw, 4):
+				var l := img.get_pixel(x, y).get_luminance()
+				lo = minf(lo, l)
+				hi = maxf(hi, l)
+		var span := maxf(hi - lo, 0.0001)
+		for y in range(y0, y0 + ch):
+			for x in range(x0, x0 + cw):
+				var c := img.get_pixel(x, y)
+				var t := clampf((c.get_luminance() - lo) / span, 0.0, 1.0)
+				var n := dark.lerp(light, t)
+				img.set_pixel(x, y, Color(n.r, n.g, n.b, c.a))
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
 
 
 ## Gear a character is wearing, {slot: gear id}. The body's own headgear
@@ -219,6 +310,9 @@ func _swap_parts(look: Dictionary) -> Array:
 				mi.material_override = mat
 		Entity.use_entity_layer(node)
 		added.append(node)
+	for node: Node in added:  # swapped-in parts (bare arms, legs) take the race's skin too
+		for mi: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false) + ([node] if node is MeshInstance3D else []):
+			_skin(mi)
 	return added
 
 

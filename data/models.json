@@ -2410,5 +2410,27 @@
         0
       ]
     }
+  },
+  "skin_cells": {
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian_barbarian_texture.png": [[0, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight_knight_texture.png": [[0, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage_mage_texture.png": [[0, 0], [7, 2]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger_ranger_texture.png": [[0, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_rogue_texture.png": [[0, 0]],
+    "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded_rogue_texture.png": [[0, 0]],
+    "res://assets/creatures/magician_body_magician_texture.png": [[0, 0], [7, 2]],
+    "res://assets/creatures/necromancer_body_necromancer_texture.png": [[0, 0], [7, 2]],
+    "res://assets/creatures/shaman_body_shaman_texture.png": [[0, 0], [7, 2]],
+    "res://assets/creatures/ranger_class_body_ranger_class_texture.png": [[0, 0]]
+  },
+  "race_parts": {
+    "race_ears_elf": {"path": "res://assets/creatures/race_ears_elf.glb", "bone": "head", "skin": true},
+    "race_ears_gnome": {"path": "res://assets/creatures/race_ears_gnome.glb", "bone": "head", "skin": true},
+    "race_beard_dwarf": {"path": "res://assets/creatures/race_beard_dwarf.glb", "bone": "head", "skin": false},
+    "race_beard_barbarian": {"path": "res://assets/creatures/race_beard_barbarian.glb", "bone": "head", "skin": false},
+    "race_tusks_troll": {"path": "res://assets/creatures/race_tusks_troll.glb", "bone": "head", "skin": false},
+    "race_troll_face": {"path": "res://assets/creatures/race_troll_face.glb", "bone": "head", "skin": true},
+    "race_tusks_ogre": {"path": "res://assets/creatures/race_tusks_ogre.glb", "bone": "head", "skin": false},
+    "race_ogre_face": {"path": "res://assets/creatures/race_ogre_face.glb", "bone": "head", "skin": true}
   }
 }

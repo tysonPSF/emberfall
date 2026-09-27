@@ -26,6 +26,7 @@ func _ready() -> void:
 	var offhand := ""
 	var tiers: PackedStringArray = []
 	var weapon := ""
+	var races: PackedStringArray = []  # --race=troll,,dwarf: each model dressed as that race
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--lineup="):
 			ids = a.substr(9).split(",", false)
@@ -56,6 +57,8 @@ func _ready() -> void:
 				worn[pair.get_slice(":", 0)] = pair.get_slice(":", 1)
 		elif a.begins_with("--shots="):
 			shots_dir = a.substr(8)
+		elif a.begins_with("--race="):
+			races = a.substr(7).split(",")
 
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
@@ -81,7 +84,10 @@ func _ready() -> void:
 	for i in ids.size():
 		var m := CharacterModel.new()
 		add_child(m)
-		m.setup(ids[i], weapon, 1.0)
+		var race_id: String = races[i] if i < races.size() else ""
+		m.setup(ids[i], weapon, float(GameData.races.get(race_id, {}).get("scale", 1.0)))
+		if race_id != "":
+			m.set_race(race_id)
 		if i < tiers.size():
 			var every := {}
 			for slot: String in ["primary", "secondary", "head", "chest", "arms", "hands", "legs", "feet", "waist"]:
@@ -89,7 +95,7 @@ func _ready() -> void:
 			m.set_tiers(every)
 		m.position.x = -width / 2.0 + i * SPACING
 		m.rotation.y = PI  # face the camera
-		if not worn.is_empty():
+		if not worn.is_empty() or not races.is_empty():  # a race preview shows the bare head, as players wear it
 			m.set_worn(worn)
 		if offhand != "":
 			m.set_offhand(offhand)
