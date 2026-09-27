@@ -19,6 +19,7 @@ signal service_opened(npc: Npc, kind: String)  # kind: "shop" or "bank"
 signal service_changed
 signal service_closed
 signal station_opened(kind: String)  # a crafting station's combine window
+signal track_opened(radius: float)  # a ranger's Track: the HUD lists what's out there
 signal station_closed
 signal pet_changed  # your pet came, went, or was told something
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
@@ -315,6 +316,7 @@ func _physics_process(delta: float) -> void:
 			_check_feign(obj as Player)
 			_check_pet(obj as Player)
 			_check_burden(obj as Player, delta)
+			_check_lava(obj as Player, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -1388,23 +1390,40 @@ func request_ranged(player_id: int) -> void:
 		return
 	if p.cooldowns.has("ranged"):
 		return  # still nocking the next arrow
-	if p.distance_to(t) > float(weapon.get("range", 30.0)):
+	if p.distance_to(t) > ranged_reach(p):
 		say(p, "Your target is out of range.", C_WARN)
 		return
 	if not in_sight(p, t):
 		say(p, "You can't see your target from here.", C_WARN)
 		return
+	if weapon.has("ammo") and _ammo_for(p, str(weapon["ammo"])) == "":
+		say(p, "You are out of %s." % str(weapon.get("ammo_name", "ammunition")), C_WARN)
+		return
+	var haste := minf(int(p.attributes.get("haste", 0)), 40) + p.buff_total("haste")
+	p.cooldowns["ranged"] = float(weapon.get("delay", 3.0)) / (1.0 + haste / 100.0)
+	p.sitting = false
+	_ranged_shot(p, t, 1.0)
+
+
+## How far a player's ranged weapon reaches (a ranger's reaches further).
+func ranged_reach(p: Player) -> float:
+	var weapon := GameData.item(str(p.equipment.get("range", "")))
+	var archer: Dictionary = GameData.classes[p.char_class].get("archery", {})
+	return float(weapon.get("range", 30.0)) * (float(archer.get("range", 1.0)) if str(weapon.get("skill", "")) == "archery" else 1.0)
+
+
+## One arrow (or stone) from a player's ranged weapon at t, `mult` times the
+## usual damage (Aimed Shot and the like); uses up the ammunition. False when
+## there was nothing to shoot.
+func _ranged_shot(p: Player, t: Entity, mult: float) -> bool:
+	var weapon := GameData.item(str(p.equipment.get("range", "")))
 	var ammo_id := ""
 	if weapon.has("ammo"):
 		ammo_id = _ammo_for(p, str(weapon["ammo"]))
 		if ammo_id == "":
-			say(p, "You are out of %s." % str(weapon.get("ammo_name", "ammunition")), C_WARN)
-			return
+			return false
 		p.pack.remove(ammo_id, 1)
 		p.inventory_changed.emit()
-	var delay := float(weapon.get("delay", 3.0)) / (1.0 + minf(int(p.attributes.get("haste", 0)), 40) / 100.0)
-	p.cooldowns["ranged"] = delay
-	p.sitting = false
 	p.animate("shoot:%s" % str(weapon.get("model", "")) if str(weapon.get("skill", "")) == "archery" else "sling")
 	var ammo := GameData.item(ammo_id)
 	shot_fired.emit(p, t, str(ammo.get("projectile", weapon.get("projectile", "stone"))))
@@ -1422,6 +1441,10 @@ func request_ranged(player_id: int) -> void:
 	var dmg := randi_range(lo, hi) if randf() < chance else 0
 	if dmg > 0:
 		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
+		var archer: Dictionary = GameData.classes[p.char_class].get("archery", {})
+		if skill == "archery":
+			mult *= float(archer.get("dmg", 1.0))  # rangers: the best bows in the land
+		dmg = maxi(1, roundi(dmg * mult))
 	_combat_msg(p, t, weapon.get("verb", ["shoot", "shoots"]), dmg)
 	if dmg > 0:
 		if ammo_id != "" and t is Mob and randf() < float(cfg("ammo_recover_chance", 0.15)):
@@ -1432,6 +1455,7 @@ func request_ranged(player_id: int) -> void:
 	else:
 		t.add_hate(p, 1.0)  # a miss still gets its attention
 		_notice_attacker(t, p)
+	return true
 
 
 func has_shield(p: Player) -> bool:
@@ -1574,7 +1598,22 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if t == null:
 		say(c, "You must first select a target for this spell!", C_WARN)
 		return
-	if t != c and c.distance_to(t) > float(s.get("range", 0)):
+	if str(s["type"]) == "shot":  # a ranger's shot: needs the bow, arrows, reach and a clear line
+		var p := c as Player
+		var bow := GameData.item(str(p.equipment.get("range", ""))) if p != null else {}
+		if bow.is_empty() or str(bow.get("skill", "")) != "archery":
+			say(c, "You need a bow equipped to %s." % str(s["name"]).to_lower(), C_WARN)
+			return
+		if bow.has("ammo") and _ammo_for(p, str(bow["ammo"])) == "":
+			say(c, "You are out of %s." % str(bow.get("ammo_name", "arrows")), C_WARN)
+			return
+		if c.distance_to(t) > ranged_reach(p):
+			say(c, "Your target is out of range.", C_WARN)
+			return
+		if not in_sight(c, t):
+			say(c, "You can't see your target from here.", C_WARN)
+			return
+	elif t != c and c.distance_to(t) > float(s.get("range", 0)):
 		say(c, "Your target is out of range, get closer!", C_WARN)
 		return
 	if s.get("from_behind", false) and not behind(c, t):
@@ -1694,7 +1733,7 @@ func _update_cast(c: Entity, delta: float) -> void:
 		return
 	if t == null or t.dead:
 		say(c, "Your target is gone.", C_WARN)
-	elif t != c and c.distance_to(t) > float(s.get("range", 0)) + 2.0:
+	elif t != c and c.distance_to(t) > (ranged_reach(c as Player) if str(s["type"]) == "shot" else float(s.get("range", 0))) + 2.0:
 		say(c, "Your target is out of range, get closer!", C_WARN)
 	elif c.mana < int(s.get("mana", 0)):
 		say(c, "Insufficient Mana to cast this spell!", C_WARN)
@@ -1771,6 +1810,22 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			if t is Player:
 				say(t, str(s.get("snare_you", "Your legs slow to a crawl.")), C_HIT_YOU)
 			t.add_hate(c, 5.0)
+		"shot":  # a ranger's shot: `shot_mult` times a bow shot, at `shots` foes (the target first, then those nearest it)
+			var p := c as Player
+			var foes: Array = [t]
+			if int(s.get("shots", 1)) > 1:
+				var others := get_mobs().filter(func(m: Mob) -> bool:
+					return m != t and not m.dead and can_attack(p, m) and m.distance_to(t) <= float(s.get("spread", 8.0)) and in_sight(p, m))
+				others.sort_custom(func(a: Mob, b: Mob) -> bool: return a.distance_to(t) < b.distance_to(t))
+				foes += others.slice(0, int(s["shots"]) - 1)
+			for f: Entity in foes:
+				if not _ranged_shot(p, f, float(s.get("shot_mult", 1.0))):
+					say(p, "You run out of arrows.", C_WARN)
+					break
+		"track":  # a ranger reads the ground: the HUD lists what walks within reach
+			var p := c as Player
+			try_skill_up(p, "tracking")
+			_ui(p, &"track_opened", [track_radius(p)])
 		"slow":  # a shaman's slow: the target's swings come further apart; named foes shrug off half
 			var pct := int(s.get("slow", 25))
 			if t is Mob and (t as Mob).data.get("named", false):
@@ -1915,6 +1970,11 @@ static func warded(e: Entity) -> bool:
 
 ## Whether an attacker stands behind its target (outside the arc in front of
 ## its face): where a backstab lands.
+## How far a ranger's Track reads: 60 m, and more with the skill (to 260).
+func track_radius(p: Player) -> float:
+	return 60.0 + 200.0 * skill_frac(p, "tracking") * minf(1.0, skill_cap(p, "tracking") / 150.0)
+
+
 ## How much longer an entity's swings take while slowed: 30% slower = 1 / 0.7.
 static func slow_factor(e: Entity) -> float:
 	return 1.0 / (1.0 - clampf(e.slow_pct, 0, 90) / 100.0) if e.slow_left > 0.0 else 1.0
@@ -1929,6 +1989,21 @@ static func behind(attacker: Entity, target: Entity) -> bool:
 
 
 ## Tells a player when their load starts slowing them, and when it stops.
+## Standing in a lava channel burns: 6% of your health a second, and it says so.
+func _check_lava(p: Player, delta: float) -> void:
+	var z := zone_of(p)
+	if p.dead or z == null or not z.data.has("rivers") or not z.lava_at(p.global_position.x, p.global_position.z) \
+			or p.global_position.y > z.surface_at(p.global_position.x, p.global_position.z) + 2.5:
+		p.set_meta("lava_burn", 0.0)
+		return
+	var t := float(p.get_meta("lava_burn", 0.0)) - delta
+	if t <= 0.0:
+		t = 1.0
+		say(p, "The lava burns you!", C_HIT_YOU)
+		damage(p, maxi(1, roundi(p.max_hp * 0.06)), null)
+	p.set_meta("lava_burn", t)
+
+
 func _check_burden(p: Player, delta: float) -> void:
 	var t := float(p.get_meta("burden_check", 0.0)) - delta
 	if t > 0.0:

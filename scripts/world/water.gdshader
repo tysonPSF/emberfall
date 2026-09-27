@@ -11,6 +11,7 @@ uniform vec3 deep : source_color = vec3(0.05, 0.16, 0.24);
 uniform vec3 sky : source_color = vec3(0.62, 0.74, 0.86);
 uniform float murk = 0.9;  // meters of water until it looks fully deep
 uniform float flow_speed = 0.0;  // meters per second downstream
+uniform float lava = 0.0;  // 1: molten rock instead of water (Cinderpass): a glowing flow under a drifting dark crust
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
 
 void fragment() {
@@ -39,4 +40,17 @@ void fragment() {
 	ALPHA = (mix(0.7, 0.95, t) + rim * 0.2) * smoothstep(0.0, 0.03, thick);
 	ROUGHNESS = 0.06;
 	SPECULAR = 0.6;
+	if (lava > 0.5) {
+		float run = UV.y - TIME * max(flow_speed, 0.15);
+		float cells = sin(run * 2.9 + UV.x * 4.3) * sin(world.x * 2.1 + run * 1.3) + sin(world.z * 2.4 - run * 1.9 + UV.x * 3.1) * 0.7
+				+ sin(world.x * 5.3 - world.z * 4.1 + run * 2.0) * 0.25;
+		float crust = smoothstep(0.0, 0.55, cells);  // dark plates of cooling rock riding the flow
+		float pulse = 0.85 + 0.15 * sin(TIME * 1.7 + world.x * 0.3 + world.z * 0.2);
+		vec3 hot = mix(vec3(0.85, 0.12, 0.01), vec3(1.0, 0.45, 0.06), smoothstep(-0.9, -0.1, cells));  // deep red where it's hottest, orange at the crust's edge
+		ALBEDO = mix(hot * 0.35, vec3(0.06, 0.045, 0.04), crust);
+		EMISSION = hot * (1.0 - crust) * 1.7 * pulse;
+		ALPHA = 1.0;
+		ROUGHNESS = mix(0.35, 0.9, crust);
+		SPECULAR = 0.2;
+	}
 }

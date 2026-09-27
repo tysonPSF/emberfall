@@ -1,10 +1,12 @@
 {
  "built": [
+  "cinderpass",
   "emberhold",
   "emberhold_crypt",
   "emberhold_tavern",
   "greenmoor",
   "harrowfield",
+  "high_terrace",
   "hollowmere",
   "lanternhold",
   "rainhold",
@@ -184,8 +186,8 @@
     3
    ],
    "kind": "terrace",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -382,8 +384,8 @@
     3
    ],
    "kind": "burn",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

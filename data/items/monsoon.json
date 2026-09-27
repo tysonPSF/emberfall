@@ -226,7 +226,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_tunic"
   },
@@ -240,7 +241,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_leggings"
   },
@@ -254,7 +256,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_gloves"
   },
@@ -268,7 +271,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_boots"
   },
@@ -287,7 +291,8 @@
     "rec_level": 21,
     "classes": [
       "warrior",
-      "rogue"
+      "rogue",
+      "ranger"
     ]
   },
   "coral_dirk": {
@@ -303,7 +308,7 @@
     "skill": "piercing",
     "value": 4600,
     "rec_level": 21,
-    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman"]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman", "ranger"]
   },
   "tidesteel_war_axe": {
     "name": "Tidesteel War Axe",
@@ -460,7 +465,8 @@
     "lore": true,
     "classes": [
       "warrior",
-      "rogue"
+      "rogue",
+      "ranger"
     ],
     "proc": {
       "spell": "drowning_cold",

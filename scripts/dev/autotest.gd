@@ -98,6 +98,11 @@ const SECTIONS := [
 	["face_path", "harrowfield"],
 	["shaman", "greenmoor"],
 	["homeward", "greenmoor"],
+	["ashfall_borders", "hollowmere"],
+	["ranger", "greenmoor"],
+	["cap30", "greenmoor"],
+	["terrace_life", "high_terrace"],
+	["cinder_life", "cinderpass"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -4060,6 +4065,372 @@ func _t_homeward() -> void:
 	p.bind_zone = ""
 	World.zone_change.emit(p, "greenmoor", Vector2(0, 10), Vector2(0, 0))
 	await wait_zone.call("greenmoor")
+
+
+## High Terrace and Cinderpass's four borders, every one both ways: Hollowmere
+## north, The Bleach west, Thornwood north, and the two new zones to each other.
+func _t_ashfall_borders() -> void:
+	for leg: Array in [["hollowmere", Vector2(0, -190), Vector2(0, -1), "high_terrace"], ["high_terrace", Vector2(-225, 0), Vector2(-1, 0), "cinderpass"],
+			["cinderpass", Vector2(0, 195), Vector2(0, 1), "thornwood"], ["thornwood", Vector2(0, -225), Vector2(0, -1), "cinderpass"],
+			["cinderpass", Vector2(195, 0), Vector2(1, 0), "high_terrace"], ["high_terrace", Vector2(225, 0), Vector2(1, 0), "the_bleach"],
+			["the_bleach", Vector2(-225, 0), Vector2(-1, 0), "high_terrace"], ["high_terrace", Vector2(0, 225), Vector2(0, 1), "hollowmere"]]:
+		if not await _walk_border("ashfall_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## The Ranger: a new one starts with a bow and arrows; shots hit harder than
+## anyone else's bow; Aimed Shot, Multishot (three foes) and Storm of Arrows;
+## Track lists what's near and puts it on the compass; the hawk at 20.
+func _t_ranger() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var fresh := Player.new()
+	fresh.from_save({"name": "Fresh", "class": "ranger"})
+	print("ranger: a new ranger wears %s and carries %d arrows; spells %s" % [fresh.equipment, fresh.pack.count("crude_arrow"), fresh.spells])
+	fresh.free()
+	var saved_class := p.char_class
+	p.char_class = "ranger"
+	p.level = 30
+	p.spells = []
+	for sid: String in GameData.spells:
+		if GameData.spells[sid].get("classes", {}).has("ranger"):
+			p.spells.append(sid)
+	p.equipment["range"] = "cinderwood_longbow"
+	p.pack.add("crude_arrow", 100)
+	p.recalc_stats()
+	for sk: String in GameData.skills["skills"]:
+		if World.skill_cap(p, sk) > 0:
+			p.skills[sk] = World.skill_cap(p, sk)
+	print("ranger: %d spells to 30; level 30 -> %d hp, %d mana; bow reach %.0f m (a warrior's %.0f)" % [p.spells.size(), p.max_hp, p.max_mana,
+			World.ranged_reach(p), float(GameData.item("cinderwood_longbow")["range"])])
+	var pups: Array = World.get_mobs().filter(func(m: Mob) -> bool: return m.mob_id in ["gnoll_pup", "gnoll_scout", "large_rat"])
+	pups.sort_custom(func(a: Mob, b: Mob) -> bool: return a.global_position.distance_to(p.global_position) < b.global_position.distance_to(p.global_position))
+	var t: Mob = pups[0]
+	for m: Mob in World.get_mobs():  # three foes standing together, very tough so nothing dies mid-test
+		m.max_hp = 100000
+		m.hp = m.max_hp
+	var near: Array = World.get_mobs().filter(func(m: Mob) -> bool: return m != t and not m.dead and World.zone_of(m) == World.zone_of(t))
+	for k in mini(2, near.size()):
+		(near[k] as Mob).global_position = t.global_position + Vector3(2.0 + k * 1.5, 0, 1.5)
+		(near[k] as Mob).set_physics_process(false)
+	t.set_physics_process(false)
+	p.global_position = z.ground(t.global_position.x + 20.0, t.global_position.z) + Vector3.UP
+	p.face_toward(t.global_position)
+	World.request_set_target(p.entity_id, t.entity_id)
+	var fire := func(what: String) -> Array:
+		var before := {}
+		for m: Mob in World.get_mobs():
+			before[m] = m.hp
+		var arrows := p.pack.count("crude_arrow")
+		p.cooldowns.clear()
+		if what == "bow":
+			World.request_ranged(p.entity_id)
+		else:
+			World.request_cast(p.entity_id, what)
+		await _wait(0.3)
+		var hit := 0
+		var dmg := 0
+		for m: Mob in World.get_mobs():
+			if before.has(m) and int(before[m]) > m.hp:
+				hit += 1
+				dmg += int(before[m]) - m.hp
+		return [hit, dmg, arrows - p.pack.count("crude_arrow")]
+	var plain := [0, 0]
+	var aimed := [0, 0]
+	for k in 12:
+		var a: Array = await fire.call("bow")
+		plain[0] += a[1]
+		plain[1] += 1
+		var b: Array = await fire.call("aimed_shot")
+		aimed[0] += b[1]
+		aimed[1] += 1
+		if k == 0:
+			print("ranger: first aimed shot: %s" % [b])
+	print("ranger: 12 plain shots average %.0f, 12 aimed shots average %.0f" % [float(plain[0]) / plain[1], float(aimed[0]) / aimed[1]])
+	var multi: Array = await fire.call("multishot")
+	print("ranger: multishot -> hit %d foes, %d arrows used" % [multi[0], multi[2]])
+	var storm: Array = await fire.call("storm_of_arrows")
+	print("ranger: storm of arrows -> hit %d foes, %d arrows used" % [storm[0], storm[2]])
+	p.pack.remove("crude_arrow", p.pack.count("crude_arrow"))
+	p.cooldowns.clear()
+	World.request_cast(p.entity_id, "aimed_shot")
+	print("ranger: aimed shot with no arrows -> cooldown started %s" % p.cooldowns.has("aimed_shot"))
+	p.pack.add("crude_arrow", 50)
+	for m: Mob in [t] + near.slice(0, 2):
+		m.set_physics_process(true)
+		m.hate.clear()
+	World.request_set_target(p.entity_id, p.entity_id)
+	p.cooldowns.clear()
+	World.request_cast(p.entity_id, "track")
+	await _wait(0.4)
+	var hud: Node = main.hud
+	print("ranger: track -> window %s, radius %.0f m, %d monsters listed" % [hud._track_panel.visible, hud._track_radius, hud._track_list.get_child_count()])
+	var first := hud._track_list.get_child(0) as Button
+	if first != null:
+		first.pressed.emit()
+	await _wait(0.3)
+	print("ranger: clicked the first -> the compass tracks %s" % (hud._compass.tracked.display_name if hud._compass.tracked else "nothing"))
+	await _shot("9zz_ranger_track")
+	hud._track_panel.visible = false
+	p.mana = p.max_mana
+	p.cooldowns.clear()
+	World.request_cast(p.entity_id, "call_of_the_hawk")
+	await _wait(5.5)
+	var pet := World.get_object(p.pet_id) as Pet
+	print("ranger: called %s (%s, %d hp, hits %d-%d)" % [pet.display_name if pet else "nothing", pet.model_id if pet else "", pet.max_hp if pet else 0, pet.dmg_min if pet else 0, pet.dmg_max if pet else 0])
+	await _wait(0.5)
+	await _shot("9zz_ranger_hawk")
+	World.request_pet(p.entity_id, "leave")
+	hud._compass.tracked = null
+	p.equipment.erase("range")
+	p.char_class = saved_class
+	p.level = 1
+	p.buffs.clear()
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
+## Level cap 30: a character can reach it; every class's three new abilities
+## (26, 28, 30) cast and land; the elemental lord and the bone colossus rise.
+func _t_cap30() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("cap30: max level %d" % int(World.cfg("max_level", 0)))
+	var saved_class := p.char_class
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		p.level = 30
+		p.spells = []
+		for sid: String in GameData.spells:
+			if int(GameData.spells[sid].get("classes", {}).get(cls, 0)) >= 26:
+				p.spells.append(sid)
+		p.spells.sort_custom(func(a: String, b: String) -> bool: return str(GameData.spells[a]["type"]) == "pet" and str(GameData.spells[b]["type"]) != "pet")
+		if cls == "ranger":
+			p.spells.push_front("call_of_the_hawk")
+		p.recalc_stats()
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		var out := PackedStringArray()
+		for sid: String in p.spells:
+			var s: Dictionary = GameData.spells[sid]
+			p.cooldowns.clear()
+			p.mana = p.max_mana
+			p.hp = p.max_hp
+			p.hidden = s.get("requires_hidden", false)
+			var tgt: Entity = mob
+			if str(s.get("target", "")) in ["self", "group", "friendly"]:
+				tgt = p
+			if str(s["type"]) == "shot":
+				p.equipment["range"] = "cinderwood_longbow"
+				p.pack.add("crude_arrow", 20)
+			p.global_position = z.ground(mob.global_position.x + (2.0 if float(s.get("range", 0)) < 5.0 and str(s["type"]) != "shot" else 12.0), mob.global_position.z) + Vector3.UP
+			if s.get("from_behind", false) or s.get("requires_hidden", false):
+				p.global_position = mob.global_position - (-mob.global_basis.z) * 2.0 + Vector3.UP * 0.5
+			p.face_toward(mob.global_position)
+			World.request_set_target(p.entity_id, tgt.entity_id)
+			var hp0 := mob.hp
+			mob.hate.clear()
+			mob.auto_attack = false
+			World.request_cast(p.entity_id, sid)
+			await _wait(float(s.get("cast_time", 0)) + 0.4)
+			var what := ""
+			match str(s["type"]):
+				"damage", "shot", "lifetap":
+					what = "hit %d" % (hp0 - mob.hp)
+				"dot":
+					what = "dot %s" % mob.dots.any(func(d: Dictionary) -> bool: return d["spell"] == sid)
+				"buff":
+					var on: Entity = World.get_object(p.pet_id) as Entity if str(s.get("target", "")) == "pet" else p
+					what = "buff %s" % (on != null and on.buffs.has(sid))
+				"heal":
+					what = "heal cast"
+				"slow":
+					what = "slow %d%%" % mob.slow_pct
+				"pet":
+					var pet := World.get_object(p.pet_id) as Pet
+					what = "pet %s (%s, %d hp)" % [pet.display_name if pet else "none", pet.model_id if pet else "", pet.max_hp if pet else 0]
+			out.append("%s: %s" % [GameData.spells[sid]["name"], what])
+			if str(s["type"]) == "pet":
+				await _wait(0.5)
+				await _shot("9zz_cap30_%s" % sid)
+		mob.dots.clear()
+		mob.slow_left = 0.0
+		print("cap30: %s -> %s" % [cls, "; ".join(out)])
+		World.request_pet(p.entity_id, "leave")
+		p.buffs.clear()
+		p.hidden = false
+		p.equipment.erase("range")
+	mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
+## High Terrace: every monster in place (and the ghost leopard at night), the
+## pilgrims' rest's five quests, the terraces and the paddies.
+func _t_terrace_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("terrace_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	print("terrace_life: ground at the rest %.1f, mid %.1f, at the monastery %.1f; fields %d" % [z.height_at(-20, 200), z.height_at(0, 0), z.height_at(0, -205), z.data.get("fields", []).size()])
+	var sloped := PackedStringArray()
+	for lm: Dictionary in z.data["landmarks"] + z.data.get("fields", []):
+		var worst := 0.0
+		var r := 3.0 if lm.has("type") else maxf(float(lm["size"][0]), float(lm["size"][1])) * 0.5
+		for k in 9:
+			var at := Vector2(lm["pos"][0], lm["pos"][1]) + (Vector2.from_angle(k * TAU / 8) * r if k < 8 else Vector2.ZERO)
+			worst = maxf(worst, z.terrace_face(at.x, at.y))
+		if worst > 0.15:
+			sloped.append("%s %s (%.2f)" % [lm.get("id", lm.get("type", lm.get("crop", "field"))), lm["pos"], worst])
+	print("terrace_life: on a terrace slope: %s" % ", ".join(sloped))
+	p.level = 23
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var tenzin: Npc = npcs["brother_tenzin"]
+	var pema: Npc = npcs["tea_mother_pema"]
+	_stand_by(p, tenzin)
+	for word in ["hail", "fallen", "beads", "abbot", "seal", "guardians", "colossus", "heartstone"]:
+		World.request_say(p.entity_id, word)
+	for pair: Array in [["prayer_bead", 4], ["prayer_bead", 4], ["abbots_seal", 1], ["colossus_heartstone", 1]]:
+		p.pack.add(pair[0], pair[1])
+		_stand_by(p, tenzin)
+		await _hand_in(p, tenzin, [pair[0]])
+	_stand_by(p, pema)
+	for word in ["hail", "harpies", "talons", "griffons", "skyrend", "plume"]:
+		World.request_say(p.entity_id, word)
+	for pair: Array in [["harpy_talon", 4], ["skyrend_plume", 1]]:
+		p.pack.add(pair[0], pair[1])
+		_stand_by(p, pema)
+		await _hand_in(p, pema, [pair[0]])
+	await _wait(0.3)
+	print("terrace_life: rewards: wraps %d, beads %d, ring %d, cloak %d; quests done %s" % [p.pack.count("monks_wraps"), p.pack.count("pilgrims_prayer_beads"),
+			p.pack.count("heartstone_ring"), p.pack.count("skyrend_cloak"),
+			["tenzins_beads", "the_abbots_seal", "the_colossus_heart", "pemas_talons", "skyrends_plume"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0)))])
+	World.time_override = 23.0
+	await _wait(0.6)
+	print("terrace_life: the ghost leopard at 23:00 %s" % (_nearest_mob(p, "ghost_leopard") != null))
+	World.time_override = 12.0
+	var paddy := Vector2(z.data["fields"][0]["pos"][0], z.data["fields"][0]["pos"][1])
+	var sheets := z.get_children().filter(func(n: Node) -> bool: return n is MeshInstance3D and (n as MeshInstance3D).mesh is PlaneMesh).size()
+	print("terrace_life: paddy water sheets %d of %d paddies" % [sheets, z.data["fields"].filter(func(f: Dictionary) -> bool: return f.get("water", false)).size()])
+	var tea := Vector2(z.data["fields"][9]["pos"][0], z.data["fields"][9]["pos"][1])
+	for spot: Array in [[Vector2(-20, 215), Vector2(-20, 190), "rest"], [paddy + Vector2(8, -34), paddy, "paddies"], [tea + Vector2(20, 16), tea, "tea"], [Vector2(0, -120), Vector2(0, -205), "monastery"]]:
+		p.global_position = z.ground(spot[0].x, spot[0].y) + Vector3.UP * 2.0
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zv_terrace_%s" % spot[2])
+	main.hud._inv_panel.visible = false
+	for id: String in ["griffon", "harpy", "fallen_monk", "gargoyle", "terrace_golem", "snow_leopard", "mountain_yak", "mountain_troll", "fallen_abbot", "terrace_colossus", "griffon_matriarch", "harpy_matriarch"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("terrace_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 4.0, at.z + 3.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zw_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
+
+
+## Cinderpass: its monsters (wraiths at night), the scouts' four quests, Tovar's
+## wares, the lava that burns, the vents, the falling ash.
+func _t_cinder_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("cinder_life: noon: %d monsters %s" % [World.get_mobs().size(), counts])
+	print("cinder_life: ash falling %s; vents %d" % [z.find_children("*", "Rain", true, false).size() > 0, z.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "vent").size()])
+	p.level = 30
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var brenna: Npc = npcs["scout_captain_brenna"]
+	var tovar: Npc = npcs["smith_tovar"]
+	_stand_by(p, brenna)
+	for word in ["hail", "ember", "ember sigil", "leader", "ashkar", "brand"]:
+		World.request_say(p.entity_id, word)
+	for pair: Array in [["ember_sigil", 4], ["ember_sigil", 4], ["ashkars_brand", 1]]:
+		p.pack.add(pair[0], pair[1])
+		_stand_by(p, brenna)
+		await _hand_in(p, brenna, [pair[0]])
+	_stand_by(p, tovar)
+	for word in ["hail", "drake", "scales", "cindermaw", "heart"]:
+		World.request_say(p.entity_id, word)
+	for pair: Array in [["drake_scale", 4], ["cindermaw_heart", 1]]:
+		p.pack.add(pair[0], pair[1])
+		_stand_by(p, tovar)
+		await _hand_in(p, tovar, [pair[0]])
+	await _wait(0.3)
+	print("cinder_life: rewards: signet %d, blade %d, cloak %d; quests done %s; Tovar sells %d things" % [p.pack.count("scouts_signet"), p.pack.count("cinderheart_blade"),
+			p.pack.count("drakescale_cloak"), ["ember_sigils", "ashkars_brand", "drake_scales", "cindermaws_heart"].map(func(q: String) -> int: return int(p.quests.get(q, {}).get("completions", 0))),
+			(GameData.npcs["smith_tovar"]["merchant"]["sells"] as Array).size()])
+	# the lava burns
+	var river: Dictionary = z.data["rivers"][0]
+	var in_lava := Vector2(river["points"][2][0], river["points"][2][1])
+	p.hp = p.max_hp
+	var hp0 := p.hp
+	p.global_position = Vector3(in_lava.x, z.surface_at(in_lava.x, in_lava.y) + 0.5, in_lava.y)
+	await _wait(2.5)
+	print("cinder_life: standing in lava at %s (lava_at %s) for 2.5 s -> %d of %d hp lost" % [in_lava, z.lava_at(in_lava.x, in_lava.y), hp0 - p.hp, p.max_hp])
+	p.hp = p.max_hp
+	World.time_override = 23.0
+	await _wait(0.6)
+	var wraiths := World.get_mobs().filter(func(m: Mob) -> bool: return m.mob_id in ["ash_wraith", "ash_wraith_lord"]).size()
+	print("cinder_life: ash wraiths at noon %d, at 23:00 %d" % [int(counts.get("ash_wraith", 0)), wraiths])
+	World.time_override = 12.0
+	for spot: Array in [[Vector2(10, 215), Vector2(30, 178), "outpost"], [Vector2(-104, -44), Vector2(-125, -50), "lava"], [Vector2(100, 40), Vector2(140, 60), "cult"], [Vector2(40, -120), Vector2(60, -160), "vents"]]:
+		p.global_position = z.ground(spot[0].x, spot[0].y) + Vector3.UP * 2.0
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zx_cinder_%s" % spot[2])
+	for id: String in ["magma_golem", "wild_fire_elemental", "ash_drake", "lava_salamander", "ember_cultist", "charred_dead", "high_pyromancer", "cinder_drake", "magma_colossus"]:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("cinder_life: no %s found" % id)
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = z.ground(at.x + 4.0, at.z + 3.0) + Vector3.UP
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zy_%s" % id)
+		m.set_physics_process(true)
+	World.time_override = -1.0
 
 
 func _t_necromancer() -> void:

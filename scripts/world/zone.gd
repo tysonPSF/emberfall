@@ -56,6 +56,12 @@ func load_zone(id: String) -> void:
 	_rng.seed = zone_seed
 	var bp: Array = data.get("bind_point", [0, 0])
 	_bind_xz = Vector2(bp[0], bp[1])
+	if data.has("terraces"):  # nothing built stands on a terrace's slope: fields and landmarks move onto the nearest flat step
+		for f: Dictionary in data.get("fields", []):
+			f["pos"] = _settle(Vector2(f["pos"][0], f["pos"][1]), maxf(float(f["size"][0]), float(f["size"][1])) * 0.55)
+		for lm: Dictionary in data.get("landmarks", []):
+			if not lm["type"] in ["rockslide", "signpost", "bridge"]:
+				lm["pos"] = _settle(Vector2(lm["pos"][0], lm["pos"][1]), 4.0)
 	for lm: Dictionary in data.get("landmarks", []):
 		var spot := Vector2(lm["pos"][0], lm["pos"][1])
 		_flat_spots.append(spot)
@@ -71,8 +77,9 @@ func load_zone(id: String) -> void:
 		_add_lake(lake)
 	for f: Dictionary in data.get("fields", []):
 		var at := Vector2(f["pos"][0], f["pos"][1])
+		var level := height_at(at.x, at.y) if f.get("water", false) else NAN  # a paddy is leveled to its middle's height
 		_fields.append([Transform3D(Basis(Vector3.UP, deg_to_rad(float(f.get("yaw", 0.0)))), Vector3(at.x, 0, at.y)),
-				Vector2(float(f["size"][0]) * 0.5, float(f["size"][1]) * 0.5), f])
+				Vector2(float(f["size"][0]) * 0.5, float(f["size"][1]) * 0.5), f, level])
 	for road: Dictionary in data.get("roads", []):
 		var pts: Array[Vector2] = []
 		for pt: Array in road["points"]:
@@ -141,22 +148,51 @@ func _bake_navigation() -> void:
 			print("zone %s: navigation baked (%d ms parsing, %d ms in all, %d polygons)" % [zone_id, parsed, Time.get_ticks_msec() - t0, nav.get_polygon_count()]))
 
 
-## Terraced land ("terraces": {start, end, steps, rise, riser, wobble}): the
-## ground climbs along +x in broad flat steps, each ending in a short stone
-## slope up to the next; the step edges wander with the noise so they curve
-## round the hills. 0 where a zone has none.
+## Terraced land ("terraces": {start, end, steps, rise, riser, wobble,
+## toward}): the ground climbs toward `toward` ("east", the default, or
+## "north", "west", "south"; start and end measured along that way) in broad
+## flat steps, each ending in a short stone slope up to the next; the step
+## edges wander with the noise so they curve round the hills. 0 where a zone
+## has none.
 func terrace_rise(x: float, z: float) -> float:
 	var t: Dictionary = data.get("terraces", {})
 	if t.is_empty():
 		return 0.0
+	var way := str(t.get("toward", "east"))
+	var u := x if way == "east" else (-z if way == "north" else (-x if way == "west" else z))  # along the climb
+	var v := z if way in ["east", "west"] else x  # across it
 	var span := float(t["end"]) - float(t["start"])
 	var steps := int(t.get("steps", 6))
-	var along := (x - float(t["start"]) + _noise.get_noise_2d(z * 0.7, x * 0.3) * float(t.get("wobble", 15))) / span
+	var along := (u - float(t["start"]) + _noise.get_noise_2d(v * 0.7, u * 0.3) * float(t.get("wobble", 15))) / span
 	var f := clampf(along, 0.0, 1.0) * steps
 	var k := minf(floorf(f), steps - 1)
 	var frac := f - k
 	var riser := float(t.get("riser", 8)) / (span / steps)  # the slope's share of a step
 	return float(t["rise"]) / steps * (k + smoothstep(1.0 - riser, 1.0, frac) if f < steps else float(steps))
+
+
+## The nearest point to `at` (within 30 m) where a thing `r` meters across
+## stands wholly on one flat terrace step; `at` itself when it already does.
+func _settle(at: Vector2, r: float) -> Array:
+	var worst := func(c: Vector2) -> float:
+		var w := terrace_face(c.x, c.y)
+		for k in 8:
+			var e := c + Vector2.from_angle(k * TAU / 8) * r
+			w = maxf(w, terrace_face(e.x, e.y))
+		return w
+	var best := at
+	var best_w: float = worst.call(at)
+	if best_w > 0.05:
+		for ring in range(1, 16):
+			for k in ring * 8:
+				var c := at + Vector2.from_angle(k * TAU / (ring * 8)) * ring * 2.0
+				var w: float = worst.call(c)
+				if w < best_w - 0.01:
+					best_w = w
+					best = c
+			if best_w <= 0.05:
+				break
+	return [best.x, best.y]
 
 
 ## How steep the terrace slope is here (0 on a flat step, up to 1 mid-slope): it's faced in stone.
@@ -165,8 +201,9 @@ func terrace_face(x: float, z: float) -> float:
 	if t.is_empty():
 		return 0.0
 	var e := 1.5
-	var dh := absf(terrace_rise(x + e, z) - terrace_rise(x - e, z)) / (2.0 * e)
-	return clampf(dh * 1.3, 0.0, 1.0)
+	var dx := terrace_rise(x + e, z) - terrace_rise(x - e, z)
+	var dz := terrace_rise(x, z + e) - terrace_rise(x, z - e)
+	return clampf(Vector2(dx, dz).length() / (2.0 * e) * 1.3, 0.0, 1.0)
 
 
 func height_at(x: float, z: float) -> float:
@@ -201,6 +238,12 @@ func height_at(x: float, z: float) -> float:
 			if d < r + 12.0:
 				h = lerpf(h, h * (1.0 - f), 1.0 - smoothstep(r * 0.6, r + 12.0, d))
 	h += terrace_rise(x, z)
+	for f: Array in _fields:  # paddies: leveled, with a low bank round them
+		if f.size() > 3 and not is_nan(float(f[3])):
+			var local := (f[0] as Transform3D).affine_inverse() * Vector3(x, 0, z)
+			var out := maxf(absf(local.x) - (f[1] as Vector2).x, absf(local.z) - (f[1] as Vector2).y)
+			if out < 4.0:
+				h = lerpf(float(f[3]), h, smoothstep(0.0, 4.0, out))
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
 	# Mountains ring the zone so you can't walk off the edge.
@@ -238,7 +281,8 @@ func _add_river(river: Dictionary) -> void:
 		var h := height_at(pts[i].x, pts[i].y) - 0.3  # before this river exists
 		levels.append(minf(h, levels[i - 1]) if i > 0 else h)
 	_rivers.append({"points": pts, "levels": levels, "width": float(river.get("width", 10.0)),
-			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0)), "dry": bool(river.get("dry", false))})
+			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0)), "dry": bool(river.get("dry", false)),
+			"lava": bool(river.get("lava", false))})
 
 
 ## [distance from the river's centerline, its water level at the nearest point].
@@ -345,7 +389,15 @@ func fishable_at(x: float, z: float) -> bool:
 	if water_level(x, z) > -INF:
 		return true
 	for river: Dictionary in _rivers:
-		if not river["dry"] and float(_river_at(river, x, z)[0]) < float(river["width"]) * 0.5 - 0.5:
+		if not river["dry"] and not river["lava"] and float(_river_at(river, x, z)[0]) < float(river["width"]) * 0.5 - 0.5:
+			return true
+	return false
+
+
+## Whether a point is in a lava channel ("lava": true on a river): it burns.
+func lava_at(x: float, z: float) -> bool:
+	for river: Dictionary in _rivers:
+		if river["lava"] and float(_river_at(river, x, z)[0]) < float(river["width"]) * 0.5 - 0.3:
 			return true
 	return false
 
@@ -602,6 +654,71 @@ func _build_landmarks() -> void:
 						_prop("lily_pads", Vector3(at.x, water_level(at.x, at.y) + 0.02, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.4), "none")
 			"prop":
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
+			"vent":
+				_build_vent(p, float(lm.get("scale", 1.0)))
+
+
+## A volcanic vent (Cinderpass): the lava_vent cone, its mouth lighting the
+## rock, and a column of smoke rising from it (only where it's drawn).
+func _build_vent(p: Vector3, scale: float) -> void:
+	_prop("lava_vent", p, _rng.randf() * TAU, scale, "mesh")
+	var glow := OmniLight3D.new()
+	glow.light_color = Color(1.0, 0.42, 0.1)
+	glow.light_energy = 2.2
+	glow.omni_range = 9.0 * scale
+	glow.distance_fade_enabled = true
+	glow.distance_fade_begin = 70.0
+	glow.distance_fade_length = 20.0
+	glow.position = p + Vector3.UP * 1.8 * scale
+	add_child(glow)
+	if DisplayServer.get_name() == "headless":
+		return
+	var smoke := GPUParticles3D.new()
+	smoke.amount = 40
+	smoke.lifetime = 7.0
+	smoke.preprocess = 7.0
+	smoke.position = p + Vector3.UP * 1.4 * scale
+	smoke.visibility_aabb = AABB(Vector3(-8, -1, -8), Vector3(16, 26, 16))
+	var mat := ParticleProcessMaterial.new()
+	mat.direction = Vector3(0.15, 1, 0.05)
+	mat.spread = 12.0
+	mat.initial_velocity_min = 1.6
+	mat.initial_velocity_max = 2.6
+	mat.gravity = Vector3(0.25, 0.1, 0.05)
+	mat.scale_min = 1.2
+	mat.scale_max = 2.2
+	var grow := Curve.new()
+	grow.add_point(Vector2(0, 0.4))
+	grow.add_point(Vector2(1, 2.4))
+	var tex := CurveTexture.new()
+	tex.curve = grow
+	mat.scale_curve = tex
+	var fade := Gradient.new()
+	fade.set_color(0, Color(0.32, 0.3, 0.29, 0.55))
+	fade.set_color(1, Color(0.45, 0.44, 0.43, 0.0))
+	var ramp := GradientTexture1D.new()
+	ramp.gradient = fade
+	mat.color_ramp = ramp
+	smoke.process_material = mat
+	var puff := QuadMesh.new()
+	puff.size = Vector2(1.6, 1.6) * scale
+	var look := StandardMaterial3D.new()
+	look.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	look.shading_mode = BaseMaterial3D.SHADING_MODE_PER_VERTEX
+	look.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	look.vertex_color_use_as_albedo = true
+	var soft := GradientTexture2D.new()  # a round, soft-edged puff
+	soft.fill = GradientTexture2D.FILL_RADIAL
+	soft.fill_from = Vector2(0.5, 0.5)
+	soft.fill_to = Vector2(1.0, 0.5)
+	var g := Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 1))
+	g.set_color(1, Color(1, 1, 1, 0))
+	soft.gradient = g
+	look.albedo_texture = soft
+	puff.material = look
+	smoke.draw_pass_1 = puff
+	add_child(smoke)
 
 
 ## A fishing village on stilts: a pier runs out over the lake along the
@@ -715,14 +832,17 @@ func in_field(x: float, z: float, margin := 0.0) -> bool:
 ## A crop field: rows of wheat (one MultiMesh, cheap to draw however big),
 ## a split-rail fence round it with a gap on the side facing "gate" (degrees
 ## from its facing), and a scarecrow in the middle if "scarecrow" is true.
+## "crop" grows something else ("rice_shoots", "tea_bush") at "row" x "step"
+## meters; "water": true floods it a hand deep (a rice paddy on a terrace).
 func _build_field(f: Array) -> void:
 	var xf: Transform3D = f[0]
 	var hs: Vector2 = f[1]
 	var spec: Dictionary = f[2]
-	var source := _clutter_source("wheat", 0.18)
+	var source := _clutter_source(str(spec.get("crop", "wheat")), 0.18)
 	if not source.is_empty():
 		var xforms: Array[Transform3D] = []
-		var row := 1.1
+		var row := float(spec.get("row", 1.1))
+		var step := float(spec.get("step", 0.55))
 		var x := -hs.x + 0.6
 		while x < hs.x - 0.4:
 			var z := -hs.y + 0.6
@@ -730,7 +850,7 @@ func _build_field(f: Array) -> void:
 				var at := xf * Vector3(x + _rng.randf_range(-0.15, 0.15), 0, z + _rng.randf_range(-0.2, 0.2))
 				var s := _rng.randf_range(0.85, 1.2)
 				xforms.append(Transform3D(Basis(Vector3.UP, _rng.randf() * TAU).scaled(Vector3.ONE * s), Vector3(at.x, height_at(at.x, at.z) - 0.03, at.z)))
-				z += 0.55
+				z += step
 			x += row
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -746,6 +866,28 @@ func _build_field(f: Array) -> void:
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mmi.visibility_range_end = 140.0
 		add_child(mmi)
+	if bool(spec.get("water", false)):  # a paddy: a sheet of still water just over the mud
+		var sheet := MeshInstance3D.new()
+		var plane := PlaneMesh.new()
+		plane.size = hs * 2.0
+		sheet.mesh = plane
+		var mat := ShaderMaterial.new()
+		mat.shader = WATER_SHADER
+		mat.set_shader_parameter("murk", 0.35)
+		sheet.material_override = mat
+		sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var c := xf.origin
+		var top := -INF
+		var low := INF
+		for corner: Vector3 in [Vector3(-hs.x, 0, -hs.y), Vector3(hs.x, 0, -hs.y), Vector3(-hs.x, 0, hs.y), Vector3(hs.x, 0, hs.y), Vector3.ZERO]:
+			var at := xf * corner
+			top = maxf(top, height_at(at.x, at.z))
+			low = minf(low, height_at(at.x, at.z))
+		sheet.transform = Transform3D(xf.basis, Vector3(c.x, (float(f[3]) if f.size() > 3 and not is_nan(float(f[3])) else top) + 0.08, c.z))
+		if top - low < 0.5:  # only a flat step holds water; on a slope it would float
+			add_child(sheet)
+		else:
+			sheet.queue_free()
 	if bool(spec.get("fence", true)):
 		var gate := deg_to_rad(float(spec.get("gate", 0.0)))
 		for side in 4:
@@ -1414,9 +1556,25 @@ func _build_river(river: Dictionary) -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
 	mat.set_shader_parameter("flow_speed", float(river.get("flow", 1.0)))
+	var lava := bool(river.get("lava", false))
+	mat.set_shader_parameter("lava", 1.0 if lava else 0.0)
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
+	if lava:  # it lights the rock around it
+		for k in int(float(along) / 18.0):
+			var sample: Array = samples[_rng.randi() % samples.size()]
+			var c: Vector2 = sample[0]
+			var glow := OmniLight3D.new()
+			glow.light_color = Color(1.0, 0.45, 0.12)
+			glow.light_energy = 1.6
+			glow.omni_range = 11.0
+			glow.distance_fade_enabled = true
+			glow.distance_fade_begin = 60.0
+			glow.distance_fade_length = 20.0
+			glow.position = Vector3(c.x, float(sample[1]) + 1.5, c.y)
+			add_child(glow)
+		return
 	for k in int(float(along) / 7.0):
 		var s_: Array = samples[_rng.randi() % samples.size()]
 		var c: Vector2 = s_[0]
@@ -1698,7 +1856,7 @@ func _build_clutter() -> void:
 ## Clutter you can't walk through: fallen logs and stumps. Grass and flowers
 ## stay walk-through. One static body per chunk, a box per piece sized from
 ## the model and turned the way it lies.
-const SOLID_CLUTTER := ["log_fallen", "stump"]
+const SOLID_CLUTTER := ["log_fallen", "stump", "charred_log"]
 
 
 func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:

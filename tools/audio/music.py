@@ -33,6 +33,7 @@ MODES = {
 	"dorian": [0, 2, 3, 5, 7, 9, 10],
 	"aeolian": [0, 2, 3, 5, 7, 8, 10],
 	"phrygian_dominant": [0, 1, 4, 5, 7, 8, 10],  # the desert's raised third over a flat second
+	"phrygian": [0, 1, 3, 5, 7, 8, 10],  # minor with a flat second: the fire god's darker color
 }
 
 
@@ -101,10 +102,11 @@ def bass(f, dur, vel=0.6):
 	return out * np.exp(-t * 1.2) * _env(len(t), 0.006, 0.3) * vel * 0.5
 
 
-def drum(vel=0.5, rng=None):
-	t = _t(0.6)
-	f = 62 + 40 * np.exp(-t * 18)
-	body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7)
+def drum(vel=0.5, rng=None, low=1.0):
+	"""A frame drum; low < 1 tunes it down and lets it ring longer (a deep heartbeat)."""
+	t = _t(0.6 / low)
+	f = (62 + 40 * np.exp(-t * 18)) * low
+	body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7 * low)
 	noise = (rng or np.random.default_rng(2)).standard_normal(len(t))
 	slap = np.convolve(noise, np.ones(8) / 8, mode="same") * np.exp(-t * 60) * 0.5
 	return (body + slap) * vel * 0.5
@@ -161,11 +163,13 @@ RHYTHMS = {  # per bar, in beats; 3/4 and 4/4
 }
 
 
-def compose_phrase(key, chords, beats, rng, low=7, high=14, cadence=True, sparse=0.0):
+def compose_phrase(key, chords, beats, rng, low=7, high=14, cadence=True, sparse=0.0, avoid=()):
 	"""A melody over one chord per bar: [(start beat, length beats, degree)].
 	Strong beats land on chord tones, the rest step through the scale, the
 	contour rises in the middle of the phrase and settles, and the last note
-	rests long on the tonic (or the chord's root for a half cadence)."""
+	rests long on the tonic (or the chord's root for a half cadence). Scale
+	degrees in `avoid` (0-6) are left out where possible: skipping the 4th
+	and 7th makes a major-mode tune pentatonic."""
 	notes = []
 	cur = 9  # start around the third above the tonic, an octave up
 	bars = len(chords)
@@ -188,6 +192,8 @@ def compose_phrase(key, chords, beats, rng, low=7, high=14, cadence=True, sparse
 			else:
 				cands = [cur + s for s in (-2, -1, 1, 2)]
 			cands = [c for c in cands if low - 2 <= c <= high + 2] or tones
+			if avoid:
+				cands = [c for c in cands if c % 7 not in avoid] or cands
 			# prefer small steps, drift toward the contour
 			weights = np.array([1.0 / (1 + abs(c - cur)) ** 1.6 * (1.0 / (1 + abs(c - target_high) * 0.25))
 								* (0.15 if c == cur else 1.0) for c in cands])  # a tune moves: repeats are rare
@@ -280,6 +286,22 @@ TRACKS = {
 		"melody": "flute", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 2, 1, 2], "pad": True, "bass": True,
 		"drum": [0, 1.5, 2.5, 3], "drum_sections": ["A", "B", "C"], "reverb": 3.0, "sparse": 0.3, "bells": 0.1,
 	},
+	"high_terrace": {  # misty tea terraces and a fallen monastery: pentatonic flute over a drone, far-off prayer bells
+		"key": (64, "major"), "bpm": 56, "beats": 4, "seed": 251,
+		"sections": {"A": [0, 5, 3, 0], "B": [5, 1, 3, 4], "C": [3, 5, 1, 0]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "avoid": [3, 6], "arp": "harp", "arp_pattern": [0, 4, 2, -1, 1, -1, 4, -1], "pad": True, "bass": False,
+		"drone": 0.4, "drum": [0, 2.5], "drum_sections": ["B", "C"], "drum_gain": 0.55,
+		"reverb": 4.8, "sparse": 0.4, "bells": 0.55,
+	},
+	"cinderpass": {  # black rock, lava and ash: a low phrygian line over a drone and a heartbeat drum
+		"key": (52, "phrygian"), "bpm": 52, "beats": 4, "seed": 277,
+		"sections": {"A": [0, 1, 0, 5], "B": [5, 6, 1, 0], "C": [3, 1, 6, 0]},
+		"form": ["A", "A", "B", "A", "C"],
+		"melody": "flute", "melody_octave": -1, "arp": "lute", "arp_pattern": [0, -1, 1, -1, 2, 1, -1, -1], "pad": True, "bass": True,
+		"drone": 0.55, "drum": [0, 0.5, 2, 2.5], "drum_sections": ["A", "B", "C"], "drum_low": 0.7,
+		"reverb": 3.6, "sparse": 0.45, "bells": 0.08,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
@@ -314,17 +336,22 @@ def render(name, spec):
 		chords = spec["sections"][sec]
 		if sec not in phrases:
 			phrases[sec] = compose_phrase(key, chords, beats, rng, sparse=spec.get("sparse", 0.0),
-										  cadence=(sec != "B"))
+										  cadence=(sec != "B"), avoid=tuple(spec.get("avoid", ())))
 			tune = phrases[sec]
 		else:
 			tune = vary(phrases[sec], rng)
 		t0 = bar * beats * beat
 		# melody
 		for s, l, d in tune:
-			f = midi_hz(key.note(d))
+			f = midi_hz(key.note(d, spec.get("melody_octave", 0)))
 			vel = 0.55 + 0.1 * rng.random()
 			voice = horn(f, l * beat * 0.95, vel) if spec["melody"] == "horn" else flute(f, l * beat * 0.95, vel, rng)
 			put(voice, t0 + s * beat + rng.normal(0, 0.006), pan=0.15)
+		# a drone under the whole section: the tonic and its fifth, two octaves down
+		if spec.get("drone"):
+			sec_len = len(chords) * beats * beat
+			for m in (key.note(0, -2), key.note(4, -2)):
+				put(pad(midi_hz(m), sec_len, spec["drone"]), t0, pan=0.0)
 		# harmony, per bar
 		for b, ch in enumerate(chords):
 			tb = t0 + b * beats * beat
@@ -342,13 +369,16 @@ def render(name, spec):
 			step = beats * beat / len(pattern)
 			tones = [key.note(d, -1) for d in key.chord(ch)] + [key.note(ch + 7, -1), key.note(ch + 9, -1)]
 			for k, idx in enumerate(pattern):
+				if idx < 0:
+					continue  # a rest in the pattern
 				f = midi_hz(tones[idx])
 				vel = (0.5 if k == 0 else 0.34) + 0.06 * rng.random()
 				inst = lute(f, step * 1.5, vel) if spec["arp"] == "lute" else harp(f, step * 2.5, vel)
 				put(inst, tb + k * step + rng.normal(0, 0.004), pan=-0.35 if k % 2 else -0.15)
 			if sec in spec["drum_sections"]:
 				for d in spec["drum"]:
-					put(drum(0.55 if d == 0 or d == 2 else 0.35, rng), tb + d * beat, pan=0.05)
+					put(drum(0.55 if d == 0 or d == 2 else 0.35, rng, spec.get("drum_low", 1.0)), tb + d * beat, pan=0.05,
+						gain=spec.get("drum_gain", 1.0))
 			if spec.get("bells") and rng.random() < spec["bells"]:
 				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), 1)), 2.0, 0.5), tb + beat * rng.integers(1, beats), pan=0.4)
 		bar += len(chords)

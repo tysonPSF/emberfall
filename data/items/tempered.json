@@ -14,7 +14,8 @@
     "rec_level": 9,
     "classes": [
       "warrior",
-      "rogue"
+      "rogue",
+      "ranger"
     ]
   },
   "tempered_war_axe": {
@@ -53,7 +54,8 @@
       "wizard",
       "magician",
       "necromancer",
-      "shaman"
+      "shaman",
+      "ranger"
     ]
   },
   "tempered_helm": {
@@ -157,7 +159,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_tunic"
   },
@@ -171,7 +174,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_leggings"
   },
@@ -185,7 +189,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_gloves"
   },
@@ -199,7 +204,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_boots"
   }

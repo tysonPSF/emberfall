@@ -72,6 +72,12 @@
     "_finish": "How each tier looks on gear (held and worn): tint multiplies the color, metallic/roughness give a sheen, rim lights the edges, glow adds a faint inner light."
   },
   "tables": {
+    "monk_weapons": {"oak_staff": 3, "iron_short_sword": 1, "cultist_staff": 1},
+    "monk_hands": {"cloth_gloves": 1},
+    "troll_mountain_weapons": {"troll_club": 1},
+    "ember_weapons": {"obsidian_dirk": 2, "cinderwood_staff": 1, "emberforged_sword": 1},
+    "ember_chest": {"ashweave_robe": 1},
+    "ashfall_rings": {"wraithbone_ring": 1},
     "crude_weapons": {
       "rusty_dagger": 3,
       "rusty_short_sword": 3,

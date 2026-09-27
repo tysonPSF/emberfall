@@ -285,21 +285,6 @@
         "Fishers' Village",
         "Thornwood Vale"
       ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Hollowmere"
-      ]
     }
   ],
   "passes": [
@@ -481,6 +466,25 @@
       "arrive_face": [
         -159,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "high_terrace",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
       ]
     }
   ],

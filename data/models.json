@@ -1119,6 +1119,333 @@
     "spirit_wolf": {
       "path": "res://assets/creatures/spirit_wolf.glb",
       "rig": "own"
+    },
+    "griffon": {
+      "path": "res://assets/creatures/griffon.glb",
+      "rig": "own"
+    },
+    "griffon_matriarch": {
+      "path": "res://assets/creatures/griffon_matriarch.glb",
+      "rig": "own"
+    },
+    "harpy": {
+      "path": "res://assets/creatures/harpy_body.glb",
+      "hide": [
+        "Rogue_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/harpy_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/harpy_wings.glb"
+        },
+        {
+          "bone": "foot.l",
+          "path": "res://assets/creatures/harpy_talon_l.glb"
+        },
+        {
+          "bone": "foot.r",
+          "path": "res://assets/creatures/harpy_talon_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "harpy_matriarch": {
+      "path": "res://assets/creatures/harpy_matriarch_body.glb",
+      "scale": 0.85,
+      "hide": [
+        "Rogue_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/harpy_matriarch_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/harpy_matriarch_wings.glb"
+        },
+        {
+          "bone": "foot.l",
+          "path": "res://assets/creatures/harpy_talon_l.glb"
+        },
+        {
+          "bone": "foot.r",
+          "path": "res://assets/creatures/harpy_talon_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "fallen_monk": {
+      "path": "res://assets/creatures/fallen_monk_body.glb",
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/monk_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/prayer_beads.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "waist"
+      ]
+    },
+    "fallen_abbot": {
+      "path": "res://assets/creatures/fallen_abbot_body.glb",
+      "scale": 0.82,
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/abbot_head.glb"
+        },
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/abbot_hat.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/prayer_beads.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "gargoyle": {
+      "path": "res://assets/creatures/gargoyle.glb",
+      "rig": "own"
+    },
+    "terrace_golem": {
+      "path": "res://assets/creatures/terrace_golem_body.glb",
+      "scale": 1.0,
+      "hide": [
+        "Knight_Head",
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/terrace_golem_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/terrace_golem_chest.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "terrace_colossus": {
+      "path": "res://assets/creatures/terrace_golem_body.glb",
+      "scale": 1.35,
+      "hide": [
+        "Knight_Head",
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/terrace_colossus_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/terrace_golem_chest.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "snow_leopard": {
+      "path": "res://assets/creatures/snow_leopard.glb",
+      "rig": "own"
+    },
+    "ghost_leopard": {
+      "path": "res://assets/creatures/ghost_leopard.glb",
+      "rig": "own"
+    },
+    "mountain_yak": {
+      "path": "res://assets/creatures/mountain_yak.glb",
+      "rig": "own"
+    },
+    "mountain_troll": {
+      "path": "res://assets/creatures/mountain_troll_body.glb",
+      "scale": 1.4,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mountain_troll_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mountain_troll_back.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/mountain_troll_loincloth.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/mountain_troll_fist_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/mountain_troll_fist_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "magma_golem": {
+      "path": "res://assets/creatures/magma_golem.glb",
+      "rig": "own"
+    },
+    "magma_colossus": {
+      "path": "res://assets/creatures/magma_colossus.glb",
+      "rig": "own"
+    },
+    "ash_drake": {
+      "path": "res://assets/creatures/ash_drake.glb",
+      "rig": "own"
+    },
+    "cinder_drake": {
+      "path": "res://assets/creatures/cinder_drake.glb",
+      "rig": "own"
+    },
+    "lava_salamander": {
+      "path": "res://assets/creatures/lava_salamander.glb",
+      "rig": "own"
+    },
+    "ember_cultist": {
+      "path": "res://assets/creatures/ember_cultist_body.glb",
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/ember_hood.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "high_pyromancer": {
+      "path": "res://assets/creatures/high_pyromancer_body.glb",
+      "scale": 0.82,
+      "hide": [
+        "Mage_Hat",
+        "Mage_Head"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/high_pyromancer_hood.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist",
+        "chest"
+      ]
+    },
+    "charred_dead": {
+      "path": "res://assets/creatures/charred_dead_body.glb",
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/charred_embers.glb"
+        }
+      ],
+      "wearable_slots": [],
+      "part_swaps": [
+        "legs",
+        "head",
+        "chest"
+      ]
+    },
+    "ash_wraith": {
+      "path": "res://assets/creatures/ash_wraith_body.glb",
+      "hide": [
+        "Skeleton_Mage_LegLeft",
+        "Skeleton_Mage_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/ash_shroud.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/ash_tail.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "ash_wraith_lord": {
+      "path": "res://assets/creatures/ash_wraith_lord_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Skeleton_Mage_LegLeft",
+        "Skeleton_Mage_LegRight",
+        "Skeleton_Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/ash_lord_crown.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/ash_lord_shroud.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/ash_lord_tail.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "ranger_class": {
+      "path": "res://assets/creatures/ranger_class_body.glb",
+      "headgear_parts": [],
+      "attach": [
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/ranger_mantle.glb"
+        }
+      ]
+    },
+    "forest_hawk": {
+      "path": "res://assets/creatures/forest_hawk.glb",
+      "rig": "own",
+      "scale": 0.5
     }
   },
   "weapons": {
@@ -1502,6 +1829,81 @@
     },
     "woodpile": {
       "path": "res://assets/props/woodpile.glb"
+    },
+    "monastery_hall": {
+      "path": "res://assets/props/monastery_hall.glb"
+    },
+    "monastery_gate": {
+      "path": "res://assets/props/monastery_gate.glb"
+    },
+    "stupa": {
+      "path": "res://assets/props/stupa.glb"
+    },
+    "prayer_flags": {
+      "path": "res://assets/props/prayer_flags.glb"
+    },
+    "prayer_flags_short": {
+      "path": "res://assets/props/prayer_flags_short.glb"
+    },
+    "prayer_wheel": {
+      "path": "res://assets/props/prayer_wheel.glb"
+    },
+    "stone_lantern": {
+      "path": "res://assets/props/stone_lantern.glb"
+    },
+    "tea_bush": {
+      "path": "res://assets/props/tea_bush.glb"
+    },
+    "rice_shoots": {
+      "path": "res://assets/props/rice_shoots.glb"
+    },
+    "harpy_nest": {
+      "path": "res://assets/props/harpy_nest.glb"
+    },
+    "broken_pillar": {
+      "path": "res://assets/props/broken_pillar.glb"
+    },
+    "pilgrim_shelter": {
+      "path": "res://assets/props/pilgrim_shelter.glb"
+    },
+    "charred_tree": {
+      "path": "res://assets/props/charred_tree.glb"
+    },
+    "charred_tree_tall": {
+      "path": "res://assets/props/charred_tree_tall.glb"
+    },
+    "charred_log": {
+      "path": "res://assets/props/charred_log.glb"
+    },
+    "obsidian_spire": {
+      "path": "res://assets/props/obsidian_spire.glb"
+    },
+    "basalt_columns": {
+      "path": "res://assets/props/basalt_columns.glb"
+    },
+    "lava_vent": {
+      "path": "res://assets/props/lava_vent.glb"
+    },
+    "ash_boulder_a": {
+      "path": "res://assets/props/ash_boulder_a.glb"
+    },
+    "ash_boulder_b": {
+      "path": "res://assets/props/ash_boulder_b.glb"
+    },
+    "ash_boulder_c": {
+      "path": "res://assets/props/ash_boulder_c.glb"
+    },
+    "cultist_brazier": {
+      "path": "res://assets/props/cultist_brazier.glb"
+    },
+    "ember_banner": {
+      "path": "res://assets/props/ember_banner.glb"
+    },
+    "scout_tent": {
+      "path": "res://assets/props/scout_tent.glb"
+    },
+    "weapon_rack": {
+      "path": "res://assets/props/weapon_rack.glb"
     }
   },
   "gear": {
