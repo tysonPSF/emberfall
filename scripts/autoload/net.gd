@@ -522,6 +522,9 @@ func broadcast_look(e: Entity) -> void:
 @rpc("authority", "reliable")
 func _s_look(id: int, look: Dictionary) -> void:
 	var e := World.get_object(id) as Entity
+	if e is Player and str(look.get("race", "")) != str(e.look.get("race", "")):
+		e.look = look
+		(e as Player).dress()  # another player changed race
 	if e != null and e.visual is CharacterModel:
 		e.look = look
 		(e.visual as CharacterModel).set_tiers(look.get("tiers", {}))
@@ -723,7 +726,7 @@ func _send_self(peer: int) -> void:
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
 		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
 		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "feigning": p.feigning, "hotbar": p.hotbar,
-		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race,
+		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 	}
 	_s_self.rpc_id(peer, d)
 

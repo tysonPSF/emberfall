@@ -105,6 +105,10 @@ const SECTIONS := [
 	["cinder_life", "cinderpass"],
 	["char_stats", "greenmoor"],
 	["races", "greenmoor"],
+	["group_window", "greenmoor"],
+	["tooltips", "greenmoor"],
+	["group_xp", "greenmoor"],
+	["race_change", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -4603,6 +4607,97 @@ func _t_races() -> void:
 	print("races: then a gnome -> '%s'; changing again -> still '%s'; mana %d" % [p.race, p.race, p.max_mana])
 	p.race = saved_race
 	p.char_class = saved_class
+	p.recalc_stats()
+
+
+## The Group & Tells window takes only group chat and tells: spell, combat
+## and system lines stay in the main chat.
+func _t_group_window() -> void:
+	var hud: Node = get_parent().hud
+	var before: int = hud._group_log_lines
+	for pair: Array in [["You begin to use your homeward stone.", World.C_SPELL], ["You feel yourself pulled back to your bind point.", World.C_SPELL],
+			["You hit a gnoll pup for 5 points of damage.", World.C_YOU_HIT], ["You have entered Emberhold.", World.C_SYSTEM], ["The rally's fire fades.", World.C_SPELL]]:
+		hud.add_log(pair[0], pair[1])
+	var after_other: int = hud._group_log_lines
+	hud.add_log("Jewy tells the group, 'sweeet'", World.C_CHAT_GROUP)
+	hud.add_log("Jewy tells you, 'meet at the bank'", World.C_CHAT_TELL)
+	hud.add_log("You told Jewy, 'on my way'", World.C_CHAT_TELL)
+	print("group_window: 5 spell/combat/system lines -> %d in the window; a group line and two tells -> %d" % [after_other - before, hud._group_log_lines - after_other])
+	hud._group_panel.visible = true
+	await _wait(0.3)
+	await _shot("9zz_group_window")
+
+
+## Tooltips wrap: no line of any item's or spell's tooltip runs past ~60
+## characters (the Homeward Stone's used to cross the whole screen).
+func _t_tooltips() -> void:
+	var hud: Node = get_parent().hud
+	var longest := ["", 0]
+	for id: String in GameData.items:
+		for line in (hud._item_tooltip(id) as String).split("\n"):
+			if line.length() > int(longest[1]):
+				longest = [id, line.length()]
+	for id: String in GameData.spells:
+		for line in (hud.spell_tooltip(id) as String).split("\n"):
+			if line.length() > int(longest[1]):
+				longest = [id, line.length()]
+	print("tooltips: the longest line in any item or spell tooltip: %d characters (%s)" % [longest[1], longest[0]])
+	print("tooltips: the Homeward Stone:\n%s" % hud._item_tooltip("homeward_stone"))
+
+
+## Group experience reaches members within 10 levels of the highest: a
+## level 5 with a level 14 shares, a level 3 with a level 14 doesn't.
+func _t_group_xp() -> void:
+	var made := []
+	for lv: int in [14, 5, 3]:
+		var x := Player.new()
+		x.from_save({"name": "L%d" % lv, "class": "warrior", "level": lv, "stats": {}, "race": "human"})
+		made.append(x)
+	var names := World.xp_eligible(made).map(func(x: Player) -> String: return "level %d" % x.level)
+	print("group_xp: a group of levels 14, 5 and 3 -> experience for %s" % [names])
+	for x: Player in made:
+		x.free()
+
+
+## The one change of race: the sheet's button, a race the class can't be is
+## refused, a gnome wizard really gets a gnome's stats and body, and a
+## second change is refused and the button gone.
+func _t_race_change() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	p.race = "human"
+	p.race_changed = false
+	p.look["race"] = "human"
+	p.dress()
+	hud._toggle_inventory()
+	await _wait(0.4)
+	print("races: the sheet offers a change %s" % hud._race_button.visible)
+	hud._open_race_change()
+	await _wait(0.2)
+	var open: Array = hud._race_row.get_children().filter(func(b: Button) -> bool: return not b.disabled).map(func(b: Button) -> String: return b.get_meta("race"))
+	print("race_change: a wizard may become %s" % [open])
+	(hud._race_row.get_child(GameData.races.keys().find("gnome")) as Button).pressed.emit()
+	await _shot("9zz_race_change_window")
+	hud._race_panel.visible = false
+	World.request_change_race(p.entity_id, "troll")
+	print("race_change: to a troll -> '%s'" % p.race)
+	var mana0 := p.max_mana
+	var scale0 := p.visual.scale.x
+	World.request_change_race(p.entity_id, "gnome")
+	await _wait(0.4)
+	print("race_change: to a gnome -> '%s', mana %d -> %d, height %.2f -> %.2f, used up %s" % [p.race, mana0, p.max_mana, scale0, p.visual.scale.x, p.race_changed])
+	World.request_change_race(p.entity_id, "dark_elf")
+	await _wait(0.4)
+	print("race_change: again, to a dark elf -> still '%s'; the button shown %s" % [p.race, hud._race_button.visible])
+	p.zoom = 5.0
+	await _wait(0.3)
+	await _shot("9zz_race_change_gnome")
+	hud._toggle_inventory()
+	p.race = "human"
+	p.race_changed = false
+	p.look["race"] = "human"
+	p.dress()
 	p.recalc_stats()
 
 

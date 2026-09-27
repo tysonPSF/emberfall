@@ -56,7 +56,7 @@ const C_CHAT_SAY := Color(0.93, 0.93, 0.9)
 const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
 const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
 const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
-const C_CHAT_GROUP := Color(0.55, 0.78, 1.0)
+const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
 const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /time  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
@@ -1289,7 +1289,7 @@ func _award_group(credited: Player, mob: Mob) -> void:
 	var top := 0
 	for m: Player in members:
 		top = maxi(top, m.level)
-	var eligible := members.filter(func(m: Player) -> bool: return top - m.level <= maxi(3, top / 3))
+	var eligible := xp_eligible(members)
 	if GameData.factions.has(mob.faction):
 		for m: Player in eligible:
 			apply_faction(m, GameData.factions[mob.faction].get("on_kill", {}))
@@ -1302,6 +1302,16 @@ func _award_group(credited: Player, mob: Mob) -> void:
 		level_sum += m.level
 	for m: Player in eligible:
 		m.add_xp(maxi(1, int(total * m.level / level_sum)), eligible.size() > 1)
+
+
+## The group members who share a kill's experience: everyone within
+## `group_xp_level_gap` (config, 10) levels of the highest.
+func xp_eligible(members: Array) -> Array:
+	var top := 0
+	for m: Player in members:
+		top = maxi(top, m.level)
+	var gap := int(cfg("group_xp_level_gap", 10))
+	return members.filter(func(m: Player) -> bool: return top - m.level <= gap)
 
 
 func award_xp(p: Player, mob: Mob) -> void:
@@ -1704,6 +1714,30 @@ func request_set_stats(player_id: int, points: Dictionary, race := "") -> void:
 		say(p, "You feel your training settle into you.", C_SYSTEM)
 	p.recalc_stats()
 	p.stats_changed.emit()
+
+
+## A character's one change of race: to any race its class allows. Stats
+## follow the new race; the home and bind stay where they are.
+func request_change_race(player_id: int, race: String) -> void:
+	if _remote(&"request_change_race", [player_id, race]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	if p.race_changed:
+		say(p, "You have already changed your race once.", C_WARN)
+		return
+	if not GameData.races.has(race) or race == p.race or not p.char_class in GameData.races[race].get("classes", []):
+		say(p, "You can't become that.", C_WARN)
+		return
+	p.race = race
+	p.race_changed = true
+	p.look["race"] = race
+	p.recalc_stats()
+	p.stats_changed.emit()
+	p.dress()
+	Net.broadcast_look(p)
+	say(p, "You feel yourself change. You are %s %s now." % ["an" if str(GameData.races[race]["name"])[0] in "AEIOU" else "a", GameData.races[race]["name"]], C_SPELL)
 
 
 func request_interrupt(entity_id: int) -> void:
