@@ -2046,7 +2046,7 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 	c.stats_changed.emit()
 
 
-## Under a ward (Divine Aura): no harm lands.
+## Under a ward (Prabhagaj's Shelter): no harm lands.
 static func warded(e: Entity) -> bool:
 	for spell_id: String in e.buffs:
 		if GameData.spells.get(spell_id, {}).get("ward", false):

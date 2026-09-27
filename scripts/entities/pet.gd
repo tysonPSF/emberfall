@@ -27,7 +27,7 @@ var body_scale := 1.0
 var _backoff := 0.0  # seconds after Back Off during which it won't pick a fight on its own
 var _taunt_timer := 0.0
 var _think := 0.0
-var _base := {}  # stats as summoned, before buffs (Burnout, Elemental Bond)
+var _base := {}  # stats as summoned, before buffs (Stoke the Flame, Elemental Bond)
 
 
 ## Server: rolls the pet for its owner from the summoning spell's pets.json kind.
@@ -59,7 +59,7 @@ func setup(owner: Player, from_spell: String) -> void:
 	_base = {"max_hp": max_hp, "ac": ac, "dmg_min": dmg_min, "dmg_max": dmg_max, "attack_delay": attack_delay, "hp_regen": hp_regen}
 
 
-## A pet's buffs (its owner's Burnout, Elemental Bond, Dark Empowerment) on
+## A pet's buffs (its owner's Stoke the Flame, Elemental Bond, Dark Empowerment) on
 ## top of what it was summoned with.
 func recalc_stats() -> void:
 	if _base.is_empty():

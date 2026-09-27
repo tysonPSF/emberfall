@@ -1412,7 +1412,7 @@
     },
     "dialogue": {
       "hail": "Earth, water, fire and air, {name}: each will answer a magician who asks properly. If you're one of mine, I'll teach you the asking. Your elementals will need [tending], too.",
-      "tending": "Renew Elements mends your elemental; Burnout makes it quicker and harder-hitting. Tell it what to do from its window, or say /pet attack, back, follow, guard, sit, taunt. Earth holds a monster's attention, fire burns it down, water chills it, air staggers it.",
+      "tending": "Mend the Bound heals your elemental; Stoke the Flame makes it quicker and harder-hitting. Tell it what to do from its window, or say /pet attack, back, follow, guard, sit, taunt. Earth holds a monster's attention, fire burns it down, water chills it, air staggers it.",
       "unknown": "Ask Keeper Maelin, {name}."
     }
   },

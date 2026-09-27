@@ -3954,7 +3954,7 @@ func _t_shaman() -> void:
 	await cast.call("spirit_mend")
 	await _wait(12.5)
 	print("shaman: spirit mend (+ward) -> %d hp back over 12 s" % (p.hp - before))
-	# slows: count a gnoll's swings at you for 15 s, then again under Turgur's Insects
+	# slows: count a gnoll's swings at you for 15 s, then again under Hornet Plague
 	var mob := _nearest_mob(p, "gnoll_scout")
 	mob.max_hp = 100000
 	mob.hp = mob.max_hp
@@ -3978,7 +3978,7 @@ func _t_shaman() -> void:
 	await cast.call("turgurs_insects")
 	var slowed_pct := mob.slow_pct
 	var slowed: int = await count_swings.call(15.0)
-	print("shaman: gnoll (delay %.1f s) swung %d times in 15 s; under Turgur's Insects (%d%%, %.0f s) %d times -> %s" % [
+	print("shaman: gnoll (delay %.1f s) swung %d times in 15 s; under Hornet Plague (%d%%, %.0f s) %d times -> %s" % [
 			mob.attack_delay, plain, slowed_pct, mob.slow_left, slowed, "PASS" if slowed < plain else "FAIL"])
 	await cast.call("drowsy")
 	print("shaman: a weaker slow on top -> still %d%%" % mob.slow_pct)
@@ -3989,7 +3989,7 @@ func _t_shaman() -> void:
 	World.request_set_target(p.entity_id, named.entity_id)
 	p.global_position = z.ground(named.global_position.x + 8.0, named.global_position.z) + Vector3.UP
 	await cast.call("turgurs_insects")
-	print("shaman: Turgur's Insects on a named foe -> %d%%" % named.slow_pct)
+	print("shaman: Hornet Plague on a named foe -> %d%%" % named.slow_pct)
 	named.hate.clear()
 	# guildmasters and gear
 	var gms := []
