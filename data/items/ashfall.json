@@ -1,0 +1,422 @@
+{
+  "emberforged_helm": {
+    "name": "Emberforged Helm",
+    "slot": "head",
+    "ac": 15,
+    "sta": 4,
+    "hp": 15,
+    "value": 4200,
+    "rec_level": 26,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "emberforged_breastplate": {
+    "name": "Emberforged Breastplate",
+    "slot": "chest",
+    "ac": 27,
+    "sta": 6,
+    "hp": 35,
+    "value": 7600,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "emberforged_vambraces": {
+    "name": "Emberforged Vambraces",
+    "slot": "arms",
+    "ac": 11,
+    "str": 3,
+    "value": 3200,
+    "rec_level": 26,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "emberforged_gauntlets": {
+    "name": "Emberforged Gauntlets",
+    "slot": "hands",
+    "ac": 10,
+    "str": 3,
+    "value": 3000,
+    "rec_level": 26,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "emberforged_greaves": {
+    "name": "Emberforged Greaves",
+    "slot": "legs",
+    "ac": 18,
+    "sta": 4,
+    "value": 5200,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "emberforged_boots": {
+    "name": "Emberforged Boots",
+    "slot": "feet",
+    "ac": 11,
+    "agi": 3,
+    "value": 3200,
+    "rec_level": 26,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "emberforged_shield": {
+    "name": "Emberforged Kite Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 17,
+    "sta": 4,
+    "hp": 20,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 6400,
+    "rec_level": 27
+  },
+  "cinderscale_jerkin": {
+    "name": "Cinderscale Jerkin",
+    "slot": "chest",
+    "ac": 19,
+    "agi": 5,
+    "str": 3,
+    "value": 7000,
+    "rec_level": 27,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "cinderscale_leggings": {
+    "name": "Cinderscale Leggings",
+    "slot": "legs",
+    "ac": 13,
+    "agi": 4,
+    "sta": 2,
+    "value": 4800,
+    "rec_level": 27,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "cinderscale_gloves": {
+    "name": "Cinderscale Gloves",
+    "slot": "hands",
+    "ac": 8,
+    "agi": 3,
+    "value": 2900,
+    "rec_level": 26,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "cinderscale_boots": {
+    "name": "Cinderscale Boots",
+    "slot": "feet",
+    "ac": 10,
+    "agi": 3,
+    "sta": 2,
+    "value": 3000,
+    "rec_level": 26,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "ashweave_cap": {
+    "name": "Ashweave Cap",
+    "slot": "head",
+    "ac": 6,
+    "int": 4,
+    "wis": 4,
+    "mana": 35,
+    "value": 3600,
+    "rec_level": 26,
+    "wear": "cloth_cap"
+  },
+  "ashweave_robe": {
+    "name": "Ashweave Robe",
+    "slot": "chest",
+    "ac": 13,
+    "int": 6,
+    "wis": 6,
+    "mana": 60,
+    "value": 7000,
+    "rec_level": 27,
+    "wear": "patchwork_tunic"
+  },
+  "ashweave_gloves": {
+    "name": "Ashweave Gloves",
+    "slot": "hands",
+    "ac": 5,
+    "int": 4,
+    "wis": 4,
+    "mana": 20,
+    "value": 2700,
+    "rec_level": 26,
+    "wear": "cloth_gloves"
+  },
+  "ashweave_slippers": {
+    "name": "Ashweave Slippers",
+    "slot": "feet",
+    "ac": 5,
+    "int": 3,
+    "wis": 3,
+    "mana": 15,
+    "value": 2600,
+    "rec_level": 26,
+    "wear": "sandals"
+  },
+  "emberforged_sword": {
+    "name": "Emberforged Sword",
+    "slot": "primary",
+    "dmg": 19,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 8200,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "emberforged_war_axe": {
+    "name": "Emberforged War Axe",
+    "slot": "primary",
+    "dmg": 20,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 8000,
+    "rec_level": 27,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "emberforged_greataxe": {
+    "name": "Emberforged Greataxe",
+    "slot": "primary",
+    "dmg": 30,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 9000,
+    "rec_level": 28,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "obsidian_dirk": {
+    "name": "Obsidian Dirk",
+    "slot": "primary",
+    "dmg": 14,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 7400,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "cinderwood_staff": {
+    "name": "Cinderwood Staff",
+    "slot": "primary",
+    "dmg": 16,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 6,
+    "wis": 6,
+    "mana": 55,
+    "value": 8000,
+    "rec_level": 27,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "cinderwood_longbow": {
+    "name": "Cinderwood Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 10,
+    "delay": 2.9,
+    "range": 44,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 7600,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "obsidian_arrow": {
+    "name": "Obsidian-Tipped Arrow",
+    "ammo_type": "arrow",
+    "dmg": 4,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 4
+  },
+  "magma_heart_amulet": {
+    "name": "Magma Heart Amulet",
+    "slot": "neck",
+    "ac": 6,
+    "sta": 5,
+    "str": 3,
+    "hp": 50,
+    "value": 11000,
+    "rec_level": 28,
+    "no_drop": true,
+    "lore": true
+  },
+  "pyromancers_cowl": {
+    "name": "Pyromancer's Cowl",
+    "slot": "head",
+    "ac": 8,
+    "int": 6,
+    "wis": 6,
+    "mana": 60,
+    "hp": 20,
+    "value": 11000,
+    "rec_level": 28,
+    "lore": true,
+    "wear": "cloth_cap"
+  },
+  "drakescale_cloak": {
+    "name": "Drakescale Cloak",
+    "slot": "arms",
+    "ac": 12,
+    "agi": 5,
+    "sta": 4,
+    "hp": 30,
+    "value": 11000,
+    "rec_level": 28,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "cinderheart_blade": {
+    "name": "Cinderheart Blade",
+    "slot": "primary",
+    "dmg": 22,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 5,
+    "agi": 4,
+    "hp": 40,
+    "value": 14000,
+    "rec_level": 29,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "elemental_flame",
+      "chance": 0.07
+    }
+  },
+  "wraithbone_ring": {
+    "name": "Wraithbone Ring",
+    "slot": "ring",
+    "ac": 4,
+    "int": 4,
+    "wis": 4,
+    "mana": 40,
+    "value": 9000,
+    "rec_level": 27,
+    "lore": true
+  },
+  "scouts_signet": {
+    "name": "Forgehold Scout's Signet",
+    "slot": "ring",
+    "ac": 5,
+    "sta": 4,
+    "agi": 3,
+    "hp": 30,
+    "value": 9000,
+    "rec_level": 27,
+    "no_drop": true,
+    "lore": true
+  }
+}

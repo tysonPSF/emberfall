@@ -546,5 +546,193 @@
       "emberhold": 15,
       "watch": 10
     }
+  },
+  "tenzins_beads": {
+    "name": "Rites for the Fallen",
+    "giver": "brother_tenzin",
+    "start_keyword": "beads",
+    "wants": {
+      "prayer_bead": 4
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 300
+    },
+    "first_reward_item": "monks_wraps",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Rites for the Fallen. Bring Brother Tenzin four prayer beads from the fallen monks.",
+    "ready_text": "Their beads. I can feel the anger in them still. Give them to me, {name}.",
+    "complete_text": "There. Four brothers at rest. The order thanks you, what is left of it.",
+    "first_complete_text": "Take my hand wraps. I have no use for fists now.",
+    "faction": {
+      "dawn_pilgrims": 10,
+      "fallen_order": -10
+    }
+  },
+  "the_abbots_seal": {
+    "name": "The Abbot's Seal",
+    "giver": "brother_tenzin",
+    "start_keyword": "seal",
+    "wants": {
+      "abbots_seal": 1
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 700
+    },
+    "first_reward_item": "pilgrims_prayer_beads",
+    "accept_text": "You have taken on a task: The Abbot's Seal. Bring Brother Tenzin the seal Abbot Varun carries.",
+    "ready_text": "The seal of the order. So Varun is gone. Give it here, {name}.",
+    "complete_text": "I will lay it on the altar at dawn. The Order of the Dawn-Tusk ends today, with grace.",
+    "first_complete_text": "These beads have been round my neck since I was a boy. Wear them.",
+    "faction": {
+      "dawn_pilgrims": 25,
+      "lanternhold": 10,
+      "fallen_order": -30
+    }
+  },
+  "the_colossus_heart": {
+    "name": "A Heart of Stone",
+    "giver": "brother_tenzin",
+    "start_keyword": "heartstone",
+    "wants": {
+      "colossus_heartstone": 1
+    },
+    "reward": {
+      "xp": 5600,
+      "coin": 700
+    },
+    "first_reward_item": "heartstone_ring",
+    "accept_text": "You have taken on a task: A Heart of Stone. Bring Brother Tenzin the Terrace Colossus's heartstone.",
+    "ready_text": "It still glows. It remembers the dawn. Give it to me, {name}.",
+    "complete_text": "The guardians of the courts will sleep now.",
+    "first_complete_text": "Set in a ring, as I promised. It will keep you standing.",
+    "faction": {
+      "dawn_pilgrims": 20,
+      "lanternhold": 5
+    }
+  },
+  "pemas_talons": {
+    "name": "Talons for the Pickers",
+    "giver": "tea_mother_pema",
+    "start_keyword": "talons",
+    "wants": {
+      "harpy_talon": 4
+    },
+    "reward": {
+      "xp": 2000,
+      "coin": 280
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Talons for the Pickers. Bring Tea-Mother Pema four harpy talons.",
+    "ready_text": "Harpy talons! Hand them over, dear.",
+    "complete_text": "The pickers will sleep better. Here's your coin, and a cup of tea on the house.",
+    "faction": {
+      "dawn_pilgrims": 8,
+      "harpies": -10
+    }
+  },
+  "skyrends_plume": {
+    "name": "The Matriarch's Plume",
+    "giver": "tea_mother_pema",
+    "start_keyword": "plume",
+    "wants": {
+      "skyrend_plume": 1
+    },
+    "reward": {
+      "xp": 5000,
+      "coin": 600
+    },
+    "first_reward_item": "skyrend_cloak",
+    "accept_text": "You have taken on a task: The Matriarch's Plume. Bring Tea-Mother Pema a plume from Skyrend the Matriarch.",
+    "ready_text": "That's her plume, sure as the dawn. Give it here, {name}.",
+    "complete_text": "Let me stitch this. There. The wind itself will slide off you.",
+    "first_complete_text": "Your cloak, {name}.",
+    "faction": {
+      "dawn_pilgrims": 15
+    }
+  },
+  "ember_sigils": {
+    "name": "Sigils of the Ember",
+    "giver": "scout_captain_brenna",
+    "start_keyword": "ember sigil",
+    "wants": {
+      "ember_sigil": 4
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 500
+    },
+    "first_reward_item": "scouts_signet",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Sigils of the Ember. Bring Scout-Captain Brenna four ember sigils.",
+    "ready_text": "Ember sigils. Good work, {name}. Hand them over.",
+    "complete_text": "Four fewer fanatics. Forgehold pays for every four.",
+    "first_complete_text": "And a scout's signet. You've earned it.",
+    "faction": {
+      "forgehold": 10,
+      "ember_cult": -10
+    }
+  },
+  "ashkars_brand": {
+    "name": "The Pyromancer's Brand",
+    "giver": "scout_captain_brenna",
+    "start_keyword": "brand",
+    "wants": {
+      "ashkars_brand": 1
+    },
+    "reward": {
+      "xp": 9000,
+      "coin": 1200
+    },
+    "first_reward_item": "cinderheart_blade",
+    "accept_text": "You have taken on a task: The Pyromancer's Brand. Bring Scout-Captain Brenna the brand High Pyromancer Ashkar carries.",
+    "ready_text": "That's his brand. Ashkar is dead? Give it here, {name}.",
+    "complete_text": "The cult will scatter without him. Forgehold owes you.",
+    "first_complete_text": "Take this blade. It was forged for the Captain of the Scouts, and I'd rather it went to you.",
+    "faction": {
+      "forgehold": 30,
+      "emberhold": 10,
+      "ember_cult": -30
+    }
+  },
+  "drake_scales": {
+    "name": "Scales for the Quench",
+    "giver": "smith_tovar",
+    "start_keyword": "scales",
+    "wants": {
+      "drake_scale": 4
+    },
+    "reward": {
+      "xp": 4000,
+      "coin": 480
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Scales for the Quench. Bring Smith Tovar four ash drake scales.",
+    "ready_text": "Drake scales, and good ones. Hand them here.",
+    "complete_text": "These'll make fine shields. Here's your coin.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "cindermaws_heart": {
+    "name": "The Heart of Cindermaw",
+    "giver": "smith_tovar",
+    "start_keyword": "heart",
+    "wants": {
+      "cindermaw_heart": 1
+    },
+    "reward": {
+      "xp": 9000,
+      "coin": 1100
+    },
+    "first_reward_item": "drakescale_cloak",
+    "accept_text": "You have taken on a task: The Heart of Cindermaw. Bring Smith Tovar the heart of the great drake Cindermaw.",
+    "ready_text": "Cindermaw's heart, and still smoldering. Give it to me, {name}.",
+    "complete_text": "I'll quench the finest blade of my life in this.",
+    "first_complete_text": "And a cloak of its kin's scales for you. Fire won't bite through it.",
+    "faction": {
+      "forgehold": 25
+    }
   }
 }

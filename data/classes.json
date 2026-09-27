@@ -156,5 +156,37 @@
     },
     "model": "shaman",
     "caster_stat": "wis"
+  },
+  "ranger": {
+    "name": "Ranger",
+    "description": "The finest archer in the land: aimed shots and volleys from afar, two blades when it gets close, nature's snares and salves, and the tracker's eye that finds what hides in the wilds. A hawk joins them from level 20.",
+    "color": "#5a8a3a",
+    "hp_base": 18,
+    "hp_per_level": 12,
+    "mana_base": 10,
+    "mana_per_level": 6,
+    "ac_base": 9,
+    "melee_skill": 0.9,
+    "hp_regen": 1,
+    "mana_regen": 1,
+    "spells": [
+      "kick",
+      "aimed_shot",
+      "track"
+    ],
+    "starting_items": {
+      "primary": "rusty_short_sword",
+      "chest": "patchwork_tunic",
+      "range": "hunting_shortbow"
+    },
+    "starting_pack": {
+      "crude_arrow": 60
+    },
+    "model": "ranger_class",
+    "caster_stat": "wis",
+    "archery": {
+      "dmg": 1.35,
+      "range": 1.2
+    }
   }
 }

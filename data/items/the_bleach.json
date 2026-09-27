@@ -99,7 +99,8 @@
     "lore": true,
     "classes": [
       "warrior",
-      "rogue"
+      "rogue",
+      "ranger"
     ],
     "proc": {
       "spell": "scorpion_venom",

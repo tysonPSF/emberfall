@@ -1543,5 +1543,262 @@
       "hail": "Listen: every drop is a voice, {name}. Shamans who hear them come to me, and I teach them to answer.",
       "unknown": "Ask at the shrine, {name}; Tidepriest Nalini knows the city best."
     }
+  },
+  "brother_tenzin": {
+    "name": "Brother Tenzin",
+    "title": "Last of the Order",
+    "level": 30,
+    "model": "fallen_monk",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "Peace, {name}. I kept the lowest shrine when the others went up to the monastery and did not come down. They are the [Fallen] now, and the terraces are [overrun].",
+      "fallen": "My brothers. The [abbot], Varun, swore the Dawn-Tusk had abandoned us and that we would wake the old [guardians] ourselves. They broke their vows to do it. Each of them still wears the order's beads. Bring me their [beads], four at a time, and I will say the rites for them.",
+      "beads": "Four tarnished prayer beads, {name}. Every four I purify is a brother at rest. The first time, take my old hand wraps; they are all I have left of the order.",
+      "abbot": "Abbot Varun the Unbound, at the top of the terraces in the monastery hall. He carries the order's [seal].",
+      "seal": "Bring me the Abbot's Seal and I will lay it on the Dawn-Tusk's altar. Then the order can end with some grace. I will give you the beads I have worn since I was a boy.",
+      "guardians": "The stone watchers of the monastery: gargoyles on the pillars, golems in the courts. Varun woke them, and one he woke is a [colossus].",
+      "colossus": "The Terrace Colossus walks the highest court. Its heart is a stone that still remembers the dawn. Bring me its [heartstone] and I will have it set in a ring for you.",
+      "heartstone": "The Colossus's heartstone. Nothing smaller will do, {name}.",
+      "overrun": "[Harpies] on the upper steps, griffons riding the wind above them, snow leopards in the tea, trolls in the high passes. Ask Pema; she knows the terraces better than I do.",
+      "unknown": "The terraces have many voices, {name}. That is not one I know."
+    }
+  },
+  "tea_mother_pema": {
+    "name": "Tea-Mother Pema",
+    "title": "Terrace Supplies",
+    "level": 25,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "merchant": {
+      "sells": [
+        "terrace_tea",
+        "loaf_of_bread",
+        "bundle_of_herbs",
+        "vial_of_water",
+        "crude_arrow",
+        "sling_stone",
+        "fishing_bait",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Sit, {name}, drink. Tea from the lowest terrace, the only one we still pick. The [harpies] took the rest. Press G if you're buying.",
+      "harpies": "Screeching things, nesting on the upper steps. They carry off the pickers. Bring me four [talons] and I'll pay you, every time.",
+      "talons": "Four harpy talons, {name}. I grind them for the pickers' charms, not that the charms work.",
+      "griffons": "The griffons were here before the monastery. Their matriarch, [Skyrend], nests on the high cliff and hunts the whole mountain.",
+      "skyrend": "Skyrend the Matriarch. Bring me one of her plumes and I'll make you a cloak that sheds the wind.",
+      "plume": "Skyrend's plume, {name}. Only the matriarch's will do.",
+      "unknown": "Ask Brother Tenzin, dear. He knows old things."
+    }
+  },
+  "terrace_warden": {
+    "name": "Terrace Warden",
+    "title": "Pilgrims of the Dawn",
+    "level": 38,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "Stay near the rest, {name}. The harpies don't come this low, and neither do the monks.",
+      "unknown": "Ask Brother Tenzin."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the pilgrims!",
+        "Back up the terraces with you!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "scout_captain_brenna": {
+    "name": "Scout-Captain Brenna",
+    "title": "Forgehold Scouts",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "You came up from Thornwood? Then you've seen the ash. Forgehold sent us to watch the pass, {name}, and what we watch is the [Ember] cult.",
+      "ember": "Madmen who say Agnavar's fire should burn the world clean. They've a fortified camp in the east of the pass, and every one of them carries an [ember sigil]. Their [leader] rules it from the fire.",
+      "ember sigil": "Four sigils, {name}, and I'll pay for each four, as often as you bring them. The first time, you'll have a scout's signet.",
+      "sigils": "Four sigils, {name}, and I'll pay for each four.",
+      "leader": "High Pyromancer [Ashkar]. He brands his cultists with an iron he keeps at his belt.",
+      "ashkar": "Bring me Ashkar's [brand] and the cult loses its heart. I'll give you a blade forged in Forgehold's own fire.",
+      "brand": "Ashkar's brand, {name}. Nothing else proves he's dead.",
+      "unknown": "Ask Tovar at the forge."
+    }
+  },
+  "smith_tovar": {
+    "name": "Smith Tovar",
+    "title": "Forgehold Arms",
+    "level": 35,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "merchant": {
+      "sells": [
+        "emberforged_helm",
+        "emberforged_breastplate",
+        "emberforged_vambraces",
+        "emberforged_gauntlets",
+        "emberforged_greaves",
+        "emberforged_boots",
+        "emberforged_shield",
+        "cinderscale_jerkin",
+        "cinderscale_leggings",
+        "cinderscale_gloves",
+        "cinderscale_boots",
+        "ashweave_cap",
+        "ashweave_robe",
+        "ashweave_gloves",
+        "ashweave_slippers",
+        "emberforged_sword",
+        "emberforged_war_axe",
+        "emberforged_greataxe",
+        "obsidian_dirk",
+        "cinderwood_staff",
+        "cinderwood_longbow",
+        "obsidian_arrow",
+        "crude_arrow",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Emberforged steel, {name}, quenched in the lava itself. Nothing finer this side of Forgehold. Press G if you're buying. And if you're hunting, I'll pay for [drake] scales.",
+      "drake": "Ash drakes, in the lava fields west of the road. Their scales make the best quench-shields. Four [scales] and I'll pay, every time. And if you're very brave, there's [Cindermaw].",
+      "scales": "Four ash drake scales, {name}.",
+      "cindermaw": "Cindermaw. The great drake of the pass, nesting at the top of the lava falls. Bring me its [heart] and I'll give you a cloak of its kin's scales.",
+      "heart": "Cindermaw's heart. Still warm, I'd wager.",
+      "unknown": "Ask the Captain."
+    }
+  },
+  "forgehold_scout": {
+    "name": "Forgehold Scout",
+    "title": "Forgehold Scouts",
+    "level": 38,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Stay close to the outpost, {name}. The ash hides things.",
+      "unknown": "Ask the Captain."
+    },
+    "guard": {
+      "radius": 20,
+      "leash": 30,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "To me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not near the outpost!",
+        "Back into the ash with you!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "gm_corin": {
+    "name": "Huntmaster Corin",
+    "title": "Ranger Guildmaster",
+    "level": 40,
+    "model": "ranger_class",
+    "weapon": "sword_1handed",
+    "faction": "emberhold",
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "You don't carry a bow like a ranger, {name}. The other guilds are round the hearth."
+    },
+    "dialogue": {
+      "hail": "Rangers learn from me, {name}: the bow, the blade, and the wild's own quiet magic. The wild is patient; learn to be.",
+      "unknown": "Ask the city's keeper, {name}."
+    }
+  },
+  "gm_taryn": {
+    "name": "Sunbow Taryn",
+    "title": "Ranger Guildmaster",
+    "level": 40,
+    "model": "ranger_class",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "Not a ranger? Then ask round the plaza."
+    },
+    "dialogue": {
+      "hail": "The dawn lights the hunter's way, {name}. Rangers, come and learn the bow as the Dawnstair's wardens shoot it.",
+      "unknown": "Ask the city's keeper, {name}."
+    }
+  },
+  "gm_aiyana": {
+    "name": "Reedwalker Aiyana",
+    "title": "Ranger Guildmaster",
+    "level": 40,
+    "model": "ranger_class",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "The reeds only speak to rangers, {name}."
+    },
+    "dialogue": {
+      "hail": "In the rain, a ranger's ears matter more than their eyes, {name}. Rangers, I'll teach you to hear the jungle.",
+      "unknown": "Ask the city's keeper, {name}."
+    }
   }
 }

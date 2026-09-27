@@ -251,21 +251,6 @@
     {
       "type": "rockslide",
       "pos": [
-        -232,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "The Bleach"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
         0,
         -232
       ],
@@ -646,6 +631,25 @@
       "arrive_face": [
         0,
         -159
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "high_terrace",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
       ]
     }
   ],

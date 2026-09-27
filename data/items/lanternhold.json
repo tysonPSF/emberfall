@@ -136,7 +136,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_tunic"
   },
@@ -150,7 +151,8 @@
     "classes": [
       "rogue",
       "warrior",
-      "shaman"
+      "shaman",
+      "ranger"
     ],
     "wear": "leather_boots"
   },
@@ -169,7 +171,8 @@
     "rec_level": 16,
     "classes": [
       "warrior",
-      "rogue"
+      "rogue",
+      "ranger"
     ]
   },
   "steel_dirk": {
@@ -185,7 +188,7 @@
     "skill": "piercing",
     "value": 2400,
     "rec_level": 16,
-    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman"]
+    "classes": ["warrior", "rogue", "wizard", "magician", "necromancer", "shaman", "ranger"]
   },
   "steel_war_axe": {
     "name": "Steel War Axe",

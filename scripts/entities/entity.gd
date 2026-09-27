@@ -289,7 +289,9 @@ func build_body(shape: String, color: Color, body_scale: float, model_id := "", 
 ## set, otherwise placeholder primitives.
 static func make_visual(look_: Dictionary) -> Node3D:
 	var body_scale := float(look_.get("scale", 1.0))
-	if str(look_.get("model", "")) != "":
+	if str(look_.get("model", "")) != "" and not GameData.models["characters"].has(str(look_["model"])):
+		push_warning("no model '%s' in models.json: drawing a placeholder" % look_["model"])
+	elif str(look_.get("model", "")) != "":
 		var m := CharacterModel.new()
 		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale, look_.get("gear"))
 		m.set_tiers(look_.get("tiers", {}))

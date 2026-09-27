@@ -16,6 +16,7 @@ const EMBER := Color(1.0, 0.45, 0.28)
 const INK := Color(0.04, 0.04, 0.06)
 
 var player: Player
+var tracked: Mob  # a ranger's tracked monster: a paw mark on the strip until it dies or you leave the zone
 var _heading := 0.0
 var _zone_name := ""
 var _levels := ""  # "Levels 6 - 14"; empty for cities and interiors
@@ -143,6 +144,22 @@ func _draw() -> void:
 			var fade := 1.0 - absf(at.x - mid) / 40.0
 			draw_string_outline(font, Vector2(at.x - w * 0.5, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9 * fade))
 			draw_string(font, Vector2(at.x - w * 0.5, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(GOLD, 0.95 * fade))
+	# the monster a ranger is tracking: a paw print, in its con color, named when faced
+	if tracked != null and (not is_instance_valid(tracked) or tracked.dead or World.zone_of(tracked) != World.zone_of(player)):
+		tracked = null
+	if tracked != null:
+		var at := _place(_bearing_to(tracked.global_position))
+		if at.y > 0.0:
+			var col: Color = World.CON_COLORS[World.con_of(player.level, tracked.level)]
+			var c := Vector2(at.x, BAND * 0.5)
+			draw_circle(c + Vector2(0, 3), 4.0, Color(col, at.y))
+			for k in 4:
+				draw_circle(c + Vector2(-4.5 + k * 3.0, -3.0 - (1.5 if k in [1, 2] else 0.0)), 1.6, Color(col, at.y))
+			if absf(at.x - mid) < 40.0:
+				var n := "%s, %d m" % [tracked.display_name, roundi(player.distance_to(tracked))]
+				var w := font.get_string_size(n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+				draw_string_outline(font, Vector2(at.x - w * 0.5, -4), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9))
+				draw_string(font, Vector2(at.x - w * 0.5, -4), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(col, 0.95))
 	# your pet (green) and your target (its con color), as pips on the strip
 	var pet := World.get_object(player.pet_id) as Entity if player.pet_id >= 0 else null
 	if pet != null and not pet.dead:

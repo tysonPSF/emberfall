@@ -3129,5 +3129,1128 @@
       "chance": 0.2,
       "text": "%s drags you into a %s!"
     }
+  },
+  "griffon": {
+    "name": "a griffon",
+    "level": [
+      19,
+      22
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.6,
+    "ac": 32,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "griffon_feather",
+        "chance": 0.55
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "griffon"
+  },
+  "griffon_matriarch": {
+    "name": "Skyrend the Matriarch",
+    "level": [
+      23,
+      23
+    ],
+    "hp_base": 3000,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 40,
+    "attack_delay": 2.6,
+    "ac": 48,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "skyrend_plume",
+        "chance": 1.0
+      },
+      {
+        "item": "griffon_feather",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "griffon_matriarch",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "gust_of_wind",
+      "chance": 0.15,
+      "text": "%s beats its wings in a %s!"
+    }
+  },
+  "harpy": {
+    "name": "a harpy",
+    "level": [
+      18,
+      21
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 11,
+    "dmg_max": 22,
+    "attack_delay": 2.4,
+    "ac": 28,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "harpies",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      10,
+      50
+    ],
+    "loot": [
+      {
+        "item": "harpy_talon",
+        "chance": 0.55
+      }
+    ],
+    "model": "harpy",
+    "proc": {
+      "spell": "harpy_shriek",
+      "chance": 0.08,
+      "text": "%s lets out a %s!"
+    }
+  },
+  "harpy_matriarch": {
+    "name": "Queen Shrikewing",
+    "level": [
+      22,
+      22
+    ],
+    "hp_base": 2600,
+    "hp_per_level": 0,
+    "dmg_min": 18,
+    "dmg_max": 36,
+    "attack_delay": 2.4,
+    "ac": 44,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "harpies",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      150,
+      400
+    ],
+    "loot": [
+      {
+        "item": "harpy_talon",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "harpy_matriarch",
+    "named": true,
+    "xp_bonus": 2.8,
+    "proc": {
+      "spell": "harpy_shriek",
+      "chance": 0.2,
+      "text": "%s lets out a %s!"
+    }
+  },
+  "fallen_monk": {
+    "name": "a fallen monk",
+    "level": [
+      19,
+      22
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.2,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "fallen_order",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      30,
+      100
+    ],
+    "loot": [
+      {
+        "item": "prayer_bead",
+        "chance": 0.5
+      }
+    ],
+    "model": "fallen_monk",
+    "proc": {
+      "spell": "monk_palm",
+      "chance": 0.14,
+      "text": "%s strikes with the %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "table": "monk_weapons"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.1,
+        "table": "monk_hands"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.06,
+        "table": "rings"
+      }
+    ]
+  },
+  "fallen_abbot": {
+    "name": "Abbot Varun the Unbound",
+    "level": [
+      23,
+      23
+    ],
+    "hp_base": 3200,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 40,
+    "attack_delay": 2.4,
+    "ac": 48,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "fallen_order",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      200,
+      600
+    ],
+    "loot": [
+      {
+        "item": "abbots_seal",
+        "chance": 1.0
+      },
+      {
+        "item": "prayer_bead",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      },
+      {
+        "item": "abbots_staff",
+        "chance": 0.35
+      }
+    ],
+    "model": "fallen_abbot",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "monk_palm",
+      "chance": 0.25,
+      "text": "%s strikes with the %s!"
+    }
+  },
+  "gargoyle": {
+    "name": "a gargoyle",
+    "level": [
+      20,
+      23
+    ],
+    "hp_base": 140,
+    "hp_per_level": 22,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.8,
+    "ac": 40,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gargoyle_shard",
+        "chance": 0.5
+      }
+    ],
+    "model": "gargoyle"
+  },
+  "terrace_golem": {
+    "name": "a terrace golem",
+    "level": [
+      21,
+      23
+    ],
+    "hp_base": 200,
+    "hp_per_level": 24,
+    "dmg_min": 14,
+    "dmg_max": 28,
+    "attack_delay": 3.4,
+    "ac": 46,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "pound",
+      "pounds"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gargoyle_shard",
+        "chance": 0.4
+      }
+    ],
+    "model": "terrace_golem"
+  },
+  "terrace_colossus": {
+    "name": "the Terrace Colossus",
+    "level": [
+      24,
+      24
+    ],
+    "hp_base": 4200,
+    "hp_per_level": 0,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 3.6,
+    "ac": 58,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "colossus_heartstone",
+        "chance": 1.0
+      },
+      {
+        "item": "gargoyle_shard",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "terrace_colossus",
+    "named": true,
+    "xp_bonus": 3.2
+  },
+  "snow_leopard": {
+    "name": "a snow leopard",
+    "level": [
+      18,
+      20
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 12,
+    "dmg_max": 22,
+    "attack_delay": 2.2,
+    "ac": 26,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "leopard_pelt",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "snow_leopard"
+  },
+  "ghost_leopard": {
+    "name": "the Ghost of the Terraces",
+    "level": [
+      22,
+      22
+    ],
+    "hp_base": 2400,
+    "hp_per_level": 0,
+    "dmg_min": 18,
+    "dmg_max": 36,
+    "attack_delay": 2.2,
+    "ac": 42,
+    "speed": 8.0,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "leopard_pelt",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      },
+      {
+        "item": "ghostpelt_boots",
+        "chance": 0.45
+      }
+    ],
+    "model": "ghost_leopard",
+    "named": true,
+    "xp_bonus": 2.8
+  },
+  "mountain_yak": {
+    "name": "a mountain yak",
+    "level": [
+      18,
+      19
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 9,
+    "dmg_max": 18,
+    "attack_delay": 3.0,
+    "ac": 26,
+    "speed": 6.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.5
+      },
+      {
+        "item": "yak_hair",
+        "chance": 0.5
+      }
+    ],
+    "model": "mountain_yak"
+  },
+  "mountain_troll": {
+    "name": "a mountain troll",
+    "level": [
+      20,
+      23
+    ],
+    "hp_base": 160,
+    "hp_per_level": 22,
+    "dmg_min": 14,
+    "dmg_max": 27,
+    "attack_delay": 2.9,
+    "ac": 36,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "mountain_trolls",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "troll_hide",
+        "chance": 0.5
+      }
+    ],
+    "model": "mountain_troll",
+    "hp_regen": 16,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "table": "troll_mountain_weapons"
+      }
+    ]
+  },
+  "magma_golem": {
+    "name": "a magma golem",
+    "level": [
+      27,
+      30
+    ],
+    "hp_base": 260,
+    "hp_per_level": 28,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 3.4,
+    "ac": 60,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pound",
+      "pounds"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "magma_core",
+        "chance": 0.5
+      }
+    ],
+    "model": "magma_golem",
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.15,
+      "text": "%s lands a %s!"
+    }
+  },
+  "magma_colossus": {
+    "name": "Pyrrhus the Molten",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 6200,
+    "hp_per_level": 0,
+    "dmg_min": 34,
+    "dmg_max": 62,
+    "attack_delay": 3.4,
+    "ac": 74,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "magma_core",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "magma_heart_amulet",
+        "chance": 0.4
+      }
+    ],
+    "model": "magma_colossus",
+    "named": true,
+    "xp_bonus": 3.4,
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.25,
+      "text": "%s lands a %s!"
+    }
+  },
+  "wild_fire_elemental": {
+    "name": "a fire elemental",
+    "level": [
+      26,
+      28
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 2.8,
+    "ac": 44,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "burn",
+      "burns"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "elemental_essence",
+        "chance": 0.5
+      }
+    ],
+    "model": "fire_elemental",
+    "proc": {
+      "spell": "elemental_flame",
+      "chance": 0.2,
+      "text": "%s lashes out with %s!"
+    }
+  },
+  "ash_drake": {
+    "name": "an ash drake",
+    "level": [
+      26,
+      29
+    ],
+    "hp_base": 190,
+    "hp_per_level": 26,
+    "dmg_min": 19,
+    "dmg_max": 34,
+    "attack_delay": 2.6,
+    "ac": 48,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "drake_scale",
+        "chance": 0.55
+      }
+    ],
+    "model": "ash_drake",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.14,
+      "text": "%s exhales %s!"
+    }
+  },
+  "cinder_drake": {
+    "name": "Cindermaw",
+    "level": [
+      30,
+      30
+    ],
+    "hp_base": 5600,
+    "hp_per_level": 0,
+    "dmg_min": 32,
+    "dmg_max": 58,
+    "attack_delay": 2.6,
+    "ac": 70,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cindermaw_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "drake_scale",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "cinder_drake",
+    "named": true,
+    "xp_bonus": 3.4,
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.3,
+      "text": "%s exhales %s!"
+    }
+  },
+  "lava_salamander": {
+    "name": "a lava salamander",
+    "level": [
+      26,
+      28
+    ],
+    "hp_base": 150,
+    "hp_per_level": 22,
+    "dmg_min": 16,
+    "dmg_max": 30,
+    "attack_delay": 2.4,
+    "ac": 42,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "salamander_tail",
+        "chance": 0.5
+      }
+    ],
+    "model": "lava_salamander",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.1,
+      "text": "%s spits %s!"
+    }
+  },
+  "ember_cultist": {
+    "name": "an ember cultist",
+    "level": [
+      27,
+      30
+    ],
+    "hp_base": 180,
+    "hp_per_level": 26,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.6,
+    "ac": 48,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 17,
+    "social": true,
+    "flees": true,
+    "faction": "ember_cult",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "ember_sigil",
+        "chance": 0.5
+      }
+    ],
+    "model": "ember_cultist",
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.14,
+      "text": "%s hurls a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "table": "ember_weapons"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "ember_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.06,
+        "table": "ashfall_rings"
+      }
+    ]
+  },
+  "high_pyromancer": {
+    "name": "High Pyromancer Ashkar",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5800,
+    "hp_per_level": 0,
+    "dmg_min": 30,
+    "dmg_max": 56,
+    "attack_delay": 2.6,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": true,
+    "flees": false,
+    "faction": "ember_cult",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      400,
+      1200
+    ],
+    "loot": [
+      {
+        "item": "ashkars_brand",
+        "chance": 1.0
+      },
+      {
+        "item": "ember_sigil",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      },
+      {
+        "item": "pyromancers_cowl",
+        "chance": 0.4
+      }
+    ],
+    "model": "high_pyromancer",
+    "named": true,
+    "xp_bonus": 3.4,
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.3,
+      "text": "%s hurls a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "cinderwood_staff"
+      }
+    ]
+  },
+  "charred_dead": {
+    "name": "a charred corpse",
+    "level": [
+      26,
+      29
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 3.0,
+    "ac": 44,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "charred_bone",
+        "chance": 0.55
+      }
+    ],
+    "model": "charred_dead",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "ash_wraith": {
+    "name": "an ash wraith",
+    "level": [
+      27,
+      30
+    ],
+    "hp_base": 160,
+    "hp_per_level": 24,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.8,
+    "ac": 46,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "touch",
+      "touches"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ash_essence",
+        "chance": 0.5
+      },
+      {
+        "item": "wraithbone_ring",
+        "chance": 0.03
+      }
+    ],
+    "model": "ash_wraith",
+    "proc": {
+      "spell": "ash_chill",
+      "chance": 0.16,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "ash_wraith_lord": {
+    "name": "the Ashen Lord",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5400,
+    "hp_per_level": 0,
+    "dmg_min": 30,
+    "dmg_max": 56,
+    "attack_delay": 2.8,
+    "ac": 66,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "touch",
+      "touches"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ash_essence",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "wraithbone_ring",
+        "chance": 0.5
+      }
+    ],
+    "model": "ash_wraith_lord",
+    "named": true,
+    "xp_bonus": 3.4,
+    "proc": {
+      "spell": "ash_chill",
+      "chance": 0.3,
+      "text": "%s's touch carries %s!"
+    }
   }
 }

@@ -113,6 +113,9 @@ func from_save(d: Dictionary) -> void:
 			if pack.slots[g].is_empty():
 				pack.slots[g] = Pack.entry("small_sack")
 				break
+		var kit: Dictionary = GameData.classes.get(str(d.get("class", "warrior")), {}).get("starting_pack", {})
+		for item_id: String in kit:  # a ranger's first quiver
+			pack.add(item_id, int(kit[item_id]))
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
 	bank = []
 	for i in int(World.cfg("bank_slots", 16)):

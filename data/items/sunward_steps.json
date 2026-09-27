@@ -146,7 +146,8 @@
     "classes": [
       "warrior",
       "rogue",
-      "cleric"
+      "cleric",
+      "ranger"
     ],
     "proc": {
       "spell": "sunfire",

@@ -138,6 +138,11 @@ var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
 var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
+var _track_panel: PanelContainer  # a ranger's Track: what walks within reach, nearest first
+var _track_list: VBoxContainer
+var _track_title: Label
+var _track_radius := 0.0
+var _track_refresh := 0.0
 var _compass: Compass
 var _map: MapWindow
 var _pet_name: Label
@@ -187,6 +192,7 @@ func _ready() -> void:
 	_build_trade_window()
 	_build_station_window()
 	_build_pet_window()
+	_build_track_window()
 	_compass = Compass.new()
 	_compass.anchor_left = 0.5
 	_compass.anchor_right = 0.5
@@ -222,6 +228,7 @@ func _ready() -> void:
 	World.trade_changed.connect(_refresh_trade)
 	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
 	World.station_opened.connect(_on_station_opened)
+	World.track_opened.connect(_on_track_opened)
 	World.station_closed.connect(func() -> void: _station_panel.visible = false; _refresh_inventory())
 
 
@@ -1432,6 +1439,71 @@ func _build_pet_window() -> void:
 	_pet_panel.visible = false
 
 
+## A ranger's Track window: each monster within reach, nearest first, in its
+## con color with which way it lies and how far; click one to follow it on the
+## compass. It refreshes each second while open.
+func _build_track_window() -> void:
+	_track_panel = UIKit.panel()
+	UIKit.place(_track_panel, Vector2(1, 0.5), Vector2(-300, -160))
+	root.add_child(_track_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size = Vector2(270, 0)
+	v.add_theme_constant_override("separation", 4)
+	_track_panel.add_child(v)
+	var head := HBoxContainer.new()
+	_track_title = UIKit.label("Track", 15, UIKit.GOLD)
+	_track_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(_track_title)
+	var close := UIKit.button("Close", Vector2(0, 22))
+	close.add_theme_font_size_override("font_size", 11)
+	close.pressed.connect(func() -> void: _track_panel.visible = false)
+	head.add_child(close)
+	v.add_child(head)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(270, 260)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(scroll)
+	_track_list = VBoxContainer.new()
+	_track_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_track_list)
+	_track_panel.visible = false
+
+
+func _on_track_opened(radius: float) -> void:
+	_track_radius = radius
+	_track_panel.visible = true
+	_track_refresh = 0.0
+	_refresh_track()
+
+
+func _refresh_track() -> void:
+	for child in _track_list.get_children():
+		child.queue_free()
+	var found := []
+	for m: Mob in World.get_mobs():
+		if not m.dead and World.zone_of(m) == World.zone_of(player) and player.distance_to(m) <= _track_radius:
+			found.append(m)
+	found.sort_custom(func(a: Mob, b: Mob) -> bool: return player.distance_to(a) < player.distance_to(b))
+	_track_title.text = "Track  (%d within %d m)" % [found.size(), roundi(_track_radius)]
+	for m: Mob in found.slice(0, 40):
+		var d := m.global_position - player.global_position
+		var b := UIKit.button("", Vector2(0, 22))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 12)
+		b.text = "%s   %s, %d m" % [m.display_name, QuestHints._compass(Vector2(d.x, d.z)), roundi(Vector2(d.x, d.z).length())]
+		b.add_theme_color_override("font_color", World.CON_COLORS[World.con_of(player.level, m.level)])
+		if _compass.tracked == m:
+			b.text = "> " + b.text
+		var mob := m
+		b.pressed.connect(func() -> void:
+			_compass.tracked = mob
+			World.request_set_target(player.entity_id, mob.entity_id)
+			_refresh_track())
+		_track_list.add_child(b)
+	if found.is_empty():
+		_track_list.add_child(UIKit.label("Nothing stirs within reach.", 12, UIKit.DIM))
+
+
 func _update_pet() -> void:
 	var pet := World.get_object(player.pet_id) as Pet if player.pet_id >= 0 else null
 	_pet_panel.visible = pet != null and not pet.dead
@@ -2180,6 +2252,11 @@ func _process(delta: float) -> void:
 	_ring_drawn = player.auto_attack
 	_update_buffs()
 	_update_pet()
+	if _track_panel.visible:
+		_track_refresh -= delta
+		if _track_refresh <= 0.0:
+			_track_refresh = 1.0
+			_refresh_track()
 	_layout_bag_bar()
 	var cls_name: String = GameData.classes[player.char_class]["name"]
 	_name_label.text = "%s   Level %d %s" % [player.display_name, player.level, cls_name]

@@ -156,5 +156,54 @@
       "river_trolls": -10,
       "rainhold": 6
     }
+  },
+  "harpies": {
+    "name": "Harpies of the High Terrace",
+    "default": -1000,
+    "kos_at": -750,
+    "on_kill": {
+      "harpies": -10,
+      "dawn_pilgrims": 3
+    }
+  },
+  "fallen_order": {
+    "name": "The Fallen Order",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "fallen_order": -10,
+      "dawn_pilgrims": 5,
+      "lanternhold": 3
+    }
+  },
+  "mountain_trolls": {
+    "name": "Mountain Trolls",
+    "default": -1000,
+    "kos_at": -750,
+    "on_kill": {
+      "mountain_trolls": -10,
+      "dawn_pilgrims": 2
+    }
+  },
+  "ember_cult": {
+    "name": "Cult of the Ember",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "ember_cult": -10,
+      "forgehold": 5,
+      "emberhold": 2
+    }
+  },
+  "forgehold": {
+    "name": "Forgehold Scouts",
+    "default": 100,
+    "on_kill": {
+      "forgehold": -200,
+      "emberhold": -40
+    },
+    "on_attack": {
+      "forgehold": -50
+    }
   }
 }

@@ -15,7 +15,8 @@
     "model": "bow",
     "value": 150,
     "classes": [
-      "warrior"
+      "warrior",
+      "ranger"
     ]
   },
   "leather_sling": {
@@ -67,7 +68,8 @@
     "value": 480,
     "rec_level": 8,
     "classes": [
-      "warrior"
+      "warrior",
+      "ranger"
     ]
   },
   "silkstring_longbow": {
@@ -89,7 +91,8 @@
     "value": 1600,
     "rec_level": 11,
     "classes": [
-      "warrior"
+      "warrior",
+      "ranger"
     ],
     "proc": {
       "spell": "thornback_venom",

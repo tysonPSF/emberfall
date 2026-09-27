@@ -1,0 +1,193 @@
+{
+  "griffon_feather": {
+    "name": "Griffon Feather",
+    "value": 40,
+    "stack": 20
+  },
+  "harpy_talon": {
+    "name": "Harpy Talon",
+    "value": 35,
+    "stack": 20
+  },
+  "prayer_bead": {
+    "name": "Tarnished Prayer Bead",
+    "value": 30,
+    "stack": 20
+  },
+  "abbots_seal": {
+    "name": "The Abbot's Seal",
+    "value": 60,
+    "lore": true,
+    "no_drop": true
+  },
+  "gargoyle_shard": {
+    "name": "Gargoyle Shard",
+    "value": 45,
+    "stack": 20
+  },
+  "leopard_pelt": {
+    "name": "Snow Leopard Pelt",
+    "value": 60,
+    "stack": 20
+  },
+  "yak_hair": {
+    "name": "Tuft of Yak Hair",
+    "value": 15,
+    "stack": 20
+  },
+  "troll_hide": {
+    "name": "Mountain Troll Hide",
+    "value": 60,
+    "stack": 20
+  },
+  "colossus_heartstone": {
+    "name": "Colossus Heartstone",
+    "value": 80,
+    "lore": true,
+    "no_drop": true
+  },
+  "skyrend_plume": {
+    "name": "Skyrend's Plume",
+    "value": 80,
+    "lore": true,
+    "no_drop": true
+  },
+  "magma_core": {
+    "name": "Magma Core",
+    "value": 60,
+    "stack": 20
+  },
+  "drake_scale": {
+    "name": "Ash Drake Scale",
+    "value": 55,
+    "stack": 20
+  },
+  "salamander_tail": {
+    "name": "Lava Salamander Tail",
+    "value": 40,
+    "stack": 20
+  },
+  "ember_sigil": {
+    "name": "Ember Sigil",
+    "value": 50,
+    "stack": 20
+  },
+  "ashkars_brand": {
+    "name": "Ashkar's Brand",
+    "value": 90,
+    "lore": true,
+    "no_drop": true
+  },
+  "cindermaw_heart": {
+    "name": "Cindermaw's Heart",
+    "value": 100,
+    "lore": true,
+    "no_drop": true
+  },
+  "ash_essence": {
+    "name": "Ash Essence",
+    "value": 50,
+    "stack": 20
+  },
+  "charred_bone": {
+    "name": "Charred Bone",
+    "value": 20,
+    "stack": 20
+  },
+  "pilgrims_prayer_beads": {
+    "name": "Pilgrim's Prayer Beads",
+    "slot": "neck",
+    "ac": 4,
+    "wis": 4,
+    "sta": 3,
+    "hp": 25,
+    "mana": 25,
+    "value": 6000,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true
+  },
+  "monks_wraps": {
+    "name": "Monk's Hand Wraps",
+    "slot": "hands",
+    "ac": 7,
+    "agi": 4,
+    "str": 2,
+    "value": 4000,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "wear": "cloth_gloves"
+  },
+  "abbots_staff": {
+    "name": "The Unbound Abbot's Staff",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 3.1,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 5,
+    "wis": 5,
+    "mana": 45,
+    "hp": 20,
+    "value": 9000,
+    "rec_level": 21,
+    "lore": true,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "skyrend_cloak": {
+    "name": "Skyrend Plume Cloak",
+    "slot": "arms",
+    "ac": 9,
+    "agi": 4,
+    "sta": 3,
+    "hp": 25,
+    "value": 7000,
+    "rec_level": 21,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "heartstone_ring": {
+    "name": "Heartstone Ring",
+    "slot": "ring",
+    "ac": 4,
+    "sta": 4,
+    "str": 3,
+    "hp": 30,
+    "value": 7000,
+    "rec_level": 21,
+    "no_drop": true,
+    "lore": true
+  },
+  "ghostpelt_boots": {
+    "name": "Ghostpelt Boots",
+    "slot": "feet",
+    "ac": 8,
+    "agi": 4,
+    "sta": 2,
+    "value": 6000,
+    "rec_level": 21,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "terrace_tea": {
+    "name": "Cup of Terrace Tea",
+    "value": 8,
+    "stack": 20,
+    "weight": 0.2,
+    "use": {
+      "spell": "meal_terrace_tea"
+    }
+  }
+}

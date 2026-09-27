@@ -13,16 +13,17 @@ extends RefCounted
 ## at the neutral 80% of cap. Gear: the best merchant gear the class can wear
 ## at that level. Resting afterward is measured from the regeneration rules.
 
-const LEVELS := [5, 10, 15, 20, 25]
+const LEVELS := [5, 10, 15, 20, 25, 30]
 const MOBS := {  # typical even-level monsters, forced to the test level
 	5: ["wild_boar", "gnoll_scout", "brigand_thug"],
 	10: ["dire_wolf", "black_bear", "orc_raider"],
 	15: ["mountain_ram", "sun_cultist", "stone_guardian"],
 	20: ["salt_basilisk", "giant_frog", "river_troll"],
 	25: ["river_croc", "water_elemental", "river_troll"],
+	30: ["ash_drake", "magma_golem", "ember_cultist"],
 }
 const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""], ["magician", "earth"], ["magician", "fire"],
-		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"]]
+		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"], ["ranger", "hawk"]]
 const FIGHTS := 2
 const TIME_LIMIT := 150.0
 const TRAVEL := 15.0  # seconds to find and pull the next one
@@ -80,6 +81,8 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 		if need <= lvl:
 			p.spells.append(sid)
 	p.equipment = _kit(cls, lvl)
+	if p.pack.count("crude_arrow") < 200:
+		p.pack.add("crude_arrow", 200)  # enough for any fight
 	p.skills = {}
 	for sk: String in GameData.skills["skills"]:
 		var cap := World.skill_cap(p, sk)
@@ -131,7 +134,7 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 		World.request_pet(p.entity_id, "attack")
 		await test._wait(1.5)  # the pet gets there first and takes the aggro
 	mob.add_hate(pet if pet != null else p, 1.0)
-	if cls in ["warrior", "rogue", "cleric"]:
+	if cls in ["warrior", "rogue", "cleric", "ranger"]:
 		World.request_toggle_attack(p.entity_id)
 	var t := 0.0
 	var mana0 := p.mana
@@ -238,14 +241,17 @@ func _decide(p: Player, mob: Mob) -> void:
 	for sid: String in p.spells:
 		var s: Dictionary = GameData.spells[sid]
 		var kind := str(s["type"])
-		if not kind in ["damage", "dot", "lifetap"] or str(s.get("target", "enemy")) != "enemy" or not _ready(p, sid):
+		if not kind in ["damage", "dot", "lifetap", "shot"] or str(s.get("target", "enemy")) != "enemy" or not _ready(p, sid):
 			continue
 		if s.has("requires") or s.get("from_behind", false) or s.get("requires_hidden", false):
 			continue  # shield, piercing, behind, hidden: situational
-		if p.distance_to(mob) > float(s.get("range", 0)) + 0.5:
+		if p.distance_to(mob) > (World.ranged_reach(p) if kind == "shot" else float(s.get("range", 0))) + 0.5:
 			continue
 		var value := 0.0
-		if kind == "dot":
+		if kind == "shot":  # a bow shot's rough worth, times the ability's multiple
+			var bow := GameData.item(str(p.equipment.get("range", "")))
+			value = (float(bow.get("dmg", 0)) * 2.0 + p.level) * float(GameData.classes[p.char_class]["melee_skill"]) * 0.6 * float(s.get("shot_mult", 1.0)) * int(s.get("shots", 1))
+		elif kind == "dot":
 			if mob.dots.any(func(dd: Dictionary) -> bool: return dd["spell"] == sid and dd["caster_id"] == p.entity_id):
 				continue
 			value = (float(s.get("tick", 1)) + float(s.get("per_level", 0)) * (p.level - 1)) * int(s.get("ticks", 3))
@@ -256,6 +262,8 @@ func _decide(p: Player, mob: Mob) -> void:
 			pick = sid
 	if pick != "":
 		World.request_cast(p.entity_id, pick)
+	elif p.char_class == "ranger" and p.distance_to(mob) > World.melee_range() and not p.cooldowns.has("ranged"):
+		World.request_ranged(p.entity_id)  # the bow while it closes
 
 
 func _ready(p: Player, sid: String) -> bool:
@@ -316,7 +324,7 @@ func _kit(cls: String, lvl: int) -> Dictionary:
 	for id: String in sold:
 		var it := GameData.item(id)
 		var slot := str(it.get("slot", ""))
-		if slot == "" or slot == "range" or int(it.get("rec_level", 1)) > lvl:
+		if slot == "" or (slot == "range" and cls != "ranger") or int(it.get("rec_level", 1)) > lvl:
 			continue
 		var classes: Array = it.get("classes", [])
 		if not classes.is_empty() and not cls in classes:
@@ -326,7 +334,7 @@ func _kit(cls: String, lvl: int) -> Dictionary:
 		var score := float(it.get("ac", 0)) + float(it.get("hp", 0)) / 5.0 + float(it.get("mana", 0)) / 5.0
 		for stat: String in ["str", "sta", "agi", "wis", "int"]:
 			score += float(it.get(stat, 0))
-		if slot == "primary":
+		if slot == "primary" or slot == "range":
 			score = float(it.get("dmg", 0)) / float(it.get("delay", 3.0)) * 10.0 + float(it.get("int", 0)) + float(it.get("wis", 0))
 			if cls == "rogue" and str(it.get("skill", "")) != "piercing":
 				score *= 0.9
