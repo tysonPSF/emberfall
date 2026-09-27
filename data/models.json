@@ -1446,6 +1446,436 @@
       "path": "res://assets/creatures/forest_hawk.glb",
       "rig": "own",
       "scale": 0.5
+    },
+    "pondkin": {
+      "path": "res://assets/creatures/pondkin_body.glb",
+      "scale": 0.75,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/pondkin_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/pondkin_chest.glb"
+        },
+        {
+          "bone": "spine",
+          "path": "res://assets/creatures/pondkin_belly.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/pondkin_skirt.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/pondkin_hand_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/pondkin_hand_r.glb"
+        },
+        {
+          "bone": "foot.l",
+          "path": "res://assets/creatures/pondkin_foot_l.glb"
+        },
+        {
+          "bone": "foot.r",
+          "path": "res://assets/creatures/pondkin_foot_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "pondkin_mudcaller": {
+      "path": "res://assets/creatures/pondkin_mudcaller_body.glb",
+      "scale": 0.75,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/pondkin_mudcaller_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/pondkin_mudcaller_chest.glb"
+        },
+        {
+          "bone": "spine",
+          "path": "res://assets/creatures/pondkin_mudcaller_belly.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/pondkin_mudcaller_skirt.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/pondkin_mudcaller_hand_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/pondkin_mudcaller_hand_r.glb"
+        },
+        {
+          "bone": "foot.l",
+          "path": "res://assets/creatures/pondkin_mudcaller_foot_l.glb"
+        },
+        {
+          "bone": "foot.r",
+          "path": "res://assets/creatures/pondkin_mudcaller_foot_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "pondkin_bloatking": {
+      "path": "res://assets/creatures/pondkin_bloatking_body.glb",
+      "scale": 1.0,
+      "hide": [
+        "Barbarian_Head",
+        "Barbarian_BearHat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/pondkin_bloatking_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/pondkin_bloatking_chest.glb"
+        },
+        {
+          "bone": "spine",
+          "path": "res://assets/creatures/pondkin_bloatking_belly.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/pondkin_bloatking_skirt.glb"
+        },
+        {
+          "bone": "hand.l",
+          "path": "res://assets/creatures/pondkin_bloatking_hand_l.glb"
+        },
+        {
+          "bone": "hand.r",
+          "path": "res://assets/creatures/pondkin_bloatking_hand_r.glb"
+        },
+        {
+          "bone": "foot.l",
+          "path": "res://assets/creatures/pondkin_bloatking_foot_l.glb"
+        },
+        {
+          "bone": "foot.r",
+          "path": "res://assets/creatures/pondkin_bloatking_foot_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "sunken_villager": {
+      "path": "res://assets/creatures/sunken_villager_body.glb",
+      "hide": [
+        "Rogue_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sunken_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sunken_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/sunken_hips.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
+    "sunken_headwoman": {
+      "path": "res://assets/creatures/sunken_headwoman_body.glb",
+      "scale": 0.8,
+      "hide": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sunken_headwoman_crown.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sunken_headwoman_shawl.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/sunken_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "sedge_sister": {
+      "path": "res://assets/creatures/sedge_sister_body.glb",
+      "hide": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sedge_sister_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sedge_sister_chest.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "feet",
+        "waist"
+      ]
+    },
+    "mother_marrowroot": {
+      "path": "res://assets/creatures/mother_marrowroot_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Mage_Hat"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/mother_marrowroot_head.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/mother_marrowroot_chest.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "reedstalker": {
+      "path": "res://assets/creatures/reedstalker.glb",
+      "rig": "own"
+    },
+    "old_stilt_legs": {
+      "path": "res://assets/creatures/old_stilt_legs.glb",
+      "rig": "own",
+      "scale": 1.3
+    },
+    "marsh_eel": {
+      "path": "res://assets/creatures/marsh_eel.glb",
+      "rig": "own"
+    },
+    "bogwing": {
+      "path": "res://assets/creatures/bogwing.glb",
+      "rig": "own"
+    },
+    "bog_lurker": {
+      "path": "res://assets/creatures/bog_lurker.glb",
+      "rig": "own"
+    },
+    "tidesworn": {
+      "path": "res://assets/creatures/tidesworn_body.glb",
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/tidesworn_helm.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/tidesworn_chest.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/tidesworn_hips.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "arms",
+        "feet",
+        "legs",
+        "waist"
+      ]
+    },
+    "tide_knight": {
+      "path": "res://assets/creatures/tide_knight_body.glb",
+      "scale": 0.8,
+      "hide": [
+        "Knight_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/tide_knight_helm.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/tidesworn_chest.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/tide_knight_cloak.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/tidesworn_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "tideking_varundra": {
+      "path": "res://assets/creatures/tideking_body.glb",
+      "scale": 0.98,
+      "hide": [
+        "Knight_Helmet",
+        "Knight_HelmetVisor",
+        "Knight_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/tideking_crown.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/tideking_mantle.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/tidesworn_hips.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "naga_warrior": {
+      "path": "res://assets/creatures/naga_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Rogue_Head",
+        "Rogue_Cape",
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/naga_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/naga_tail.glb"
+        }
+      ],
+      "wearable_slots": [
+        "chest",
+        "arms",
+        "hands",
+        "waist"
+      ]
+    },
+    "naga_tidecaller": {
+      "path": "res://assets/creatures/naga_tidecaller_body.glb",
+      "scale": 0.9,
+      "hide": [
+        "Rogue_Head",
+        "Rogue_Cape",
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/naga_tidecaller_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/naga_tidecaller_tail.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/naga_tidecaller_jewels.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/naga_tidecaller_armband_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/naga_tidecaller_armband_r.glb"
+        }
+      ],
+      "wearable_slots": [
+        "hands",
+        "waist"
+      ]
+    },
+    "naga_queen": {
+      "path": "res://assets/creatures/naga_queen_body.glb",
+      "scale": 1.12,
+      "hide": [
+        "Rogue_Head",
+        "Rogue_Cape",
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/naga_queen_head.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/naga_queen_tail.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/naga_queen_jewels.glb"
+        },
+        {
+          "bone": "upperarm.l",
+          "path": "res://assets/creatures/naga_queen_armband_l.glb"
+        },
+        {
+          "bone": "upperarm.r",
+          "path": "res://assets/creatures/naga_queen_armband_r.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "tempest_spirit": {
+      "path": "res://assets/creatures/tempest_spirit.glb",
+      "rig": "own"
+    },
+    "stormbound_warden": {
+      "path": "res://assets/creatures/stormbound_warden.glb",
+      "rig": "own",
+      "scale": 1.4
+    },
+    "causeway_crab": {
+      "path": "res://assets/creatures/causeway_crab.glb",
+      "rig": "own"
+    },
+    "shellback": {
+      "path": "res://assets/creatures/shellback.glb",
+      "rig": "own",
+      "scale": 1.3
+    },
+    "old_chitterjaw": {
+      "path": "res://assets/creatures/old_chitterjaw.glb",
+      "rig": "own",
+      "scale": 2.0
     }
   },
   "weapons": {
@@ -1904,6 +2334,71 @@
     },
     "weapon_rack": {
       "path": "res://assets/props/weapon_rack.glb"
+    },
+    "stilt_platform_broken": {
+      "path": "res://assets/props/stilt_platform_broken.glb"
+    },
+    "stilt_walkway_broken": {
+      "path": "res://assets/props/stilt_walkway_broken.glb"
+    },
+    "stilt_hut_sunken": {
+      "path": "res://assets/props/stilt_hut_sunken.glb"
+    },
+    "pondkin_hut": {
+      "path": "res://assets/props/pondkin_hut.glb"
+    },
+    "pondkin_totem": {
+      "path": "res://assets/props/pondkin_totem.glb"
+    },
+    "witch_hut": {
+      "path": "res://assets/props/witch_hut.glb",
+      "lights": [{"pos": [0.9, 2.9, 1.25], "color": "#a0e060", "energy": 0.9, "range": 6}, {"pos": [1.55, 2.9, 0], "color": "#a0e060", "energy": 0.7, "range": 5}]
+    },
+    "witch_cauldron": {
+      "path": "res://assets/props/witch_cauldron.glb",
+      "lights": [{"pos": [0, 1.3, 0], "color": "#80ff60", "energy": 1.2, "range": 6, "night": false}]
+    },
+    "heron_rookery_nest": {
+      "path": "res://assets/props/heron_rookery_nest.glb"
+    },
+    "reeds_tall": {
+      "path": "res://assets/props/reeds_tall.glb"
+    },
+    "mooring_post": {
+      "path": "res://assets/props/mooring_post.glb",
+      "lights": [{"pos": [0.64, 1.98, -0.02], "color": "#ffb060", "energy": 1.0, "range": 6}]
+    },
+    "citadel_tower": {
+      "path": "res://assets/props/citadel_tower.glb"
+    },
+    "citadel_wall_ruin": {
+      "path": "res://assets/props/citadel_wall_ruin.glb"
+    },
+    "causeway_span": {
+      "path": "res://assets/props/causeway_span.glb"
+    },
+    "causeway_broken": {
+      "path": "res://assets/props/causeway_broken.glb"
+    },
+    "citadel_platform": {
+      "path": "res://assets/props/citadel_platform.glb"
+    },
+    "sea_temple": {
+      "path": "res://assets/props/sea_temple.glb",
+      "lights": [{"pos": [0, 19.2, -0.3], "color": "#80c8ff", "energy": 2.5, "range": 14, "night": false}]
+    },
+    "tideking_throne": {
+      "path": "res://assets/props/tideking_throne.glb"
+    },
+    "shipwreck": {
+      "path": "res://assets/props/shipwreck.glb"
+    },
+    "coral_growth": {
+      "path": "res://assets/props/coral_growth.glb"
+    },
+    "naga_shrine": {
+      "path": "res://assets/props/naga_shrine.glb",
+      "lights": [{"pos": [0, 3.8, 0], "color": "#60b0ff", "energy": 1.4, "range": 7, "night": false}]
     }
   },
   "gear": {

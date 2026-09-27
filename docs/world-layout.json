@@ -1,6 +1,7 @@
 {
  "built": [
   "cinderpass",
+  "drownfast",
   "emberhold",
   "emberhold_crypt",
   "emberhold_tavern",
@@ -10,6 +11,7 @@
   "hollowmere",
   "lanternhold",
   "rainhold",
+  "reedmere",
   "sunward_steps",
   "the_bleach",
   "thornwood",
@@ -294,8 +296,8 @@
     2
    ],
    "kind": "water",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -312,8 +314,8 @@
     3
    ],
    "kind": "water",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

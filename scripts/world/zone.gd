@@ -775,7 +775,10 @@ func _build_stilt_village(p: Vector3, yaw: float, length: int) -> void:
 ## NPCs and the bind point stand on them; boats float at the water line;
 ## "boardwalk_ramp" steps down to the shore; "lamp" is a lit torch post.
 const STILT_DECKS := {"stilt_platform": Vector2(4.5, 4.5), "stilt_walkway": Vector2(1.5, 4.5), "rope_bridge": Vector2(1.5, 6.0),
-		"boardwalk": Vector2(1.5, 1.5)}
+		"boardwalk": Vector2(1.5, 1.5),
+		# Reedmere's drowned village and Drownfast's causeways (the same way: walkable tops at deck height)
+		"stilt_platform_broken": Vector2(4.5, 4.5), "stilt_walkway_broken": Vector2(1.5, 4.5),
+		"causeway_span": Vector2(1.15, 4.5), "causeway_broken": Vector2(1.15, 4.5), "citadel_platform": Vector2(4.5, 4.5)}
 const STILT_ON_DECK := ["stilt_hall", "stilt_house", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack",
 		"oven", "loom", "brew_barrel", "forge"]
 
@@ -1920,7 +1923,9 @@ func _build_spawns() -> void:
 		sp.respawn_time = float(entry.get("respawn", 60))
 		sp.wander_radius = float(entry.get("wander", 8))
 		sp.when = str(entry.get("when", ""))
-		sp.position = ground(entry["pos"][0], entry["pos"][1])
+		var x := float(entry["pos"][0])
+		var z := float(entry["pos"][1])
+		sp.position = Vector3(x, surface_at(x, z), z)  # on a deck (a causeway, a boardwalk) when there's one over the ground
 		add_child(sp)
 
 
@@ -1987,6 +1992,20 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 	add_child(root)
 	if id in STATION_PROPS:
 		_add_station(id, root, _prop_bounds(id, model), s)
+	for l: Dictionary in spec.get("lights", []):  # lanterns, windows, glowing brews and pearls: models.json "lights" [{pos, color, energy, range, night}]
+		var glow := OmniLight3D.new()
+		glow.light_color = Color(str(l.get("color", "#ffb070")))
+		glow.omni_range = float(l.get("range", 6.0)) * s
+		var at: Array = l["pos"]
+		glow.position = pos + Basis(Vector3.UP, yaw) * (Vector3(at[0], at[1], at[2]) * s)
+		if l.get("night", true):
+			_night_light(glow, float(l.get("energy", 1.2)))
+		else:
+			glow.light_energy = float(l.get("energy", 1.2))
+			glow.distance_fade_enabled = true
+			glow.distance_fade_begin = 60.0
+			glow.distance_fade_length = 15.0
+			add_child(glow)
 	return root
 
 

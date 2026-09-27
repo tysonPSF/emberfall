@@ -734,5 +734,288 @@
     "faction": {
       "forgehold": 25
     }
+  },
+  "pondkin_fetishes": {
+    "name": "Fetishes of the Pondkin",
+    "giver": "reedcutter_pallavi",
+    "start_keyword": "fetishes",
+    "wants": {
+      "pondkin_fetish": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 380
+    },
+    "first_reward_item": "reedwalker_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Fetishes of the Pondkin. Bring Reedcutter Pallavi four pondkin fetishes.",
+    "ready_text": "Pondkin fetishes! Give them here, {name}.",
+    "complete_text": "Four fewer spears in the reeds. Here's your pay.",
+    "first_complete_text": "And the boots. They won't sink.",
+    "faction": {
+      "rainhold": 8,
+      "pondkin": -10
+    }
+  },
+  "bloatking_crown": {
+    "name": "The Bloatking's Crown",
+    "giver": "reedcutter_pallavi",
+    "start_keyword": "crown",
+    "wants": {
+      "bloatking_crown": 1
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 900
+    },
+    "first_reward_item": "bloatking_scepter",
+    "accept_text": "You have taken on a task: The Bloatking's Crown. Bring Reedcutter Pallavi the crown of Bloatking Ghurr.",
+    "ready_text": "That's his crown, rust and shells. Give it here, {name}.",
+    "complete_text": "The reed beds are ours again. Rainhold thanks you.",
+    "first_complete_text": "Take his scepter too; you've earned it more than he did.",
+    "faction": {
+      "rainhold": 25,
+      "pondkin": -30
+    }
+  },
+  "reedstalker_plumes": {
+    "name": "Plumes for Fletching",
+    "giver": "boatwright_kesh",
+    "start_keyword": "plumes",
+    "wants": {
+      "reedstalker_plume": 4
+    },
+    "reward": {
+      "xp": 3000,
+      "coin": 360
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Plumes for Fletching. Bring Boatwright Kesh four reedstalker plumes.",
+    "ready_text": "Reedstalker plumes, and fine ones. Hand them over.",
+    "complete_text": "That's a quiver's worth of fletching. Here's your coin.",
+    "faction": {
+      "rainhold": 6
+    }
+  },
+  "stilt_legs_plume": {
+    "name": "The Great Heron",
+    "giver": "boatwright_kesh",
+    "start_keyword": "plume",
+    "wants": {
+      "stilt_legs_plume": 1
+    },
+    "reward": {
+      "xp": 7000,
+      "coin": 850
+    },
+    "first_reward_item": "heronfeather_cloak",
+    "accept_text": "You have taken on a task: The Great Heron. Bring Boatwright Kesh a plume of Old Stilt-Legs.",
+    "ready_text": "That's the old one's plume, sure enough. Give it here, {name}.",
+    "complete_text": "Let me stitch this... there.",
+    "first_complete_text": "Your cloak. The rain will run right off it.",
+    "faction": {
+      "rainhold": 20
+    }
+  },
+  "sunken_charms": {
+    "name": "Rest for Veyamar",
+    "giver": "priestess_amrit",
+    "start_keyword": "charms",
+    "wants": {
+      "sunken_charm": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 380
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Rest for Veyamar. Bring Priestess Amrit four sunken charms.",
+    "ready_text": "The charms of Veyamar. Give them to me, gently.",
+    "complete_text": "I will sing them to Jalendra. Four souls go home tonight.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "headwomans_lotus": {
+    "name": "The Headwoman's Lotus",
+    "giver": "priestess_amrit",
+    "start_keyword": "lotus",
+    "wants": {
+      "headwomans_lotus": 1
+    },
+    "reward": {
+      "xp": 7400,
+      "coin": 900
+    },
+    "first_reward_item": "veyamar_locket",
+    "accept_text": "You have taken on a task: The Headwoman's Lotus. Bring Priestess Amrit the lotus of Headwoman Ishani the Sunken.",
+    "ready_text": "Ishani's lotus. Her people will follow her now. Give it to me.",
+    "complete_text": "Rest, Ishani. Rest, Veyamar.",
+    "first_complete_text": "This locket was hers. She would want it worn by the living.",
+    "faction": {
+      "rainhold": 25
+    }
+  },
+  "marrowroot_heart": {
+    "name": "The Coven's Heart",
+    "giver": "priestess_amrit",
+    "start_keyword": "heart",
+    "wants": {
+      "marrowroot_heart": 1
+    },
+    "reward": {
+      "xp": 8000,
+      "coin": 1000
+    },
+    "first_reward_item": "sedgebane_charm",
+    "accept_text": "You have taken on a task: The Coven's Heart. Bring Priestess Amrit the heart of Mother Marrowroot.",
+    "ready_text": "It still beats. Give it to me, quickly.",
+    "complete_text": "The coven is broken. The fen will quiet now.",
+    "first_complete_text": "Wear this charm; no hex will hold you.",
+    "faction": {
+      "rainhold": 30,
+      "sedge_coven": -40
+    }
+  },
+  "tidesworn_insignias": {
+    "name": "The Tide Kings' Insignia",
+    "giver": "tidewarden_nkemi",
+    "start_keyword": "insignia",
+    "wants": {
+      "tidesworn_insignia": 4
+    },
+    "reward": {
+      "xp": 4400,
+      "coin": 520
+    },
+    "first_reward_item": "tidesworn_blade",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: The Tide Kings' Insignia. Bring Tidewarden Nkemi four tidesworn insignias.",
+    "ready_text": "Royal insignia, green with age. Give them here, {name}.",
+    "complete_text": "Four more of the garrison at rest. Rainhold pays.",
+    "first_complete_text": "And a blade from our armory. It was forged to fight them.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "varundra_crown": {
+    "name": "The Drowned Crown",
+    "giver": "tidewarden_nkemi",
+    "start_keyword": "crown",
+    "wants": {
+      "varundra_crown": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1400
+    },
+    "first_reward_item": "tideking_helm",
+    "accept_text": "You have taken on a task: The Drowned Crown. Bring Tidewarden Nkemi the crown of Tideking Varundra.",
+    "ready_text": "The crown of the Tide Kings. Is the rain... easing? Give it here, {name}.",
+    "complete_text": "Rainhold will remember this.",
+    "first_complete_text": "His helm was found beside the throne. It's yours.",
+    "faction": {
+      "rainhold": 35
+    }
+  },
+  "naga_scales": {
+    "name": "Scales of the Deep",
+    "giver": "pearl_diver_suriya",
+    "start_keyword": "scales",
+    "wants": {
+      "naga_scale": 4
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 500
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Scales of the Deep. Bring Pearl-Diver Suriya four naga scales.",
+    "ready_text": "Naga scales! Hand them over, {name}.",
+    "complete_text": "That's a season's diving paid for. Here's your share.",
+    "faction": {
+      "rainhold": 6,
+      "deep_naga": -10
+    }
+  },
+  "sessavi_pearl": {
+    "name": "The Queen's Pearl",
+    "giver": "pearl_diver_suriya",
+    "start_keyword": "pearl",
+    "wants": {
+      "sessavi_pearl": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1400
+    },
+    "first_reward_item": "pearl_of_the_deeps",
+    "accept_text": "You have taken on a task: The Queen's Pearl. Bring Pearl-Diver Suriya the pearl of Queen Sessavi.",
+    "ready_text": "The pearl of the deeps. I've dreamed of it. Give it here.",
+    "complete_text": "Let me set it... there.",
+    "first_complete_text": "Wear it; the deep sea will know you.",
+    "faction": {
+      "rainhold": 25,
+      "deep_naga": -40
+    }
+  },
+  "tempest_shards": {
+    "name": "Shards of the Storm",
+    "giver": "stormsage_obi",
+    "start_keyword": "shards",
+    "wants": {
+      "tempest_shard": 4
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 500
+    },
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Shards of the Storm. Bring Stormsage Obi four tempest shards.",
+    "ready_text": "Tempest shards, still crackling. Give them here.",
+    "complete_text": "The storm grows weaker, I think. Here's your pay.",
+    "faction": {
+      "rainhold": 6
+    }
+  },
+  "wardens_chain": {
+    "name": "The Warden's Chain",
+    "giver": "stormsage_obi",
+    "start_keyword": "chain",
+    "wants": {
+      "wardens_chain": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1400
+    },
+    "first_reward_item": "stormbound_bracer",
+    "accept_text": "You have taken on a task: The Warden's Chain. Bring Stormsage Obi the chain of the Stormbound Warden.",
+    "ready_text": "The Warden's chain. It hums. Give it here.",
+    "complete_text": "The storm has lost its keeper.",
+    "first_complete_text": "A bracer forged from its links. Lightning won't find you.",
+    "faction": {
+      "rainhold": 25
+    }
+  },
+  "chitterjaw_claw": {
+    "name": "The Great Crab's Claw",
+    "giver": "stormsage_obi",
+    "start_keyword": "claw",
+    "wants": {
+      "chitterjaw_claw": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1400
+    },
+    "first_reward_item": "chitin_shield",
+    "accept_text": "You have taken on a task: The Great Crab's Claw. Bring Stormsage Obi the claw of Old Chitterjaw.",
+    "ready_text": "That claw could crush a boat. Give it here, {name}.",
+    "complete_text": "I'll shape it with a storm-hammer.",
+    "first_complete_text": "A shield nothing will break.",
+    "faction": {
+      "rainhold": 20
+    }
   }
 }

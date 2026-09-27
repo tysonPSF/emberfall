@@ -1,0 +1,280 @@
+{
+  "pondkin_fetish": {
+    "name": "Pondkin Fetish",
+    "value": 55,
+    "stack": 20
+  },
+  "reedstalker_plume": {
+    "name": "Reedstalker Plume",
+    "value": 60,
+    "stack": 20
+  },
+  "eel_skin": {
+    "name": "Marsh Eel Skin",
+    "value": 50,
+    "stack": 20
+  },
+  "bogwing_wing": {
+    "name": "Bogwing Wing",
+    "value": 50,
+    "stack": 20
+  },
+  "sunken_charm": {
+    "name": "Sunken Charm",
+    "value": 55,
+    "stack": 20
+  },
+  "sedge_charm": {
+    "name": "Sedge Charm",
+    "value": 60,
+    "stack": 20
+  },
+  "tidesworn_insignia": {
+    "name": "Tidesworn Insignia",
+    "value": 70,
+    "stack": 20
+  },
+  "naga_scale": {
+    "name": "Naga Scale",
+    "value": 70,
+    "stack": 20
+  },
+  "tempest_shard": {
+    "name": "Tempest Shard",
+    "value": 70,
+    "stack": 20
+  },
+  "crab_carapace": {
+    "name": "Crab Carapace",
+    "value": 65,
+    "stack": 20
+  },
+  "bloatking_crown": {
+    "name": "Bloatking Ghurr's Crown",
+    "value": 120,
+    "lore": true,
+    "no_drop": true
+  },
+  "stilt_legs_plume": {
+    "name": "Old Stilt-Legs' Plume",
+    "value": 120,
+    "lore": true,
+    "no_drop": true
+  },
+  "headwomans_lotus": {
+    "name": "Headwoman Ishani's Lotus",
+    "value": 120,
+    "lore": true,
+    "no_drop": true
+  },
+  "marrowroot_heart": {
+    "name": "Mother Marrowroot's Heart",
+    "value": 130,
+    "lore": true,
+    "no_drop": true
+  },
+  "varundra_crown": {
+    "name": "Tideking Varundra's Crown",
+    "value": 150,
+    "lore": true,
+    "no_drop": true
+  },
+  "sessavi_pearl": {
+    "name": "Queen Sessavi's Pearl",
+    "value": 150,
+    "lore": true,
+    "no_drop": true
+  },
+  "wardens_chain": {
+    "name": "The Stormbound Warden's Chain",
+    "value": 150,
+    "lore": true,
+    "no_drop": true
+  },
+  "chitterjaw_claw": {
+    "name": "Old Chitterjaw's Claw",
+    "value": 140,
+    "lore": true,
+    "no_drop": true
+  },
+  "reedwalker_boots": {
+    "name": "Reedwalker Boots",
+    "slot": "feet",
+    "ac": 9,
+    "agi": 4,
+    "sta": 3,
+    "value": 6000,
+    "rec_level": 23,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "bloatking_scepter": {
+    "name": "Bloatking's Scepter",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 3.0,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "wand",
+    "skill": "1h_blunt",
+    "str": 4,
+    "sta": 4,
+    "hp": 30,
+    "value": 9000,
+    "rec_level": 24,
+    "lore": true
+  },
+  "heronfeather_cloak": {
+    "name": "Heronfeather Cloak",
+    "slot": "arms",
+    "ac": 11,
+    "agi": 5,
+    "sta": 3,
+    "hp": 25,
+    "value": 8000,
+    "rec_level": 24,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "veyamar_locket": {
+    "name": "Locket of Veyamar",
+    "slot": "neck",
+    "ac": 5,
+    "wis": 4,
+    "int": 4,
+    "mana": 40,
+    "hp": 30,
+    "value": 8000,
+    "rec_level": 23,
+    "no_drop": true,
+    "lore": true
+  },
+  "sedgebane_charm": {
+    "name": "Sedgebane Charm",
+    "slot": "ring",
+    "ac": 5,
+    "sta": 4,
+    "wis": 3,
+    "int": 3,
+    "hp": 35,
+    "value": 8500,
+    "rec_level": 25,
+    "no_drop": true,
+    "lore": true
+  },
+  "tideking_helm": {
+    "name": "Helm of the Tide Kings",
+    "slot": "head",
+    "ac": 17,
+    "sta": 5,
+    "str": 3,
+    "hp": 40,
+    "value": 14000,
+    "rec_level": 29,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "wear": "iron_coif"
+  },
+  "pearl_of_the_deeps": {
+    "name": "Pearl of the Deeps",
+    "slot": "neck",
+    "ac": 6,
+    "wis": 6,
+    "int": 6,
+    "mana": 70,
+    "hp": 35,
+    "value": 14000,
+    "rec_level": 28,
+    "no_drop": true,
+    "lore": true
+  },
+  "stormbound_bracer": {
+    "name": "Stormbound Bracer",
+    "slot": "arms",
+    "ac": 12,
+    "str": 4,
+    "agi": 4,
+    "haste": 5,
+    "value": 13000,
+    "rec_level": 28,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "chitin_shield": {
+    "name": "Chitterjaw Carapace Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 19,
+    "sta": 5,
+    "hp": 40,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 13000,
+    "rec_level": 29,
+    "no_drop": true,
+    "lore": true
+  },
+  "tidesworn_blade": {
+    "name": "Tidesworn Blade",
+    "slot": "primary",
+    "dmg": 20,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "agi": 3,
+    "value": 9000,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "naga_fang_dirk": {
+    "name": "Naga Fang Dirk",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 4,
+    "value": 9000,
+    "rec_level": 27,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.06
+    }
+  }
+}

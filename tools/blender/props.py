@@ -4255,6 +4255,1420 @@ def weapon_rack():
 	return p.build(bevel=0.01)
 
 
+# ---------------------------------------------------------------- Long Monsoon west: Reedmere
+# The misty reed marsh of the lost village of Veyamar: its rotting stilt
+# decks, the pondkin's mud huts, the witch's hut. Water there is about 1 m
+# deep; props that stand in it have their origin on the bed.
+
+SEA_STONE = (2, 1)      # blue-gray: stone the flood has worn smooth
+TEAL = (5, 1)           # light teal: patina, naga scales, heron eggs
+SLIME = (6, 1)          # yellow-green into teal: a witch's brew
+SCALE_GREEN = (0, 2)    # teal-green
+CORAL_PINK = (2, 2)
+CORAL_ORANGE = (4, 2)
+CORAL_MAGENTA = (4, 1)
+SHELL_PEACH = (7, 1)
+
+
+def _move_parts(p, start, m):
+	"""Transforms every part added since `start` (an index into p.parts) by m:
+	tilt or sink a whole assembly after building it upright."""
+	for obj in p.parts[start:]:
+		obj.data.transform(m)
+
+
+def _post_weed(p, x, y, r, z):
+	"""Slime and weed round a post of radius r where the water line (z) meets
+	it, a strand or two trailing up the wood."""
+	for k in range(5):
+		a = k * math.tau / 5 + p.rng.uniform(-0.3, 0.3)
+		p.blob((r * 1.5, r * 1.1, 0.2), (x + math.cos(a) * r * 0.8, y + math.sin(a) * r * 0.8, z + p.rng.uniform(-0.04, 0.08)),
+			   MOSS if k % 2 else LEAF, rot=(0, 0, math.degrees(a)), segs=(6, 4), grad=(0.1, 0.9))
+	a = p.rng.uniform(0, math.tau)
+	top = (x + math.cos(a) * r * 1.05, y + math.sin(a) * r * 1.05, z + p.rng.uniform(0.35, 0.8))
+	p.seg(top, (top[0] + math.cos(a) * 0.05, top[1] + math.sin(a) * 0.05, z), 0.045, 0.03, MOSS, sides=4, grad=(0.2, 0.9))
+
+
+def _weed_hang(p, top, length, r=0.04):
+	"""A strand of weed hanging off a beam, wandering a little."""
+	x, y, z = top
+	pts = [(x, y, z)]
+	for k in range(3):
+		x += p.rng.uniform(-0.06, 0.06)
+		y += p.rng.uniform(-0.06, 0.06)
+		z -= length / 3
+		pts.append((x, y, z))
+	_chain(p, pts, r, r * 0.4, MOSS if p.rng.random() < 0.6 else LEAF, sides=4, grad=(0.2, 0.9))
+
+
+def _moss_patch(p, x, y, z, sx, sy):
+	"""A flat, lumpy patch of moss lying on planks: only a centimeter proud of them."""
+	for k in range(3):
+		p.blob((sx * p.rng.uniform(0.5, 0.8), sy * p.rng.uniform(0.5, 0.8), 0.03), (x + p.rng.uniform(-0.25, 0.25) * sx, y + p.rng.uniform(-0.25, 0.25) * sy, z),
+			   MOSS if k else PINE, rot=(0, 0, p.rng.uniform(0, 180)), segs=(7, 3), grad=(0.5, 1.0))
+
+
+def stilt_platform_broken():
+	"""A rotting 9 x 9 m stilt deck of lost Veyamar: stilt_platform's frame, its
+	+X+Y corner rotted through (planks gone, ragged ends, a joist snapped into
+	the water, its piling broken off), the -X edge sagging, weed and slime on
+	the pilings at the water line (0.8 m under the deck, as Rainhold's decks
+	stand). The deck's top is the origin and is flat wherever planks remain:
+	walkable for x in [-3.5, 4.5] outside the hole (x > 2.1 and y > 2.2)."""
+	p = Prop("stilt_platform_broken", 301)
+	soft = Prop("stilt_platform_broken_soft", 301)  # weed, slime, barnacles and coral: left unbeveled
+	h = 4.5
+	water = -0.8
+	n = 30
+	for k in range(n):
+		y = -h + (k + 0.5) * 2 * h / n
+		w = 2 * h / n - 0.03
+		sw = WOOD_GRAY if p.rng.random() < 0.45 else WOOD
+		x1 = h + p.rng.uniform(-0.05, 0.0)
+		if y > 2.2:  # the rotten corner: planks broken off short
+			x1 = 2.2 + p.rng.uniform(-0.05, 0.5) - (y - 2.2) * 0.2
+			if k in (n - 3, n - 6):
+				x1 = 0.6 + p.rng.uniform(0.0, 0.8)  # rotted further back
+		x0 = -3.5
+		p.box((x1 - x0, w, 0.08), ((x0 + x1) / 2, y, -0.04), sw, rot=(0, 0, p.rng.uniform(-0.3, 0.3)), grad=(0.1, 0.6))
+		t = max(0.0, min(1.0, (y + 2.0) / 6.0))  # the sag deepens toward +Y
+		a = math.radians(3 + 16 * t)
+		L = h - 3.5 + p.rng.uniform(-0.15, 0.0)
+		p.box((L, w, 0.08), (x0 - L / 2 * math.cos(a), y, -0.04 - L / 2 * math.sin(a)), sw, rot=(0, -math.degrees(a), 0), grad=(0.1, 0.6))
+	for x in (-1.1, 1.1):  # joists under the planks
+		p.box((0.16, 2 * h - 0.2, 0.22), (x, 0, -0.19), WOOD, grad=(0.3, 1.0))
+	p.box((0.16, 5.4, 0.22), (-3.4, -1.6, -0.19), WOOD, grad=(0.3, 1.0))
+	p.box((0.16, 6.3, 0.22), (3.4, -1.05, -0.19), WOOD, grad=(0.3, 1.0))
+	p.box((0.16, 2.2, 0.2), (3.55, 2.9, -0.62), WOOD_GRAY, rot=(-24, 6, 0), grad=(0.3, 1.0))  # snapped, dropped into the water
+	# the edge beams: whole at -Y, broken at +X and +Y, sagging along -X
+	p.box((2 * h, 0.2, 0.36), (0, -h + 0.1, -0.18), WOOD, grad=(0.2, 0.9))
+	p.box((0.2, 6.5, 0.36), (h - 0.1, -1.25, -0.18), WOOD, grad=(0.2, 0.9))
+	p.box((6.6, 0.2, 0.36), (-1.2, h - 0.1, -0.18), WOOD, grad=(0.2, 0.9))
+	p.box((0.2, 1.6, 0.3), (h - 0.05, 2.55, -0.45), WOOD_GRAY, rot=(-18, 0, 4), grad=(0.2, 0.9))
+	_chain(p, [(-h + 0.1, -h, -0.18), (-h + 0.1, -2.0, -0.2), (-h + 0.12, 1.0, -0.45), (-h + 0.14, h, -0.95)], 0.18, 0.16, WOOD, sides=4)
+	posts = (-4.2, -1.4, 1.4, 4.2)
+	for x in posts:
+		for y in posts:
+			if (x, y) == (4.2, 4.2):  # snapped off below the water
+				p.seg((x, y, -4.0), (x, y, water - 0.3), 0.15, 0.14, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+				p.rock((0.34, 0.34, 0.25), (x, y, water - 0.25), WOOD_GRAY, jitter=0.06)
+				continue
+			top = -0.1
+			if x < -4:  # the sagging side's pilings sank a little and lean
+				top = -0.2 - 0.25 * (y + 4.2) / 8.4
+			lean = (-0.25, 0.0) if (x < -4 and y > 0) else (0.0, 0.0)
+			p.seg((x + lean[0], y + lean[1], -4.0), (x, y, top), 0.15, 0.13, WOOD, sides=6, grad=(0.2, 1.0))
+			if abs(x) > 4 or abs(y) > 4:
+				_post_weed(soft, x + lean[0] * 0.2, y, 0.15, water)
+	for i in range(3):  # cross bracing, a couple of braces gone
+		a, b = posts[i], posts[i + 1]
+		p.seg((a, -4.2, -0.5), (b, -4.2, -2.4), 0.06, 0.06, WOOD_GRAY, sides=4)
+		if i < 2:
+			p.seg((4.2, a, -0.5), (4.2, b, -2.4), 0.06, 0.06, WOOD_GRAY, sides=4)
+		if i != 1:
+			p.seg((-4.2, a, -0.6), (-4.2, b, -2.5), 0.06, 0.06, WOOD_GRAY, sides=4)
+	for k in range(9):  # weed trailing from the edge beams
+		if k < 5:
+			top = (p.rng.uniform(-4.0, 3.5), -h - 0.05, -0.3)
+		else:
+			top = (-h - 0.05, p.rng.uniform(-4.0, 2.0), -0.45)
+		_weed_hang(soft, top, p.rng.uniform(0.4, 0.7))
+	for x, y, sx, sy in ((-2.6, 3.4, 1.2, 0.8), (1.6, 1.3, 0.9, 0.6), (-1.0, -3.2, 0.7, 0.5), (3.6, -3.8, 0.8, 0.6)):
+		_moss_patch(soft, x, y, 0.0, sx, sy)
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
+def stilt_walkway_broken():
+	"""A 3 x 9 m walkway of lost Veyamar, running along Y like stilt_walkway:
+	its planks rotted out on the +X side for y in [0.4, 2.2] (the -X side of
+	them still holds), a plank hanging into the water, the +X rail's middle
+	post leaning out with its ropes slack, weed on the pilings. Deck top at the
+	origin, flat wherever planks remain."""
+	p = Prop("stilt_walkway_broken", 302)
+	soft = Prop("stilt_walkway_broken_soft", 302)  # weed, slime, barnacles and coral: left unbeveled
+	hx, hy = 1.5, 4.5
+	n = 30
+	for k in range(n):
+		y = -hy + (k + 0.5) * 2 * hy / n
+		w = 2 * hy / n - 0.03
+		sw = WOOD_GRAY if p.rng.random() < 0.45 else WOOD
+		x0, x1 = -hx + p.rng.uniform(0.0, 0.04), hx - p.rng.uniform(0.0, 0.05)
+		if 0.4 < y < 2.2:
+			x1 = -0.35 + p.rng.uniform(0.0, 0.45)
+		p.box((x1 - x0, w, 0.08), ((x0 + x1) / 2, y, -0.04), sw, rot=(0, 0, p.rng.uniform(-0.3, 0.3)), grad=(0.1, 0.6))
+	p.box((0.3, 1.5, 0.07), (1.62, 1.2, -0.6), WOOD_GRAY, rot=(0, 72, 8), grad=(0.1, 0.6))  # a plank hanging off the side
+	p.box((0.16, 2 * hy, 0.2), (-1.2, 0, -0.18), WOOD, grad=(0.3, 1.0))
+	p.box((0.16, 4.8, 0.2), (1.2, -2.1, -0.18), WOOD, grad=(0.3, 1.0))  # the +X stringer, snapped in the gap
+	p.box((0.16, 2.3, 0.2), (1.2, 3.35, -0.18), WOOD, grad=(0.3, 1.0))
+	p.box((0.16, 0.9, 0.2), (1.22, 0.62, -0.4), WOOD_GRAY, rot=(28, 0, 0), grad=(0.3, 1.0))
+	posts = (-4.25, -1.45, 1.45, 4.25)
+	for s in (-1, 1):
+		x = s * 1.38
+		tops = []
+		for y in posts:
+			top = (x, y, 1.1)
+			if s > 0 and y == 1.45:
+				top = (x + 0.55, y + 0.1, 0.95)  # leaning out over the water
+			p.seg((x, y, -4.0), top, 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+			p.seg(top, (top[0], top[1], top[2] + 0.08), 0.12, 0.12, WOOD_GRAY, sides=6)
+			tops.append(top)
+			_post_weed(soft, x, y, 0.1, -0.8)
+		for i, (a, b) in enumerate(zip(tops, tops[1:])):
+			slack = 0.35 if (s > 0 and i in (1, 2)) else 0.12
+			_rope(p, (a[0], a[1], a[2] - 0.08), (b[0], b[1], b[2] - 0.08), slack)
+			if s > 0 and i == 1:  # the lower rope snapped and trails in the water
+				_rope(p, (a[0], a[1], 0.55), (a[0] + 0.1, a[1] + 1.0, -0.8), 0.1)
+				continue
+			_rope(p, (a[0], a[1], a[2] - 0.55 * (a[2] / 1.1)), (b[0], b[1], b[2] - 0.55 * (b[2] / 1.1)), slack * 0.7)
+	for k in range(5):
+		_weed_hang(soft, (p.rng.choice((-1.55, 1.55)), p.rng.uniform(-4.0, 4.0), -0.25), p.rng.uniform(0.35, 0.6))
+	_moss_patch(soft, -0.8, -3.0, 0.0, 0.8, 0.5)
+	_moss_patch(soft, 0.6, 3.6, 0.0, 0.6, 0.5)
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
+def stilt_hut_sunken():
+	"""A hut of lost Veyamar whose pilings gave way: its 5 x 5 m deck and the
+	hut on it tilted and half sunk in the marsh (one corner under water, the
+	other 1.7 m out), plank walls gapped, the roof's right slope fallen in round
+	a snapped ridge. Origin on the bed; built for about 1 m of water. Scenery,
+	not walkable: collide it as a box. About 4.3 m above the bed."""
+	p = Prop("stilt_hut_sunken", 303)
+	soft = Prop("stilt_hut_sunken_soft", 303)  # weed, slime, barnacles and coral: left unbeveled
+	start = len(p.parts)
+	hd = 2.5
+	_deck_planks(p, hd, hd, True)
+	for s in (-1, 1):
+		p.box((2 * hd, 0.2, 0.3), (0, s * (hd - 0.1), -0.15), WOOD, grad=(0.2, 0.9))
+		p.box((0.2, 2 * hd, 0.3), (s * (hd - 0.1), 0, -0.15), WOOD, grad=(0.2, 0.9))
+	for x in (-2.2, 0.0, 2.2):
+		for y in (-2.2, 2.2):
+			p.seg((x, y, -2.6), (x, y, -0.08), 0.13, 0.12, WOOD, sides=6, grad=(0.2, 1.0))
+	w, wall_h = 3.6, 2.2
+	hw = w / 2
+
+	def planks(x0, x1, fixed, along_x, skip=None, drop=()):
+		n = int(abs(x1 - x0) / 0.32)
+		for k in range(n):
+			c = x0 + (k + 0.5) * (x1 - x0) / n
+			if (skip and skip[0] < c < skip[1]) or k in drop:
+				continue
+			hgt = wall_h + p.rng.uniform(-0.1, 0.05)
+			sw = WOOD_GRAY if p.rng.random() < 0.5 else WOOD
+			if along_x:
+				p.box((abs(x1 - x0) / n - 0.03, 0.1, hgt), (c, fixed, hgt / 2), sw, rot=(p.rng.uniform(-2, 2), 0, 0), grad=(0.15, 0.9))
+			else:
+				p.box((0.1, abs(x1 - x0) / n - 0.03, hgt), (fixed, c, hgt / 2), sw, rot=(0, p.rng.uniform(-2, 2), 0), grad=(0.15, 0.9))
+
+	planks(-hw, hw, -hw, True, skip=(-0.5, 0.5), drop=(8,))
+	planks(-hw, hw, hw, True, drop=(3,))
+	planks(-hw, hw, -hw, False, skip=(-0.45, 0.45))
+	planks(-hw, hw, hw, False, drop=(2, 7))
+	p.box((1.1, 0.12, 0.26), (0, -hw, 2.0), WOOD, grad=(0.3, 1.0))
+	for x in (-hw, hw):
+		for y in (-hw, hw):
+			p.seg((x, y, 0), (x, y, wall_h + 0.1), 0.1, 0.09, WOOD, sides=6, grad=(0.2, 1.0))
+	ridge = wall_h + 1.7
+	# left slope whole
+	p.poly([(-(hw + 0.45), -hw - 0.4, wall_h - 0.2), (0, -hw - 0.4, ridge), (0, hw + 0.4, ridge - 0.7), (-(hw + 0.45), hw + 0.4, wall_h - 0.35)],
+		   [(0, 1, 2, 3)], HIDE, grad=(0.0, 0.7))
+	for k in range(5):
+		t = (k + 0.5) / 5
+		x = -(hw + 0.45) * (1 - t)
+		z0 = wall_h - 0.2 + (ridge - wall_h + 0.2) * t
+		z1 = wall_h - 0.35 + (ridge - 0.7 - wall_h + 0.35) * t
+		p.seg((x, -hw - 0.45, z0 + 0.04), (x, hw + 0.45, z1 + 0.04), 0.06, 0.06, HIDE, sides=4, grad=(0.1, 0.6))
+	# the ridge snapped: its back half sagging to the right wall
+	p.seg((0, -hw - 0.55, ridge + 0.05), (0, 0.1, ridge - 0.25), 0.09, 0.09, WOOD, sides=6)
+	p.seg((0.05, 0.1, ridge - 0.3), (0.5, hw + 0.5, wall_h - 0.15), 0.09, 0.08, WOOD_GRAY, sides=6)
+	# right slope: a strip of thatch left at the front, bare rafters, the rest slumped inside
+	p.poly([(hw + 0.45, -hw - 0.4, wall_h - 0.2), (0, -hw - 0.4, ridge), (0, -0.7, ridge - 0.15), (hw + 0.45, -0.9, wall_h - 0.25)],
+		   [(0, 1, 2, 3)], HIDE, grad=(0.0, 0.7))
+	for k in range(3):
+		t = (k + 0.5) / 3
+		x = (hw + 0.45) * (1 - t)
+		z = wall_h - 0.2 + (ridge - wall_h + 0.2) * t
+		p.seg((x, -hw - 0.45, z + 0.04), (x, -0.8, z - 0.04), 0.06, 0.06, HIDE, sides=4, grad=(0.1, 0.6))
+	for y in (0.0, 0.9, 1.8):
+		zr = ridge - 0.25 - (ridge - 0.25 - wall_h) * (y / (hw + 0.5)) * 0.9
+		p.seg((0.1, y, zr), (hw + 0.3, y + 0.1, wall_h - 0.05), 0.05, 0.045, WOOD_GRAY, sides=4)
+	p.seg((0.3, 0.4, ridge - 0.5), (hw - 0.1, 0.6, 0.6), 0.05, 0.04, WOOD_GRAY, sides=4)  # a rafter fallen in
+	p.blob((2.4, 2.6, 0.9), (0.8, 1.0, 0.35), HIDE, rot=(0, 8, 10), segs=(8, 5), grad=(0.2, 1.0), jitter=0.05)  # the thatch that came down
+	p.poly([(-hw, -hw, wall_h), (0, -hw, ridge - 0.12), (hw, -hw, wall_h)], [(0, 1, 2)], WOOD_GRAY, grad=(0.2, 0.9))
+	p.box((0.06, 0.55, 0.9), (-hw - 0.05, -0.6, 1.35), WOOD_GRAY, rot=(0, 0, -30), grad=(0.1, 0.8))  # a shutter hanging
+	_move_parts(p, start, Matrix.Translation((0, 0, 0.75)) @ Matrix.Rotation(math.radians(-15), 4, "Y") @ Matrix.Rotation(math.radians(9), 4, "X"))
+	# what the water carried off, and weed where it meets the wreck
+	for k in range(5):
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(3.0, 4.2)
+		p.box((p.rng.uniform(1.2, 2.2), 0.28, 0.07), (math.cos(a) * d, math.sin(a) * d, 0.98), WOOD_GRAY, rot=(0, p.rng.uniform(-4, 4), p.rng.uniform(0, 180)), grad=(0.1, 0.6))
+	for k in range(10):
+		a = k * math.tau / 10
+		p.blob((1.0, 0.6, 0.08), (math.cos(a) * 2.5, math.sin(a) * 2.5, 1.0), MOSS if k % 2 else PINE, rot=(0, 0, math.degrees(a) + 90), segs=(7, 3), grad=(0.4, 1.0))
+	for k in range(6):
+		_weed_hang(soft, (p.rng.uniform(-2.4, 2.4), -2.6, 1.3), p.rng.uniform(0.3, 0.5))
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
+def pondkin_hut():
+	"""A pondkin's hut: a lumpy dome of marsh mud about 3.5 m across and 2.3 m
+	tall under a cap of bundled reeds, studded with shells, with a low round
+	doorway (about 1 m high) through a short mud porch at the front (-Y).
+	Collide it as a box."""
+	p = Prop("pondkin_hut", 304)
+	soft = Prop("pondkin_hut_soft", 304)  # weed, slime, barnacles and coral: left unbeveled
+	R, H = 1.75, 1.95
+	_lathe(p, [(0.02, -0.3), (R + 0.05, -0.3), (R + 0.05, 0.3), (R * 0.97, 0.8), (R * 0.82, 1.3), (R * 0.55, 1.75), (R * 0.2, 1.95), (0.02, 1.97)],
+		   16, WOOD, grad=(0.25, 1.0), jitter=0.05)
+	for k in range(14):  # the mud banked round its foot
+		a = k * math.tau / 14
+		soft.blob((1.1, 0.8, 0.7), (math.cos(a) * R * 0.98, math.sin(a) * R * 0.98, 0.1), WOOD_GRAY, rot=(0, 0, math.degrees(a) + 90), segs=(8, 5), grad=(0.3, 1.0), jitter=0.04)
+	# the reed cap: a cone of thatch with bundles down it and a spray at the top
+	p.seg((0, 0, 1.35), (0, 0, 2.55), 1.35, 0.1, BAMBOO, sides=12, grad=(0.1, 0.9), jitter=0.03)
+	for k in range(12):
+		a = k * math.tau / 12 + 0.13
+		p.seg((math.cos(a) * 1.42, math.sin(a) * 1.42, 1.28), (math.cos(a) * 0.1, math.sin(a) * 0.1, 2.56), 0.08, 0.05, HIDE if k % 2 else BAMBOO, sides=4, grad=(0.1, 0.7))
+	p.seg((0, 0, 1.55), (0, 0, 1.63), 1.18, 1.12, WOOD, sides=12)  # the binding cord
+	for k in range(9):
+		a = k * math.tau / 9
+		p.seg((0, 0, 2.45), (math.cos(a) * 0.35, math.sin(a) * 0.35, 3.0 + p.rng.uniform(-0.1, 0.15)), 0.03, 0.005, BAMBOO, sides=3)
+	# the porch and doorway
+	p.seg((0, -1.1, 0.45), (0, -2.0, 0.45), 0.78, 0.72, WOOD, sides=10, grad=(0.2, 1.0), jitter=0.03)
+	p.seg((0, -2.0, 0.45), (0, -2.06, 0.45), 0.6, 0.58, IRON, sides=12, grad=(0.6, 1.0))
+	for k in range(9):  # shells round the door
+		a = math.pi * (-0.1 + 1.2 * k / 8)
+		soft.blob((0.2, 0.08, 0.17), (math.cos(a) * 0.72, -2.04, 0.45 + math.sin(a) * 0.72), (CLOTH_WHITE, SHELL_PEACH, CORAL_PINK)[k % 3],
+			   rot=(90, 0, 0), segs=(7, 4), grad=(0.0, 0.5))
+	for k in range(22):  # shells pressed into the dome
+		a = p.rng.uniform(0, math.tau)
+		if math.sin(a) < -0.85:
+			continue
+		e = p.rng.uniform(0.15, 0.62)
+		n = Vector((math.cos(a) * math.cos(e) / R, math.sin(a) * math.cos(e) / R, math.sin(e) / H)).normalized()
+		c = (math.cos(a) * math.cos(e) * R, math.sin(a) * math.cos(e) * R, math.sin(e) * H)
+		q = Vector((0, 0, 1)).rotation_difference(n).to_euler()
+		soft.blob((0.2, 0.17, 0.07), c, (CLOTH_WHITE, SHELL_PEACH, CORAL_PINK, BONE)[k % 4], rot=tuple(math.degrees(v) for v in q), segs=(7, 4), grad=(0.0, 0.5))
+	# a drying rack of fish by the door and a clay pot
+	for x in (1.25, 2.05):
+		p.seg((x, -1.75, 0), (x, -1.75, 1.2), 0.04, 0.035, WOOD_GRAY, sides=4)
+	p.seg((1.15, -1.75, 1.15), (2.15, -1.75, 1.15), 0.03, 0.03, WOOD_GRAY, sides=4)
+	for k in range(3):
+		x = 1.4 + k * 0.3
+		p.blob((0.12, 0.05, 0.42), (x, -1.75, 0.9), SEA_STONE, segs=(6, 4), grad=(0.0, 0.8))
+	_lathe(p, [(0.02, 0.0), (0.2, 0.03), (0.28, 0.2), (0.24, 0.42), (0.15, 0.5), (0.18, 0.55), (0.12, 0.55), (0.02, 0.45)], 10, CLAY, grad=(0.1, 0.9))
+	p.parts[-1].data.transform(Matrix.Translation((-1.5, -1.6, 0)))
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
+def pondkin_totem():
+	"""A pondkin totem, about 3.6 m with its reed crest: a carved post topped with a grinning frog
+	head painted green (bulging eyes, a yellow throat), a second frog face
+	carved lower down, strings of shells and reed streamers hanging from a
+	crossbar, on a mound of mud and shells. Faces -Y. Collide it as a box."""
+	p = Prop("pondkin_totem", 305)
+	soft = Prop("pondkin_totem_soft", 305)  # weed, slime, barnacles and coral: left unbeveled
+	p.blob((1.4, 1.3, 0.5), (0, 0, 0.0), WOOD_GRAY, segs=(10, 5), grad=(0.3, 1.0), jitter=0.04)
+	for k in range(7):
+		a = k * math.tau / 7 + 0.2
+		soft.blob((0.18, 0.15, 0.07), (math.cos(a) * 0.5, math.sin(a) * 0.45, 0.2), (CLOTH_WHITE, SHELL_PEACH)[k % 2], rot=(20, 0, math.degrees(a)), segs=(6, 4))
+	p.seg((0, 0, -0.2), (0, 0.03, 2.45), 0.21, 0.18, WOOD, sides=8, grad=(0.2, 1.0))
+	for z in (0.6, 1.95):
+		p.seg((0, 0, z), (0, 0, z + 0.1), 0.23, 0.23, SCALE_GREEN, sides=8)  # painted bands
+	# the lower face, carved in the wood
+	p.blob((0.52, 0.4, 0.4), (0, -0.14, 1.3), WOOD, segs=(8, 6), grad=(0.1, 0.8))
+	for s in (-1, 1):
+		p.blob((0.16, 0.14, 0.16), (s * 0.15, -0.28, 1.46), WOOD, segs=(6, 5))
+		p.blob((0.07, 0.04, 0.07), (s * 0.15, -0.35, 1.47), IRON, segs=(5, 4))
+	p.box((0.36, 0.05, 0.04), (0, -0.33, 1.2), IRON, grad=(0.6, 1.0))
+	# the crown: a frog head
+	hz = 2.72
+	p.blob((0.95, 0.85, 0.6), (0, -0.05, hz), LEAF, segs=(12, 8), grad=(0.05, 0.9))
+	p.blob((0.7, 0.55, 0.32), (0, -0.12, hz - 0.3), PETAL_YELLOW, segs=(10, 6), grad=(0.0, 0.7))  # the throat
+	grin = []  # the grin, following the head round the front
+	for k in range(9):
+		a = math.radians(200 + k * 140 / 8)
+		grin.append((math.cos(a) * 0.475 * 0.97, -0.05 + math.sin(a) * 0.425 * 0.97, hz - 0.1 + 0.06 * abs(math.cos(a))))
+	_chain(p, grin, 0.03, 0.03, IRON, sides=4, grad=(0.6, 1.0))
+	for s in (-1, 1):
+		p.blob((0.34, 0.32, 0.32), (s * 0.28, -0.12, hz + 0.26), LEAF, segs=(8, 6), grad=(0.0, 0.8))
+		p.blob((0.24, 0.12, 0.24), (s * 0.29, -0.27, hz + 0.28), CLOTH_WHITE, segs=(8, 5), grad=(0.0, 0.3))
+		p.blob((0.1, 0.05, 0.14), (s * 0.29, -0.33, hz + 0.28), IRON, segs=(6, 4))
+		p.blob((0.05, 0.03, 0.05), (s * 0.08, -0.46, hz + 0.08), IRON, segs=(4, 3))  # nostrils
+	for k in range(5):  # a crest of reeds behind the head
+		a = math.radians(-50 + k * 25)
+		p.seg((0, 0.15, hz + 0.2), (math.sin(a) * 0.5, 0.3, hz + 0.95 - abs(a) * 0.2), 0.035, 0.005, BAMBOO, sides=3)
+	# crossbar with shell strings and reed streamers
+	p.seg((-0.85, 0.02, 2.1), (0.85, 0.02, 2.12), 0.05, 0.05, WOOD_GRAY, sides=5)
+	for k, x in enumerate((-0.78, -0.55, -0.32, 0.32, 0.55, 0.78)):
+		if k % 3 == 1:
+			for j in range(4):
+				soft.blob((0.12, 0.05, 0.1), (x, 0.02, 1.95 - j * 0.16), (CLOTH_WHITE, SHELL_PEACH, CORAL_PINK)[(j + k) % 3], rot=(0, 0, 90), segs=(6, 4))
+			p.seg((x, 0.02, 2.08), (x, 0.02, 1.4), 0.008, 0.008, HIDE, sides=3)
+		else:
+			ln = p.rng.uniform(0.9, 1.3)
+			p.box((0.06, 0.015, ln), (x, 0.05, 2.08 - ln / 2), BAMBOO if k % 2 else PINE, rot=(0, p.rng.uniform(-6, 6), 0), grad=(0.1, 0.9))
+			p.box((0.05, 0.015, ln * 0.8), (x + 0.07, 0.06, 2.08 - ln * 0.4), LEAF, rot=(0, p.rng.uniform(-6, 6), 0), grad=(0.1, 0.9))
+	return join_into(p.build(bevel=0.015), [soft.build()])
+
+
+def witch_hut():
+	"""The marsh witch's hut: a crooked plank shack leaning on five crooked
+	stilts, floor 1.7 m up, a steep reed-thatch roof with a bent tip (about 6.8 m
+	to the top), a ladder up to the door (-Y), a lit window beside it and one
+	at the side, bones, skulls and charms hung from the eaves. Origin on the
+	ground or marsh bed. Collide it as a box."""
+	p = Prop("witch_hut", 306)
+	soft = Prop("witch_hut_soft", 306)  # weed, slime, barnacles and coral: left unbeveled
+	fz = 1.7
+	for (x, y) in ((-1.5, -1.5), (1.6, -1.4), (1.45, 1.55), (-1.55, 1.5), (0.1, 0.2)):
+		mid = (x + p.rng.uniform(-0.4, 0.4), y + p.rng.uniform(-0.4, 0.4), 0.95)
+		_chain(p, [(x * 1.18, y * 1.18, -0.4), mid, (x, y, fz - 0.05)], 0.13, 0.1, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+		_post_weed(soft, mid[0], mid[1], 0.13, 0.95)
+	for a, b in (((-1.5, -1.5, 0.6), (1.6, -1.4, 1.3)), ((1.6, -1.4, 0.5), (1.45, 1.55, 1.35)), ((-1.55, 1.5, 0.7), (-1.5, -1.5, 1.4))):
+		p.seg(a, b, 0.05, 0.05, WOOD, sides=4)
+	start = len(p.parts)
+	# the floor, a porch lip at the front
+	for k in range(12):
+		y = -1.95 + (k + 0.5) * 3.9 / 12
+		p.box((3.6 + p.rng.uniform(-0.2, 0.1), 3.9 / 12 - 0.03, 0.08), (p.rng.uniform(-0.05, 0.05), y, fz - 0.04), WOOD_GRAY if k % 3 else WOOD,
+			  rot=(0, 0, p.rng.uniform(-2, 2)), grad=(0.1, 0.6))
+	for s in (-1, 1):
+		p.box((3.7, 0.18, 0.25), (0, s * 1.8, fz - 0.18), WOOD, grad=(0.2, 0.9))
+	# the shack: 2.8 x 2.6 m of plank walls, leaning (sheared) toward +X
+	w, d, wh = 2.8, 2.6, 2.1
+	hw, hd = w / 2, d / 2
+	wstart = len(p.parts)
+
+	def wall(x0, x1, fixed, along_x, gaps=()):
+		n = int(abs(x1 - x0) / 0.3)
+		for k in range(n):
+			c = x0 + (k + 0.5) * (x1 - x0) / n
+			top = wh + p.rng.uniform(-0.05, 0.12)
+			spans = [(0.0, top)]
+			for g0, g1, z0, z1 in gaps:
+				if g0 < c < g1:
+					spans = [(0.0, z0), (z1, top)] if z0 > 0 else [(z1, top)]
+			for a, b in spans:
+				sw = WOOD_GRAY if p.rng.random() < 0.5 else WOOD
+				if along_x:
+					p.box((abs(x1 - x0) / n - 0.02, 0.1, b - a), (c, fixed, fz + (a + b) / 2), sw, rot=(0, p.rng.uniform(-3, 3), 0), grad=(0.15, 0.95))
+				else:
+					p.box((0.1, abs(x1 - x0) / n - 0.02, b - a), (fixed, c, fz + (a + b) / 2), sw, rot=(p.rng.uniform(-3, 3), 0, 0), grad=(0.15, 0.95))
+
+	wall(-hw, hw, -hd, True, [(-0.9, -0.1, 0.0, 1.75), (0.45, 1.05, 0.95, 1.5)])
+	wall(-hw, hw, hd, True)
+	wall(-hd, hd, -hw, False)
+	wall(-hd, hd, hw, False, [(-0.3, 0.35, 0.9, 1.45)])
+	for x, y in ((-hw, -hd), (hw, -hd), (hw, hd), (-hw, hd)):
+		p.seg((x, y, fz), (x, y, fz + wh + 0.1), 0.09, 0.08, WOOD, sides=5, grad=(0.2, 1.0))
+	p.box((0.78, 0.08, 1.7), (-0.9 + 0.39 * math.cos(math.radians(-55)), -hd + 0.39 * math.sin(math.radians(-55)), fz + 0.86), WOOD, rot=(0, 0, -55), grad=(0.2, 0.9))  # the door, ajar
+	p.box((0.9, 0.12, 0.16), (-0.5, -hd - 0.02, fz + 1.82), WOOD_GRAY, grad=(0.2, 0.9))  # lintel
+	p.box((0.72, 0.1, 1.72), (-0.5, -hd + 0.2, fz + 0.86), IRON, grad=(0.6, 1.0))  # the dark inside
+	for (x, y, sx, sy) in ((0.75, -hd + 0.02, 0.62, 0.06), (hw - 0.02, 0.02, 0.06, 0.66)):  # the lit windows, crossed with sticks
+		p.box((sx, sy, 0.56), (x, y, fz + 1.22), FLAME, grad=(0.2, 0.6), glow=1.6)
+		if sy < 0.1:
+			p.seg((x - 0.33, y - 0.08, fz + 1.22), (x + 0.33, y - 0.08, fz + 1.22), 0.025, 0.025, WOOD_GRAY, sides=4)
+			p.seg((x, y - 0.08, fz + 0.93), (x, y - 0.08, fz + 1.51), 0.025, 0.025, WOOD_GRAY, sides=4)
+		else:
+			p.seg((x + 0.08, y - 0.35, fz + 1.22), (x + 0.08, y + 0.35, fz + 1.22), 0.025, 0.025, WOOD_GRAY, sides=4)
+			p.seg((x + 0.08, y, fz + 0.93), (x + 0.08, y, fz + 1.51), 0.025, 0.025, WOOD_GRAY, sides=4)
+	# the roof: a crooked four-sided cone of reed thatch, the tip bent over
+	ez, apex = fz + wh - 0.1, (0.6, 0.3, fz + wh + 2.2)
+	rstart = len(p.parts)
+	ov = 0.5
+	eaves = [(-hw - ov, -hd - ov, ez - 0.1), (hw + ov, -hd - ov, ez + 0.05), (hw + ov, hd + ov, ez - 0.15), (-hw - ov, hd + ov, ez)]
+	for i in range(4):
+		a, b = eaves[i], eaves[(i + 1) % 4]
+		p.poly([a, b, apex], [(0, 1, 2)], HIDE, grad=(0.0, 0.8))
+		for k in range(4):  # courses of reed bundles
+			t = (k + 0.4) / 4.5
+			pa = Vector(a).lerp(Vector(apex), t)
+			pb = Vector(b).lerp(Vector(apex), t)
+			p.seg(tuple(pa + Vector((0, 0, 0.04))), tuple(pb + Vector((0, 0, 0.04))), 0.07, 0.07, BAMBOO if k % 2 else HIDE, sides=4, grad=(0.1, 0.7))
+	_chain(p, [apex, (apex[0] + 0.15, apex[1] + 0.05, apex[2] + 0.6), (apex[0] + 0.55, apex[1] - 0.1, apex[2] + 0.85), (apex[0] + 0.85, apex[1] - 0.2, apex[2] + 0.65)],
+		   0.3, 0.05, HIDE, sides=6, grad=(0.1, 0.8))
+	_move_parts(p, rstart, Matrix.Rotation(math.radians(9), 4, "Z"))  # the roof sits askew
+	p.seg((-0.9, 0.8, ez + 0.6), (-1.0, 0.95, ez + 1.9), 0.12, 0.1, IRON, sides=6)  # a crooked stovepipe
+	p.seg((-1.0, 0.95, ez + 1.9), (-0.8, 1.05, ez + 2.15), 0.14, 0.14, IRON, sides=6)
+	# charms: bones, skulls, a bottle and glowing trinkets hung from the eaves
+	for k, (x, y) in enumerate(((-hw - 0.35, -hd - 0.35), (hw + 0.35, -hd - 0.35), (0.2, -hd - 0.4), (hw + 0.4, 0.8), (-1.0, -hd - 0.38), (1.0, -hd - 0.38))):
+		top = (x, y, ez - 0.05)
+		ln = p.rng.uniform(0.5, 0.9)
+		p.seg(top, (x, y, top[2] - ln), 0.008, 0.008, HIDE, sides=3)
+		end = (x, y, top[2] - ln)
+		if k % 3 == 0:
+			_skull(p, (end[0], end[1], end[2] - 0.2), s=0.9, yaw=p.rng.uniform(-0.4, 0.4))
+		elif k % 3 == 1:
+			_bone(p, (x - 0.1, y, end[2] + 0.1), (x + 0.1, y, end[2] - 0.2), r=0.02)
+			_bone(p, (x + 0.08, y + 0.03, end[2] + 0.05), (x - 0.06, y - 0.02, end[2] - 0.25), r=0.018)
+		else:
+			p.blob((0.1, 0.1, 0.12), end, SLIME, segs=(6, 5), glow=1.3)
+			for j in range(3):
+				p.box((0.03, 0.01, 0.2), (x - 0.06 + j * 0.06, y, end[2] - 0.14), CLOTH_RED if j % 2 else BONE, rot=(0, (j - 1) * 20, 0))
+	_skull(p, (1.2, -hd - 0.05, fz + 2.0), s=1.3)  # nailed over the window
+	# the lean
+	_move_parts(p, wstart, Matrix.Translation((0, 0, fz)) @ Matrix.Shear("XY", 4, (0.11, 0.04)) @ Matrix.Translation((0, 0, -fz)))
+	_move_parts(p, start, Matrix.Translation((0, 0, fz)) @ Matrix.Rotation(math.radians(5), 4, "Y") @ Matrix.Rotation(math.radians(-3), 4, "X") @ Matrix.Translation((0, 0, -fz)))
+	# the ladder up to the door
+	for x in (-0.82, -0.18):
+		p.seg((x, -2.6, -0.2), (x - 0.02, -1.85, fz + 0.5), 0.045, 0.04, WOOD_GRAY, sides=5)
+	for k in range(5):
+		t = (k + 0.7) / 6.0
+		z = -0.2 + (fz + 0.7) * t
+		y = -2.6 + 0.75 * t
+		p.seg((-0.86, y, z), (-0.14, y, z), 0.03, 0.03, WOOD, sides=4)
+	return join_into(p.build(bevel=0.015), [soft.build()])
+
+
+def witch_cauldron():
+	"""A big black cauldron (1.4 m across, rim at 1.3 m) on three stubby legs
+	over a fire of gnarled roots and embers, full of a glowing green brew that
+	bubbles and drips over the rim, a ladle stuck in it. Collide it as a box."""
+	p = Prop("witch_cauldron", 307)
+	soft = Prop("witch_cauldron_soft", 307)  # weed, slime, barnacles and coral: left unbeveled
+	for k in range(7):  # roots for firewood
+		a = k * math.tau / 7 + p.rng.uniform(-0.2, 0.2)
+		pts = []
+		for j in range(4):
+			t = j / 3
+			r = 1.15 - 0.85 * t
+			pts.append((math.cos(a + t * 0.6) * r, math.sin(a + t * 0.6) * r, 0.08 + 0.1 * math.sin(t * math.pi) + p.rng.uniform(-0.03, 0.05)))
+		_chain(p, pts, 0.1, 0.05, WOOD_GRAY, sides=5, grad=(0.3, 1.0))
+		p.seg(pts[1], (pts[1][0] * 1.2, pts[1][1] * 1.2 + 0.1, 0.35), 0.04, 0.01, WOOD_GRAY, sides=4)
+	soft.blob((1.5, 1.5, 0.16), (0, 0, 0.05), EMBER, segs=(10, 4), grad=(0.5, 0.9), glow=1.2)
+	for k in range(7):
+		a = k * math.tau / 7 + 0.3
+		r = 0.35 + (k % 2) * 0.25
+		soft.seg((math.cos(a) * r, math.sin(a) * r, 0.05), (math.cos(a) * r * 1.2, math.sin(a) * r * 1.2, 0.35 + (k % 3) * 0.12), 0.1, 0.0, FLAME, sides=5,
+			  grad=(0.1, 0.9), glow=1.2, twist=p.rng.uniform(0, 60))
+	for k in range(3):
+		a = k * math.tau / 3 + 0.5
+		p.seg((math.cos(a) * 0.5, math.sin(a) * 0.5, 0.35), (math.cos(a) * 0.62, math.sin(a) * 0.62, -0.05), 0.1, 0.07, IRON, sides=5, grad=(0.0, 0.7))
+	_lathe(p, [(0.05, 0.3), (0.42, 0.34), (0.66, 0.55), (0.72, 0.82), (0.66, 1.08), (0.56, 1.22), (0.64, 1.27), (0.62, 1.33), (0.52, 1.3), (0.5, 1.18), (0.05, 1.16)],
+		   16, IRON, grad=(0.0, 0.8))
+	for s in (-1, 1):  # ring handles
+		pts = [(s * (0.66 + 0.18 * math.sin(t * math.pi)), 0.16 * math.cos(t * math.pi), 1.1 - 0.2 * math.sin(t * math.pi)) for t in (0, 0.25, 0.5, 0.75, 1.0)]
+		_chain(p, pts, 0.03, 0.03, IRON, sides=4)
+	p.seg((0, 0, 1.18), (0, 0, 1.25), 0.53, 0.53, SLIME, sides=16, grad=(0.3, 0.5), glow=1.5)
+	for k in range(6):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.4)
+		b = p.rng.uniform(0.08, 0.16)
+		soft.blob((b, b, b * 0.7), (math.cos(a) * r, math.sin(a) * r, 1.26), SLIME, segs=(6, 4), grad=(0.2, 0.45), glow=1.5)
+	for a in (0.4, 2.3, 4.4):  # drips down the side
+		p.seg((math.cos(a) * 0.6, math.sin(a) * 0.6, 1.31), (math.cos(a) * 0.71, math.sin(a) * 0.71, 0.95), 0.05, 0.02, SLIME, sides=4, grad=(0.3, 0.6), glow=1.5)
+	p.seg((0.15, 0.1, 0.9), (-0.35, 0.3, 1.95), 0.035, 0.03, WOOD_GRAY, sides=5)  # the ladle
+	return join_into(p.build(bevel=0.015), [soft.build()])
+
+
+def heron_rookery_nest():
+	"""A heron's rookery: a big nest of sticks (2.2 m across) in the fork of a
+	dead, broken-topped stump, its rim about 2.5 m up, three pale blue eggs
+	in it and droppings down the bark. Origin on the ground or marsh bed.
+	Collide it as a trunk (or a box)."""
+	p = Prop("heron_rookery_nest", 308)
+	p.seg((0, 0, -0.4), (0.05, 0.02, 1.7), 0.42, 0.3, WOOD_GRAY, sides=7, grad=(0.2, 1.0), jitter=0.02)
+	for k in range(5):  # roots
+		a = k * math.tau / 5 + 0.3
+		_chain(p, [(math.cos(a) * 0.3, math.sin(a) * 0.3, 0.5), (math.cos(a) * 0.7, math.sin(a) * 0.7, 0.1), (math.cos(a) * 1.0, math.sin(a) * 1.0, -0.3)],
+			   0.16, 0.06, WOOD_GRAY, sides=5, grad=(0.2, 1.0))
+	for k, a in enumerate((0.3, 2.4, 4.3)):  # the fork carrying the nest, one limb snapped short
+		top = (math.cos(a) * 0.85, math.sin(a) * 0.85, 2.3 if k else 2.9)
+		_chain(p, [(0.05, 0.02, 1.6), (math.cos(a) * 0.4, math.sin(a) * 0.4, 1.95), top], 0.24, 0.1 if k else 0.12, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+		if k == 0:
+			p.rock((0.26, 0.26, 0.22), top, WOOD_GRAY, jitter=0.05)
+	p.seg((0.2, -0.2, 1.2), (0.8, -0.9, 1.55), 0.08, 0.02, WOOD_GRAY, sides=4)  # a dead branch
+	p.blob((2.0, 2.0, 0.45), (0, 0, 2.15), WOOD, segs=(12, 6), grad=(0.3, 1.0), jitter=0.04)
+	p.blob((1.3, 1.3, 0.25), (0, 0, 2.38), HIDE, segs=(10, 5), grad=(0.2, 0.8))
+	for layer, (R, z, n) in enumerate(((0.95, 2.2, 14), (0.9, 2.38, 12), (0.8, 2.52, 10))):
+		for k in range(n):
+			a = k * math.tau / n + p.rng.uniform(-0.2, 0.2) + layer * 0.3
+			c = Vector((math.cos(a) * R, math.sin(a) * R, z + p.rng.uniform(-0.05, 0.05)))
+			t = Vector((-math.sin(a), math.cos(a), 0)).lerp(Vector((math.cos(a), math.sin(a), 0)), p.rng.uniform(-0.5, 0.5))
+			t.z = p.rng.uniform(-0.2, 0.2)
+			L = p.rng.uniform(0.6, 1.1)
+			p.seg(tuple(c - t * L / 2), tuple(c + t * L / 2), 0.035, 0.025, WOOD if (k + layer) % 3 else WOOD_GRAY, sides=4, grad=(0.2, 1.0))
+	for k in range(8):  # sticks sagging over the edge
+		a = p.rng.uniform(0, math.tau)
+		p.seg((math.cos(a) * 0.8, math.sin(a) * 0.8, 2.35), (math.cos(a) * 1.45, math.sin(a) * 1.45, p.rng.uniform(1.8, 2.2)), 0.03, 0.012, WOOD_GRAY, sides=4)
+	for x, y in ((-0.14, 0.05), (0.16, 0.1), (0.0, -0.16)):
+		p.blob((0.17, 0.17, 0.22), (x, y, 2.55), TEAL, segs=(8, 6), rot=(p.rng.uniform(-20, 20), p.rng.uniform(-20, 20), 0), grad=(0.0, 0.35))
+	for k in range(4):  # droppings streaked down the bark
+		a = k * 1.6 + 0.4
+		p.box((0.12, 0.03, p.rng.uniform(0.4, 0.8)), (math.cos(a) * 0.36, math.sin(a) * 0.36, 1.2 + k * 0.1), CLOTH_WHITE, rot=(0, 0, math.degrees(a) + 90), grad=(0.0, 0.3))
+	for k in range(3):
+		a = p.rng.uniform(0, math.tau)
+		p.blob((0.45, 0.07, 0.03), (math.cos(a) * 0.7, math.sin(a) * 0.7, 2.62), CLOTH_WHITE if k else SEA_STONE, rot=(0, 15, math.degrees(a)), segs=(6, 3))
+	return p.build(bevel=0.0)
+
+
+def reeds_tall():
+	"""A dense clump of tall reeds and bulrushes, 2 to 3 m, about 1 m across:
+	blades and brown cattail heads, low-poly enough to scatter by the dozen
+	(about 300 triangles). Origin on the ground or marsh bed. No collision."""
+	p = Prop("reeds_tall", 309)
+	for k in range(18):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.45)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(1.9, 3.0)
+		la = a + p.rng.uniform(-0.6, 0.6)
+		lean = p.rng.uniform(0.1, 0.5)
+		w = p.rng.uniform(0.045, 0.07)
+		bend = (x + math.cos(la) * lean * 0.35, y + math.sin(la) * lean * 0.35, h * 0.6)
+		ox, oy = -math.sin(la) * w, math.cos(la) * w
+		p.poly([(x - ox, y - oy, 0), (x + ox, y + oy, 0), (bend[0] + ox * 0.7, bend[1] + oy * 0.7, bend[2]), (bend[0] - ox * 0.7, bend[1] - oy * 0.7, bend[2]),
+				(x + math.cos(la) * lean, y + math.sin(la) * lean, h)], [(0, 1, 2, 3), (3, 2, 4)], PINE if k % 3 else LEAF, grad=(0.1, 0.85))
+	for k in range(6):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.3)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(2.1, 2.8)
+		tx, ty = x + p.rng.uniform(-0.12, 0.12), y + p.rng.uniform(-0.12, 0.12)
+		p.seg((x, y, 0), (tx, ty, h), 0.015, 0.01, LEAF, sides=3)
+		f = (h - 0.42) / h
+		p.seg((x + (tx - x) * f, y + (ty - y) * f, h - 0.42), (x + (tx - x) * 0.97, y + (ty - y) * 0.97, h - 0.08), 0.05, 0.045, WOOD, sides=5, grad=(0.3, 0.9))
+	return p.build()
+
+
+def mooring_post():
+	"""A weathered mooring post, about 2.7 m from the bed (1.7 m above 1 m of
+	water): rope wound round it with a loose end trailing in the water, an
+	iron arm at the top hung with a lit lantern (its flame at x 0.62, height
+	1.95 from the origin), slime at the water line. Collide it as a trunk."""
+	p = Prop("mooring_post", 310)
+	soft = Prop("mooring_post_soft", 310)  # weed, slime, barnacles and coral: left unbeveled
+	p.seg((0, 0, -0.3), (0.04, 0.02, 2.55), 0.17, 0.14, WOOD_GRAY, sides=7, grad=(0.2, 1.0))
+	for k in range(5):  # the split, weathered top
+		a = k * math.tau / 5
+		p.seg((0.04 + math.cos(a) * 0.06, 0.02 + math.sin(a) * 0.06, 2.5), (0.04 + math.cos(a) * 0.09, 0.02 + math.sin(a) * 0.09, 2.62 + p.rng.uniform(0, 0.08)),
+			  0.07, 0.03, WOOD_GRAY, sides=4)
+	for k in range(4):  # rope coils
+		z = 1.55 + k * 0.08
+		pts = [(0.02 + math.cos(j * math.tau / 10) * 0.19, 0.01 + math.sin(j * math.tau / 10) * 0.19, z + j * 0.008) for j in range(11)]
+		_chain(p, pts, 0.035, 0.035, HIDE, sides=4)
+	_chain(p, [(0.2, -0.05, 1.6), (0.35, -0.3, 1.3), (0.45, -0.6, 1.0), (0.6, -1.1, 0.98), (0.5, -1.7, 0.99)], 0.035, 0.03, HIDE, sides=4)
+	p.seg((0.0, 0.02, 2.3), (0.66, 0.02, 2.38), 0.035, 0.03, IRON, sides=5)  # the lantern arm
+	p.seg((0.0, 0.02, 2.0), (0.42, 0.02, 2.36), 0.025, 0.025, IRON, sides=4)
+	p.seg((0.64, 0.02, 2.38), (0.64, 0.02, 2.2), 0.012, 0.012, IRON, sides=3)
+	c = (0.64, 0.02, 1.98)
+	p.seg((c[0], c[1], c[2] + 0.2), (c[0], c[1], c[2] + 0.3), 0.14, 0.02, IRON, sides=4, twist=45)
+	p.box((0.22, 0.22, 0.04), (c[0], c[1], c[2] + 0.19), IRON, grad=(0.0, 0.6))
+	p.box((0.22, 0.22, 0.04), (c[0], c[1], c[2] - 0.15), IRON, grad=(0.0, 0.6))
+	for dx in (-0.1, 0.1):
+		for dy in (-0.1, 0.1):
+			p.seg((c[0] + dx, c[1] + dy, c[2] - 0.15), (c[0] + dx, c[1] + dy, c[2] + 0.19), 0.015, 0.015, IRON, sides=4)
+	p.box((0.17, 0.17, 0.28), c, FLAME, grad=(0.1, 0.6), glow=1.8)
+	_post_weed(soft, 0.02, 0.01, 0.17, 1.0)
+	for k in range(6):
+		a = p.rng.uniform(0, math.tau)
+		p.seg((math.cos(a) * 0.16, math.sin(a) * 0.16, 0.85 + p.rng.uniform(0, 0.12)), (math.cos(a) * 0.22, math.sin(a) * 0.22, 0.9 + p.rng.uniform(0, 0.12)),
+			  0.045, 0.02, BONE, sides=5)  # barnacles
+	return join_into(p.build(bevel=0.01), [soft.build()])
+
+# ---------------------------------------------------------------- Long Monsoon west: Drownfast
+# The half-sunken citadel of the Tide Kings in a flooded valley, about 2 m
+# of water over the old streets. Stone is KayKit's own walls where it can be,
+# the rest the pack's stone swatches, weathered blue-gray, with weed at the
+# water line, barnacles and coral.
+
+
+def _algae_band(p, pts, z, size=(1.2, 0.22, 0.4)):
+	"""Weed and slime hugging a wall at the water line: pts are (x, y, yaw_deg)
+	on its face (yaw along the face)."""
+	for k, (x, y, yaw) in enumerate(pts):
+		s = p.rng.uniform(0.8, 1.2)
+		p.blob((size[0] * s, size[1], size[2] * s), (x, y, z + p.rng.uniform(-0.08, 0.08)), MOSS if k % 3 else PINE, rot=(0, 0, yaw), segs=(7, 4), grad=(0.45, 1.0))
+
+
+def _barnacles(p, c, n, spread, normal=(0, 0, 1)):
+	"""A crust of barnacles round c, pointing out along normal."""
+	nrm = Vector(normal).normalized()
+	t1 = nrm.orthogonal().normalized()
+	t2 = nrm.cross(t1)
+	for k in range(n):
+		off = t1 * p.rng.uniform(-spread, spread) + t2 * p.rng.uniform(-spread, spread)
+		base = Vector(c) + off
+		r = p.rng.uniform(0.04, 0.08)
+		p.seg(tuple(base), tuple(base + nrm * r * 1.1), r, r * 0.45, BONE if k % 3 else CLOTH_WHITE, sides=6, grad=(0.0, 0.6))
+
+
+def _coral_branch(p, base, d, length, r, swatch, depth):
+	"""A branching coral stem from base along d, forking `depth` more times."""
+	d = Vector(d).normalized()
+	tip = Vector(base) + d * length
+	p.seg(tuple(base), tuple(tip), r, r * 0.75, swatch, sides=5, grad=(0.0, 0.7))
+	if depth <= 0:
+		p.blob((r * 2.0, r * 2.0, r * 2.0), tuple(tip), swatch, segs=(5, 4), grad=(0.0, 0.4))
+		return
+	for k in range(2):
+		nd = d + Vector((p.rng.uniform(-0.7, 0.7), p.rng.uniform(-0.7, 0.7), p.rng.uniform(0.0, 0.5)))
+		_coral_branch(p, tuple(tip), nd, length * p.rng.uniform(0.6, 0.8), r * 0.75, swatch, depth - 1)
+
+
+def _coral_cluster(p, c, scale=1.0, seed_kinds=(CORAL_PINK, CORAL_ORANGE, CLOTH_RED)):
+	"""A small knot of coral for dressing stone: two branching stems and a
+	brain coral lump, about 0.6 m across at scale 1."""
+	x, y, z = c
+	for k in range(2):
+		a = p.rng.uniform(0, math.tau)
+		_coral_branch(p, (x + math.cos(a) * 0.1 * scale, y + math.sin(a) * 0.1 * scale, z), (math.cos(a) * 0.3, math.sin(a) * 0.3, 1.0),
+					  0.22 * scale, 0.045 * scale, seed_kinds[k % len(seed_kinds)], 2)
+	p.blob((0.3 * scale, 0.28 * scale, 0.2 * scale), (x + 0.15 * scale, y - 0.12 * scale, z + 0.05 * scale), PETAL_YELLOW, segs=(8, 5), grad=(0.1, 0.8), jitter=0.015 * scale)
+
+
+def citadel_tower():
+	"""A drowned tower of the Tide Kings: an octagon of KayKit walls about 8.6 m
+	across, five storeys of 3.2 m, the top one broken off to a jagged ring
+	(about 16.6 m where it stands whole). A door at the foot (-Y, under the
+	water), windows up the storeys, weed at the water line (2 m), barnacles,
+	coral and fallen stones at its foot, a torn blue banner. Origin on the bed.
+	Collide it as a mesh."""
+	p = Prop("citadel_tower", 311)
+	soft = Prop("citadel_tower_soft", 311)  # weed, slime, barnacles and coral: left unbeveled
+	A, SH, base = 3.6, 3.2, 0.6
+	cos8 = math.cos(math.pi / 8)
+	p.seg((0, 0, -1.2), (0, 0, base), (A + 1.0) / cos8, (A + 0.8) / cos8, STONE_DARK, sides=8, grad=(0.3, 1.0), twist=22.5)
+	p.seg((0, 0, base - 0.05), (0, 0, base + 0.3), (A + 0.62) / cos8, (A + 0.55) / cos8, SEA_STONE, sides=8, grad=(0.1, 0.8), twist=22.5)
+	top_floor = base + 4 * SH
+	p.seg((0, 0, top_floor - 0.35), (0, 0, top_floor), (A - 0.2) / cos8, (A - 0.2) / cos8, STONE_DARK, sides=8, grad=(0.2, 0.9), twist=22.5)
+	for z in (base + SH, base + 3 * SH):  # string courses between storeys
+		p.seg((0, 0, z - 0.12), (0, 0, z + 0.14), (A + 0.52) / cos8, (A + 0.52) / cos8, SEA_STONE, sides=8, grad=(0.0, 0.7), twist=22.5)
+	# the broken top storey: which sides still stand (0 gone, else fraction of the storey)
+	top = [1.0, 0.55, 0.0, 0.8, 1.0, 0.0, 0.35, 0.7]
+	for j in range(8):  # pilasters at the corners, as high as the walls either side
+		a = math.radians(22.5 + 45 * j)
+		h = max(top[j], top[(j + 1) % 8])
+		zt = top_floor + SH * h
+		if h == 0.0:
+			zt = top_floor + 0.4
+		x, y = math.cos(a) * A / cos8, math.sin(a) * A / cos8
+		p.seg((x, y, base), (x, y, zt), 0.55, 0.5, STONE_DARK, sides=8, grad=(0.0, 0.8), twist=22.5)
+		if h == 1.0:
+			p.seg((x, y, zt), (x, y, zt + 0.35), 0.7, 0.62, STONE_DARK, sides=8, grad=(0.0, 0.6), twist=22.5)
+		else:
+			p.rock((0.8, 0.8, 0.5), (x, y, zt), STONE_DARK, jitter=0.08)
+	for j in range(8):  # broken walls finished in rough courses of block
+		if 0.0 < top[j] < 1.0:
+			a = math.radians(45 * j)
+			n = Vector((math.cos(a), math.sin(a), 0))
+			t = Vector((-math.sin(a), math.cos(a), 0))
+			zt = top_floor + SH * top[j]
+			for k in range(5):
+				u = -1.2 + k * 0.6
+				hk = p.rng.uniform(0.0, 0.55)
+				c = n * A + t * u
+				p.box((0.62, 0.8, 0.35 + hk), (c.x, c.y, zt + (0.35 + hk) / 2 - 0.05), STONE_DARK, rot=(0, 0, math.degrees(a) + 90), grad=(0.1, 0.8), jitter=0.03)
+	for k in range(8):  # stones fallen at its foot
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(A + 1.4, A + 3.2)
+		s = p.rng.uniform(0.6, 1.2)
+		p.box((s, s * 0.7, s * 0.55), (math.cos(a) * d, math.sin(a) * d, p.rng.uniform(-0.1, 0.3)), STONE_DARK if k % 2 else STONE_LIGHT,
+			  rot=(p.rng.uniform(-20, 20), p.rng.uniform(-20, 20), p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	water = 2.0
+	pts = []
+	for j in range(8):
+		a = math.radians(45 * j)
+		for u in (-1.0, 0.0, 1.0):
+			pts.append((math.cos(a) * (A + 0.42) - math.sin(a) * u, math.sin(a) * (A + 0.42) + math.cos(a) * u, 45 * j + 90))
+	_algae_band(soft, pts, water)
+	for j in range(8):
+		a = math.radians(22.5 + 45 * j)
+		_barnacles(soft, (math.cos(a) * (A / cos8 + 0.55), math.sin(a) * (A / cos8 + 0.55), 1.2), 6, 0.3, normal=(math.cos(a), math.sin(a), 0.2))
+	for j in (1, 4, 6):
+		a = math.radians(45 * j + 12)
+		_coral_cluster(soft, (math.cos(a) * (A + 1.2), math.sin(a) * (A + 1.2), base), 1.4)
+	for j, z in ((0, base + 2 * SH + 0.4), (2, base + 2 * SH + 0.4), (6, base + SH + 0.35), (4, base + 2 * SH + 0.4)):
+		a = math.radians(45 * j)
+		for k in range(3):  # weed left hanging from the sills by old floods
+			u = -0.5 + k * 0.5
+			_weed_hang(soft, (math.cos(a) * (A + 0.42) - math.sin(a) * u, math.sin(a) * (A + 0.42) + math.cos(a) * u, z), p.rng.uniform(0.5, 1.2), r=0.05)
+	obj = join_into(p.build(bevel=0.05), [soft.build()])
+	# the walls: KayKit's own, storey on storey
+	rows = [
+		["wall", "wall", "wall_cracked", "wall", "wall", "wall", "wall_doorway", "wall"],
+		["wall", "wall", "wall_window_open", "wall", "wall_cracked", "wall", "wall_window_open", "wall"],
+		["wall_archedwindow_open", "wall", "wall_archedwindow_open", "wall", "wall_archedwindow_open", "wall_cracked", "wall_archedwindow_open", "wall"],
+		["wall", "wall_archedwindow_open", "wall_cracked", "wall_archedwindow_open", "wall", "wall_archedwindow_open", "wall", "wall_archedwindow_open"],
+	]
+	sx = 2 * A * math.tan(math.pi / 8) / 4.0
+	pieces = []
+	for i, row in enumerate(rows + [["wall", "wall_broken", None, "wall", "wall_archedwindow_open", None, "wall", "wall_broken"]]):
+		for j, piece in enumerate(row):
+			if piece is None:
+				continue
+			a = math.radians(45 * j)
+			hz = SH / 4.0
+			if i == 4:
+				if top[j] < 1.0:
+					continue
+			pieces += kaykit(piece, (math.cos(a) * A, math.sin(a) * A, base + i * SH), a - math.pi / 2, (sx, 0.75, hz))
+	for j in range(8):  # the broken sides' lower courses, KayKit stone under the rough blocks
+		if 0.0 < top[j] < 1.0:
+			a = math.radians(45 * j)
+			pieces += kaykit("wall_half" if j % 2 else "wall", (math.cos(a) * A, math.sin(a) * A, top_floor), a - math.pi / 2, (sx, 0.75, SH * top[j] / 4.0))
+	pieces += kaykit("banner_patternA_blue", (math.cos(math.radians(-45)) * (A + 0.1), math.sin(math.radians(-45)) * (A + 0.1), base + 2 * SH + 0.4),
+					 math.radians(-45) - math.pi / 2 + math.pi, (0.9, 0.9, 0.9))
+	return _merge_materials(join_into(obj, pieces))
+
+
+def citadel_wall_ruin():
+	"""A broken run of the citadel's curtain wall along X, about 14 m, sunk a
+	meter into the flood bed: a KayKit wall with a corner pillar at -X, a gate
+	(wall_doorway_sides) with its rusted portcullis jammed up in the arch, and
+	at +X a section tipping outward and sinking, its end fallen into rubble;
+	merlons along the top (5.2 m above the bed), weed at the water line (2 m),
+	barnacles and coral. Faces -Y. Origin on the bed. Collide it as a mesh
+	(the gate is passable)."""
+	p = Prop("citadel_wall_ruin", 312)
+	soft = Prop("citadel_wall_ruin_soft", 312)  # weed, slime, barnacles and coral: left unbeveled
+	z0, zs = -1.0, 1.3
+	top = z0 + 4.0 * zs
+	n = 5
+	for k in range(n):  # merlons on both faces of the west wall
+		x = -6.6 + (k + 0.5) * 4.0 / n
+		for s in (-1, 1):
+			if s > 0 and k == 1:
+				continue
+			p.box((0.5, 0.3, 0.75), (x, s * 0.45, top + 0.37), STONE_DARK, grad=(0.05, 0.8))
+	# the portcullis, rusted fast in the top of the arch
+	for k in range(7):
+		x = -1.05 + k * 2.1 / 6
+		p.seg((x, 0.0, top - 2.3), (x, 0.0, top - 0.6), 0.045, 0.045, IRON, sides=5, grad=(0.1, 0.8))
+		p.seg((x, 0.0, top - 2.3), (x, 0.0, top - 2.55), 0.045, 0.0, IRON, sides=5)
+	for z in (top - 2.2, top - 1.5, top - 0.8):
+		p.box((2.3, 0.08, 0.1), (0, 0.0, z), IRON, grad=(0.2, 0.9))
+	water = 2.0
+	_algae_band(soft, [(x, -0.5, 0) for x in (-6.9, -5.6, -4.4, -3.2)] + [(x, 0.5, 0) for x in (-6.2, -5.0, -3.8)], water)
+	_algae_band(soft, [(x, y, 90) for x in (-2.1, 2.1) for y in (-1.5, 1.5)], water, size=(0.9, 0.4, 0.45))
+	for x in (-5.5, -3.5):
+		_barnacles(soft, (x, -0.5, 0.9), 7, 0.4, normal=(0, -1, 0.1))
+	for k in range(6):
+		_weed_hang(soft, (p.rng.uniform(-1.0, 1.0), p.rng.uniform(-0.2, 0.2), top - 2.55), p.rng.uniform(0.4, 0.9), r=0.04)
+	_coral_cluster(soft, (-4.4, -1.0, 0.0), 1.5)
+	for k in range(12):  # the rubble where the east end fell
+		a = p.rng.uniform(-1.4, 1.4)
+		d = p.rng.uniform(0.3, 2.6)
+		s = p.rng.uniform(0.5, 1.1)
+		p.box((s, s * 0.8, s * 0.6), (7.2 + math.cos(a) * d, math.sin(a) * d, p.rng.uniform(-0.1, 0.4)), STONE_DARK if k % 2 else STONE_LIGHT,
+			  rot=(p.rng.uniform(-25, 25), p.rng.uniform(-25, 25), p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	obj = join_into(p.build(bevel=0.04), [soft.build()])
+	# the tipping east section, built upright and then leaned out
+	q = Prop("citadel_wall_ruin_east", 322)
+	for k in range(4):
+		x = 2.6 + (k + 0.5) * 3.6 / 4
+		for s in (-1, 1):
+			hk = (0.75, 0.6, 0.35, 0.0)[k] if s < 0 else (0.75, 0.0, 0.5, 0.25)[k]
+			if hk:
+				q.box((0.5, 0.3, hk), (x, s * 0.45, top * 0.93 + hk / 2), STONE_DARK, grad=(0.05, 0.8))
+	for k in range(5):  # its broken end
+		q.rock((0.7, 0.9, 0.6), (6.1, p.rng.uniform(-0.4, 0.4), top * 0.93 - k * 0.9), STONE_DARK, jitter=0.08)
+	_algae_band(q, [(x, -0.5, 0) for x in (3.0, 4.2, 5.4)] + [(x, 0.5, 0) for x in (3.2, 4.6)], water)
+	_barnacles(q, (3.6, -0.5, 0.9), 7, 0.4, normal=(0, -1, 0.1))
+	east = q.build(bevel=0.04)
+	tip = kaykit("wall", (4.4, 0, z0), 0.0, (0.9, 0.85, zs * 0.93))
+	east = join_into(east, tip)
+	east.data.transform(Matrix.Translation((2.6, 0, z0 - 0.35)) @ Matrix.Rotation(math.radians(4), 4, "Y") @ Matrix.Rotation(math.radians(6), 4, "X") @ Matrix.Translation((-2.6, 0, -z0)))
+	pieces = [east]
+	pieces += kaykit("wall", (-4.6, 0, z0), 0.0, (1.0, 0.85, zs))
+	pieces += kaykit("wall_doorway_sides", (0, 0, z0), 0.0, (0.9, 0.62, zs))
+	pieces += kaykit("pillar", (-6.9, 0, z0), 0.0, (0.7, 0.7, zs * 1.12))
+	return _merge_materials(join_into(obj, pieces))
+
+
+def _clip_y(poly, y0, y1):
+	"""Sutherland-Hodgman clip of a (y, z) polygon to y0 <= y <= y1."""
+	def clip(pts, keep, cut):
+		out = []
+		for i, a in enumerate(pts):
+			b = pts[(i + 1) % len(pts)]
+			ka, kb = keep(a), keep(b)
+			if ka:
+				out.append(a)
+			if ka != kb:
+				t = (cut - a[0]) / (b[0] - a[0])
+				out.append((cut, a[1] + (b[1] - a[1]) * t))
+		return out
+	pts = clip(poly, lambda q: q[0] >= y0 - 1e-6, y0)
+	return clip(pts, lambda q: q[0] <= y1 + 1e-6, y1)
+
+
+def _extrude_yz(p, outline, x0, x1, swatch, grad=(0.1, 0.9)):
+	"""A solid from a (y, z) outline (any simple polygon) run along X from x0 to x1."""
+	n = len(outline)
+	verts = [(x0, y, z) for y, z in outline] + [(x1, y, z) for y, z in outline]
+	faces = [tuple(range(n)), tuple(range(2 * n - 1, n - 1, -1))]
+	for i in range(n):
+		j = (i + 1) % n
+		faces.append((i, j, n + j, n + i))
+	return p.poly(verts, faces, swatch, grad)
+
+
+CAUSEWAY_DEEP = -6.0
+
+
+def _causeway_outline():
+	"""The causeway's side elevation (y, z): deck underside at -0.12, a main
+	arch between piers at y = +-2.4..3.6, quarter arches at both ends that
+	meet the next span's into a small arch."""
+	pts = [(-4.5, -0.12), (4.5, -0.12), (4.5, -0.8)]
+	for k in range(1, 7):
+		a = math.pi / 2 + k * (math.pi / 2) / 6
+		pts.append((4.5 + 0.9 * math.cos(a), -1.7 + 0.9 * math.sin(a)))
+	pts += [(3.6, CAUSEWAY_DEEP), (2.4, CAUSEWAY_DEEP), (2.4, -3.2)]
+	for k in range(1, 16):
+		a = k * math.pi / 16
+		pts.append((2.4 * math.cos(a), -3.2 + 2.4 * math.sin(a)))
+	pts += [(-2.4, -3.2), (-2.4, CAUSEWAY_DEEP), (-3.6, CAUSEWAY_DEEP), (-3.6, -1.7)]
+	for k in range(1, 6):
+		a = k * (math.pi / 2) / 6
+		pts.append((-4.5 + 0.9 * math.cos(a), -1.7 + 0.9 * math.sin(a)))
+	pts.append((-4.5, -0.8))
+	return pts
+
+
+def _flagstones(p, x0, x1, y0, y1, rows, ragged=None, broken=()):
+	"""Paving with every top exactly at 0: rows along Y, two or three stones
+	across each (staggered). `ragged` = (x_edge, side) breaks the stones off
+	near x_edge on that side; `broken` lists (row, col) stones cracked in
+	shards."""
+	L = (y1 - y0) / rows
+	for r in range(rows):
+		y = y0 + (r + 0.5) * L
+		cuts = [x0, x0 + (x1 - x0) * (0.45 if r % 2 else 0.55), x1] if (x1 - x0) < 3.0 else [x0 + (x1 - x0) * t for t in ((0, 0.3, 0.65, 1.0) if r % 2 else (0, 0.4, 0.72, 1.0))]
+		for c in range(len(cuts) - 1):
+			a, b = cuts[c], cuts[c + 1]
+			if ragged:
+				edge, side = ragged
+				e = edge + p.rng.uniform(-0.15, 0.1) * side
+				if side < 0:
+					b = min(b, e)
+				else:
+					a = max(a, e)
+				if b - a < 0.15:
+					continue
+			sw = (STONE_LIGHT, SEA_STONE, STONE_WARM)[(r + c) % 3]
+			if (r, c) in broken:
+				m = (a + b) / 2 + p.rng.uniform(-0.15, 0.15)
+				p.box((m - a - 0.07, L - 0.05, 0.12), ((a + m) / 2, y, -0.06), sw, rot=(0, 0, p.rng.uniform(-4, 4)), grad=(0.1, 0.7))
+				p.box((b - m - 0.07, (L - 0.05) / 2 - 0.03, 0.12), ((m + b) / 2, y - L / 4, -0.06), sw, rot=(0, 0, p.rng.uniform(-6, 6)), grad=(0.1, 0.7))
+				p.box((b - m - 0.07, (L - 0.05) / 2 - 0.03, 0.12), ((m + b) / 2, y + L / 4, -0.075), sw, rot=(0, 0, p.rng.uniform(-6, 6)), grad=(0.1, 0.7))
+				continue
+			p.box((b - a - 0.04, L - 0.04, 0.12), ((a + b) / 2, y, -0.06), sw, grad=(0.1, 0.7))
+
+
+def _causeway(name, seed, broken):
+	p = Prop(name, seed)
+	soft = Prop(name + "_soft", seed)  # weed, slime, barnacles and coral: left unbeveled
+	outline = _causeway_outline()
+	if not broken:
+		_extrude_yz(p, outline, -1.4, 1.4, STONE_LIGHT)
+	else:
+		for y0, y1 in ((-4.5, -1.3), (1.3, 4.5)):
+			_extrude_yz(p, _clip_y(outline, y0, y1), -1.4, 1.4, STONE_LIGHT)
+		_extrude_yz(p, _clip_y(outline, -1.3, 1.3), -1.4, -0.4, STONE_LIGHT)
+		for k in range(12):  # the broken faces: jagged blocks
+			y = p.rng.choice((-1.3, 1.3))
+			p.rock((0.55, 0.45, 0.45), (p.rng.uniform(-0.2, 1.3), y + p.rng.uniform(-0.12, 0.12), p.rng.uniform(-1.6, -0.3)), STONE_LIGHT, jitter=0.08)
+		for k in range(6):
+			p.rock((0.4, 0.5, 0.45), (-0.35 + p.rng.uniform(-0.05, 0.1), p.rng.uniform(-1.2, 1.2), p.rng.uniform(-1.4, -0.35)), STONE_LIGHT, jitter=0.07)
+		for k in range(12):  # what fell, heaped in the water under the gap
+			s = p.rng.uniform(0.6, 1.2)
+			p.box((s, s * 0.8, s * 0.6), (p.rng.uniform(-0.6, 2.2), p.rng.uniform(-1.6, 1.6), p.rng.uniform(-3.6, -2.4)), STONE_LIGHT if k % 2 else SEA_STONE,
+				  rot=(p.rng.uniform(-30, 30), p.rng.uniform(-30, 30), p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	for s in (-1, 1):
+		for yc in (-3.0, 3.0):  # cutwaters on the piers, pointed against the current
+			p.box((0.85, 0.85, CAUSEWAY_DEEP * -1 - 1.4), (s * 1.4, yc, (CAUSEWAY_DEEP - 1.6) / 2), SEA_STONE, rot=(0, 0, 45), grad=(0.1, 1.0))
+			p.seg((s * 1.4, yc, -1.62), (s * 1.4, yc, -0.95), 0.62, 0.05, SEA_STONE, sides=4, grad=(0.0, 0.7))
+			_barnacles(soft, (s * 1.85, yc, -1.3), 5, 0.25, normal=(s, 0, 0.1))
+		for (yc, r, zc, a0, a1, n) in ((0.0, 2.4, -3.2, 0.0, math.pi, 9), (4.5, 0.9, -1.7, math.pi / 2, math.pi, 3), (-4.5, 0.9, -1.7, 0.0, math.pi / 2, 3)):
+			for k in range(n):  # voussoirs standing proud round the arches
+				a = a0 + (k + 0.5) * (a1 - a0) / n
+				if broken and yc == 0.0 and s > 0 and 3 <= k <= 5:
+					continue  # fell with the middle
+				y, z = yc + (r + 0.18) * math.cos(a), zc + (r + 0.18) * math.sin(a)
+				big = yc == 0.0 and k == n // 2
+				p.box((0.12, 0.42 if not big else 0.6, 0.5 if not big else 0.8), (s * 1.44, y, z), STONE_WARM if not big else SEA_STONE,
+					  rot=(math.degrees(a) - 90, 0, 0), grad=(0.1, 0.8))
+		# the string course under the parapet and the parapet itself
+		spans = [(-4.5, 4.5)]
+		if broken:
+			spans = [(-4.5, -1.3), (1.3, 4.5)] if s > 0 else [(-4.5, -0.9), (0.6, 4.5)]
+		for y0, y1 in spans:
+			p.box((0.26, y1 - y0, 0.22), (s * 1.44, (y0 + y1) / 2, -0.28), STONE_WARM, grad=(0.1, 0.7))
+			n = max(1, round((y1 - y0) / 1.0))
+			for k in range(n):
+				ya = y0 + k * (y1 - y0) / n + 0.03
+				yb = y0 + (k + 1) * (y1 - y0) / n - 0.03
+				if not broken and s > 0 and k == 6:  # one block knocked off
+					p.box((0.3, yb - ya, 0.22), (s * 1.32, (ya + yb) / 2, 0.11), STONE_LIGHT, grad=(0.1, 0.8))
+					continue
+				p.box((0.3, yb - ya, 0.42), (s * 1.32, (ya + yb) / 2, 0.21), STONE_LIGHT, grad=(0.1, 0.9))
+				p.box((0.4, yb - ya + 0.02, 0.1), (s * 1.32, (ya + yb) / 2, 0.47), STONE_WARM, grad=(0.0, 0.6))
+	if broken:
+		_flagstones(p, -1.17, 1.17, -4.5, -1.3, 3, broken=((1, 1),))
+		_flagstones(p, -1.17, 1.17, 1.3, 4.5, 3, broken=((2, 0),))
+		_flagstones(p, -1.17, -0.45, -1.3, 1.3, 3, ragged=(-0.45, -1))
+	else:
+		_flagstones(p, -1.17, 1.17, -4.5, 4.5, 9, broken=((3, 1), (7, 0)))
+	water = -1.0
+	_algae_band(soft, [(s * 1.9, yc + u, 90) for s in (-1, 1) for yc in (-3.0, 3.0) for u in (-0.3, 0.3)], water, size=(0.7, 0.35, 0.4))
+	for k in range(6):
+		s = p.rng.choice((-1, 1))
+		y = p.rng.uniform(-4.2, 4.2)
+		if broken and abs(y) < 1.5:
+			continue
+		_weed_hang(soft, (s * 1.58, y, -0.38), p.rng.uniform(0.4, 0.8), r=0.04)
+	return join_into(p.build(bevel=0.04), [soft.build()])
+
+
+def causeway_span():
+	"""A 3 x 9 m stretch of the Tide Kings' stone causeway, running along Y: a
+	flagstone top (the origin, flat) between low parapets (0.52 m), a round
+	arch between two cutwater piers that go 6 m down, and half arches at both
+	ends that close into small arches with the next span's (or meet a
+	citadel_platform's edge). Walkable x in [-1.15, 1.15], all of y. Weed and
+	barnacles about 1 m under the deck (where the water stands if the deck is
+	set a meter above it). Collide it as a mesh."""
+	return _causeway("causeway_span", 313, False)
+
+
+def causeway_broken():
+	"""causeway_span with its middle fallen in: for y in [-1.3, 1.3] only a
+	strip along the -X side still stands on what is left of the arch (flat,
+	walkable for x in [-1.15, -0.5]), the rest a gap over a heap of fallen
+	stone in the water. Both ends walkable full width (x in [-1.15, 1.15]).
+	Collide it as a mesh."""
+	return _causeway("causeway_broken", 314, True)
+
+
+def citadel_platform():
+	"""A 9 x 9 m stone plaza of the citadel on nine KayKit pillars running 6 m
+	down, its top (the origin) paved flat, a few flagstones cracked; a cornice
+	round the edge, weed and barnacles on the pillars about 1 m down. Tiles
+	edge to edge with causeway_span on the stilt pieces' 9 m grid. Walkable
+	over all of it. Collide it as a mesh."""
+	p = Prop("citadel_platform", 315)
+	soft = Prop("citadel_platform_soft", 315)  # weed, slime, barnacles and coral: left unbeveled
+	h = 4.5
+	p.box((2 * h, 2 * h, 0.7), (0, 0, -0.12 - 0.35), STONE_LIGHT, grad=(0.1, 0.9))
+	for s in (-1, 1):  # the cornice
+		p.box((2 * h + 0.3, 0.26, 0.24), (0, s * (h + 0.02), -0.5), STONE_WARM, grad=(0.0, 0.7))
+		p.box((0.26, 2 * h + 0.3, 0.24), (s * (h + 0.02), 0, -0.5), STONE_WARM, grad=(0.0, 0.7))
+		p.box((2 * h, 0.2, 0.12), (0, s * (h - 0.1), -0.06), STONE_WARM, grad=(0.0, 0.6))  # kerb, flush with the paving
+		p.box((0.2, 2 * h - 0.4, 0.12), (s * (h - 0.1), 0, -0.06), STONE_WARM, grad=(0.0, 0.6))
+	L = (2 * h - 0.4) / 8
+	for r in range(8):
+		for c in range(8):
+			x0 = -h + 0.2 + c * L
+			y0 = -h + 0.2 + r * L
+			sw = (STONE_LIGHT, SEA_STONE, STONE_WARM)[(r * 3 + c * 2 + (r * c) % 2) % 3]
+			if (r, c) in ((1, 5), (4, 2), (6, 6), (7, 1)):
+				m = x0 + L * p.rng.uniform(0.35, 0.65)
+				p.box((m - x0 - 0.06, L - 0.04, 0.12), ((x0 + m) / 2, y0 + L / 2, -0.06), sw, rot=(0, 0, p.rng.uniform(-4, 4)), grad=(0.1, 0.7))
+				p.box((x0 + L - m - 0.06, L / 2 - 0.05, 0.12), ((m + x0 + L) / 2, y0 + L * 0.25, -0.07), sw, rot=(0, 0, p.rng.uniform(-6, 6)), grad=(0.1, 0.7))
+				p.box((x0 + L - m - 0.06, L / 2 - 0.05, 0.12), ((m + x0 + L) / 2, y0 + L * 0.75, -0.065), sw, rot=(0, 0, p.rng.uniform(-6, 6)), grad=(0.1, 0.7))
+				continue
+			p.box((L - 0.04, L - 0.04, 0.12), (x0 + L / 2, y0 + L / 2, -0.06), sw, grad=(0.1, 0.7))
+	for x, y, sx, sy in ((-3.1, 2.6, 0.9, 0.5), (2.2, -3.4, 0.7, 0.4), (3.8, 1.2, 0.5, 0.8)):
+		_moss_patch(soft, x, y, 0.0, sx, sy)
+	water = -1.0
+	for i, x in enumerate((-3.4, 0.0, 3.4)):
+		for j, y in enumerate((-3.4, 0.0, 3.4)):
+			_algae_band(soft, [(x + math.cos(a) * 0.55, y + math.sin(a) * 0.55, math.degrees(a) + 90) for a in (0.3, 1.9, 3.5, 5.1)], water, size=(0.6, 0.3, 0.35))
+			if (i + j) % 2 == 0:
+				_barnacles(soft, (x + 0.52, y, water - 0.5), 5, 0.2, normal=(1, 0, 0))
+	for k in range(8):
+		s = p.rng.choice((-1, 1))
+		u = p.rng.uniform(-4.2, 4.2)
+		pos = (s * (h + 0.16), u, -0.6) if k % 2 else (u, s * (h + 0.16), -0.6)
+		_weed_hang(soft, pos, p.rng.uniform(0.3, 0.7), r=0.04)
+	obj = join_into(p.build(bevel=0.04), [soft.build()])
+	pieces = []
+	for x in (-3.4, 0.0, 3.4):
+		for y in (-3.4, 0.0, 3.4):
+			pieces += kaykit("pillar", (x, y, CAUSEWAY_DEEP), 0.0, (0.7, 0.7, (-0.8 - CAUSEWAY_DEEP) / 4.0))
+	return _merge_materials(join_into(obj, pieces))
+
+
+def sea_temple():
+	"""The great sea temple of Jalendra at the heart of Drownfast: three stepped
+	tiers of blue-gray stone (18 m square at the foot, sunk 1.2 m in the bed so
+	the flood covers its first course), a grand stair up the front (-Y) to a
+	shrine whose facade is Jalendra's elephant head, ears spread 7 m, trunk
+	raised and pouring a glowing stream down the stair into the flood. A
+	stepped roof and a spire carry a glowing pearl 19 m up, to be seen from
+	across the valley. The stair (6 m further out) is for looking at. Origin
+	on the bed. Collide it as a mesh."""
+	p = Prop("sea_temple", 316)
+	soft = Prop("sea_temple_soft", 316)  # weed, slime, barnacles and coral: left unbeveled
+	tiers = [(9.0, -1.2, 3.2), (7.0, 3.2, 5.8), (5.2, 5.8, 8.2)]
+	for i, (hs, z0, z1) in enumerate(tiers):
+		p.box((2 * hs, 2 * hs, z1 - z0), (0, 0, (z0 + z1) / 2), SEA_STONE if i % 2 else STONE_LIGHT, grad=(0.1, 0.95))
+		p.box((2 * hs + 0.4, 2 * hs + 0.4, 0.3), (0, 0, z1 - 0.12), STONE_WARM, grad=(0.0, 0.6))  # cornice
+		p.box((2 * hs + 0.25, 2 * hs + 0.25, 0.35), (0, 0, max(z0, 0.0) + 0.3 if i else 0.3), STONE_DARK, grad=(0.2, 0.9))
+		for s in (-1, 1):  # pilasters down the faces
+			for u in [-hs + 0.9 + k * (2 * hs - 1.8) / 4 for k in range(5)]:
+				if i < 2 and abs(u) < 2.4:
+					continue
+				for (x, y, sx, sy) in ((u, s * (hs + 0.12), 0.8, 0.3), (s * (hs + 0.12), u, 0.3, 0.8)):
+					p.box((sx, sy, z1 - max(z0, 0.0) - 0.8), (x, y, (z1 + max(z0, 0.0)) / 2 - 0.1), STONE_LIGHT if i % 2 else SEA_STONE, grad=(0.05, 0.9))
+		for k in range(int(2 * hs / 1.6)):  # the wave frieze under the cornice
+			u = -hs + 0.8 + k * 1.6
+			for (x, y, yaw) in ((u, -hs - 0.18, 0), (u, hs + 0.18, 0), (-hs - 0.18, u, 90), (hs + 0.18, u, 90)):
+				p.blob((0.9, 0.18, 0.45), (x, y, z1 - 0.55), TEAL, rot=(0, 0, yaw), segs=(8, 4), grad=(0.0, 0.7))
+	# the stair: 21 steps of 0.4 up to the top tier's face, balustrades with sea-serpent ends
+	n, rise, tread = 21, 0.39, 0.45
+	y_top = -tiers[2][0]
+	run = n * tread
+	for k in range(n):
+		d = run - k * tread
+		p.box((3.6, d, rise), (0, y_top - d / 2, k * rise + rise / 2), STONE_LIGHT if k % 2 else SEA_STONE, grad=(0.1, 0.8))
+	zt = tiers[2][2]
+	ang = math.degrees(math.atan2(zt, run))
+	for s in (-1, 1):
+		p.box((0.6, math.hypot(zt, run), 0.6), (s * 2.1, y_top - run / 2, zt / 2 + 0.3), STONE_DARK, rot=(ang, 0, 0), grad=(0.1, 0.8))
+		p.box((1.1, 1.1, 1.6), (s * 2.1, y_top - run - 0.2, 0.8), STONE_DARK, grad=(0.1, 0.8))
+		_chain(p, [(s * 2.1, y_top - run - 0.2, 1.5), (s * 2.1, y_top - run - 0.5, 2.3), (s * 2.1, y_top - run - 1.0, 2.6), (s * 2.1, y_top - run - 1.3, 2.3)],
+			   0.4, 0.22, TEAL, sides=8, grad=(0.0, 0.7))  # a stone serpent rearing on the newel
+		p.blob((0.6, 0.8, 0.45), (s * 2.1, y_top - run - 1.35, 2.25), TEAL, segs=(8, 6), grad=(0.0, 0.7))
+		p.blob((0.12, 0.1, 0.1), (s * 2.1 + 0.18 * s, y_top - run - 1.65, 2.35), GOLD, segs=(5, 4), glow=0.2)
+	# the shrine: 7.2 x 6 m, walls 3.6 m, the head its facade
+	rw, rd, rh = 3.6, 3.0, 3.8
+	fz = zt
+	p.box((0.7, 2 * rd, rh), (-rw + 0.35, 0, fz + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((0.7, 2 * rd, rh), (rw - 0.35, 0, fz + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((2 * rw, 0.7, rh), (0, rd - 0.35, fz + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	dw, dh = 2.2, 3.0
+	fy = -rd + 0.35
+	for s in (-1, 1):
+		p.box(((2 * rw - dw) / 2, 0.7, rh), (s * (dw / 2 + (2 * rw - dw) / 4), fy, fz + rh / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((dw, 0.7, rh - dh), (0, fy, fz + dh + (rh - dh) / 2), STONE_LIGHT, grad=(0.1, 0.9))
+	p.box((dw, 0.1, dh), (0, fy + 0.3, fz + dh / 2), IRON, grad=(0.6, 1.0))
+	p.box((2 * rw - 1.4, 2 * rd - 1.4, 0.1), (0, 0, fz + 0.05), IRON, grad=(0.6, 1.0))
+	for s in (-1, 1):  # door jambs with gold bands
+		p.box((0.4, 0.9, dh + 0.2), (s * (dw / 2 + 0.2), fy - 0.1, fz + (dh + 0.2) / 2), SEA_STONE, grad=(0.05, 0.8))
+		for z in (0.6, 1.6, 2.6):
+			p.box((0.44, 0.94, 0.1), (s * (dw / 2 + 0.2), fy - 0.1, fz + z), GOLD, grad=(0.0, 0.5), glow=0.2)
+	# the roof: stepped slabs, a drum and the spire with its pearl
+	rz = fz + rh
+	for k, (ax, ay, th) in enumerate(((rw + 0.5, rd + 0.5, 0.45), (rw - 0.2, rd - 0.2, 0.7), (rw - 1.0, rd - 1.0, 0.7), (rw - 1.8, rd - 1.8, 0.6))):
+		p.box((2 * ax, 2 * ay, th), (0, 0.3 * (k > 0), rz + th / 2), STONE_WARM if k % 2 else STONE_LIGHT, grad=(0.0, 0.8))
+		rz += th
+	p.seg((0, 0.3, rz), (0, 0.3, rz + 1.4), 1.1, 0.95, SEA_STONE, sides=8, grad=(0.0, 0.8))
+	p.seg((0, 0.3, rz + 1.4), (0, 0.3, rz + 1.6), 1.2, 1.2, GOLD, sides=8, glow=0.2)
+	p.seg((0, 0.3, rz + 1.6), (0, 0.3, rz + 4.2), 0.9, 0.15, STONE_LIGHT, sides=8, grad=(0.0, 0.8))
+	for k in range(8):  # petals holding the pearl
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.15, 0.3 + math.sin(a) * 0.15, rz + 4.1), (math.cos(a) * 0.55, 0.3 + math.sin(a) * 0.55, rz + 4.6), 0.12, 0.03, GOLD, sides=4, glow=0.2)
+	p.blob((0.9, 0.9, 0.9), (0, 0.3, rz + 4.75), RUNE, segs=(12, 8), grad=(0.0, 0.4), glow=2.2)
+	for s in (-1, 1):  # pinnacles on the top tier's corners
+		for t in (-1, 1):
+			x, y = s * (tiers[2][0] - 0.7), t * (tiers[2][0] - 0.7)
+			p.seg((x, y, zt), (x, y, zt + 1.6), 0.45, 0.38, SEA_STONE, sides=8, grad=(0.0, 0.8))
+			p.seg((x, y, zt + 1.6), (x, y, zt + 2.8), 0.45, 0.0, STONE_LIGHT, sides=8, grad=(0.0, 0.7))
+			p.blob((0.3, 0.3, 0.3), (x, y, zt + 2.85), RUNE, glow=1.2)
+	# Jalendra's head over the door, trunk raised, pouring
+	hs_ = 2.5
+	hc = (0, fy - 1.0, fz + dh + 1.8)
+	trunk = [(0, -0.45, -0.3), (0, -0.8, -0.35), (0, -1.15, -0.2), (0, -1.45, 0.05), (0, -1.7, 0.3), (0, -1.9, 0.42)]
+	_elephant_head(p, hc, hs_, STONE_LIGHT, trunk=trunk)
+	p.seg((0, hc[1] + 0.2, hc[2] + 0.85 * hs_ * 0.6), (0, hc[1] + 0.05, hc[2] + hs_ * 0.75), 0.55 * hs_ * 0.6, 0.3 * hs_ * 0.6, GOLD, sides=8, glow=0.2)
+	for s in (-1, 1):
+		p.blob((0.25, 0.1, 0.25), (s * 0.26 * hs_, hc[1] - 0.46 * hs_, hc[2] + 0.15 * hs_), RUNE, segs=(6, 4), glow=1.2)  # eyes of sea-glass
+	sx, sy, sz = 0.0, hc[1] - 1.9 * hs_, hc[2] + 0.42 * hs_
+	arc = []
+	land_k = 12
+	land_y = y_top - land_k * tread
+	land_z = zt - land_k * rise
+	for k in range(14):
+		t = k / 13
+		up = 1.6
+		arc.append((sx, sy + (land_y - sy) * t ** 0.8, sz + 2 * up * t - (2 * up + sz - land_z) * t ** 2))
+	_chain(p, arc, 0.2, 0.42, WATER, sides=8, grad=(0.0, 0.5), glow=0.2)
+	# the stream running down the stair: a sheet over the steps' noses
+	pts_a, pts_b = [], []
+	for k in range(land_k, n + 1):
+		y = y_top - k * tread
+		z = zt - k * rise + 0.08
+		pts_a.append((-0.8, y, z))
+		pts_b.append((0.8, y, z))
+	_slab(p, pts_a, pts_b, 0.1, WATER, grad=(0.0, 0.5), glow=0.2)
+	for k in range(7):  # foam where it lands and where it meets the flood
+		a = k * math.tau / 7
+		p.blob((0.7, 0.7, 0.35), (math.cos(a) * 0.6, land_y + math.sin(a) * 0.5, land_z + 0.15), CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.4))
+		p.blob((0.9, 0.8, 0.3), (math.cos(a) * 0.9, y_top - run - 0.6 + math.sin(a) * 0.5, 2.0), CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.4))
+	# the flood's marks: weed at the water line, barnacles, coral, a tumbled corner
+	water = 2.0
+	pts = []
+	for u in [-8.4 + k * 1.2 for k in range(15)]:
+		if abs(u) < 2.6:
+			continue
+		pts += [(u, -9.15, 0), (u, 9.15, 0), (-9.15, u, 90), (9.15, u, 90)]
+	_algae_band(soft, pts, water, size=(1.3, 0.4, 0.5))
+	for (x, y, nx, ny) in ((-6, -9.2, 0, -1), (5, -9.2, 0, -1), (-9.2, 3, -1, 0), (9.2, -4, 1, 0), (2, 9.2, 0, 1)):
+		_barnacles(soft, (x, y, 1.2), 9, 0.6, normal=(nx, ny, 0.1))
+	for (x, y) in ((-7.5, -9.8), (6.8, -9.9), (-9.9, 6.0), (9.8, 2.5), (4.0, 9.9), (-3.4, -10.2)):
+		_coral_cluster(soft, (x, y, 0.0), 1.6)
+	for k in range(10):
+		s = p.rng.uniform(0.8, 1.5)
+		p.box((s, s * 0.8, s * 0.6), (8.6 + p.rng.uniform(-1.5, 2.5), 8.6 + p.rng.uniform(-1.5, 2.5), p.rng.uniform(0.0, 1.0)), STONE_LIGHT if k % 2 else SEA_STONE,
+			  rot=(p.rng.uniform(-25, 25), p.rng.uniform(-25, 25), p.rng.uniform(0, 90)), grad=(0.1, 0.9))
+	obj = join_into(p.build(bevel=0.06), [soft.build()])
+	pieces = []
+	for s in (-1, 1):  # KayKit pillars by the shrine door
+		pieces += kaykit("pillar", (s * (rw + 0.2), -rd - 0.1, fz), 0.0, (0.6, 0.6, rh / 4.0))
+		pieces += kaykit("banner_thin_blue", (s * 3.3, -tiers[1][0] - 0.05, 2.2), 0.0, (0.9, 0.9, 0.9))  # the Tide Kings' colors by the stair
+	return _merge_materials(join_into(obj, pieces))
+
+
+def tideking_throne():
+	"""The throne of the last Tide King: a high-backed stone seat under a
+	scallop-shell crest (about 3.9 m to its top), its arms ending in wave
+	curls, on a two-step dais 3.6 x 3.2 m, crusted with coral and barnacles, a
+	tarnished crown left on the seat and a trident against its arm. Faces -Y.
+	Collide it as a box."""
+	p = Prop("tideking_throne", 317)
+	soft = Prop("tideking_throne_soft", 317)  # weed, slime, barnacles and coral: left unbeveled
+	p.box((3.6, 3.2, 0.3), (0, 0.2, 0.15), SEA_STONE, grad=(0.2, 0.9))
+	p.box((2.8, 2.4, 0.3), (0, 0.4, 0.45), STONE_LIGHT, grad=(0.1, 0.8))
+	for s in (-1, 1):
+		p.box((3.64, 0.1, 0.06), (0, -1.4, 0.28), GOLD, grad=(0.0, 0.5))
+	fz = 0.6
+	p.box((1.4, 1.0, 0.5), (0, 0.45, fz + 0.25), STONE_LIGHT, grad=(0.1, 0.9))  # seat
+	p.box((1.5, 1.1, 0.12), (0, 0.42, fz + 0.54), STONE_WARM, grad=(0.0, 0.6))
+	p.box((1.5, 0.4, 2.3), (0, 1.0, fz + 1.55), STONE_LIGHT, grad=(0.05, 0.9))  # back
+	p.box((1.1, 0.1, 1.7), (0, 0.79, fz + 1.55), TEAL, grad=(0.0, 0.8))  # a patina panel
+	p.box((0.12, 0.08, 1.5), (0, 0.74, fz + 1.5), GOLD, grad=(0.0, 0.5))
+	for s in (-1, 1):  # arms ending in wave curls
+		p.box((0.3, 1.1, 0.5), (s * 0.85, 0.45, fz + 0.65), STONE_LIGHT, grad=(0.05, 0.8))
+		pts = [(s * 0.85, -0.1, fz + 0.9), (s * 0.85, -0.25, fz + 0.95), (s * 0.85, -0.35, fz + 0.8), (s * 0.85, -0.28, fz + 0.62), (s * 0.85, -0.14, fz + 0.66), (s * 0.85, -0.17, fz + 0.77)]
+		_chain(p, pts, 0.17, 0.08, SEA_STONE, sides=8, grad=(0.0, 0.7))
+		p.box((0.36, 0.42, 0.72), (s * 0.85, 0.0, fz + 0.36), STONE_LIGHT, grad=(0.05, 0.9))
+	# the scallop crest: ribs fanned over a shell plate
+	cz, cy = fz + 2.7, 1.05
+	outline = [(math.cos(math.radians(a)) * 1.25, cz + math.sin(math.radians(a)) * 1.1) for a in range(0, 181, 15)] + [(-0.3, cz - 0.15), (0.3, cz - 0.15)]
+	_plate(p, outline, cy, 0.3, SEA_STONE, grad=(0.0, 0.8))
+	for k in range(9):
+		a = math.radians(10 + k * 20)
+		p.seg((0, cy - 0.12, cz - 0.05), (math.cos(a) * 1.2, cy - 0.16, cz + math.sin(a) * 1.05), 0.09, 0.07, STONE_LIGHT, sides=6, grad=(0.0, 0.7))
+	p.blob((0.4, 0.3, 0.4), (0, cy - 0.2, cz), GOLD, segs=(8, 6), grad=(0.0, 0.5), glow=0.2)
+	p.blob((0.28, 0.2, 0.28), (0, cy - 0.3, cz + 0.02), RUNE, segs=(8, 6), glow=1.4)  # a pearl set in it
+	# coral and barnacles creeping over it all
+	for c, sc in (((0.7, 1.25, fz + 1.2), 0.9), ((-0.8, 1.2, fz + 2.2), 0.8), ((1.3, -0.4, 0.6), 1.0), ((-1.4, 1.2, 0.6), 1.2), ((-1.2, -0.9, 0.3), 0.8)):
+		_coral_cluster(soft, c, sc)
+	_barnacles(soft, (-0.7, 0.2, fz + 0.9), 8, 0.15, normal=(0, 0, 1))
+	_barnacles(soft, (0.6, 0.8, fz + 2.6), 7, 0.25, normal=(0, -1, 0.3))
+	_barnacles(soft, (1.75, 0.8, 0.2), 8, 0.3, normal=(1, 0, 0.2))
+	# the crown left on the seat and a trident leaning on the right arm
+	cr = (0.2, 0.3, fz + 0.62)
+	p.seg(cr, (cr[0], cr[1], cr[2] + 0.12), 0.16, 0.17, GOLD, sides=10, grad=(0.0, 0.6), glow=0.15)
+	for k in range(5):
+		a = k * math.tau / 5
+		p.seg((cr[0] + math.cos(a) * 0.15, cr[1] + math.sin(a) * 0.15, cr[2] + 0.1), (cr[0] + math.cos(a) * 0.17, cr[1] + math.sin(a) * 0.17, cr[2] + 0.25), 0.04, 0.0, GOLD, sides=4, glow=0.15)
+	p.seg((1.2, -0.6, 0.62), (1.05, 0.2, 3.0), 0.04, 0.035, IRON, sides=6)
+	p.seg((0.95, 0.24, 2.95), (1.18, 0.21, 3.0), 0.03, 0.03, IRON, sides=4)
+	for dx in (-0.12, 0.0, 0.12):
+		p.seg((1.06 + dx, 0.22, 2.97), (1.06 + dx * 1.2, 0.26, 3.45 if dx == 0 else 3.3), 0.025, 0.0, IRON, sides=4)
+	return join_into(p.build(bevel=0.03), [soft.build()])
+
+
+def shipwreck():
+	"""A wrecked two-masted ship lying on its side in the flood: the planked
+	hull (about 11 m from the snapped bow to the stern, 4 m in the beam) rolled
+	24 degrees and settled bow-down in the bed, ribs showing where the bow broke
+	away and through a hole in its flank, the sterncastle still decked, a mast
+	snapped off with a rag of sail, and the broken bow lying off to one side
+	(about 15 m overall). Origin on the bed. Collide it as a mesh."""
+	p = Prop("shipwreck", 318)
+	soft = Prop("shipwreck_soft", 318)  # weed, slime, barnacles and coral: left unbeveled
+	L0, L1 = -4.0, 7.0  # hull from the break to the stern
+	W, D, nu = 2.0, 3.2, 9
+	start = len(p.parts)
+
+	def section(y, shrink=1.0, lift=0.0):
+		t = (y - L0) / (L1 - L0)
+		w = W * (0.62 + 0.38 * math.sin(min(1.0, 0.35 + t * 0.9) * math.pi * 0.95)) * shrink  # full amidships, narrowing to the stern
+		g = D + 0.35 * max(0.0, t - 0.7) / 0.3  # the sheer rises at the stern
+		dep = D * shrink
+		return [(math.cos(math.pi * i / (nu - 1)) * w, y, g - math.sin(math.pi * i / (nu - 1)) * dep ** 1.0 * (0.55 + 0.45 * math.sin(math.pi * i / (nu - 1))) + lift) for i in range(nu)]
+
+	nsec = 14
+	ys = [L0 + (L1 - L0) * k / nsec for k in range(nsec + 1)]
+	outer = [section(y) for y in ys]
+	inner = [section(y, 0.9, 0.08) for y in ys]
+	hole = {(k, i) for k in (6, 7) for i in (1, 2)} | {(0, i) for i in (0, 1, 7, 8)} | {(1, 0), (1, 8), (0, 2), (1, 1)}
+	for grid, sw0, grad in ((outer, WOOD, (0.1, 0.9)), (inner, WOOD_GRAY, (0.4, 1.0))):
+		for i in range(nu - 1):  # one strip per plank row, so the rows read
+			for k in range(nsec):
+				if (k, i) in hole:
+					continue
+				sw = sw0 if grid is inner else (WOOD if i % 2 else WOOD_GRAY)
+				p.poly([grid[k][i], grid[k + 1][i], grid[k + 1][i + 1], grid[k][i + 1]], [(0, 1, 2, 3)], sw, grad)
+	for k in range(nsec):  # gunwales
+		for i in (0, nu - 1):
+			if (k, i) in hole:
+				continue
+			p.poly([outer[k][i], outer[k + 1][i], inner[k + 1][i], inner[k][i]], [(0, 1, 2, 3)], WOOD, grad=(0.0, 0.4))
+	for k in (0, 1, 2, 6, 7, 8):  # ribs where the planks are gone
+		y = ys[k] + 0.3
+		sec = section(y, 0.95, 0.0)
+		_chain(p, sec, 0.09, 0.09, WOOD, sides=4, grad=(0.2, 0.9))
+	# the transom and the sterncastle
+	st = outer[-1]
+	p.poly(list(st), [tuple(range(nu))], WOOD_GRAY, grad=(0.1, 0.9))
+	p.box((2 * W * 0.8, 3.0, 0.12), (0, L1 - 1.6, D + 0.3), WOOD, grad=(0.1, 0.6))
+	p.box((2 * W * 0.7, 0.14, 1.3), (0, L1 - 3.1, D + 0.95), WOOD_GRAY, grad=(0.2, 0.9))
+	for x in (-0.8, 0.8):
+		p.box((0.4, 0.05, 0.35), (x, L1 - 3.18, D + 1.1), IRON, grad=(0.6, 1.0))
+	p.box((2 * W * 0.8 + 0.1, 3.1, 0.1), (0, L1 - 1.6, D + 1.6), WOOD, grad=(0.1, 0.6))
+	for k in range(5):  # deck beams across the waist, a few planks left on them
+		y = -2.0 + k * 1.5
+		p.box((2 * W * 0.85, 0.2, 0.2), (0, y, D - 0.2), WOOD, grad=(0.2, 0.9))
+		if k in (1, 3):
+			p.box((1.2, 1.4, 0.07), (-0.8 + k * 0.3, y + 0.75, D - 0.07), WOOD_GRAY, grad=(0.1, 0.6))
+	p.box((0.35, L1 - L0, 0.35), (0, (L0 + L1) / 2, 0.05), WOOD, grad=(0.3, 1.0))  # keel
+	# masts: the main snapped at 5 m, the fore a stump, a rag of sail on the yard
+	p.seg((0, 0.6, 0.2), (0, 0.6, 5.8), 0.2, 0.17, WOOD, sides=8, grad=(0.2, 1.0))
+	p.rock((0.4, 0.4, 0.35), (0, 0.6, 5.8), WOOD, jitter=0.06)
+	p.seg((-1.6, 0.7, 4.9), (1.8, 0.5, 5.1), 0.08, 0.07, WOOD, sides=6)
+	p.poly([(-1.5, 0.75, 4.85), (0.4, 0.75, 4.9), (0.9, 0.9, 3.3), (-0.2, 1.0, 2.8), (-1.1, 0.9, 3.6)], [(0, 1, 2, 3, 4)], CLOTH_WHITE, grad=(0.3, 1.0))
+	p.seg((0, -2.9, 0.2), (0, -2.9, 3.6), 0.17, 0.15, WOOD, sides=8, grad=(0.2, 1.0))
+	p.rock((0.34, 0.34, 0.3), (0, -2.9, 3.6), WOOD, jitter=0.06)
+	for k in range(3):  # rigging trailing off the stump
+		_rope(p, (0, 0.6, 5.2 - k * 0.2), (W * 0.9, 2.2 + k * 1.2, D + 0.1), 0.4, r=0.02)
+	# roll it onto its side and settle it bow-down into the bed
+	for k in (3, 5, 9, 11):  # barnacles along the hull's flank, above the bilge
+		v = Vector(outer[k][2])
+		_barnacles(p, tuple(v), 7, 0.5, normal=(1, 0, -0.3))
+	_move_parts(p, start, Matrix.Translation((0, 0, -0.35)) @ Matrix.Rotation(math.radians(7), 4, "X") @ Matrix.Rotation(math.radians(24), 4, "Y"))
+	# the bow that broke away, lying on its side off the port bow
+	bstart = len(p.parts)
+	bys = [-3.0 + k * 0.5 for k in range(7)]
+
+	def bow_sec(y):
+		t = (y + 3.0) / 3.0  # 0 at the point, 1 at the break
+		w = W * 0.85 * max(0.05, t) ** 0.7
+		return [(math.cos(math.pi * i / (nu - 1)) * w, y, D + 0.4 * (1 - t) - math.sin(math.pi * i / (nu - 1)) * D * (0.4 + 0.6 * t) * (0.55 + 0.45 * math.sin(math.pi * i / (nu - 1)))) for i in range(nu)]
+
+	bg = [bow_sec(y) for y in bys]
+	bi = [[(v[0] * 0.88, v[1], v[2] + 0.08) for v in bow_sec(y)] for y in bys]
+	for grid, sw0, grad in ((bg, WOOD, (0.1, 0.9)), (bi, WOOD_GRAY, (0.4, 1.0))):
+		for i in range(nu - 1):
+			for k in range(len(bys) - 1):
+				if k == len(bys) - 2 and i in (0, 1, 6, 7):
+					continue
+				sw = sw0 if grid is bi else (WOOD if i % 2 else WOOD_GRAY)
+				p.poly([grid[k][i], grid[k + 1][i], grid[k + 1][i + 1], grid[k][i + 1]], [(0, 1, 2, 3)], sw, grad)
+	p.seg((0, -3.0, D + 0.4), (0, -5.0, D + 1.4), 0.12, 0.05, WOOD, sides=6)  # the bowsprit
+	_chain(p, bow_sec(-0.2), 0.08, 0.08, WOOD, sides=4)
+	_move_parts(p, bstart, Matrix.Translation((-3.6, -2.4, -0.6)) @ Matrix.Rotation(math.radians(-70), 4, "Y") @ Matrix.Rotation(math.radians(25), 4, "Z"))
+	# weed at the water line, barnacles on the hull, planks and a barrel adrift
+	water = 2.0
+	for k in range(4):
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(4.0, 6.0)
+		p.box((p.rng.uniform(1.4, 2.4), 0.26, 0.07), (math.cos(a) * d, 1.5 + math.sin(a) * d, water - 0.02), WOOD_GRAY, rot=(0, 0, p.rng.uniform(0, 180)), grad=(0.1, 0.6))
+	_coral_cluster(soft, (3.2, -1.0, 0.0), 1.3)
+	_coral_cluster(soft, (-2.6, 6.6, 0.0), 1.1)
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
+def coral_growth():
+	"""A clump of coral for dressing the drowned ruins, about 1.8 m across and
+	1.3 m tall: branching stems in pink, orange and red, a sea fan, tube
+	sponges, a brain coral and barnacles on a lump of stone. Origin on the bed
+	(or on a ledge). No collision."""
+	p = Prop("coral_growth", 319)
+	p.rock((1.6, 1.3, 0.55), (0, 0, 0.05), STONE_DARK, jitter=0.07)
+	p.rock((0.8, 0.7, 0.4), (0.7, 0.4, 0.05), STONE_DARK, jitter=0.06)
+	for k, (x, y, sw) in enumerate(((-0.3, 0.1, CORAL_PINK), (0.25, -0.25, CORAL_ORANGE), (0.1, 0.35, CLOTH_RED), (-0.55, -0.35, CORAL_PINK))):
+		a = p.rng.uniform(0, math.tau)
+		_coral_branch(p, (x, y, 0.25), (math.cos(a) * 0.2, math.sin(a) * 0.2, 1.0), 0.32, 0.06, sw, 3)
+	# a sea fan: a flat lattice plate
+	fan = [(math.cos(math.radians(a)) * 0.55, 0.3 + math.sin(math.radians(a)) * 0.75) for a in range(0, 181, 20)] + [(0.0, 0.25)]
+	fstart = len(p.parts)
+	_plate(p, fan, 0.0, 0.03, PETAL_PURPLE, grad=(0.0, 0.8))
+	for k in range(7):
+		a = math.radians(15 + k * 25)
+		p.seg((0, 0, 0.3), (math.cos(a) * 0.5, 0, 0.3 + math.sin(a) * 0.7), 0.025, 0.015, CORAL_MAGENTA, sides=4)
+	_move_parts(p, fstart, Matrix.Translation((0.45, 0.35, 0.05)) @ Matrix.Rotation(math.radians(30), 4, "Z"))
+	for k in range(4):  # tube sponges, dark in their mouths
+		x, y = -0.6 + k * 0.13, 0.35 + (k % 2) * 0.15
+		h = 0.35 + k * 0.08
+		p.seg((x, y, 0.15), (x, y, 0.15 + h), 0.08, 0.1, CORAL_MAGENTA if k % 2 else PETAL_YELLOW, sides=7, grad=(0.0, 0.8))
+		p.seg((x, y, 0.15 + h - 0.02), (x, y, 0.15 + h + 0.005), 0.075, 0.075, IRON, sides=7, grad=(0.6, 1.0))
+	p.blob((0.55, 0.5, 0.38), (0.5, -0.45, 0.25), PETAL_YELLOW, segs=(10, 6), grad=(0.1, 0.8), jitter=0.02)  # brain coral
+	for k in range(6):
+		a = k * math.tau / 6
+		p.seg((0.5 + math.cos(a) * 0.1, -0.45 + math.sin(a) * 0.1, 0.4), (0.5 + math.cos(a) * 0.22, -0.45 + math.sin(a) * 0.2, 0.45), 0.02, 0.02, CORAL_ORANGE, sides=3)
+	for k in range(5):  # little anemones
+		a = p.rng.uniform(0, math.tau)
+		c = (math.cos(a) * 0.6, math.sin(a) * 0.45, 0.22)
+		for j in range(5):
+			b = j * math.tau / 5
+			p.seg(c, (c[0] + math.cos(b) * 0.07, c[1] + math.sin(b) * 0.07, c[2] + 0.12), 0.02, 0.005, TEAL if k % 2 else CORAL_PINK, sides=3)
+	_barnacles(p, (-0.2, -0.5, 0.2), 8, 0.25, normal=(0, -0.6, 1))
+	return p.build(bevel=0.0)
+
+
+def naga_shrine():
+	"""A naga shrine: a carved pillar on a round two-step dais (3.6 m across),
+	a stone serpent coiled up it, its hooded head reared over a lotus bowl that
+	holds a great glowing blue pearl (about 5.5 m to the hood). Two offering
+	bowls of glowing water on the dais. Faces -Y. Collide it as a box."""
+	p = Prop("naga_shrine", 320)
+	soft = Prop("naga_shrine_soft", 320)  # weed, slime, barnacles and coral: left unbeveled
+	p.seg((0, 0, -0.2), (0, 0, 0.3), 1.8, 1.75, SEA_STONE, sides=16, grad=(0.2, 0.9))
+	p.seg((0, 0, 0.3), (0, 0, 0.55), 1.3, 1.25, STONE_LIGHT, sides=16, grad=(0.1, 0.8))
+	p.seg((0, 0, 0.55), (0, 0, 3.1), 0.4, 0.34, STONE_LIGHT, sides=8, grad=(0.05, 0.9), twist=22.5)
+	for z in (0.7, 3.0):
+		p.seg((0, 0, z - 0.08), (0, 0, z + 0.08), 0.5, 0.5, STONE_WARM, sides=8, twist=22.5)
+	p.seg((0, 0, 3.1), (0, 0, 3.5), 0.36, 0.75, STONE_WARM, sides=12, grad=(0.0, 0.7))  # the lotus bowl
+	for k in range(10):
+		a = k * math.tau / 10
+		p.blob((0.34, 0.12, 0.3), (math.cos(a) * 0.62, math.sin(a) * 0.62, 3.45), GOLD, rot=(0, 25, math.degrees(a)), segs=(6, 4), grad=(0.0, 0.6), glow=0.15)
+	p.blob((0.8, 0.8, 0.8), (0, 0, 3.82), RUNE, segs=(14, 10), grad=(0.0, 0.4), glow=2.4)
+	# the serpent: coils up the pillar, then the neck rises behind the pearl
+	pts = []
+	turns, z0, z1 = 2.4, 0.75, 2.95
+	n = 40
+	for k in range(n + 1):
+		t = k / n
+		a = -math.pi / 2 + t * turns * math.tau
+		r = 0.52 - 0.05 * t
+		pts.append((math.cos(a) * r, math.sin(a) * r, z0 + (z1 - z0) * t))
+	tail = [(0.9, -1.0, 0.6), (0.45, -0.85, 0.62), (0.05, -0.62, 0.68)]
+	body = tail + pts[1:]
+	last = pts[-1]
+	neck = [last, (last[0] * 1.2, last[1] * 1.2 + 0.2, 3.5), (0.0, 0.7, 4.1), (0.0, 0.6, 4.6), (0.0, 0.42, 4.95)]
+	allp = body + neck[1:]
+	m = len(allp) - 1
+	for i, (a, b) in enumerate(zip(allp, allp[1:])):
+		r0 = 0.06 + 0.12 * min(1.0, i / 6) - 0.02 * (i / m)
+		r1 = 0.06 + 0.12 * min(1.0, (i + 1) / 6) - 0.02 * ((i + 1) / m)
+		p.seg(a, b, r0, r1, SCALE_GREEN if (i // 3) % 2 else TEAL, sides=7, grad=(0.0, 0.8))
+	hood_c = (0.0, 0.5, 4.95)
+	p.blob((1.3, 0.24, 1.15), hood_c, SCALE_GREEN, rot=(-25, 0, 0), segs=(12, 6), grad=(0.0, 0.8))
+	p.blob((0.85, 0.1, 0.8), (0.0, 0.37, 4.9), PETAL_YELLOW, rot=(-25, 0, 0), segs=(10, 5), grad=(0.0, 0.7))  # the hood's pale inside
+	for k in range(3):  # its eye markings
+		p.blob((0.12, 0.05, 0.12), ((k - 1) * 0.3, 0.33, 5.05 - abs(k - 1) * 0.1), TEAL, segs=(6, 4))
+	p.blob((0.4, 0.6, 0.3), (0.0, 0.12, 5.02), TEAL, rot=(22, 0, 0), segs=(8, 6), grad=(0.0, 0.7))  # the head, bent over the pearl
+	for s in (-1, 1):
+		p.blob((0.07, 0.06, 0.06), (s * 0.14, -0.08, 5.02), EMBER, segs=(5, 4), glow=1.2)
+	p.seg((0, -0.17, 4.9), (0, -0.33, 4.78), 0.012, 0.012, CLOTH_RED, sides=3)  # the tongue
+	for s in (-1, 1):  # offering bowls of glowing water
+		c = (s * 1.0, -0.75, 0.55)
+		p.seg(c, (c[0], c[1], c[2] + 0.25), 0.16, 0.28, STONE_WARM, sides=10, grad=(0.0, 0.8))
+		p.seg((c[0], c[1], c[2] + 0.18), (c[0], c[1], c[2] + 0.24), 0.24, 0.24, RUNE, sides=10, glow=1.2)
+	for k in range(6):
+		a = k * math.tau / 6 + 0.4
+		p.blob((0.18, 0.08, 0.14), (math.cos(a) * 1.5, math.sin(a) * 1.5, 0.33), (CLOTH_WHITE, SHELL_PEACH, CORAL_PINK)[k % 3], rot=(90, 0, math.degrees(a)), segs=(6, 4))
+	_barnacles(soft, (1.3, 1.0, 0.1), 6, 0.25, normal=(1, 1, 0.3))
+	_coral_cluster(soft, (-1.35, 0.9, 0.3), 0.8)
+	return join_into(p.build(bevel=0.02), [soft.build()])
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -4379,6 +5793,26 @@ PROPS = {
 	"ember_banner": ember_banner,
 	"scout_tent": scout_tent,
 	"weapon_rack": weapon_rack,
+	"stilt_platform_broken": stilt_platform_broken,
+	"stilt_walkway_broken": stilt_walkway_broken,
+	"stilt_hut_sunken": stilt_hut_sunken,
+	"pondkin_hut": pondkin_hut,
+	"pondkin_totem": pondkin_totem,
+	"witch_hut": witch_hut,
+	"witch_cauldron": witch_cauldron,
+	"heron_rookery_nest": heron_rookery_nest,
+	"reeds_tall": reeds_tall,
+	"mooring_post": mooring_post,
+	"citadel_tower": citadel_tower,
+	"citadel_wall_ruin": citadel_wall_ruin,
+	"causeway_span": causeway_span,
+	"causeway_broken": causeway_broken,
+	"citadel_platform": citadel_platform,
+	"sea_temple": sea_temple,
+	"tideking_throne": tideking_throne,
+	"shipwreck": shipwreck,
+	"coral_growth": coral_growth,
+	"naga_shrine": naga_shrine,
 }
 
 

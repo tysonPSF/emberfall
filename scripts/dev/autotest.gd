@@ -109,6 +109,9 @@ const SECTIONS := [
 	["tooltips", "greenmoor"],
 	["group_xp", "greenmoor"],
 	["race_change", "greenmoor"],
+	["monsoon_west_borders", "weeping_throat"],
+	["reedmere_life", "reedmere"],
+	["drownfast_life", "drownfast"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -4699,6 +4702,107 @@ func _t_race_change() -> void:
 	p.look["race"] = "human"
 	p.dress()
 	p.recalc_stats()
+
+
+## Reedmere and Drownfast's three borders, every one both ways.
+func _t_monsoon_west_borders() -> void:
+	for leg: Array in [["weeping_throat", Vector2(-195, 0), Vector2(-1, 0), "reedmere"], ["reedmere", Vector2(225, 0), Vector2(1, 0), "weeping_throat"],
+			["weeping_throat", Vector2(0, -195), Vector2(0, -1), "drownfast"], ["drownfast", Vector2(225, 0), Vector2(1, 0), "cinderpass"],
+			["cinderpass", Vector2(-195, 0), Vector2(-1, 0), "drownfast"], ["drownfast", Vector2(0, 225), Vector2(0, 1), "weeping_throat"]]:
+		if not await _walk_border("monsoon_west_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## A zone's life: its monsters by day and night, each quest giver's quests
+## handed in (twice for the repeatable ones), and a look at each monster.
+func _zone_life(tag: String, givers: Dictionary, night_ids: Array, look_ids: Array) -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World.time_override = 12.0
+	await _wait(0.5)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("%s: noon: %d monsters %s" % [tag, World.get_mobs().size(), counts])
+	p.level = 30
+	p.recalc_stats()
+	p.pack.clear()
+	var npcs := _npcs()
+	var done := {}
+	for giver: String in givers:
+		var npc: Npc = npcs[giver]
+		_stand_by(p, npc)
+		World.request_say(p.entity_id, "hail")
+		for q_id: String in givers[giver]:
+			var q: Dictionary = GameData.quests[q_id]
+			World.request_say(p.entity_id, str(q["start_keyword"]))
+			for round in (2 if q.get("repeatable", false) else 1):
+				for item_id: String in q["wants"]:
+					p.pack.add(item_id, int(q["wants"][item_id]))
+				_stand_by(p, npc)
+				await _hand_in(p, npc, (q["wants"] as Dictionary).keys())
+			done[q_id] = int(p.quests.get(q_id, {}).get("completions", 0))
+	await _wait(0.3)
+	print("%s: quests done %s" % [tag, done])
+	World.time_override = 23.0
+	await _wait(0.6)
+	var night := {}
+	for m in World.get_mobs():
+		if m.mob_id in night_ids:
+			night[m.mob_id] = int(night.get(m.mob_id, 0)) + 1
+	print("%s: at 23:00 %s" % [tag, night])
+	World.time_override = 12.0
+	main.hud._inv_panel.visible = false
+	for id: String in look_ids:
+		var m: Mob = _nearest_mob(p, id)
+		if m == null:
+			print("%s: no %s found" % [tag, id])
+			continue
+		m.set_physics_process(false)
+		var at := m.global_position
+		p.global_position = Vector3(at.x + 4.0, z.surface_at(at.x + 4.0, at.z + 3.0) + 1.0, at.z + 3.0)
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.5
+		p.pitch = -0.15
+		await _wait(0.8)
+		await _shot("9zm_%s" % id)
+		m.set_physics_process(true)
+
+
+func _t_reedmere_life() -> void:
+	var z: Zone = get_parent().zone
+	print("reedmere_life: water at the middle %.1f over ground %.1f; Veyamar's decks stand at %.1f" % [z.water_level(0, -60), z.height_at(0, -60), z.surface_at(-10, 20)])
+	await _zone_life("reedmere_life", {"reedcutter_pallavi": ["pondkin_fetishes", "bloatking_crown"], "boatwright_kesh": ["reedstalker_plumes", "stilt_legs_plume"],
+			"priestess_amrit": ["sunken_charms", "headwomans_lotus", "marrowroot_heart"]}, ["sunken_villager", "sunken_headwoman"],
+			["pondkin", "pondkin_mudcaller", "pondkin_bloatking", "reedstalker", "old_stilt_legs", "marsh_eel", "bogwing", "sunken_villager", "sedge_sister", "bog_lurker", "mother_marrowroot"])
+	var p := World.local_player
+	for spot: Array in [[Vector2(236, 20), Vector2(210, 0), "rest"], [Vector2(30, 60), Vector2(-10, 20), "veyamar"], [Vector2(-100, -80), Vector2(-130, -115), "pondkin"], [Vector2(-110, 150), Vector2(-140, 125), "coven"]]:
+		p.global_position = Vector3(spot[0].x, z.surface_at(spot[0].x, spot[0].y) + 2.0, spot[0].y)
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zn_reedmere_%s" % spot[2])
+
+
+func _t_drownfast_life() -> void:
+	var z: Zone = get_parent().zone
+	print("drownfast_life: water %.1f; the south causeway at %.1f, the east causeway at %.1f, the throne platform at %.1f" % [z.water_level(0, 100), z.surface_at(0, 100), z.surface_at(120, -10), z.surface_at(0, 13)])
+	await _zone_life("drownfast_life", {"tidewarden_nkemi": ["tidesworn_insignias", "varundra_crown"], "pearl_diver_suriya": ["naga_scales", "sessavi_pearl"],
+			"stormsage_obi": ["tempest_shards", "wardens_chain", "chitterjaw_claw"]}, [],
+			["tidesworn", "tide_knight", "tideking_varundra", "naga_warrior", "naga_tidecaller", "naga_queen", "tempest_spirit", "stormbound_warden", "causeway_crab", "shellback", "old_chitterjaw"])
+	var p := World.local_player
+	for spot: Array in [[Vector2(20, 236), Vector2(0, 210), "camp"], [Vector2(12, 90), Vector2(0, -30), "causeway"], [Vector2(-100, -30), Vector2(-145, -60), "naga"], [Vector2(40, -110), Vector2(0, -150), "tower"]]:
+		p.global_position = Vector3(spot[0].x, z.surface_at(spot[0].x, spot[0].y) + 2.0, spot[0].y)
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.0)
+		await _shot("9zn_drownfast_%s" % spot[2])
 
 
 func _t_necromancer() -> void:
