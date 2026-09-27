@@ -3586,5 +3586,271 @@
         "slashes"
       ]
     }
+  },
+  "flamewarden_isak": {
+    "name": "Flamewarden Isak",
+    "level": 50,
+    "model": "knight",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "You stand at the Hearth of Agnavar, {name}, where the first fire still burns. The [court] of the ember giants holds the north-east.",
+      "unknown": "Ask the others at the rest.",
+      "court": "The ember court, armored giants who serve their queen. Bring me four of their [signets], every time.",
+      "signets": "Four ember court signets. The first time, a bracer.",
+      "brannagh": "Queen Brannagh, who would rule the flame itself. Bring me her molten [crown].",
+      "crown": "Brannagh's molten crown, {name}."
+    },
+    "title": "Pilgrims' Rest"
+  },
+  "pyre_priestess_olusola": {
+    "name": "Pyre-Priestess Olusola",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The [salamanders] tend the flame in their own way, {name}, and they kill pilgrims who come near.",
+      "unknown": "Ask Isak.",
+      "salamanders": "Fire-lizard folk from the south-east dens. Bring me four of their [scales], every time.",
+      "scales": "Four salamander scales. The first time, boots.",
+      "scorchtongue": "Scorchtongue, their high priest. Bring me his [brazier].",
+      "brazier": "Scorchtongue's brazier, {name}."
+    },
+    "title": "Pilgrims' Rest"
+  },
+  "forge_sage_kalinda": {
+    "name": "Forge-Sage Kalinda",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Agnavar's fire makes [elementals] as easily as it makes steel, {name}.",
+      "unknown": "Ask Isak.",
+      "elementals": "Greater fire elementals and living magma. Bring me four hearts of [flame], every time.",
+      "flame": "Four hearts of flame. The first time, a ring.",
+      "forgeheart": "The Living Forgeheart, lord of them all, at the great forge. Bring me its [core].",
+      "core": "The Forgeheart's core, {name}."
+    },
+    "title": "Pilgrims' Rest"
+  },
+  "inquisitor_tobiah": {
+    "name": "Inquisitor Tobiah",
+    "level": 50,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Heretics tried to steal the eternal flame, {name}. It burned them, and still they walk: the [fallen] priests of the south-west.",
+      "unknown": "Ask Isak.",
+      "fallen": "Bring me four of their [charms], every time.",
+      "charms": "Four heretic's charms. The first time, a penitent's sash.",
+      "caldris": "Caldris the Unburnt carries a stolen ember. Bring me the [ember].",
+      "ember": "The stolen ember, {name}."
+    },
+    "title": "Pilgrims' Rest"
+  },
+  "pilgrim_trader_aziz": {
+    "name": "Pilgrim-Trader Aziz",
+    "level": 36,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Supplies for the pilgrim road, {name}. Press G.",
+      "unknown": "Ask Isak."
+    },
+    "title": "Pilgrims' Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "windcutter_arrow",
+        "magmasteel_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "hearth_flamewarden": {
+    "name": "a Forgehold flamewarden",
+    "level": 55,
+    "model": "knight",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The flame watches us, {name}.",
+      "unknown": "Ask Isak."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the pilgrims!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4200,
+      "hp_regen": 70,
+      "ac": 118,
+      "dmg": [
+        28,
+        48
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "woodwarden_sefa": {
+    "name": "Woodwarden Sefa",
+    "level": 50,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Smokewood never stops burning, {name}, and never burns down. The [treants] see to that.",
+      "unknown": "Ask the others at camp.",
+      "treants": "Walking trees with ember hearts. Bring me four pieces of their [heartwood], every time.",
+      "heartwood": "Four pieces of ember heartwood. The first time, a shield of it.",
+      "emberheart": "Old Emberheart, the oldest of them. Bring me his [heart].",
+      "heart": "Old Emberheart's heart, {name}."
+    },
+    "title": "Smokewood Camp"
+  },
+  "hunter_bartek": {
+    "name": "Hunter Bartek",
+    "level": 50,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The beasts here are made of smoke, {name}. They bleed ash. The [smoke] wolves are the worst.",
+      "unknown": "Ask Sefa.",
+      "smoke": "Wolves, bears and stags of smoke. Bring me four smoke [pelts], every time.",
+      "pelts": "Four smoke pelts. The first time, gloves.",
+      "stag": "The Ashen Stag, white as bone. Bring me its [antler].",
+      "antler": "The Ashen Stag's antler, {name}."
+    },
+    "title": "Smokewood Camp"
+  },
+  "scout_liesl": {
+    "name": "Scout Liesl",
+    "level": 50,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The charcoal-burners went mad in the smoke, {name}. Now they wear [masks] and worship it.",
+      "unknown": "Ask Sefa.",
+      "masks": "The Sootmask cult. Bring me four [fragments] of their masks, every time.",
+      "fragments": "Four soot-mask fragments. The first time, a hood.",
+      "kolt": "Their chieftain, Kolt Soot-Mask, wears antlers. Bring me his antlered [mask].",
+      "mask": "Kolt's antlered mask, {name}."
+    },
+    "title": "Smokewood Camp"
+  },
+  "moth_catcher_ondine": {
+    "name": "Moth-Catcher Ondine",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Fire [moths] the size of eagles, {name}, and mushrooms that walk. Smokewood is a strange place.",
+      "unknown": "Ask Sefa.",
+      "moths": "Bring me four pinches of fire moth [dust], every time.",
+      "dust": "Four pinches of fire moth dust. The first time, a cloak of moth wings.",
+      "queen": "The Cinder Moth Queen. Bring me one of her [wings].",
+      "wings": "The Moth Queen's wing, {name}."
+    },
+    "title": "Smokewood Camp"
+  },
+  "charcoal_seller_vard": {
+    "name": "Charcoal-Seller Vard",
+    "level": 36,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Charcoal, bread, arrows, {name}. Press G.",
+      "unknown": "Ask Sefa."
+    },
+    "title": "Charcoal and Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "windcutter_arrow",
+        "magmasteel_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "smokewood_warden": {
+    "name": "a Smokewood warden",
+    "level": 55,
+    "model": "ranger",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "Mind the smoke, {name}.",
+      "unknown": "Ask Sefa."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the camp!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4200,
+      "hp_regen": 70,
+      "ac": 118,
+      "dmg": [
+        28,
+        48
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

@@ -204,6 +204,25 @@
         159,
         0
       ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "agnavars_hearth",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
     }
   ],
   "landmarks": [
@@ -458,21 +477,6 @@
       "yaw": 180,
       "labels": [
         "Dawnwatch",
-        "Mirror Flats"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
         "Mirror Flats"
       ]
     }

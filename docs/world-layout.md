@@ -99,8 +99,8 @@ Stonesail (37–41) lies past it at `[-3, 5]`.
 | Cinderpass **(built)** | The Ashfall | 26–30 | 448 m | `[0, 3]` | burn |
 | The Burn **(built)** | The Ashfall | 29–33 | 512 m | `[0, 4]` | burn |
 | Blackglass **(built)** | The Ashfall | 31–35 | 512 m | `[0, 5]` | burn |
-| Smokewood | The Ashfall | 33–37 | 512 m | `[3, 5]` | wood |
-| Agnavar's Hearth | The Ashfall | 35–38 | 512 m | `[2, 5]` | burn |
+| Smokewood **(built)** | The Ashfall | 33–37 | 512 m | `[3, 5]` | wood |
+| Agnavar's Hearth **(built)** | The Ashfall | 35–38 | 512 m | `[2, 5]` | burn |
 | Galehold **(built)** | The Standing Sky | city | 224 m | `[-2, 5]` | city |
 | Windbreak **(built)** | The Standing Sky | 32–36 | 448 m | `[-1, 4]` | plain |
 | The Long Grass **(built)** | The Standing Sky | 34–38 | 512 m | `[-1, 5]` | plain |
