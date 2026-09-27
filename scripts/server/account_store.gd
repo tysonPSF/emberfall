@@ -55,7 +55,7 @@ func owns(account: String, name: String) -> bool:
 
 ## A brand-new level 1 character, or why not. Offline characters come in
 ## through import_character instead.
-func create_character(account: String, name: String, cls: String, deity: String, start_zone: String, stats: Dictionary = {}, race := "human", gender := "") -> String:
+func create_character(account: String, name: String, cls: String, deity: String, start_zone: String, stats: Dictionary = {}, race := "human", gender := "", hair: Array = []) -> String:
 	var why := _name_problem(name)
 	if why != "":
 		return why
@@ -69,7 +69,7 @@ func create_character(account: String, name: String, cls: String, deity: String,
 		return "A %s can't be a %s." % [GameData.races[race]["name"], GameData.classes[cls]["name"]]
 	var home := str(GameData.races[race].get("home", start_zone))  # every race starts, and is bound, in its home city
 	return _add(account, {"name": name.to_lower().capitalize(), "class": cls, "deity": deity, "zone": home, "bind": home,
-			"stats": Player.clean_stat_points(stats), "race": race, "gender": gender if gender in ["male", "female"] else ""})
+			"stats": Player.clean_stat_points(stats), "race": race, "gender": gender if gender in ["male", "female"] else "", "hair": Player.clean_hair(hair)})
 
 
 ## Brings an offline character onto the server once, cleaned up: unknown

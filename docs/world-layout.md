@@ -1,6 +1,6 @@
 # Emberfall — the world layout
 
-36 zones, 6 areas, levels 1–50, a city in every area. **This is the layout
+37 zones, 6 areas, levels 1–50, a city in every area. **This is the layout
 table only** — no zone files are written yet. Passes and zone lines are derived
 from the grid by `tools/world_layout.py`, never typed.
 
@@ -21,7 +21,7 @@ the only one today.
 | Area | Deity | City | Zones | Levels | Where |
 | --- | --- | --- | --- | --- | --- |
 | **The Emberlands** | — *the start* | Emberhold | 6 | 1–15 | south, home |
-| **The Dawnstair** | light | Lanternhold | 6 | 14–24 | east, climbing |
+| **The Dawnstair** | light | Lanternhold | 7 | 1–24 | east, climbing (Dewstep, its beginner ground, 1–10) |
 | **The Long Monsoon** | water | Rainhold | 6 | 20–30 | west, and rising water |
 | **The Ashfall** | fire | Forgehold | 6 | 26–38 | due north of home |
 | **The Standing Sky** | wind | Galehold | 6 | 32–44 | north-west, high and open |
@@ -74,19 +74,20 @@ it means moving a zone.
 | Thornwood Vale **(built)** | The Emberlands | 6–14 | 512 m | `[0, 2]` | wood |
 | Hollowmere **(built)** | The Emberlands | 10–15 | 448 m | `[1, 2]` | water |
 | Lanternhold **(built)** | The Dawnstair | city | 224 m | `[3, 2]` | city |
+| Dewstep **(built)** | The Dawnstair | 1–10 | 384 m | `[3, 1]` | field |
 | Sunward Steps **(built)** | The Dawnstair | 14–18 | 448 m | `[2, 2]` | terrace |
 | The Bleach **(built)** | The Dawnstair | 16–21 | 512 m | `[2, 3]` | waste |
-| High Terrace | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |
+| High Terrace **(built)** | The Dawnstair | 18–23 | 512 m | `[1, 3]` | terrace |
 | Mirror Flats | The Dawnstair | 20–24 | 512 m | `[2, 4]` | waste |
 | Dawnwatch | The Dawnstair | 22–24 | 448 m | `[1, 4]` | outpost |
 | Rainhold **(built)** | The Long Monsoon | city | 224 m | `[-1, 1]` | city |
 | The Weeping Throat **(built)** | The Long Monsoon | 20–24 | 448 m | `[-1, 2]` | water |
-| Reedmere | The Long Monsoon | 22–26 | 512 m | `[-2, 2]` | water |
+| Reedmere **(built)** | The Long Monsoon | 22–26 | 512 m | `[-2, 2]` | water |
 | The Silted Reach | The Long Monsoon | 24–28 | 512 m | `[-2, 3]` | water |
-| Drownfast | The Long Monsoon | 26–30 | 512 m | `[-1, 3]` | water |
+| Drownfast **(built)** | The Long Monsoon | 26–30 | 512 m | `[-1, 3]` | water |
 | Tidemouth | The Long Monsoon | 28–30 | 448 m | `[-2, 4]` | outpost |
 | Forgehold | The Ashfall | city | 224 m | `[3, 5]` | city |
-| Cinderpass | The Ashfall | 26–30 | 448 m | `[0, 3]` | burn |
+| Cinderpass **(built)** | The Ashfall | 26–30 | 448 m | `[0, 3]` | burn |
 | The Burn | The Ashfall | 29–33 | 512 m | `[0, 4]` | burn |
 | Blackglass | The Ashfall | 31–35 | 512 m | `[0, 5]` | burn |
 | Smokewood | The Ashfall | 33–37 | 512 m | `[1, 5]` | wood |
@@ -103,6 +104,16 @@ it means moving a zone.
 | The Unlit | The Boneyard | 44–47 | 512 m | `[2, 6]` | fog |
 | Lastwalk | The Boneyard | 46–49 | 512 m | `[0, 7]` | fog |
 | Timiraj's Table | The Boneyard | 48–50 | 512 m | `[1, 7]` | fog |
+
+## Dewstep, added later
+
+The first layout gave only Emberhold (Greenmoor) and Rainhold (Greenmoor, next
+door) a beginner field, so a character whose home is Lanternhold (high elves)
+had nowhere at their own level. Dewstep, 1–10, takes the cell **south** of
+Lanternhold, `[3, 1]`: the bottom of the Dawnstair, terraced tea gardens under
+the city walls. It touches **only** Lanternhold, so no wilderness border drops a
+newcomer anywhere deep; they leave through the city toward Sunward Steps. The
+Dawnstair is the one area with seven zones, and `world_layout.py` allows it.
 
 ## The Grove is off the grid
 

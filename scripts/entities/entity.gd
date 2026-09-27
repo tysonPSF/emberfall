@@ -296,6 +296,8 @@ static func make_visual(look_: Dictionary) -> Node3D:
 		m.setup(look_["model"], str(look_.get("weapon", "")), body_scale, look_.get("gear"))
 		if str(look_.get("gender", "")) != "":  # a player's gender: the head (before the race, whose beards are for men)
 			m.set_gender(str(look_["gender"]))
+		if look_.get("hair") is Array and (look_["hair"] as Array).size() == 2:  # a player's chosen hair
+			m.set_hair(str(look_["hair"][0]), str(look_["hair"][1]))
 		if str(look_.get("race", "")) != "":  # a player's race: skin and bolt-ons (the portrait and corpses too)
 			m.set_race(str(look_["race"]))
 		m.set_tiers(look_.get("tiers", {}))

@@ -22,6 +22,7 @@ var _deity := ""
 var _stats: StatPicker
 var _race := "human"
 var _gender := "male"
+var _hair: HairPicker
 var _race_desc: Label
 var _class_buttons := {}  # class id -> its button (greyed when the race can't be it)
 var _race_buttons := {}
@@ -138,6 +139,8 @@ func _build_new_character(page: VBoxContainer) -> void:
 		gb.pressed.connect(func() -> void: _gender = g[0])
 		genders.add_child(gb)
 	v.add_child(genders)
+	_hair = HairPicker.new()
+	v.add_child(_hair)
 
 	var races := GridContainer.new()  # the race first: it decides which classes are open
 	races.columns = 5
@@ -301,4 +304,4 @@ func _create() -> void:
 		return
 	var home := str(GameData.races[_race].get("home", World.cfg("starting_zone", "emberhold")))
 	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity, "stats": _stats.points.duplicate(),
-			"race": _race, "gender": _gender, "zone": home, "bind": home})
+			"race": _race, "gender": _gender, "hair": [_hair.style, _hair.color], "zone": home, "bind": home})

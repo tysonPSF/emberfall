@@ -8,7 +8,7 @@ the `arrive` point you materialise at. So the world is a GRID, and a world map
 is the set of cells plus which edge of which cell opens onto which.
 
 That is why this is a table and a script rather than 31 hand-written files.
-Six areas at five or six zones each is 31 zones and 50-odd borders; every
+Six areas at five to seven zones each is 37 zones and 50-odd borders; every
 border is four things that have to agree (a pass each side, a line each side)
 and eight numbers. Typed out, that is where the one-way doors and the arrive
 points inside a mountain come from.
@@ -56,6 +56,12 @@ ZONES = [
     # Beside Sunward Steps, the zone you arrive in: you enter the Dawnstair and
     # the town is right there.
     ('lanternhold',     'Lanternhold',        'dawnstair',  (14, 24), 224, (3, 2), 'city'),
+    # ADDED LATER, on purpose: the Dawnstair's own beginner ground, so a
+    # Lanternhold-born character (high elves) starts at home like Emberhold's
+    # and Rainhold's do. Below the city, the first step of the stair. The cell
+    # touches only Lanternhold, so no wilderness border drops a newcomer
+    # anywhere deep; they leave by the city, toward Sunward Steps.
+    ('dewstep',         'Dewstep',            'dawnstair',  (1, 10),  384, (3, 1), 'field'),
 
     # ---- THE LONG MONSOON - Jalendra, the Tide-Trunked. West, and rising water.
     ('weeping_throat',  'The Weeping Throat', 'monsoon',    (20, 24), 448, (-1, 2), 'water'),
@@ -193,7 +199,7 @@ def check(by_id, by_cell, links):
     for a, meta in AREAS.items():
         cells = [tuple(r['cell']) for r in by_id.values() if r['area'] == a and r['cell']]
         total = sum(1 for r in by_id.values() if r['area'] == a)
-        ok(5 <= total <= 6, f'{meta["name"]}: {total} zones'
+        ok(5 <= total <= 7, f'{meta["name"]}: {total} zones'
            + (f' ({len(cells)} on the grid)' if total != len(cells) else ''))
         # contiguous: flood fill from one cell through 4-neighbours inside the area
         seen, stack = {cells[0]}, [cells[0]]

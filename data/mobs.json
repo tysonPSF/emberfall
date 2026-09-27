@@ -5353,5 +5353,678 @@
       "chance": 0.3,
       "text": "%s snaps a %s!"
     }
+  },
+  "lantern_moth": {
+    "name": "a lantern moth",
+    "level": [
+      1,
+      2
+    ],
+    "hp_base": 6,
+    "hp_per_level": 5,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "attack_delay": 2.4,
+    "ac": 1,
+    "speed": 5.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": true,
+    "faction": "wildlife",
+    "verb": [
+      "batter",
+      "batters"
+    ],
+    "shape": "beetle",
+    "color": "#e8d8a8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "moth_wing",
+        "chance": 0.5
+      }
+    ],
+    "model": "lantern_moth"
+  },
+  "paddy_rat": {
+    "name": "a paddy rat",
+    "level": [
+      1,
+      3
+    ],
+    "hp_base": 6,
+    "hp_per_level": 5,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "attack_delay": 2.6,
+    "ac": 1,
+    "speed": 5.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": true,
+    "faction": "vermin",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6b5040",
+    "scale": 0.85,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rat_whiskers",
+        "chance": 0.45
+      }
+    ],
+    "model": "paddy_rat"
+  },
+  "rice_beetle": {
+    "name": "a rice beetle",
+    "level": [
+      2,
+      4
+    ],
+    "hp_base": 8,
+    "hp_per_level": 8,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "attack_delay": 3.0,
+    "ac": 4,
+    "speed": 4.5,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": true,
+    "faction": "beetles",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#5a7a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rice_beetle_shell",
+        "chance": 0.5
+      }
+    ],
+    "model": "rice_beetle"
+  },
+  "temple_monkey": {
+    "name": "a thieving monkey",
+    "level": [
+      3,
+      6
+    ],
+    "hp_base": 18,
+    "hp_per_level": 9,
+    "dmg_min": 2,
+    "dmg_max": 5,
+    "attack_delay": 2.2,
+    "ac": 6,
+    "speed": 6.8,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": true,
+    "faction": "wildlife",
+    "verb": [
+      "swipe at",
+      "swipes at"
+    ],
+    "shape": "humanoid",
+    "color": "#8a8a8a",
+    "scale": 0.9,
+    "coin": [
+      0,
+      8
+    ],
+    "loot": [
+      {
+        "item": "stolen_trinket",
+        "chance": 0.45
+      }
+    ],
+    "model": "temple_monkey"
+  },
+  "monkey_troop_king": {
+    "name": "Pilfer the Troop-King",
+    "level": [
+      7,
+      7
+    ],
+    "hp_base": 380,
+    "hp_per_level": 0,
+    "dmg_min": 4,
+    "dmg_max": 11,
+    "attack_delay": 2.1,
+    "ac": 16,
+    "speed": 7.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "swipe at",
+      "swipes at"
+    ],
+    "shape": "humanoid",
+    "color": "#b0b0b0",
+    "scale": 1.2,
+    "coin": [
+      20,
+      90
+    ],
+    "loot": [
+      {
+        "item": "pilfers_bangle",
+        "chance": 1.0
+      },
+      {
+        "item": "stolen_trinket",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "monkey_troop_king",
+    "named": true,
+    "xp_bonus": 2.0
+  },
+  "jackal": {
+    "name": "a jackal",
+    "level": [
+      4,
+      6
+    ],
+    "hp_base": 20,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.4,
+    "ac": 7,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#c8a060",
+    "scale": 0.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "jackal_pelt",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "jackal"
+  },
+  "hooded_cobra": {
+    "name": "a hooded cobra",
+    "level": [
+      5,
+      7
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 8,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "strike at",
+      "strikes at"
+    ],
+    "shape": "beetle",
+    "color": "#4a5a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cobra_fang",
+        "chance": 0.5
+      }
+    ],
+    "model": "cobra",
+    "proc": {
+      "spell": "cobra_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    }
+  },
+  "young_tiger": {
+    "name": "a young tiger",
+    "level": [
+      7,
+      9
+    ],
+    "hp_base": 36,
+    "hp_per_level": 12,
+    "dmg_min": 4,
+    "dmg_max": 10,
+    "attack_delay": 2.6,
+    "ac": 13,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#d07a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tiger_pelt",
+        "chance": 0.45
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.4
+      }
+    ],
+    "model": "tiger"
+  },
+  "amberstripe": {
+    "name": "Amberstripe",
+    "level": [
+      10,
+      10
+    ],
+    "hp_base": 640,
+    "hp_per_level": 0,
+    "dmg_min": 7,
+    "dmg_max": 16,
+    "attack_delay": 2.5,
+    "ac": 22,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#b0601a",
+    "scale": 1.3,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "amberstripes_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "tiger_pelt",
+        "chance": 1.0,
+        "count": [
+          1,
+          2
+        ]
+      },
+      {
+        "item": "raw_meat",
+        "chance": 1.0
+      }
+    ],
+    "model": "tigress",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "dustpaw_raider": {
+    "name": "a Dustpaw raider",
+    "level": [
+      5,
+      8
+    ],
+    "hp_base": 32,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "attack_delay": 2.6,
+    "ac": 11,
+    "speed": 6.3,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": true,
+    "faction": "dustpaw",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#b8904a",
+    "scale": 1.0,
+    "coin": [
+      6,
+      28
+    ],
+    "loot": [
+      {
+        "item": "dustpaw_beads",
+        "chance": 0.5
+      }
+    ],
+    "model": "dustpaw",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "dustpaw_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.1,
+        "table": "crude_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.1,
+        "table": "crude_chest"
+      },
+      {
+        "slot": "hands",
+        "chance": 0.06,
+        "table": "crude_hands"
+      },
+      {
+        "slot": "feet",
+        "chance": 0.06,
+        "table": "crude_feet"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.03,
+        "table": "rings"
+      }
+    ]
+  },
+  "dustpaw_howler": {
+    "name": "a Dustpaw howler",
+    "level": [
+      6,
+      8
+    ],
+    "hp_base": 28,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.8,
+    "ac": 9,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": true,
+    "faction": "dustpaw",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#a8804a",
+    "scale": 1.0,
+    "coin": [
+      8,
+      30
+    ],
+    "loot": [
+      {
+        "item": "dustpaw_beads",
+        "chance": 0.5
+      }
+    ],
+    "model": "dustpaw_shaman",
+    "proc": {
+      "spell": "spirit_bolt",
+      "chance": 0.2,
+      "text": "%s howls, and %s flies at you!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "item": "worn_staff"
+      }
+    ]
+  },
+  "chief_rattlejaw": {
+    "name": "Chief Rattlejaw",
+    "level": [
+      10,
+      10
+    ],
+    "hp_base": 660,
+    "hp_per_level": 0,
+    "dmg_min": 7,
+    "dmg_max": 16,
+    "attack_delay": 2.5,
+    "ac": 22,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "dustpaw",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#9a6a3a",
+    "scale": 1.2,
+    "coin": [
+      80,
+      240
+    ],
+    "loot": [
+      {
+        "item": "rattlejaws_necklace",
+        "chance": 1.0
+      },
+      {
+        "item": "dustpaw_beads",
+        "chance": 1.0,
+        "count": [
+          1,
+          2
+        ]
+      }
+    ],
+    "model": "dustpaw_chief",
+    "named": true,
+    "xp_bonus": 2.2,
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "rattlejaws_cleaver"
+      }
+    ]
+  },
+  "lantern_wisp": {
+    "name": "a lantern wisp",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 14,
+    "hp_per_level": 8,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "attack_delay": 2.6,
+    "ac": 5,
+    "speed": 5.5,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "beetle",
+    "color": "#f0e0a0",
+    "scale": 0.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wisp_light",
+        "chance": 0.5
+      }
+    ],
+    "model": "lantern_wisp"
+  },
+  "hungry_ghost": {
+    "name": "a hungry ghost",
+    "level": [
+      6,
+      9
+    ],
+    "hp_base": 34,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.7,
+    "ac": 11,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#a0c0a0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      10
+    ],
+    "loot": [
+      {
+        "item": "funeral_coin",
+        "chance": 0.5
+      }
+    ],
+    "model": "hungry_ghost",
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.12,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "lantern_widow": {
+    "name": "the Lantern-Widow",
+    "level": [
+      10,
+      10
+    ],
+    "hp_base": 600,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 15,
+    "attack_delay": 2.6,
+    "ac": 20,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d8f0",
+    "scale": 1.15,
+    "coin": [
+      40,
+      150
+    ],
+    "loot": [
+      {
+        "item": "widows_lantern",
+        "chance": 1.0
+      },
+      {
+        "item": "funeral_coin",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "lantern_widow",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.2,
+      "text": "%s's touch carries %s!"
+    }
   }
 }

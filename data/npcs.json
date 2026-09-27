@@ -2021,5 +2021,133 @@
         "slashes"
       ]
     }
+  },
+  "headpicker_anjali": {
+    "name": "Headpicker Anjali",
+    "title": "The Tea Gardens",
+    "level": 20,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Welcome to Dewstep, {name}, the first step below Lanternhold. We pick the city's tea here, when the [moths] and the [monkeys] let us.",
+      "moths": "Lantern moths. They come to our lamps at dusk and lay their eggs in the young leaves. Bring me four of their [wings] and I'll pay for every four.",
+      "wings": "Four lantern moth wings, {name}. The first time, I've a pair of garden sandals for you.",
+      "monkeys": "A troop of thieving monkeys in the old orchard east of the road. They snatch baskets, bangles, anything bright, and their king, [Pilfer], is the worst of them.",
+      "pilfer": "Pilfer the Troop-King. He wears a bangle he stole from the tea house itself. Bring me his [bangle] and two of the trinkets his troop took, and I'll give you something bright of your own.",
+      "bangle": "Pilfer's bangle and two stolen trinkets, {name}.",
+      "unknown": "Ask Kaveri about the beasts, Brother Ravi about the old shrine, or Warden Tashi about the Dustpaw."
+    }
+  },
+  "hunter_kaveri": {
+    "name": "Hunter Kaveri",
+    "title": "Dewstep Hunter",
+    "level": 22,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Keep your eyes on the grass, {name}. [Jackals] hunt the west meadows and [cobras] sun on the southern rocks.",
+      "jackals": "They run in packs and they're bold. Bring me three jackal [pelts]; I'll pay for every three.",
+      "pelts": "Three jackal pelts, {name}. The first time, I'll give you leggings sewn from them.",
+      "cobras": "Hooded cobras, in the rocks south of the river. Bring me three cobra [fangs]; the healers in the city want the venom.",
+      "fangs": "Three cobra fangs. The first time, a dagger with a fang for its point.",
+      "tigers": "Young tigers in the southwest woods, and their mother, [Amberstripe], who has killed three pickers this year.",
+      "amberstripe": "The old tigress. Bring me one of her [fang] and I'll make you a mantle of her kin's stripes.",
+      "fang": "Amberstripe's fang, {name}. Only hers.",
+      "unknown": "Ask Anjali."
+    }
+  },
+  "brother_ravi": {
+    "name": "Brother Ravi",
+    "title": "Novice of the Dawn-Tusk",
+    "level": 20,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "Dawn's blessing on you, {name}. West of the road stands an old [shrine] of Prabhagaj, broken long ago. It isn't at rest.",
+      "shrine": "Little lights drift around it by day, lantern [wisps]. At night the hungry dead come looking for offerings no one leaves anymore, and the [widow] walks among them.",
+      "wisps": "Bring me three wisp [lights]. I keep them in a jar and pray over them; it quiets them. I'll give you prayer beads, the first time.",
+      "lights": "Three wisp lights, {name}.",
+      "widow": "A woman who waited at that shrine with her lantern for a husband who never came home. She waits still. Bring me her [lantern] and I'll lay her to rest.",
+      "lantern": "The Widow's Lantern. Only at night will you find her.",
+      "unknown": "Ask Headpicker Anjali."
+    }
+  },
+  "tea_seller_moti": {
+    "name": "Tea-Seller Moti",
+    "title": "Tea and Supplies",
+    "level": 18,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "lanternhold",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "crude_arrow",
+        "fishing_bait",
+        "fishing_pole",
+        "draught_of_homecoming",
+        "rusty_dagger",
+        "worn_staff"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Tea, bread, bait, {name}. Press G to trade.",
+      "unknown": "I only sell things. Ask Anjali."
+    }
+  },
+  "warden_tashi": {
+    "name": "Warden Tashi",
+    "title": "Lanternhold",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "Stay near the lanterns, {name}. The [Dustpaw] have been raiding the pickers again.",
+      "dustpaw": "Jackal-folk, from the dry country. They've a camp in the southeast past the paddies. Bring me four of their bead [strings] and I'll pay, every time.",
+      "strings": "Four Dustpaw bead strings. The first time, a buckler from our stores.",
+      "rattlejaw": "Their chief, Chief Rattlejaw. He wears a necklace of trophies. Bring me his [necklace] and they'll scatter.",
+      "necklace": "Rattlejaw's trophy necklace, {name}.",
+      "unknown": "Ask Anjali."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 16,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! I'm coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the gardens!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

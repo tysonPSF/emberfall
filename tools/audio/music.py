@@ -294,6 +294,13 @@ TRACKS = {
 		"drone": 0.4, "drum": [0, 2.5], "drum_sections": ["B", "C"], "drum_gain": 0.55,
 		"reverb": 4.8, "sparse": 0.4, "bells": 0.55,
 	},
+	"dewstep": {  # the Dawnstair's first steps: morning over lantern-lit tea gardens, a light pentatonic flute over harp, soft pad, a few bells
+		"key": (60, "major"), "bpm": 78, "beats": 3, "seed": 353,
+		"sections": {"A": [0, 3, 0, 4, 0, 5, 3, 0], "B": [5, 3, 0, 4, 5, 1, 4, 4]},
+		"form": ["A", "A", "B", "A"],
+		"melody": "flute", "avoid": [3, 6], "arp": "harp", "arp_pattern": [0, 2, 4, 3, 2, 1], "pad": True, "bass": False,
+		"drum": [0], "drum_sections": ["B"], "drum_gain": 0.4, "reverb": 3.0, "sparse": 0.2, "bells": 0.3,
+	},
 	"cinderpass": {  # black rock, lava and ash: a low phrygian line over a drone and a heartbeat drum
 		"key": (52, "phrygian"), "bpm": 52, "beats": 4, "seed": 277,
 		"sections": {"A": [0, 1, 0, 5], "B": [5, 6, 1, 0], "C": [3, 1, 6, 0]},

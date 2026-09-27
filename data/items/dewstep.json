@@ -1,0 +1,216 @@
+{
+  "moth_wing": {
+    "name": "Lantern Moth Wing",
+    "value": 4,
+    "stack": 20
+  },
+  "rice_beetle_shell": {
+    "name": "Rice Beetle Shell",
+    "value": 4,
+    "stack": 20
+  },
+  "stolen_trinket": {
+    "name": "Stolen Trinket",
+    "value": 8,
+    "stack": 20
+  },
+  "jackal_pelt": {
+    "name": "Jackal Pelt",
+    "value": 10,
+    "stack": 20
+  },
+  "cobra_fang": {
+    "name": "Cobra Fang",
+    "value": 8,
+    "stack": 20
+  },
+  "tiger_pelt": {
+    "name": "Tiger Pelt",
+    "value": 30,
+    "stack": 20
+  },
+  "dustpaw_beads": {
+    "name": "Dustpaw Bead String",
+    "value": 8,
+    "stack": 20
+  },
+  "wisp_light": {
+    "name": "Wisp Light",
+    "value": 8,
+    "stack": 20
+  },
+  "funeral_coin": {
+    "name": "Funeral Coin",
+    "value": 12,
+    "stack": 20
+  },
+  "pilfers_bangle": {
+    "name": "Pilfer's Stolen Bangle",
+    "value": 40,
+    "lore": true
+  },
+  "amberstripes_fang": {
+    "name": "Amberstripe's Fang",
+    "value": 40,
+    "lore": true
+  },
+  "rattlejaws_necklace": {
+    "name": "Rattlejaw's Trophy Necklace",
+    "value": 40,
+    "lore": true
+  },
+  "widows_lantern": {
+    "name": "The Widow's Lantern",
+    "value": 40,
+    "lore": true
+  },
+  "teagarden_sandals": {
+    "name": "Teagarden Sandals",
+    "slot": "feet",
+    "ac": 2,
+    "agi": 1,
+    "sta": 1,
+    "value": 90,
+    "rec_level": 2,
+    "no_drop": true,
+    "lore": true,
+    "wear": "sandals"
+  },
+  "dawnlight_ring": {
+    "name": "Dawnlight Ring",
+    "slot": "ring",
+    "ac": 1,
+    "wis": 2,
+    "int": 2,
+    "mana": 10,
+    "value": 320,
+    "rec_level": 6,
+    "no_drop": true,
+    "lore": true
+  },
+  "jackalhide_leggings": {
+    "name": "Jackalhide Leggings",
+    "slot": "legs",
+    "ac": 5,
+    "agi": 2,
+    "sta": 1,
+    "value": 220,
+    "rec_level": 5,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_leggings"
+  },
+  "cobrafang_dagger": {
+    "name": "Cobrafang Dagger",
+    "slot": "primary",
+    "dmg": 5,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 1,
+    "proc": {
+      "spell": "cobra_venom",
+      "chance": 0.06
+    },
+    "value": 400,
+    "rec_level": 6,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "wizard",
+      "rogue",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "tigerstripe_mantle": {
+    "name": "Tigerstripe Mantle",
+    "slot": "arms",
+    "ac": 6,
+    "str": 2,
+    "sta": 2,
+    "hp": 15,
+    "value": 900,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "wardens_buckler": {
+    "name": "Warden's Buckler",
+    "slot": "secondary",
+    "ac": 6,
+    "sta": 1,
+    "value": 360,
+    "rec_level": 6,
+    "no_drop": true,
+    "lore": true,
+    "shield": true,
+    "model": "shield_round"
+  },
+  "dawnsteel_shortsword": {
+    "name": "Dawnsteel Shortsword",
+    "slot": "primary",
+    "dmg": 8,
+    "delay": 2.5,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 2,
+    "agi": 1,
+    "value": 1200,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true
+  },
+  "ravis_prayer_beads": {
+    "name": "Ravi's Prayer Beads",
+    "slot": "neck",
+    "ac": 1,
+    "wis": 1,
+    "mana": 5,
+    "hp": 5,
+    "value": 150,
+    "rec_level": 4,
+    "no_drop": true,
+    "lore": true
+  },
+  "lampwardens_charm": {
+    "name": "Lampwarden's Charm",
+    "slot": "neck",
+    "ac": 3,
+    "wis": 2,
+    "int": 2,
+    "hp": 20,
+    "mana": 20,
+    "value": 1100,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true
+  },
+  "rattlejaws_cleaver": {
+    "name": "Rattlejaw's Cleaver",
+    "slot": "primary",
+    "dmg": 8,
+    "delay": 2.7,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 2,
+    "value": 700,
+    "rec_level": 8
+  }
+}

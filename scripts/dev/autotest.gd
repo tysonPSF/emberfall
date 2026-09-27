@@ -112,6 +112,9 @@ const SECTIONS := [
 	["gender", "greenmoor"],
 	["pet_fixes", "greenmoor"],
 	["drag_windows", "greenmoor"],
+	["hair", "greenmoor"],
+	["dewstep_borders", "lanternhold"],
+	["dewstep_life", "dewstep"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -4859,6 +4862,101 @@ func _t_drag_windows() -> void:
 	Controls._save_setting("window_positions", saved_positions)
 
 
+
+## Hair: a style (any KayKit head, any gender) and a color painted on the
+## head's hair cells and on beards; picked at creation, restyled once from the
+## sheet, saved and sent in the look.
+func _t_hair() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	p.hair_style = ""
+	p.hair_color = ""
+	p.hair_changed = false
+	p.look.erase("hair")
+	p.dress()
+	var head_color := func() -> Color:  # the hair cell's middle, as painted on the head now
+		var m := p.visual as CharacterModel
+		var head: MeshInstance3D = m._body_parts().get("Head")
+		var mat := (head.material_override if head.material_override != null else head.get_active_material(0)) as BaseMaterial3D
+		var img := mat.albedo_texture.get_image()
+		if img.is_compressed():
+			img.decompress()
+		return img.get_pixel(int(img.get_width() * 1.5 / 8), int(img.get_height() / 8))
+	var before: Color = head_color.call()
+	hud._toggle_inventory()
+	await _wait(0.4)
+	print("hair: the sheet offers a restyle %s" % hud._hair_button.visible)
+	hud._open_hair_change()
+	hud._hair_picker.set_hair("flowing", "copper")
+	await _shot("9zz_hair_window")
+	(hud._hair_panel.find_children("*", "Button", true, false).filter(func(b: Button) -> bool: return b.text == "Change")[0] as Button).pressed.emit()
+	await _wait(0.4)
+	var after: Color = head_color.call()
+	print("hair: restyled -> %s / %s, used up %s, look %s, head %s, hair %s -> %s, button shown %s" % [p.hair_style, p.hair_color, p.hair_changed, p.look.get("hair"),
+			(p.visual as CharacterModel)._body_parts()["Head"].name, before.to_html(false), after.to_html(false), hud._hair_button.visible])
+	World.request_change_hair(p.entity_id, "short", "black")
+	print("hair: again -> still %s / %s; saved %s %s" % [p.hair_style, p.hair_color, p.to_save()["hair"], p.to_save()["hair_changed"]])
+	print("hair: cleaned %s %s" % [Player.clean_hair(["mohawk", "copper"]), Player.clean_hair("nonsense")])
+	var dwarf := Entity.make_visual({"model": "barbarian", "race": "dwarf", "gender": "male", "hair": ["", "white"]}) as CharacterModel
+	var beard: Array = dwarf.skeleton.find_children("*", "MeshInstance3D", true, false).filter(func(mi: MeshInstance3D) -> bool:
+		return mi.material_override is BaseMaterial3D and (mi.material_override as BaseMaterial3D).albedo_texture == null)
+	print("hair: a white-haired dwarf's beard %s" % [beard.map(func(mi: MeshInstance3D) -> String: return (mi.material_override as BaseMaterial3D).albedo_color.to_html(false))])
+	dwarf.free()
+	hud._toggle_inventory()
+	p.zoom = 4.0
+	await _wait(0.3)
+	await _shot("9zz_hair_copper")
+	var cc := CharCreate.new()
+	cc.layer = 30
+	main.add_child(cc)
+	await _wait(0.4)
+	cc._hair.set_hair("long", "white")
+	cc._name_edit.text = "Ilyra"
+	cc._deity = "light"
+	cc._select_race("high_elf")
+	var got := []
+	cc.confirmed.connect(func(sv: Dictionary) -> void: got.append(sv))
+	cc._create()
+	print("hair: created %s" % [[got[0].get("hair"), got[0].get("race"), got[0].get("zone"), got[0].get("bind")] if not got.is_empty() else "nothing"])
+	await _shot("9zz_hair_create")
+	cc.queue_free()
+	p.hair_style = ""
+	p.hair_color = ""
+	p.hair_changed = false
+	p.look.erase("hair")
+	p.dress()
+
+
+
+## Dewstep's one border, Lanternhold's new south gate, both ways.
+func _t_dewstep_borders() -> void:
+	for leg: Array in [["lanternhold", Vector2(0, 80), Vector2(0, 1), "dewstep"], ["dewstep", Vector2(0, -168), Vector2(0, -1), "lanternhold"]]:
+		if not await _walk_border("dewstep_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## Dewstep, Lanternhold's beginner ground: its monsters by day and night, the
+## ten quests handed in, and a look at each monster and at the tea house.
+func _t_dewstep_life() -> void:
+	var z: Zone = get_parent().zone
+	print("dewstep_life: the terraces climb %.1f m from the paddies to the tea house; there's water to fish by the bridge %s" % [z.height_at(-12, -150) - z.height_at(-20, 90), z.fishable_at(3, 10)])
+	await _zone_life("dewstep_life", {"headpicker_anjali": ["dewstep_moth_wings", "pilfers_bangle"], "hunter_kaveri": ["jackal_pelts", "cobra_fangs", "amberstripes_fang"],
+			"warden_tashi": ["dustpaw_beads", "rattlejaws_necklace"], "brother_ravi": ["wisp_lights", "widows_lantern"]}, ["hungry_ghost", "lantern_widow"],
+			["lantern_moth", "paddy_rat", "rice_beetle", "temple_monkey", "monkey_troop_king", "jackal", "hooded_cobra", "young_tiger", "amberstripe",
+			"dustpaw_raider", "dustpaw_howler", "chief_rattlejaw", "lantern_wisp", "hungry_ghost", "lantern_widow"])
+	var p := World.local_player
+	for spot: Array in [[Vector2(10, -118), Vector2(-24, -142), "hub"], [Vector2(-92, -40), Vector2(-110, -52), "shrine"], [Vector2(95, 110), Vector2(124, 143), "dustpaw"], [Vector2(30, 5), Vector2(-20, 70), "paddies"],
+			[Vector2(24, 30), Vector2(0, 10), "river"], [Vector2(20, -80), Vector2(42, -104), "tea"], [Vector2(30, 80), Vector2(0, 10), "aerial"]]:
+		p.global_position = Vector3(spot[0].x, z.surface_at(spot[0].x, spot[0].y) + 2.0, spot[0].y)
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 30.0 if spot[2] == "aerial" else 9.0
+		p.pitch = -1.1 if spot[2] == "aerial" else -0.2
+		await _wait(1.2)
+		await _shot("9zv_dewstep_%s" % spot[2])
+
+
 ## Reedmere and Drownfast's three borders, every one both ways.
 func _t_monsoon_west_borders() -> void:
 	for leg: Array in [["weeping_throat", Vector2(-195, 0), Vector2(-1, 0), "reedmere"], ["reedmere", Vector2(225, 0), Vector2(1, 0), "weeping_throat"],
@@ -4887,6 +4985,8 @@ func _zone_life(tag: String, givers: Dictionary, night_ids: Array, look_ids: Arr
 	var done := {}
 	for giver: String in givers:
 		var npc: Npc = npcs[giver]
+		for i in p.pack.slots.size():  # room for the next giver's hand-ins (rewards pile up)
+			p.pack.slots[i] = {}
 		_stand_by(p, npc)
 		World.request_say(p.entity_id, "hail")
 		for q_id: String in givers[giver]:

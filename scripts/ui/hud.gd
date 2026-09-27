@@ -144,6 +144,9 @@ var _stats_picker: StatPicker
 var _stats_later := false
 var _race_button: Button  # on the character sheet: the one change of race
 var _gender_button: Button  # on the character sheet: the one change of gender (click twice)
+var _hair_button: Button  # on the character sheet: the one restyle
+var _hair_panel: PanelContainer
+var _hair_picker: HairPicker
 var _race_panel: PanelContainer
 var _race_pick := ""
 var _race_row: GridContainer
@@ -209,6 +212,7 @@ func _ready() -> void:
 	_build_track_window()
 	_build_stats_window()
 	_build_race_window()
+	_build_hair_window()
 	_make_draggable.call_deferred()  # once every window is built
 	_compass = Compass.new()
 	_compass.anchor_left = 0.5
@@ -1585,6 +1589,42 @@ func _build_race_window() -> void:
 	_race_panel.visible = false
 
 
+## The one restyle: a hairstyle and a color, then Change (or Cancel).
+func _build_hair_window() -> void:
+	_hair_panel = UIKit.panel()
+	UIKit.place(_hair_panel, Vector2(0.5, 0.5), Vector2(-250, -80))
+	root.add_child(_hair_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 500
+	v.add_theme_constant_override("separation", 8)
+	_hair_panel.add_child(v)
+	v.add_child(UIKit.label("Restyle your hair", 18, UIKit.GOLD))
+	var hint := UIKit.label("Once only. A style (any of them, whoever you are) and a color.", 13, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(hint)
+	_hair_picker = HairPicker.new()
+	v.add_child(_hair_picker)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var ok := UIKit.button("Change", Vector2(0, 34))
+	ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ok.pressed.connect(func() -> void:
+		World.request_change_hair(player.entity_id, _hair_picker.style, _hair_picker.color)
+		_hair_panel.visible = false)
+	var cancel := UIKit.button("Cancel", Vector2(0, 34))
+	cancel.pressed.connect(func() -> void: _hair_panel.visible = false)
+	for b: Button in [ok, cancel]:
+		UIKit.frame(b)
+		row.add_child(b)
+	v.add_child(row)
+	_hair_panel.visible = false
+
+
+func _open_hair_change() -> void:
+	_hair_picker.set_hair(player.hair_style, player.hair_color)
+	_hair_panel.visible = true
+
+
 func _open_race_change() -> void:
 	_race_pick = ""
 	_race_info.text = "Choose a race your class allows."
@@ -1938,6 +1978,12 @@ func _build_inventory() -> void:
 		_gender_button.remove_meta("armed")
 		World.request_change_gender(player.entity_id, to))
 	stats.add_child(_gender_button)
+	_hair_button = UIKit.button("Restyle hair (once)", Vector2(0, 22))
+	_hair_button.add_theme_font_size_override("font_size", 11)
+	UIKit.frame(_hair_button)
+	_hair_button.tooltip_text = "Every character may change its hairstyle and color once."
+	_hair_button.pressed.connect(_open_hair_change)
+	stats.add_child(_hair_button)
 	_coin_label = UIKit.label("", 12, UIKit.GOLD)
 	stats.add_child(_coin_label)
 	_weight_label = UIKit.label("", 12, UIKit.TEXT)
@@ -2532,6 +2578,7 @@ func _process(delta: float) -> void:
 
 
 func _refresh_gender_button() -> void:
+	_hair_button.visible = not player.hair_changed
 	_gender_button.visible = not player.gender_changed
 	if not _gender_button.has_meta("armed"):
 		_gender_button.text = "Become %s (once)" % ("a man" if player.shown_gender() == "female" else "a woman")
