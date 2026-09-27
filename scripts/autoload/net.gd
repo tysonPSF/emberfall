@@ -591,7 +591,7 @@ func _replicate(peer: int) -> void:
 		if obj is Entity and id != own:
 			var e := obj as Entity
 			var p := e.global_position
-			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0) | (8 if e.hidden else 0) | (16 if e.feigning else 0)
+			var flags := (1 if e.dead else 0) | (2 if e.sitting else 0) | (4 if not e.cast.is_empty() else 0) | (8 if e.hidden else 0) | (16 if e.feigning else 0) | (32 if e.afk else 0)
 			var row := PackedFloat32Array([id, p.x, p.y, p.z, e.rotation.y, e.hp, e.max_hp, e.level, flags])
 			if _keyframe or sent.get(id) != row:
 				sent[id] = row
@@ -704,7 +704,7 @@ func _s_state(s: PackedFloat32Array) -> void:
 		e.max_hp = int(s[i + 6])
 		e.level = int(s[i + 7])
 		var flags := int(s[i + 8])
-		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0, flags & 16 != 0)
+		e.set_net_flags(flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0, flags & 16 != 0, flags & 32 != 0)
 
 
 # --- the player's own state (server -> its client) ------------------------------
@@ -729,7 +729,7 @@ func _send_self(peer: int) -> void:
 		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "feigning": p.feigning, "hotbar": p.hotbar,
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 		"gender": p.gender, "gender_changed": p.gender_changed,
-		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed,
+		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
 	}
 	_s_self.rpc_id(peer, d)
 

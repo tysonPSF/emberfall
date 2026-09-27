@@ -49,6 +49,8 @@ func _run() -> void:
 			Net.import_character({"name": who, "class": "warrior" if who == "Alpha" else "cleric", "deity": "fire",
 					"level": 3 if who == "Alpha" else 5, "spells": ["kick", "taunt"] if who == "Alpha" else ["minor_healing", "circle_of_mending", "fire_bolt"],
 					"equipment": {"primary": "rusty_short_sword"} if who == "Alpha" else {"primary": "worn_staff"}})
+		elif who == "Petter":
+			Net.import_character({"name": "Petter", "class": "magician", "deity": "fire", "level": 2, "spells": ["call_of_earth"], "equipment": {"primary": "worn_staff"}})
 		elif who == "Importer":
 			Net.import_character({"name": "Importer", "class": "cleric", "deity": "water", "level": 4, "xp": 50,
 					"inventory": ["gnoll_fang", "not_a_real_item"], "equipment": {"primary": "worn_staff"}})
@@ -97,12 +99,36 @@ func _run() -> void:
 					if q != p:
 						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif who == "Petter":
+		# a pet's swings must show on a client: summon, send it at a mob, sample the puppet's clip
+		World.request_cast(p.entity_id, "call_of_earth")
+		await _wait(6.0)
+		var pet := World.get_object(p.pet_id) as Pet
+		var mob: Mob = null
+		for m in World.get_mobs():
+			if not m.dead and m.level >= 3 and (mob == null or m.global_position.distance_to(p.global_position) < mob.global_position.distance_to(p.global_position)):
+				mob = m
+		print("[Petter] pet %s, nearest mob %s at %.1f m" % [pet.display_name if pet else "none", mob.display_name if mob else "none", mob.global_position.distance_to(p.global_position) if mob else -1.0])
+		if pet != null and mob != null:
+			World.request_set_target(p.entity_id, mob.entity_id)
+			World.request_pet(p.entity_id, "attack")
+			var clips := {}
+			var mob_clips := {}
+			for k in 300:
+				await _wait(0.1)
+				if pet.visual is CharacterModel:
+					var c: String = (pet.visual as CharacterModel).anim.current_animation
+					clips[c] = int(clips.get(c, 0)) + 1
+				if is_instance_valid(mob) and mob.visual is CharacterModel:
+					var mc: String = (mob.visual as CharacterModel).anim.current_animation
+					mob_clips[mc] = int(mob_clips.get(mc, 0)) + 1
+			print("[Petter] the pet's clips over 30 s on this client: %s; the mob's %s" % [clips, mob_clips])
 	elif "--group" in OS.get_cmdline_user_args():
 		await _group_test(p)
 	elif "--chat" in OS.get_cmdline_user_args():
 		await _wait(2.0)
 		if who == "Alpha":
-			for line in ["hello there", "/tell bravo psst, over here", "/ooc anyone want to group?", "/who all", "/lfg", "/random 20", "/tell nobody hi", "/bogus"]:
+			for line in ["hello there", "/tell bravo psst, over here", "/ooc anyone want to group?", "/who all", "/lfg", "/random 20", "/tell nobody hi", "/bogus", "/afk back soon"]:
 				World.request_chat(p.entity_id, line)
 				await _wait(0.4)
 			await _wait(3.0)
@@ -112,6 +138,11 @@ func _run() -> void:
 				World.request_chat(p.entity_id, line)
 				await _wait(0.4)
 			await _wait(2.0)
+			for q in World.get_players():
+				if q != p:
+					print("[Bravo] Alpha's nameplate reads '%s'" % q.nameplate.text)
+			World.request_chat(p.entity_id, "/tell alpha still there?")
+			await _wait(1.0)
 	elif who == "Sprinter":
 		# hold forward and Shift like a player would; the server must accept the speed
 		var start := p.global_position

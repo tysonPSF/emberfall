@@ -59,7 +59,7 @@ const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
 const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
-const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /random [max]  /loc  /time  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
 const GROUP_MAX := 6
 const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
 const LOOT_RIGHTS_SECONDS := 180.0
@@ -1788,6 +1788,24 @@ func request_change_hair(player_id: int, style: String, color: String) -> void:
 	say(p, "You look quite different now.", C_SPELL)
 
 
+## Away from the keyboard: "/afk [message]", or on its own after config
+## afk_minutes idle (the client asks); a key or a click brings you back.
+## Others see "[AFK]" on your nameplate and in /who, and a tell is answered.
+func request_afk(player_id: int, on: bool, message := "") -> void:
+	if _remote(&"request_afk", [player_id, on, message]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or on == p.afk:
+		return
+	p.afk = on
+	p.afk_message = message.strip_edges().left(80) if on else ""
+	p.show_name()
+	if on:
+		say(p, "You are now away from the keyboard%s" % (": " + p.afk_message if p.afk_message != "" else ". (A key or a click brings you back.)"), C_SYSTEM)
+	else:
+		say(p, "You are no longer away from the keyboard.", C_SYSTEM)
+
+
 func request_interrupt(entity_id: int) -> void:
 	if _remote(&"request_interrupt", [entity_id]):
 		return
@@ -2894,6 +2912,8 @@ func request_chat(player_id: int, text: String) -> void:
 			_chat_tell(p, str(p.get_meta("last_tell_from", "")), rest)
 		"/who":
 			_chat_who(p, rest.to_lower() == "all")
+		"/afk":
+			request_afk(p.entity_id, not p.afk, rest)
 		"/lfg":
 			p.set_meta("lfg", not p.get_meta("lfg", false))
 			say(p, "You are now %s." % ("looking for a group" if p.get_meta("lfg") else "no longer looking for a group"), C_SYSTEM)
@@ -2973,6 +2993,8 @@ func _chat_tell(p: Player, to_name: String, text: String) -> void:
 			say(q, "%s tells you, '%s'" % [p.display_name, text], C_CHAT_TELL)
 			q.set_meta("last_tell_from", p.display_name)
 			say(p, "You told %s, '%s'" % [q.display_name, text], C_CHAT_TELL)
+			if q.afk:  # an away player's tells are answered for them
+				say(p, "%s is AFK%s" % [q.display_name, ": " + q.afk_message if q.afk_message != "" else "."], C_CHAT_TELL)
 			return
 	say(p, "%s is not online at this time." % to_name.capitalize(), C_WARN)
 
@@ -2984,7 +3006,7 @@ func _chat_who(p: Player, everywhere: bool) -> void:
 	for q in get_players():
 		if everywhere or zone_of(q) == here:
 			var cls := str(GameData.classes[q.char_class]["name"])
-			lines.append("  [%d %s] %s (%s)%s" % [q.level, cls, q.display_name, zone_of(q).zone_name, "  LFG" if q.get_meta("lfg", false) else ""])
+			lines.append("  [%d %s] %s (%s)%s" % [q.level, cls, q.display_name, zone_of(q).zone_name, ("  LFG" if q.get_meta("lfg", false) else "") + ("  AFK" if q.afk else "")])
 	lines.sort()
 	say(p, "Players on %s:" % ("the server" if everywhere else here.zone_name), C_SYSTEM)
 	for line in lines:

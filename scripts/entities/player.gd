@@ -50,6 +50,8 @@ var gender_changed := false  # a character's one change of gender has been used
 var hair_style := ""  # models.json "hair_styles" id, "" = the head the body and gender give
 var hair_color := ""  # models.json "hair_colors" id, "" = the head's own
 var hair_changed := false  # a character's one restyle has been used
+var afk_message := ""  # the reply a tell gets while you're away ("/afk <message>")
+var _idle := 0.0  # seconds with no input (local player): past config afk_minutes you go AFK
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
@@ -273,6 +275,9 @@ func apply_self(d: Dictionary) -> void:
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
 			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed"]:
 		set(key, d[key])
+	if bool(d.get("afk", false)) != afk:
+		afk = bool(d.get("afk", false))
+		show_name()
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
 		show_hidden()
@@ -674,7 +679,7 @@ func _ready() -> void:
 			look["offhand"] = str(GameData.item(equipment.get("secondary", "")).get("model", ""))
 			(visual as CharacterModel).set_offhand(look["offhand"])
 		(visual as CharacterModel).set_worn(look.get("worn", {}))
-	nameplate.text = display_name
+	show_name()
 	nameplate.modulate = Color(0.7, 0.85, 1.0)
 	if not is_local:
 		return
@@ -702,6 +707,10 @@ func _process(delta: float) -> void:
 		SpellFx.update_cast(self)  # a glow in the hands while casting, for everyone watching
 	if not is_local:
 		return
+	_idle += delta
+	if not afk and not dead and _idle > float(World.cfg("afk_minutes", 10)) * 60.0:
+		_idle = 0.0
+		World.request_afk(entity_id, true)
 	_update_mouse_look()
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, zoom, minf(1.0, delta * 10.0))
 	camera_pivot.rotation.x = pitch
@@ -709,6 +718,18 @@ func _process(delta: float) -> void:
 
 
 # --- input ------------------------------------------------------------------
+
+## Anything you do counts against going AFK; a key or a click away from the
+## chat box also brings you back (typing a reply while away doesn't).
+func _input(event: InputEvent) -> void:
+	if not is_local:
+		return
+	if event is InputEventMouseMotion or (event is InputEventKey and event.pressed) or (event is InputEventMouseButton and event.pressed):
+		_idle = 0.0
+	if afk and ((event is InputEventKey and event.pressed and not event.echo) or (event is InputEventMouseButton and event.pressed)) \
+			and not get_viewport().gui_get_focus_owner() is LineEdit:
+		World.request_afk(entity_id, false)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_local:

@@ -37,7 +37,7 @@ LINKS = W['links']
 
 P = 250.0                      # pixels per grid cell
 MARGIN = 300.0
-RIGHT_PAD = 300.0
+RIGHT_PAD = 520.0              # sea enough on the east for the cartouche
 BOTTOM_PAD = 90.0
 BERTH = {'the_grove': (-3.3, 0.55)}     # off-grid zones get a display berth
 
@@ -64,7 +64,13 @@ def field(sigma, amp, shape):
     return f * amp
 
 WS = 4                                    # warp field is coarse; sampled smoothly
-wshape = (Hpx // WS + 2, Wpx // WS + 2)
+# The field is drawn on a FIXED lattice, not on the plate. Widening the plate
+# to make room for the cartouche would otherwise redraw every wobble on the
+# map - each zone's coast, ridge and label would shift - and the only thing
+# that actually changed is how much sea is on the right.
+WBASE = (2440, 2175)
+wshape = (max(Hpx, WBASE[0]) // WS + 2, max(Wpx, WBASE[1]) // WS + 2)
+wshape = (WBASE[0] // WS + 2, WBASE[1] // WS + 2)
 WX = field(24, 0.150 * P, wshape) + field(8, 0.048 * P, wshape)
 WY = field(24, 0.150 * P, wshape) + field(8, 0.048 * P, wshape)
 
@@ -365,6 +371,74 @@ def hillock(d, x, y, w, seed):
     stroke(d, [(x - w / 2, y), (x - w * 0.16, y - w * 0.32),
                (x + w * 0.16, y - w * 0.30), (x + w / 2, y)], INK_SOFT, 0.9, 220)
 
+def terrace_row(d, x, y, w, seed):
+    """A short hatched step - one tea terrace cut into the hillside."""
+    g = seeded(seed)
+    pts = [(x - w / 2 + w * i / 6, y + math.sin(i * 0.8 + g.uniform(0, 3)) * 1.3)
+           for i in range(7)]
+    stroke(d, pts, INK_SOFT, 0.85, 215)
+    for i in range(1, 6):                      # ticks down the cut face
+        qx, qy = pts[i]
+        stroke(d, [(qx, qy), (qx + g.uniform(-1.2, 1.2), qy + 4.2)],
+               INK_SOFT, 0.55, 170)
+
+def paddy(d, x, y, s_, seed):
+    """A flooded field: a low bank with water standing inside it."""
+    c = [(x - s_, y - s_ * 0.62), (x + s_, y - s_ * 0.70),
+         (x + s_ * 1.04, y + s_ * 0.64), (x - s_ * 0.96, y + s_ * 0.58)]
+    stroke(d, c + [c[0]], INK_SOFT, 0.8, 210)
+    for k in (-1, 1):
+        stroke(d, [(x - s_ * 0.62, y + k * s_ * 0.26),
+                   (x - s_ * 0.20, y + k * s_ * 0.26 - 1.4),
+                   (x + s_ * 0.20, y + k * s_ * 0.26 + 1.4),
+                   (x + s_ * 0.62, y + k * s_ * 0.26)], (52, 86, 104), 0.6, 165)
+
+def shrine(d, x, y, h, seed):
+    """A broken gate - older than the city that looks down on it. Two posts,
+    one snapped short, and a lintel left leaning on the stump."""
+    w = h * 0.52
+    stroke(d, [(x - w, y), (x - w, y - h)], INK, 1.0)                 # standing post
+    stroke(d, [(x + w, y), (x + w, y - h * 0.58)], INK, 1.0)          # the stump
+    stroke(d, [(x + w * 0.76, y - h * 0.58), (x + w, y - h * 0.66),
+               (x + w * 1.22, y - h * 0.56)], INK_SOFT, 0.7, 200)     # its broken top
+    stroke(d, [(x - w * 1.34, y - h * 1.02), (x + w * 1.24, y - h * 0.62)], INK, 1.0)
+    stroke(d, [(x - w * 0.94, y - h * 0.74), (x + w * 0.90, y - h * 0.50)],
+           INK_SOFT, 0.75, 195)                                       # the crossbar
+
+def dewstep_terrain(d, z):
+    """Dewstep is the one farmed zone on the plate, so it gets placed glyphs
+    rather than a scatter: terraces stepping down from Lanternhold's wall, a
+    river running west to east, paddies below it, and a shrine nobody keeps.
+    Everything is offset from the zone centre in units of its own radius, so
+    it follows the blob and the warp like the rest of the map."""
+    cx, cy = to_px(*at(z))
+    r = 0.70 * P * (z['size'] / 512.0) ** 0.30
+    g = seeded(31337)
+
+    def put(fn, ox, oy, *a):
+        wx, wy = warp(cx + ox, cy + oy)
+        wx, wy = float(wx), float(wy)
+        if inland(wx, wy):
+            fn(d, wx, wy, *a)
+
+    for i in range(5):                          # terraces, under the city wall
+        put(terrace_row, g.uniform(-14, 14), -r * 0.62 + i * r * 0.13,
+            r * (0.76 - 0.07 * i), 600 + i)
+
+    n = 110                                     # the river, west to east
+    xs = np.linspace(cx - r * 0.92, cx + r * 0.92, n)
+    ys = cy + r * 0.32 + np.sin(np.linspace(0, 5.2, n)) * r * 0.085
+    wx, wy = warp(xs, ys)
+    wx, wy = jitter(wx, wy, 2.2, 4242)          # drawn by hand, like the coast
+    stroke(d, list(zip(wx, wy)), (52, 86, 104), 0.9, 180)
+    stroke(d, list(zip(wx + 1.1, wy + 2.8)), (52, 86, 104), 0.5, 105)
+
+    for i, (ox, oy) in enumerate(((-0.46, 0.56), (-0.02, 0.67), (0.42, 0.54))):
+        put(paddy, ox * r, oy * r, 12.5 + i * 1.6, 700 + i)
+    for i, (ox, oy) in enumerate(((-0.66, -0.16), (0.60, -0.24), (0.30, 0.76))):
+        put(tree, ox * r, oy * r, 16, 800 + i, 'round')
+    put(shrine, -r * 0.72, r * 0.24, 19, 900)
+
 FILLERS = {
     'wood':      ('tree', 'round'), 'field': ('tuft', None),
     'water':     ('wave', None),    'burn':  ('tree', 'dead'),
@@ -516,39 +590,42 @@ def crest(d, x, y, r, area):
         stroke(d, [(x-r*0.55, y-r*0.35), (x-r*0.25, y-r*0.05)], c, 1.0)
 
 def legend(d):
-    """A cartouche in the open sea, bottom right.
+    """A cartouche in the open sea, north-east, beside Barrowhold.
 
-    It lived in a right-hand gutter first and ran off the plate: the continent
-    reaches gx 3, and Forgehold and Lanternhold sit under where the crests
-    were. The empty water below them is the only clear space big enough.
+    It lived in a right-hand gutter first and ran off the plate; it then sat in
+    the water south-east of Lanternhold, which is where Dewstep now is. The
+    only water left that covers no land and no label is the north-east corner,
+    so the plate carries a little more sea on that side and the cartouche sits
+    in it. The rows are pitched a shade tighter than they were so the panel
+    clears Forgehold's northern cape - the contents are unchanged.
     """
-    w, h = 470, 604
-    x = Wpx - w - 118
-    y = Hpx - h - 150
+    w, h = 470, 520
+    x = Wpx - w - 80
+    y = 88
     d.rectangle([(x * S, y * S), ((x + w) * S, (y + h) * S)],
                 fill=(231, 214, 176, 224), outline=INK + (255,), width=int(2.2 * S))
     d.rectangle([((x + 9) * S, (y + 9) * S), ((x + w - 9) * S, (y + h - 9) * S)],
                 outline=INK_SOFT + (165,), width=int(0.9 * S))
-    halo_text(d, (x + w / 2, y + 40), 'THE SIX', 'caps', 21, INK, 'mm', 4)
-    halo_text(d, (x + w / 2, y + 66), 'and the realms they keep', 'label', 16,
+    halo_text(d, (x + w / 2, y + 38), 'THE SIX', 'caps', 21, INK, 'mm', 4)
+    halo_text(d, (x + w / 2, y + 62), 'and the realms they keep', 'label', 16,
               INK_SOFT, 'mm')
-    stroke(d, [(x + 60, y + 84), (x + w - 60, y + 84)], INK_SOFT, 0.9, 190)
-    ry = y + 108
+    stroke(d, [(x + 60, y + 78), (x + w - 60, y + 78)], INK_SOFT, 0.9, 190)
+    ry = y + 96
     for area in ('dawnstair', 'monsoon', 'ashfall', 'standingsky', 'boneyard'):
         name, title_ = DEITY[area]
-        crest(d, x + 52, ry + 26, 27, area)
-        text(d, (x + 94, ry + 12), name, 'bold', 18, PEN[area], 'lm')
-        text(d, (x + 94, ry + 33), title_, 'label', 15, INK_SOFT, 'lm')
-        text(d, (x + 94, ry + 53), AREAS[area]['name'], 'label', 15,
+        crest(d, x + 52, ry + 22, 25, area)
+        text(d, (x + 94, ry + 9), name, 'bold', 18, PEN[area], 'lm')
+        text(d, (x + 94, ry + 29), title_, 'label', 15, INK_SOFT, 'lm')
+        text(d, (x + 94, ry + 48), AREAS[area]['name'], 'label', 15,
              lerp(PEN[area], INK_SOFT, .45), 'lm')
-        ry += 72
+        ry += 64
     stroke(d, [(x + 60, ry + 2), (x + w - 60, ry + 2)], INK_SOFT, 0.9, 190)
-    text(d, (x + 94, ry + 24), 'The Emberlands', 'bold', 18, PEN['emberlands'], 'lm')
-    text(d, (x + 94, ry + 45), 'no god claims it', 'label', 15, INK_SOFT, 'lm')
+    text(d, (x + 94, ry + 22), 'The Emberlands', 'bold', 18, PEN['emberlands'], 'lm')
+    text(d, (x + 94, ry + 41), 'no god claims it', 'label', 15, INK_SOFT, 'lm')
     n = sum(1 for z in ZONES.values() if z.get('built') and z['cell'])
-    d.ellipse([((x + 44) * S, (ry + 74) * S), ((x + 62) * S, (ry + 92) * S)],
+    d.ellipse([((x + 44) * S, (ry + 63) * S), ((x + 62) * S, (ry + 81) * S)],
               fill=PEN['emberlands'] + (70,), outline=INK_SOFT + (140,), width=int(0.8 * S))
-    text(d, (x + 94, ry + 83), f'coloured ground: built, {n} of '
+    text(d, (x + 94, ry + 72), f'coloured ground: built, {n} of '
          f'{sum(1 for z in ZONES.values() if z["cell"])}', 'label', 15, INK_SOFT, 'lm')
 
 def compass(d, x, y, r):
@@ -648,7 +725,7 @@ def build():
         d = ImageDraw.Draw(img, 'RGBA')
 
     for z in ZONES.values():                   # terrain, over the wash
-        scatter(d, z)
+        (dewstep_terrain if z['id'] == 'dewstep' else scatter)(d, z)
 
     for i, l in enumerate(LINKS):              # the walls, and the notch in each
         a, b = ZONES[l['a']], ZONES[l['b']]
