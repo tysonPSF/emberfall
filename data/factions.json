@@ -205,5 +205,32 @@
     "on_attack": {
       "forgehold": -50
     }
+  },
+  "pondkin": {
+    "name": "Pondkin of the Reeds",
+    "default": -900,
+    "kos_at": -750,
+    "on_kill": {
+      "pondkin": -10,
+      "rainhold": 3
+    }
+  },
+  "sedge_coven": {
+    "name": "The Sedge Coven",
+    "default": -1200,
+    "kos_at": -750,
+    "on_kill": {
+      "sedge_coven": -10,
+      "rainhold": 4
+    }
+  },
+  "deep_naga": {
+    "name": "The Deep Naga",
+    "default": -1000,
+    "kos_at": -750,
+    "on_kill": {
+      "deep_naga": -10,
+      "rainhold": 4
+    }
   }
 }

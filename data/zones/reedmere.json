@@ -1,0 +1,1950 @@
+{
+  "name": "Reedmere",
+  "levels": [
+    22,
+    26
+  ],
+  "music": "reedmere",
+  "seed": 4411,
+  "size": 512,
+  "height_amplitude": 4,
+  "bind_point": [
+    218,
+    0
+  ],
+  "flat_radius": 20,
+  "trees": 170,
+  "tree_mix": [
+    "jungle_tree",
+    "tree_round",
+    "jungle_tree"
+  ],
+  "groves": 0.5,
+  "rocks": 35,
+  "grass_colors": [
+    "#4a6a3a",
+    "#6a7a44"
+  ],
+  "fog_density": 0.018,
+  "fog_color": "#8a9a8c",
+  "sun_energy": 0.65,
+  "rain": {
+    "amount": 2200
+  },
+  "fish": {
+    "mud_carp": 3,
+    "monsoon_eel": 2,
+    "lagoon_snapper": 1,
+    "tattered_boot": 1
+  },
+  "clutter": {
+    "grass_a": {
+      "density": 0.4,
+      "patch": 0.5,
+      "sway": 0.2,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.9,
+        1.5
+      ]
+    },
+    "grass_b": {
+      "density": 0.3,
+      "patch": 0.4,
+      "sway": 0.18,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.9,
+        1.4
+      ]
+    },
+    "reeds_tall": {
+      "density": 0.02,
+      "patch": 0.8,
+      "sway": 0.12,
+      "range": 80,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "fern": {
+      "density": 0.02,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.4
+      ]
+    },
+    "mushrooms": {
+      "density": 0.01,
+      "patch": 0.8,
+      "range": 45,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "log_fallen": {
+      "density": 0.0006,
+      "patch": 0.3,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.1
+      ]
+    }
+  },
+  "lakes": [
+    {
+      "points": [
+        [
+          -205,
+          -170
+        ],
+        [
+          -150,
+          -200
+        ],
+        [
+          -60,
+          -195
+        ],
+        [
+          20,
+          -205
+        ],
+        [
+          100,
+          -195
+        ],
+        [
+          160,
+          -165
+        ],
+        [
+          168,
+          -80
+        ],
+        [
+          160,
+          0
+        ],
+        [
+          168,
+          80
+        ],
+        [
+          158,
+          160
+        ],
+        [
+          100,
+          198
+        ],
+        [
+          20,
+          205
+        ],
+        [
+          -60,
+          198
+        ],
+        [
+          -150,
+          200
+        ],
+        [
+          -205,
+          160
+        ],
+        [
+          -212,
+          70
+        ],
+        [
+          -208,
+          -40
+        ],
+        [
+          -212,
+          -110
+        ]
+      ],
+      "depth": 0.35,
+      "shelf": 30,
+      "bank": 10,
+      "islands": [
+        [
+          -130,
+          -115,
+          36
+        ],
+        [
+          105,
+          -125,
+          24
+        ],
+        [
+          -140,
+          125,
+          32
+        ],
+        [
+          60,
+          90,
+          14
+        ],
+        [
+          -60,
+          -30,
+          10
+        ],
+        [
+          70,
+          -20,
+          12
+        ],
+        [
+          -40,
+          150,
+          12
+        ],
+        [
+          130,
+          40,
+          11
+        ]
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        226,
+        -12
+      ],
+      "id": "tent",
+      "face": [
+        218,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        228,
+        12
+      ],
+      "id": "tent",
+      "face": [
+        218,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        208,
+        -6
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        212,
+        16
+      ],
+      "id": "drying_rack",
+      "yaw": 20
+    },
+    {
+      "type": "prop",
+      "pos": [
+        198,
+        -18
+      ],
+      "id": "canoe",
+      "yaw": 80,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        196,
+        10
+      ],
+      "id": "canoe",
+      "yaw": 100,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        200,
+        -26
+      ],
+      "id": "mooring_post"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        198,
+        22
+      ],
+      "id": "mooring_post"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        236,
+        -6
+      ],
+      "yaw": 90,
+      "labels": [
+        "Reedcutters' Rest",
+        "The Weeping Throat"
+      ]
+    },
+    {
+      "type": "stilt_city",
+      "pos": [
+        -10,
+        20
+      ],
+      "pieces": [
+        [
+          "stilt_platform_broken",
+          -46,
+          2,
+          0
+        ],
+        [
+          "stilt_platform",
+          -46,
+          20,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          -46,
+          29,
+          90
+        ],
+        [
+          "stilt_walkway_broken",
+          -46,
+          47,
+          90
+        ],
+        [
+          "stilt_walkway_broken",
+          -46,
+          65,
+          90
+        ],
+        [
+          "stilt_walkway",
+          -37,
+          2,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -37,
+          11,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -37,
+          29,
+          0
+        ],
+        [
+          "stilt_walkway",
+          -37,
+          38,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -37,
+          47,
+          0
+        ],
+        [
+          "stilt_walkway",
+          -37,
+          74,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -28,
+          2,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          -28,
+          11,
+          90
+        ],
+        [
+          "stilt_platform",
+          -28,
+          20,
+          0
+        ],
+        [
+          "stilt_platform",
+          -28,
+          56,
+          0
+        ],
+        [
+          "stilt_walkway",
+          -28,
+          65,
+          90
+        ],
+        [
+          "stilt_platform_broken",
+          -19,
+          11,
+          0
+        ],
+        [
+          "stilt_walkway",
+          -19,
+          20,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          -19,
+          38,
+          0
+        ],
+        [
+          "stilt_platform",
+          -19,
+          47,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -19,
+          65,
+          0
+        ],
+        [
+          "stilt_platform",
+          -10,
+          2,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -10,
+          38,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          -10,
+          47,
+          90
+        ],
+        [
+          "stilt_walkway_broken",
+          -10,
+          65,
+          90
+        ],
+        [
+          "stilt_walkway_broken",
+          -1,
+          2,
+          0
+        ],
+        [
+          "stilt_platform",
+          -1,
+          11,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          -1,
+          29,
+          0
+        ],
+        [
+          "stilt_walkway",
+          -1,
+          38,
+          0
+        ],
+        [
+          "stilt_platform",
+          -1,
+          65,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          -1,
+          74,
+          0
+        ],
+        [
+          "stilt_walkway",
+          8,
+          11,
+          90
+        ],
+        [
+          "stilt_platform",
+          8,
+          20,
+          0
+        ],
+        [
+          "stilt_walkway",
+          8,
+          29,
+          90
+        ],
+        [
+          "stilt_platform_broken",
+          8,
+          38,
+          0
+        ],
+        [
+          "stilt_walkway",
+          8,
+          65,
+          90
+        ],
+        [
+          "stilt_platform_broken",
+          8,
+          74,
+          0
+        ],
+        [
+          "stilt_walkway",
+          17,
+          2,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          17,
+          11,
+          0
+        ],
+        [
+          "stilt_walkway",
+          17,
+          38,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          17,
+          47,
+          0
+        ],
+        [
+          "stilt_walkway_broken",
+          17,
+          56,
+          0
+        ],
+        [
+          "stilt_platform_broken",
+          26,
+          2,
+          0
+        ],
+        [
+          "stilt_walkway",
+          26,
+          11,
+          90
+        ],
+        [
+          "stilt_platform",
+          26,
+          20,
+          0
+        ],
+        [
+          "stilt_platform",
+          26,
+          38,
+          0
+        ],
+        [
+          "stilt_walkway",
+          26,
+          65,
+          90
+        ],
+        [
+          "stilt_platform",
+          26,
+          74,
+          0
+        ],
+        [
+          "stilt_platform",
+          -38,
+          30,
+          0
+        ],
+        [
+          "stilt_house",
+          -38,
+          30,
+          0
+        ],
+        [
+          "stilt_platform",
+          -6,
+          60,
+          0
+        ],
+        [
+          "stilt_house",
+          -6,
+          60,
+          180
+        ],
+        [
+          "stilt_platform",
+          12,
+          12,
+          0
+        ],
+        [
+          "stilt_house",
+          12,
+          12,
+          270
+        ]
+      ],
+      "deck": 0.9
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        50
+      ],
+      "id": "stilt_hut_sunken",
+      "yaw": 20,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        70
+      ],
+      "id": "stilt_hut_sunken",
+      "yaw": -30,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        -20
+      ],
+      "id": "stilt_hut_sunken",
+      "yaw": 60,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -30
+      ],
+      "id": "stilt_hut_sunken",
+      "yaw": 10,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        80
+      ],
+      "id": "stilt_hut_sunken",
+      "yaw": -50,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        -125
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -118,
+        -104
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        -98
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -112,
+        -132
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -132,
+        -140
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -156,
+        -120
+      ],
+      "id": "pondkin_hut",
+      "face": [
+        -130,
+        -115
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        -115
+      ],
+      "id": "pondkin_totem",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -104,
+        -118
+      ],
+      "id": "pondkin_totem",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -142,
+        -88
+      ],
+      "id": "pondkin_totem",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -124,
+        -112
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        -120
+      ],
+      "id": "heron_rookery_nest",
+      "yaw": 302.34124221723397,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        112,
+        -134
+      ],
+      "id": "heron_rookery_nest",
+      "yaw": 290.80381769884997,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -136
+      ],
+      "id": "heron_rookery_nest",
+      "yaw": 67.15620822442868,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        118,
+        -114
+      ],
+      "id": "heron_rookery_nest",
+      "yaw": 33.4588487043508,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        104,
+        -108
+      ],
+      "id": "heron_rookery_nest",
+      "yaw": 89.0077589289596,
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -146,
+        120
+      ],
+      "id": "witch_hut",
+      "face": [
+        -140,
+        125
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -128,
+        136
+      ],
+      "id": "witch_hut",
+      "face": [
+        -140,
+        125
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -156,
+        140
+      ],
+      "id": "witch_hut",
+      "face": [
+        -140,
+        125
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -138,
+        120
+      ],
+      "id": "witch_cauldron",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        110
+      ],
+      "id": "bone_totem",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -160,
+        110
+      ],
+      "id": "bone_totem",
+      "collide": "trunk"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60.47748311363776,
+        -122.26610088507779
+      ],
+      "id": "reeds_tall",
+      "yaw": 270.3319699846003,
+      "collide": "none",
+      "scale": 0.97
+    },
+    {
+      "type": "prop",
+      "pos": [
+        104.39890843012944,
+        56.13047336546006
+      ],
+      "id": "reeds_tall",
+      "yaw": 234.87988033919297,
+      "collide": "none",
+      "scale": 1.36
+    },
+    {
+      "type": "prop",
+      "pos": [
+        57.66343132865828,
+        132.20982202801548
+      ],
+      "id": "reeds_tall",
+      "yaw": 175.90634717534186,
+      "collide": "none",
+      "scale": 1.35
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -39.696709121954655,
+        183.629660981906
+      ],
+      "id": "reeds_tall",
+      "yaw": 48.97630493740352,
+      "collide": "none",
+      "scale": 1.25
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -161.45631619765834,
+        88.79060843289261
+      ],
+      "id": "reeds_tall",
+      "yaw": 347.51279223847746,
+      "collide": "none",
+      "scale": 1.08
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -132.98829997901305,
+        -24.60583776352081
+      ],
+      "id": "reeds_tall",
+      "yaw": 4.207293656751379,
+      "collide": "none",
+      "scale": 1.18
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -172.47489675349968,
+        -158.28223009848085
+      ],
+      "id": "reeds_tall",
+      "yaw": 317.4592818028216,
+      "collide": "none",
+      "scale": 1.11
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -131.0692190789646,
+        -172.18322744580433
+      ],
+      "id": "reeds_tall",
+      "yaw": 222.92972000405217,
+      "collide": "none",
+      "scale": 1.38
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.7345525435383706,
+        171.9018251062535
+      ],
+      "id": "reeds_tall",
+      "yaw": 343.9569905549122,
+      "collide": "none",
+      "scale": 1.19
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.96131516720294,
+        98.90389929690542
+      ],
+      "id": "reeds_tall",
+      "yaw": 338.82075619222314,
+      "collide": "none",
+      "scale": 1.33
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -176.9354524277805,
+        106.12089570509778
+      ],
+      "id": "reeds_tall",
+      "yaw": 236.79864938660927,
+      "collide": "none",
+      "scale": 1.17
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70.20278065905765,
+        -60.378051762316744
+      ],
+      "id": "reeds_tall",
+      "yaw": 169.87046839475352,
+      "collide": "none",
+      "scale": 1.36
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -6.026820675492303,
+        107.2641965219205
+      ],
+      "id": "reeds_tall",
+      "yaw": 320.57932140571205,
+      "collide": "none",
+      "scale": 1.06
+    },
+    {
+      "type": "prop",
+      "pos": [
+        99.37902171266222,
+        -169.0128913268447
+      ],
+      "id": "reeds_tall",
+      "yaw": 96.46418926374918,
+      "collide": "none",
+      "scale": 1.1
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -9.676710547471345,
+        2.0180204794041003
+      ],
+      "id": "reeds_tall",
+      "yaw": 198.64391349054287,
+      "collide": "none",
+      "scale": 1.18
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -94.98707734613049,
+        117.07839612347021
+      ],
+      "id": "reeds_tall",
+      "yaw": 290.99990882258084,
+      "collide": "none",
+      "scale": 1.09
+    },
+    {
+      "type": "prop",
+      "pos": [
+        141.16509804496172,
+        -88.03378939516888
+      ],
+      "id": "reeds_tall",
+      "yaw": 220.10538509084688,
+      "collide": "none",
+      "scale": 0.91
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.9123494916937887,
+        13.897907926116744
+      ],
+      "id": "reeds_tall",
+      "yaw": 250.88711523556884,
+      "collide": "none",
+      "scale": 0.98
+    },
+    {
+      "type": "prop",
+      "pos": [
+        8.81507517027839,
+        -13.603766366858366
+      ],
+      "id": "reeds_tall",
+      "yaw": 229.54001216150328,
+      "collide": "none",
+      "scale": 1.22
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -53.7894547785215,
+        147.04999095596645
+      ],
+      "id": "reeds_tall",
+      "yaw": 79.51346749272705,
+      "collide": "none",
+      "scale": 1.33
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -18.89790300047858,
+        -78.63348990557463
+      ],
+      "id": "reeds_tall",
+      "yaw": 287.58517410077206,
+      "collide": "none",
+      "scale": 1.26
+    },
+    {
+      "type": "prop",
+      "pos": [
+        17.124525005064754,
+        31.388372271233322
+      ],
+      "id": "reeds_tall",
+      "yaw": 62.80777857815138,
+      "collide": "none",
+      "scale": 1.13
+    },
+    {
+      "type": "prop",
+      "pos": [
+        91.32710855736678,
+        -146.56523870111164
+      ],
+      "id": "reeds_tall",
+      "yaw": 214.4554103237067,
+      "collide": "none",
+      "scale": 1.08
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -49.074861156442864,
+        132.06876086457982
+      ],
+      "id": "reeds_tall",
+      "yaw": 309.7922097545215,
+      "collide": "none",
+      "scale": 0.97
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -105.74618234816253,
+        170.52863447364075
+      ],
+      "id": "reeds_tall",
+      "yaw": 1.3249580772387048,
+      "collide": "none",
+      "scale": 1.26
+    },
+    {
+      "type": "prop",
+      "pos": [
+        45.74701436967899,
+        44.00317839526906
+      ],
+      "id": "reeds_tall",
+      "yaw": 228.24528242032153,
+      "collide": "none",
+      "scale": 1.31
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        -232
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Reedmere"
+      ]
+    }
+  ],
+  "passes": [
+    [
+      256,
+      0,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          256,
+          0
+        ],
+        [
+          230,
+          0
+        ],
+        [
+          210,
+          0
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "weeping_throat",
+      "arrive": [
+        -199,
+        0
+      ],
+      "arrive_face": [
+        -159,
+        0
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "reedcutter_pallavi",
+      "pos": [
+        214,
+        -8
+      ],
+      "face": [
+        208,
+        -6
+      ]
+    },
+    {
+      "id": "boatwright_kesh",
+      "pos": [
+        204,
+        8
+      ],
+      "face": [
+        196,
+        10
+      ]
+    },
+    {
+      "id": "priestess_amrit",
+      "pos": [
+        220,
+        6
+      ],
+      "face": [
+        208,
+        -6
+      ]
+    },
+    {
+      "id": "rainhold_reedwatch",
+      "pos": [
+        230,
+        0
+      ],
+      "patrol": [
+        [
+          230,
+          0
+        ],
+        [
+          216,
+          -20
+        ],
+        [
+          200,
+          0
+        ],
+        [
+          216,
+          22
+        ],
+        [
+          230,
+          0
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -120,
+        -90
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        -135
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -100,
+        -140
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -160,
+        -80
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -90,
+        -100
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -135,
+        -60
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -70,
+        -120
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -135,
+        -118
+      ],
+      "pool": {
+        "pondkin_bloatking": 1
+      },
+      "respawn": 1300,
+      "wander": 4
+    },
+    {
+      "pos": [
+        90,
+        -110
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        120,
+        -140
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        80,
+        -150
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        130,
+        -90
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        -100
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        140,
+        -60
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        106,
+        -126
+      ],
+      "pool": {
+        "old_stilt_legs": 1
+      },
+      "respawn": 1300,
+      "wander": 8
+    },
+    {
+      "pos": [
+        40,
+        -60
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -80,
+        40
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        100,
+        20
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -40,
+        110
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        80,
+        140
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -170,
+        20
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        20,
+        160
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -100,
+        -20
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        0,
+        -100
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -60,
+        -60
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        60,
+        40
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        120,
+        100
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -20,
+        130
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -120,
+        60
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        140,
+        -10
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        40,
+        120
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -25,
+        5
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        5,
+        30
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -30,
+        45
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        15,
+        55
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -5,
+        -5
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        20,
+        10
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -40,
+        25
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        0,
+        70
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        25,
+        35
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -20,
+        60
+      ],
+      "pool": {
+        "sunken_villager": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -8,
+        22
+      ],
+      "pool": {
+        "sunken_headwoman": 1
+      },
+      "respawn": 1300,
+      "wander": 6,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -150,
+        115
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -125,
+        130
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -160,
+        135
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -130,
+        100
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -110,
+        145
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        95
+      ],
+      "pool": {
+        "bog_lurker": 1
+      },
+      "respawn": 95,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -105,
+        120
+      ],
+      "pool": {
+        "bog_lurker": 1
+      },
+      "respawn": 95,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -165,
+        150
+      ],
+      "pool": {
+        "bog_lurker": 1
+      },
+      "respawn": 95,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -140,
+        128
+      ],
+      "pool": {
+        "mother_marrowroot": 1
+      },
+      "respawn": 1400,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -125,
+        -100
+      ],
+      "pool": {
+        "pondkin_mudcaller": 1
+      },
+      "respawn": 90,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -145,
+        -130
+      ],
+      "pool": {
+        "pondkin_mudcaller": 1
+      },
+      "respawn": 90,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -110,
+        -120
+      ],
+      "pool": {
+        "pondkin_mudcaller": 1
+      },
+      "respawn": 90,
+      "wander": 8
+    }
+  ]
+}

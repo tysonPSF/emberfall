@@ -2364,6 +2364,227 @@ def searing_blow():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Reedmere and Drownfast monsters
+
+AQUA = (5, 1)         # pale aqua to deep teal: naga, sea glass
+SEAFOAM = (0, 2)      # sea green
+
+
+def _hand(p, x, z, s, swatch, glow=0.0, curl=0.0, y=0.0):
+	"""A hand reaching up: palm, four fingers (curl bends their tips in) and a thumb."""
+	p.blob((0.5 * s, 0.24 * s, 0.5 * s), (x, y, z), swatch, segs=(10, 6), glow=glow)
+	for k, (fx, h) in enumerate(((-0.18, 0.36), (-0.06, 0.44), (0.06, 0.42), (0.18, 0.34))):
+		base = (x + fx * s, y, z + 0.2 * s)
+		mid = (x + fx * 1.15 * s, y, z + (0.2 + h * 0.65) * s)
+		tip = (x + fx * 1.1 * s, y - curl * 0.25 * s, z + (0.2 + h * (0.95 - curl * 0.35)) * s)
+		p.seg(base, mid, 0.065 * s, 0.055 * s, swatch, sides=6, glow=glow)
+		p.seg(mid, tip, 0.055 * s, 0.03 * s, swatch, sides=5, glow=glow)
+	p.seg((x - 0.22 * s, y, z - 0.05 * s), (x - 0.42 * s, y - curl * 0.15 * s, z + 0.2 * s), 0.07 * s, 0.045 * s, swatch, sides=6, glow=glow)
+	p.seg((x, y, z - 0.2 * s), (x, y, z - 0.6 * s), 0.17 * s, 0.2 * s, swatch, sides=8, glow=glow)          # the wrist
+
+
+def _bolt_line(p, pts, r, swatch, glow, y=0.0):
+	for a, b in zip(pts, pts[1:]):
+		p.seg((a[0], y, a[1]), (b[0], y, b[1]), r, r * 0.8, swatch, sides=5, glow=glow)
+
+
+def mud_spit():
+	p = Prop("mud_spit", 807)
+	p.seg((0.1, 0, 0.1), (0.15, 0, 0.8), 0.18, 0.2, HIDE, sides=8, grad=(0.4, 0.9))          # a leg in a boot
+	p.seg((0.15, 0, 0.78), (0.16, 0, 0.9), 0.22, 0.22, WOOD, sides=8)                       # its cuff
+	p.seg((0.16, 0, 0.9), (0.18, 0, 1.15), 0.2, 0.19, CLOTH_RED, sides=8, grad=(0.3, 0.9))   # a trouser leg
+	p.blob((0.5, 0.26, 0.2), (-0.05, 0, 0.1), HIDE, segs=(8, 5))
+	for x, z, s in ((0.12, 0.2, 0.62), (0.0, 0.45, 0.5), (0.25, 0.4, 0.4), (-0.15, 0.12, 0.45)):   # plastered in brown mud
+		p.blob((s, s * 0.8, s * 0.7), (x, -0.08, z), WOOD, segs=(8, 6), jitter=0.03)
+	for k, (x, z, s) in enumerate(((-0.75, 1.05, 0.3), (-0.5, 0.9, 0.22), (-0.3, 0.78, 0.16))):   # the gob flying in
+		p.blob((s, s, s * 0.85), (x, -0.1, z), WOOD, segs=(8, 6))
+	for k in range(4):                                                                    # splatter
+		a = math.radians(-20 + k * 50)
+		p.blob((0.1, 0.08, 0.1), (0.12 + math.cos(a) * 0.55, -0.15, 0.3 + math.sin(a) * 0.45), CLAY, segs=(6, 4))
+	for k in range(3):                                                                    # slow: heavy drips
+		_drop(p, -0.15 + k * 0.25, -0.1, 0.22, WOOD, 0.0)
+	return p.build()
+
+
+def bog_bolt():
+	p = Prop("bog_bolt", 809)
+	p.blob((0.7, 0.62, 0.66), (0.35, 0, 0.5), WOOD_GRAY, segs=(12, 8), jitter=0.02)          # a ball of murky bogwater
+	p.blob((0.5, 0.4, 0.48), (0.35, -0.12, 0.52), (6, 1), segs=(10, 6), glow=1.2)             # glowing sickly through it
+	for k in range(5):                                                                    # a spattering trail
+		t = k / 4
+		p.blob((0.2 - t * 0.1,) * 3, (-0.1 - t * 0.7, 0, 0.62 + t * 0.25), WOOD_GRAY, segs=(6, 4))
+	for k in range(3):                                                                    # its stench
+		x = 0.1 + k * 0.22
+		pts = [(x, 0.95), (x + 0.08, 1.08), (x - 0.04, 1.2), (x + 0.06, 1.32)]
+		_bolt_line(p, pts, 0.035, (6, 1), 1.6, y=-0.1)
+	for (x, z) in ((0.2, 0.62), (0.5, 0.4), (0.45, 0.7)):                                 # bubbles on its skin
+		p.blob((0.1, 0.06, 0.1), (x, -0.34, z), STONE_LIGHT, segs=(6, 4))
+	return p.build()
+
+
+def eel_shock():
+	p = Prop("eel_shock", 811)
+	pts = [(-0.7, 0.3), (-0.4, 0.55), (-0.1, 0.35), (0.2, 0.15), (0.5, 0.35), (0.7, 0.6)]   # a writhing eel
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		r = 0.13 - i * 0.018
+		p.seg((a[0], 0, a[1]), (b[0], 0, b[1]), r + 0.01, r, PINE, sides=8)
+	p.blob((0.3, 0.24, 0.24), (-0.72, 0, 0.3), PINE, segs=(8, 6))
+	p.blob((0.07, 0.04, 0.07), (-0.8, -0.12, 0.35), GOLD, segs=(6, 4), glow=2.0)
+	for (x, z) in ((-0.45, 0.9), (0.15, 0.7), (0.55, 0.95), (-0.1, -0.1), (0.45, -0.05)):   # crackling off it
+		pts = [(x - 0.12, z + 0.2), (x + 0.05, z + 0.05), (x - 0.05, z - 0.02), (x + 0.1, z - 0.2)]
+		_bolt_line(p, pts, 0.04, GOLD, 2.8, y=-0.15)
+	for (x, z) in ((-0.2, 1.15), (0.3, 1.2)):                                               # stunned stars
+		for k in range(4):
+			a = k * math.pi / 4
+			p.seg((x - math.cos(a) * 0.1, -0.2, z - math.sin(a) * 0.1), (x + math.cos(a) * 0.1, -0.2, z + math.sin(a) * 0.1), 0.03, 0.03,
+				  CLOTH_WHITE, sides=4, glow=2.0)
+	return p.build()
+
+
+def bogwing_sting():
+	p = Prop("bogwing_sting", 813)
+	for sx, sw in ((-1, SEAFOAM), (1, AQUA)):                                             # veined wings at the top
+		p.blob((0.95, 0.04, 0.24), (-0.3 + sx * 0.05, 0.1, 1.05 + sx * 0.1), sw, rot=(0, sx * 18, 0), segs=(10, 4), glow=0.4)
+	pts = [(-0.55, 0.95), (-0.3, 0.75), (-0.05, 0.55), (0.18, 0.38), (0.36, 0.22)]           # a bogwing's banded tail
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		r = 0.2 - i * 0.03
+		p.blob((r * 2.4, r * 1.8, r * 1.8), ((a[0] + b[0]) / 2, 0, (a[1] + b[1]) / 2), AQUA if i % 2 else STONE_DARK,
+			   rot=(0, 38, 0), segs=(10, 6))
+	p.seg((0.36, 0, 0.22), (0.62, -0.05, -0.05), 0.08, 0.0, STONE_DARK, sides=6)             # the sting
+	for k in range(3):                                                                    # venom dripping
+		_drop(p, 0.64 - k * 0.02, -0.2 - k * 0.24, 0.3 - k * 0.05, SEAFOAM, 2.2)
+	p.blob((0.45, 0.2, 0.3), (-0.4, -0.2, 0.05), CLOTH_RED, segs=(10, 6), glow=0.8)          # and the swelling it leaves
+	p.blob((0.1, 0.06, 0.1), (-0.4, -0.32, 0.12), SEAFOAM, segs=(6, 4), glow=2.0)
+	return p.build()
+
+
+def hex_of_rot():
+	p = Prop("hex_of_rot", 815)
+	for k in range(7):                                                                    # a witch's sedge doll
+		x = -0.12 + k * 0.04
+		p.seg((x * 0.6, 0, 0.95), (x * 2.2, 0, 0.0), 0.035, 0.025, PINE if k % 2 else WOOD_GRAY, sides=4)
+	p.blob((0.34, 0.24, 0.34), (0, 0, 0.92), PINE, segs=(8, 6))
+	for sx in (-1, 1):
+		p.seg((0, -0.02, 0.65), (sx * 0.42, -0.02, 0.48), 0.04, 0.03, PINE, sides=4)
+		p.blob((0.08, 0.04, 0.08), (sx * 0.08, -0.16, 0.95), (6, 1), segs=(6, 4), glow=2.4)   # sickly eyes
+	p.seg((0, 0, 0.72), (0, 0, 0.77), 0.12, 0.12, CLOTH_RED, sides=6)
+	p.seg((0.6, -0.3, 0.9), (-0.25, 0.2, 0.45), 0.04, 0.0, BONE, sides=5)                      # a thorn driven through
+	_ring_at(p, 0, 0.5, 0.72, 0.035, (6, 1), glow=1.6, sides=20, y=0.15)                   # the hex round it
+	for k in range(4):                                                                    # rot dripping off
+		_drop(p, -0.3 + k * 0.2, -0.05 - (k % 2) * 0.15, 0.22, (6, 1), 1.8)
+	return p.build()
+
+
+def mire_grip():
+	p = Prop("mire_grip", 817)
+	p.blob((1.8, 1.1, 0.14), (0, 0, 0.0), WOOD, segs=(14, 5), grad=(0.3, 0.9))              # a bog pool
+	for k in range(6):                                                                    # bubbles in it
+		a = k * 1.05
+		p.blob((0.1, 0.1, 0.07), (math.cos(a) * 0.65, math.sin(a) * 0.35, 0.07), WOOD_GRAY, segs=(6, 4))
+	for x, lean, s in ((-0.35, 12, 0.85), (0.35, -12, 0.95)):                             # muddy hands rising, clutching
+		_hand(p, x, 0.72 * s, s, WOOD_GRAY, curl=1.0)
+	for x in (-0.35, 0.35):                                                               # dripping with muck
+		p.blob((0.12, 0.08, 0.12), (x + 0.1, -0.15, 0.35), WOOD, segs=(6, 4))
+	return p.build()
+
+
+def undertow():
+	p = Prop("undertow", 819)
+	_swirl(p, 0, 0.5, 0.08, 0.72, 2.2, WATER, 1.0, thick=0.08, steps=36)                   # a whirling current
+	for k in range(3):                                                                    # pulling downward
+		x = -0.35 + k * 0.35
+		p.seg((x, -0.2, 0.55), (x, -0.2, 0.05), 0.04, 0.04, CLOTH_WHITE, sides=5, glow=1.4)
+		p.seg((x, -0.2, 0.12), (x, -0.2, -0.12), 0.12, 0.0, CLOTH_WHITE, sides=4, glow=1.4)
+	for k in range(5):                                                                    # foam
+		a = k * 1.3
+		p.blob((0.1, 0.06, 0.1), (math.cos(a) * 0.62, -0.15, 0.5 + math.sin(a) * 0.62), CLOTH_WHITE, segs=(6, 4), glow=0.6)
+	return p.build()
+
+
+def naga_venom():
+	p = Prop("naga_venom", 821)
+	p.blob((0.8, 0.5, 0.45), (-0.2, 0, 0.85), AQUA, segs=(12, 8), grad=(0.0, 0.8))            # a serpent's head, striking
+	p.seg((-0.55, 0, 0.8), (-0.8, 0, 0.3), 0.2, 0.18, AQUA, sides=8)                         # its neck
+	p.seg((0.0, 0, 0.72), (0.3, 0, 0.66), 0.14, 0.06, AQUA, sides=7)                         # lower jaw, gaping
+	for sx in (-1, 1):
+		p.blob((0.12, 0.06, 0.08), (-0.1, sx * 0.12 - 0.1, 0.98), GOLD, segs=(6, 4), glow=2.0)  # slit eyes
+	p.blob((0.4, 0.3, 0.06), (-0.05, 0, 1.05), GOLD, segs=(8, 4))                            # a gold crest scale
+	for dx in (0.0, 0.12):                                                                # long fangs
+		p.seg((0.08 + dx, -0.08, 0.72), (0.12 + dx, -0.1, 0.38), 0.05, 0.0, BONE, sides=5)
+	for k in range(3):                                                                    # venom dripping
+		_drop(p, 0.14 + k * 0.03, 0.2 - k * 0.28, 0.3 - k * 0.04, SEAFOAM, 2.2)
+	return p.build()
+
+
+def tidal_bolt():
+	p = Prop("tidal_bolt", 823)
+	wave = [(-0.8, 0.0), (0.8, 0.0), (0.6, 0.15), (0.3, 0.3), (0.12, 0.5), (0.28, 0.66), (0.42, 0.62), (0.52, 0.72), (0.4, 0.92),
+			(0.15, 1.05), (-0.2, 1.0), (-0.45, 0.8), (-0.62, 0.5), (-0.75, 0.22)]              # a wave rearing to break
+	icons._slab(p, wave, -0.08, 0.08, WATER, grad=(0.0, 0.8))
+	for (x, z, s) in ((0.3, 0.98, 0.13), (0.45, 0.85, 0.12), (0.1, 1.07, 0.14), (-0.15, 1.04, 0.13), (0.5, 0.7, 0.1),
+					  (-0.4, 0.86, 0.12), (0.38, 0.62, 0.08)):                              # white foam along its crest
+		p.blob((s, s, s), (x, -0.12, z), CLOTH_WHITE, segs=(8, 5), glow=0.8)
+	for k in range(3):                                                                    # the lines of its face
+		pts = [(-0.55 + k * 0.2, 0.15), (-0.45 + k * 0.2, 0.45 - k * 0.05), (-0.25 + k * 0.18, 0.72 - k * 0.12)]
+		for a, b in zip(pts, pts[1:]):
+			p.seg((a[0], -0.1, a[1]), (b[0], -0.1, b[1]), 0.03, 0.03, (2, 1), sides=4, glow=0.6)
+	for k in range(4):                                                                    # spray flung ahead
+		p.blob((0.07, 0.07, 0.07), (0.62 + k * 0.1, -0.12, 0.6 - k * 0.14), CLOTH_WHITE, segs=(5, 3), glow=1.2)
+	return p.build()
+
+
+def lightning_lash():
+	p = Prop("lightning_lash", 825)
+	for x, z, s in ((-0.55, 1.0, 0.5), (-0.25, 1.05, 0.45), (-0.4, 1.2, 0.42)):            # a tempest spirit's wisp
+		p.blob((s, s * 0.7, s * 0.6), (x, 0.1, z), (2, 1), segs=(8, 6), glow=0.4)
+	pts = []                                                                              # a whip of lightning, cracking down
+	for k in range(12):
+		t = k / 11
+		pts.append((-0.4 + t * 1.1 + math.sin(t * 7) * 0.08 * (1 - t), 0.9 - t * 0.9 + math.sin(t * 5.5) * 0.25))
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		r = 0.075 - i * 0.004
+		p.seg((a[0], -0.05, a[1]), (b[0], -0.05, b[1]), r, r * 0.9, CLOTH_WHITE, sides=5, glow=3.0)
+		p.seg((a[0], 0.02, a[1]), (b[0], 0.02, b[1]), r * 1.6, r * 1.5, RUNE, sides=5, glow=1.6)
+	end = pts[-1]
+	for k in range(6):                                                                    # the crack where it lands
+		a = k * math.tau / 6 + 0.2
+		p.seg((end[0], -0.1, end[1]), (end[0] + math.cos(a) * 0.3, -0.1, end[1] + math.sin(a) * 0.3), 0.04, 0.0, GOLD, sides=4, glow=2.6)
+	return p.build()
+
+
+def crushing_claw():
+	p = Prop("crushing_claw", 827)
+	p.blob((0.7, 0.45, 0.5), (-0.4, 0, 0.45), CLOTH_RED, segs=(12, 8), grad=(0.0, 0.8))      # a great crab claw
+	pts = [(-0.12, 0.6), (0.2, 0.72), (0.45, 0.65), (0.55, 0.48)]                          # snapping shut
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg((a[0], 0, a[1]), (b[0], 0, b[1]), 0.19 - i * 0.05, 0.14 - i * 0.05, CLOTH_RED, sides=8, grad=(0.0, 0.7))
+	pts = [(-0.12, 0.3), (0.2, 0.22), (0.42, 0.3), (0.52, 0.44)]
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg((a[0], 0, a[1]), (b[0], 0, b[1]), 0.15 - i * 0.04, 0.11 - i * 0.04, CLOTH_RED, sides=8, grad=(0.0, 0.7))
+	for k in range(7):                                                                    # the crunch
+		a = math.radians(-60 + k * 20)
+		p.seg((0.55 + math.cos(a) * 0.15, -0.2, 0.46 + math.sin(a) * 0.15), (0.55 + math.cos(a) * 0.5, -0.2, 0.46 + math.sin(a) * 0.5),
+			  0.05, 0.0, FLAME, sides=4, glow=2.4)
+	for (x, z) in ((-0.5, 0.62), (-0.3, 0.3)):                                            # barnacles
+		p.seg((x, -0.18, z), (x, -0.26, z), 0.05, 0.025, STONE_LIGHT, sides=6)
+	return p.build()
+
+
+def drowning_grasp():
+	p = Prop("drowning_grasp", 829)
+	_hand(p, 0.0, 0.45, 1.25, WATER, glow=1.2, curl=0.8)                                   # a hand of seawater, closing
+	for k in range(6):                                                                    # the last breath bubbling away
+		x = -0.45 + (k % 3) * 0.12 + (k // 3) * 0.7
+		z = 0.75 + (k % 3) * 0.2
+		p.blob((0.1 + (k % 3) * 0.03,) * 3, (x, -0.25, z), CLOTH_WHITE, segs=(8, 5), glow=0.6)
+	_ring_at(p, 0, 0.1, 0.62, 0.04, WATER, glow=0.8, sides=16, a0=math.pi, a1=math.tau, y=-0.1)   # rising water
+	return p.build()
+
+
+MONSOON_WEST = [mud_spit, bog_bolt, eel_shock, bogwing_sting, hex_of_rot, mire_grip, undertow, naga_venom, tidal_bolt, lightning_lash,
+				crushing_claw, drowning_grasp]
+
+
 NEW_SPELLS = [false_sunfire, aimed_shot, track, flame_lick, ensnare, salve, strength_of_the_wild, icicle, entangle, eagle_eye,
 			  multishot, natures_mend, call_of_flame, thornskin, rapid_fire, barbed_arrow, frost_wind, call_of_the_hawk, volley,
 			  guardian_of_the_wild, natures_renewal, piercing_shot, wildfire, hawks_fury, trueshot, storm_of_arrows, mighty_blow,
@@ -2390,7 +2611,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 

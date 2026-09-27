@@ -4252,5 +4252,1106 @@
       "chance": 0.3,
       "text": "%s's touch carries %s!"
     }
+  },
+  "pondkin": {
+    "name": "a pondkin spearman",
+    "level": [
+      22,
+      25
+    ],
+    "hp_base": 160,
+    "hp_per_level": 22,
+    "dmg_min": 16,
+    "dmg_max": 30,
+    "attack_delay": 2.7,
+    "ac": 40,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": true,
+    "faction": "pondkin",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "pondkin_fetish",
+        "chance": 0.5
+      }
+    ],
+    "model": "pondkin",
+    "proc": {
+      "spell": "mud_spit",
+      "chance": 0.1,
+      "text": "%s hawks up some %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "table": "pondkin_weapons"
+      }
+    ]
+  },
+  "pondkin_mudcaller": {
+    "name": "a pondkin mudcaller",
+    "level": [
+      23,
+      25
+    ],
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 14,
+    "dmg_max": 26,
+    "attack_delay": 2.8,
+    "ac": 34,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "pondkin",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "pondkin_fetish",
+        "chance": 0.5
+      }
+    ],
+    "model": "pondkin_mudcaller",
+    "proc": {
+      "spell": "bog_bolt",
+      "chance": 0.18,
+      "text": "%s hurls a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "oak_staff"
+      }
+    ]
+  },
+  "pondkin_bloatking": {
+    "name": "Bloatking Ghurr",
+    "level": [
+      26,
+      26
+    ],
+    "hp_base": 4600,
+    "hp_per_level": 0,
+    "dmg_min": 26,
+    "dmg_max": 50,
+    "attack_delay": 3.0,
+    "ac": 58,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "pondkin",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "loot": [
+      {
+        "item": "bloatking_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "pondkin_fetish",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      },
+      {
+        "item": "bloatking_scepter",
+        "chance": 0.35
+      }
+    ],
+    "model": "pondkin_bloatking",
+    "named": true,
+    "xp_bonus": 3.2,
+    "proc": {
+      "spell": "mud_spit",
+      "chance": 0.25,
+      "text": "%s hawks up some %s!"
+    }
+  },
+  "reedstalker": {
+    "name": "a reedstalker",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 150,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.5,
+    "ac": 38,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "reedstalker_plume",
+        "chance": 0.55
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "reedstalker"
+  },
+  "old_stilt_legs": {
+    "name": "Old Stilt-Legs",
+    "level": [
+      26,
+      26
+    ],
+    "hp_base": 4200,
+    "hp_per_level": 0,
+    "dmg_min": 26,
+    "dmg_max": 48,
+    "attack_delay": 2.5,
+    "ac": 56,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "stilt_legs_plume",
+        "chance": 1.0
+      },
+      {
+        "item": "reedstalker_plume",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "old_stilt_legs",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "marsh_eel": {
+    "name": "a marsh eel",
+    "level": [
+      22,
+      25
+    ],
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.4,
+    "ac": 36,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "eel_skin",
+        "chance": 0.5
+      }
+    ],
+    "model": "marsh_eel",
+    "proc": {
+      "spell": "eel_shock",
+      "chance": 0.08,
+      "text": "%s lets loose an %s!"
+    }
+  },
+  "bogwing": {
+    "name": "a bogwing",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 120,
+    "hp_per_level": 18,
+    "dmg_min": 13,
+    "dmg_max": 24,
+    "attack_delay": 2.2,
+    "ac": 32,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bogwing_wing",
+        "chance": 0.5
+      }
+    ],
+    "model": "bogwing",
+    "proc": {
+      "spell": "bogwing_sting",
+      "chance": 0.14,
+      "text": "%s drives in a %s!"
+    }
+  },
+  "sunken_villager": {
+    "name": "a sunken villager",
+    "level": [
+      22,
+      25
+    ],
+    "hp_base": 160,
+    "hp_per_level": 22,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sunken_charm",
+        "chance": 0.5
+      },
+      {
+        "item": "bone_chips",
+        "chance": 0.3
+      }
+    ],
+    "model": "sunken_villager"
+  },
+  "sunken_headwoman": {
+    "name": "Headwoman Ishani the Sunken",
+    "level": [
+      26,
+      26
+    ],
+    "hp_base": 4400,
+    "hp_per_level": 0,
+    "dmg_min": 26,
+    "dmg_max": 48,
+    "attack_delay": 3.0,
+    "ac": 56,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "headwomans_lotus",
+        "chance": 1.0
+      },
+      {
+        "item": "sunken_charm",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "sunken_headwoman",
+    "named": true,
+    "xp_bonus": 3.0,
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.2,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "sedge_sister": {
+    "name": "a sedge sister",
+    "level": [
+      23,
+      26
+    ],
+    "hp_base": 150,
+    "hp_per_level": 21,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.8,
+    "ac": 36,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "sedge_coven",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      50,
+      160
+    ],
+    "loot": [
+      {
+        "item": "sedge_charm",
+        "chance": 0.5
+      }
+    ],
+    "model": "sedge_sister",
+    "proc": {
+      "spell": "hex_of_rot",
+      "chance": 0.16,
+      "text": "%s casts a %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "item": "worn_staff"
+      }
+    ]
+  },
+  "bog_lurker": {
+    "name": "a bog lurker",
+    "level": [
+      24,
+      26
+    ],
+    "hp_base": 220,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 34,
+    "attack_delay": 3.4,
+    "ac": 46,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "sedge_coven",
+    "verb": [
+      "pound",
+      "pounds"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sedge_charm",
+        "chance": 0.3
+      }
+    ],
+    "model": "bog_lurker",
+    "proc": {
+      "spell": "mire_grip",
+      "chance": 0.1,
+      "text": "%s drags you into its %s!"
+    }
+  },
+  "mother_marrowroot": {
+    "name": "Mother Marrowroot",
+    "level": [
+      27,
+      27
+    ],
+    "hp_base": 4800,
+    "hp_per_level": 0,
+    "dmg_min": 28,
+    "dmg_max": 52,
+    "attack_delay": 2.8,
+    "ac": 58,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sedge_coven",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "loot": [
+      {
+        "item": "marrowroot_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "sedge_charm",
+        "chance": 1.0,
+        "count": [
+          2,
+          4
+        ]
+      }
+    ],
+    "model": "mother_marrowroot",
+    "named": true,
+    "xp_bonus": 3.2,
+    "proc": {
+      "spell": "hex_of_rot",
+      "chance": 0.3,
+      "text": "%s casts a %s!"
+    }
+  },
+  "tidesworn": {
+    "name": "a tidesworn soldier",
+    "level": [
+      26,
+      29
+    ],
+    "hp_base": 200,
+    "hp_per_level": 26,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.9,
+    "ac": 52,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tidesworn_insignia",
+        "chance": 0.5
+      }
+    ],
+    "model": "tidesworn",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.6,
+        "table": "tidesworn_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "tidesworn_armor"
+      }
+    ]
+  },
+  "tide_knight": {
+    "name": "a tide knight",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 240,
+    "hp_per_level": 28,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 3.0,
+    "ac": 60,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tidesworn_insignia",
+        "chance": 0.6
+      }
+    ],
+    "model": "tide_knight",
+    "proc": {
+      "spell": "undertow",
+      "chance": 0.12,
+      "text": "%s's blade drags with the %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.8,
+        "table": "tidesworn_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.12,
+        "table": "tidesworn_armor"
+      }
+    ]
+  },
+  "tideking_varundra": {
+    "name": "Tideking Varundra",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 6600,
+    "hp_per_level": 0,
+    "dmg_min": 34,
+    "dmg_max": 62,
+    "attack_delay": 3.0,
+    "ac": 76,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      500,
+      1500
+    ],
+    "loot": [
+      {
+        "item": "varundra_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "tidesworn_insignia",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "tidesworn_blade",
+        "chance": 0.4
+      }
+    ],
+    "model": "tideking_varundra",
+    "named": true,
+    "xp_bonus": 3.5,
+    "proc": {
+      "spell": "drowning_grasp",
+      "chance": 0.25,
+      "text": "%s reaches out in a %s!"
+    }
+  },
+  "naga_warrior": {
+    "name": "a naga warrior",
+    "level": [
+      26,
+      29
+    ],
+    "hp_base": 190,
+    "hp_per_level": 26,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.6,
+    "ac": 50,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "deep_naga",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "naga_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "naga_warrior",
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.12,
+      "text": "%s strikes with %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.5,
+        "table": "naga_weapons"
+      }
+    ]
+  },
+  "naga_tidecaller": {
+    "name": "a naga tidecaller",
+    "level": [
+      27,
+      30
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 2.8,
+    "ac": 44,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 17,
+    "social": true,
+    "flees": false,
+    "faction": "deep_naga",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "naga_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "naga_tidecaller",
+    "proc": {
+      "spell": "tidal_bolt",
+      "chance": 0.18,
+      "text": "%s hurls a %s!"
+    }
+  },
+  "naga_queen": {
+    "name": "Queen Sessavi",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 6200,
+    "hp_per_level": 0,
+    "dmg_min": 32,
+    "dmg_max": 58,
+    "attack_delay": 2.6,
+    "ac": 72,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": true,
+    "flees": false,
+    "faction": "deep_naga",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      500,
+      1500
+    ],
+    "loot": [
+      {
+        "item": "sessavi_pearl",
+        "chance": 1.0
+      },
+      {
+        "item": "naga_scale",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "naga_fang_dirk",
+        "chance": 0.4
+      }
+    ],
+    "model": "naga_queen",
+    "named": true,
+    "xp_bonus": 3.5,
+    "proc": {
+      "spell": "tidal_bolt",
+      "chance": 0.3,
+      "text": "%s hurls a %s!"
+    }
+  },
+  "tempest_spirit": {
+    "name": "a tempest spirit",
+    "level": [
+      27,
+      30
+    ],
+    "hp_base": 180,
+    "hp_per_level": 25,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.7,
+    "ac": 48,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tempest_shard",
+        "chance": 0.5
+      },
+      {
+        "item": "elemental_essence",
+        "chance": 0.3
+      }
+    ],
+    "model": "tempest_spirit",
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.16,
+      "text": "%s lets fly a %s!"
+    }
+  },
+  "stormbound_warden": {
+    "name": "the Stormbound Warden",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 6400,
+    "hp_per_level": 0,
+    "dmg_min": 34,
+    "dmg_max": 60,
+    "attack_delay": 2.8,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wardens_chain",
+        "chance": 1.0
+      },
+      {
+        "item": "tempest_shard",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "stormbound_warden",
+    "named": true,
+    "xp_bonus": 3.5,
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.3,
+      "text": "%s lets fly a %s!"
+    }
+  },
+  "causeway_crab": {
+    "name": "a causeway crab",
+    "level": [
+      26,
+      28
+    ],
+    "hp_base": 190,
+    "hp_per_level": 25,
+    "dmg_min": 19,
+    "dmg_max": 34,
+    "attack_delay": 2.8,
+    "ac": 56,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "crab_carapace",
+        "chance": 0.55
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "causeway_crab",
+    "proc": {
+      "spell": "crushing_claw",
+      "chance": 0.1,
+      "text": "%s snaps a %s!"
+    }
+  },
+  "shellback": {
+    "name": "a shellback",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 280,
+    "hp_per_level": 30,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 3.4,
+    "ac": 70,
+    "speed": 4.8,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "crab_carapace",
+        "chance": 0.5
+      }
+    ],
+    "model": "shellback"
+  },
+  "old_chitterjaw": {
+    "name": "Old Chitterjaw",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 7000,
+    "hp_per_level": 0,
+    "dmg_min": 34,
+    "dmg_max": 62,
+    "attack_delay": 3.0,
+    "ac": 80,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "chitterjaw_claw",
+        "chance": 1.0
+      },
+      {
+        "item": "crab_carapace",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      }
+    ],
+    "model": "old_chitterjaw",
+    "named": true,
+    "xp_bonus": 3.5,
+    "proc": {
+      "spell": "crushing_claw",
+      "chance": 0.3,
+      "text": "%s snaps a %s!"
+    }
   }
 }

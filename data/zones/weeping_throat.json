@@ -430,36 +430,6 @@
       ]
     },
     {
-      "type": "rockslide",
-      "pos": [
-        -200,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Weeping Throat"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Weeping Throat"
-      ]
-    },
-    {
       "type": "prop",
       "id": "taro_plant",
       "pos": [
@@ -784,6 +754,44 @@
       "arrive_face": [
         0,
         -6
+      ]
+    },
+    {
+      "pos": [
+        -213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "reedmere",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "drownfast",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
       ]
     }
   ],

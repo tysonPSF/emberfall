@@ -1800,5 +1800,226 @@
       "hail": "In the rain, a ranger's ears matter more than their eyes, {name}. Rangers, I'll teach you to hear the jungle.",
       "unknown": "Ask the city's keeper, {name}."
     }
+  },
+  "reedcutter_pallavi": {
+    "name": "Reedcutter Pallavi",
+    "title": "Reedcutters of Rainhold",
+    "level": 30,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Mind the channels, {name}; the mud takes boots and the reeds take the rest. We cut reed for Rainhold's roofs, when the [pondkin] let us.",
+      "pondkin": "Frog-folk. They think every reed in the mere is theirs, and they spear anyone who says otherwise. Their mudcallers carry [fetishes], bone and shell; bring me four and I'll pay, every time.",
+      "fetishes": "Four pondkin fetishes, {name}. The first time, I've a pair of boots that don't sink.",
+      "bloatking": "Their king. A great fat thing on a throne of mud in the northwest, wearing a crown of rust and shells. Bring me his [crown] and the reed beds are ours again.",
+      "crown": "Bloatking Ghurr's crown, {name}. Nothing else will convince the others.",
+      "unknown": "Ask Kesh at the boats, or the priestess."
+    }
+  },
+  "boatwright_kesh": {
+    "name": "Boatwright Kesh",
+    "title": "Boats and Supplies",
+    "level": 28,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "bundle_of_herbs",
+        "vial_of_water",
+        "loaf_of_bread",
+        "fishing_bait",
+        "crude_arrow",
+        "obsidian_arrow",
+        "draught_of_homecoming",
+        "fishing_pole"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "Boats, bait, bread, {name}. Press G. And if you're hunting, I'll pay for [reedstalker] plumes.",
+      "reedstalker": "The giant herons. Their plumes make the best fletching in the Monsoon. Four [plumes], and I'll pay every time.",
+      "plumes": "Four reedstalker plumes, {name}.",
+      "stilt-legs": "Old Stilt-Legs, the great heron of the rookery in the northeast. Bring me one of its [plume] and I'll make you a cloak.",
+      "plume": "Old Stilt-Legs' plume. Only that one.",
+      "unknown": "Ask Pallavi."
+    }
+  },
+  "priestess_amrit": {
+    "name": "Priestess Amrit",
+    "title": "Voice of Jalendra",
+    "level": 32,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Jalendra's peace, {name}. Veyamar drowned in one night of rain, long ago; its people still walk the water. The [Sunken] cannot rest, and the [coven] makes it worse.",
+      "sunken": "Each of the Sunken wears the village charm. Bring me four [charms] and I will sing them to Jalendra, and the water will let them go.",
+      "charms": "Four sunken charms, {name}. As many times as you can bear it.",
+      "headwoman": "Headwoman Ishani walks at night, among the ruins of her hall. She wears a [lotus] in her hair; bring it to me and her people will follow her to rest.",
+      "lotus": "Ishani's lotus, {name}.",
+      "coven": "The Sedge Sisters, witches in the southwest fen, who raise the bog against us. Their mother, Marrowroot, keeps her [heart] in a jar, they say.",
+      "heart": "Mother Marrowroot's heart. Bring it, and the coven breaks.",
+      "unknown": "Jalendra hears all, {name}. I do not."
+    }
+  },
+  "rainhold_reedwatch": {
+    "name": "Rainhold Reedwatch",
+    "title": "Rainhold",
+    "level": 38,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Stay by the camp, {name}. The reeds hide more than frogs.",
+      "unknown": "Ask Pallavi."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!",
+        "To the piers, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not in Rainhold!",
+        "Back into the rain!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Rainhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "tidewarden_nkemi": {
+    "name": "Tidewarden Nkemi",
+    "title": "Tidewatch Expedition",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Welcome to Drownfast, {name}, the citadel of the Tide Kings. Rainhold sent us to learn why the storm never ends. The [Tidesworn] still guard their walls.",
+      "tidesworn": "The drowned garrison. Every one of them wears the royal [insignia]. Bring me four and Rainhold pays, every time.",
+      "insignia": "Four tidesworn insignias, {name}. The first time, a blade from our armory.",
+      "king": "Tideking Varundra, the last of them, holds the throne in the sea temple. I think the storm is his grief. Bring me his [crown].",
+      "crown": "Varundra's crown, {name}. Then maybe the rain will stop.",
+      "unknown": "Ask Suriya or the stormsage."
+    }
+  },
+  "pearl_diver_suriya": {
+    "name": "Pearl-Diver Suriya",
+    "title": "Tidewatch Expedition",
+    "level": 32,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "I dive for pearls in the old harbor, {name}, when the [naga] let me.",
+      "naga": "Serpent-folk, come up from the deeps into the drowned halls. Their scales fetch a fine price. Four [scales], every time.",
+      "scales": "Four naga scales, {name}.",
+      "queen": "Queen Sessavi. She wears the greatest pearl of the deeps on her brow. Bring me that [pearl] and I'll set it for you.",
+      "pearl": "Sessavi's pearl, {name}.",
+      "unknown": "Ask the tidewarden."
+    }
+  },
+  "stormsage_obi": {
+    "name": "Stormsage Obi",
+    "title": "Tidewatch Expedition",
+    "level": 34,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "merchant": {
+      "sells": [
+        "bundle_of_herbs",
+        "vial_of_water",
+        "loaf_of_bread",
+        "obsidian_arrow",
+        "draught_of_homecoming",
+        "greater_healing_potion",
+        "clarity_tonic"
+      ],
+      "buy_rate": 0.5
+    },
+    "dialogue": {
+      "hail": "The storm is alive, {name}, and it has children: the [tempest] spirits. Press G for supplies.",
+      "tempest": "Bring me four tempest [shards] and I'll pay; I read the storm in them.",
+      "shards": "Four tempest shards, {name}.",
+      "warden": "The Stormbound Warden, chained to the great tower. Bring me its [chain] and I'll forge you something storm-proof.",
+      "chain": "The Warden's chain, {name}.",
+      "chitterjaw": "Old Chitterjaw, the great crab of the causeways. Its [claw] would make a shield nothing could break.",
+      "claw": "Chitterjaw's claw, {name}.",
+      "unknown": "Ask the tidewarden."
+    }
+  },
+  "tidewatch_guard": {
+    "name": "Tidewatch Guard",
+    "title": "Tidewatch Expedition",
+    "level": 38,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "Keep to the causeways, {name}.",
+      "unknown": "Ask the tidewarden."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!",
+        "To the piers, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not in Rainhold!",
+        "Back into the rain!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Rainhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }

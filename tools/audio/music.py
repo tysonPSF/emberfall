@@ -302,6 +302,22 @@ TRACKS = {
 		"drone": 0.55, "drum": [0, 0.5, 2, 2.5], "drum_sections": ["A", "B", "C"], "drum_low": 0.7,
 		"reverb": 3.6, "sparse": 0.45, "bells": 0.08,
 	},
+	"reedmere": {  # a misty reed marsh and its half-sunken stilt villages: a breathy low flute over a drone, dripping bells, a wandering hand drum
+		"key": (51, "aeolian"), "bpm": 60, "beats": 3, "seed": 307,
+		"sections": {"A": [0, 6, 3, 2, 0, 5, 6, 0], "B": [5, 2, 3, 6, 5, 3, 4, 4]},
+		"form": ["A", "B", "A", "B"],
+		"melody": "flute", "melody_octave": -1, "arp": "harp", "arp_pattern": [0, 2, -1, 4, 1, -1], "pad": True, "bass": False,
+		"drone": 0.35, "drum": [0, 1.5, 2.5], "drum_sections": ["B"], "drum_gain": 0.45, "drum_skip": 0.4,
+		"reverb": 4.6, "sparse": 0.4, "bells": 0.5,
+	},
+	"drownfast": {  # the drowned kings' citadel under an endless storm: a processional lament over deep drones, sunken bells, far thunder
+		"key": (47, "aeolian"), "bpm": 50, "beats": 4, "seed": 331,
+		"sections": {"A": [0, 5, 2, 4], "B": [3, 6, 2, 0], "C": [5, 3, 1, 4]},
+		"form": ["A", "A", "B", "A", "C"],
+		"melody": "flute", "arp": "lute", "arp_pattern": [0, -1, 2, -1, 1, -1, 4, -1], "pad": True, "bass": True,
+		"drone": 0.6, "drum": [0, 2], "drum_sections": ["A", "B", "C"], "drum_low": 0.6, "drum_gain": 0.8,
+		"reverb": 4.4, "sparse": 0.3, "bells": 0.35, "bell_octave": 0, "thunder": 0.3,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
@@ -377,10 +393,20 @@ def render(name, spec):
 				put(inst, tb + k * step + rng.normal(0, 0.004), pan=-0.35 if k % 2 else -0.15)
 			if sec in spec["drum_sections"]:
 				for d in spec["drum"]:
+					if spec.get("drum_skip") and d != 0 and rng.random() < spec["drum_skip"]:
+						continue  # an irregular hand: some off-beats go unplayed
 					put(drum(0.55 if d == 0 or d == 2 else 0.35, rng, spec.get("drum_low", 1.0)), tb + d * beat, pan=0.05,
 						gain=spec.get("drum_gain", 1.0))
 			if spec.get("bells") and rng.random() < spec["bells"]:
-				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), 1)), 2.0, 0.5), tb + beat * rng.integers(1, beats), pan=0.4)
+				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), spec.get("bell_octave", 1))), 2.0, 0.5),
+					tb + beat * rng.integers(1, beats), pan=0.4)
+			if spec.get("thunder") and rng.random() < spec["thunder"]:
+				# far thunder: a slow low swell on the chord's root and a few deep drum rolls under it
+				at = tb + beat * rng.uniform(0.5, beats - 1)
+				put(pad(midi_hz(key.note(ch, -2)), beats * beat * 1.4, 0.8), at, pan=rng.uniform(-0.5, 0.5))
+				for k in range(int(rng.integers(2, 5))):
+					put(drum(0.25 + 0.1 * rng.random(), rng, 0.55), at + 0.6 + k * rng.uniform(0.15, 0.4),
+						pan=rng.uniform(-0.6, 0.6), gain=0.6)
 		bar += len(chords)
 
 	# the room: a decaying-noise reverb, a little different on each side
