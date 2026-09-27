@@ -1,21 +1,28 @@
 {
  "built": [
+  "blackglass",
   "cinderpass",
+  "dawnwatch",
   "dewstep",
   "drownfast",
   "emberhold",
   "emberhold_crypt",
   "emberhold_tavern",
+  "forgehold",
   "greenmoor",
   "harrowfield",
   "high_terrace",
   "hollowmere",
   "lanternhold",
+  "mirror_flats",
   "rainhold",
   "reedmere",
+  "silted_reach",
   "sunward_steps",
   "the_bleach",
+  "the_burn",
   "thornwood",
+  "tidemouth",
   "weeping_throat"
  ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",
@@ -225,8 +232,8 @@
     4
    ],
    "kind": "outpost",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -243,8 +250,8 @@
     4
    ],
    "kind": "waste",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -351,8 +358,8 @@
     3
    ],
    "kind": "water",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -369,8 +376,8 @@
     4
    ],
    "kind": "outpost",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -423,8 +430,8 @@
     4
    ],
    "kind": "burn",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -441,8 +448,8 @@
     5
    ],
    "kind": "burn",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -455,7 +462,7 @@
    ],
    "size": 512,
    "cell": [
-    1,
+    3,
     5
    ],
    "kind": "wood",
@@ -491,12 +498,12 @@
    ],
    "size": 224,
    "cell": [
-    3,
+    1,
     5
    ],
    "kind": "city",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -797,7 +804,7 @@
   {
    "a": "dawnwatch",
    "a_edge": "north",
-   "b": "smokewood",
+   "b": "forgehold",
    "b_edge": "south",
    "cross_area": true
   },
@@ -951,7 +958,7 @@
   {
    "a": "blackglass",
    "a_edge": "east",
-   "b": "smokewood",
+   "b": "forgehold",
    "b_edge": "west",
    "cross_area": false
   },
@@ -979,16 +986,23 @@
   {
    "a": "agnavars_hearth",
    "a_edge": "east",
-   "b": "forgehold",
+   "b": "smokewood",
    "b_edge": "west",
    "cross_area": false
   },
   {
    "a": "agnavars_hearth",
    "a_edge": "west",
-   "b": "smokewood",
+   "b": "forgehold",
    "b_edge": "east",
    "cross_area": false
+  },
+  {
+   "a": "forgehold",
+   "a_edge": "north",
+   "b": "ivory_field",
+   "b_edge": "south",
+   "cross_area": true
   },
   {
    "a": "the_long_grass",
@@ -1066,13 +1080,6 @@
    "b": "timirajs_table",
    "b_edge": "south",
    "cross_area": false
-  },
-  {
-   "a": "ivory_field",
-   "a_edge": "south",
-   "b": "smokewood",
-   "b_edge": "north",
-   "cross_area": true
   },
   {
    "a": "ivory_field",

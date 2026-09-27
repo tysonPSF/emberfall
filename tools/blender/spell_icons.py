@@ -2620,6 +2620,615 @@ def cobra_venom():
 	return p.build()
 
 
+# ---------------------------------------------------------------- level 35 and the Forgehold / glass-country monsters
+
+def _star(p, cx, cz, r, swatch, glow=2.2, y=0.0, points=5, inner=0.42, spin=90.0):
+	"""A pointed star standing in the picture plane."""
+	p.blob((r * 0.9, 0.12 * r / 0.3, r * 0.9), (cx, y, cz), swatch, segs=(10, 6), glow=glow)
+	for k in range(points):
+		a = math.radians(spin) + k * math.tau / points
+		p.seg((cx + math.cos(a) * r * inner, y, cz + math.sin(a) * r * inner), (cx + math.cos(a) * r * 1.35, y, cz + math.sin(a) * r * 1.35),
+			  r * 0.34, 0.0, swatch, sides=4, glow=glow)
+
+
+def _heart(p, cx, cz, s, swatch=CLOTH_RED, y=0.0, depth=0.16, rim=None, glow=0.0):
+	"""A heart in the picture plane, s = its half width."""
+	outline = []
+	for k in range(32):
+		t = k * math.tau / 32
+		x = 16 * math.sin(t) ** 3
+		z = 13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t)
+		outline.append((cx + x / 16 * s, cz + z / 16 * s))
+	icons._slab(p, outline, y - depth / 2, y + depth / 2, swatch, grad=(0.1, 0.7))
+	p.blob((s * 0.7, depth * 0.9, s * 0.55), (cx - s * 0.35, y - depth * 0.2, cz + s * 0.25), swatch, segs=(8, 5), grad=(0.0, 0.4))  # a round front
+	if rim:
+		for a, b in zip(outline, outline[1:] + outline[:1]):
+			p.seg((a[0], y - depth * 0.6, a[1]), (b[0], y - depth * 0.6, b[1]), 0.03, 0.03, rim, sides=4, glow=glow)
+
+
+def _shard(p, base, tip, w, swatch, glow=0.0, y=0.0, grad=(0.1, 0.8)):
+	"""A four-sided splinter of glass or crystal from base to its point."""
+	p.seg((base[0], y, base[1]), (tip[0], y, tip[1]), w, 0.0, swatch, sides=4, glow=glow, grad=grad)
+	d = Vector((tip[0] - base[0], 0, tip[1] - base[1]))
+	p.seg((base[0], y, base[1]), (base[0] - d.x * 0.25, y, base[1] - d.z * 0.25), w, 0.0, swatch, sides=4, glow=glow, grad=grad)
+
+
+def _fangs(p, cx, cz, w, gap, n, swatch, length=0.22, glow=0.0, y=-0.1):
+	"""Two rows of fangs biting shut on (cx, cz): an upper jaw's pointing down, a lower jaw's up."""
+	for k in range(n):
+		x = cx - w / 2 + w * k / max(n - 1, 1)
+		big = 1.0 if k in (0, n - 1) else 0.7
+		p.seg((x, y, cz + gap), (x, y, cz + gap - length * big), 0.06, 0.0, swatch, sides=5, glow=glow)
+		p.seg((x, y, cz - gap), (x, y, cz - gap + length * big), 0.055, 0.0, swatch, sides=5, glow=glow)
+
+
+def sundering_blow():
+	p = Prop("sundering_blow", 901)
+	for sx in (-1, 1):                                                                    # a breastplate, split in two
+		off = sx * 0.16
+		pts = [(0.0, 1.0), (0.0, 0.05), (sx * 0.25, -0.05), (sx * 0.52, 0.12), (sx * 0.62, 0.62), (sx * 0.7, 0.95), (sx * 0.35, 1.0), (sx * 0.2, 0.82)]
+		outline = [(x + off, z) for x, z in pts]
+		icons._slab(p, outline, -0.06 + (0.04 if sx > 0 else 0), 0.1, STONE_LIGHT, grad=(0.1, 0.6))
+		p.seg((sx * 0.42 + off, -0.04, 0.7), (sx * 0.38 + off, -0.04, 0.25), 0.05, 0.05, IRON, sides=5)      # its ribbing
+	for k in range(5):                                                                    # the split, torn jagged
+		z0, z1 = 1.05 - k * 0.24, 1.05 - (k + 1) * 0.24
+		p.seg(((-1) ** k * 0.05, -0.2, z0), ((-1) ** (k + 1) * 0.05, -0.2, z1), 0.035, 0.035, CLOTH_WHITE, sides=4, glow=2.6)
+	p.seg((-0.55, -0.3, 1.35), (0.5, -0.3, -0.25), 0.05, 0.0, CLOTH_WHITE, sides=4, glow=1.8)      # the stroke that did it
+	for x, z, s in ((-0.55, 0.3, 0.1), (0.62, 0.05, 0.08), (-0.4, -0.05, 0.07)):          # chips flying
+		p.rock((s * 1.2, s, s), (x, -0.25, z), STONE_LIGHT, jitter=0.2)
+	for x, z in ((0.55, 1.2), (0.8, 0.95)):                                               # stunned stars
+		_star(p, x, z, 0.09, GOLD, glow=2.4, y=-0.3)
+	return p.build()
+
+
+def last_stand():
+	p = Prop("last_stand", 903)
+	p.blob((1.5, 0.9, 0.3), (0, 0, -0.05), STONE_DARK, segs=(12, 5))                          # a last patch of ground
+	for k in range(9):                                                                    # a golden aura
+		a = math.radians(10 + k * 20)
+		p.seg((math.cos(a) * 0.55, 0.25, 0.25 + math.sin(a) * 0.55), (math.cos(a) * 0.95, 0.25, 0.25 + math.sin(a) * 0.95), 0.06, 0.0, GOLD, sides=4, glow=2.0)
+	c = Vector((0, 0, 0.1))
+	p.seg(tuple(c), tuple(c + Vector((0, 0, 0.95))), 0.09, 0.09, STONE_LIGHT, sides=4, twist=45)     # a sword driven into it
+	p.seg(tuple(c), tuple(c - Vector((0, 0, 0.12))), 0.09, 0.0, STONE_LIGHT, sides=4, twist=45)
+	p.box((0.62, 0.14, 0.1), (0, 0, 1.08), GOLD)
+	p.seg((0, 0, 1.12), (0, 0, 1.42), 0.055, 0.055, WOOD, sides=6)
+	p.blob((0.14, 0.14, 0.14), (0, 0, 1.46), GOLD, segs=(6, 4))
+	p.seg((-0.35, -0.15, 0.1), (-0.35, -0.15, 0.95), 0.1, 0.1, CLOTH_RED, sides=6)          # a torn banner tied to it
+	outline = [(0.0, 0.95), (-0.7, 0.9), (-0.62, 0.5), (-0.75, 0.3), (-0.45, 0.42), (-0.3, 0.2), (0.0, 0.55)]
+	icons._slab(p, [(x + 0.02, z) for x, z in outline], -0.08, -0.02, CLOTH_RED, grad=(0.2, 0.7))
+	p.seg((0, -0.12, 0.72), (0.0, -0.12, 0.92), 0.12, 0.12, WOOD, sides=6)
+	for x, z in ((0.55, 0.62), (0.7, 0.35)):                                                # holding: +
+		p.box((0.26, 0.06, 0.07), (x, -0.3, z), LEAF, glow=2.2)
+		p.box((0.07, 0.06, 0.26), (x, -0.3, z), LEAF, glow=2.2)
+	return p.build()
+
+
+def earthshaker():
+	p = Prop("earthshaker", 905)
+	p.blob((2.0, 1.4, 0.18), (0, 0, 0.0), STONE_WARM, segs=(14, 5))                         # the ground
+	for k, r in enumerate((0.35, 0.62, 0.9)):                                             # the quake rolling out
+		_ring(p, r, 0.1 + k * 0.01, 0.035, AMBER, glow=1.8 - k * 0.3, sides=22)
+	for k in range(7):                                                                    # stone thrown up in slabs
+		a = k * math.tau / 7 + 0.3
+		r = 0.72 + (k % 2) * 0.15
+		base = (math.cos(a) * r, math.sin(a) * r * 0.8, 0.05)
+		lean = 0.35
+		top = (base[0] * (1 + lean), base[1] * (1 + lean), 0.45 + (k % 3) * 0.12)
+		p.seg(base, top, 0.14, 0.03, STONE_DARK, sides=4, jitter=0.02)
+	for x, z, s in ((-0.4, 0.95, 0.16), (0.2, 1.15, 0.12), (0.5, 0.85, 0.14), (-0.1, 1.35, 0.09)):   # and rocks flung high
+		p.rock((s * 1.2, s, s), (x, -0.1, z), STONE_WARM, jitter=0.2)
+	p.rock((0.5, 0.45, 0.4), (0, 0, 0.25), STONE_DARK, jitter=0.15)                           # at the heart, a stamped crater
+	p.blob((0.3, 0.3, 0.1), (0, -0.05, 0.42), AMBER, segs=(8, 5), glow=2.4)
+	for k in range(6):
+		a = k * math.tau / 6
+		p.seg((0, 0, 0.12), (math.cos(a) * 0.5, math.sin(a) * 0.4, 0.1), 0.04, 0.01, AMBER, sides=4, glow=2.2)
+	return p.build()
+
+
+def circle_of_dawn():
+	p = Prop("circle_of_dawn", 907)
+	_ring(p, 0.85, 0.0, 0.05, GOLD, glow=2.2, sides=26)                                   # a ring of dawn light on the ground
+	for k in range(5):                                                                    # a friend at each point of it
+		a = k * math.tau / 5 + 0.6
+		x, y = math.cos(a) * 0.85, math.sin(a) * 0.85
+		p.seg((x, y, 0.0), (x, y, 0.7), 0.11, 0.03, FLAME, sides=6, glow=1.4)            # a column of light rising
+		p.blob((0.2, 0.2, 0.2), (x, y, 0.35), CLOTH_WHITE, segs=(8, 5), glow=1.8)
+	p.seg((0, 0, 0.35), (0, 0, 0.45), 0.3, 0.3, GOLD, sides=16, glow=2.6)                   # the sun at its center...
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.32, math.sin(a) * 0.32, 0.4), (math.cos(a) * 0.55, math.sin(a) * 0.55, 0.4), 0.05, 0.0, FLAME, sides=4, glow=2.4)
+	p.box((0.16, 0.12, 0.5), (0, 0, 0.85), LEAF, glow=2.2)                                   # ...and a healing cross above
+	p.box((0.4, 0.12, 0.14), (0, 0, 0.92), LEAF, glow=2.2)
+	return p.build()
+
+
+def dawnbreak():
+	p = Prop("dawnbreak", 909)
+	p.blob((1.5, 0.9, 0.14), (0, 0, 0.0), STONE_DARK, segs=(12, 4))                           # dark ground
+	p.seg((0, 0.05, 1.45), (0, 0.05, 1.3), 0.34, 0.34, GOLD, sides=18, glow=2.6)            # the sun, breaking open above
+	for k in range(9):
+		a = math.radians(-20 + k * 27.5)
+		p.seg((math.cos(a) * 0.38, 0.05, 1.38 + math.sin(a) * 0.38), (math.cos(a) * 0.62, 0.05, 1.38 + math.sin(a) * 0.62), 0.05, 0.0, FLAME, sides=4, glow=2.4)
+	p.seg((0, 0, 1.2), (0, 0, 0.1), 0.1, 0.24, CLOTH_WHITE, sides=10, glow=2.4)              # a spear of light driving down
+	p.seg((0, -0.02, 1.2), (0, -0.02, 0.1), 0.2, 0.36, GOLD, sides=10, glow=0.9)
+	for k in range(10):                                                                   # bursting where it lands
+		a = math.radians(5 + k * 19)
+		p.seg((math.cos(a) * 0.3, -0.3, 0.08 + math.sin(a) * 0.2), (math.cos(a) * 0.8, -0.3, 0.08 + math.sin(a) * 0.55), 0.05, 0.0,
+			  GOLD if k % 2 else CLOTH_WHITE, sides=4, glow=2.4)
+	for k in range(4):                                                                    # cracks of light in the ground
+		a = k * math.tau / 4 + 0.5
+		p.seg((0, 0, 0.08), (math.cos(a) * 0.7, math.sin(a) * 0.45, 0.08), 0.04, 0.01, FLAME, sides=4, glow=2.2)
+	return p.build()
+
+
+def dawns_embrace():
+	p = Prop("dawns_embrace", 911)
+	for sx in (-1, 1):                                                                    # two cupped hands...
+		before = len(p.parts)
+		_hand(p, 0, 0, 0.75, CLOTH_WHITE, glow=0.5, curl=0.6)
+		for o in p.parts[before:]:
+			o.data.transform(Matrix.Rotation(math.radians(-sx * 38), 4, "Y"))
+			o.data.transform(Matrix.Translation((sx * 0.38, 0, 0.1)))
+	p.seg((0, 0.02, 0.72), (0, -0.05, 0.72), 0.3, 0.3, GOLD, sides=18, glow=2.8)            # ...cradling the dawn
+	for k in range(10):
+		a = k * math.tau / 10 + 0.2
+		p.seg((math.cos(a) * 0.34, -0.02, 0.72 + math.sin(a) * 0.34), (math.cos(a) * (0.62 if k % 2 else 0.5), -0.02, 0.72 + math.sin(a) * (0.62 if k % 2 else 0.5)),
+			  0.05, 0.0, FLAME, sides=4, glow=2.4)
+	_ring_at(p, 0, 0.72, 0.85, 0.03, LEAF, glow=1.6, sides=24, a0=math.radians(20), a1=math.radians(160), y=0.1)   # warm, healing light
+	for x, z in ((-0.62, 1.2), (0.62, 1.2), (0, 1.5)):
+		p.blob((0.1, 0.1, 0.1), (x, -0.1, z), LEAF, segs=(6, 4), glow=2.4)
+	return p.build()
+
+
+def obsidian_lance():
+	p = Prop("obsidian_lance", 913)
+	a, b = Vector((-0.6, 0, 0.1)), Vector((0.6, 0, 1.1))
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	p.seg(tuple(a), tuple(b), 0.3, 0.0, STONE_DARK, sides=4, twist=45)                     # a lance of black glass
+	p.seg(tuple(a), tuple(a - d * 0.4), 0.3, 0.0, STONE_DARK, sides=4, twist=45)
+	for k in range(4):                                                                    # molten veins down its facets
+		t0, t1 = 0.0 + k * 0.2, 0.14 + k * 0.2
+		w = 0.13 * (1 - t0)
+		p0, p1 = a + (b - a) * t0 + n * (w if k % 2 else -w), a + (b - a) * t1 + n * (-w if k % 2 else w)
+		p.seg(tuple(p0 - Vector((0, 0.2, 0))), tuple(p1 - Vector((0, 0.2, 0))), 0.04, 0.035, EMBER, sides=4, glow=2.8)
+	p.seg(tuple(a - d * 0.3 - Vector((0, 0.16, 0))), tuple(b - d * 0.1 - Vector((0, 0.1, 0))), 0.025, 0.0, CLOTH_WHITE, sides=4, glow=1.4)  # a glassy glint
+	p.seg(tuple(b - d * 0.25), tuple(b + d * 0.03), 0.09, 0.0, FLAME, sides=4, glow=3.0)    # its point, white-hot
+	for k in range(7):                                                                    # dripping fire behind
+		t = k / 6
+		c = a - d * (0.45 + t * 0.4) + n * math.sin(k * 2.3) * 0.2
+		s = 0.2 - t * 0.11
+		p.blob((s, s, s), tuple(c), EMBER if k % 2 else FLAME, segs=(6, 4), glow=2.6)
+	return p.build()
+
+def frost_prison():
+	p = Prop("frost_prison", 915)
+	p.blob((1.5, 1.2, 0.16), (0, 0, -0.02), CLOTH_WHITE, segs=(12, 5))                        # frozen ground
+	p.blob((0.4, 0.35, 0.45), (0, 0.05, 0.35), PURPLE, segs=(8, 6))                           # a foe, caught
+	p.blob((0.3, 0.3, 0.3), (0, 0.05, 0.72), PURPLE, segs=(8, 6))
+	for sx in (-1, 1):
+		p.blob((0.07, 0.05, 0.05), (sx * 0.07, -0.1, 0.75), CLOTH_WHITE, segs=(5, 3), glow=2.0)
+	for k in range(8):                                                                    # bars of ice all round it
+		a = k * math.tau / 8 + 0.2
+		x, y = math.cos(a) * 0.55, math.sin(a) * 0.45
+		p.seg((x, y, 0.0), (x * 0.92, y * 0.92, 1.0), 0.09, 0.06, WATER, sides=6, glow=1.2)
+		p.seg((x * 0.92, y * 0.92, 1.0), (x * 0.5, y * 0.5, 1.28), 0.06, 0.0, WATER, sides=5, glow=1.4)
+	_ring(p, 0.55, 0.05, 0.07, WATER, glow=1.0, sides=16)
+	_ring(p, 0.51, 1.0, 0.05, CLOTH_WHITE, glow=1.4, sides=16)
+	for x, z in ((-0.7, 1.05), (0.72, 0.7)):
+		_snowflake(p, x, z, 0.18, 1.8)
+	return p.build()
+
+
+def starfall():
+	p = Prop("starfall", 917)
+	p.blob((1.7, 1.0, 0.12), (0, 0, 0.0), STONE_DARK, segs=(12, 4))
+	for k in range(5):                                                                    # a blue burst on the ground
+		a = k * math.tau / 5 + 0.3
+		p.seg((0.15, 0, 0.06), (0.15 + math.cos(a) * 0.6, math.sin(a) * 0.4, 0.06), 0.04, 0.01, RUNE, sides=4, glow=2.0)
+	for x, z, r, trail in ((-0.55, 1.15, 0.17, 0.55), (0.1, 0.55, 0.22, 0.7), (0.62, 1.2, 0.13, 0.45), (-0.2, 0.28, 0.12, 0.35)):  # stars falling
+		_star(p, x, z, r, CLOTH_WHITE if r > 0.15 else GOLD, glow=2.6, y=-0.1)
+		p.seg((x - 0.06, 0.05, z + r), (x - trail * 0.35, 0.05, z + trail), r * 0.55, 0.0, RUNE, sides=6, glow=1.8)   # their blue tails
+	return p.build()
+
+
+def throat_cut():
+	p = Prop("throat_cut", 919)
+	pts = [(math.cos(a) * 0.8, 0, 0.35 + math.sin(a) * 0.35) for a in [math.radians(200 + k * 17) for k in range(9)]]   # the cut: a red crescent
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		w = 0.1 * math.sin(math.pi * (i + 0.5) / 8) + 0.01
+		p.seg(a, b, w, w, CRIMSON, sides=5, glow=1.8)
+	for x, z, s in ((-0.3, -0.25, 0.22), (0.05, -0.35, 0.26), (0.35, -0.2, 0.2)):          # spilling
+		_drop(p, x, z - 0.1, s, CLOTH_RED, 1.0)
+	for k in range(9):                                                                    # a curved knife that made it
+		t = k / 8
+		a = math.radians(160 - t * 90)
+		c = (0.55 + math.cos(a) * 0.55, -0.15, 0.4 + math.sin(a) * 0.55)
+		c2 = (0.55 + math.cos(a - 0.2) * 0.55, -0.15, 0.4 + math.sin(a - 0.2) * 0.55)
+		p.seg(c, c2, 0.07 * (1 - t) + 0.015, 0.07 * (1 - t * 0.9), STONE_LIGHT, sides=4)
+	hilt = (0.55 + math.cos(math.radians(160)) * 0.55, -0.15, 0.4 + math.sin(math.radians(160)) * 0.55)
+	p.seg((hilt[0] + 0.02, -0.15, hilt[2] - 0.12), (hilt[0] - 0.02, -0.15, hilt[2] + 0.12), 0.04, 0.04, GOLD, sides=5)
+	p.seg(hilt, (hilt[0] - 0.3, -0.15, hilt[2] - 0.1), 0.05, 0.05, WOOD, sides=6)
+	for x, z in ((-0.55, 1.05), (-0.2, 1.2)):                                              # reeling
+		_star(p, x, z, 0.09, GOLD, glow=2.4, y=-0.2)
+	return p.build()
+
+
+def shadow_dance():
+	p = Prop("shadow_dance", 921)
+	_swirl(p, 0, 0.6, 0.12, 0.85, 1.3, PURPLE, 1.4, thick=0.14, steps=34)                  # a whirl of shadow
+	for k, (a, g) in enumerate(((0.3, 0.0), (2.4, 0.0), (4.4, 0.0))):                      # blades dancing round it
+		base = (math.cos(a) * 0.25, -0.1, 0.6 + math.sin(a) * 0.25)
+		tip = (math.cos(a + 0.5) * 0.9, -0.1, 0.6 + math.sin(a + 0.5) * 0.9)
+		_dagger(p, base, tip, w=0.1, edge=PETAL_PURPLE)
+		for j in (1, 2):                                                                 # each trailing afterimages
+			aj = a - j * 0.28
+			b2 = (math.cos(aj) * 0.25, 0.05 + j * 0.05, 0.6 + math.sin(aj) * 0.25)
+			t2 = (math.cos(aj + 0.5) * 0.9, 0.05 + j * 0.05, 0.6 + math.sin(aj + 0.5) * 0.9)
+			p.seg(b2, t2, 0.07 - j * 0.015, 0.0, PURPLE, sides=4, glow=1.6 - j * 0.4)
+	p.blob((0.22, 0.2, 0.22), (0, -0.1, 0.6), STONE_DARK, segs=(8, 5))
+	p.blob((0.1, 0.06, 0.06), (0, -0.2, 0.62), PETAL_PURPLE, segs=(6, 4), glow=3.0)
+	return p.build()
+
+
+def heartseeker():
+	p = Prop("heartseeker", 923)
+	for x, z, s in ((0.3, 0.8, 0.7), (-0.35, 0.35, 0.6), (0.4, 0.2, 0.55)):                # the shadows it came out of
+		p.blob((s, s * 0.6, s), (x, 0.4, z), PURPLE, segs=(10, 6), glow=0.4)
+	_heart(p, 0, 0.55, 0.52, CLOTH_RED, y=0.0, rim=CRIMSON, glow=1.6)                       # a heart
+	_dagger(p, (0.85, 0.3, 1.25), (-0.55, -0.4, 0.05), w=0.1, edge=CLOTH_WHITE)             # run through from behind, the point out the front
+	for k in range(3):
+		_drop(p, -0.45 + k * 0.14, -0.1 - k * 0.12, 0.16, CLOTH_RED, 0.8)
+	return p.build()
+
+
+def forgefire_mantle():
+	p = Prop("forgefire_mantle", 925)
+	for x, s in ((-0.55, 0.75), (0.55, 0.8), (0.0, 1.05)):                                # forge fire rising behind
+		_fl(p, x, 0.45, 0.45, s, glow=2.0)
+	for sx in (-1, 1):                                                                    # a great mantle of plate: two pauldrons
+		for k in range(3):
+			z = 0.78 - k * 0.2
+			w = 0.62 - k * 0.06
+			p.blob((w, 0.62, 0.3), (sx * (0.4 + k * 0.07), 0, z), STONE_LIGHT, rot=(0, sx * (18 + k * 12), 0), segs=(12, 6), grad=(0.1, 0.55))
+			p.seg((sx * (0.14 + k * 0.07), -0.3, z - 0.02 - k * 0.02), (sx * (0.66 + k * 0.07), -0.3, z - 0.14 - k * 0.07), 0.035, 0.035, GOLD, sides=4, glow=0.8)
+		p.blob((0.13, 0.1, 0.13), (sx * 0.42, -0.34, 0.84), EMBER, segs=(6, 4), glow=2.8)    # rivets glowing hot
+	p.seg((0, 0.05, 0.45), (0, 0.05, 0.8), 0.24, 0.22, IRON, sides=10)                   # a gorget between them
+	p.seg((0, 0.03, 0.8), (0, 0.03, 0.88), 0.25, 0.25, GOLD, sides=10, glow=0.8)
+	p.blob((0.2, 0.1, 0.2), (0, -0.2, 0.6), EMBER, segs=(8, 5), glow=2.6)                    # a forge-gem at the collar
+	return p.build()
+
+
+def forge_flare():
+	p = Prop("forge_flare", 927)
+	for k in range(9):                                                                    # a stone forge mouth
+		a = math.radians(k * 22.5)
+		p.box((0.24, 0.5, 0.18), (-0.45 + math.cos(a) * 0.42, 0.1, 0.35 + math.sin(a) * 0.42), STONE_DARK, rot=(0, -math.degrees(a) + 90, 0))
+	p.box((1.1, 0.6, 0.2), (-0.45, 0.1, -0.02), STONE_DARK)
+	p.blob((0.6, 0.3, 0.5), (-0.45, 0.25, 0.4), EMBER, segs=(10, 6), glow=2.6)                # its heart, glowing
+	for k in range(8):                                                                    # a gout of white-hot flame
+		t = k / 7
+		x = -0.35 + t * 1.3
+		z = 0.42 + t * 0.35
+		s = 0.22 + t * 0.3
+		sw = CLOTH_WHITE if t < 0.3 else (FLAME if t < 0.75 else EMBER)
+		p.blob((s, s * 0.8, s * 0.85), (x, -0.1 - t * 0.1, z + math.sin(k * 1.9) * 0.05), sw, segs=(8, 6), glow=3.0 - t)
+	for k in range(5):                                                                    # sparks
+		p.blob((0.06, 0.06, 0.06), (0.1 + k * 0.2, -0.3, 1.0 + (k % 2) * 0.15 - k * 0.05), GOLD, segs=(5, 3), glow=3.0)
+	return p.build()
+
+
+def elemental_tempest():
+	p = Prop("elemental_tempest", 929)
+	p.blob((0.34, 0.3, 0.34), (0, -0.05, 0.55), CLOTH_WHITE, segs=(10, 6), glow=3.0)          # where they meet
+	for k in range(8):
+		a = k * math.tau / 8 + 0.2
+		p.seg((math.cos(a) * 0.18, -0.1, 0.55 + math.sin(a) * 0.18), (math.cos(a) * 0.38, -0.1, 0.55 + math.sin(a) * 0.38), 0.04, 0.0, GOLD, sides=4, glow=2.6)
+	corners = ((-0.75, 1.25), (0.75, 1.25), (-0.75, -0.15), (0.75, -0.15))
+	for (x, z), kind in zip(corners, ("fire", "water", "earth", "air")):                   # the four elements, converging
+		c = Vector((x, 0, z))
+		d = (Vector((0, 0, 0.55)) - c).normalized()
+		tail = c - d * 0.1
+		head = c + d * 0.5
+		if kind == "fire":
+			_fl(p, x, 0, z - 0.2, 0.42, glow=2.2)
+			p.seg(tuple(head), tuple(c), 0.04, 0.12, FLAME, sides=5, glow=1.8)
+		elif kind == "water":
+			_drop(p, x, z - 0.15, 0.55, WATER, 1.4)
+			p.seg(tuple(head), tuple(c), 0.04, 0.12, WATER, sides=5, glow=1.4)
+		elif kind == "earth":
+			p.rock((0.4, 0.36, 0.34), (x, 0, z), STONE_WARM, jitter=0.12)
+			p.seg(tuple(head), tuple(c), 0.04, 0.12, STONE_WARM, sides=5, glow=0.3)
+		else:
+			_swirl(p, x, z, 0.04, 0.26, 1.5, CLOTH_WHITE, 1.4, thick=0.08, steps=18)
+			p.seg(tuple(head), tuple(c), 0.04, 0.1, CLOTH_WHITE, sides=5, glow=1.2)
+	return p.build()
+
+
+def wither():
+	p = Prop("wither", 931)
+	p.blob((1.2, 0.8, 0.14), (0, 0, 0.0), WOOD, segs=(10, 4))                                 # dead earth
+	stem = [(0.0, 0, 0.05), (0.05, 0, 0.45), (0.0, 0, 0.8), (-0.2, 0, 1.0), (-0.45, 0, 0.95), (-0.55, 0, 0.75)]   # a flower bowed over
+	for i, (a, b) in enumerate(zip(stem, stem[1:])):
+		p.seg(a, b, 0.05, 0.045, SICKLY if i < 2 else WOOD, sides=6)
+	for k in range(5):                                                                    # its head, browned and shedding
+		a = math.radians(-60 + k * 30)
+		c = (-0.55, -0.05, 0.72)
+		p.blob((0.12, 0.06, 0.28), (c[0] + math.sin(a) * 0.18, c[1], c[2] - math.cos(a) * 0.18), WOOD if k % 2 else CLAY,
+			   rot=(0, -math.degrees(a), 0), segs=(6, 4))
+	p.blob((0.14, 0.14, 0.14), (-0.55, -0.1, 0.72), STONE_DARK, segs=(6, 4))
+	for x, z, ang in ((0.35, 0.35, 30), (-0.25, 0.3, -50)):                                 # leaves curling dry
+		p.blob((0.34, 0.06, 0.12), (x, 0, z), WOOD, rot=(0, ang, 0), segs=(8, 4))
+	for x, z in ((-0.7, 0.3), (-0.35, 0.18)):                                              # fallen petals
+		p.blob((0.12, 0.06, 0.05), (x, -0.1, z), CLAY, rot=(0, 30, 0), segs=(6, 3))
+	for k in range(6):                                                                    # a sickly rot in the air
+		a = k * 1.05
+		p.blob((0.08, 0.08, 0.08), (math.cos(a) * 0.55 + 0.1, -0.2, 0.7 + math.sin(a) * 0.45), SICKLY, segs=(5, 3), glow=2.4)
+	_swirl(p, 0.25, 0.75, 0.05, 0.4, 1.2, SICKLY, 1.6, thick=0.05, steps=20)
+	return p.build()
+
+
+def grave_pact():
+	p = Prop("grave_pact", 933)
+	p.blob((1.5, 0.9, 0.14), (0, 0, 0.0), STONE_DARK, segs=(12, 4))
+	outline = [(-0.42, 0.0), (0.42, 0.0), (0.42, 0.85)] + [(math.cos(a) * 0.42, 0.85 + math.sin(a) * 0.35) for a in [k * math.pi / 8 for k in range(1, 8)]] + [(-0.42, 0.85)]
+	icons._slab(p, outline, -0.08, 0.14, STONE_LIGHT, grad=(0.1, 0.6))                     # a gravestone
+	_ring_at(p, 0, 0.62, 0.26, 0.03, PETAL_PURPLE, glow=2.6, sides=18, y=-0.12)             # sealed with a glowing sigil
+	for k in range(3):
+		a0 = math.radians(90 + k * 120)
+		a1 = a0 + math.radians(120) * 2
+		p.seg((math.cos(a0) * 0.26, -0.12, 0.62 + math.sin(a0) * 0.26), (math.cos(a1) * 0.26, -0.12, 0.62 + math.sin(a1) * 0.26), 0.025, 0.025, PETAL_PURPLE, sides=4, glow=2.6)
+	for sx in (-1, 1):                                                                    # two bony hands clasping over it
+		pts = [(sx * 0.8, -0.2, 0.2), (sx * 0.55, -0.25, 0.8), (sx * 0.12, -0.3, 1.05)]
+		for a, b in zip(pts, pts[1:]):
+			_bone(p, a, b, 0.05)
+		p.blob((0.2, 0.14, 0.16), (sx * 0.05, -0.32, 1.08), BONE, segs=(8, 5))
+		for d in (-0.05, 0.03, 0.1):
+			p.seg((sx * 0.05, -0.32, 1.08 + d), (-sx * 0.14, -0.35, 1.1 + d), 0.03, 0.02, BONE, sides=4)
+	for k in range(5):                                                                    # a pact struck in violet light
+		a = math.radians(30 + k * 30)
+		p.seg((math.cos(a) * 0.22, -0.35, 1.1 + math.sin(a) * 0.22), (math.cos(a) * 0.42, -0.35, 1.1 + math.sin(a) * 0.42), 0.035, 0.0, PURPLE, sides=4, glow=2.4)
+	return p.build()
+
+
+def devour_soul():
+	p = Prop("devour_soul", 935)
+	p.blob((0.95, 0.6, 1.0), (-0.3, 0.2, 0.55), PURPLE, segs=(12, 8), glow=0.5)               # a shade, all mouth
+	p.blob((0.62, 0.3, 0.52), (-0.18, -0.02, 0.52), STONE_DARK, segs=(10, 6))                 # its maw
+	for k in range(5):
+		x = -0.42 + k * 0.12
+		p.seg((x, -0.2, 0.8), (x, -0.2, 0.62), 0.045, 0.0, BONE, sides=5)
+		p.seg((x + 0.05, -0.2, 0.26), (x + 0.05, -0.2, 0.42), 0.04, 0.0, BONE, sides=5)
+	for sx in (-1, 1):
+		p.blob((0.12, 0.06, 0.08), (-0.3 + sx * 0.16, -0.25, 0.98), PETAL_PURPLE, segs=(6, 4), glow=3.0)
+	p.blob((0.3, 0.26, 0.34), (0.62, -0.1, 0.62), CLOTH_WHITE, segs=(8, 6), glow=1.8)          # a pale soul...
+	for sx in (-1, 1):
+		p.blob((0.06, 0.04, 0.08), (0.62 + sx * 0.07, -0.25, 0.68), STONE_DARK, segs=(5, 3))
+	p.blob((0.07, 0.04, 0.1), (0.62, -0.26, 0.55), STONE_DARK, segs=(5, 3))
+	for k in range(6):                                                                    # ...dragged in, streaming
+		t = k / 5
+		x = 0.45 - t * 0.6
+		z = 0.6 + math.sin(t * math.pi * 1.5) * 0.12
+		s = 0.2 - t * 0.12
+		p.blob((s, s * 0.8, s * 0.8), (x, -0.15, z), CLOTH_WHITE, segs=(6, 4), glow=1.8)
+	_stream(p, 0.9, 0.25, 0.3, 0.12, 0.04, CLOTH_RED, 2.2)                                 # its life drunk
+	return p.build()
+
+
+def frostbite_curse():
+	p = Prop("frostbite_curse", 937)
+	_snowflake(p, 0, 0.55, 0.42, 2.0)                                                     # the cold, bitten
+	for side, sz in ((1, 1), (-1, -1)):                                                   # jaws of ice closing on it
+		pts = [(math.cos(a) * 0.75, 0, 0.55 + side * math.sin(a) * 0.5) for a in [math.radians(20 + k * 17.5) for k in range(9)]]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.08, 0.08, WATER, sides=6, glow=0.8)
+		for k, (x, _, z) in enumerate(pts[1:-1]):                                        # icicle fangs
+			if k % 2 == 0 or k in (0, 6):
+				p.seg((x, -0.05, z), (x * 0.7, -0.05, 0.55 + (z - 0.55) * 0.35), 0.06, 0.0, CLOTH_WHITE, sides=5, glow=1.4)
+	for sx in (-1, 1):                                                                    # a spirit's cold eyes
+		p.blob((0.1, 0.05, 0.07), (0.2 * sx - 0.1, -0.2, 1.15), RUNE, segs=(6, 4), glow=3.0)
+	for k in range(4):
+		_drop(p, -0.3 + k * 0.2, -0.2 - (k % 2) * 0.1, 0.14, WATER, 1.6)
+	return p.build()
+
+
+def chorus_of_ancestors():
+	p = Prop("chorus_of_ancestors", 939)
+	for k, (x, z, s) in enumerate(((-0.62, 0.35, 0.8), (0.0, 0.55, 1.0), (0.62, 0.35, 0.8))):   # three ancestor spirits, singing
+		p.blob((0.46 * s, 0.4 * s, 0.56 * s), (x, 0.1 * k, z + 0.3 * s), LEAF, segs=(10, 8), glow=1.0)
+		p.seg((x, 0.1 * k, z + 0.1 * s), (x + 0.06, 0.1 * k, z - 0.35 * s), 0.2 * s, 0.03, LEAF, sides=8, glow=1.0)
+		for sx in (-1, 1):
+			p.blob((0.1 * s, 0.05, 0.08 * s), (x + sx * 0.1 * s, 0.1 * k - 0.2 * s, z + 0.4 * s), STONE_DARK, segs=(6, 4))
+		p.blob((0.12 * s, 0.05, 0.16 * s), (x, 0.1 * k - 0.21 * s, z + 0.18 * s), STONE_DARK, segs=(8, 5))    # mouths open in song
+		for j in range(3):                                                               # feathers in their hair
+			p.seg((x + (j - 1) * 0.08 * s, 0.1 * k, z + 0.55 * s), (x + (j - 1) * 0.2 * s, 0.1 * k, z + 0.85 * s), 0.04 * s, 0.0,
+				  CLOTH_WHITE if j != 1 else CLOTH_RED, sides=4)
+	for k in range(3):                                                                    # their song rising
+		_ring_at(p, 0, 1.25, 0.2 + k * 0.18, 0.03, GOLD, glow=2.0, sides=10, a0=math.radians(40), a1=math.radians(140), y=-0.2)
+	for x, z in ((-0.9, 1.0), (0.9, 1.0), (-0.35, 1.25), (0.35, 1.25)):
+		p.box((0.14, 0.06, 0.04), (x, -0.25, z), LEAF, glow=2.4)
+		p.box((0.04, 0.06, 0.14), (x, -0.25, z), LEAF, glow=2.4)
+	return p.build()
+
+
+def totem_of_fury():
+	p = Prop("totem_of_fury", 941)
+	for x, s in ((-0.45, 0.7), (0.45, 0.7), (0.0, 0.95)):                                 # rage burning behind it
+		_fl(p, x, 0.3, 0.6, s, glow=2.0, core=CLOTH_RED)
+	p.seg((0, 0, -0.2), (0, 0, 0.4), 0.16, 0.18, WOOD, sides=8)                           # a post
+	p.blob((0.78, 0.5, 0.82), (0, 0, 0.72), CLOTH_RED, segs=(10, 8))                         # a snarling carved head
+	for sx in (-1, 1):
+		pts = [(sx * 0.35, 0, 0.95), (sx * 0.62, 0, 1.12), (sx * 0.7, 0, 1.45)]          # horns
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.09, 0.04, BONE, sides=6)
+		p.box((0.22, 0.06, 0.07), (sx * 0.16, -0.25, 0.92), STONE_DARK, rot=(0, sx * -25, 0))   # scowling brows
+		p.blob((0.14, 0.06, 0.1), (sx * 0.16, -0.24, 0.8), FLAME, segs=(6, 4), glow=3.0)          # blazing eyes
+	p.box((0.5, 0.08, 0.16), (0, -0.24, 0.5), STONE_DARK)                                     # a roaring mouth
+	for k in range(4):
+		x = -0.18 + k * 0.12
+		p.seg((x, -0.3, 0.58), (x, -0.3, 0.47), 0.035, 0.0, CLOTH_WHITE, sides=4)
+	for sx in (-1, 1):
+		p.seg((sx * 0.2, -0.3, 0.42), (sx * 0.22, -0.3, 0.6), 0.04, 0.0, CLOTH_WHITE, sides=4)
+	p.box((0.4, 0.06, 0.05), (0, -0.25, 0.66), GOLD)                                         # painted stripes
+	return p.build()
+
+
+def heartpiercer():
+	p = Prop("heartpiercer", 943)
+	_heart(p, 0.1, 0.5, 0.5, CLOTH_RED, y=0.0, rim=GOLD, glow=1.4)                           # a heart
+	_arrow(p, (-0.95, -0.25, 1.05), (0.75, 0.2, 0.05), hs=1.2, glow=0.8, r=0.04)            # an arrow clean through it
+	for k in range(4):                                                                    # its flight, a gold streak
+		t = k / 3
+		p.seg((-1.05 - t * 0.25, -0.25, 1.1 + t * 0.15), (-1.35 - t * 0.25, -0.25, 1.28 + t * 0.15), 0.03, 0.0, GOLD, sides=4, glow=2.2)
+	for k in range(3):
+		_drop(p, 0.55 + k * 0.1, -0.15 - k * 0.12, 0.14, CLOTH_RED, 0.8)
+	return p.build()
+
+
+def predators_focus():
+	p = Prop("predators_focus", 945)
+	_ring_at(p, 0, 0.55, 0.78, 0.04, LEAF, glow=2.0, sides=28, y=0.1)                     # a hunter's sights
+	for k in range(4):
+		a = k * math.pi / 2
+		p.seg((math.cos(a) * 0.62, 0.05, 0.55 + math.sin(a) * 0.62), (math.cos(a) * 0.98, 0.05, 0.55 + math.sin(a) * 0.98), 0.035, 0.035, LEAF, sides=4, glow=2.0)
+	p.blob((0.95, 0.2, 0.46), (0, 0, 0.55), GOLD, segs=(14, 8), glow=1.0)                     # a narrowed predator's eye
+	p.blob((0.1, 0.1, 0.38), (0, -0.08, 0.55), STONE_DARK, segs=(6, 6))                       # slit pupil
+	p.blob((0.05, 0.04, 0.06), (0.06, -0.14, 0.64), CLOTH_WHITE, segs=(5, 3), glow=2.0)
+	for sz in (1, -1):                                                                    # dark lids
+		pts = [(math.cos(a) * 0.5, -0.05, 0.55 + sz * math.sin(a) * 0.24) for a in [math.radians(k * 22.5) for k in range(9)]]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.035, 0.035, STONE_DARK, sides=4)
+	for k in range(3):                                                                    # claw rakes beneath
+		x = -0.28 + k * 0.28
+		p.seg((x + 0.1, -0.1, 0.12), (x - 0.12, -0.1, -0.35), 0.055, 0.0, LEAF, sides=4, glow=2.2)
+	return p.build()
+
+
+def hailstorm_volley():
+	p = Prop("hailstorm_volley", 947)
+	for k, (x, z) in enumerate(((-0.7, 0.9), (-0.35, 0.5), (0.0, 0.95), (0.3, 0.35), (0.62, 0.8), (-0.05, 0.0))):   # arrows tipped with ice, diving
+		a = (x - 0.35, -0.1, z + 0.6)
+		b = (x + 0.12, -0.1, z)
+		_arrow(p, a, b, head=WATER, fletch=CLOTH_WHITE, glow=1.8, hs=0.75, r=0.03)
+		p.seg(a, (a[0] - 0.25, -0.05, a[2] + 0.3), 0.03, 0.0, WATER, sides=4, glow=1.4)   # frost streaming off them
+	for x, z, s in ((-0.5, 1.25, 0.11), (0.2, 1.3, 0.09), (0.75, 1.2, 0.1), (-0.85, 0.45, 0.08), (0.5, 0.15, 0.09), (-0.4, 0.05, 0.08),
+					(0.9, 0.5, 0.07), (0.15, 0.7, 0.07)):                                  # and hail between them
+		p.blob((s, s, s), (x, -0.2, z), CLOTH_WHITE, segs=(6, 4), glow=1.4)
+	_snowflake(p, -0.9, 1.15, 0.16, 1.8)
+	return p.build()
+
+
+def burning_bite():
+	p = Prop("burning_bite", 949)
+	_fl(p, 0, 0.1, 0.1, 0.85, glow=2.2)                                                    # fire in the wound
+	for side in (1, -1):                                                                  # a hound's jaws snapping shut on it
+		pts = [(math.cos(a) * 0.7, -0.05, 0.55 + side * math.sin(a) * 0.45) for a in [math.radians(15 + k * 18.75) for k in range(9)]]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.1, 0.1, STONE_DARK, sides=6)
+		for k, (x, _, z) in enumerate(pts[1:-1]):
+			big = 0.28 if k in (1, 5) else 0.16
+			p.seg((x, -0.12, z), (x * 0.9, -0.12, z - side * big), 0.06 if big > 0.2 else 0.045, 0.0, BONE, sides=5)
+	for k in range(6):                                                                    # embers flying
+		a = k * 1.1 + 0.3
+		p.blob((0.07, 0.07, 0.07), (math.cos(a) * 0.95, -0.25, 0.55 + math.sin(a) * 0.65), FLAME, segs=(5, 3), glow=3.0)
+	return p.build()
+
+
+def choking_smoke():
+	p = Prop("choking_smoke", 951)
+	for k, (x, z, s) in enumerate(((-0.35, 1.0, 0.55), (0.25, 1.1, 0.6), (0.0, 0.75, 0.7), (-0.5, 0.6, 0.45), (0.5, 0.65, 0.45))):   # a dark smoke spirit
+		p.blob((s, s * 0.8, s * 0.8), (x, 0.2, z), WOOD_GRAY if k % 2 else MIST, segs=(10, 6), jitter=0.03)
+	for sx in (-1, 1):                                                                    # its ember eyes
+		p.blob((0.22, 0.1, 0.14), (sx * 0.17, -0.25, 0.85), EMBER, segs=(8, 5), glow=3.2)
+	p.blob((0.26, 0.1, 0.16), (0, -0.22, 0.58), STONE_DARK, segs=(8, 5))
+	pts = []                                                                              # its smoky tail coiling down into a noose
+	for k in range(31):
+		t = k / 30
+		a = -math.pi / 2 + t * math.tau * 1.6
+		r = 0.08 + 0.34 * min(t * 2.5, 1.0)
+		pts.append((math.cos(a) * r, math.sin(a) * r * 0.5, 0.45 - t * 0.6))
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		w = 0.13 - i * 0.002
+		p.seg(a, b, w, w, WOOD_GRAY if (i // 3) % 2 else MIST, sides=6)
+	for k in range(4):                                                                    # choked, gasping puffs
+		p.blob((0.1 + k * 0.03, 0.08, 0.1 + k * 0.03), (0.62 + k * 0.13, -0.3, 0.05 - k * 0.1), STONE_DARK, segs=(6, 4))
+	return p.build()
+
+
+def shard_burst():
+	p = Prop("shard_burst", 953)
+	p.blob((0.3, 0.3, 0.3), (0, 0, 0.55), CLOTH_WHITE, segs=(10, 6), glow=3.0)                # the flash of breaking glass
+	for k in range(11):                                                                   # razor shards flying out
+		a = k * math.tau / 11 + 0.15
+		r0 = 0.22
+		r1 = 0.75 + (k % 3) * 0.15
+		sw = (STONE_LIGHT, RUNE, PETAL_PURPLE)[k % 3]
+		_shard(p, (math.cos(a) * r0, 0.55 + math.sin(a) * r0), (math.cos(a) * r1, 0.55 + math.sin(a) * r1), 0.08, sw, glow=0.9 if sw != STONE_LIGHT else 0.3,
+			   y=-0.05 * (k % 2))
+		p.seg((math.cos(a) * r0 * 0.6, -0.2, 0.55 + math.sin(a) * r0 * 0.6), (math.cos(a) * r1 * 0.75, -0.2, 0.55 + math.sin(a) * r1 * 0.75),
+			  0.012, 0.0, CLOTH_WHITE, sides=3, glow=2.0)
+	for k in range(6):                                                                    # glittering dust
+		a = k * 1.05 + 0.5
+		p.blob((0.05, 0.05, 0.05), (math.cos(a) * 1.1, -0.2, 0.55 + math.sin(a) * 1.0), CLOTH_WHITE, segs=(4, 3), glow=2.4)
+	return p.build()
+
+
+def obsidian_breath():
+	p = Prop("obsidian_breath", 955)
+	p.blob((1.6, 1.0, 0.12), (0.25, 0, 0.0), STONE_DARK, segs=(12, 4))
+	p.blob((1.0, 0.7, 0.08), (0.4, -0.05, 0.06), EMBER, segs=(12, 4), glow=2.0)              # a pool of molten glass...
+	for x, y, s in ((0.1, 0.1, 0.4), (0.6, 0.15, 0.5), (0.85, -0.1, 0.32), (0.35, -0.2, 0.3)):   # ...setting into black glass spikes
+		p.seg((x, y, 0.05), (x + 0.06, y, 0.05 + s * 1.4), s * 0.32, 0.0, STONE_DARK, sides=4)
+		p.seg((x - s * 0.1, y - s * 0.3, 0.1), (x + 0.04, y - s * 0.2, 0.05 + s * 1.2), 0.02, 0.0, EMBER, sides=3, glow=2.4)
+	a, b = Vector((-0.9, 0, 1.3)), Vector((0.3, 0, 0.25))                                  # the breath: a gout of molten glass
+	p.seg(tuple(a), tuple(b), 0.08, 0.34, FLAME, sides=10, glow=2.2)
+	p.seg(tuple(a + (b - a) * 0.15), tuple(b + (b - a) * 0.05), 0.04, 0.2, CLOTH_WHITE, sides=8, glow=2.6)
+	for k in range(6):                                                                    # black shards carried in it
+		t = 0.2 + k * 0.13
+		c = a + (b - a) * t
+		off = 0.15 + 0.1 * t
+		sgn = 1 if k % 2 else -1
+		_shard(p, (c.x - 0.05, c.z + sgn * off * 0.7), (c.x + 0.22, c.z + sgn * off * 0.7 - 0.12), 0.06, STONE_DARK, y=-0.35)
+	p.blob((0.45, 0.35, 0.36), (-1.05, 0.05, 1.4), STONE_DARK, segs=(8, 6))                   # the drake's jaw at the edge
+	for k in range(3):
+		p.seg((-0.95 + k * 0.08, -0.15, 1.24), (-0.93 + k * 0.08, -0.15, 1.12), 0.035, 0.0, BONE, sides=4)
+	return p.build()
+
+def glass_venom():
+	p = Prop("glass_venom", 957)
+	for sx in (-1, 1):                                                                    # a pair of glass fangs
+		pts = [(sx * 0.3, 0, 1.2), (sx * 0.34, 0, 0.9), (sx * 0.26, 0, 0.62), (sx * 0.12, 0, 0.42)]
+		for i, (a, b) in enumerate(zip(pts, pts[1:])):
+			p.seg(a, b, 0.14 - i * 0.04, 0.1 - i * 0.04 if i < 2 else 0.0, RUNE, sides=5, glow=0.7)
+		p.seg((sx * 0.3 - 0.04, -0.12, 1.15), (sx * 0.2 - 0.03, -0.1, 0.55), 0.02, 0.0, CLOTH_WHITE, sides=4, glow=2.2)  # glinting
+		p.blob((0.34, 0.3, 0.2), (sx * 0.3, 0.05, 1.25), STONE_LIGHT, segs=(8, 5))
+	for k, (x, z, s) in enumerate(((0.12, 0.2, 0.22), (-0.12, 0.05, 0.18), (0.1, -0.3, 0.26))):   # dripping pale-blue venom
+		_drop(p, x, z, s, WATER, 2.2)
+	p.blob((0.9, 0.6, 0.06), (0, 0, -0.5), WATER, segs=(12, 4), glow=1.6)                     # a pool of it
+	for k in range(5):                                                                    # tiny glass crystals growing in it
+		a = k * math.tau / 5 + 0.3
+		x, y = math.cos(a) * 0.32, math.sin(a) * 0.2
+		p.seg((x, y, -0.5), (x * 1.3, y, -0.25), 0.05, 0.0, STONE_LIGHT, sides=4)
+	return p.build()
+
+
+def ember_tusk_blessing():
+	p = Prop("ember_tusk_blessing", 959)
+	p.blob((0.6, 0.5, 0.55), (0, 0, 0.4), STONE_LIGHT, segs=(10, 8))                      # an elephant's head
+	for s_ in (-1, 1):
+		p.blob((0.1, 0.35, 0.4), (s_ * 0.36, 0.05, 0.42), STONE_LIGHT, segs=(6, 5))
+		p.seg((s_ * 0.12, -0.25, 0.25), (s_ * 0.2, -0.45, 0.15), 0.05, 0.02, EMBER, sides=5, glow=2.0)   # tusks glowing like hot iron
+	p.seg((0, -0.3, 0.3), (0, -0.4, 0.85), 0.09, 0.06, STONE_LIGHT, sides=6)               # the trunk, raised...
+	_fl(p, 0, -0.44, 0.85, 0.42, glow=2.4)                                                  # ...holding a flame
+	return p.build()
+
+
+LEVEL_35 = [sundering_blow, last_stand, earthshaker, circle_of_dawn, dawnbreak, dawns_embrace, obsidian_lance, frost_prison, starfall,
+			throat_cut, shadow_dance, heartseeker, forgefire_mantle, forge_flare, elemental_tempest, wither, grave_pact, devour_soul,
+			frostbite_curse, chorus_of_ancestors, totem_of_fury, heartpiercer, predators_focus, hailstorm_volley,
+			burning_bite, choking_smoke, shard_burst, obsidian_breath, glass_venom, ember_tusk_blessing]
+
+
 MONSOON_WEST = [mud_spit, bog_bolt, eel_shock, bogwing_sting, hex_of_rot, mire_grip, undertow, naga_venom, tidal_bolt, lightning_lash,
 				crushing_claw, drowning_grasp, cobra_venom]
 
@@ -2650,7 +3259,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 

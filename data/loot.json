@@ -73,6 +73,9 @@
   },
   "tables": {
     "dustpaw_weapons": {"rusty_dagger": 3, "rusty_short_sword": 3, "worn_staff": 1},
+    "glassbound_weapons": {"blackglass_dirk": 1, "magmasteel_sword": 1, "emberforged_sword": 2, "emberforged_war_axe": 1},
+    "stonebrow_weapons": {"iron_short_sword": 2, "iron_dagger": 1, "oak_staff": 1},
+    "nomad_weapons": {"iron_short_sword": 2, "iron_dagger": 2},
     "pondkin_weapons": {"iron_short_sword": 2, "iron_dagger": 2, "oak_staff": 1},
     "tidesworn_weapons": {"tidesworn_blade": 1, "tidesteel_sword": 2, "tidesteel_war_axe": 1},
     "tidesworn_armor": {"tidesteel_helm": 1, "tidesteel_gauntlets": 1, "tidesteel_boots": 1},

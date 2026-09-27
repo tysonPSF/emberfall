@@ -13,7 +13,7 @@ extends RefCounted
 ## at the neutral 80% of cap. Gear: the best merchant gear the class can wear
 ## at that level. Resting afterward is measured from the regeneration rules.
 
-const LEVELS := [5, 10, 15, 20, 25, 30]
+const LEVELS := [5, 10, 15, 20, 25, 30, 35]
 const MOBS := {  # typical even-level monsters, forced to the test level
 	5: ["wild_boar", "gnoll_scout", "brigand_thug"],
 	10: ["dire_wolf", "black_bear", "orc_raider"],
@@ -21,6 +21,7 @@ const MOBS := {  # typical even-level monsters, forced to the test level
 	20: ["salt_basilisk", "giant_frog", "river_troll"],
 	25: ["river_croc", "water_elemental", "river_troll"],
 	30: ["ash_drake", "magma_golem", "ember_cultist"],
+	35: ["ember_giant", "glass_golem", "obsidian_drake"],
 }
 const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""], ["magician", "earth"], ["magician", "fire"],
 		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"], ["ranger", "hawk"]]
@@ -46,6 +47,8 @@ func run(t: Node) -> void:
 		if only != "" and not str(v[0]) in only.split(","):
 			continue
 		for lvl: int in LEVELS:
+			if OS.get_environment("BALANCE_LEVELS") != "" and not str(lvl) in OS.get_environment("BALANCE_LEVELS").split(","):  # e.g. "30,35"
+				continue
 			var row := {"class": v[0], "pet": v[1], "level": lvl, "fights": []}
 			for mob_id: String in MOBS[lvl]:
 				for k in FIGHTS:

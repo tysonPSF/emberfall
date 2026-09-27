@@ -1,0 +1,938 @@
+{
+  "name": "Mirror Flats",
+  "levels": [
+    20,
+    24
+  ],
+  "music": "mirror_flats",
+  "seed": 9431,
+  "size": 512,
+  "height_amplitude": 1.2,
+  "bind_point": [
+    0,
+    200
+  ],
+  "flat_radius": 30,
+  "trees": 0,
+  "tree_mix": [
+    "dead_palm"
+  ],
+  "groves": 0.0,
+  "rocks": 25,
+  "grass_colors": [
+    "#d8d0c4",
+    "#e8e0d6"
+  ],
+  "fog_density": 0.0022,
+  "fog_color": "#d8e2ec",
+  "sun_energy": 1.2,
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        0
+      ],
+      "radius": 220,
+      "color": "#f2eee8",
+      "flatten": 0.9,
+      "bare": true
+    }
+  ],
+  "lakes": [
+    {
+      "points": [
+        [
+          -200,
+          -200
+        ],
+        [
+          0,
+          -215
+        ],
+        [
+          200,
+          -200
+        ],
+        [
+          215,
+          0
+        ],
+        [
+          200,
+          160
+        ],
+        [
+          0,
+          170
+        ],
+        [
+          -200,
+          160
+        ],
+        [
+          -215,
+          0
+        ]
+      ],
+      "depth": 0.08,
+      "shelf": 30,
+      "bank": 6,
+      "islands": [
+        [
+          -30,
+          -40,
+          9
+        ],
+        [
+          60,
+          -90,
+          8
+        ],
+        [
+          -90,
+          -100,
+          9
+        ],
+        [
+          110,
+          80,
+          8
+        ],
+        [
+          20,
+          60,
+          8
+        ],
+        [
+          -60,
+          40,
+          8
+        ],
+        [
+          -150,
+          100,
+          34
+        ],
+        [
+          10,
+          -100,
+          10
+        ]
+      ]
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      -256,
+      0,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          0,
+          180
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          -256,
+          0
+        ],
+        [
+          -200,
+          0
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "the_bleach",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "dawnwatch",
+      "arrive": [
+        199,
+        0
+      ],
+      "arrive_face": [
+        159,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -40
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -90
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        -100
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        80
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        60
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        40
+      ],
+      "id": "salt_crust_island",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -90
+      ],
+      "id": "salt_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        -60
+      ],
+      "id": "salt_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        -40
+      ],
+      "id": "salt_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        20
+      ],
+      "id": "salt_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -180
+      ],
+      "id": "salt_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -100
+      ],
+      "id": "mirror_obelisk",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        90
+      ],
+      "id": "nomad_tent",
+      "collide": "box",
+      "face": [
+        -150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -170,
+        120
+      ],
+      "id": "nomad_tent",
+      "collide": "box",
+      "face": [
+        -150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        130
+      ],
+      "id": "nomad_tent",
+      "collide": "box",
+      "face": [
+        -150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        70
+      ],
+      "id": "sand_skiff",
+      "collide": "box",
+      "face": [
+        -60,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -175,
+        70
+      ],
+      "id": "sand_skiff",
+      "collide": "box",
+      "face": [
+        -120,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        110
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        200
+      ],
+      "id": "caravan_wagon",
+      "collide": "box",
+      "face": [
+        0,
+        180
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -18,
+        200
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        200
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        212
+      ],
+      "id": "market_stall",
+      "collide": "box",
+      "face": [
+        0,
+        200
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        205
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        230
+      ],
+      "yaw": -90,
+      "labels": [
+        "The Bleach",
+        "Mirror Flats"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -230,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Dawnwatch",
+        "Mirror Flats"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        -232
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Mirror Flats"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "caravan_guide_rahel",
+      "pos": [
+        -8,
+        192
+      ],
+      "face": [
+        0,
+        205
+      ]
+    },
+    {
+      "id": "mirror_scholar_anouk",
+      "pos": [
+        10,
+        194
+      ],
+      "face": [
+        0,
+        205
+      ]
+    },
+    {
+      "id": "saltcutter_bram",
+      "pos": [
+        24,
+        196
+      ],
+      "face": [
+        0,
+        205
+      ]
+    },
+    {
+      "id": "birdwatcher_kiri",
+      "pos": [
+        -20,
+        210
+      ],
+      "face": [
+        0,
+        205
+      ]
+    },
+    {
+      "id": "trader_hesper",
+      "pos": [
+        30,
+        206
+      ],
+      "face": [
+        0,
+        205
+      ]
+    },
+    {
+      "id": "caravan_guard",
+      "pos": [
+        0,
+        186
+      ],
+      "patrol": [
+        [
+          0,
+          186
+        ],
+        [
+          -30,
+          170
+        ],
+        [
+          30,
+          170
+        ],
+        [
+          0,
+          186
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -40,
+        -60
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        -90
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        -110
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        -40
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -140
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        -30
+      ],
+      "pool": {
+        "mirage_wisp": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        50,
+        -120
+      ],
+      "pool": {
+        "mirage_wisp": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        -70
+      ],
+      "pool": {
+        "mirage_wisp": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        -80
+      ],
+      "pool": {
+        "mirage_wisp": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        10,
+        -110
+      ],
+      "pool": {
+        "the_reflection": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        120,
+        60
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        100
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        120
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        170,
+        40
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        130,
+        150
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        80,
+        90
+      ],
+      "pool": {
+        "brine_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        130
+      ],
+      "pool": {
+        "brine_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        110,
+        40
+      ],
+      "pool": {
+        "brine_swarm": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        140
+      ],
+      "pool": {
+        "old_saltclaw": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -130,
+        80
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -160,
+        110
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -110,
+        120
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        60
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -180,
+        90
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        150
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        100
+      ],
+      "pool": {
+        "nomad_queen": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        40,
+        40
+      ],
+      "pool": {
+        "salt_wader": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -30,
+        60
+      ],
+      "pool": {
+        "salt_wader": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        70,
+        10
+      ],
+      "pool": {
+        "salt_wader": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -60,
+        20
+      ],
+      "pool": {
+        "salt_wader": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        -170
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -40,
+        -180
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        120,
+        -150
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        20,
+        -190
+      ],
+      "pool": {
+        "great_sky_ray": 1
+      },
+      "respawn": 1200,
+      "wander": 12
+    }
+  ]
+}

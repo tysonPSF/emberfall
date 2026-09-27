@@ -249,21 +249,6 @@
       ]
     },
     {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "The Bleach"
-      ]
-    },
-    {
       "type": "prop",
       "id": "mesa",
       "pos": [
@@ -614,6 +599,7 @@
     }
   ],
   "zone_lines": [
+    {"pos": [0, -245], "size": [18, 8], "to": "mirror_flats", "arrive": [0, 231], "arrive_face": [0, 191]},
     {
       "pos": [
         0,

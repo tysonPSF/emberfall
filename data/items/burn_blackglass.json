@@ -1,0 +1,372 @@
+{
+  "firehound_mane": {
+    "name": "Firehound Mane",
+    "value": 30,
+    "stack": 20
+  },
+  "imp_horn": {
+    "name": "Imp Horn",
+    "value": 30,
+    "stack": 20
+  },
+  "smoke_essence": {
+    "name": "Bottled Smoke",
+    "value": 30,
+    "stack": 20
+  },
+  "giants_coal": {
+    "name": "Giant's Heart-Coal",
+    "value": 40,
+    "stack": 20
+  },
+  "firebird_feather": {
+    "name": "Firebird Feather",
+    "value": 30,
+    "stack": 20
+  },
+  "glass_core": {
+    "name": "Glass Golem Core",
+    "value": 40,
+    "stack": 20
+  },
+  "obsidian_scale": {
+    "name": "Obsidian Drake Scale",
+    "value": 40,
+    "stack": 20
+  },
+  "glass_silk": {
+    "name": "Glass Spider Silk",
+    "value": 40,
+    "stack": 20
+  },
+  "glassbound_insignia": {
+    "name": "Glassbound Insignia",
+    "value": 40,
+    "stack": 20
+  },
+  "ashmaws_mane": {
+    "name": "Ashmaw's Burning Mane",
+    "value": 200,
+    "lore": true
+  },
+  "cackleflames_crown": {
+    "name": "Cackleflame's Crown",
+    "value": 200,
+    "lore": true
+  },
+  "thanes_iron_crown": {
+    "name": "The Thane's Iron Crown",
+    "value": 200,
+    "lore": true
+  },
+  "phoenix_ember": {
+    "name": "The Phoenix's Ember",
+    "value": 200,
+    "lore": true
+  },
+  "colossus_heart": {
+    "name": "The Black Colossus's Heart",
+    "value": 200,
+    "lore": true
+  },
+  "vitrax_eye": {
+    "name": "Vitrax's Eye",
+    "value": 200,
+    "lore": true
+  },
+  "shardmothers_crown": {
+    "name": "The Shardmother's Crown",
+    "value": 200,
+    "lore": true
+  },
+  "aldrics_banner": {
+    "name": "Aldric's Glassbound Banner",
+    "value": 200,
+    "lore": true
+  },
+  "coalhand_gauntlets": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Coalhand Gauntlets",
+    "slot": "hands",
+    "ac": 15,
+    "str": 5,
+    "sta": 3,
+    "value": 9000,
+    "rec_level": 31,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "thanes_hammer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "The Thane's Hammer",
+    "slot": "primary",
+    "dmg": 39,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 6,
+    "sta": 4,
+    "hp": 50,
+    "value": 22000,
+    "rec_level": 34,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.06
+    }
+  },
+  "firehound_mantle": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Firehound Mantle",
+    "slot": "arms",
+    "ac": 14,
+    "agi": 5,
+    "sta": 4,
+    "value": 9000,
+    "rec_level": 32,
+    "wear": "leather_sleeves"
+  },
+  "ashmaws_fang_pendant": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ashmaw's Fang Pendant",
+    "slot": "neck",
+    "ac": 7,
+    "str": 5,
+    "agi": 4,
+    "hp": 40,
+    "value": 16000,
+    "rec_level": 33
+  },
+  "tallpine_signet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tallpine Signet",
+    "slot": "ring",
+    "ac": 5,
+    "sta": 4,
+    "str": 3,
+    "hp": 30,
+    "value": 9000,
+    "rec_level": 31
+  },
+  "smokeweave_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Smokeweave Sash",
+    "slot": "waist",
+    "ac": 6,
+    "int": 4,
+    "wis": 4,
+    "mana": 30,
+    "value": 9000,
+    "rec_level": 32,
+    "wear": "rope_belt"
+  },
+  "cackleflame_scepter": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Cackleflame's Scepter",
+    "slot": "primary",
+    "dmg": 15,
+    "delay": 2.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "wand",
+    "skill": "1h_blunt",
+    "int": 7,
+    "wis": 7,
+    "mana": 60,
+    "value": 18000,
+    "rec_level": 33,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "firefeather_cap": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Firefeather Cap",
+    "slot": "head",
+    "ac": 9,
+    "int": 6,
+    "wis": 6,
+    "mana": 55,
+    "value": 9000,
+    "rec_level": 32,
+    "wear": "cloth_cap"
+  },
+  "ring_of_the_phoenix": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ring of the Phoenix",
+    "slot": "ring",
+    "ac": 6,
+    "hp": 60,
+    "hp_regen": 3,
+    "sta": 4,
+    "value": 20000,
+    "rec_level": 34
+  },
+  "glasswrights_lenses": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Glasswright's Lenses",
+    "slot": "head",
+    "ac": 10,
+    "int": 6,
+    "wis": 6,
+    "mana": 50,
+    "value": 11000,
+    "rec_level": 33,
+    "wear": "cloth_cap"
+  },
+  "heart_of_the_colossus": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Heart of the Colossus",
+    "slot": "neck",
+    "ac": 8,
+    "sta": 7,
+    "hp": 70,
+    "value": 24000,
+    "rec_level": 35
+  },
+  "obsidian_scale_leggings": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Obsidian Scale Leggings",
+    "slot": "legs",
+    "ac": 20,
+    "agi": 6,
+    "sta": 4,
+    "value": 11000,
+    "rec_level": 33,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "eye_of_vitrax": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Eye of Vitrax",
+    "slot": "ring",
+    "ac": 7,
+    "int": 6,
+    "wis": 6,
+    "mana": 60,
+    "value": 24000,
+    "rec_level": 35
+  },
+  "glassweb_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Glassweb Gloves",
+    "slot": "hands",
+    "ac": 8,
+    "int": 5,
+    "wis": 5,
+    "mana": 30,
+    "value": 11000,
+    "rec_level": 33,
+    "wear": "cloth_gloves"
+  },
+  "shardmothers_fang": {
+    "no_drop": true,
+    "lore": true,
+    "name": "The Shardmother's Fang",
+    "slot": "primary",
+    "dmg": 19,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 6,
+    "value": 24000,
+    "rec_level": 35,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "glass_venom",
+      "chance": 0.07
+    }
+  },
+  "glassbound_greaves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Glassbound Greaves",
+    "slot": "legs",
+    "ac": 25,
+    "sta": 6,
+    "str": 3,
+    "value": 11000,
+    "rec_level": 33,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "aldrics_glass_blade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Aldric's Glass Blade",
+    "slot": "primary",
+    "dmg": 26,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 6,
+    "agi": 5,
+    "hp": 50,
+    "value": 26000,
+    "rec_level": 35,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "shard_burst",
+      "chance": 0.06
+    }
+  }
+}

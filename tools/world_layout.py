@@ -78,14 +78,16 @@ ZONES = [
     ('cinderpass',      'Cinderpass',         'ashfall',    (26, 30), 448, (0, 3), 'burn'),
     ('the_burn',        'The Burn',           'ashfall',    (29, 33), 512, (0, 4), 'burn'),
     ('blackglass',      'Blackglass',         'ashfall',    (31, 35), 512, (0, 5), 'burn'),
-    ('smokewood',       'Smokewood',          'ashfall',    (33, 37), 512, (1, 5), 'wood'),
+    # Smokewood and Forgehold swapped cells (2026-09-27): the wood went to the
+    # far end, past the Hearth, and the city came forward.
+    ('smokewood',       'Smokewood',          'ashfall',    (33, 37), 512, (3, 5), 'wood'),
     ('agnavars_hearth', "Agnavar's Hearth",   'ashfall',    (35, 38), 512, (2, 5), 'burn'),
-    # DEEP, and not by choice: every cell touching Cinderpass, The Burn,
-    # Blackglass and Smokewood is already taken, so the only free ground beside
-    # the Ashfall is past the Hearth. It suits Agnavar - his people live at the
-    # far end, beside the fire that will not go out - but it is a constraint
-    # before it is a decision, and moving it means moving a zone.
-    ('forgehold',       'Forgehold',          'ashfall',    (26, 38), 224, (3, 5), 'city'),
+    # FORWARD, where the players are. It sat past Agnavar's Hearth at first,
+    # the only free cell beside the Ashfall, so the fire city was five zones
+    # deep; it swapped cells with Smokewood. At [1, 5] it touches Blackglass,
+    # Dawnwatch, the Hearth and the Boneyard's Ivory Field: a hub, and a city
+    # is safe ground, so the level gaps across its gates don't count.
+    ('forgehold',       'Forgehold',          'ashfall',    (26, 38), 224, (1, 5), 'city'),
 
     # ---- THE STANDING SKY - Vayuketh. North-west, open and high.
     ('windbreak',       'Windbreak',          'standingsky',(32, 36), 448, (-1, 4), 'plain'),

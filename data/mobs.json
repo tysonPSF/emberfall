@@ -6026,5 +6026,2807 @@
       "chance": 0.2,
       "text": "%s's touch carries %s!"
     }
+  },
+  "firehound": {
+    "name": "a firehound",
+    "level": [
+      29,
+      32
+    ],
+    "hp_base": 210,
+    "hp_per_level": 27,
+    "dmg_min": 21,
+    "dmg_max": 38,
+    "attack_delay": 2.4,
+    "ac": 50,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#c8501a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "firehound_mane",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "firehound",
+    "proc": {
+      "spell": "burning_bite",
+      "chance": 0.15,
+      "text": "%s's bite leaves %s!"
+    }
+  },
+  "ash_wolf": {
+    "name": "an ash wolf",
+    "level": [
+      29,
+      31
+    ],
+    "hp_base": 200,
+    "hp_per_level": 26,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.5,
+    "ac": 48,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6a6660",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.4
+      },
+      {
+        "item": "firehound_mane",
+        "chance": 0.15
+      }
+    ],
+    "model": "ash_wolf"
+  },
+  "firehound_alpha": {
+    "name": "Ashmaw the Alpha",
+    "level": [
+      34,
+      34
+    ],
+    "hp_base": 7200,
+    "hp_per_level": 0,
+    "dmg_min": 36,
+    "dmg_max": 64,
+    "attack_delay": 2.3,
+    "ac": 78,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "maul",
+      "mauls"
+    ],
+    "shape": "beetle",
+    "color": "#e8601a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ashmaws_mane",
+        "chance": 1.0
+      },
+      {
+        "item": "firehound_mane",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "firehound_alpha",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "burning_bite",
+      "chance": 0.25,
+      "text": "%s's bite leaves %s!"
+    }
+  },
+  "fire_imp": {
+    "name": "a fire imp",
+    "level": [
+      29,
+      32
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 2.2,
+    "ac": 44,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "fire_imps",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#e0401a",
+    "scale": 0.8,
+    "coin": [
+      20,
+      90
+    ],
+    "loot": [
+      {
+        "item": "imp_horn",
+        "chance": 0.5
+      }
+    ],
+    "model": "fire_imp",
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.18,
+      "text": "%s cackles and hurls %s!"
+    }
+  },
+  "smoke_spirit": {
+    "name": "a smoke spirit",
+    "level": [
+      30,
+      33
+    ],
+    "hp_base": 200,
+    "hp_per_level": 26,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.8,
+    "ac": 48,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "fire_imps",
+    "verb": [
+      "smother",
+      "smothers"
+    ],
+    "shape": "humanoid",
+    "color": "#3a3634",
+    "scale": 1.1,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "smoke_essence",
+        "chance": 0.5
+      }
+    ],
+    "model": "smoke_spirit",
+    "proc": {
+      "spell": "choking_smoke",
+      "chance": 0.18,
+      "text": "%s wraps you in %s!"
+    }
+  },
+  "imp_lord": {
+    "name": "Lord Cackleflame",
+    "level": [
+      34,
+      34
+    ],
+    "hp_base": 6800,
+    "hp_per_level": 0,
+    "dmg_min": 34,
+    "dmg_max": 60,
+    "attack_delay": 2.3,
+    "ac": 74,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "fire_imps",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#ff5a1a",
+    "scale": 1.0,
+    "coin": [
+      500,
+      1500
+    ],
+    "loot": [
+      {
+        "item": "cackleflames_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "imp_horn",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "imp_lord",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.3,
+      "text": "%s cackles and hurls %s!"
+    }
+  },
+  "ember_giant": {
+    "name": "an ember giant",
+    "level": [
+      31,
+      33
+    ],
+    "hp_base": 320,
+    "hp_per_level": 32,
+    "dmg_min": 26,
+    "dmg_max": 48,
+    "attack_delay": 3.4,
+    "ac": 62,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "ember_giants",
+    "verb": [
+      "hammer",
+      "hammers"
+    ],
+    "shape": "humanoid",
+    "color": "#6a3a2a",
+    "scale": 1.0,
+    "coin": [
+      80,
+      260
+    ],
+    "loot": [
+      {
+        "item": "giants_coal",
+        "chance": 0.5
+      }
+    ],
+    "model": "ember_giant",
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.15,
+      "text": "%s's hammer brings down %s!"
+    },
+    "weapon": "ember_hammer"
+  },
+  "ember_giant_thane": {
+    "name": "Thane Korrok Emberhand",
+    "level": [
+      35,
+      35
+    ],
+    "hp_base": 9000,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 72,
+    "attack_delay": 3.4,
+    "ac": 84,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "ember_giants",
+    "verb": [
+      "hammer",
+      "hammers"
+    ],
+    "shape": "humanoid",
+    "color": "#8a4a2a",
+    "scale": 1.0,
+    "coin": [
+      800,
+      2200
+    ],
+    "loot": [
+      {
+        "item": "thanes_iron_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "giants_coal",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "ember_giant_thane",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.25,
+      "text": "%s's hammer brings down %s!"
+    },
+    "weapon": "ember_greathammer"
+  },
+  "firebird": {
+    "name": "a firebird",
+    "level": [
+      30,
+      33
+    ],
+    "hp_base": 190,
+    "hp_per_level": 25,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.4,
+    "ac": 46,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#ff9a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "firebird_feather",
+        "chance": 0.5
+      }
+    ],
+    "model": "firebird",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.15,
+      "text": "%s's wings shed %s!"
+    }
+  },
+  "phoenix": {
+    "name": "Pyrelle the Undying",
+    "level": [
+      35,
+      35
+    ],
+    "hp_base": 8200,
+    "hp_per_level": 0,
+    "dmg_min": 38,
+    "dmg_max": 68,
+    "attack_delay": 2.3,
+    "ac": 80,
+    "speed": 7.4,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#ffd06a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "phoenix_ember",
+        "chance": 1.0
+      },
+      {
+        "item": "firebird_feather",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "phoenix",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.3,
+      "text": "%s's wings shed %s!"
+    }
+  },
+  "glass_golem": {
+    "name": "a glass golem",
+    "level": [
+      31,
+      34
+    ],
+    "hp_base": 300,
+    "hp_per_level": 30,
+    "dmg_min": 24,
+    "dmg_max": 44,
+    "attack_delay": 3.4,
+    "ac": 70,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "glass_constructs",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#18161c",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "glass_core",
+        "chance": 0.5
+      }
+    ],
+    "model": "glass_golem",
+    "proc": {
+      "spell": "shard_burst",
+      "chance": 0.15,
+      "text": "%s bursts, and %s cuts you!"
+    }
+  },
+  "glass_colossus": {
+    "name": "the Black Colossus",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 9600,
+    "hp_per_level": 0,
+    "dmg_min": 42,
+    "dmg_max": 76,
+    "attack_delay": 3.4,
+    "ac": 90,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "glass_constructs",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#101014",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "colossus_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "glass_core",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "glass_colossus",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "shard_burst",
+      "chance": 0.25,
+      "text": "%s bursts, and %s cuts you!"
+    }
+  },
+  "obsidian_drake": {
+    "name": "an obsidian drake",
+    "level": [
+      32,
+      35
+    ],
+    "hp_base": 260,
+    "hp_per_level": 29,
+    "dmg_min": 24,
+    "dmg_max": 42,
+    "attack_delay": 2.6,
+    "ac": 64,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#1c1a20",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "obsidian_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "obsidian_drake",
+    "proc": {
+      "spell": "obsidian_breath",
+      "chance": 0.15,
+      "text": "%s breathes %s!"
+    }
+  },
+  "obsidian_wyrm": {
+    "name": "Vitrax the Obsidian Wyrm",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 9400,
+    "hp_per_level": 0,
+    "dmg_min": 42,
+    "dmg_max": 76,
+    "attack_delay": 2.6,
+    "ac": 88,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 20,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#141218",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "vitrax_eye",
+        "chance": 1.0
+      },
+      {
+        "item": "obsidian_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "obsidian_wyrm",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "obsidian_breath",
+      "chance": 0.3,
+      "text": "%s breathes %s!"
+    }
+  },
+  "glass_spider": {
+    "name": "a glass spider",
+    "level": [
+      31,
+      34
+    ],
+    "hp_base": 230,
+    "hp_per_level": 27,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 2.4,
+    "ac": 58,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2a2830",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "glass_silk",
+        "chance": 0.5
+      }
+    ],
+    "model": "glass_spider",
+    "proc": {
+      "spell": "glass_venom",
+      "chance": 0.18,
+      "text": "%s's fangs inject %s!"
+    }
+  },
+  "glass_brood_queen": {
+    "name": "the Shardmother",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 9000,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 72,
+    "attack_delay": 2.4,
+    "ac": 86,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2a2432",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "shardmothers_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "glass_silk",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "glass_brood_queen",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "glass_venom",
+      "chance": 0.3,
+      "text": "%s's fangs inject %s!"
+    }
+  },
+  "glassbound_dead": {
+    "name": "a glassbound soldier",
+    "level": [
+      32,
+      35
+    ],
+    "hp_base": 250,
+    "hp_per_level": 28,
+    "dmg_min": 24,
+    "dmg_max": 42,
+    "attack_delay": 2.9,
+    "ac": 62,
+    "speed": 5.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8aa0c0",
+    "scale": 1.0,
+    "coin": [
+      40,
+      160
+    ],
+    "loot": [
+      {
+        "item": "glassbound_insignia",
+        "chance": 0.5
+      }
+    ],
+    "model": "glassbound_dead",
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.12,
+      "text": "%s's touch carries %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "glassbound_weapons"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "ashfall_rings"
+      }
+    ]
+  },
+  "glassbound_captain": {
+    "name": "Captain Aldric the Glassbound",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 9200,
+    "hp_per_level": 0,
+    "dmg_min": 42,
+    "dmg_max": 74,
+    "attack_delay": 2.8,
+    "ac": 88,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#a0b8d8",
+    "scale": 1.0,
+    "coin": [
+      800,
+      2200
+    ],
+    "loot": [
+      {
+        "item": "aldrics_banner",
+        "chance": 1.0
+      },
+      {
+        "item": "glassbound_insignia",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "glassbound_captain",
+    "named": true,
+    "xp_bonus": 2.4,
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.25,
+      "text": "%s's touch carries %s!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 1.0,
+        "item": "magmasteel_sword"
+      }
+    ]
+  },
+  "stonebrow_ogre": {
+    "name": "a Stonebrow ogre",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 152,
+    "hp_per_level": 22,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.7,
+    "ac": 43,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "stonebrow",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#6a7a5a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "stonebrow_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "stonebrow_ogre",
+    "gear": [
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ],
+    "weapon": "stonebrow_club"
+  },
+  "stonebrow_shaman": {
+    "name": "a Stonebrow shaman",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 133,
+    "hp_per_level": 19,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.7,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "stonebrow",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#5a6a4a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "stonebrow_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "stonebrow_shaman",
+    "proc": {
+      "spell": "spirit_bolt",
+      "chance": 0.2,
+      "text": "%s grunts, and %s flies at you!"
+    },
+    "gear": [],
+    "weapon": "stonebrow_skull_staff"
+  },
+  "stonebrow_warlord": {
+    "name": "Warlord Uthrak Stonebrow",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "stonebrow",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a8a6a",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "loot": [
+      {
+        "item": "uthraks_war_horn",
+        "chance": 1.0
+      },
+      {
+        "item": "stonebrow_tusk",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "stonebrow_warlord",
+    "named": true,
+    "xp_bonus": 2.2,
+    "weapon": "stonebrow_club"
+  },
+  "roc": {
+    "name": "a roc",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 133,
+    "hp_per_level": 19,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.5,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#8a6a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "roc_feather",
+        "chance": 0.5
+      }
+    ],
+    "model": "roc"
+  },
+  "great_roc": {
+    "name": "Sunwing the Great Roc",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.5,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#e0c890",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sunwing_plume",
+        "chance": 1.0
+      },
+      {
+        "item": "roc_feather",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "great_roc",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "wyvern": {
+    "name": "a wyvern",
+    "level": [
+      23,
+      24
+    ],
+    "hp_base": 139,
+    "hp_per_level": 20,
+    "dmg_min": 14,
+    "dmg_max": 28,
+    "attack_delay": 2.7,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#5a6a7a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wyvern_barb",
+        "chance": 0.5
+      }
+    ],
+    "model": "wyvern",
+    "proc": {
+      "spell": "frog_poison",
+      "chance": 0.15,
+      "text": "%s's barb injects %s!"
+    }
+  },
+  "snow_spirit": {
+    "name": "a snow spirit",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 133,
+    "hp_per_level": 19,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.7,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "mountain_spirits",
+    "verb": [
+      "chill",
+      "chills"
+    ],
+    "shape": "humanoid",
+    "color": "#c8e0f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "frozen_breath",
+        "chance": 0.5
+      }
+    ],
+    "model": "snow_spirit",
+    "proc": {
+      "spell": "grave_chill",
+      "chance": 0.15,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "avalanche_elemental": {
+    "name": "an avalanche elemental",
+    "level": [
+      23,
+      24
+    ],
+    "hp_base": 167,
+    "hp_per_level": 24,
+    "dmg_min": 14,
+    "dmg_max": 28,
+    "attack_delay": 3.3,
+    "ac": 46,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "mountain_spirits",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#e0e8f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "frozen_breath",
+        "chance": 0.4
+      }
+    ],
+    "model": "avalanche_elemental"
+  },
+  "storm_crowned_spirit": {
+    "name": "the Storm-Crowned",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "mountain_spirits",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#a0c8f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "storm_crown_shard",
+        "chance": 1.0
+      },
+      {
+        "item": "frozen_breath",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "storm_crowned_spirit",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.25,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "fallen_sentinel": {
+    "name": "a fallen sentinel",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 133,
+    "hp_per_level": 19,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.7,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      20,
+      80
+    ],
+    "loot": [
+      {
+        "item": "sentinels_sunbadge",
+        "chance": 0.5
+      }
+    ],
+    "model": "fallen_sentinel",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "knight_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "knight_commander": {
+    "name": "Knight-Commander Halvard",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#f0e0a8",
+    "scale": 1.0,
+    "coin": [
+      200,
+      700
+    ],
+    "loot": [
+      {
+        "item": "halvards_sun_banner",
+        "chance": 1.0
+      },
+      {
+        "item": "sentinels_sunbadge",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "knight_commander",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "mirror_image": {
+    "name": "a mirror image",
+    "level": [
+      21,
+      24
+    ],
+    "hp_base": 126,
+    "hp_per_level": 18,
+    "dmg_min": 13,
+    "dmg_max": 25,
+    "attack_delay": 2.7,
+    "ac": 35,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "reflections",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d0d8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mirror_shard",
+        "chance": 0.5
+      }
+    ],
+    "model": "mirror_image",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "raider_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "mirage_wisp": {
+    "name": "a mirage wisp",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 120,
+    "hp_per_level": 18,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.7,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "reflections",
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "beetle",
+    "color": "#f0e8ff",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mirror_shard",
+        "chance": 0.4
+      }
+    ],
+    "model": "mirage_wisp"
+  },
+  "the_reflection": {
+    "name": "the Reflection",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "reflections",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#d8e0e8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cracked_mirror_face",
+        "chance": 1.0
+      },
+      {
+        "item": "mirror_shard",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "the_reflection",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "salt_crab": {
+    "name": "a salt crab",
+    "level": [
+      20,
+      23
+    ],
+    "hp_base": 132,
+    "hp_per_level": 19,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.7,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#e8e0d8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "salt_crab_claw",
+        "chance": 0.5
+      }
+    ],
+    "model": "salt_crab"
+  },
+  "brine_swarm": {
+    "name": "a brine swarm",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 84,
+    "hp_per_level": 12,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.7,
+    "ac": 23,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#e8a0b0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [],
+    "model": "brine_swarm"
+  },
+  "old_saltclaw": {
+    "name": "Old Saltclaw",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 3.0,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#f0e8e0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "saltclaws_pearl",
+        "chance": 1.0
+      },
+      {
+        "item": "salt_crab_claw",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "old_saltclaw",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "duneskiff_nomad": {
+    "name": "a Duneskiff raider",
+    "level": [
+      21,
+      24
+    ],
+    "hp_base": 126,
+    "hp_per_level": 18,
+    "dmg_min": 13,
+    "dmg_max": 25,
+    "attack_delay": 2.7,
+    "ac": 35,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "duneskiff",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#c8b090",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "nomad_veil",
+        "chance": 0.5
+      }
+    ],
+    "model": "duneskiff_nomad",
+    "gear": [
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ],
+    "weapon": "salt_scimitar"
+  },
+  "nomad_queen": {
+    "name": "Queen Asra of the Skiffs",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "duneskiff",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#d8c0a0",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "loot": [
+      {
+        "item": "asras_salt_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "nomad_veil",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "nomad_queen",
+    "named": true,
+    "xp_bonus": 2.2,
+    "weapon": "salt_scimitar"
+  },
+  "salt_wader": {
+    "name": "a salt wader",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 120,
+    "hp_per_level": 18,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.7,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "beetle",
+    "color": "#f0d8e0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wader_plume",
+        "chance": 0.5
+      }
+    ],
+    "model": "salt_wader"
+  },
+  "sky_ray": {
+    "name": "a sky ray",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 133,
+    "hp_per_level": 19,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.7,
+    "ac": 37,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "beetle",
+    "color": "#d0d8e0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wader_plume",
+        "chance": 0.3
+      }
+    ],
+    "model": "sky_ray"
+  },
+  "great_sky_ray": {
+    "name": "the Great Sky Ray",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 3800,
+    "hp_per_level": 0,
+    "dmg_min": 23,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 55,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "beetle",
+    "color": "#e0e8f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sky_ray_spine",
+        "chance": 1.0
+      },
+      {
+        "item": "wader_plume",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "great_sky_ray",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "whiskerfolk": {
+    "name": "a whiskerfolk brute",
+    "level": [
+      24,
+      27
+    ],
+    "hp_base": 175,
+    "hp_per_level": 25,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.7,
+    "ac": 48,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "whiskerfolk",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#6a7a6a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "whisker_barbel",
+        "chance": 0.5
+      }
+    ],
+    "model": "whiskerfolk",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "pondkin_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "river_hippo": {
+    "name": "a river hippo",
+    "level": [
+      25,
+      28
+    ],
+    "hp_base": 198,
+    "hp_per_level": 29,
+    "dmg_min": 15,
+    "dmg_max": 30,
+    "attack_delay": 3.2,
+    "ac": 55,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#8a7a7a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "hippo_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "river_hippo"
+  },
+  "river_king": {
+    "name": "the River King",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 4920,
+    "hp_per_level": 0,
+    "dmg_min": 27,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "whiskerfolk",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#5a7a6a",
+    "scale": 1.0,
+    "coin": [
+      400,
+      1200
+    ],
+    "loot": [
+      {
+        "item": "river_kings_pearl_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "whisker_barbel",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "river_king",
+    "named": true,
+    "xp_bonus": 2.2,
+    "weapon": "river_trident"
+  },
+  "mudfolk": {
+    "name": "a mudfolk digger",
+    "level": [
+      24,
+      27
+    ],
+    "hp_base": 146,
+    "hp_per_level": 21,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.7,
+    "ac": 40,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "mudfolk",
+    "verb": [
+      "hit",
+      "hits"
+    ],
+    "shape": "humanoid",
+    "color": "#7a6a4a",
+    "scale": 1.0,
+    "coin": [
+      20,
+      90
+    ],
+    "loot": [
+      {
+        "item": "mud_charm",
+        "chance": 0.5
+      }
+    ],
+    "model": "mudfolk",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "crude_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "mud_shaman": {
+    "name": "Mud-Shaman Gloop",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 4920,
+    "hp_per_level": 0,
+    "dmg_min": 27,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "mudfolk",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#8a7a5a",
+    "scale": 1.0,
+    "coin": [
+      300,
+      900
+    ],
+    "loot": [
+      {
+        "item": "shell_mask",
+        "chance": 1.0
+      },
+      {
+        "item": "mud_charm",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "mud_shaman",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "mud_spit",
+      "chance": 0.3,
+      "text": "%s gurgles and hurls %s!"
+    },
+    "weapon": "driftwood_staff"
+  },
+  "delta_serpent": {
+    "name": "a delta serpent",
+    "level": [
+      24,
+      27
+    ],
+    "hp_base": 146,
+    "hp_per_level": 21,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.7,
+    "ac": 40,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#5a6a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "serpent_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "delta_serpent",
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    }
+  },
+  "biting_swarm": {
+    "name": "a biting swarm",
+    "level": [
+      24,
+      26
+    ],
+    "hp_base": 102,
+    "hp_per_level": 15,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.7,
+    "ac": 28,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#4a4a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [],
+    "model": "biting_swarm"
+  },
+  "great_delta_serpent": {
+    "name": "Old Coilmother",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 4920,
+    "hp_per_level": 0,
+    "dmg_min": 27,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a6a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "coilmothers_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "serpent_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "great_delta_serpent",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.3,
+      "text": "%s's fangs deliver %s!"
+    }
+  },
+  "drowned_smuggler": {
+    "name": "a drowned smuggler",
+    "level": [
+      25,
+      28
+    ],
+    "hp_base": 152,
+    "hp_per_level": 22,
+    "dmg_min": 15,
+    "dmg_max": 30,
+    "attack_delay": 2.7,
+    "ac": 42,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#6a9a9a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      160
+    ],
+    "loot": [
+      {
+        "item": "smugglers_token",
+        "chance": 0.5
+      }
+    ],
+    "model": "drowned_smuggler",
+    "gear": [
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ],
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.12,
+      "text": "%s's touch carries %s!"
+    },
+    "weapon": "smuggler_cutlass"
+  },
+  "smuggler_captain": {
+    "name": "Captain Wren Blackwater",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 4920,
+    "hp_per_level": 0,
+    "dmg_min": 27,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#5a8a8a",
+    "scale": 1.0,
+    "coin": [
+      400,
+      1200
+    ],
+    "loot": [
+      {
+        "item": "blackwaters_ledger",
+        "chance": 1.0
+      },
+      {
+        "item": "smugglers_token",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "smuggler_captain",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.25,
+      "text": "%s's touch carries %s!"
+    },
+    "gear": [],
+    "weapon": "smuggler_cutlass"
+  },
+  "saltreaver": {
+    "name": "a Saltreaver",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 172,
+    "hp_per_level": 25,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "saltreavers",
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "shape": "humanoid",
+    "color": "#7a6a5a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "reaver_armring",
+        "chance": 0.5
+      }
+    ],
+    "model": "saltreaver",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.75,
+        "table": "tidesworn_weapons"
+      },
+      {
+        "slot": "head",
+        "chance": 0.08,
+        "table": "light_head"
+      },
+      {
+        "slot": "chest",
+        "chance": 0.08,
+        "table": "light_chest"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "rings"
+      }
+    ]
+  },
+  "saltreaver_king": {
+    "name": "King Harrow Saltbeard",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5480,
+    "hp_per_level": 0,
+    "dmg_min": 29,
+    "dmg_max": 57,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "saltreavers",
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "shape": "humanoid",
+    "color": "#8a7a6a",
+    "scale": 1.0,
+    "coin": [
+      500,
+      1500
+    ],
+    "loot": [
+      {
+        "item": "saltbeards_whalebone_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "reaver_armring",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "saltreaver_king",
+    "named": true,
+    "xp_bonus": 2.2,
+    "weapon": "whalebone_axe"
+  },
+  "clawfolk": {
+    "name": "a clawfolk",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 197,
+    "hp_per_level": 28,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 54,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "clawfolk",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "humanoid",
+    "color": "#a04a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "clawfolk_pincer",
+        "chance": 0.5
+      }
+    ],
+    "model": "clawfolk",
+    "proc": {
+      "spell": "crushing_claw",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "deep_horror": {
+    "name": "the Horror Below",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5480,
+    "hp_per_level": 0,
+    "dmg_min": 29,
+    "dmg_max": 57,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "clawfolk",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "beetle",
+    "color": "#3a3a5a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "horror_lure",
+        "chance": 1.0
+      },
+      {
+        "item": "clawfolk_pincer",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "deep_horror",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "drowning_grasp",
+      "chance": 0.25,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "sea_serpent": {
+    "name": "a sea serpent",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 172,
+    "hp_per_level": 25,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#3a7a8a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sea_serpent_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "sea_serpent"
+  },
+  "giant_gull": {
+    "name": "a giant gull",
+    "level": [
+      28,
+      29
+    ],
+    "hp_base": 146,
+    "hp_per_level": 21,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 40,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "beetle",
+    "color": "#e0e0e0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gull_feather",
+        "chance": 0.5
+      }
+    ],
+    "model": "giant_gull"
+  },
+  "sea_lion": {
+    "name": "a sea lion",
+    "level": [
+      28,
+      29
+    ],
+    "hp_base": 172,
+    "hp_per_level": 25,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#7a6a5a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "raw_meat",
+        "chance": 0.5
+      }
+    ],
+    "model": "sea_lion"
+  },
+  "great_sea_serpent": {
+    "name": "Leviathan Whitefin",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5480,
+    "hp_per_level": 0,
+    "dmg_min": 29,
+    "dmg_max": 57,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a8a9a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "whitefins_fin",
+        "chance": 1.0
+      },
+      {
+        "item": "sea_serpent_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "great_sea_serpent",
+    "named": true,
+    "xp_bonus": 2.2
+  },
+  "harbor_storm_spirit": {
+    "name": "a storm spirit",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 172,
+    "hp_per_level": 25,
+    "dmg_min": 17,
+    "dmg_max": 34,
+    "attack_delay": 2.7,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "storm_spirits",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a9ab8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bottled_lightning",
+        "chance": 0.5
+      }
+    ],
+    "model": "tempest_spirit",
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "tempest_lord": {
+    "name": "the Tempest Lord",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 5480,
+    "hp_per_level": 0,
+    "dmg_min": 29,
+    "dmg_max": 57,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "storm_spirits",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8ab0d8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tempest_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "bottled_lightning",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "tempest_lord",
+    "named": true,
+    "xp_bonus": 2.2,
+    "proc": {
+      "spell": "lightning_lash",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
   }
 }

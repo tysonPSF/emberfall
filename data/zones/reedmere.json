@@ -1213,21 +1213,6 @@
       "yaw": 228.24528242032153,
       "collide": "none",
       "scale": 1.31
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Reedmere"
-      ]
     }
   ],
   "passes": [
@@ -1279,6 +1264,25 @@
       "arrive_face": [
         -159,
         0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "silted_reach",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
       ]
     }
   ],

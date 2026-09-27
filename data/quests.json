@@ -697,20 +697,22 @@
     }
   },
   "drake_scales": {
-    "name": "Scales for the Quench",
-    "giver": "smith_tovar",
+    "name": "Obsidian Drake Scales",
+    "giver": "drakewarden_solveig",
     "start_keyword": "scales",
     "wants": {
-      "drake_scale": 4
+      "obsidian_scale": 3
     },
     "reward": {
-      "xp": 4000,
-      "coin": 480
+      "xp": 6200,
+      "coin": 760
     },
+    "first_reward_item": "obsidian_scale_leggings",
     "repeatable": true,
-    "accept_text": "You have taken on a task: Scales for the Quench. Bring Smith Tovar four ash drake scales.",
-    "ready_text": "Drake scales, and good ones. Hand them here.",
-    "complete_text": "These'll make fine shields. Here's your coin.",
+    "accept_text": "You have taken on a task: Obsidian Drake Scales. Bring Drakewarden Solveig three obsidian drake scales.",
+    "ready_text": "Good scales. Hand them over.",
+    "complete_text": "Our miners thank you.",
+    "first_complete_text": "Leggings of their scales, as I promised.",
     "faction": {
       "forgehold": 8
     }
@@ -1205,6 +1207,1002 @@
     "faction": {
       "dawn_pilgrims": 15,
       "lanternhold": 10
+    }
+  },
+  "giants_coals": {
+    "name": "Giants' Heart-Coals",
+    "giver": "warden_dagny",
+    "start_keyword": "coals",
+    "wants": {
+      "giants_coal": 4
+    },
+    "reward": {
+      "xp": 5400,
+      "coin": 640
+    },
+    "first_reward_item": "coalhand_gauntlets",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Giants' Heart-Coals. Bring Warden Dagny four giant's heart-coals.",
+    "ready_text": "Still warm. Give them here, {name}.",
+    "complete_text": "Forgehold pays for every giant it doesn't have to fight.",
+    "first_complete_text": "And my gauntlets. Don't take them off near the forges.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "thanes_crown": {
+    "name": "The Thane's Iron Crown",
+    "giver": "warden_dagny",
+    "start_keyword": "crown",
+    "wants": {
+      "thanes_iron_crown": 1
+    },
+    "reward": {
+      "xp": 13000,
+      "coin": 1800
+    },
+    "first_reward_item": "thanes_hammer",
+    "accept_text": "You have taken on a task: The Thane's Iron Crown. Bring Warden Dagny Thane Korrok's iron crown.",
+    "ready_text": "The thane's crown. It's still hot, {name}.",
+    "complete_text": "The giants will fight among themselves for a while now.",
+    "first_complete_text": "His hammer too. Can you even lift it?",
+    "faction": {
+      "forgehold": 35
+    }
+  },
+  "imp_horns": {
+    "name": "Imp Horns",
+    "giver": "sawyer_mott",
+    "start_keyword": "horns",
+    "wants": {
+      "imp_horn": 4
+    },
+    "reward": {
+      "xp": 5000,
+      "coin": 600
+    },
+    "first_reward_item": "tallpine_signet",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Imp Horns. Bring Old Sawyer Mott four imp horns.",
+    "ready_text": "Horns! Let's have them.",
+    "complete_text": "Four fewer imps in my town.",
+    "first_complete_text": "My signet from the mill. Tallpine's gone, but it's still good silver.",
+    "faction": {
+      "forgehold": 6
+    }
+  },
+  "bottled_smoke": {
+    "name": "Bottled Smoke",
+    "giver": "sawyer_mott",
+    "start_keyword": "bottled",
+    "wants": {
+      "smoke_essence": 3
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 620
+    },
+    "first_reward_item": "smokeweave_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Bottled Smoke. Bring Old Sawyer Mott three bottles of smoke.",
+    "ready_text": "Careful with the stoppers, {name}.",
+    "complete_text": "I'll pour them back into the vents.",
+    "first_complete_text": "A sash woven from it. It never quite stops moving.",
+    "faction": {
+      "forgehold": 6
+    }
+  },
+  "cackleflames_crown": {
+    "name": "Cackleflame's Crown",
+    "giver": "sawyer_mott",
+    "start_keyword": "lordly",
+    "wants": {
+      "cackleflames_crown": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1600
+    },
+    "first_reward_item": "cackleflame_scepter",
+    "accept_text": "You have taken on a task: Cackleflame's Crown. Bring Old Sawyer Mott the crown of Lord Cackleflame.",
+    "ready_text": "His crown. Out of my mill at last.",
+    "complete_text": "Tallpine is quiet again. Thank you.",
+    "first_complete_text": "Take his scepter. I don't want it.",
+    "faction": {
+      "forgehold": 25
+    }
+  },
+  "firehound_manes": {
+    "name": "Firehound Manes",
+    "giver": "tracker_ilse",
+    "start_keyword": "manes",
+    "wants": {
+      "firehound_mane": 3
+    },
+    "reward": {
+      "xp": 5000,
+      "coin": 600
+    },
+    "first_reward_item": "firehound_mantle",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Firehound Manes. Bring Tracker Ilse three firehound manes.",
+    "ready_text": "Still smoldering. Good.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And the mantle. It'll keep you warm, to say the least.",
+    "faction": {
+      "forgehold": 6
+    }
+  },
+  "ashmaws_mane": {
+    "name": "Ashmaw's Mane",
+    "giver": "tracker_ilse",
+    "start_keyword": "mane",
+    "wants": {
+      "ashmaws_mane": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1600
+    },
+    "first_reward_item": "ashmaws_fang_pendant",
+    "accept_text": "You have taken on a task: Ashmaw's Mane. Bring Tracker Ilse Ashmaw's burning mane.",
+    "ready_text": "Ashmaw's mane. The pack will scatter.",
+    "complete_text": "The plains are safer for it.",
+    "first_complete_text": "His fangs, on a cord.",
+    "faction": {
+      "forgehold": 25
+    }
+  },
+  "firebird_feathers": {
+    "name": "Firebird Feathers",
+    "giver": "ashseer_omari",
+    "start_keyword": "feathers",
+    "wants": {
+      "firebird_feather": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 620
+    },
+    "first_reward_item": "firefeather_cap",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Firebird Feathers. Bring Ashseer Omari four firebird feathers.",
+    "ready_text": "Agnavar's own fire in them.",
+    "complete_text": "Here's your coin.",
+    "first_complete_text": "A cap sewn with them. Wear it proudly.",
+    "faction": {
+      "forgehold": 6
+    }
+  },
+  "phoenix_ember": {
+    "name": "The Phoenix's Ember",
+    "giver": "ashseer_omari",
+    "start_keyword": "ember",
+    "wants": {
+      "phoenix_ember": 1
+    },
+    "reward": {
+      "xp": 14000,
+      "coin": 1900
+    },
+    "first_reward_item": "ring_of_the_phoenix",
+    "accept_text": "You have taken on a task: The Phoenix's Ember. Bring Ashseer Omari the phoenix's ember.",
+    "ready_text": "Her ember. She'll rise again, but not today.",
+    "complete_text": "Agnavar's fire, held in the hand.",
+    "first_complete_text": "A ring set with a spark of it.",
+    "faction": {
+      "forgehold": 25
+    }
+  },
+  "glass_cores": {
+    "name": "Glass Golem Cores",
+    "giver": "glasswright_uzma",
+    "start_keyword": "cores",
+    "wants": {
+      "glass_core": 4
+    },
+    "reward": {
+      "xp": 6200,
+      "coin": 760
+    },
+    "first_reward_item": "glasswrights_lenses",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Glass Golem Cores. Bring Glasswright Uzma four glass golem cores.",
+    "ready_text": "Flawless glass. Give them here.",
+    "complete_text": "The glassworks thank you.",
+    "first_complete_text": "My lenses. You'll see better than I do.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "colossus_heart": {
+    "name": "The Colossus's Heart",
+    "giver": "glasswright_uzma",
+    "start_keyword": "heart",
+    "wants": {
+      "colossus_heart": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "first_reward_item": "heart_of_the_colossus",
+    "accept_text": "You have taken on a task: The Colossus's Heart. Bring Glasswright Uzma the Black Colossus's heart.",
+    "ready_text": "Its heart! Still glowing.",
+    "complete_text": "The fields are ours to work again.",
+    "first_complete_text": "I set a piece of it in a pendant for you.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "vitrax_eye": {
+    "name": "The Wyrm's Eye",
+    "giver": "drakewarden_solveig",
+    "start_keyword": "eye",
+    "wants": {
+      "vitrax_eye": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "first_reward_item": "eye_of_vitrax",
+    "accept_text": "You have taken on a task: The Wyrm's Eye. Bring Drakewarden Solveig Vitrax's eye.",
+    "ready_text": "Her eye. It's still looking at me, {name}.",
+    "complete_text": "The drakes will scatter without their mother.",
+    "first_complete_text": "Set in a ring. Don't stare into it.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "glass_silk": {
+    "name": "Glass Spider Silk",
+    "giver": "alchemist_farid",
+    "start_keyword": "silk",
+    "wants": {
+      "glass_silk": 3
+    },
+    "reward": {
+      "xp": 6000,
+      "coin": 740
+    },
+    "first_reward_item": "glassweb_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Glass Spider Silk. Bring Alchemist Farid three spools of glass spider silk.",
+    "ready_text": "Wonderful. Give it here.",
+    "complete_text": "Here's your coin.",
+    "first_complete_text": "Gloves woven from it.",
+    "faction": {
+      "forgehold": 6
+    }
+  },
+  "shardmothers_crown": {
+    "name": "The Shardmother's Crown",
+    "giver": "alchemist_farid",
+    "start_keyword": "crown",
+    "wants": {
+      "shardmothers_crown": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "first_reward_item": "shardmothers_fang",
+    "accept_text": "You have taken on a task: The Shardmother's Crown. Bring Alchemist Farid the Shardmother's crown.",
+    "ready_text": "Her crown of shards. Careful.",
+    "complete_text": "A treasure. Thank you.",
+    "first_complete_text": "I made a blade of her fang and one shard. It still bites.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "glassbound_insignia": {
+    "name": "Glassbound Insignia",
+    "giver": "captain_ragna",
+    "start_keyword": "insignia",
+    "wants": {
+      "glassbound_insignia": 4
+    },
+    "reward": {
+      "xp": 6200,
+      "coin": 760
+    },
+    "first_reward_item": "glassbound_greaves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Glassbound Insignia. Bring Captain Ragna four glassbound insignia.",
+    "ready_text": "Their insignia. I'll send them home.",
+    "complete_text": "Four more of them at rest.",
+    "first_complete_text": "Greaves from our armory.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "aldrics_banner": {
+    "name": "Aldric's Banner",
+    "giver": "captain_ragna",
+    "start_keyword": "banner",
+    "wants": {
+      "aldrics_banner": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "first_reward_item": "aldrics_glass_blade",
+    "accept_text": "You have taken on a task: Aldric's Banner. Bring Captain Ragna Captain Aldric's glassbound banner.",
+    "ready_text": "Their banner. At last.",
+    "complete_text": "Let them rest now.",
+    "first_complete_text": "His blade. He'd want it used.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "stonebrow_tusk_q": {
+    "name": "Stonebrow Tusks",
+    "giver": "marshal_oyelaran",
+    "start_keyword": "tusks",
+    "wants": {
+      "stonebrow_tusk": 4
+    },
+    "reward": {
+      "xp": 3600,
+      "coin": 400
+    },
+    "first_reward_item": "dawnwatch_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Stonebrow Tusks. Bring Marshal Oyelaran 4 stonebrow tusks.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "lanternhold": 8,
+      "stonebrow": -10
+    }
+  },
+  "uthraks_war_horn_q": {
+    "name": "Uthrak's War Horn",
+    "giver": "marshal_oyelaran",
+    "start_keyword": "horn",
+    "wants": {
+      "uthraks_war_horn": 1
+    },
+    "reward": {
+      "xp": 8000,
+      "coin": 960
+    },
+    "first_reward_item": "warlords_war_horn",
+    "accept_text": "You have taken on a task: Uthrak's War Horn. Bring Marshal Oyelaran Uthrak's War Horn.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "lanternhold": 30,
+      "stonebrow": -30
+    }
+  },
+  "frozen_breath_q": {
+    "name": "Frozen Breaths",
+    "giver": "beacon_keeper_lior",
+    "start_keyword": "frozen",
+    "wants": {
+      "frozen_breath": 4
+    },
+    "reward": {
+      "xp": 3600,
+      "coin": 400
+    },
+    "first_reward_item": "frostspirit_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Frozen Breaths. Bring Beacon-Keeper Lior 4 frozen breaths.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "lanternhold": 8
+    }
+  },
+  "storm_crown_shard_q": {
+    "name": "A Shard of the Storm Crown",
+    "giver": "beacon_keeper_lior",
+    "start_keyword": "shard",
+    "wants": {
+      "storm_crown_shard": 1
+    },
+    "reward": {
+      "xp": 8000,
+      "coin": 960
+    },
+    "first_reward_item": "stormcrown_circlet",
+    "accept_text": "You have taken on a task: A Shard of the Storm Crown. Bring Beacon-Keeper Lior a Shard of the Storm Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "lanternhold": 30
+    }
+  },
+  "roc_feather_q": {
+    "name": "Roc Feathers",
+    "giver": "falconer_mehr",
+    "start_keyword": "feathers",
+    "wants": {
+      "roc_feather": 3
+    },
+    "reward": {
+      "xp": 3600,
+      "coin": 400
+    },
+    "first_reward_item": "rocfeather_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Roc Feathers. Bring Falconer Mehr 3 roc feathers.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "lanternhold": 8
+    }
+  },
+  "sunwing_plume_q": {
+    "name": "Sunwing's Golden Plume",
+    "giver": "falconer_mehr",
+    "start_keyword": "plume",
+    "wants": {
+      "sunwing_plume": 1
+    },
+    "reward": {
+      "xp": 8000,
+      "coin": 960
+    },
+    "first_reward_item": "ogrehide_belt",
+    "accept_text": "You have taken on a task: Sunwing's Golden Plume. Bring Falconer Mehr Sunwing's Golden Plume.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "lanternhold": 30
+    }
+  },
+  "sentinels_sunbadge_q": {
+    "name": "Sentinels' Sun-badges",
+    "giver": "chaplain_beatrix",
+    "start_keyword": "badges",
+    "wants": {
+      "sentinels_sunbadge": 4
+    },
+    "reward": {
+      "xp": 3600,
+      "coin": 400
+    },
+    "first_reward_item": "sunbadge_pendant",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Sentinels' Sun-badges. Bring Chaplain Beatrix 4 sentinels' sun-badges.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "lanternhold": 8
+    }
+  },
+  "halvards_sun_banner_q": {
+    "name": "Halvard's Sun Banner",
+    "giver": "chaplain_beatrix",
+    "start_keyword": "banner",
+    "wants": {
+      "halvards_sun_banner": 1
+    },
+    "reward": {
+      "xp": 8000,
+      "coin": 960
+    },
+    "first_reward_item": "halvards_sunblade",
+    "accept_text": "You have taken on a task: Halvard's Sun Banner. Bring Chaplain Beatrix Halvard's Sun Banner.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "lanternhold": 30
+    }
+  },
+  "nomad_veil_q": {
+    "name": "Nomad Veils",
+    "giver": "caravan_guide_rahel",
+    "start_keyword": "veils",
+    "wants": {
+      "nomad_veil": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "first_reward_item": "skiffrunner_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Nomad Veils. Bring Caravan-Guide Rahel 4 nomad veils.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "salt_traders": 8,
+      "duneskiff": -10
+    }
+  },
+  "asras_salt_crown_q": {
+    "name": "Asra's Salt Crown",
+    "giver": "caravan_guide_rahel",
+    "start_keyword": "crown",
+    "wants": {
+      "asras_salt_crown": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "first_reward_item": "asras_skiff_blade",
+    "accept_text": "You have taken on a task: Asra's Salt Crown. Bring Caravan-Guide Rahel Asra's Salt Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "salt_traders": 30,
+      "duneskiff": -30
+    }
+  },
+  "mirror_shard_q": {
+    "name": "Mirror Shards",
+    "giver": "mirror_scholar_anouk",
+    "start_keyword": "shards",
+    "wants": {
+      "mirror_shard": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "first_reward_item": "mirrorglass_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Mirror Shards. Bring Mirror-Scholar Anouk 4 mirror shards.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "salt_traders": 8
+    }
+  },
+  "cracked_mirror_face_q": {
+    "name": "The Reflection's Cracked Face",
+    "giver": "mirror_scholar_anouk",
+    "start_keyword": "face",
+    "wants": {
+      "cracked_mirror_face": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "first_reward_item": "mask_of_the_reflection",
+    "accept_text": "You have taken on a task: The Reflection's Cracked Face. Bring Mirror-Scholar Anouk the Reflection's Cracked Face.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "salt_traders": 30
+    }
+  },
+  "salt_crab_claw_q": {
+    "name": "Salt Crab Claws",
+    "giver": "saltcutter_bram",
+    "start_keyword": "claws",
+    "wants": {
+      "salt_crab_claw": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "first_reward_item": "saltcrust_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Salt Crab Claws. Bring Saltcutter Bram 4 salt crab claws.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "salt_traders": 8
+    }
+  },
+  "saltclaws_pearl_q": {
+    "name": "Saltclaw's Salt Pearl",
+    "giver": "saltcutter_bram",
+    "start_keyword": "pearl",
+    "wants": {
+      "saltclaws_pearl": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "first_reward_item": "saltclaw_pearl_ring",
+    "accept_text": "You have taken on a task: Saltclaw's Salt Pearl. Bring Saltcutter Bram Saltclaw's Salt Pearl.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "salt_traders": 30
+    }
+  },
+  "wader_plume_q": {
+    "name": "Wader Plumes",
+    "giver": "birdwatcher_kiri",
+    "start_keyword": "plumes",
+    "wants": {
+      "wader_plume": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "first_reward_item": "waderplume_cap",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Wader Plumes. Bring Birdwatcher Kiri 4 wader plumes.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "salt_traders": 8
+    }
+  },
+  "sky_ray_spine_q": {
+    "name": "The Great Ray's Spine",
+    "giver": "birdwatcher_kiri",
+    "start_keyword": "spine",
+    "wants": {
+      "sky_ray_spine": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "first_reward_item": "rayspine_staff",
+    "accept_text": "You have taken on a task: The Great Ray's Spine. Bring Birdwatcher Kiri the Great Ray's Spine.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "salt_traders": 30
+    }
+  },
+  "whisker_barbel_q": {
+    "name": "Whiskerfolk Barbels",
+    "giver": "riverwarden_sione",
+    "start_keyword": "barbels",
+    "wants": {
+      "whisker_barbel": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "first_reward_item": "barbel_whip_belt",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Whiskerfolk Barbels. Bring Riverwarden Sione 4 whiskerfolk barbels.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8,
+      "whiskerfolk": -10
+    }
+  },
+  "river_kings_pearl_crown_q": {
+    "name": "The River King's Pearl Crown",
+    "giver": "riverwarden_sione",
+    "start_keyword": "crown",
+    "wants": {
+      "river_kings_pearl_crown": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "first_reward_item": "pearl_crown_of_the_river",
+    "accept_text": "You have taken on a task: The River King's Pearl Crown. Bring Riverwarden Sione the River King's Pearl Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30,
+      "whiskerfolk": -30
+    }
+  },
+  "mud_charm_q": {
+    "name": "Mud Charms",
+    "giver": "headman_obafemi",
+    "start_keyword": "charms",
+    "wants": {
+      "mud_charm": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "first_reward_item": "mudcharm_bracelet",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Mud Charms. Bring Headman Obafemi 4 mud charms.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8,
+      "mudfolk": -10
+    }
+  },
+  "shell_mask_q": {
+    "name": "Gloop's Shell Mask",
+    "giver": "headman_obafemi",
+    "start_keyword": "mask",
+    "wants": {
+      "shell_mask": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "first_reward_item": "shellmask_amulet",
+    "accept_text": "You have taken on a task: Gloop's Shell Mask. Bring Headman Obafemi Gloop's Shell Mask.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30,
+      "mudfolk": -30
+    }
+  },
+  "serpent_scale_q": {
+    "name": "Delta Serpent Scales",
+    "giver": "snakecatcher_anh",
+    "start_keyword": "scales",
+    "wants": {
+      "serpent_scale": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "first_reward_item": "serpentscale_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Delta Serpent Scales. Bring Snake-Catcher Anh 4 delta serpent scales.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "coilmothers_fang_q": {
+    "name": "Coilmother's Fang",
+    "giver": "snakecatcher_anh",
+    "start_keyword": "fang",
+    "wants": {
+      "coilmothers_fang": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "first_reward_item": "coilmother_fang_dirk",
+    "accept_text": "You have taken on a task: Coilmother's Fang. Bring Snake-Catcher Anh Coilmother's Fang.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30
+    }
+  },
+  "smugglers_token_q": {
+    "name": "Smuggler's Tokens",
+    "giver": "ferryman_cato",
+    "start_keyword": "tokens",
+    "wants": {
+      "smugglers_token": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "first_reward_item": "hippohide_jerkin",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Smuggler's Tokens. Bring Ferryman Cato 4 smuggler's tokens.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "blackwaters_ledger_q": {
+    "name": "Blackwater's Ledger",
+    "giver": "ferryman_cato",
+    "start_keyword": "ledger",
+    "wants": {
+      "blackwaters_ledger": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "first_reward_item": "blackwater_cutlass",
+    "accept_text": "You have taken on a task: Blackwater's Ledger. Bring Ferryman Cato Blackwater's Ledger.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30
+    }
+  },
+  "reaver_armring_q": {
+    "name": "Reaver Arm-rings",
+    "giver": "harbormaster_quilla",
+    "start_keyword": "arm-rings",
+    "wants": {
+      "reaver_armring": 4
+    },
+    "reward": {
+      "xp": 5400,
+      "coin": 600
+    },
+    "first_reward_item": "reaver_armring_band",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Reaver Arm-rings. Bring Harbormaster Quilla 4 reaver arm-rings.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8,
+      "saltreavers": -10
+    }
+  },
+  "saltbeards_whalebone_crown_q": {
+    "name": "Saltbeard's Whalebone Crown",
+    "giver": "harbormaster_quilla",
+    "start_keyword": "crown",
+    "wants": {
+      "saltbeards_whalebone_crown": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1440
+    },
+    "first_reward_item": "saltbeards_axe",
+    "accept_text": "You have taken on a task: Saltbeard's Whalebone Crown. Bring Harbormaster Quilla Saltbeard's Whalebone Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30,
+      "saltreavers": -30
+    }
+  },
+  "bottled_lightning_q": {
+    "name": "Bottles Of Lightning",
+    "giver": "lamplighter_soren",
+    "start_keyword": "lightning",
+    "wants": {
+      "bottled_lightning": 4
+    },
+    "reward": {
+      "xp": 5400,
+      "coin": 600
+    },
+    "first_reward_item": "gullfeather_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Bottles Of Lightning. Bring Lamplighter Soren 4 bottles of lightning.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "tempest_heart_q": {
+    "name": "The Tempest Heart",
+    "giver": "lamplighter_soren",
+    "start_keyword": "heart",
+    "wants": {
+      "tempest_heart": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1440
+    },
+    "first_reward_item": "tempest_heart_staff",
+    "accept_text": "You have taken on a task: The Tempest Heart. Bring Lamplighter Soren the Tempest Heart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30
+    }
+  },
+  "clawfolk_pincer_q": {
+    "name": "Clawfolk Pincers",
+    "giver": "diver_makoa",
+    "start_keyword": "pincers",
+    "wants": {
+      "clawfolk_pincer": 4
+    },
+    "reward": {
+      "xp": 5400,
+      "coin": 600
+    },
+    "first_reward_item": "clawfolk_carapace_shield",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Clawfolk Pincers. Bring Diver Makoa 4 clawfolk pincers.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8,
+      "clawfolk": -10
+    }
+  },
+  "horror_lure_q": {
+    "name": "The Horror's Lure",
+    "giver": "diver_makoa",
+    "start_keyword": "lure",
+    "wants": {
+      "horror_lure": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1440
+    },
+    "first_reward_item": "lure_of_the_deep",
+    "accept_text": "You have taken on a task: The Horror's Lure. Bring Diver Makoa the Horror's Lure.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30,
+      "clawfolk": -30
+    }
+  },
+  "sea_serpent_scale_q": {
+    "name": "Sea Serpent Scales",
+    "giver": "harpooner_freya",
+    "start_keyword": "scales",
+    "wants": {
+      "sea_serpent_scale": 4
+    },
+    "reward": {
+      "xp": 5400,
+      "coin": 600
+    },
+    "first_reward_item": "serpentskin_leggings",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Sea Serpent Scales. Bring Harpooner Freya 4 sea serpent scales.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "rainhold": 8
+    }
+  },
+  "whitefins_fin_q": {
+    "name": "Whitefin's Fin",
+    "giver": "harpooner_freya",
+    "start_keyword": "fin",
+    "wants": {
+      "whitefins_fin": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1440
+    },
+    "first_reward_item": "whitefin_cloak",
+    "accept_text": "You have taken on a task: Whitefin's Fin. Bring Harpooner Freya Whitefin's Fin.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. They'll speak of this.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "rainhold": 30
     }
   }
 }

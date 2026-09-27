@@ -34,6 +34,7 @@ MODES = {
 	"aeolian": [0, 2, 3, 5, 7, 8, 10],
 	"phrygian_dominant": [0, 1, 4, 5, 7, 8, 10],  # the desert's raised third over a flat second
 	"phrygian": [0, 1, 3, 5, 7, 8, 10],  # minor with a flat second: the fire god's darker color
+	"lydian": [0, 2, 4, 6, 7, 9, 11],  # major with a raised fourth: bright, floating, unresolved
 }
 
 
@@ -112,6 +113,15 @@ def drum(vel=0.5, rng=None, low=1.0):
 	return (body + slap) * vel * 0.5
 
 
+def snare(vel=0.5, rng=None):
+	"""A tight frame drum with a rattle: a bright hiss over a short high body, for marching."""
+	t = _t(0.35)
+	noise = (rng or np.random.default_rng(4)).standard_normal(len(t))
+	hiss = (noise - np.convolve(noise, np.ones(5) / 5, mode="same")) * np.exp(-t * 20)  # the high part of the noise
+	body = np.sin(2 * np.pi * (180 + 60 * np.exp(-t * 40)) * t) * np.exp(-t * 28)
+	return (hiss * 0.8 + body * 0.6) * _env(len(t), 0.001, 0.05) * vel * 0.42
+
+
 def horn(f, dur, vel=0.6):
 	"""A soft brass voice: the upper partials swell in after the attack."""
 	t = _t(dur + 0.3)
@@ -132,6 +142,18 @@ def bell(f, dur, vel=0.4):
 	for ratio, amp, decay in ((1.0, 1.0, 0.9), (2.76, 0.45, 1.8), (5.4, 0.25, 3.2), (8.9, 0.1, 5.0)):
 		out += amp * np.sin(2 * np.pi * f * ratio * t) * np.exp(-t * decay)
 	return out * _env(len(t), 0.002, 0.5) * vel * 0.18
+
+
+def anvil(f=880.0, vel=0.5, rng=None):
+	"""A hammer on an anvil: a bright, inharmonic metal ring that dies fast,
+	with a hard click of noise at the strike."""
+	t = _t(1.4)
+	out = np.zeros_like(t)
+	for ratio, amp, decay in ((1.0, 1.0, 5.0), (2.41, 0.6, 7.0), (3.93, 0.4, 9.0), (5.37, 0.25, 12.0), (7.12, 0.15, 16.0)):
+		out += amp * np.sin(2 * np.pi * f * ratio * t) * np.exp(-t * decay)
+	noise = (rng or np.random.default_rng(3)).standard_normal(len(t))
+	click = noise * np.exp(-t * 180) * 0.6
+	return (out + click) * _env(len(t), 0.001, 0.1) * vel * 0.16
 
 
 # ---------------------------------------------------------------- theory
@@ -325,6 +347,65 @@ TRACKS = {
 		"drone": 0.6, "drum": [0, 2], "drum_sections": ["A", "B", "C"], "drum_low": 0.6, "drum_gain": 0.8,
 		"reverb": 4.4, "sparse": 0.3, "bells": 0.35, "bell_octave": 0, "thunder": 0.3,
 	},
+	"the_burn": {  # a burned forest under falling ash: a mournful low flute over drones, sparse deep drum, embers ticking in the lute
+		"key": (50, "phrygian"), "bpm": 48, "beats": 4, "seed": 379,
+		"sections": {"A": [0, 5, 1, 0], "B": [3, 1, 6, 0], "C": [5, 6, 1, 1]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "melody_octave": -1, "arp": "lute", "arp_pattern": [0, -1, -1, 2, -1, -1, 1, -1], "pad": True, "bass": True,
+		"drone": 0.6, "drum": [0], "drum_sections": ["B", "C"], "drum_low": 0.6, "drum_gain": 0.7,
+		"reverb": 4.2, "sparse": 0.5, "bells": 0.05,
+	},
+	"blackglass": {  # fields of black volcanic glass: cold harp and bell harmonics up high, eerie and still, a slow low pulse
+		"key": (56, "aeolian"), "bpm": 50, "beats": 4, "seed": 401,
+		"sections": {"A": [0, 5, 0, 1], "B": [5, 3, 1, 4], "C": [0, 1, 5, 0]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "melody_octave": 0, "arp": "harp", "arp_octave": 1, "arp_pattern": [0, -1, 4, -1, 2, -1, -1, -1], "pad": True, "bass": False,
+		"drone": 0.3, "drum": [0], "drum_sections": ["A", "B", "C"], "drum_low": 0.55, "drum_gain": 0.5,
+		"reverb": 5.2, "sparse": 0.55, "bells": 0.7, "bell_octave": 2,
+	},
+	"forgehold": {  # the forge city in the volcano's flank: hammers on anvils, a strong bass, a proud horn, warm and loud
+		"key": (50, "mixolydian"), "bpm": 88, "beats": 4, "seed": 419,
+		"sections": {"A": [0, 6, 3, 0], "B": [3, 0, 6, 4], "C": [5, 6, 0, 4]},
+		"form": ["A", "A", "B", "A", "C", "A", "B", "A"],
+		"melody": "horn", "arp": "lute", "arp_pattern": [0, 2, 1, 2, 0, 2, 1, 2], "pad": True, "bass": True, "bass_eighths": True,
+		"drum": [0, 1.5, 2, 3], "drum_sections": ["A", "B", "C"], "drum_low": 0.75,
+		"anvil": [0, 1, 2.5, 3], "anvil_sections": ["A", "B", "C"], "anvil_hz": 740,
+		"reverb": 2.4, "sparse": 0.1, "bells": 0.0,
+	},
+	"dawnwatch": {  # the Dawn-Tusk's fortress on the snowy ridge, under siege: a proud horn over driving bass, marching drums, a watch bell
+		"key": (55, "aeolian"), "bpm": 96, "beats": 4, "seed": 431,
+		"sections": {"A": [0, 5, 6, 0], "B": [3, 0, 5, 4], "C": [5, 6, 3, 4]},
+		"form": ["A", "A", "B", "A", "C", "A", "B", "A"],
+		"melody": "horn", "arp": "lute", "arp_pattern": [0, -1, 0, 2, 0, -1, 1, 2], "pad": True, "bass": True, "bass_eighths": True,
+		"drum": [0, 2, 2.5], "drum_sections": ["A", "B", "C"], "drum_low": 0.8,
+		"snare": [1, 3, 3.75], "snare_sections": ["B", "C"], "snare_gain": 0.9,
+		"reverb": 2.6, "sparse": 0.05, "bells": 0.12, "bell_octave": 0,
+	},
+	"mirror_flats": {  # a salt flat under a mirror of water: lone bells over a floating lydian pad, high harp glints, a lot of silence
+		"key": (60, "lydian"), "bpm": 50, "beats": 4, "seed": 443,
+		"sections": {"A": [0, 1, 0, 1], "B": [5, 1, 4, 0], "C": [3, 1, 0, 0]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "bell", "arp": "harp", "arp_octave": 1, "arp_pattern": [0, -1, -1, -1, 4, -1, -1, -1], "pad": True, "bass": False,
+		"drone": 0.3, "drum": [], "drum_sections": [],
+		"reverb": 5.6, "sparse": 0.6, "bells": 0.4, "bell_octave": 2,
+	},
+	"silted_reach": {  # a great river delta in the rain: a flowing flute over a rolling lute, a gentle hand-drum pulse, rain all through
+		"key": (53, "dorian"), "bpm": 70, "beats": 3, "seed": 457,
+		"sections": {"A": [0, 6, 3, 0, 5, 3, 6, 0], "B": [3, 0, 6, 3, 5, 6, 4, 4]},
+		"form": ["A", "A", "B", "A", "B"],
+		"melody": "flute", "arp": "lute", "arp_pattern": [0, 2, 4, 2, 1, 2], "pad": True, "bass": True,
+		"drum": [0, 1.5], "drum_sections": ["A", "B"], "drum_gain": 0.4, "drum_skip": 0.3,
+		"reverb": 3.8, "sparse": 0.3, "bells": 0.2, "rain": 0.35,
+	},
+	"tidemouth": {  # Rainhold's harbor under siege from the sea: a shanty's lilt, lute doubled by a low horn, stamping drum, the harbor bell
+		"key": (62, "dorian"), "bpm": 108, "beats": 3, "seed": 467,
+		"sections": {"A": [0, 6, 0, 4, 0, 6, 3, 0], "B": [3, 0, 6, 4, 3, 0, 4, 0]},
+		"form": ["A", "A", "B", "A", "B"],
+		"melody": "lute", "melody_double": "horn", "arp": "lute", "arp_pattern": [0, 2, 1], "pad": True, "bass": True,
+		"drum": [0, 2], "drum_sections": ["A", "B"], "drum_low": 0.85,
+		"snare": [1], "snare_sections": ["B"], "snare_gain": 0.7,
+		"reverb": 2.0, "sparse": 0.05, "bells": 0.15, "bell_octave": 0,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
@@ -333,6 +414,17 @@ TRACKS = {
 		"drum": [], "drum_sections": [], "reverb": 3.2, "sparse": 0.35, "bells": 0.3,
 	},
 }
+
+
+def _voice(name, f, dur, vel, rng):
+	"""One melody note on the named instrument."""
+	if name == "horn":
+		return horn(f, dur, vel)
+	if name == "bell":
+		return bell(f, dur, vel * 1.6)
+	if name == "lute":
+		return lute(f, dur, vel * 1.25)
+	return flute(f, dur, vel, rng)
 
 
 def render(name, spec):
@@ -368,8 +460,10 @@ def render(name, spec):
 		for s, l, d in tune:
 			f = midi_hz(key.note(d, spec.get("melody_octave", 0)))
 			vel = 0.55 + 0.1 * rng.random()
-			voice = horn(f, l * beat * 0.95, vel) if spec["melody"] == "horn" else flute(f, l * beat * 0.95, vel, rng)
-			put(voice, t0 + s * beat + rng.normal(0, 0.006), pan=0.15)
+			at = t0 + s * beat + rng.normal(0, 0.006)
+			put(_voice(spec["melody"], f, l * beat * 0.95, vel, rng), at, pan=0.15)
+			if spec.get("melody_double"):  # a second voice on the tune an octave down, for weight
+				put(_voice(spec["melody_double"], f / 2, l * beat * 0.95, vel * 0.7, rng), at + 0.004, pan=-0.1)
 		# a drone under the whole section: the tonic and its fifth, two octaves down
 		if spec.get("drone"):
 			sec_len = len(chords) * beats * beat
@@ -390,7 +484,8 @@ def render(name, spec):
 				put(bass(midi_hz(key.note(ch, -2)), beats * beat * 0.9, 0.55), tb)
 			pattern = spec["arp_pattern"]
 			step = beats * beat / len(pattern)
-			tones = [key.note(d, -1) for d in key.chord(ch)] + [key.note(ch + 7, -1), key.note(ch + 9, -1)]
+			ao = spec.get("arp_octave", -1)
+			tones = [key.note(d, ao) for d in key.chord(ch)] + [key.note(ch + 7, ao), key.note(ch + 9, ao)]
 			for k, idx in enumerate(pattern):
 				if idx < 0:
 					continue  # a rest in the pattern
@@ -404,6 +499,14 @@ def render(name, spec):
 						continue  # an irregular hand: some off-beats go unplayed
 					put(drum(0.55 if d == 0 or d == 2 else 0.35, rng, spec.get("drum_low", 1.0)), tb + d * beat, pan=0.05,
 						gain=spec.get("drum_gain", 1.0))
+			if sec in spec.get("snare_sections", ()):
+				for d in spec["snare"]:  # marching sticks: accents on the backbeat, a lighter pickup before the bar
+					put(snare(0.5 if d == int(d) else 0.3, rng), tb + d * beat + rng.normal(0, 0.004), pan=-0.1,
+						gain=spec.get("snare_gain", 1.0))
+			if sec in spec.get("anvil_sections", ()):
+				for k, d in enumerate(spec["anvil"]):  # the smiths' hammers: a strong strike, then lighter taps, a second smith answering
+					hz = spec.get("anvil_hz", 800) * (1.0 if k % 2 == 0 else 1.19)
+					put(anvil(hz, 0.6 if d == 0 else 0.38, rng), tb + d * beat + rng.normal(0, 0.005), pan=0.45 if k % 2 else -0.45)
 			if spec.get("bells") and rng.random() < spec["bells"]:
 				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), spec.get("bell_octave", 1))), 2.0, 0.5),
 					tb + beat * rng.integers(1, beats), pan=0.4)
@@ -415,6 +518,16 @@ def render(name, spec):
 					put(drum(0.25 + 0.1 * rng.random(), rng, 0.55), at + 0.6 + k * rng.uniform(0.15, 0.4),
 						pan=rng.uniform(-0.6, 0.6), gain=0.6)
 		bar += len(chords)
+
+	if spec.get("rain"):
+		# rain: a soft bed of dark noise, swelling slowly, different in each ear.
+		# It runs the whole length at an even level, so the loop point hides in it.
+		m = int(length * SR)
+		for chan, seed in ((L, 303), (R, 404)):
+			noise = np.random.default_rng(seed).standard_normal(m)
+			noise = np.convolve(noise, np.ones(14) / 14, mode="same")
+			swell = 0.8 + 0.2 * np.sin(2 * np.pi * np.arange(m) / SR / length * 2 + seed)  # whole cycles over the loop
+			chan[:m] += noise * swell * spec["rain"] * 0.12
 
 	# the room: a decaying-noise reverb, a little different on each side
 	for chan, seed in ((L, 101), (R, 202)):

@@ -162,6 +162,15 @@ FONTS = {
     'basker': '/usr/share/fonts/truetype/baskerville/GFSBaskerville.otf',
 }
 _fc = {}
+# Anywhere else (a Mac, say), point EMBERFALL_FONTS at a folder holding the
+# same font files (any layout): each is found by its file name.
+if os.environ.get('EMBERFALL_FONTS'):
+    _found = {}
+    for _root, _dirs, _files in os.walk(os.environ['EMBERFALL_FONTS']):
+        for _f in _files:
+            _found[_f] = os.path.join(_root, _f)
+    FONTS = {k: _found.get(os.path.basename(v), v) for k, v in FONTS.items()}
+
 def font(kind, size):
     k = (kind, int(size * S))
     if k not in _fc:
@@ -761,10 +770,14 @@ def build():
                       lerp(col, (120, 100, 78), .45), 'mm')
 
     # the realm names, big and faint, under the zone labels
+    # A realm whose middle falls on a city's name takes a spot of its own: the
+    # Ashfall's middle landed on Forgehold once the city moved to [1, 5].
+    LABEL_AT = {'ashfall': (0.0, 3.92)}
     for key, meta in AREAS.items():
         cs = [at(z) for z in ZONES.values() if z['area'] == key and z['cell']]
         mx = sum(c[0] for c in cs) / len(cs)
         my = sum(c[1] for c in cs) / len(cs)
+        mx, my = LABEL_AT.get(key, (mx, my))
         px_, py_ = to_px(mx, my)
         wx, wy = warp(px_, py_ - 0.36 * P)
         for ox, oy in ((-2, 0), (2, 0), (0, -2), (0, 2), (-1.5, -1.5),

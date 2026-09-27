@@ -117,6 +117,17 @@ const SECTIONS := [
 	["dewstep_life", "dewstep"],
 	["pet_anims", "greenmoor"],
 	["afk", "greenmoor"],
+	["cap35", "greenmoor"],
+	["ashfall35_borders", "cinderpass"],
+	["burn_life", "the_burn"],
+	["glass_life", "blackglass"],
+	["forgehold", "forgehold"],
+	["part3_borders", "high_terrace"],
+	["part3_borders_monsoon", "reedmere"],
+	["dawnwatch_life", "dawnwatch"],
+	["flats_life", "mirror_flats"],
+	["reach_life", "silted_reach"],
+	["tidemouth_life", "tidemouth"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5034,6 +5045,220 @@ func _t_afk() -> void:
 	await _wait(0.2)
 	print("afk: /afk again -> afk %s" % p.afk)
 	World.log_message.disconnect(grab)
+
+
+## Level cap 35: every class's three new abilities (31/33/35) cast and land.
+func _t_cap35() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("cap35: max level %d" % int(World.cfg("max_level", 0)))
+	var saved_class := p.char_class
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		p.level = 35
+		p.spells = []
+		for sid: String in GameData.spells:
+			if int(GameData.spells[sid].get("classes", {}).get(cls, 0)) >= 31:
+				p.spells.append(sid)
+		p.spells.sort_custom(func(a: String, b: String) -> bool: return str(GameData.spells[a]["type"]) == "pet" and str(GameData.spells[b]["type"]) != "pet")
+		if cls == "ranger":
+			p.spells.push_front("call_of_the_hawk")
+		elif cls == "magician":
+			p.spells.push_front("call_of_the_elemental_lord")
+		elif cls == "necromancer":
+			p.spells.push_front("raise_bone_colossus")
+		p.recalc_stats()
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		var out := PackedStringArray()
+		for sid: String in p.spells:
+			var s: Dictionary = GameData.spells[sid]
+			p.cooldowns.clear()
+			p.mana = p.max_mana
+			p.hp = p.max_hp
+			p.hidden = s.get("requires_hidden", false)
+			var tgt: Entity = mob
+			if str(s.get("target", "")) in ["self", "group", "friendly"]:
+				tgt = p
+			if str(s["type"]) == "shot":
+				p.equipment["range"] = "forgehold_longbow"
+				p.pack.add("crude_arrow", 20)
+			p.global_position = z.ground(mob.global_position.x + (2.0 if float(s.get("range", 0)) < 5.0 and str(s["type"]) != "shot" else 12.0), mob.global_position.z) + Vector3.UP
+			if s.get("from_behind", false) or s.get("requires_hidden", false):
+				p.global_position = mob.global_position - (-mob.global_basis.z) * 2.0 + Vector3.UP * 0.5
+			p.face_toward(mob.global_position)
+			World.request_set_target(p.entity_id, tgt.entity_id)
+			var hp0 := mob.hp
+			mob.hate.clear()
+			mob.auto_attack = false
+			World.request_cast(p.entity_id, sid)
+			await _wait(float(s.get("cast_time", 0)) + 0.4)
+			var what := ""
+			match str(s["type"]):
+				"damage", "shot", "lifetap":
+					what = "hit %d" % (hp0 - mob.hp)
+				"dot":
+					what = "dot %s" % mob.dots.any(func(d: Dictionary) -> bool: return d["spell"] == sid)
+				"buff":
+					var on: Entity = World.get_object(p.pet_id) as Entity if str(s.get("target", "")) == "pet" else p
+					what = "buff %s" % (on != null and on.buffs.has(sid))
+				"heal":
+					what = "heal cast"
+				"slow":
+					what = "slow %d%%" % mob.slow_pct
+				"root":
+					what = "root %.0f s" % mob.root_left
+				"pet":
+					var pet := World.get_object(p.pet_id) as Pet
+					what = "pet %s (%s, %d hp)" % [pet.display_name if pet else "none", pet.model_id if pet else "", pet.max_hp if pet else 0]
+			out.append("%s: %s" % [GameData.spells[sid]["name"], what])
+			if str(s["type"]) == "pet":
+				await _wait(0.5)
+				await _shot("9zz_cap35_%s" % sid)
+		mob.dots.clear()
+		mob.slow_left = 0.0
+		print("cap35: %s -> %s" % [cls, "; ".join(out)])
+		World.request_pet(p.entity_id, "leave")
+		p.buffs.clear()
+		p.hidden = false
+		p.equipment.erase("range")
+	mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
+## The Ashfall's new borders, every one both ways: Cinderpass to The Burn,
+## The Burn to Blackglass, Blackglass to Forgehold.
+func _t_ashfall35_borders() -> void:
+	for leg: Array in [["cinderpass", Vector2(0, -195), Vector2(0, -1), "the_burn"], ["the_burn", Vector2(0, -225), Vector2(0, -1), "blackglass"],
+			["blackglass", Vector2(225, 0), Vector2(1, 0), "forgehold"], ["forgehold", Vector2(-80, 0), Vector2(-1, 0), "blackglass"],
+			["blackglass", Vector2(0, 225), Vector2(0, 1), "the_burn"], ["the_burn", Vector2(0, 225), Vector2(0, 1), "cinderpass"]]:
+		if not await _walk_border("ashfall35_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## The Burn: its monsters, its four quest givers' quests, a look round.
+func _t_burn_life() -> void:
+	await _zone_life("burn_life", {"warden_dagny": ["giants_coals", "thanes_crown"], "sawyer_mott": ["imp_horns", "bottled_smoke", "cackleflames_crown"],
+			"tracker_ilse": ["firehound_manes", "ashmaws_mane"], "ashseer_omari": ["firebird_feathers", "phoenix_ember"]}, [],
+			["firehound", "ash_wolf", "firehound_alpha", "fire_imp", "smoke_spirit", "imp_lord", "ember_giant", "ember_giant_thane", "firebird", "phoenix"])
+	await _zone_views("burn", [[Vector2(20, 175), Vector2(20, 200), "camp"], [Vector2(-100, 70), Vector2(-140, 60), "tallpine"],
+			[Vector2(100, -40), Vector2(145, -70), "giants"], [Vector2(-20, -130), Vector2(-60, -150), "nests"]])
+
+
+## Blackglass: its monsters by day and night; its quests are given in Forgehold.
+func _t_glass_life() -> void:
+	var z: Zone = get_parent().zone
+	await _zone_life("glass_life", {}, ["glassbound_dead", "glassbound_captain"],
+			["glass_golem", "glass_colossus", "obsidian_drake", "obsidian_wyrm", "glass_spider", "glass_brood_queen", "glassbound_dead"])
+	await _zone_views("glass", [[Vector2(0, 40), Vector2(-40, -30), "fields"], [Vector2(-110, -100), Vector2(-150, -150), "spires"],
+			[Vector2(110, -100), Vector2(150, -140), "spiders"], [Vector2(-100, 80), Vector2(-130, 110), "battlefield"]])
+
+
+## Forgehold: binding, Agnavar's blessing, the guildmasters, the merchants,
+## the Blackglass quests handed in, and a look round the city.
+func _t_forgehold() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("forgehold: bindstone %s at %s" % [z.data.get("bindstone", false), z.bind_point])
+	p.global_position = z.bind_point + Vector3.UP
+	World.request_bind(p.entity_id)
+	print("forgehold: bound to %s" % p.bind_zone)
+	var gms := {}
+	var npcs := _npcs()
+	for id: String in npcs:
+		if GameData.npcs[id].has("guildmaster"):
+			gms[GameData.npcs[id]["guildmaster"]["class"]] = npcs[id].display_name
+	print("forgehold: guildmasters %s" % [gms])
+	var saved_deity := p.deity
+	p.deity = "fire"
+	_stand_by(p, npcs["flamekeeper_ashani"])
+	World.request_say(p.entity_id, "blessing")
+	await _wait(0.3)
+	print("forgehold: a follower of Agnavar asks for his blessing -> %s" % p.buffs.has("ember_tusk_blessing"))
+	p.deity = saved_deity
+	p.buffs.erase("ember_tusk_blessing")
+	for id: String in ["armorer_gunhild", "weaponsmith_teodor", "provisioner_bettany"]:
+		var sells: Array = GameData.npcs[id]["merchant"]["sells"]
+		print("forgehold: %s sells %d, unknown %s" % [id, sells.size(), sells.filter(func(i: String) -> bool: return GameData.item(i).is_empty())])
+	await _zone_life("forgehold", {"glasswright_uzma": ["glass_cores", "colossus_heart"], "drakewarden_solveig": ["drake_scales", "vitrax_eye"],
+			"alchemist_farid": ["glass_silk", "shardmothers_crown"], "captain_ragna": ["glassbound_insignia", "aldrics_banner"]}, [], [])
+	await _zone_views("forgehold", [[Vector2(-40, 0), Vector2(0, -10), "plaza"], [Vector2(-50, 10), Vector2(-74, 0), "gate"],
+			[Vector2(0, -40), Vector2(0, -88), "mine"], [Vector2(20, 20), Vector2(34, -52), "forges"]])
+
+
+## Dawnwatch, Mirror Flats, the Silted Reach and Tidemouth: every new border both ways.
+func _t_part3_borders() -> void:
+	for leg: Array in [["high_terrace", Vector2(0, -225), Vector2(0, -1), "dawnwatch"], ["dawnwatch", Vector2(-195, 0), Vector2(-1, 0), "the_burn"],
+			["the_burn", Vector2(225, 0), Vector2(1, 0), "dawnwatch"], ["dawnwatch", Vector2(195, 0), Vector2(1, 0), "mirror_flats"],
+			["mirror_flats", Vector2(0, 225), Vector2(0, 1), "the_bleach"], ["the_bleach", Vector2(0, -225), Vector2(0, -1), "mirror_flats"],
+			["mirror_flats", Vector2(-225, 0), Vector2(-1, 0), "dawnwatch"], ["dawnwatch", Vector2(0, -195), Vector2(0, -1), "forgehold"],
+			["forgehold", Vector2(0, 80), Vector2(0, 1), "dawnwatch"], ["dawnwatch", Vector2(0, 195), Vector2(0, 1), "high_terrace"]]:
+		if not await _walk_border("part3_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_part3_borders_monsoon() -> void:
+	for leg: Array in [["reedmere", Vector2(0, -225), Vector2(0, -1), "silted_reach"], ["silted_reach", Vector2(225, 0), Vector2(1, 0), "drownfast"],
+			["drownfast", Vector2(-225, 0), Vector2(-1, 0), "silted_reach"], ["silted_reach", Vector2(0, -225), Vector2(0, -1), "tidemouth"],
+			["tidemouth", Vector2(0, 195), Vector2(0, 1), "silted_reach"], ["silted_reach", Vector2(0, 225), Vector2(0, 1), "reedmere"]]:
+		if not await _walk_border("part3_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_dawnwatch_life() -> void:
+	await _zone_life("dawnwatch_life", {"marshal_oyelaran": ["stonebrow_tusk_q", "uthraks_war_horn_q"], "beacon_keeper_lior": ["frozen_breath_q", "storm_crown_shard_q"],
+			"falconer_mehr": ["roc_feather_q", "sunwing_plume_q"], "chaplain_beatrix": ["sentinels_sunbadge_q", "halvards_sun_banner_q"]}, ["fallen_sentinel", "knight_commander"],
+			["stonebrow_ogre", "stonebrow_shaman", "stonebrow_warlord", "roc", "great_roc", "wyvern", "snow_spirit", "avalanche_elemental", "storm_crowned_spirit"])
+	await _zone_views("dawnwatch", [[Vector2(0, 80), Vector2(0, 20), "gate"], [Vector2(-20, 0), Vector2(20, -40), "inside"],
+			[Vector2(60, 40), Vector2(125, 90), "siege"], [Vector2(0, -110), Vector2(0, -170), "snowfields"]])
+
+
+func _t_flats_life() -> void:
+	await _zone_life("flats_life", {"caravan_guide_rahel": ["nomad_veil_q", "asras_salt_crown_q"], "mirror_scholar_anouk": ["mirror_shard_q", "cracked_mirror_face_q"],
+			"saltcutter_bram": ["salt_crab_claw_q", "saltclaws_pearl_q"], "birdwatcher_kiri": ["wader_plume_q", "sky_ray_spine_q"]}, [],
+			["mirror_image", "mirage_wisp", "the_reflection", "salt_crab", "brine_swarm", "old_saltclaw", "duneskiff_nomad", "nomad_queen", "salt_wader", "sky_ray", "great_sky_ray"])
+	await _zone_views("flats", [[Vector2(0, 170), Vector2(0, 100), "camp"], [Vector2(-10, -10), Vector2(10, -100), "mirror"],
+			[Vector2(-100, 60), Vector2(-150, 100), "nomads"], [Vector2(100, 40), Vector2(150, 110), "crabs"]])
+
+
+func _t_reach_life() -> void:
+	await _zone_life("reach_life", {"riverwarden_sione": ["whisker_barbel_q", "river_kings_pearl_crown_q"], "headman_obafemi": ["mud_charm_q", "shell_mask_q"],
+			"snakecatcher_anh": ["serpent_scale_q", "coilmothers_fang_q"], "ferryman_cato": ["smugglers_token_q", "blackwaters_ledger_q"]}, [],
+			["whiskerfolk", "river_hippo", "river_king", "mudfolk", "mud_shaman", "delta_serpent", "biting_swarm", "great_delta_serpent", "drowned_smuggler", "smuggler_captain"])
+	await _zone_views("reach", [[Vector2(10, 220), Vector2(0, 170), "landing"], [Vector2(-40, 40), Vector2(-60, -60), "delta"],
+			[Vector2(90, 40), Vector2(130, 90), "mudfolk"], [Vector2(-40, 100), Vector2(-80, 140), "barges"]])
+
+
+func _t_tidemouth_life() -> void:
+	await _zone_life("tidemouth_life", {"harbormaster_quilla": ["reaver_armring_q", "saltbeards_whalebone_crown_q"], "lamplighter_soren": ["bottled_lightning_q", "tempest_heart_q"],
+			"diver_makoa": ["clawfolk_pincer_q", "horror_lure_q"], "harpooner_freya": ["sea_serpent_scale_q", "whitefins_fin_q"]}, [],
+			["saltreaver", "saltreaver_king", "clawfolk", "deep_horror", "sea_serpent", "giant_gull", "sea_lion", "great_sea_serpent", "harbor_storm_spirit", "tempest_lord"])
+	await _zone_views("tidemouth", [[Vector2(20, 100), Vector2(20, 30), "harbor"], [Vector2(0, 0), Vector2(-40, -20), "lighthouse"],
+			[Vector2(-90, 100), Vector2(-130, 140), "reavers"], [Vector2(60, -100), Vector2(110, -160), "storm"]])
+
+
+## Screenshots from a few spots: [from, looking at, name].
+func _zone_views(tag: String, spots: Array) -> void:
+	var p := World.local_player
+	var z: Zone = get_parent().zone
+	for spot: Array in spots:
+		p.global_position = Vector3(spot[0].x, z.surface_at(spot[0].x, spot[0].y) + 2.0, spot[0].y)
+		p.face_toward(Vector3(spot[1].x, 0, spot[1].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.2
+		await _wait(1.2)
+		await _shot("9zw_%s_%s" % [tag, spot[2]])
 
 
 ## Reedmere and Drownfast's three borders, every one both ways.

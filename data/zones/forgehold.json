@@ -1,0 +1,1061 @@
+{
+  "name": "Forgehold",
+  "music": "forgehold",
+  "seed": 9351,
+  "size": 224,
+  "height_amplitude": 1.4,
+  "bind_point": [
+    0,
+    12
+  ],
+  "bindstone": true,
+  "flat_radius": 75,
+  "clear_radius": 70,
+  "tree_mix": [
+    "charred_tree",
+    "charred_tree_tall"
+  ],
+  "rocks": 30,
+  "road_lamps": 10,
+  "grass_colors": [
+    "#4a4038",
+    "#56483c"
+  ],
+  "fog_density": 0.003,
+  "fog_color": "#8a5a40",
+  "sun_energy": 1.0,
+  "ground_tint": {
+    "color": "#3a302a",
+    "radius": 70,
+    "amount": 0.7
+  },
+  "passes": [
+    [
+      -112,
+      0,
+      9
+    ],
+    [
+      0,
+      112,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -112,
+          0
+        ],
+        [
+          -14,
+          0
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          0,
+          -20
+        ],
+        [
+          0,
+          -94
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          14,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "width": 4.5
+    },
+    {
+      "points": [
+        [
+          0,
+          16
+        ],
+        [
+          0,
+          112
+        ]
+      ],
+      "width": 4.5
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "blackglass",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "dawnwatch",
+      "arrive": [
+        0,
+        -199
+      ],
+      "arrive_face": [
+        0,
+        -159
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        0
+      ],
+      "id": "forge_gate",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -10
+      ],
+      "id": "agnavar_shrine",
+      "face": [
+        0,
+        20
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -14,
+        28
+      ],
+      "id": "great_anvil",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -100
+      ],
+      "id": "mine_entrance",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -90
+      ],
+      "id": "ore_cart",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -12,
+        -86
+      ],
+      "id": "ore_cart",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -34,
+        -52
+      ],
+      "id": "forge_hall",
+      "face": [
+        -34,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        34,
+        -52
+      ],
+      "id": "forge_hall",
+      "face": [
+        34,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -34
+      ],
+      "id": "smelter",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -34
+      ],
+      "id": "smelter",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -18,
+        -70
+      ],
+      "id": "smelter",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -44,
+        34
+      ],
+      "id": "basalt_house",
+      "face": [
+        -30,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        56
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        30
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        56
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        30
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44,
+        34
+      ],
+      "id": "basalt_house",
+      "face": [
+        30,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        64,
+        10
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        64,
+        -12
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -52,
+        -62
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        52,
+        -62
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "market",
+      "pos": [
+        34,
+        18
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -22,
+        -30
+      ],
+      "id": "forge",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44,
+        -8
+      ],
+      "id": "oven",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        50,
+        2
+      ],
+      "id": "loom",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44,
+        12
+      ],
+      "id": "brew_barrel",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -8
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        8
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -22,
+        10
+      ],
+      "id": "cultist_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        22,
+        10
+      ],
+      "id": "cultist_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -22,
+        -26
+      ],
+      "id": "cultist_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        22,
+        -26
+      ],
+      "id": "cultist_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -66,
+        -10
+      ],
+      "yaw": 180,
+      "labels": [
+        "Forgehold",
+        "Blackglass"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -43,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -37,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -31,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -25,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        25,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        31,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        37,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        43,
+        -28
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -16,
+        37
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        16,
+        37
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -16,
+        43
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        16,
+        43
+      ],
+      "id": "lava_trough",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -72,
+        40
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -72,
+        -42
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        72,
+        42
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        76,
+        -40
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -42,
+        78
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        42,
+        78
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -84
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        42,
+        -84
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -24,
+        92
+      ],
+      "id": "basalt_house",
+      "face": [
+        0,
+        0
+      ],
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -78,
+        -8
+      ],
+      "id": "smelter",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        20
+      ],
+      "id": "smelter",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        62
+      ],
+      "id": "city_tower",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        62,
+        62
+      ],
+      "id": "city_tower",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -62,
+        -70
+      ],
+      "id": "city_tower",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        62,
+        -70
+      ],
+      "id": "city_tower",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8,
+        -40
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        8,
+        -40
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        6,
+        90
+      ],
+      "yaw": 90,
+      "labels": [
+        "Forgehold",
+        "Dawnwatch"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "flamekeeper_ashani",
+      "pos": [
+        0,
+        6
+      ],
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "id": "gm_brandt",
+      "pos": [
+        -30,
+        -20
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_oona",
+      "pos": [
+        -12,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_kaelen",
+      "pos": [
+        12,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_soot",
+      "pos": [
+        30,
+        -20
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_zaid",
+      "pos": [
+        -30,
+        20
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_morrow",
+      "pos": [
+        -14,
+        44
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "gm_ngozi",
+      "pos": [
+        14,
+        44
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "gm_dain",
+      "pos": [
+        -40,
+        12
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "banker_hollis",
+      "pos": [
+        26,
+        30
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "provisioner_bettany",
+      "pos": [
+        40,
+        22
+      ],
+      "face": [
+        30,
+        18
+      ]
+    },
+    {
+      "id": "armorer_gunhild",
+      "pos": [
+        36,
+        -40
+      ],
+      "face": [
+        34,
+        -20
+      ]
+    },
+    {
+      "id": "weaponsmith_teodor",
+      "pos": [
+        -36,
+        -40
+      ],
+      "face": [
+        -34,
+        -20
+      ]
+    },
+    {
+      "id": "glasswright_uzma",
+      "pos": [
+        -50,
+        -14
+      ],
+      "face": [
+        -30,
+        0
+      ]
+    },
+    {
+      "id": "drakewarden_solveig",
+      "pos": [
+        -50,
+        18
+      ],
+      "face": [
+        -30,
+        0
+      ]
+    },
+    {
+      "id": "alchemist_farid",
+      "pos": [
+        52,
+        -24
+      ],
+      "face": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "captain_ragna",
+      "pos": [
+        -62,
+        -18
+      ],
+      "face": [
+        -74,
+        0
+      ]
+    },
+    {
+      "id": "forgehold_guard",
+      "pos": [
+        -62,
+        -6
+      ]
+    },
+    {
+      "id": "forgehold_guard",
+      "pos": [
+        -62,
+        6
+      ]
+    },
+    {
+      "id": "forgehold_guard",
+      "pos": [
+        -16,
+        -12
+      ]
+    },
+    {
+      "id": "forgehold_guard",
+      "pos": [
+        16,
+        12
+      ]
+    }
+  ],
+  "spawns": [],
+  "trees": 40
+}

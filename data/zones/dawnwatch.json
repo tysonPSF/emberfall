@@ -1,0 +1,1180 @@
+{
+  "name": "Dawnwatch",
+  "levels": [
+    22,
+    24
+  ],
+  "music": "dawnwatch",
+  "seed": 9411,
+  "size": 448,
+  "height_amplitude": 6,
+  "bind_point": [
+    0,
+    -10
+  ],
+  "flat_radius": 55,
+  "trees": 90,
+  "tree_mix": [
+    "pine_a",
+    "pine_b",
+    "pine_a"
+  ],
+  "groves": 0.5,
+  "rocks": 120,
+  "grass_colors": [
+    "#8a9a78",
+    "#a8b498"
+  ],
+  "fog_density": 0.0035,
+  "fog_color": "#b8c4d4",
+  "sun_energy": 0.95,
+  "rain": {
+    "amount": 900,
+    "color": "#f4f8ffdd",
+    "ash": true
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -170
+      ],
+      "radius": 90,
+      "color": "#dfe6ec",
+      "flatten": 0.1,
+      "bare": true
+    },
+    {
+      "pos": [
+        -150,
+        -110
+      ],
+      "radius": 60,
+      "color": "#dde4ea",
+      "flatten": 0.0,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      224,
+      9
+    ],
+    [
+      -224,
+      0,
+      9
+    ],
+    [
+      224,
+      0,
+      9
+    ],
+    [
+      0,
+      -224,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          224
+        ],
+        [
+          0,
+          120
+        ],
+        [
+          0,
+          24
+        ]
+      ],
+      "width": 3.4
+    },
+    {
+      "points": [
+        [
+          0,
+          -64
+        ],
+        [
+          0,
+          -224
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          -224,
+          0
+        ],
+        [
+          -120,
+          20
+        ],
+        [
+          -44,
+          30
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          0,
+          30
+        ],
+        [
+          44,
+          30
+        ],
+        [
+          120,
+          10
+        ],
+        [
+          224,
+          0
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "high_terrace",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        -213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_burn",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "mirror_flats",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "forgehold",
+      "arrive": [
+        0,
+        46
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        20
+      ],
+      "id": "fortress_gatehouse",
+      "collide": "mesh",
+      "face": [
+        0,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -60
+      ],
+      "id": "fortress_gatehouse",
+      "collide": "mesh",
+      "face": [
+        0,
+        -100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        -30
+      ],
+      "id": "fortress_keep",
+      "collide": "mesh",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        24,
+        -40
+      ],
+      "id": "dawn_beacon",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8,
+        10
+      ],
+      "id": "sun_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        8,
+        10
+      ],
+      "id": "sun_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        70
+      ],
+      "id": "siege_catapult",
+      "collide": "box",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        40
+      ],
+      "id": "siege_catapult",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        45
+      ],
+      "id": "siege_ram",
+      "collide": "box",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        95
+      ],
+      "id": "ogre_war_camp_tent",
+      "collide": "box",
+      "face": [
+        100,
+        70
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        70
+      ],
+      "id": "ogre_war_camp_tent",
+      "collide": "box",
+      "face": [
+        100,
+        70
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        125
+      ],
+      "id": "ogre_war_camp_tent",
+      "collide": "box",
+      "face": [
+        100,
+        70
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        128,
+        82
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -140
+      ],
+      "id": "snow_drift",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -160
+      ],
+      "id": "snow_drift",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -180
+      ],
+      "id": "snow_drift",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        -190
+      ],
+      "id": "snow_drift",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        60
+      ],
+      "id": "broken_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        90
+      ],
+      "id": "rubble_large",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        100
+      ],
+      "id": "wall_broken",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        50
+      ],
+      "id": "wall_broken",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        190
+      ],
+      "yaw": -90,
+      "labels": [
+        "High Terrace",
+        "Dawnwatch"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -190,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "The Burn",
+        "Dawnwatch"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        190,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Mirror Flats",
+        "Dawnwatch"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        -190
+      ],
+      "yaw": 90,
+      "labels": [
+        "Forgehold",
+        "Dawnwatch"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -27.5,
+        20
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -27.5,
+        -60
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -15.5,
+        20
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -15.5,
+        -60
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "pos": [
+        15.5,
+        20
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        15.5,
+        -60
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "pos": [
+        27.5,
+        20
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        27.5,
+        -60
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 180
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        14
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        14
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        2
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        2
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        -10
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        -10
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        -22
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        -22
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        -34
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        -34
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        -46
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        -46
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -33.5,
+        -54
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        33.5,
+        -54
+      ],
+      "id": "fortress_wall",
+      "collide": "box",
+      "yaw": 90
+    }
+  ],
+  "npcs": [
+    {
+      "id": "marshal_oyelaran",
+      "pos": [
+        -6,
+        -8
+      ],
+      "face": [
+        0,
+        10
+      ]
+    },
+    {
+      "id": "beacon_keeper_lior",
+      "pos": [
+        20,
+        -30
+      ],
+      "face": [
+        0,
+        -10
+      ]
+    },
+    {
+      "id": "falconer_mehr",
+      "pos": [
+        -24,
+        0
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "chaplain_beatrix",
+      "pos": [
+        -24,
+        -14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quartermaster_ide",
+      "pos": [
+        22,
+        4
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dawnwatch_sentinel",
+      "pos": [
+        -6,
+        28
+      ]
+    },
+    {
+      "id": "dawnwatch_sentinel",
+      "pos": [
+        6,
+        28
+      ]
+    },
+    {
+      "id": "dawnwatch_sentinel",
+      "pos": [
+        0,
+        0
+      ],
+      "patrol": [
+        [
+          0,
+          0
+        ],
+        [
+          30,
+          -10
+        ],
+        [
+          30,
+          -50
+        ],
+        [
+          -30,
+          -50
+        ],
+        [
+          -30,
+          -10
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        90,
+        60
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        90
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        50
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        120
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        110
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        70,
+        100
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        115,
+        70
+      ],
+      "pool": {
+        "stonebrow_shaman": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        135,
+        100
+      ],
+      "pool": {
+        "stonebrow_shaman": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        125,
+        80
+      ],
+      "pool": {
+        "stonebrow_warlord": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -140,
+        -60
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -170,
+        -100
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -120,
+        -130
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -160,
+        -20
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -165,
+        -140
+      ],
+      "pool": {
+        "great_roc": 1
+      },
+      "respawn": 1200,
+      "wander": 10
+    },
+    {
+      "pos": [
+        160,
+        -80
+      ],
+      "pool": {
+        "wyvern": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        180,
+        -130
+      ],
+      "pool": {
+        "wyvern": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        140,
+        -150
+      ],
+      "pool": {
+        "wyvern": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -40,
+        -150
+      ],
+      "pool": {
+        "snow_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        20,
+        -170
+      ],
+      "pool": {
+        "snow_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        -140
+      ],
+      "pool": {
+        "snow_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        -170
+      ],
+      "pool": {
+        "snow_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -150
+      ],
+      "pool": {
+        "avalanche_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        -185
+      ],
+      "pool": {
+        "avalanche_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -50,
+        -190
+      ],
+      "pool": {
+        "avalanche_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        10,
+        -190
+      ],
+      "pool": {
+        "storm_crowned_spirit": 1
+      },
+      "respawn": 1200,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -110,
+        40
+      ],
+      "pool": {
+        "fallen_sentinel": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -140,
+        70
+      ],
+      "pool": {
+        "fallen_sentinel": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -90,
+        80
+      ],
+      "pool": {
+        "fallen_sentinel": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -160,
+        30
+      ],
+      "pool": {
+        "fallen_sentinel": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -120,
+        110
+      ],
+      "pool": {
+        "fallen_sentinel": 1
+      },
+      "respawn": 90,
+      "wander": 10,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -130,
+        80
+      ],
+      "pool": {
+        "knight_commander": 1
+      },
+      "respawn": 1200,
+      "wander": 6,
+      "when": "night"
+    }
+  ]
+}

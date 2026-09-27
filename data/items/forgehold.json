@@ -1,0 +1,334 @@
+{
+  "magmasteel_helm": {
+    "name": "Magmasteel Helm",
+    "slot": "head",
+    "ac": 19,
+    "sta": 5,
+    "hp": 25,
+    "value": 6300,
+    "rec_level": 31,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "magmasteel_breastplate": {
+    "name": "Magmasteel Breastplate",
+    "slot": "chest",
+    "ac": 34,
+    "sta": 8,
+    "hp": 50,
+    "value": 11400,
+    "rec_level": 32,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "magmasteel_vambraces": {
+    "name": "Magmasteel Vambraces",
+    "slot": "arms",
+    "ac": 14,
+    "str": 4,
+    "value": 4800,
+    "rec_level": 31,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "magmasteel_gauntlets": {
+    "name": "Magmasteel Gauntlets",
+    "slot": "hands",
+    "ac": 13,
+    "str": 4,
+    "value": 4500,
+    "rec_level": 31,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "magmasteel_greaves": {
+    "name": "Magmasteel Greaves",
+    "slot": "legs",
+    "ac": 23,
+    "sta": 5,
+    "value": 7800,
+    "rec_level": 32,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "magmasteel_boots": {
+    "name": "Magmasteel Boots",
+    "slot": "feet",
+    "ac": 14,
+    "agi": 4,
+    "value": 4800,
+    "rec_level": 31,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "magmasteel_shield": {
+    "name": "Magmasteel Tower Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 22,
+    "sta": 5,
+    "hp": 30,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 9600,
+    "rec_level": 32
+  },
+  "emberhide_jerkin": {
+    "name": "Emberhide Jerkin",
+    "slot": "chest",
+    "ac": 24,
+    "agi": 7,
+    "str": 4,
+    "value": 10500,
+    "rec_level": 32,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "emberhide_leggings": {
+    "name": "Emberhide Leggings",
+    "slot": "legs",
+    "ac": 17,
+    "agi": 5,
+    "sta": 3,
+    "value": 7200,
+    "rec_level": 32,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "emberhide_gloves": {
+    "name": "Emberhide Gloves",
+    "slot": "hands",
+    "ac": 10,
+    "agi": 4,
+    "value": 4400,
+    "rec_level": 31,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "emberhide_boots": {
+    "name": "Emberhide Boots",
+    "slot": "feet",
+    "ac": 13,
+    "agi": 4,
+    "sta": 3,
+    "value": 4500,
+    "rec_level": 31,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "flameweave_cap": {
+    "name": "Flameweave Cap",
+    "slot": "head",
+    "ac": 8,
+    "int": 5,
+    "wis": 5,
+    "mana": 50,
+    "value": 5400,
+    "rec_level": 31,
+    "wear": "cloth_cap"
+  },
+  "flameweave_robe": {
+    "name": "Flameweave Robe",
+    "slot": "chest",
+    "ac": 17,
+    "int": 8,
+    "wis": 8,
+    "mana": 85,
+    "value": 10500,
+    "rec_level": 32,
+    "wear": "patchwork_tunic"
+  },
+  "flameweave_gloves": {
+    "name": "Flameweave Gloves",
+    "slot": "hands",
+    "ac": 7,
+    "int": 5,
+    "wis": 5,
+    "mana": 30,
+    "value": 4000,
+    "rec_level": 31,
+    "wear": "cloth_gloves"
+  },
+  "flameweave_slippers": {
+    "name": "Flameweave Slippers",
+    "slot": "feet",
+    "ac": 7,
+    "int": 4,
+    "wis": 4,
+    "mana": 22,
+    "value": 3900,
+    "rec_level": 31,
+    "wear": "sandals"
+  },
+  "magmasteel_sword": {
+    "name": "Magmasteel Sword",
+    "slot": "primary",
+    "dmg": 23,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 12300,
+    "rec_level": 32,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "magmasteel_war_axe": {
+    "name": "Magmasteel War Axe",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 12000,
+    "rec_level": 32,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "magmasteel_greataxe": {
+    "name": "Magmasteel Greataxe",
+    "slot": "primary",
+    "dmg": 36,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 13500,
+    "rec_level": 33,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "blackglass_dirk": {
+    "name": "Blackglass Dirk",
+    "slot": "primary",
+    "dmg": 17,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 11100,
+    "rec_level": 32,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "forgeheart_staff": {
+    "name": "Forgeheart Staff",
+    "slot": "primary",
+    "dmg": 19,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 8,
+    "wis": 8,
+    "mana": 75,
+    "value": 12000,
+    "rec_level": 32,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "forgehold_longbow": {
+    "name": "Forgehold Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 12,
+    "delay": 2.9,
+    "range": 46,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 11400,
+    "rec_level": 32,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "magmasteel_arrow": {
+    "name": "Magmasteel Arrow",
+    "ammo_type": "arrow",
+    "dmg": 5,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 6
+  }
+}
