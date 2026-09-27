@@ -6177,6 +6177,204 @@ def build_ranger_mantle():
 	return b.build_static()
 
 
+# ---------------------------------------------------------------- playable races
+# Bolt-ons for the player races (data/races.json "attach", models.json "race_parts"),
+# pinned to the head bone and authored in KayKit character mesh space: every KayKit
+# head is the same shape under its hair, its own little ears at x = +-0.54, y = 0,
+# z 1.39-1.67, the face's front at y = -0.52, eyes near z 1.62, mouth near z 1.43,
+# chin at z 1.22. Parts marked "skin" are modeled near white; the game multiplies
+# them by the race's light skin tone. Beards are the Barbarian's own beard lifted
+# off his head, so they fit every KayKit face, then grown and restyled.
+
+def race_skin_materials(p):
+	return {"skin": material(f"{p}_skin", "f4e8de", 0.8), "inner": material(f"{p}_skin_inner", "d8b8a8", 0.85)}
+
+
+def _smooth_static(b):
+	obj = b.build_static()
+	for poly in obj.data.polygons:
+		poly.use_smooth = True
+	return obj
+
+
+def _leaf(b, root, tip, width, thick, normal, mat, bulge=0.6, rings=9, sides=10, droop=0.0, lift=0.0):
+	"""A flat, lens-shaped lobe from root to tip (an ear): its width follows a rounded
+	profile, widest at `bulge` of the way out, lying in the plane whose normal is `normal`.
+	`droop` sags its middle that far (world z); `lift` curls its edges toward the normal,
+	cupping it like an ear."""
+	root, tip = Vector(root), Vector(tip)
+	d = tip - root
+	n = Vector(normal).normalized()
+	wv = d.cross(n).normalized()
+	nv = wv.cross(d).normalized()
+	bm = bmesh.new()
+	loops = []
+	for k in range(rings + 1):
+		t = k / rings
+		if t < bulge:
+			prof = math.sin(0.5 * math.pi * t / bulge)
+		else:
+			prof = math.cos(0.5 * math.pi * (t - bulge) / (1 - bulge))
+		prof = prof ** 0.7
+		w = max(0.004, width * 0.5 * prof)
+		h = max(0.003, thick * 0.5 * prof)
+		c = root + d * t + Vector((0, 0, -droop * math.sin(math.pi * t)))
+		ring = []
+		for j in range(sides):
+			a = 2 * math.pi * j / sides
+			cw = math.cos(a)
+			ring.append(bm.verts.new(c + wv * (w * cw) + nv * (h * math.sin(a) + lift * prof * cw * cw)))
+		loops.append(ring)
+	for r0, r1 in zip(loops, loops[1:]):
+		for j in range(sides):
+			bm.faces.new((r0[j], r0[(j + 1) % sides], r1[(j + 1) % sides], r1[j]))
+	bm.faces.new(list(reversed(loops[0])))
+	bm.faces.new(loops[-1])
+	bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+	b._add(bm, mat, "x")
+
+
+def build_race_ears_elf():
+	"""Long pointed elf ears sweeping up and back from the side of the head, out past the hair."""
+	m = race_skin_materials("elf_ear")
+	b = Builder("race_ears_elf")
+	for s in (1, -1):
+		nrm = (0.3 * s, -1.0, 0.15)
+		_leaf(b, (0.46 * s, 0.03, 1.5), (0.9 * s, 0.18, 1.88), 0.24, 0.06, nrm, m["skin"], bulge=0.3, lift=0.03)
+		_leaf(b, (0.56 * s, 0.0, 1.55), (0.82 * s, 0.1, 1.8), 0.11, 0.03, nrm, m["inner"], bulge=0.3)   # its hollow
+	return _smooth_static(b)
+
+
+def build_race_ears_gnome():
+	"""Big round, droopy gnome ears and a big round nose."""
+	m = race_skin_materials("gnome")
+	b = Builder("race_ears_gnome")
+	for s in (1, -1):
+		nrm = (0.2 * s, -1.0, 0.0)
+		_leaf(b, (0.46 * s, 0.03, 1.56), (0.9 * s, 0.14, 1.44), 0.42, 0.08, nrm, m["skin"], bulge=0.55, droop=0.04, lift=0.04)
+		_leaf(b, (0.56 * s, 0.0, 1.56), (0.84 * s, 0.09, 1.46), 0.22, 0.04, nrm, m["inner"], bulge=0.55, droop=0.04)
+	b.blob((0.24, 0.2, 0.22), (0, -0.6, 1.5), m["skin"], "x", segs=(14, 10))                    # the nose
+	b.blob((0.12, 0.1, 0.1), (0, -0.53, 1.58), m["skin"], "x", segs=(10, 7))                     # its bridge
+	return _smooth_static(b)
+
+
+def build_race_troll_face():
+	"""The troll's skin-tinted features: a long drooping nose and big pointed ears."""
+	m = race_skin_materials("troll_face")
+	b = Builder("race_troll_face")
+	b.seg((0, -0.48, 1.6), (0, -0.64, 1.46), 0.075, 0.07, m["skin"], "x", sides=10)             # the nose
+	b.blob((0.16, 0.18, 0.18), (0, -0.66, 1.42), m["skin"], "x", segs=(12, 8))                   # its bulb, hanging
+	b.blob((0.12, 0.1, 0.1), (0, -0.5, 1.6), m["skin"], "x", segs=(10, 6))
+	for s in (1, -1):
+		b.blob((0.045, 0.04, 0.035), (0.045 * s, -0.7, 1.35), m["inner"], "x", segs=(6, 4))     # nostrils
+		nrm = (0.15 * s, -1.0, 0.25)
+		_leaf(b, (0.47 * s, 0.04, 1.54), (0.98 * s, 0.26, 1.72), 0.3, 0.07, nrm, m["skin"], bulge=0.3, lift=0.03)
+		_leaf(b, (0.56 * s, 0.02, 1.56), (0.9 * s, 0.2, 1.69), 0.14, 0.04, nrm, m["inner"], bulge=0.3)
+	return _smooth_static(b)
+
+
+def build_race_tusks_troll():
+	"""Two lower tusks curving up out of the jaw past the corners of the mouth."""
+	ivory = material("troll_tusk", "efe4c6", 0.45)
+	b = Builder("race_tusks_troll")
+	for s in (1, -1):
+		b.seg((0.2 * s, -0.44, 1.24), (0.22 * s, -0.54, 1.33), 0.05, 0.04, ivory, "x", sides=8)
+		b.seg((0.22 * s, -0.54, 1.33), (0.26 * s, -0.59, 1.45), 0.04, 0.004, ivory, "x", sides=8)
+	return _smooth_static(b)
+
+
+def build_race_ogre_face():
+	"""The ogre's heavy brow over the eyes, flat broad nose and underslung jaw (skin-tinted)."""
+	m = race_skin_materials("ogre_face")
+	b = Builder("race_ogre_face")
+	for s in (1, -1):
+		b.blob((0.36, 0.2, 0.13), (0.15 * s, -0.47, 1.73), m["skin"], "x", rot=(0, 8 * s, 0), segs=(12, 7))   # brows
+	b.blob((0.2, 0.14, 0.14), (0, -0.56, 1.52), m["skin"], "x", segs=(10, 7))                    # nose
+	b.blob((0.6, 0.26, 0.2), (0, -0.46, 1.29), m["skin"], "x", segs=(14, 8))                     # the jaw, jutting
+	b.blob((0.44, 0.1, 0.07), (0, -0.585, 1.37), m["inner"], "x", segs=(12, 5))                  # the lower lip
+	return _smooth_static(b)
+
+
+def build_race_tusks_ogre():
+	"""Two short, thick tusks standing up from the underbite."""
+	ivory = material("ogre_tusk", "e8dcbc", 0.5)
+	b = Builder("race_tusks_ogre")
+	for s in (1, -1):
+		b.seg((0.15 * s, -0.56, 1.33), (0.17 * s, -0.6, 1.49), 0.055, 0.012, ivory, "x", sides=8)
+	return _smooth_static(b)
+
+
+def _kaykit_beard(name, mat, grow, forward, widen=1.0):
+	"""The Barbarian's beard and mustache (his head's hair cell, below the brows) as a
+	static part in `mat`, puffed a little off the face so it covers another beard,
+	its lower half grown `grow` times longer and pushed `forward`."""
+	keep = _kaykit_part(KAYKIT + "Barbarian.glb", "Barbarian_Head", name)
+	bm = bmesh.new()
+	bm.from_mesh(keep.data)
+	uv = bm.loops.layers.uv.active
+	drop = []
+	for f in bm.faces:
+		u = sum(l[uv].uv.x for l in f.loops) / len(f.loops)
+		v = sum(l[uv].uv.y for l in f.loops) / len(f.loops)
+		if (int(u * 8), int((1 - v) * 4)) != (1, 0) or f.calc_center_median().z > 1.56:
+			drop.append(f)
+	bmesh.ops.delete(bm, geom=drop, context="FACES")
+	bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+	center = Vector((0, -0.05, 1.6))
+	for v in bm.verts:
+		p = v.co
+		p = center + (p - center) * 1.05          # off the face
+		p.x *= widen
+		if p.z < 1.36:                            # grow the lower half down and out
+			k = 1.36 - p.z
+			p.z = 1.36 - k * grow
+			p.y -= forward * k * grow
+			p.x *= 1.0 - 0.18 * min(1.0, k * grow / 0.5)
+		v.co = p
+	bm.to_mesh(keep.data)
+	bm.free()
+	keep.data.materials.clear()
+	keep.data.materials.append(mat)
+	return keep
+
+
+def _braid(b, top, length, r, mats, links=5, lean=(0.0, 0.0)):
+	"""A braid hanging from `top`: a chain of alternating blobs, tapering."""
+	top = Vector(top)
+	step = Vector((lean[0], lean[1], -1.0)).normalized() * (length / links)
+	for k in range(links):
+		rr = r * (1 - 0.1 * k)
+		b.blob((rr * 2, rr * 1.8, length / links * 1.35), tuple(top + step * (k + 0.5)), mats[k % 2], "x", segs=(10, 6))
+	return top + step * links
+
+
+def build_race_beard_dwarf():
+	"""A big, full dwarf beard from the jaw down over the chest, ending in a braid with an iron bead."""
+	m = {"hair": material("dwarf_beard", "7a4222", 0.9), "hair_d": material("dwarf_beard_dark", "542c14", 0.9),
+		 "iron": material("dwarf_bead", "a8b0b4", 0.35)}
+	beard = _kaykit_beard("race_beard_dwarf", m["hair"], 2.3, 0.18, 1.06)
+	b = Builder("race_beard_dwarf")
+	b.parts.append(beard)
+	b.blob((0.5, 0.3, 0.42), (0, -0.52, 0.98), m["hair"], "x", segs=(14, 9))                     # the full beard's belly
+	end = _braid(b, (0, -0.58, 0.84), 0.26, 0.065, (m["hair"], m["hair_d"]), links=4, lean=(0, -0.1))
+	b.seg(tuple(end + Vector((0, 0, 0.04))), tuple(end + Vector((0, 0, -0.06))), 0.055, 0.055, m["iron"], "x", sides=10)
+	b.blob((0.1, 0.08, 0.14), tuple(end + Vector((0, 0, -0.13))), m["hair_d"], "x", segs=(8, 6))  # the tuft below
+	return _smooth_static(b)
+
+
+def build_race_beard_barbarian():
+	"""A shorter, wild beard with two braids hanging from the chin."""
+	m = {"hair": material("barb_beard", "b87a40", 0.9), "hair_d": material("barb_beard_dark", "8a5226", 0.9),
+		 "band": material("barb_band", "4a3a30", 0.7)}
+	beard = _kaykit_beard("race_beard_barbarian", m["hair"], 1.4, 0.1, 1.05)
+	b = Builder("race_beard_barbarian")
+	b.parts.append(beard)
+	for s in (1, -1):
+		end = _braid(b, (0.13 * s, -0.56, 1.14), 0.28, 0.045, (m["hair"], m["hair_d"]), links=4, lean=(0.05 * s, -0.08))
+		b.seg(tuple(end + Vector((0, 0, 0.06))), tuple(end + Vector((0, 0, 0.0))), 0.042, 0.042, m["band"], "x", sides=8)
+	return _smooth_static(b)
+
+
 # ---------------------------------------------------------------- repainted KayKit bodies
 # Tints only multiply a texture, so a purple robe can't turn saffron. These
 # write a copy of a KayKit character .glb with its palette texture repainted
@@ -6405,7 +6603,11 @@ ATTACHMENTS = {"gnoll_head": build_gnoll_head, "gnoll_tail": build_gnoll_tail, "
 			   "ember_hood": build_ember_hood, "high_pyromancer_hood": build_high_pyromancer_hood,
 			   "charred_embers": build_charred_embers, "ash_tail": build_ash_tail, "ash_lord_tail": build_ash_lord_tail,
 			   "ash_shroud": build_ash_shroud, "ash_lord_shroud": build_ash_lord_shroud, "ash_lord_crown": build_ash_lord_crown,
-			   "ranger_mantle": build_ranger_mantle}
+			   "ranger_mantle": build_ranger_mantle,
+			   "race_ears_elf": build_race_ears_elf, "race_ears_gnome": build_race_ears_gnome,
+			   "race_beard_dwarf": build_race_beard_dwarf, "race_beard_barbarian": build_race_beard_barbarian,
+			   "race_tusks_troll": build_race_tusks_troll, "race_troll_face": build_race_troll_face,
+			   "race_tusks_ogre": build_race_tusks_ogre, "race_ogre_face": build_race_ogre_face}
 CREATURES = {"rat": build_rat, "fire_beetle": build_beetle, "wolf": build_wolf, "dire_wolf": build_dire_wolf,
 			 "bear": build_bear, "spider": build_spider, "mire_toad": build_toad, "snapping_turtle": build_turtle,
 			 "bog_leech": build_leech, "boar": build_boar, "mountain_ram": build_ram, "sunhawk": build_sunhawk,

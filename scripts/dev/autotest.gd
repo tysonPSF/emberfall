@@ -104,6 +104,7 @@ const SECTIONS := [
 	["terrace_life", "high_terrace"],
 	["cinder_life", "cinderpass"],
 	["char_stats", "greenmoor"],
+	["races", "greenmoor"],
 	["hotbars", "greenmoor"],
 	["pets", "greenmoor"],
 	["necromancer", "greenmoor"],
@@ -163,7 +164,7 @@ func _setup() -> void:
 	await _shot("0_title")
 	for c in main.get_children():
 		if c is CharCreate:
-			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "deity": "wind", "zone": "greenmoor", "stats": {}})
+			(c as CharCreate).confirmed.emit({"name": "Tester", "class": "wizard", "deity": "wind", "zone": "greenmoor", "stats": {}, "race": "human"})
 	await _wait(2.0)
 	var p := World.local_player
 	print("player at ", p.global_position, " on_floor=", p.is_on_floor(), " mobs=", World.get_mobs().size())
@@ -4480,6 +4481,7 @@ func _t_char_stats() -> void:
 	# a character from before stats
 	p.stats_chosen = false
 	p.stat_points = {}
+	p.race = "human"
 	main.hud._stats_later = false
 	await _wait(0.4)
 	print("char_stats: an older character -> the window opens %s" % main.hud._stats_panel.visible)
@@ -4490,6 +4492,117 @@ func _t_char_stats() -> void:
 	await _wait(0.3)
 	print("char_stats: spent -> %s (mana %d -> %d); a second spend ignored %s; window closed %s" % [p.stat_points, mana0, p.max_mana, not p.stat_points.has("str"), not main.hud._stats_panel.visible])
 	p.stat_points = {}
+	p.recalc_stats()
+
+
+## Races: the data (every class open to some race, every race 375 stat
+## points); race stats in the numbers; creation's race picker (classes it
+## can't be greyed, a troll starts in Rainhold); the traits (human xp, troll
+## regeneration, ogre stun immunity, halfling unnoticed, gnome mana); an older
+## character chooses its race once, only one its class allows.
+func _t_races() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	for cls: String in GameData.classes:
+		var open := GameData.races.keys().filter(func(r: String) -> bool: return cls in GameData.races[r]["classes"])
+		print("races: %s -> %s" % [cls, open])
+	var sums := {}
+	for r: String in GameData.races:
+		var t := 0
+		for v: Variant in (GameData.races[r]["stats"] as Dictionary).values():
+			t += int(v)
+		sums[r] = t
+	print("races: stat totals %s" % [sums])
+	var made := {}
+	for pair: Array in [["human", "warrior"], ["ogre", "warrior"], ["human", "wizard"], ["gnome", "wizard"], ["human", "rogue"], ["halfling", "rogue"]]:
+		var x := Player.new()
+		x.from_save({"name": "Probe", "class": pair[1], "race": pair[0], "stats": {}})
+		made["%s %s" % pair] = "hp %d, dmg %d-%d, mana %d, ac %d, STR %d AGI %d INT %d" % [x.max_hp, x.dmg_min, x.dmg_max, x.max_mana, x.ac, x.stat_value("str"), x.stat_value("agi"), x.stat_value("int")]
+		x.free()
+	for k: String in made:
+		print("races: %s -> %s" % [k, made[k]])
+	# creation
+	var cc := CharCreate.new()
+	cc.layer = 30
+	main.add_child(cc)
+	await _wait(0.4)
+	cc._select_race("troll")
+	var open_buttons := cc._class_buttons.keys().filter(func(c: String) -> bool: return not (cc._class_buttons[c] as Button).disabled)
+	cc._select("wizard")
+	print("races: a troll may be %s; picking wizard leaves %s; stats start %s" % [open_buttons, cc._selected, cc._stats._rows["str"][1].text])
+	cc._name_edit.text = "Grukk"
+	cc._deity = "fire"
+	var got := []
+	cc.confirmed.connect(func(s: Dictionary) -> void: got.append(s))
+	cc._create()
+	print("races: created %s" % [got[0] if not got.is_empty() else "nothing"])
+	await _wait(0.2)
+	await _shot("9zz_races_create")
+	cc.queue_free()
+	# traits
+	var saved_race := p.race
+	var saved_class := p.char_class
+	p.race = "human"
+	p.level = 18  # past the Elders' blessing, and a bar long enough not to level mid-test
+	p.xp = 0
+	p.recalc_stats()
+	var xp0 := p.xp
+	p.add_xp(100)
+	var human_xp := p.xp - xp0
+	p.race = "dwarf"
+	xp0 = p.xp
+	p.add_xp(100)
+	print("races: 100 experience -> a human gets %d, a dwarf %d" % [human_xp, p.xp - xp0])
+	p.race = "troll"
+	p.char_class = "warrior"
+	p.recalc_stats()
+	var troll_regen := p.hp_regen
+	p.race = "human"
+	p.recalc_stats()
+	print("races: health regeneration, troll %d vs human %d" % [troll_regen, p.hp_regen])
+	var gust: Dictionary = GameData.spells["gust_of_wind"]
+	var mob := _nearest_mob(p, "gnoll_pup")
+	for r: String in ["human", "ogre"]:
+		p.race = r
+		p.stun_left = 0.0
+		World._land(mob, "gust_of_wind", p, gust, 0)
+		print("races: a %s hit by a stunning gust -> stunned %.1f s" % [r, p.stun_left])
+	p.stun_left = 0.0
+	var beast: Mob = null
+	for m in World.get_mobs():
+		if m.aggressive and not m.dead:
+			beast = m
+			break
+	if beast != null:
+		p.level = 1
+		for r: String in ["halfling", "human"]:
+			p.race = r
+			beast.hate.clear()
+			beast.state = Mob.State.IDLE
+			beast.set_physics_process(false)
+			var at := beast.global_position + Vector3(beast.aggro_radius * 0.85, 0, 0)
+			p.global_position = z.ground(at.x, at.z) + Vector3.UP
+			beast._scan_timer = 0.0
+			beast._scan_for_aggro(0.1)
+			print("races: a %s at %.0f%% of a %s's notice range -> noticed %s" % [r, 85, beast.mob_id, beast.hate.has(p.entity_id)])
+			beast.hate.clear()
+		beast.set_physics_process(true)
+	# an older character chooses once
+	p.char_class = "wizard"
+	p.race = ""
+	p.stats_chosen = true
+	main.hud._stats_later = false
+	await _wait(0.4)
+	print("races: an older character with no race -> the window opens %s, race row %s" % [main.hud._stats_panel.visible, main.hud._stats_race_row.visible])
+	await _shot("9zz_races_window")
+	World.request_set_stats(p.entity_id, {}, "troll")
+	print("races: a wizard asks to be a troll -> race '%s'" % p.race)
+	World.request_set_stats(p.entity_id, {}, "gnome")
+	World.request_set_stats(p.entity_id, {}, "dark_elf")
+	print("races: then a gnome -> '%s'; changing again -> still '%s'; mana %d" % [p.race, p.race, p.max_mana])
+	p.race = saved_race
+	p.char_class = saved_class
 	p.recalc_stats()
 
 

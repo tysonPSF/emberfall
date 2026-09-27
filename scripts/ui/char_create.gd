@@ -20,6 +20,10 @@ var _error: Label
 var _selected := "warrior"
 var _deity := ""
 var _stats: StatPicker
+var _race := "human"
+var _race_desc: Label
+var _class_buttons := {}  # class id -> its button (greyed when the race can't be it)
+var _race_buttons := {}
 var _main: VBoxContainer
 var _pledge: VBoxContainer
 
@@ -120,6 +124,26 @@ func _build_new_character(page: VBoxContainer) -> void:
 	_name_edit.text_submitted.connect(func(_t: String) -> void: _create())
 	v.add_child(_name_edit)
 
+	var races := GridContainer.new()  # the race first: it decides which classes are open
+	races.columns = 5
+	races.add_theme_constant_override("h_separation", 6)
+	races.add_theme_constant_override("v_separation", 6)
+	var race_group := ButtonGroup.new()
+	for race_id: String in GameData.races:
+		var rb := UIKit.button(GameData.races[race_id]["name"], Vector2(0, 34))
+		rb.toggle_mode = true
+		rb.button_group = race_group
+		rb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rb.add_theme_font_size_override("font_size", 13)
+		rb.button_pressed = race_id == _race
+		rb.pressed.connect(func() -> void: _select_race(race_id))
+		races.add_child(rb)
+		_race_buttons[race_id] = rb
+	v.add_child(races)
+	_race_desc = UIKit.label("", 13, UIKit.TEXT)
+	_race_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_race_desc)
+
 	var row := GridContainer.new()  # three to a row: six classes don't fit in one
 	row.columns = 3
 	row.add_theme_constant_override("h_separation", 8)
@@ -133,6 +157,7 @@ func _build_new_character(page: VBoxContainer) -> void:
 		b.button_pressed = class_id == _selected
 		b.pressed.connect(func() -> void: _select(class_id))
 		row.add_child(b)
+		_class_buttons[class_id] = b
 	v.add_child(row)
 	_desc = UIKit.label("", 13, UIKit.TEXT)
 	_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -145,6 +170,7 @@ func _build_new_character(page: VBoxContainer) -> void:
 
 	right.add_child(UIKit.label("Deity", 16, UIKit.GOLD))
 	_deity_picker(right)
+	_select_race(_race)
 
 	v = page
 	var enter := UIKit.button("Create character" if server_mode else "Enter World", Vector2(0, 44))
@@ -218,8 +244,29 @@ func set_status(text: String, is_error := false) -> void:
 		_status.add_theme_color_override("font_color", Color(1, 0.45, 0.35) if is_error else UIKit.DIM)
 
 
+## Picks a race: its classes open (the rest grey out; the class moves to an
+## open one if it must), its stats become the picker's starting values.
+func _select_race(race_id: String) -> void:
+	_race = race_id
+	var r: Dictionary = GameData.races[race_id]
+	var open: Array = r.get("classes", [])
+	for class_id: String in _class_buttons:
+		(_class_buttons[class_id] as Button).disabled = not class_id in open
+	(_race_buttons[race_id] as Button).button_pressed = true
+	var home := str(r.get("home", "emberhold"))
+	_race_desc.text = "%s  %s  Starts in %s." % [r["description"], r["trait_text"], home.capitalize()]
+	if _stats != null:
+		_stats.set_race(race_id)
+	if not _selected in open:
+		_select(str(open[0]))
+
+
 func _select(class_id: String) -> void:
+	if not class_id in GameData.races.get(_race, {}).get("classes", [class_id]):
+		return
 	_selected = class_id
+	if _class_buttons.has(class_id):
+		(_class_buttons[class_id] as Button).button_pressed = true
 	_desc.text = GameData.classes[class_id]["description"]
 	if _stats != null:
 		_stats.set_class(class_id, true)  # a new class starts from its own spread
@@ -237,4 +284,6 @@ func _create() -> void:
 	if _stats.points_left() > 0:
 		_error.text = "Spend all your stat points (%d left)." % _stats.points_left()
 		return
-	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity, "stats": _stats.points.duplicate()})
+	var home := str(GameData.races[_race].get("home", World.cfg("starting_zone", "emberhold")))
+	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity, "stats": _stats.points.duplicate(),
+			"race": _race, "zone": home, "bind": home})

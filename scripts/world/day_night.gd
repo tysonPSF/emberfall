@@ -75,7 +75,8 @@ func update(_force := false) -> void:
 	sky_mat.sky_horizon_color = horizon.lerp(DUSK_COLOR, glow * 0.55)
 	sky_mat.ground_horizon_color = sky_mat.sky_horizon_color
 	env.fog_light_color = NIGHT_FOG.lerp(_day["fog"], day).lerp(DUSK_COLOR.darkened(0.3), glow * 0.3)
-	env.ambient_light_energy = lerpf(NIGHT_AMBIENT, float(_day["ambient"]), day)
+	var seeing := World.local_player != null and is_instance_valid(World.local_player) and World.local_player.bonus("night_vision") > 0.0
+	env.ambient_light_energy = lerpf(NIGHT_AMBIENT * (2.2 if seeing else 1.0), float(_day["ambient"]), day)  # dwarves and dark elves see in the dark
 	var lit := 1.0 - smoothstep(-0.12, 0.08, e)  # lamps come on in the dusk, before full dark
 	for n in get_tree().get_nodes_in_group("night_lights"):  # every pass: guards and their torches come and go
 		if not _same_zone(n):

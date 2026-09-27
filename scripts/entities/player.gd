@@ -43,6 +43,7 @@ var station_kind := ""  # the crafting station whose combine window is open ("ov
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var pet_id := -1  # your pet's entity id, -1 with none
+var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
@@ -136,6 +137,7 @@ func from_save(d: Dictionary) -> void:
 			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
 	bind_zone = str(d.get("bind", ""))
+	race = str(d.get("race", "")) if GameData.races.has(str(d.get("race", ""))) else ""
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -256,7 +258,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen"]:
+			"stat_points", "stats_chosen", "race"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -312,7 +314,7 @@ func to_save() -> Dictionary:
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
-		"stats": stat_points if stats_chosen else null,
+		"stats": stat_points if stats_chosen else null, "race": race,
 	}
 
 
@@ -383,10 +385,11 @@ func recalc_stats() -> void:
 			weapon_model = str(item.get("model", ""))
 			attack_delay = float(item.get("delay", 3.0))
 			attack_verb = item.get("verb", ["hit", "hits"])
-	for stat: String in ["str", "sta", "agi", "wis", "int"]:  # a meal can raise them too, and the points spent at creation count like gear
-		attr[stat] = int(attr.get(stat, 0)) + buff_total(stat) + int(stat_points.get(stat, 0))
+	var born: Dictionary = GameData.races.get(race if race != "" else "human", {}).get("stats", {})
+	for stat: String in ["str", "sta", "agi", "wis", "int"]:  # a meal can raise them too; the race's stats and the points spent at creation count like gear
+		attr[stat] = int(attr.get(stat, 0)) + buff_total(stat) + int(stat_points.get(stat, 0)) + int(born.get(stat, 75)) - int(World.cfg("stat_base", 75))
 	var skill := float(cls["melee_skill"])
-	dmg_min = 1 + level / 4 + int(attr.get("str", 0)) / 10
+	dmg_min = maxi(1, 1 + level / 4 + int(attr.get("str", 0)) / 10)
 	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill) + int(attr.get("str", 0)) / 5)
 	max_hp += int(attr.get("sta", 0))
 	ac += int(attr.get("agi", 0)) / 2
@@ -402,23 +405,24 @@ func recalc_stats() -> void:
 	dmg_max += buff_total("dmg")
 	if max_mana > 0:
 		max_mana += buff_total("mana")
-	max_mana += int(max_mana * GameData.deity_bonus(deity, "mana_pct") / 100.0)
-	dmg_min += int(GameData.deity_bonus(deity, "dmg"))
-	dmg_max += int(GameData.deity_bonus(deity, "dmg"))
+	max_mana += int(max_mana * bonus("mana_pct") / 100.0)
+	dmg_min += int(bonus("dmg"))
+	dmg_max += int(bonus("dmg"))
 	if off_weapon_dmg > 0:  # the off hand hits a little lighter than the main; buffs and deity count the same
 		off_dmg_min = dmg_min
 		off_dmg_max = maxi(off_dmg_min + 1, int((off_weapon_dmg * 2 + level) * skill * World.OFFHAND_DAMAGE) + int(attr.get("str", 0)) / 5
-				+ buff_total("dmg") + int(GameData.deity_bonus(deity, "dmg")))
+				+ buff_total("dmg") + int(bonus("dmg")))
 		off_delay /= 1.0 + haste / 100.0
-	hp_regen = int(cls["hp_regen"]) + level / 4 + int(GameData.deity_bonus(deity, "hp_regen")) + int(attr.get("hp_regen", 0)) + buff_total("hp_regen")
-	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0)) + buff_total("mana_regen")
+	hp_regen = int(cls["hp_regen"]) + level / 4 + int(bonus("hp_regen")) + int(attr.get("hp_regen", 0)) + buff_total("hp_regen")
+	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0)) + buff_total("mana_regen") + (int(bonus("mana_regen")) if max_mana > 0 else 0)
+	max_hp += int(max_hp * bonus("hp_pct") / 100.0)
 	# Every lever that could lengthen a run lands in max_stamina, so nothing else
 	# has to change to grant more. STA is the gear route: it is already the
 	# endurance stat, so a stamina-heavy set both toughens you and lets you run
 	# further, rather than gear carrying a second stat that means "wind".
 	max_stamina += int(attr.get("sta", 0))
 	max_stamina += buff_total("stamina")
-	max_stamina += int(max_stamina * GameData.deity_bonus(deity, "stamina_pct") / 100.0)
+	max_stamina += int(max_stamina * bonus("stamina_pct") / 100.0)
 	hp = mini(hp, max_hp)
 	mana = mini(mana, max_mana)
 	var worn := worn_gear_models()
@@ -517,6 +521,11 @@ func xp_to_next() -> int:
 
 ## Blessing of the Elders: every character is born with it and keeps it until
 ## config "elders_blessing.until_level"; it adds xp_pct to all experience.
+## A deity's blessing plus the race's trait, for one key (see GameData.race_bonus).
+func bonus(key: String) -> float:
+	return GameData.deity_bonus(deity, key) + GameData.race_bonus(race if race != "" else "human", key)
+
+
 func elders_blessing() -> bool:
 	var b: Dictionary = World.cfg("elders_blessing", {})
 	return not b.is_empty() and level < int(b.get("until_level", 10))
@@ -528,6 +537,8 @@ func add_xp(amount: int, party := false) -> void:
 		return
 	if elders_blessing():
 		amount = int(round(amount * (1.0 + float(World.cfg("elders_blessing", {}).get("xp_pct", 15)) / 100.0)))
+	if bonus("xp_pct") != 0.0:  # a human's adaptability
+		amount = int(round(amount * (1.0 + bonus("xp_pct") / 100.0)))
 	xp += amount
 	World.say(self, "You gain party experience!!" if party else "You gain experience!!", World.C_XP)
 	while level < max_level and xp >= xp_to_next():
@@ -576,7 +587,11 @@ func _ready() -> void:
 	var weapon: String = GameData.item(equipment.get("primary", "")).get("model", "")
 	if not mirrored.is_empty():
 		weapon = str(mirrored.get("weapon", ""))
-	build_body("humanoid", body_color, 1.0, GameData.classes[char_class].get("model", ""), weapon)
+	var looks_race := str(mirrored.get("race", race)) if not mirrored.is_empty() else race
+	build_body("humanoid", body_color, float(GameData.races.get(looks_race, {}).get("scale", 1.0)), GameData.classes[char_class].get("model", ""), weapon)
+	if visual is CharacterModel:
+		(visual as CharacterModel).set_race(looks_race)
+		look["race"] = looks_race
 	if not mirrored.is_empty() and visual is CharacterModel:
 		look = mirrored
 		(visual as CharacterModel).set_tiers(look.get("tiers", {}))
@@ -935,7 +950,7 @@ func _physics_process(delta: float) -> void:
 			stop_follow()  # taking the controls back
 		else:
 			dir = _follow_step()
-	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + GameData.deity_bonus(deity, "run_speed_pct") / 100.0)
+	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + bonus("run_speed_pct") / 100.0)
 	# Sprinting is forward-only, and asked for every frame rather than toggled:
 	# World decides whether it is allowed and ends it when the wind runs out.
 	var want_sprint := Input.is_action_pressed("sprint") and fwd > 0.0

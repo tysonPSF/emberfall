@@ -1230,7 +1230,7 @@ func _kill_player(p: Player, killer: Entity) -> void:
 	request_trade_cancel(p.entity_id)
 	request_service_close(p.entity_id)
 	say(p, "You have been slain by %s!" % killer.display_name if killer != null else "You have died.", C_HIT_YOU)
-	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)) * (1.0 + GameData.deity_bonus(p.deity, "xp_loss_pct") / 100.0))
+	var loss := int(p.xp_to_next() * float(cfg("death_xp_loss", 0.1)) * (1.0 + p.bonus("xp_loss_pct") / 100.0))
 	if loss > 0 and p.xp > 0:
 		p.xp = maxi(0, p.xp - loss)
 		say(p, "You have lost experience.", C_WARN)
@@ -1682,18 +1682,28 @@ func request_bind(player_id: int) -> void:
 	say(p, "You feel your soul bind to %s." % z.zone_name, C_SPELL)
 
 
-## An older character spends the stat points they never had, once.
-func request_set_stats(player_id: int, points: Dictionary) -> void:
-	if _remote(&"request_set_stats", [player_id, points]):
+## An older character chooses what it never could, once: its race (one its
+## class allows) and how to spend its stat points. Either part is ignored
+## once it's been chosen.
+func request_set_stats(player_id: int, points: Dictionary, race := "") -> void:
+	if _remote(&"request_set_stats", [player_id, points, race]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.stats_chosen:
+	if p == null:
 		return
-	p.stat_points = Player.clean_stat_points(points)
-	p.stats_chosen = true
+	if p.race == "" and GameData.races.has(race) and p.char_class in GameData.races[race].get("classes", []):
+		p.race = race
+		p.look["race"] = race
+		if p.visual is CharacterModel:
+			(p.visual as CharacterModel).set_race(race)
+			p.visual.scale *= float(GameData.races[race].get("scale", 1.0))
+		say(p, "You are %s %s." % ["an" if str(GameData.races[race]["name"])[0] in "AEIOU" else "a", GameData.races[race]["name"]], C_SYSTEM)
+	if not p.stats_chosen:
+		p.stat_points = Player.clean_stat_points(points)
+		p.stats_chosen = true
+		say(p, "You feel your training settle into you.", C_SYSTEM)
 	p.recalc_stats()
 	p.stats_changed.emit()
-	say(p, "You feel your training settle into you.", C_SYSTEM)
 
 
 func request_interrupt(entity_id: int) -> void:
@@ -1797,7 +1807,8 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				if t.level > c.level + int(s.get("stun_max_over", 3)):
 					pass
 				elif randf() < float(s["stun_chance"]):
-					t.stun_left = maxf(t.stun_left, float(s.get("stun", 2.0)))
+					if not (t is Player and (t as Player).bonus("stun_immune") > 0.0):  # an ogre stands
+						t.stun_left = maxf(t.stun_left, float(s.get("stun", 2.0)))
 					say(c, "%s is stunned!" % cap(t.display_name), C_SPELL)
 					if t is Player:
 						say(t, "You are stunned!", C_HIT_YOU)
@@ -1854,6 +1865,10 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 					say(t, str(s.get("slow_you", "Your arms feel heavy.")), C_HIT_YOU)
 			t.add_hate(c, 10.0)
 		"stun":
+			if t is Player and (t as Player).bonus("stun_immune") > 0.0:
+				say(c, "%s shrugs it off." % cap(t.display_name), C_WARN)
+				say(t, "You shrug off the stun.", C_SPELL)
+				return
 			t.stun_left = float(s.get("duration", 4))
 			say(c, str(s.get("stun_text", "%s is stunned.")) % t.display_name, C_SPELL)
 			if t is Player:
