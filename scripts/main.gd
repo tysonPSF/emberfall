@@ -12,6 +12,14 @@ const SAVE_PATH := "user://character.json"
 const AUTOTEST_SAVE_PATH := "user://autotest_character.json"
 const SETTINGS_PATH := "user://settings.json"
 const AUTOSAVE_SECONDS := 30.0
+## A headless server has no vsync, so without a cap its main loop runs as fast
+## as it can with nobody there. The rules run on 60 Hz physics and delta timers,
+## so 60 frames a second changes nothing about play. (Not the project's
+## run/max_fps setting: that would cap players' games too.)
+const SERVER_FPS := 60
+## Server: a zone nobody has been in for at least this long may be taken down
+## (see _watch_idle_zones). Dropped items last 15 minutes and aren't saved.
+const ZONE_IDLE_SECONDS := 900.0
 
 var save_path := SAVE_PATH
 var zone: Zone
@@ -284,6 +292,8 @@ func _on_left_server(reason: String) -> void:
 # --- dedicated server ----------------------------------------------------------
 
 func _start_server(args: PackedStringArray) -> void:
+	Net.dedicated = true
+	Engine.max_fps = SERVER_FPS
 	var port := Net.DEFAULT_PORT
 	var zone_id := str(World.cfg("starting_zone", "greenmoor"))
 	for a in args:
@@ -320,6 +330,8 @@ func _start_server(args: PackedStringArray) -> void:
 		get_tree().quit(1)
 		return
 	_watch_for_updates(data_dir)
+	if not "--preload-zones" in args:
+		_watch_idle_zones()
 
 
 ## Updates (tools/server/auto_update.sh): a "restart_notice" file in the data
@@ -354,8 +366,38 @@ func _watch_for_updates(data_dir: String) -> void:
 			get_tree().quit(3))
 
 
-## A server keeps every zone someone has visited running, each inside its own
-## SubViewport world so their physics (and overlapping coordinates) never meet.
+## A server builds a zone the first time someone goes there and takes it down
+## again once nobody has been there for a while, so a server that's been up for
+## days isn't running every zone anyone ever visited. Only when building it
+## again later would look the same (Zone.keep_reason, idle_seconds_to_unload):
+## a returning player can't tell. The start zone always stays up (new characters
+## land there), and --preload-zones keeps every zone up.
+## EMBERFALL_ZONE_IDLE=<seconds> (testing) takes an empty zone down that soon.
+func _watch_idle_zones() -> void:
+	var test_idle := OS.get_environment("EMBERFALL_ZONE_IDLE")
+	var empty_since := {}  # zone id -> msec since which nothing has kept it up
+	var timer := Timer.new()
+	timer.wait_time = 1.0 if test_idle != "" else 30.0
+	timer.autostart = true
+	add_child(timer)
+	timer.timeout.connect(func() -> void:
+		for zone_id: String in _server_zones.keys():
+			var z := _server_zones[zone_id] as Zone
+			if zone_id == _start_zone or z.keep_reason() != "":
+				empty_since.erase(zone_id)
+				continue
+			var since: int = empty_since.get_or_add(zone_id, Time.get_ticks_msec())
+			var idle := float(test_idle) if test_idle != "" else z.idle_seconds_to_unload(ZONE_IDLE_SECONDS)
+			if Time.get_ticks_msec() - since < idle * 1000.0:
+				continue
+			empty_since.erase(zone_id)
+			_server_zones.erase(zone_id)
+			z.get_parent().queue_free()  # its SubViewport: the zone's world, physics and navigation go with it
+			print("zone down: %s (empty for %d s)" % [zone_id, (Time.get_ticks_msec() - since) / 1000]))
+
+
+## Each zone runs inside its own SubViewport world so their physics (and
+## overlapping coordinates) never meet.
 func _server_zone(zone_id: String) -> Zone:
 	if _server_zones.has(zone_id):
 		return _server_zones[zone_id]

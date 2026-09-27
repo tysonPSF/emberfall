@@ -36,6 +36,7 @@ const CH_STATE := 1  # unreliable channel for snapshots
 const CH_MOVE := 2  # unreliable channel for client movement
 
 var mode := "offline"
+var dedicated := false  # a --server process: it draws nothing, so looks skip their per-frame work (set before the first zone is built, unlike mode)
 var my_player_id := -1  # client: our player's id on the server
 var address := ""  # client: the server we're connected to
 

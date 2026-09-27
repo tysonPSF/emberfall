@@ -440,6 +440,34 @@ func restore_corpses(saved: Array) -> void:
 		add_child(c)
 
 
+## Server: why this zone must stay up, or "" when taking it down now and
+## building it again later would lose nothing: nobody here (players, pets),
+## no player corpse (they're saved per zone, from the zones that are running),
+## no dropped item (never saved), the navigation bake done (its thread uses us).
+func keep_reason() -> String:
+	if not nav_ready:
+		return "navigation still baking"
+	for child in get_children():
+		if child is Player or child is Pet:
+			return "occupied"
+		if child is Corpse and (child as Corpse).owner_name != "":
+			return "a player corpse"
+		if child is GroundItem:
+			return "a dropped item"
+	return ""
+
+
+## Server: how long the zone must stay empty before it's taken down: past its
+## slowest respawn (timers run 15% either way), so every monster is back up and
+## it would be built exactly as it stands. Never less than at_least.
+func idle_seconds_to_unload(at_least: float) -> float:
+	var slowest := 0.0
+	for child in get_children():
+		if child is SpawnPoint:
+			slowest = maxf(slowest, (child as SpawnPoint).respawn_time)
+	return maxf(at_least, slowest * 1.15 + 60.0)
+
+
 # --- builders ---------------------------------------------------------------
 
 func _build_environment() -> void:
@@ -490,9 +518,10 @@ func _build_environment() -> void:
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 110.0
 	add_child(sun)
-	var cycle := DayNight.new()
-	add_child(cycle)
-	cycle.setup(env, sky_mat, sun)
+	if not Net.dedicated:  # the sun's path and the sky are looks; the rules read the hour from World.game_hour()
+		var cycle := DayNight.new()
+		add_child(cycle)
+		cycle.setup(env, sky_mat, sun)
 
 
 func _build_terrain() -> void:

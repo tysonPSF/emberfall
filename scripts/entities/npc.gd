@@ -61,6 +61,8 @@ func setup(id: String, name_override := "") -> void:
 
 func _ready() -> void:
 	build_body("humanoid", Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
+	if Net.dedicated:
+		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name
 	nameplate.modulate = NAME_COLOR
 	if data.has("title"):  # EQ-style second line: <Warrior Guildmaster>

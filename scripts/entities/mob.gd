@@ -130,6 +130,8 @@ func _pick_model(choices: Array) -> String:
 func _ready() -> void:
 	var mirrored := look.duplicate()
 	build_body(shape, color, body_scale, model_id, weapon_id)
+	if Net.dedicated:
+		set_process(false)  # _process only colors the nameplate for a local player; a server has none
 	if not Net.is_authority():
 		look = mirrored
 		if visual is CharacterModel:

@@ -299,6 +299,8 @@ static func make_visual(look_: Dictionary) -> Node3D:
 		if look_.has("worn"):
 			m.set_worn(look_["worn"])
 		use_entity_layer(m)
+		if Net.dedicated:  # nobody watches a server's animations: no clip advancing, no pose every frame
+			m.process_mode = Node.PROCESS_MODE_DISABLED
 		return m
 	var shape := str(look_.get("shape", "humanoid"))
 	var color := Color.html(str(look_.get("color", "ffffff")))
