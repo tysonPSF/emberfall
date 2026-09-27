@@ -81,6 +81,10 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 		if need <= lvl:
 			p.spells.append(sid)
 	p.equipment = _kit(cls, lvl)
+	p.stat_points = {}  # the class's recommended starting stats, as most players will spend them
+	var spread: Dictionary = GameData.classes[cls].get("stat_preset", {})
+	for stat: String in spread:
+		p.stat_points[stat] = int(spread[stat])
 	if p.pack.count("crude_arrow") < 200:
 		p.pack.add("crude_arrow", 200)  # enough for any fight
 	p.skills = {}
@@ -170,6 +174,7 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	p.hp = p.max_hp
 	p.target = null
 	p.auto_attack = false
+	p.stat_points = {}
 	await test._wait(0.2)
 	return out
 

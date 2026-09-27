@@ -19,6 +19,7 @@ var _desc: Label
 var _error: Label
 var _selected := "warrior"
 var _deity := ""
+var _stats: StatPicker
 var _main: VBoxContainer
 var _pledge: VBoxContainer
 
@@ -36,12 +37,12 @@ func _ready() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var v := VBoxContainer.new()
-	v.custom_minimum_size.x = 560
-	v.add_theme_constant_override("separation", 12)
+	v.custom_minimum_size.x = 1110  # the new-character form runs in two columns
+	v.add_theme_constant_override("separation", 8)
 	center.add_child(v)
 	_main = v
 
-	var title := UIKit.label("EMBERFALL", 60, UIKit.GOLD)
+	var title := UIKit.label("EMBERFALL", 50, UIKit.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
 	var sub := UIKit.label("A new character for %s" % (Net.address if Net.address != "" else "this server") if server_mode else "The world is dangerous. Bring friends.", 15, UIKit.DIM)
@@ -97,9 +98,21 @@ func _ready() -> void:
 	_build_pledge(center)
 
 
-## Name, class and deity, then Enter World.
-func _build_new_character(v: VBoxContainer) -> void:
-	v.add_child(UIKit.label("New character", 18, UIKit.GOLD))
+## Name, class and description on the left; starting stats and deity on the
+## right; then Enter World.
+func _build_new_character(page: VBoxContainer) -> void:
+	page.add_child(UIKit.label("New character", 18, UIKit.GOLD))
+	var cols := HBoxContainer.new()
+	cols.add_theme_constant_override("separation", 30)
+	page.add_child(cols)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	v.custom_minimum_size.x = 530
+	cols.add_child(v)
+	var right := VBoxContainer.new()
+	right.add_theme_constant_override("separation", 8)
+	right.custom_minimum_size.x = 550
+	cols.add_child(right)
 	_name_edit = LineEdit.new()
 	_name_edit.placeholder_text = "Name (letters only)"
 	_name_edit.max_length = 15
@@ -125,11 +138,15 @@ func _build_new_character(v: VBoxContainer) -> void:
 	_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_desc.custom_minimum_size.y = 40
 	v.add_child(_desc)
+	right.add_child(UIKit.label("Starting stats", 16, UIKit.GOLD))
+	_stats = StatPicker.new()
+	right.add_child(_stats)
 	_select(_selected)
 
-	v.add_child(UIKit.label("Deity", 18, UIKit.GOLD))
-	_deity_picker(v)
+	right.add_child(UIKit.label("Deity", 16, UIKit.GOLD))
+	_deity_picker(right)
 
+	v = page
 	var enter := UIKit.button("Create character" if server_mode else "Enter World", Vector2(0, 44))
 	enter.pressed.connect(_create)
 	v.add_child(enter)
@@ -172,7 +189,7 @@ func _deity_picker(parent: Container) -> void:
 	var group := ButtonGroup.new()
 	var desc := UIKit.label("Choose one. Each grants a small blessing, and they will remember who followed them.", 13, UIKit.DIM)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.custom_minimum_size.y = 84
+	desc.custom_minimum_size.y = 64
 	for deity_id: String in GameData.deities:
 		var d: Dictionary = GameData.deities[deity_id]
 		var b := UIKit.button(str(d["name"]), Vector2(0, 118))
@@ -204,6 +221,8 @@ func set_status(text: String, is_error := false) -> void:
 func _select(class_id: String) -> void:
 	_selected = class_id
 	_desc.text = GameData.classes[class_id]["description"]
+	if _stats != null:
+		_stats.set_class(class_id, true)  # a new class starts from its own spread
 
 
 func _create() -> void:
@@ -215,4 +234,7 @@ func _create() -> void:
 	if _deity == "":
 		_error.text = "Choose a deity."
 		return
-	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity})
+	if _stats.points_left() > 0:
+		_error.text = "Spend all your stat points (%d left)." % _stats.points_left()
+		return
+	confirmed.emit({"name": raw.to_lower().capitalize(), "class": _selected, "deity": _deity, "stats": _stats.points.duplicate()})

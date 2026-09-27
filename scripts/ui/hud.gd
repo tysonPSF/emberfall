@@ -138,6 +138,9 @@ var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
 var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
+var _stats_panel: PanelContainer  # characters from before starting stats spend their points here, once
+var _stats_picker: StatPicker
+var _stats_later := false
 var _track_panel: PanelContainer  # a ranger's Track: what walks within reach, nearest first
 var _track_list: VBoxContainer
 var _track_title: Label
@@ -193,6 +196,7 @@ func _ready() -> void:
 	_build_station_window()
 	_build_pet_window()
 	_build_track_window()
+	_build_stats_window()
 	_compass = Compass.new()
 	_compass.anchor_left = 0.5
 	_compass.anchor_right = 0.5
@@ -1439,6 +1443,54 @@ func _build_pet_window() -> void:
 	_pet_panel.visible = false
 
 
+## The one-time window for a character from before starting stats: spend the
+## 25 points (the class's spread is filled in), then Confirm. "Later" puts it
+## off until the next login.
+func _build_stats_window() -> void:
+	_stats_panel = UIKit.panel()
+	UIKit.place(_stats_panel, Vector2(0.5, 0.5), Vector2(-250, -170))
+	root.add_child(_stats_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 500
+	v.add_theme_constant_override("separation", 8)
+	_stats_panel.add_child(v)
+	v.add_child(UIKit.label("Your training", 18, UIKit.GOLD))
+	var hint := UIKit.label("Every stat starts at 75. Spend 25 points to make this character your own; your class's key stats are in gold. You choose once.", 13, UIKit.DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(hint)
+	_stats_picker = StatPicker.new()
+	v.add_child(_stats_picker)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var ok := UIKit.button("Confirm", Vector2(0, 34))
+	ok.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ok.pressed.connect(func() -> void:
+		if _stats_picker.points_left() > 0:
+			add_log("Spend all your stat points first (%d left)." % _stats_picker.points_left(), World.C_WARN)
+			return
+		World.request_set_stats(player.entity_id, _stats_picker.points.duplicate())
+		_stats_panel.visible = false)
+	var later := UIKit.button("Later", Vector2(0, 34))
+	later.pressed.connect(func() -> void:
+		_stats_later = true
+		_stats_panel.visible = false)
+	row.add_child(ok)
+	row.add_child(later)
+	UIKit.frame(ok)
+	UIKit.frame(later)
+	v.add_child(row)
+	_stats_panel.visible = false
+
+
+func _update_stats_window() -> void:
+	if player.stats_chosen or _stats_later:
+		_stats_panel.visible = false
+		return
+	if not _stats_panel.visible:
+		_stats_picker.set_class(player.char_class, true)
+		_stats_panel.visible = true
+
+
 ## A ranger's Track window: each monster within reach, nearest first, in its
 ## con color with which way it lies and how far; click one to follow it on the
 ## compass. It refreshes each second while open.
@@ -2252,6 +2304,7 @@ func _process(delta: float) -> void:
 	_ring_drawn = player.auto_attack
 	_update_buffs()
 	_update_pet()
+	_update_stats_window()
 	if _track_panel.visible:
 		_track_refresh -= delta
 		if _track_refresh <= 0.0:
@@ -2320,7 +2373,8 @@ func _process(delta: float) -> void:
 			sheet.append("Off hand  %d-%d, %.1fs" % [player.off_dmg_min, player.off_dmg_max, player.off_delay])
 		sheet.append("")
 		for stat: String in ["str", "sta", "agi", "wis", "int"]:
-			sheet.append("%s  %+d" % [ATTR_NAMES[stat], int(player.attributes.get(stat, 0))])
+			var above := int(player.attributes.get(stat, 0))
+			sheet.append("%s  %d%s" % [ATTR_NAMES[stat], player.stat_value(stat), "  (+%d)" % above if above > 0 else ""])
 		if int(player.attributes.get("haste", 0)) != 0:
 			sheet.append("Haste  %d%%" % int(player.attributes["haste"]))
 		_stats_label.text = "\n".join(sheet)

@@ -43,6 +43,8 @@ var station_kind := ""  # the crafting station whose combine window is open ("ov
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var pet_id := -1  # your pet's entity id, -1 with none
+var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
+var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
 var pet_hp := -1  # its health when you last left, to bring it back as it was
@@ -134,6 +136,8 @@ func from_save(d: Dictionary) -> void:
 			cursor = clean
 	bank_coin = int(d.get("bank_coin", 0))
 	bind_zone = str(d.get("bind", ""))
+	stats_chosen = d.get("stats") is Dictionary
+	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
 		pack.add("homeward_stone", 1)
 	hotbar = (d.get("hotbar", []) as Array).duplicate()
@@ -251,7 +255,8 @@ func apply_self(d: Dictionary) -> void:
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
-			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar"]:
+			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
+			"stat_points", "stats_chosen"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -281,12 +286,33 @@ func apply_self(d: Dictionary) -> void:
 	stats_changed.emit()
 
 
+## Creation's stat points, made legal: only the five stats, none below 0 or
+## over `stat_point_max`, and no more than `stat_points` in all.
+static func clean_stat_points(raw: Variant) -> Dictionary:
+	var out := {}
+	if not raw is Dictionary:
+		return out
+	var left := int(World.cfg("stat_points", 25))
+	for stat: String in ["str", "sta", "agi", "wis", "int"]:
+		var n := clampi(int((raw as Dictionary).get(stat, 0)), 0, mini(left, int(World.cfg("stat_point_max", 15))))
+		if n > 0:
+			out[stat] = n
+			left -= n
+	return out
+
+
+## A stat as the character sheet shows it: the base (75), plus points, gear and buffs.
+func stat_value(stat: String) -> int:
+	return int(World.cfg("stat_base", 75)) + int(attributes.get(stat, 0))
+
+
 func to_save() -> Dictionary:
 	var p := global_position
 	return {
 		"name": display_name, "class": char_class, "deity": deity, "skills": skills, "level": level, "xp": xp, "coin": coin,
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
+		"stats": stat_points if stats_chosen else null,
 	}
 
 
@@ -357,8 +383,8 @@ func recalc_stats() -> void:
 			weapon_model = str(item.get("model", ""))
 			attack_delay = float(item.get("delay", 3.0))
 			attack_verb = item.get("verb", ["hit", "hits"])
-	for stat: String in ["str", "sta", "agi", "wis", "int"]:  # a meal can raise them too
-		attr[stat] = int(attr.get(stat, 0)) + buff_total(stat)
+	for stat: String in ["str", "sta", "agi", "wis", "int"]:  # a meal can raise them too, and the points spent at creation count like gear
+		attr[stat] = int(attr.get(stat, 0)) + buff_total(stat) + int(stat_points.get(stat, 0))
 	var skill := float(cls["melee_skill"])
 	dmg_min = 1 + level / 4 + int(attr.get("str", 0)) / 10
 	dmg_max = maxi(dmg_min + 1, int((weapon_dmg * 2 + level) * skill) + int(attr.get("str", 0)) / 5)
