@@ -109,6 +109,9 @@ const SECTIONS := [
 	["tooltips", "greenmoor"],
 	["group_xp", "greenmoor"],
 	["race_change", "greenmoor"],
+	["gender", "greenmoor"],
+	["pet_fixes", "greenmoor"],
+	["drag_windows", "greenmoor"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -4703,6 +4706,157 @@ func _t_race_change() -> void:
 	p.look["race"] = "human"
 	p.dress()
 	p.recalc_stats()
+
+
+
+## Gender: a head swap on the class body, beards for men only, the sheet's one
+## change (two clicks), saved and sent in the look.
+func _t_gender() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	p.gender = ""
+	p.gender_changed = false
+	p.look.erase("gender")
+	p.dress()
+	var heads := func() -> Array:
+		var m := p.visual as CharacterModel
+		return m._body_parts().values().filter(func(mi: Node) -> bool: return mi.name.ends_with("Head")).map(func(mi: Node) -> String: return str(mi.name))
+	print("gender: a %s from before genders shows as '%s', head %s" % [p.char_class, p.shown_gender(), heads.call()])
+	hud._toggle_inventory()
+	await _wait(0.4)
+	print("gender: the sheet offers '%s' (shown %s)" % [hud._gender_button.text, hud._gender_button.visible])
+	hud._gender_button.pressed.emit()
+	print("gender: one click -> '%s', still '%s'" % [hud._gender_button.text, p.gender])
+	hud._gender_button.pressed.emit()
+	await _wait(0.4)
+	print("gender: two clicks -> '%s', used up %s, look '%s', head %s, button shown %s" % [p.gender, p.gender_changed, p.look.get("gender"), heads.call(), hud._gender_button.visible])
+	World.request_change_gender(p.entity_id, "male")
+	print("gender: again -> still '%s'; saved as '%s' / %s" % [p.gender, p.to_save()["gender"], p.to_save()["gender_changed"]])
+	var beards := func(g: String) -> int:
+		var v := Entity.make_visual({"model": "barbarian", "race": "dwarf", "gender": g}) as CharacterModel
+		var n := v.skeleton.find_children("*", "BoneAttachment3D", false, false).size()
+		v.free()
+		return n
+	print("gender: a dwarf's bolt-ons, man %d, woman %d (no beard)" % [beards.call("male"), beards.call("female")])
+	var rogue := Entity.make_visual({"model": "rogue", "gender": "male"}) as CharacterModel
+	print("gender: a male rogue's head %s" % [rogue._body_parts().values().filter(func(mi: Node) -> bool: return mi.name.ends_with("Head")).map(func(mi: Node) -> String: return str(mi.name))])
+	rogue.free()
+	hud._toggle_inventory()
+	p.zoom = 4.0
+	await _wait(0.3)
+	await _shot("9zz_gender_female")
+	var cc := CharCreate.new()
+	cc.layer = 30
+	main.add_child(cc)
+	await _wait(0.4)
+	cc._gender = "female"
+	cc._name_edit.text = "Asha"
+	cc._deity = "fire"
+	var got := []
+	cc.confirmed.connect(func(sv: Dictionary) -> void: got.append(sv))
+	cc._create()
+	print("gender: created %s" % [got[0].get("gender") if not got.is_empty() else "nothing"])
+	await _shot("9zz_gender_create")
+	cc.queue_free()
+	p.gender = ""
+	p.gender_changed = false
+	p.look.erase("gender")
+	p.dress()
+
+
+
+## The pet window drags and stays where it's left; a pet whose owner has
+## left the world goes too (it used to linger on the server as "<pet>").
+func _t_pet_fixes() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	var saved_class := p.char_class
+	var saved_positions: Dictionary = Controls.window_positions.duplicate()
+	p.char_class = "magician"
+	p.level = 10
+	p.recalc_stats()
+	World.summon_pet(p, "call_of_earth")
+	await _wait(0.6)
+	var panel: Control = hud._pet_panel
+	var before := panel.global_position
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.global_position = before + Vector2(10, 10)
+	panel.gui_input.emit(press)
+	var drag := InputEventMouseMotion.new()
+	drag.global_position = Vector2(60, 460)
+	panel.gui_input.emit(drag)
+	var release := press.duplicate() as InputEventMouseButton
+	release.pressed = false
+	panel.gui_input.emit(release)
+	print("pet_fixes: dragged the window %s -> %s, saved %s" % [before, panel.global_position, Controls.window_positions.get("pet")])
+	drag.global_position = Vector2(99999, 99999)
+	panel.gui_input.emit(press)
+	panel.gui_input.emit(drag)
+	panel.gui_input.emit(release)
+	print("pet_fixes: dragged off screen -> kept at %s (screen %s, window %s)" % [panel.global_position, panel.get_viewport_rect().size, panel.size])
+	drag.global_position = Vector2(60, 460)
+	panel.gui_input.emit(press)
+	panel.gui_input.emit(drag)
+	panel.gui_input.emit(release)
+	await _shot("9zz_pet_window_moved")
+	var pet := World.get_object(p.pet_id) as Pet
+	pet.owner_id = 987654  # its owner is gone
+	await _wait(0.3)
+	print("pet_fixes: a pet with no owner left -> still there %s" % is_instance_valid(pet))
+	p.pet_id = -1
+	p.pet_spell = ""
+	p.char_class = saved_class
+	p.recalc_stats()
+	Controls.window_positions = saved_positions
+	Controls._save_setting("window_positions", saved_positions)
+
+
+
+## Every HUD window can be dragged, stays put (the buffs and quest tracker
+## stop laying themselves out), and Settings' reset puts them all back.
+func _t_drag_windows() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = main.hud
+	var saved_positions: Dictionary = Controls.window_positions.duplicate()
+	await _wait(0.4)
+	var drag := func(panel: Control, to: Vector2) -> void:
+		var press := InputEventMouseButton.new()
+		press.button_index = MOUSE_BUTTON_LEFT
+		press.pressed = true
+		press.global_position = panel.global_position + Vector2(4, 4)
+		panel.gui_input.emit(press)
+		var move := InputEventMouseMotion.new()
+		move.global_position = to + Vector2(4, 4)
+		panel.gui_input.emit(move)
+		var release := press.duplicate() as InputEventMouseButton
+		release.pressed = false
+		panel.gui_input.emit(release)
+	var windows := {"player": hud._player_panel, "target": hud._target_panel, "quests": hud._quest_panel, "chat": hud._log_panel, "buffs": hud._buff_panel, "group": hud._group_panel}
+	var homes := {}
+	for key: String in windows:
+		homes[key] = (windows[key] as Control).global_position
+	var spots := {"player": Vector2(900, 300), "target": Vector2(40, 300), "quests": Vector2(700, 120), "chat": Vector2(1000, 600), "buffs": Vector2(300, 400), "group": Vector2(500, 500)}
+	for key: String in windows:
+		drag.call(windows[key], spots[key])
+	await _wait(0.6)  # the layout code runs every frame: moved windows must stay moved
+	for key: String in windows:
+		print("drag_windows: %s %s -> %s (asked %s)" % [key, homes[key], (windows[key] as Control).global_position, spots[key]])
+	print("drag_windows: saved %s" % [Controls.window_positions.keys()])
+	await _shot("9zz_drag_windows")
+	UIKit.reset_windows(hud.root)
+	await _wait(0.3)
+	var back := windows.keys().filter(func(k: String) -> bool:  # anchored as they started (a hidden window's size settles when it shows)
+		var c: Control = windows[k]
+		var h: Array = c.get_meta("drag_home")
+		return c.global_position.distance_to(homes[k]) < 2.0 or [c.anchor_left, c.anchor_top, c.offset_left, c.offset_top] == [h[0], h[1], h[4], h[5]])
+	print("drag_windows: reset -> back home %s of %d; saved %s" % [back, windows.size(), Controls.window_positions])
+	Controls.window_positions = saved_positions
+	Controls._save_setting("window_positions", saved_positions)
 
 
 ## Reedmere and Drownfast's three borders, every one both ways.

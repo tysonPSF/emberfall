@@ -45,6 +45,8 @@ var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while i
 var pet_id := -1  # your pet's entity id, -1 with none
 var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
 var race_changed := false  # a character's one change of race has been used
+var gender := ""  # "male" / "female"; "" for a character from before genders (drawn as its class body was made)
+var gender_changed := false  # a character's one change of gender has been used
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
@@ -140,6 +142,8 @@ func from_save(d: Dictionary) -> void:
 	bind_zone = str(d.get("bind", ""))
 	race = str(d.get("race", "")) if GameData.races.has(str(d.get("race", ""))) else ""
 	race_changed = bool(d.get("race_changed", false))
+	gender = str(d.get("gender", "")) if str(d.get("gender", "")) in ["male", "female"] else ""
+	gender_changed = bool(d.get("gender_changed", false))
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -260,7 +264,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed"]:
+			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed"]:
 		set(key, d[key])
 	if bool(d.get("hidden", false)) != hidden:
 		hidden = bool(d.get("hidden", false))
@@ -279,9 +283,9 @@ func apply_self(d: Dictionary) -> void:
 		(visual as CharacterModel).set_weapon(str(lk.get("weapon", "")))
 		(visual as CharacterModel).set_offhand(str(lk.get("offhand", "")))
 		(visual as CharacterModel).set_worn(lk.get("worn", {}))
-	if str(lk.get("race", "")) != str(look.get("race", "")):
+	if str(lk.get("race", "")) != str(look.get("race", "")) or str(lk.get("gender", "")) != str(look.get("gender", "")):
 		look = lk
-		dress()  # a new race: a new body
+		dress()  # a new race or gender: a new body
 	look = lk
 	pack.slots = (d["pack"] as Array).duplicate(true)
 	if bags_before != [pack.slots, equipment, coin, bank, bank_coin, trade_items, cursor, station_items]:
@@ -320,6 +324,7 @@ func to_save() -> Dictionary:
 		"pack": pack.to_save(), "trade_items": trade_items + station_items.filter(func(e: Dictionary) -> bool: return not e.is_empty()), "cursor": cursor, "equipment": equipment, "quests": quests, "spells": spells, "bank": bank, "bank_coin": bank_coin, "factions": factions, "hp": maxi(hp, 1), "mana": mana,
 		"position": [p.x, p.y, p.z], "pet": _pet_save(), "hotbar": hotbar, "bind": bind_zone,
 		"stats": stat_points if stats_chosen else null, "race": race, "race_changed": race_changed,
+		"gender": gender, "gender_changed": gender_changed,
 	}
 
 
@@ -531,6 +536,13 @@ func bonus(key: String) -> float:
 	return GameData.deity_bonus(deity, key) + GameData.race_bonus(race if race != "" else "human", key)
 
 
+## "male" or "female": as chosen, or, for a character from before genders, as its class body was made.
+func shown_gender() -> String:
+	if gender != "":
+		return gender
+	return str(GameData.models.get("genders", {}).get("bodies", {}).get(str(GameData.classes[char_class].get("model", "")), "male"))
+
+
 ## Rebuilds the body from `look` (after a change of race: new skin, height,
 ## ears or tusks), keeping what it holds and wears.
 func dress() -> void:
@@ -616,9 +628,12 @@ func _ready() -> void:
 		weapon = str(mirrored.get("weapon", ""))
 	var looks_race := str(mirrored.get("race", race)) if not mirrored.is_empty() else race
 	build_body("humanoid", body_color, float(GameData.races.get(looks_race, {}).get("scale", 1.0)), GameData.classes[char_class].get("model", ""), weapon)
+	var looks_gender := str(mirrored.get("gender", gender)) if not mirrored.is_empty() else gender
 	if visual is CharacterModel:
+		(visual as CharacterModel).set_gender(looks_gender)
 		(visual as CharacterModel).set_race(looks_race)
 		look["race"] = looks_race
+		look["gender"] = looks_gender
 	if not mirrored.is_empty() and visual is CharacterModel:
 		look = mirrored
 		(visual as CharacterModel).set_tiers(look.get("tiers", {}))

@@ -93,6 +93,70 @@ static func frame(b: Button, lit := false) -> void:
 
 ## Anchors a control to a point on screen (0..1 on each axis) plus a pixel
 ## offset, growing away from the nearest edge as its content sizes it.
+## Lets a panel be dragged by its background (buttons still click) and
+## remembers where it was left (Controls.window_positions[key], per machine),
+## kept on screen. Call after placing it and adding it to the tree.
+static func draggable(c: Control, key: String) -> void:
+	c.set_meta("drag_key", key)
+	c.set_meta("drag_home", [c.anchor_left, c.anchor_top, c.anchor_right, c.anchor_bottom,
+			c.offset_left, c.offset_top, c.offset_right, c.offset_bottom, c.grow_horizontal, c.grow_vertical])
+	if c.tooltip_text == "":
+		c.tooltip_text = "Drag to move."
+	c.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	for child: Node in c.find_children("*", "Container", true, false):
+		(child as Control).mouse_filter = Control.MOUSE_FILTER_PASS  # clicks between buttons reach the panel
+	var grab := [null]  # where the mouse took hold, relative to the corner, while dragging
+	c.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+			if ev.pressed:
+				grab[0] = (ev as InputEventMouseButton).global_position - c.global_position
+			elif grab[0] != null:
+				grab[0] = null
+				Controls.set_window_position(key, c.global_position)
+			c.accept_event()
+		elif ev is InputEventMouseMotion and grab[0] != null:
+			_move_to(c, (ev as InputEventMouseMotion).global_position - grab[0])
+			c.accept_event())
+	var saved: Variant = Controls.window_positions.get(key)
+	if saved is Array and (saved as Array).size() == 2:
+		(func() -> void: _move_to(c, Vector2(float(saved[0]), float(saved[1])))).call_deferred()
+
+
+## Whether a draggable window has been moved from where it started (its
+## layout code leaves it alone then).
+static func moved(c: Control) -> bool:
+	return Controls.window_positions.has(str(c.get_meta("drag_key", "")))
+
+
+## Every dragged window under `root` back where it started.
+static func reset_windows(root: Node) -> void:
+	for c: Node in root.find_children("*", "Control", true, false):
+		if c.has_meta("drag_home") and moved(c):
+			var h: Array = c.get_meta("drag_home")
+			c.anchor_left = h[0]
+			c.anchor_top = h[1]
+			c.anchor_right = h[2]
+			c.anchor_bottom = h[3]
+			c.offset_left = h[4]
+			c.offset_top = h[5]
+			c.offset_right = h[6]
+			c.offset_bottom = h[7]
+			c.grow_horizontal = h[8]
+			c.grow_vertical = h[9]
+	Controls.window_positions = {}
+	Controls._save_setting("window_positions", {})
+
+
+## Pins a control's top-left corner at `at` (screen pixels), inside the screen.
+static func _move_to(c: Control, at: Vector2) -> void:
+	var screen := c.get_viewport_rect().size
+	at = at.clamp(Vector2.ZERO, (screen - c.size).max(Vector2.ZERO))
+	c.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	c.grow_horizontal = Control.GROW_DIRECTION_END
+	c.grow_vertical = Control.GROW_DIRECTION_END
+	c.position = at
+
+
 static func place(c: Control, anchor: Vector2, offset: Vector2) -> void:
 	c.anchor_left = anchor.x
 	c.anchor_right = anchor.x

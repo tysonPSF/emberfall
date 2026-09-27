@@ -11,6 +11,7 @@ extends Node3D
 ## --grip=x,y,z[,px,py,pz[,bone[,orient[,ox,oy,oz]]]] tries a rotation
 ## (degrees), offset, bone, orientation bone and outward offset for it before
 ## writing them to "grips".
+## --race=troll,,dwarf and --gender=female,,male dress each model in turn.
 ## Model ids are data/models.json character ids. Quits when done.
 
 const SPACING := 1.8
@@ -27,6 +28,7 @@ func _ready() -> void:
 	var tiers: PackedStringArray = []
 	var weapon := ""
 	var races: PackedStringArray = []  # --race=troll,,dwarf: each model dressed as that race
+	var genders: PackedStringArray = []  # --gender=female,,male: each model as a man or a woman
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--lineup="):
 			ids = a.substr(9).split(",", false)
@@ -59,6 +61,8 @@ func _ready() -> void:
 			shots_dir = a.substr(8)
 		elif a.begins_with("--race="):
 			races = a.substr(7).split(",")
+		elif a.begins_with("--gender="):
+			genders = a.substr(9).split(",")
 
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
@@ -86,6 +90,8 @@ func _ready() -> void:
 		add_child(m)
 		var race_id: String = races[i] if i < races.size() else ""
 		m.setup(ids[i], weapon, float(GameData.races.get(race_id, {}).get("scale", 1.0)))
+		if i < genders.size():
+			m.set_gender(genders[i])
 		if race_id != "":
 			m.set_race(race_id)
 		if i < tiers.size():
@@ -95,7 +101,7 @@ func _ready() -> void:
 			m.set_tiers(every)
 		m.position.x = -width / 2.0 + i * SPACING
 		m.rotation.y = PI  # face the camera
-		if not worn.is_empty() or not races.is_empty():  # a race preview shows the bare head, as players wear it
+		if not worn.is_empty() or not races.is_empty() or not genders.is_empty():  # a race preview shows the bare head, as players wear it
 			m.set_worn(worn)
 		if offhand != "":
 			m.set_offhand(offhand)

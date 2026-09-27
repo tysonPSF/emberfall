@@ -2378,6 +2378,478 @@ def naga_fang_dirk():
 	return p.build()
 
 
+# ---------------------------------------------------------------- gloves, sleeves and bracers
+# KayKit arms end in a hand, so the body-part path drew gloves and sleeves alike.
+# Hands items are drawn as a pair of gloves standing fingers up; arms items as a
+# forearm piece lying on the diagonal with an empty wrist, so the two never mix.
+
+SEA_STONE = (2, 1)    # blue-gray: shark hide
+
+
+def _hand_frame(off, tilt, sx):
+	"""Maps a glove's own coordinates (x across the hand, -y its back, z up the
+	fingers) into the scene: mirrored by sx, leaned by tilt degrees, moved to off."""
+	ca, sa = math.cos(math.radians(tilt)), math.sin(math.radians(tilt))
+
+	def f(x, y, z):
+		x *= sx
+		return (off[0] + x * ca + z * sa, off[1] + y, off[2] - x * sa + z * ca)
+	f.tilt = tilt
+	return f
+
+
+FINGERS = ((-0.17, 0.26), (-0.057, 0.33), (0.057, 0.36), (0.17, 0.32))   # (x, length) little finger to index
+
+
+def _finger(p, f, x, length, r, swatch, grad, glow=0.0, lames=0, lame_swatch=None, tip=True):
+	base, top = (x, 0, 0.7), (x * 1.25, 0, 0.7 + length)
+	if lames:
+		for k in range(lames):                                                       # jointed plates, each a little wider at its base
+			a, b = k / lames, (k + 0.92) / lames
+			pa = tuple(base[i] + (top[i] - base[i]) * a for i in range(3))
+			pb = tuple(base[i] + (top[i] - base[i]) * b for i in range(3))
+			p.seg(f(*pa), f(*pb), r * 1.12, r * 0.95, lame_swatch if k % 2 else swatch, sides=8, grad=grad)
+		p.seg(f(*top), f(top[0] * 1.03, 0, top[2] + 0.08), r * 0.95, 0.0, swatch, sides=8, grad=grad)   # a pointed tip
+		return
+	p.seg(f(*base), f(*top), r, r * 0.88, swatch, sides=8, grad=grad, glow=glow)
+	if tip:
+		p.blob((r * 1.76, r * 1.76, r * 1.76), f(*top), swatch, segs=(8, 5), grad=grad, glow=glow)
+
+
+def _glove(p, f, body, cuff, trim, grad=(0.1, 0.8), style="glove", cuff_r=0.24, skin=HIDE):
+	"""One glove. style: glove, gauntlet (plates, knuckle ridge, flared cuff),
+	mitt (fingers in one pouch) or wrap (bandaged, fingertips bare)."""
+	rot = (0, f.tilt, 0)
+	if style == "gauntlet":
+		p.seg(f(0, 0, -0.02), f(0, 0, 0.34), 0.34, 0.21, cuff, sides=14, grad=grad)             # flared cuff
+		p.seg(f(0, 0, -0.04), f(0, 0, 0.02), 0.36, 0.35, trim, sides=14)                       # its rolled rim
+		p.seg(f(0, 0, 0.16), f(0, 0, 0.2), 0.29, 0.28, trim, sides=14)
+		p.blob((0.52, 0.26, 0.46), f(0, 0, 0.55), body, rot=rot, segs=(12, 8), grad=grad)
+		p.blob((0.48, 0.12, 0.34), f(0, -0.09, 0.56), cuff, rot=rot, segs=(10, 6), grad=grad)   # back-of-hand plate
+		for x, _ in FINGERS:                                                          # knuckle plates
+			p.blob((0.14, 0.12, 0.11), f(x * 1.05, -0.08, 0.74), trim, rot=rot, segs=(8, 5))
+		for x, length in FINGERS:
+			_finger(p, f, x, length, 0.07, body, grad, lames=3, lame_swatch=cuff)
+		p.seg(f(0.2, -0.02, 0.45), f(0.4, -0.04, 0.64), 0.09, 0.08, cuff, sides=8, grad=grad)   # thumb
+		p.seg(f(0.4, -0.04, 0.64), f(0.47, -0.05, 0.78), 0.08, 0.0, body, sides=8, grad=grad)
+		return
+	if style == "wrap":
+		for k in range(5):                                                            # wound bands up the wrist, each askew
+			z = 0.0 + k * 0.1
+			p.seg(f(0, 0, z), f(0.02, 0, z + 0.09), 0.2 + k * 0.004, 0.2, body if k % 2 else cuff, sides=12, grad=grad, twist=k * 20)
+		p.blob((0.5, 0.25, 0.44), f(0, 0, 0.57), body, rot=rot, segs=(12, 8), grad=grad)
+		for k in range(3):                                                            # bands across the back of the hand
+			z = 0.44 + k * 0.12
+			p.seg(f(-0.25, -0.1, z - 0.04), f(0.25, -0.1, z + 0.04), 0.03, 0.03, cuff, sides=5)
+		p.seg(f(-0.26, -0.02, 0.74), f(0.26, -0.02, 0.74), 0.08, 0.08, cuff, sides=8)       # the knuckle band
+		for x, length in FINGERS:                                                    # bare fingertips out the top
+			_finger(p, f, x, length * 0.7, 0.062, skin, (0.0, 0.5))
+		p.seg(f(0.2, -0.02, 0.45), f(0.4, -0.04, 0.66), 0.085, 0.075, body, sides=8, grad=grad)
+		p.blob((0.13, 0.13, 0.13), f(0.4, -0.04, 0.66), skin, segs=(6, 4), grad=(0.0, 0.5))
+		p.seg(f(-0.2, -0.12, 0.2), f(-0.34, -0.14, -0.12), 0.05, 0.03, trim, sides=5)        # the loose tail of the wrap
+		return
+	p.seg(f(0, 0, 0.0), f(0, 0, 0.34), cuff_r, 0.2, cuff, sides=12, grad=grad)                 # cuff
+	p.seg(f(0, 0, -0.02), f(0, 0, 0.05), cuff_r + 0.02, cuff_r + 0.02, trim, sides=12)
+	p.blob((0.5, 0.24, 0.46), f(0, 0, 0.55), body, rot=rot, segs=(12, 8), grad=grad)
+	if style == "mitt":
+		p.blob((0.46, 0.22, 0.52), f(0.02, 0, 0.86), body, rot=rot, segs=(12, 8), grad=grad)   # the fingers in one pouch
+		p.seg(f(-0.2, -0.1, 0.72), f(0.2, -0.1, 0.72), 0.02, 0.02, trim, sides=4)          # a stitched seam
+	else:
+		for x, length in FINGERS:
+			_finger(p, f, x, length, 0.068, body, grad)
+	p.seg(f(0.2, -0.02, 0.45), f(0.4, -0.04, 0.66), 0.08, 0.072, body, sides=8, grad=grad)     # thumb
+	p.blob((0.13, 0.13, 0.13), f(0.4, -0.04, 0.66), body, segs=(8, 5), grad=grad)
+
+
+def _glove_pair(name, seed, body, cuff, trim, **kw):
+	"""A pair: the left glove behind, the right in front. Returns the Prop and both frames."""
+	p = Prop(name, seed)
+	frames = [_hand_frame((-0.38, 0.3, 0.14), 16, -1), _hand_frame((0.12, -0.12, 0.0), -8, 1)]
+	for f in frames:
+		_glove(p, f, body, cuff, trim, **kw)
+	return p, frames
+
+
+def _studs(p, frames, swatch, z=0.62, n=3, y=-0.13, glow=0.0):
+	for f in frames:
+		for k in range(n):
+			x = -0.14 + k * 0.28 / max(n - 1, 1)
+			p.blob((0.07, 0.06, 0.07), f(x, y, z), swatch, segs=(6, 4), glow=glow)
+
+
+def cloth_gloves():
+	p, fr = _glove_pair("cloth_gloves", 801, HIDE, BONE, WOOD_GRAY, grad=(0.0, 0.6))
+	return p.build()
+
+
+def leather_gloves():
+	p, fr = _glove_pair("leather_gloves", 803, WOOD, WOOD_GRAY, HIDE, grad=(0.1, 0.8))
+	return p.build()
+
+
+def handsewn_leather_gloves():
+	p, fr = _glove_pair("handsewn_leather_gloves", 805, CLAY, WOOD, BONE, grad=(0.2, 0.9))
+	for f in fr:                                                                     # big hand stitches down the back
+		for k in range(4):
+			z = 0.42 + k * 0.08
+			p.seg(f(-0.03, -0.13, z), f(0.03, -0.13, z + 0.04), 0.014, 0.014, BONE, sides=4)
+	return p.build()
+
+
+def hardened_leather_gloves():
+	p, fr = _glove_pair("hardened_leather_gloves", 807, WOOD, STONE_DARK, IRON, grad=(0.4, 1.0))
+	for f in fr:                                                                     # a boiled-leather knuckle pad, riveted
+		p.blob((0.46, 0.1, 0.14), f(0, -0.1, 0.72), WOOD_GRAY, rot=(0, f.tilt, 0), segs=(10, 5), grad=(0.3, 0.9))
+	_studs(p, fr, STONE_LIGHT, z=0.73, n=4, y=-0.16)
+	return p.build()
+
+
+def farmhands_gloves():
+	p, fr = _glove_pair("farmhands_gloves", 809, AMBER, WOOD, WOOD_GRAY, grad=(0.3, 0.95), cuff_r=0.27)
+	f = fr[1]
+	p.blob((0.2, 0.05, 0.18), f(-0.08, -0.13, 0.52), HIDE, rot=(0, f.tilt + 10, 0), segs=(6, 4))   # a patch
+	for k in range(4):                                                              # straw caught in the cuff
+		a = math.radians(-40 + k * 25)
+		p.seg(f(math.sin(a) * 0.2, -0.18, 0.12), f(math.sin(a) * 0.4, -0.22, -0.14 + k * 0.03), 0.014, 0.008, GOLD, sides=4)
+	return p.build()
+
+
+def sharkskin_gloves():
+	p, fr = _glove_pair("sharkskin_gloves", 811, SEA_STONE, STONE_DARK, CLOTH_WHITE, grad=(0.35, 1.0))
+	for f in fr:                                                                     # a little fin down the back of each
+		p.seg(f(0.0, -0.12, 0.4), f(0.0, -0.3, 0.52), 0.07, 0.0, SEA_STONE, sides=4, grad=(0.5, 1.0))
+	for f in fr:
+		p.seg(f(-0.2, -0.1, 0.12), f(0.2, -0.1, 0.12), 0.015, 0.015, CLOTH_WHITE, sides=4)   # pale belly-hide stripe
+	return p.build()
+
+
+def trollhide_gloves():
+	p, fr = _glove_pair("trollhide_gloves", 813, TEAL, WOOD_GRAY, PINE, grad=(0.35, 1.0), cuff_r=0.27)
+	for f in fr:                                                                     # warts
+		for (x, z) in ((-0.12, 0.5), (0.1, 0.62), (0.02, 0.44), (-0.05, 0.66)):
+			p.blob((0.07, 0.05, 0.07), f(x, -0.12, z), PINE, segs=(6, 4))
+		for k in range(5):                                                         # a ragged fur trim at the cuff
+			a = -0.2 + k * 0.1
+			p.seg(f(a, -0.2, 0.02), f(a * 1.2, -0.24, -0.12), 0.04, 0.0, WOOD_GRAY, sides=4)
+	return p.build()
+
+
+def frogskin_gloves():
+	p, fr = _glove_pair("frogskin_gloves", 815, LEAF, PINE, GOLD, grad=(0.0, 0.6))
+	for f in fr:                                                                     # dark spots and one yellow
+		for (x, z, sw) in ((-0.12, 0.5, PINE), (0.08, 0.62, PINE), (0.1, 0.42, GOLD), (-0.04, 0.68, PINE), (-0.17, 0.3, PINE)):
+			p.blob((0.09, 0.04, 0.09), f(x, -0.12 if z > 0.36 else -0.2, z), sw, segs=(6, 4), grad=(0.1, 0.5))
+	return p.build()
+
+
+def cinderscale_gloves():
+	p, fr = _glove_pair("cinderscale_gloves", 817, IRON, CLOTH_RED, CRIMSON, grad=(0.0, 0.5))
+	for f in fr:                                                                     # overlapping charcoal scales, red at the seams
+		for row in range(3):
+			for k in range(3 - row % 2):
+				x = -0.14 + k * 0.14 + (0.07 if row % 2 else 0)
+				p.blob((0.13, 0.05, 0.1), f(x, -0.12, 0.44 + row * 0.1), STONE_DARK if (k + row) % 2 else IRON, rot=(0, f.tilt, 0),
+					   segs=(6, 4), grad=(0.0, 0.6))
+		p.seg(f(-0.2, -0.13, 0.38), f(0.2, -0.13, 0.38), 0.018, 0.018, EMBER, sides=4, glow=1.8)
+	return p.build()
+
+
+def silkweave_gloves():
+	p, fr = _glove_pair("silkweave_gloves", 819, CLOTH_WHITE, PETAL_PURPLE, STONE_LIGHT, grad=(0.0, 0.5))
+	for f in fr:                                                                     # a web picked out in thread
+		for a in (-50, 0, 50):
+			r = math.radians(a)
+			p.seg(f(0, -0.13, 0.52), f(math.sin(r) * 0.18, -0.13, 0.52 + math.cos(r) * 0.16), 0.01, 0.01, PETAL_PURPLE, sides=4)
+	return p.build()
+
+
+def silkweave_mitts():
+	p, fr = _glove_pair("silkweave_mitts", 821, CLOTH_WHITE, PETAL_PURPLE, GOLD, grad=(0.0, 0.5), style="mitt", cuff_r=0.26)
+	return p.build()
+
+
+def rainsilk_gloves():
+	p, fr = _glove_pair("rainsilk_gloves", 823, SKY, WATER, CLOTH_WHITE, grad=(0.0, 0.6))
+	for f in fr:                                                                     # a raindrop pearl on the back
+		p.blob((0.1, 0.06, 0.13), f(0, -0.13, 0.54), AQUA, segs=(8, 5), glow=1.2)
+		p.seg(f(0, -0.13, 0.6), f(0, -0.13, 0.66), 0.05, 0.0, AQUA, sides=6, glow=1.2)
+	return p.build()
+
+
+def dawnweave_gloves():
+	p, fr = _glove_pair("dawnweave_gloves", 825, PINK, GOLD, GOLD, grad=(0.0, 0.5))
+	for f in fr:                                                                     # a small sun on the back
+		p.blob((0.1, 0.05, 0.1), f(0, -0.13, 0.54), GOLD, segs=(8, 5), glow=1.0)
+		for k in range(6):
+			a = k * math.tau / 6
+			p.seg(f(math.cos(a) * 0.07, -0.13, 0.54 + math.sin(a) * 0.07), f(math.cos(a) * 0.12, -0.13, 0.54 + math.sin(a) * 0.12),
+				  0.015, 0.0, GOLD, sides=4, glow=1.0)
+	return p.build()
+
+
+def ashweave_gloves():
+	p, fr = _glove_pair("ashweave_gloves", 827, ASH, STONE_DARK, EMBER, grad=(0.35, 0.7))
+	for f in fr:                                                                     # an ember thread across the knuckles
+		p.seg(f(-0.22, -0.12, 0.7), f(0.22, -0.12, 0.7), 0.016, 0.016, EMBER, sides=4, glow=2.0)
+		p.seg(f(-0.2, -0.2, 0.2), f(0.2, -0.2, 0.2), 0.016, 0.016, EMBER, sides=4, glow=2.0)
+	return p.build()
+
+
+def monks_wraps():
+	p, fr = _glove_pair("monks_wraps", 829, CLOTH_WHITE, BONE, CLOTH_RED, grad=(0.0, 0.5), style="wrap")
+	return p.build()
+
+
+def iron_gauntlets():
+	p, fr = _glove_pair("iron_gauntlets", 831, STONE_DARK, STONE_DARK, IRON, grad=(0.0, 0.7), style="gauntlet")
+	return p.build()
+
+
+def tempered_gauntlets():
+	p, fr = _glove_pair("tempered_gauntlets", 833, STONE_DARK, STONE_LIGHT, SEA_STONE, grad=(0.2, 0.9), style="gauntlet")
+	return p.build()
+
+
+def steel_gauntlets():
+	p, fr = _glove_pair("steel_gauntlets", 835, STONE_LIGHT, STONE_LIGHT, IRON, grad=(0.0, 0.45), style="gauntlet")
+	_studs(p, fr, GOLD, z=0.3, n=3, y=-0.25)
+	return p.build()
+
+
+def tidesteel_gauntlets():
+	p, fr = _glove_pair("tidesteel_gauntlets", 837, AQUA, SEAFOAM, STONE_LIGHT, grad=(0.1, 0.8), style="gauntlet")
+	for f in fr:
+		p.blob((0.09, 0.07, 0.09), f(0, -0.17, 0.56), CLOTH_WHITE, segs=(8, 5), glow=0.5)   # a pearl in the back plate
+	return p.build()
+
+
+def emberforged_gauntlets():
+	p, fr = _glove_pair("emberforged_gauntlets", 839, IRON, STONE_DARK, EMBER, grad=(0.0, 0.6), style="gauntlet")
+	for f in fr:                                                                     # forge-glow in the seams
+		p.seg(f(-0.2, -0.17, 0.46), f(0.2, -0.17, 0.46), 0.016, 0.016, EMBER, sides=4, glow=2.4)
+		p.seg(f(0, -0.17, 0.4), f(0, -0.17, 0.66), 0.016, 0.016, EMBER, sides=4, glow=2.4)
+		p.seg(f(-0.28, -0.22, 0.1), f(0.28, -0.22, 0.1), 0.016, 0.016, EMBER, sides=4, glow=2.4)
+	return p.build()
+
+
+# Forearm pieces lie along D through C, elbow low-left, the open wrist high-right toward the camera.
+FA_C, FA_D = Vector((0, 0, 0.45)), Vector((0.7, 0, 0.7)).normalized()
+
+
+def _fa(t, r=0.0, ang=0.0, c=FA_C, d=FA_D):
+	"""A point on the forearm: t along it, r out from its axis, ang round it (0 faces the camera)."""
+	a = math.radians(ang)
+	n = Vector((-d.z, 0, d.x))
+	return tuple(c + d * t + (Vector((0, -1, 0)) * math.cos(a) + n * math.sin(a)) * r)
+
+
+def _fa_r(t, r0, r1, t0, t1):
+	return r0 + (r1 - r0) * (t - t0) / (t1 - t0)
+
+
+SL_C, SL_D = Vector((0, 0, 0.55)), Vector((0.32, 0, -1)).normalized()   # a sleeve hangs from its shoulder, wrist low right
+
+
+def _sl(t, r=0.0, ang=0.0):
+	"""_fa for a hanging sleeve."""
+	return _fa(t, r, ang, SL_C, SL_D)
+
+
+def _sleeve(p, body, hem, grad=(0.1, 0.8), folds=3):
+	"""A soft sleeve hanging from an open shoulder, wrinkled, with a flared hem;
+	returns its frame's (t0, t1, r0, r1) for trims laid on with _sl."""
+	t0, t1, r0, r1 = -0.6, 0.5, 0.36, 0.2
+	p.seg(_sl(t0), _sl(t1), r0, r1, body, sides=18, grad=grad)
+	p.seg(_sl(t0 - 0.02), _sl(t0 + 0.07), r0 + 0.025, r0 + 0.01, hem, sides=18)            # shoulder seam
+	p.seg(_sl(t0 - 0.03), _sl(t0 - 0.02), r0 - 0.04, r0 - 0.04, STONE_DARK, sides=18)       # the open shoulder
+	for k in range(folds):                                                            # wrinkles across the front
+		tc = -0.3 + k * 0.24
+		pts = []
+		for j in range(7):
+			ang = -80 + j * 26
+			t = tc + 0.05 * math.sin(math.radians(ang * 2 + k * 40))
+			pts.append(_sl(t, _fa_r(t, r0, r1, t0, t1) + 0.005, ang))
+		for u, v in zip(pts, pts[1:]):
+			p.seg(u, v, 0.028, 0.028, body, sides=5, grad=(min(grad[1] + 0.1, 1.0), 1.0))
+	p.seg(_sl(t1 - 0.1), _sl(t1 + 0.04), r1 + 0.02, r1 + 0.08, hem, sides=18)               # a flared hem
+	p.seg(_sl(t1 + 0.04), _sl(t1 + 0.05), r1 + 0.03, r1 + 0.03, STONE_DARK, sides=18)        # and the empty cuff
+	return t0, t1, r0, r1
+
+
+def _vambrace(p, plate, trim, strap, buckle, grad=(0.1, 0.8), glow_line=None):
+	"""A hard forearm guard in overlapping plates, a raised ridge, two straps and an empty wrist."""
+	t0, t1, r0, r1 = -0.42, 0.42, 0.33, 0.26
+	for k in range(3):                                                                # lames, each wider where it overlaps the next
+		a = t0 + k * 0.28
+		b = a + 0.3
+		p.seg(_fa(a), _fa(b), _fa_r(a, r0, r1, t0, t1) + 0.02, _fa_r(b, r0, r1, t0, t1), plate, sides=16, grad=grad)
+		p.seg(_fa(a), _fa(a + 0.03), _fa_r(a, r0, r1, t0, t1) + 0.035, _fa_r(a, r0, r1, t0, t1) + 0.035, trim, sides=16)
+	p.seg(_fa(t1 - 0.03), _fa(t1 + 0.01), r1 + 0.03, r1 + 0.03, trim, sides=16)            # wrist rim
+	p.seg(_fa(t0 + 0.02, r0 + 0.01, -25), _fa(t1 - 0.02, r1 + 0.01, -25), 0.04, 0.035, trim, sides=6)   # the ridge
+	for t in (-0.2, 0.18):                                                             # straps and buckles
+		r = _fa_r(t, r0, r1, t0, t1) + 0.04
+		p.seg(_fa(t - 0.04), _fa(t + 0.04), r, r, strap, sides=16)
+		p.box((0.1, 0.05, 0.1), _fa(t, r + 0.02, 35), buckle, rot=(0, -45, 0))
+	if glow_line:
+		for t in (-0.3, 0.02, 0.3):
+			r = _fa_r(t, r0, r1, t0, t1) + 0.025
+			p.seg(_fa(t - 0.12, r, 20), _fa(t + 0.08, r, 20), 0.018, 0.018, glow_line, sides=4, glow=2.4)
+	p.seg(_fa(t1 + 0.01), _fa(t1 + 0.02), 0.2, 0.2, STONE_DARK, sides=16)                    # the empty wrist
+	return t0, t1, r0, r1
+
+
+def cloth_sleeves():
+	p = Prop("cloth_sleeves", 851)
+	_sleeve(p, HIDE, BONE, grad=(0.0, 0.6))
+	return p.build()
+
+
+def leather_sleeves():
+	p = Prop("leather_sleeves", 853)
+	t0, t1, r0, r1 = _sleeve(p, WOOD, WOOD_GRAY, folds=2)
+	for k in range(5):                                                                # laced down the seam
+		t = -0.5 + k * 0.19
+		r = _fa_r(t, r0, r1, t0, t1) + 0.015
+		p.seg(_sl(t, r, -30), _sl(t + 0.09, r, 10), 0.014, 0.014, HIDE, sides=4)
+		p.seg(_sl(t, r, 10), _sl(t + 0.09, r, -30), 0.014, 0.014, HIDE, sides=4)
+	return p.build()
+
+
+def netmakers_sleeves():
+	p = Prop("netmakers_sleeves", 855)
+	t0, t1, r0, r1 = _sleeve(p, BONE, WOOD, grad=(0.0, 0.7), folds=0)
+	for sgn in (-1, 1):                                                               # knotted netting spiralled round it
+		for k in range(8):
+			for j in range(6):
+				ta, tb = t0 + 0.08 + j * 0.16, t0 + 0.08 + (j + 1) * 0.16
+				if tb > t1 - 0.12:
+					break
+				aa, ab = k * 45 + sgn * j * 40, k * 45 + sgn * (j + 1) * 40
+				p.seg(_sl(ta, _fa_r(ta, r0, r1, t0, t1) + 0.015, aa), _sl(tb, _fa_r(tb, r0, r1, t0, t1) + 0.015, ab),
+					  0.012, 0.012, WOOD_GRAY, sides=4)
+	p.blob((0.14, 0.12, 0.2), _sl(-0.1, 0.36, 60), WOOD, segs=(8, 5))                        # a cork float tied on
+	p.seg(_sl(-0.1, 0.27, 60), _sl(-0.1, 0.33, 60), 0.01, 0.01, WOOD_GRAY, sides=4)
+	return p.build()
+
+
+def vale_patrol_bracer():
+	p = Prop("vale_patrol_bracer", 857)
+	t0, t1, r0, r1 = -0.34, 0.34, 0.31, 0.27
+	p.seg(_fa(t0), _fa(t1), r0, r1, WOOD, sides=16, grad=(0.2, 0.9))                        # a plain leather cuff
+	for t in (t0, t1 - 0.04):
+		p.seg(_fa(t), _fa(t + 0.04), _fa_r(t, r0, r1, t0, t1) + 0.02, _fa_r(t, r0, r1, t0, t1) + 0.02, HIDE, sides=16)
+	for k in range(3):                                                                # laced shut down the side
+		t = -0.24 + k * 0.18
+		r = _fa_r(t, r0, r1, t0, t1) + 0.01
+		p.seg(_fa(t, r, 50), _fa(t + 0.12, r, 80), 0.014, 0.014, HIDE, sides=4)
+		p.seg(_fa(t, r, 80), _fa(t + 0.12, r, 50), 0.014, 0.014, HIDE, sides=4)
+	c = Vector(_fa(0.0, 0.3, -10))                                                    # the patrol's badge: a gold disc, a green leaf
+	p.seg(tuple(c), _fa(0.0, 0.36, -10), 0.14, 0.14, GOLD, sides=12, grad=(0.0, 0.6))
+	p.blob((0.07, 0.07, 0.14), _fa(0.0, 0.37, -10), PINE, rot=(0, -45, 0), segs=(6, 4))
+	p.seg(_fa(t1 + 0.0), _fa(t1 + 0.01), 0.21, 0.21, STONE_DARK, sides=16)                   # the empty wrist
+	return p.build()
+
+
+def tempered_vambraces():
+	p = Prop("tempered_vambraces", 859)
+	_vambrace(p, STONE_DARK, SEA_STONE, WOOD, IRON, grad=(0.2, 0.9))
+	return p.build()
+
+
+def steel_vambraces():
+	p = Prop("steel_vambraces", 861)
+	_vambrace(p, STONE_LIGHT, IRON, WOOD, GOLD, grad=(0.0, 0.45))
+	return p.build()
+
+
+def tidesteel_vambraces():
+	p = Prop("tidesteel_vambraces", 863)
+	_vambrace(p, AQUA, STONE_LIGHT, SEAFOAM, CLOTH_WHITE, grad=(0.1, 0.8))
+	p.blob((0.1, 0.08, 0.1), _fa(-0.02, 0.33, -25), CLOTH_WHITE, segs=(8, 5), glow=0.5)       # a pearl on the ridge
+	return p.build()
+
+
+def emberforged_vambraces():
+	p = Prop("emberforged_vambraces", 865)
+	_vambrace(p, IRON, STONE_DARK, STONE_DARK, EMBER, grad=(0.0, 0.6), glow_line=EMBER)
+	return p.build()
+
+
+def _cape_outline(top_w, hem_w, sag, n=9, dags=0):
+	"""A cape seen from behind: a straight collar at z = 1, a hem curving down to its middle,
+	optionally cut into points (dags)."""
+	pts = [(-top_w, 1.0), (top_w, 1.0)]
+	for k in range(n + 1):
+		u = 1 - 2 * k / n                                                           # right to left along the hem
+		z = 0.05 - sag * (1 - u * u)
+		if dags and k % 2 == 1:
+			z -= 0.1
+		pts.append((u * hem_w, z))
+	return pts
+
+
+def skyrend_cloak():
+	p = Prop("skyrend_cloak", 871)
+	_slab(p, _cape_outline(0.3, 0.62, 0.12), 0.04, 0.1, WOOD, grad=(0.2, 0.9))        # a tawny hide cape under the plumes
+	for row, (z0, length, n, spread) in enumerate(((0.62, 0.72, 7, 0.5), (0.86, 0.6, 5, 0.34))):   # two fans of griffon plumes
+		for k in range(n):
+			u = -1 + 2 * k / (n - 1)
+			base = (u * spread * 0.55, -0.02 - row * 0.05, z0)
+			ang = math.radians(u * 26)
+			tip = (base[0] + math.sin(ang) * length, base[1], z0 - math.cos(ang) * length)
+			_vane(p, base, tip, 0.13 if row == 0 else 0.11, HIDE if (k + row) % 2 else AMBER,
+				  bars=(0.35, 0.55) if row == 0 else None, tip_swatch=CLOTH_WHITE)
+	for k in range(7):                                                              # a collar of white down
+		x = -0.3 + k * 0.1
+		p.blob((0.16, 0.1, 0.14), (x, -0.13, 0.97 + 0.02 * math.cos(x * 5)), CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.5))
+	p.blob((0.24, 0.1, 0.24), (0, -0.2, 0.95), SKY, segs=(10, 6), glow=1.2)          # the sky-blue clasp
+	p.seg((0, -0.2, 0.95), (0, -0.26, 0.95), 0.07, 0.07, CLOTH_WHITE, sides=8)
+	return p.build()
+
+
+def _scale_outline(cx, cz, w, h, n=6):
+	"""A drake scale hanging point down: straight top, rounded sides to a point."""
+	pts = [(cx - w, cz), (cx + w, cz)]
+	for k in range(1, n):
+		a = math.radians(k * 90 / n)
+		pts.append((cx + w * math.cos(a) * (1 - 0.3 * k / n), cz - h * math.sin(a)))
+	pts.append((cx, cz - h * 1.1))
+	for k in range(n - 1, 0, -1):
+		a = math.radians(k * 90 / n)
+		pts.append((cx - w * math.cos(a) * (1 - 0.3 * k / n), cz - h * math.sin(a)))
+	return pts
+
+
+def drakescale_cloak():
+	p = Prop("drakescale_cloak", 873)
+	outline = _cape_outline(0.32, 0.64, 0.1, n=8, dags=True)
+	_slab(p, [(x * 1.1, z - 0.06 if z < 0.9 else z + 0.02) for x, z in outline], 0.1, 0.14, EMBER, grad=(0.0, 0.45))   # ember lining round the edge
+	_slab(p, outline, 0.04, 0.1, IRON, grad=(0.0, 0.5))
+	rows = 5
+	for r in range(rows):                                                           # shingled scales, upper rows over lower
+		z = 0.95 - r * 0.18
+		half = 0.3 + 0.32 * (0.95 - z) / 0.95
+		n = 3 + r
+		for k in range(n):
+			cx = -half + (k + 0.5) * 2 * half / n + (0.05 if r % 2 else 0.0)
+			dark = (k + r) % 3 == 0
+			_slab(p, _scale_outline(cx, z, half / n * 1.45, 0.25), -0.01 - (rows - r) * 0.015, 0.04, STONE_DARK if dark else CLOTH_RED,
+				  grad=(0.2, 0.8) if dark else (0.5, 1.0))
+	p.seg((-0.34, -0.1, 1.0), (0.34, -0.1, 1.0), 0.06, 0.06, STONE_DARK, sides=6)         # an iron collar band
+	for sx in (-1, 1):                                                              # a bone fang clasp on an iron ring
+		p.seg((sx * 0.2, -0.18, 0.99), (sx * 0.03, -0.2, 0.88), 0.06, 0.0, BONE, sides=6)
+	p.seg((0, -0.18, 0.96), (0, -0.23, 0.96), 0.1, 0.1, STONE_LIGHT, sides=10)
+	p.seg((0, -0.23, 0.96), (0, -0.24, 0.96), 0.055, 0.055, IRON, sides=10)
+	return p.build()
+
+
+HANDS_ARMS = [cloth_gloves, leather_gloves, handsewn_leather_gloves, hardened_leather_gloves, farmhands_gloves, sharkskin_gloves,
+			  trollhide_gloves, frogskin_gloves, cinderscale_gloves, silkweave_gloves, silkweave_mitts, rainsilk_gloves,
+			  dawnweave_gloves, ashweave_gloves, monks_wraps, iron_gauntlets, tempered_gauntlets, steel_gauntlets,
+			  tidesteel_gauntlets, emberforged_gauntlets, cloth_sleeves, leather_sleeves, netmakers_sleeves, vale_patrol_bracer,
+			  tempered_vambraces, steel_vambraces, tidesteel_vambraces, emberforged_vambraces, skyrend_cloak, drakescale_cloak]
+
+
 MONSOON_WEST = [pondkin_fetish, reedstalker_plume, eel_skin, bogwing_wing, sunken_charm, sedge_charm, tidesworn_insignia, naga_scale,
 				tempest_shard, crab_carapace, bloatking_crown, stilt_legs_plume, headwomans_lotus, marrowroot_heart, varundra_crown,
 				sessavi_pearl, wardens_chain, chitterjaw_claw, reedwalker_boots, bloatking_scepter, heronfeather_cloak, veyamar_locket,
@@ -2412,7 +2884,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

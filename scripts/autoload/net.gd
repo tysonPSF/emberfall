@@ -135,8 +135,8 @@ func login_hashed(account: String, pw_hash: String, create := false) -> void:
 	_c_login.rpc_id(1, account.strip_edges(), pw_hash, PROTOCOL, create)
 
 
-func create_character(name: String, cls: String, deity: String, stats: Dictionary = {}, race := "human") -> void:
-	_c_create_character.rpc_id(1, name, cls, deity, stats, race)
+func create_character(name: String, cls: String, deity: String, stats: Dictionary = {}, race := "human", gender := "") -> void:
+	_c_create_character.rpc_id(1, name, cls, deity, stats, race, gender)
 
 
 ## Client: bring an offline character onto the server (once).
@@ -197,11 +197,11 @@ func _c_login(account: String, pw_hash: String, protocol: int, create: bool) -> 
 
 
 @rpc("any_peer", "reliable")
-func _c_create_character(name: String, cls: String, deity: String, stats: Dictionary, race: String) -> void:
+func _c_create_character(name: String, cls: String, deity: String, stats: Dictionary, race: String, gender := "") -> void:
 	var peer := multiplayer.get_remote_sender_id()
 	if not _sessions.has(peer):
 		return
-	var why := accounts.create_character(_sessions[peer], name, cls, deity, start_zone, stats, race)
+	var why := accounts.create_character(_sessions[peer], name, cls, deity, start_zone, stats, race, gender)
 	if why != "":
 		_s_message.rpc_id(peer, why, true)
 		return
@@ -523,9 +523,9 @@ func broadcast_look(e: Entity) -> void:
 @rpc("authority", "reliable")
 func _s_look(id: int, look: Dictionary) -> void:
 	var e := World.get_object(id) as Entity
-	if e is Player and str(look.get("race", "")) != str(e.look.get("race", "")):
+	if e is Player and (str(look.get("race", "")) != str(e.look.get("race", "")) or str(look.get("gender", "")) != str(e.look.get("gender", ""))):
 		e.look = look
-		(e as Player).dress()  # another player changed race
+		(e as Player).dress()  # another player changed race or gender
 	if e != null and e.visual is CharacterModel:
 		e.look = look
 		(e.visual as CharacterModel).set_tiers(look.get("tiers", {}))
@@ -728,6 +728,7 @@ func _send_self(peer: int) -> void:
 		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
 		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "feigning": p.feigning, "hotbar": p.hotbar,
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
+		"gender": p.gender, "gender_changed": p.gender_changed,
 	}
 	_s_self.rpc_id(peer, d)
 

@@ -1740,6 +1740,29 @@ func request_change_race(player_id: int, race: String) -> void:
 	say(p, "You feel yourself change. You are %s %s now." % ["an" if str(GameData.races[race]["name"])[0] in "AEIOU" else "a", GameData.races[race]["name"]], C_SPELL)
 
 
+## A character's one change of gender (a character from before genders may
+## also just confirm the one it has, which uses the change too).
+func request_change_gender(player_id: int, gender: String) -> void:
+	if _remote(&"request_change_gender", [player_id, gender]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	if p.gender_changed:
+		say(p, "You have already changed your gender once.", C_WARN)
+		return
+	if not gender in ["male", "female"] or gender == p.shown_gender():
+		say(p, "You can't become that.", C_WARN)
+		return
+	p.gender = gender
+	p.gender_changed = true
+	p.look["gender"] = gender
+	p.stats_changed.emit()
+	p.dress()
+	Net.broadcast_look(p)
+	say(p, "You feel yourself change. You are a %s now." % ("woman" if gender == "female" else "man"), C_SPELL)
+
+
 func request_interrupt(entity_id: int) -> void:
 	if _remote(&"request_interrupt", [entity_id]):
 		return

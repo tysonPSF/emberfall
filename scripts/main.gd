@@ -466,6 +466,7 @@ func _server_save_of(p: Player) -> Dictionary:
 func _on_remote_left(p: Player) -> void:
 	World.leave_group(p, "%s has left the group." % p.display_name)
 	World.request_trade_cancel(p.entity_id)
+	World.dismiss_pet(p, false)  # saved already; it comes back with them next time
 	p.queue_free()
 
 
