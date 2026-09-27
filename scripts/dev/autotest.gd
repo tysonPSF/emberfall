@@ -115,6 +115,8 @@ const SECTIONS := [
 	["hair", "greenmoor"],
 	["dewstep_borders", "lanternhold"],
 	["dewstep_life", "dewstep"],
+	["pet_anims", "greenmoor"],
+	["afk", "greenmoor"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -4955,6 +4957,83 @@ func _t_dewstep_life() -> void:
 		p.pitch = -1.1 if spot[2] == "aerial" else -0.2
 		await _wait(1.2)
 		await _shot("9zv_dewstep_%s" % spot[2])
+
+
+
+## A pet's swings show: each kind fights a monster that stands still, and
+## what its model plays and how fast it moves are sampled.
+func _t_pet_anims() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	var saved_class := p.char_class
+	p.char_class = "magician"
+	p.level = 20
+	p.recalc_stats()
+	for spell: String in ["call_of_earth", "call_of_fire"]:
+		World.summon_pet(p, spell)
+		await _wait(0.5)
+		var pet := World.get_object(p.pet_id) as Pet
+		var mob := _nearest_mob(p, "gnoll_pup")
+		mob.set_physics_process(false)
+		mob.max_hp = 100000
+		mob.hp = mob.max_hp
+		p.global_position = z.ground(mob.global_position.x + 8.0, mob.global_position.z) + Vector3.UP
+		pet.global_position = z.ground(mob.global_position.x + 3.0, mob.global_position.z) + Vector3.UP
+		World.request_set_target(p.entity_id, mob.entity_id)
+		World.request_pet(p.entity_id, "attack")
+		var clips := {}
+		var moving := 0
+		var samples := 0
+		for i in 60:
+			await _wait(0.1)
+			var m := pet.visual as CharacterModel
+			clips[m.anim.current_animation] = int(clips.get(m.anim.current_animation, 0)) + 1
+			samples += 1
+			if Vector2(pet.velocity.x, pet.velocity.z).length() > 0.3:
+				moving += 1
+		print("pet_anims: %s over 6 s: clips %s, moving %d of %d samples, the pup took %d" % [pet.kind, clips, moving, samples, 100000 - mob.hp])
+		await _shot("9zz_pet_anim_%s" % pet.kind)
+		World.dismiss_pet(p)
+		mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.recalc_stats()
+
+
+
+## AFK: "/afk <message>" and back, the nameplate tag, tells answered, /who,
+## going away on its own after config afk_minutes idle, and a key bringing you back.
+func _t_afk() -> void:
+	var p := World.local_player
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	World.request_chat(p.entity_id, "/afk gone fishing")
+	await _wait(0.2)
+	print("afk: /afk gone fishing -> afk %s, nameplate '%s', message '%s'" % [p.afk, p.nameplate.text, p.afk_message])
+	World._chat_tell(p, p.display_name, "are you there?")
+	World._chat_who(p, false)
+	await _wait(0.2)
+	print("afk: a tell answered %s; /who marks it %s" % [lines.any(func(l: String) -> bool: return l.ends_with("is AFK: gone fishing")),
+			lines.any(func(l: String) -> bool: return l.contains(p.display_name) and l.ends_with("AFK"))])
+	await _shot("9zz_afk_tag")
+	var key := InputEventKey.new()
+	key.pressed = true
+	key.keycode = KEY_W
+	p._input(key)
+	await _wait(0.2)
+	print("afk: a key -> afk %s, nameplate '%s'" % [p.afk, p.nameplate.text])
+	p._idle = float(World.cfg("afk_minutes", 10)) * 60.0 + 1.0
+	await _wait(0.2)
+	print("afk: %d idle minutes -> afk %s" % [int(World.cfg("afk_minutes", 10)), p.afk])
+	var move := InputEventMouseMotion.new()
+	p._input(move)
+	await _wait(0.2)
+	print("afk: nudging the mouse leaves you away %s (idle reset %s)" % [p.afk, p._idle < 1.0])
+	World.request_chat(p.entity_id, "/afk")
+	await _wait(0.2)
+	print("afk: /afk again -> afk %s" % p.afk)
+	World.log_message.disconnect(grab)
 
 
 ## Reedmere and Drownfast's three borders, every one both ways.

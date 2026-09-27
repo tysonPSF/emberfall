@@ -46,6 +46,7 @@ var slow_pct := 0  # how much slower (Heavy Limbs 20 ... Hornet Plague 50)
 var hidden := false  # a rogue's Hide: unseen by monsters (and other players) until it breaks
 var sneaking := false  # a rogue's Sneak: half speed, and walking keeps Hide
 var feigning := false  # a necromancer's Feign Death: lying still, forgotten by everything hunting them
+var afk := false  # a player away from the keyboard (/afk, or idle): "[AFK]" on the nameplate, tells answered for them
 var fear_left := 0.0  # seconds a feared monster runs from whoever scared it
 var feared_by := -1
 
@@ -206,9 +207,12 @@ func puppet(delta: float) -> void:
 
 
 ## Client: dead, sitting and casting as the server reports them.
-func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden := false, is_feigning := false) -> void:
+func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden := false, is_feigning := false, is_afk := false) -> void:
 	sitting = is_sitting
 	feigning = is_feigning
+	if is_afk != afk:
+		afk = is_afk
+		show_name()
 	if is_hidden != hidden:
 		hidden = is_hidden
 		show_hidden()
@@ -222,6 +226,12 @@ func set_net_flags(is_dead: bool, is_sitting: bool, is_casting: bool, is_hidden 
 			visual.visible = not dead
 		if nameplate != null:
 			nameplate.visible = not dead
+
+
+## The nameplate's text: the name, and "[AFK]" while a player is away.
+func show_name() -> void:
+	if nameplate != null:
+		nameplate.text = display_name + ("  [AFK]" if afk else "")
 
 
 ## Hidden: another player sees nothing at all; your own character is a

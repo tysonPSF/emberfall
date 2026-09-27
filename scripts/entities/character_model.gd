@@ -659,10 +659,10 @@ func _process(delta: float) -> void:
 		_loop("jump")
 	elif moving > 4.2:
 		_loop("run")
+	elif _one_shot_left > 0.0:
+		return  # a swing or a flinch plays out over a shuffle (a client's copy settling in after the server's move)
 	elif moving > 0.3:
 		_loop("walk")
-	elif _one_shot_left > 0.0:
-		return
 	elif e.feigning and _clip("dead") != "":  # Feign Death: down as if slain
 		if anim.current_animation != _clip("dead") and anim.current_animation != _clip("death"):
 			anim.play(_clip("death"), BLEND)
