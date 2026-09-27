@@ -138,6 +138,7 @@ const SECTIONS := [
 	["river", "thornwood"],
 	["landmarks_tw", "thornwood"],
 	["camp", "greenmoor"],
+	["zone_unload", "greenmoor"],
 ]
 
 var shots_dir := ""
@@ -5752,3 +5753,45 @@ func _t_encumbrance() -> void:
 	p.char_class = saved_class
 	p.level = 1
 	p.recalc_stats()
+
+
+## What keeps a server's idle zone up (main._watch_idle_zones): Zone.keep_reason
+## must name anything that taking the zone down and building it again would
+## lose, and idle_seconds_to_unload must wait out its slowest respawn. Steps
+## the player out of the zone for a moment to see the zone as a server would.
+func _t_zone_unload() -> void:
+	var z: Zone = get_parent().zone
+	for k in 120:
+		if z.nav_ready:
+			break
+		await _wait(0.25)
+	var p := World.local_player
+	print("zone_unload: player here -> '%s' (want 'occupied')" % z.keep_reason())
+	var pos := p.global_position
+	z.remove_child(p)
+	print("zone_unload: nobody here -> '%s' (want '')" % z.keep_reason())
+	var g := GroundItem.new()
+	g.entry = {"item": "gnoll_fang", "count": 1}
+	z.add_child(g)
+	print("zone_unload: a dropped item -> '%s' (want 'a dropped item')" % z.keep_reason())
+	z.remove_child(g)
+	g.free()
+	var mine := Corpse.new()
+	mine.setup("Tester", {}, [], 0, 60.0, "Tester")
+	z.add_child(mine)
+	print("zone_unload: a player corpse -> '%s' (want 'a player corpse')" % z.keep_reason())
+	z.remove_child(mine)
+	mine.free()
+	var mobs := Corpse.new()
+	mobs.setup("a gnoll pup", {}, [], 0, 60.0)
+	z.add_child(mobs)
+	print("zone_unload: a monster's corpse -> '%s' (want '')" % z.keep_reason())
+	z.remove_child(mobs)
+	mobs.free()
+	z.add_player(p, pos)
+	var slowest := 0.0
+	for child in z.get_children():
+		if child is SpawnPoint:
+			slowest = maxf(slowest, (child as SpawnPoint).respawn_time)
+	print("zone_unload: slowest respawn %.0f s -> waits %.0f s empty (want max(900, %.0f))" % [slowest, z.idle_seconds_to_unload(900.0), slowest * 1.15 + 60.0])
+	print("zone_unload: player back -> '%s' (want 'occupied')" % z.keep_reason())
