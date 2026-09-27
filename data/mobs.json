@@ -9804,5 +9804,962 @@
       "text": "%s's attack carries %s!"
     },
     "weapon": "barrow_lord_sword"
+  },
+  "ember_court_guard": {
+    "name": "an ember court guard",
+    "level": [
+      35,
+      38
+    ],
+    "hp_base": 338,
+    "hp_per_level": 45,
+    "dmg_min": 25,
+    "dmg_max": 48,
+    "attack_delay": 3.3,
+    "ac": 86,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "ember_giants",
+    "verb": [
+      "hammer",
+      "hammers"
+    ],
+    "shape": "humanoid",
+    "color": "#5a3a2a",
+    "scale": 1.0,
+    "coin": [
+      100,
+      320
+    ],
+    "loot": [
+      {
+        "item": "court_signet",
+        "chance": 0.5
+      }
+    ],
+    "model": "ember_court_guard",
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.15,
+      "text": "%s's hammer brings down %s!"
+    },
+    "weapon": "court_maul"
+  },
+  "ember_giant_queen": {
+    "name": "Queen Brannagh of the Ember Court",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 78,
+    "attack_delay": 3.2,
+    "ac": 93,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "ember_giants",
+    "verb": [
+      "hammer",
+      "hammers"
+    ],
+    "shape": "humanoid",
+    "color": "#8a4a2a",
+    "scale": 1.0,
+    "coin": [
+      1200,
+      3000
+    ],
+    "loot": [
+      {
+        "item": "brannaghs_molten_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "court_signet",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "ember_giant_queen",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.3,
+      "text": "%s's scepter brings down %s!"
+    },
+    "weapon": "queen_scepter"
+  },
+  "salamander_kin": {
+    "name": "a salamander warrior",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 260,
+    "hp_per_level": 35,
+    "dmg_min": 25,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 66,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "salamanders",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#c85a2a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "salamander_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "salamander_kin",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.15,
+      "text": "%s breathes %s!"
+    },
+    "weapon": "salamander_glaive"
+  },
+  "salamander_priest": {
+    "name": "a salamander flamecaller",
+    "level": [
+      36,
+      38
+    ],
+    "hp_base": 268,
+    "hp_per_level": 36,
+    "dmg_min": 25,
+    "dmg_max": 49,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "salamanders",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#d86a3a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "salamander_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "salamander_priest",
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.2,
+      "text": "%s hisses, and %s flies at you!"
+    },
+    "weapon": "brazier_staff"
+  },
+  "scorchtongue": {
+    "name": "Scorchtongue, High Priest of the Flame",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 78,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "salamanders",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#ff7a3a",
+    "scale": 1.0,
+    "coin": [
+      1000,
+      2600
+    ],
+    "loot": [
+      {
+        "item": "scorchtongues_brazier",
+        "chance": 1.0
+      },
+      {
+        "item": "salamander_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "scorchtongue",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.3,
+      "text": "%s hisses, and %s flies at you!"
+    },
+    "weapon": "scorchtongue_staff"
+  },
+  "greater_fire_elemental": {
+    "name": "a greater fire elemental",
+    "level": [
+      36,
+      38
+    ],
+    "hp_base": 268,
+    "hp_per_level": 36,
+    "dmg_min": 25,
+    "dmg_max": 49,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_flames",
+    "verb": [
+      "burn",
+      "burns"
+    ],
+    "shape": "humanoid",
+    "color": "#ff6a1a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "heart_of_flame",
+        "chance": 0.5
+      }
+    ],
+    "model": "greater_fire_elemental",
+    "proc": {
+      "spell": "elemental_flame",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "living_magma": {
+    "name": "a living magma",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 338,
+    "hp_per_level": 45,
+    "dmg_min": 25,
+    "dmg_max": 48,
+    "attack_delay": 3.5,
+    "ac": 86,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_flames",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#c84a1a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "heart_of_flame",
+        "chance": 0.4
+      }
+    ],
+    "model": "living_magma",
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.15,
+      "text": "%s's molten fist brings %s!"
+    }
+  },
+  "living_forgeheart": {
+    "name": "the Living Forgeheart",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 78,
+    "attack_delay": 3.3,
+    "ac": 93,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_flames",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#ff8a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "forgeheart_core",
+        "chance": 1.0
+      },
+      {
+        "item": "heart_of_flame",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "living_forgeheart",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "elemental_flame",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "fallen_fire_priest": {
+    "name": "a fallen fire-priest",
+    "level": [
+      35,
+      38
+    ],
+    "hp_base": 260,
+    "hp_per_level": 35,
+    "dmg_min": 25,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 66,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "heretics",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#8a3a2a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "heretics_charm",
+        "chance": 0.5
+      }
+    ],
+    "model": "fallen_fire_priest",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.15,
+      "text": "%s breathes %s!"
+    },
+    "gear": [],
+    "weapon": "staff"
+  },
+  "caldris_unburnt": {
+    "name": "Caldris the Unburnt",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 8880,
+    "hp_per_level": 0,
+    "dmg_min": 40,
+    "dmg_max": 78,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "heretics",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#ffb06a",
+    "scale": 1.0,
+    "coin": [
+      1000,
+      2600
+    ],
+    "loot": [
+      {
+        "item": "stolen_ember",
+        "chance": 1.0
+      },
+      {
+        "item": "heretics_charm",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "caldris_unburnt",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.3,
+      "text": "%s raises the stolen ember, and %s flies at you!"
+    },
+    "weapon": "ember_cage_staff"
+  },
+  "ember_treant": {
+    "name": "an ember treant",
+    "level": [
+      34,
+      37
+    ],
+    "hp_base": 327,
+    "hp_per_level": 44,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 3.4,
+    "ac": 83,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#5a3a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ember_heartwood",
+        "chance": 0.5
+      }
+    ],
+    "model": "ember_treant"
+  },
+  "old_emberheart": {
+    "name": "Old Emberheart",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 8560,
+    "hp_per_level": 0,
+    "dmg_min": 39,
+    "dmg_max": 76,
+    "attack_delay": 3.4,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a4a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "emberhearts_heart",
+        "chance": 1.0
+      },
+      {
+        "item": "ember_heartwood",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "old_emberheart",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "smoke_wolf": {
+    "name": "a smoke wolf",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 244,
+    "hp_per_level": 33,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a4644",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "smoke_pelt",
+        "chance": 0.5
+      }
+    ],
+    "model": "smoke_wolf",
+    "proc": {
+      "spell": "choking_smoke",
+      "chance": 0.12,
+      "text": "%s's bite leaves %s!"
+    }
+  },
+  "smoke_bear": {
+    "name": "a smoke bear",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 312,
+    "hp_per_level": 42,
+    "dmg_min": 25,
+    "dmg_max": 48,
+    "attack_delay": 3.0,
+    "ac": 79,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "maul",
+      "mauls"
+    ],
+    "shape": "beetle",
+    "color": "#3a3634",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "smoke_pelt",
+        "chance": 0.4
+      }
+    ],
+    "model": "smoke_bear"
+  },
+  "smoke_stag": {
+    "name": "a smoke stag",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 252,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 64,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#5a5250",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "smoke_pelt",
+        "chance": 0.3
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "smoke_stag"
+  },
+  "ashen_stag": {
+    "name": "the Ashen Stag",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 8560,
+    "hp_per_level": 0,
+    "dmg_min": 39,
+    "dmg_max": 76,
+    "attack_delay": 2.7,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#d8d0c8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ashen_antler",
+        "chance": 1.0
+      },
+      {
+        "item": "smoke_pelt",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "ashen_stag",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "sootmask_cultist": {
+    "name": "a Sootmask cultist",
+    "level": [
+      33,
+      36
+    ],
+    "hp_base": 244,
+    "hp_per_level": 33,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sootmask",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#3a3430",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "soot_mask_fragment",
+        "chance": 0.5
+      }
+    ],
+    "model": "sootmask_cultist",
+    "proc": {
+      "spell": "choking_smoke",
+      "chance": 0.12,
+      "text": "%s blows %s at you!"
+    },
+    "gear": [
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "ashfall_rings"
+      }
+    ],
+    "weapon": "charburner_axe"
+  },
+  "sootmask_chief": {
+    "name": "Chieftain Kolt Soot-Mask",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 8560,
+    "hp_per_level": 0,
+    "dmg_min": 39,
+    "dmg_max": 76,
+    "attack_delay": 2.7,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sootmask",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#4a3a30",
+    "scale": 1.0,
+    "coin": [
+      900,
+      2400
+    ],
+    "loot": [
+      {
+        "item": "kolts_antlered_mask",
+        "chance": 1.0
+      },
+      {
+        "item": "soot_mask_fragment",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "sootmask_chief",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "choking_smoke",
+      "chance": 0.25,
+      "text": "%s blows %s at you!"
+    },
+    "weapon": "sootmask_brand"
+  },
+  "fire_moth": {
+    "name": "a fire moth",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 244,
+    "hp_per_level": 33,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "batter",
+      "batters"
+    ],
+    "shape": "beetle",
+    "color": "#ff8a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "fire_moth_dust",
+        "chance": 0.5
+      }
+    ],
+    "model": "fire_moth",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.12,
+      "text": "%s's wings shed %s!"
+    }
+  },
+  "walking_fungus": {
+    "name": "a walking fungus",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 268,
+    "hp_per_level": 36,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#e8804a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "fire_moth_dust",
+        "chance": 0.3
+      },
+      {
+        "item": "glowcap",
+        "chance": 0.4
+      }
+    ],
+    "model": "walking_fungus"
+  },
+  "cinder_moth_queen": {
+    "name": "the Cinder Moth Queen",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 8560,
+    "hp_per_level": 0,
+    "dmg_min": 39,
+    "dmg_max": 76,
+    "attack_delay": 2.7,
+    "ac": 91,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "batter",
+      "batters"
+    ],
+    "shape": "beetle",
+    "color": "#ffb06a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "moth_queens_wing",
+        "chance": 1.0
+      },
+      {
+        "item": "fire_moth_dust",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "cinder_moth_queen",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.3,
+      "text": "%s's wings shed %s!"
+    }
   }
 }

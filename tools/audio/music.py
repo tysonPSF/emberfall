@@ -432,6 +432,23 @@ TRACKS = {
 		"drum": [0, 0.5, 0.75, 1, 1.5, 1.75, 2, 2.5, 2.75, 3, 3.5, 3.75], "drum_sections": ["A", "B", "C"], "drum_gain": 0.55, "drum_low": 0.85,
 		"reverb": 3.4, "sparse": 0.1, "bells": 0.0, "wind": 0.12,
 	},
+	"agnavars_hearth": {  # the caldera where Agnavar's own fire burns: a slow, grand horn doubled an octave down, temple bells, a great anvil pulse and a deep heartbeat
+		"key": (50, "dorian"), "bpm": 50, "beats": 4, "seed": 509,
+		"sections": {"A": [0, 3, 6, 0], "B": [5, 3, 4, 0], "C": [3, 6, 5, 4]},
+		"form": ["A", "A", "B", "A", "C", "A"],
+		"melody": "horn", "melody_double": "horn", "arp": "harp", "arp_pattern": [0, -1, 2, -1, 4, -1, 2, -1], "pad": True, "bass": True,
+		"drone": 0.6, "drum": [0, 2], "drum_sections": ["A", "B", "C"], "drum_low": 0.55, "drum_gain": 0.85,
+		"anvil": [0, 2], "anvil_sections": ["A", "B", "C"], "anvil_hz": 520, "anvil_gain": 0.8,
+		"reverb": 4.8, "sparse": 0.25, "bells": 0.55, "bell_octave": 0,
+	},
+	"smokewood": {  # a living forest that never stops smoking: a hushed low flute over harp, a faint drone, embers crackling in the undergrowth
+		"key": (52, "aeolian"), "bpm": 58, "beats": 3, "seed": 521,
+		"sections": {"A": [0, 5, 6, 0, 3, 5, 6, 0], "B": [5, 3, 0, 6, 5, 1, 4, 4]},
+		"form": ["A", "B", "A", "B"],
+		"melody": "flute", "melody_octave": -1, "arp": "harp", "arp_pattern": [0, 2, -1, 4, -1, 1], "pad": True, "bass": False,
+		"drone": 0.35, "drum": [0], "drum_sections": ["B"], "drum_low": 0.6, "drum_gain": 0.4, "drum_skip": 0.3,
+		"reverb": 4.4, "sparse": 0.45, "bells": 0.12, "bell_octave": 1, "crackle": 0.5,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
@@ -536,7 +553,8 @@ def render(name, spec):
 			if sec in spec.get("anvil_sections", ()):
 				for k, d in enumerate(spec["anvil"]):  # the smiths' hammers: a strong strike, then lighter taps, a second smith answering
 					hz = spec.get("anvil_hz", 800) * (1.0 if k % 2 == 0 else 1.19)
-					put(anvil(hz, 0.6 if d == 0 else 0.38, rng), tb + d * beat + rng.normal(0, 0.005), pan=0.45 if k % 2 else -0.45)
+					put(anvil(hz, 0.6 if d == 0 else 0.38, rng), tb + d * beat + rng.normal(0, 0.005), pan=0.45 if k % 2 else -0.45,
+						gain=spec.get("anvil_gain", 1.0))
 			if spec.get("bells") and rng.random() < spec["bells"]:
 				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), spec.get("bell_octave", 1))), 2.0, 0.5),
 					tb + beat * rng.integers(1, beats), pan=0.4)
@@ -578,6 +596,31 @@ def render(name, spec):
 			gust = sum(np.sin(2 * np.pi * tt / length * c + seed * k) * a for k, (c, a) in enumerate(((3, 0.5), (7, 0.3), (13, 0.2)), 1))
 			swell = np.clip(0.35 + 0.5 * gust, 0.05, 1.0)
 			chan[:m] += band * swell * spec["wind"] * 1.2
+
+	if spec.get("crackle"):
+		# embers crackling: sparse sharp ticks of bright noise, in clusters and
+		# at random levels, over a faint low smolder; spread evenly over the
+		# whole loop, so the seam hides in it
+		m = int(length * SR)
+		crng = np.random.default_rng(spec["seed"] + 7)
+		for chan, seed in ((L, 707), (R, 808)):
+			bed = np.random.default_rng(seed).standard_normal(m)
+			bed = np.convolve(bed, np.ones(60) / 60, mode="same")
+			chan[:m] += bed * spec["crackle"] * 0.05
+		count = int(length * 9 * spec["crackle"])
+		for _ in range(count):
+			at = crng.uniform(0, length)
+			for k in range(int(crng.integers(1, 5))):  # a pop, sometimes a little run of them
+				nl = int(crng.uniform(0.002, 0.009) * SR)
+				tk = np.arange(nl) / SR
+				burst = crng.standard_normal(nl)
+				burst = (burst - np.convolve(burst, np.ones(6) / 6, mode="same")) * np.exp(-tk * crng.uniform(400, 1400))
+				amp = spec["crackle"] * 0.22 * crng.pareto(3.0) * (0.4 + 0.6 * crng.random())
+				i = int(((at + k * crng.uniform(0.01, 0.08)) % length) * SR)
+				j = min(m, i + nl)
+				pan = crng.uniform(-0.9, 0.9)
+				L[i:j] += burst[:j - i] * amp * math.cos((pan + 1) * math.pi / 4)
+				R[i:j] += burst[:j - i] * amp * math.sin((pan + 1) * math.pi / 4)
 
 	# the room: a decaying-noise reverb, a little different on each side
 	for chan, seed in ((L, 101), (R, 202)):

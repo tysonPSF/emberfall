@@ -39,6 +39,11 @@
       0,
       112,
       9
+    ],
+    [
+      112,
+      0,
+      9
     ]
   ],
   "roads": [
@@ -75,7 +80,7 @@
           0
         ],
         [
-          60,
+          112,
           0
         ]
       ],
@@ -132,6 +137,25 @@
       "arrive_face": [
         0,
         -159
+      ]
+    },
+    {
+      "pos": [
+        97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "agnavars_hearth",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
       ]
     }
   ],
@@ -836,6 +860,31 @@
       "labels": [
         "Forgehold",
         "Dawnwatch"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        0
+      ],
+      "id": "forge_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        84,
+        10
+      ],
+      "yaw": 0,
+      "labels": [
+        "Forgehold",
+        "Agnavar's Hearth"
       ]
     }
   ],

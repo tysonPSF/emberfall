@@ -1,0 +1,366 @@
+{
+  "court_signet": {
+    "name": "Ember Court Signet",
+    "value": 50,
+    "stack": 20
+  },
+  "salamander_scale": {
+    "name": "Salamander Scale",
+    "value": 46,
+    "stack": 20
+  },
+  "heart_of_flame": {
+    "name": "Heart of Flame",
+    "value": 50,
+    "stack": 20
+  },
+  "heretics_charm": {
+    "name": "Heretic's Charm",
+    "value": 48,
+    "stack": 20
+  },
+  "ember_heartwood": {
+    "name": "Ember Heartwood",
+    "value": 44,
+    "stack": 20
+  },
+  "smoke_pelt": {
+    "name": "Smoke Pelt",
+    "value": 42,
+    "stack": 20
+  },
+  "soot_mask_fragment": {
+    "name": "Soot-Mask Fragment",
+    "value": 44,
+    "stack": 20
+  },
+  "fire_moth_dust": {
+    "name": "Fire Moth Dust",
+    "value": 42,
+    "stack": 20
+  },
+  "glowcap": {
+    "name": "Glowcap",
+    "value": 20,
+    "stack": 20
+  },
+  "brannaghs_molten_crown": {
+    "name": "Brannagh's Molten Crown",
+    "value": 260,
+    "lore": true
+  },
+  "scorchtongues_brazier": {
+    "name": "Scorchtongue's Brazier",
+    "value": 260,
+    "lore": true
+  },
+  "forgeheart_core": {
+    "name": "The Forgeheart's Core",
+    "value": 260,
+    "lore": true
+  },
+  "stolen_ember": {
+    "name": "The Stolen Ember",
+    "value": 260,
+    "lore": true
+  },
+  "emberhearts_heart": {
+    "name": "Old Emberheart's Heart",
+    "value": 260,
+    "lore": true
+  },
+  "ashen_antler": {
+    "name": "The Ashen Stag's Antler",
+    "value": 260,
+    "lore": true
+  },
+  "kolts_antlered_mask": {
+    "name": "Kolt's Antlered Mask",
+    "value": 260,
+    "lore": true
+  },
+  "moth_queens_wing": {
+    "name": "The Moth Queen's Wing",
+    "value": 260,
+    "lore": true
+  },
+  "courtiers_bracer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Courtier's Bracer",
+    "slot": "arms",
+    "ac": 17,
+    "str": 5,
+    "sta": 5,
+    "value": 13000,
+    "rec_level": 36,
+    "wear": "leather_sleeves"
+  },
+  "brannaghs_scepter": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Brannagh's Scepter",
+    "slot": "primary",
+    "dmg": 46,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 9,
+    "sta": 7,
+    "hp": 70,
+    "value": 32000,
+    "rec_level": 39,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "proc": {
+      "spell": "searing_blow",
+      "chance": 0.06
+    }
+  },
+  "salamanderscale_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Salamanderscale Boots",
+    "slot": "feet",
+    "ac": 17,
+    "agi": 6,
+    "sta": 5,
+    "value": 13000,
+    "rec_level": 36,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "scorchtongue_staff": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Scorchtongue's Staff",
+    "slot": "primary",
+    "dmg": 23,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 11,
+    "wis": 11,
+    "mana": 110,
+    "value": 32000,
+    "rec_level": 39,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "flameheart_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Flameheart Ring",
+    "slot": "ring",
+    "ac": 7,
+    "str": 5,
+    "sta": 5,
+    "hp": 45,
+    "value": 13000,
+    "rec_level": 36
+  },
+  "forgeheart_amulet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Forgeheart Amulet",
+    "slot": "neck",
+    "ac": 10,
+    "sta": 8,
+    "str": 6,
+    "hp": 80,
+    "value": 32000,
+    "rec_level": 39
+  },
+  "penitents_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Penitent's Sash",
+    "slot": "waist",
+    "ac": 8,
+    "int": 6,
+    "wis": 6,
+    "mana": 55,
+    "value": 13000,
+    "rec_level": 36,
+    "wear": "rope_belt"
+  },
+  "unburnt_mantle": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Unburnt Mantle",
+    "slot": "arms",
+    "ac": 18,
+    "agi": 7,
+    "sta": 6,
+    "hp": 55,
+    "value": 32000,
+    "rec_level": 39,
+    "wear": "leather_sleeves"
+  },
+  "heartwood_shield": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Heartwood Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 26,
+    "sta": 7,
+    "hp": 45,
+    "model": "shield_round",
+    "value": 14000,
+    "rec_level": 35,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "emberheart_bow": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Emberheart Bow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 15,
+    "delay": 2.8,
+    "range": 48,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "agi": 6,
+    "value": 30000,
+    "rec_level": 38,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "smokehide_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Smokehide Gloves",
+    "slot": "hands",
+    "ac": 13,
+    "agi": 6,
+    "sta": 4,
+    "value": 13000,
+    "rec_level": 35,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "ashen_antler_helm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ashen Antler Helm",
+    "slot": "head",
+    "ac": 24,
+    "sta": 7,
+    "str": 6,
+    "hp": 55,
+    "value": 30000,
+    "rec_level": 38,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "sootveil_hood": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Sootveil Hood",
+    "slot": "head",
+    "ac": 11,
+    "int": 7,
+    "wis": 7,
+    "mana": 70,
+    "value": 13000,
+    "rec_level": 35,
+    "wear": "cloth_cap"
+  },
+  "kolts_brand": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Kolt's Brand",
+    "slot": "primary",
+    "dmg": 27,
+    "delay": 2.7,
+    "verb": [
+      "burn",
+      "burns"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 6,
+    "agi": 6,
+    "hp": 45,
+    "value": 30000,
+    "rec_level": 38,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "choking_smoke",
+      "chance": 0.07
+    }
+  },
+  "mothwing_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mothwing Cloak",
+    "slot": "arms",
+    "ac": 15,
+    "int": 6,
+    "wis": 6,
+    "mana": 50,
+    "value": 13000,
+    "rec_level": 35,
+    "wear": "leather_sleeves"
+  },
+  "moth_queens_diadem": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Moth Queen's Diadem",
+    "slot": "head",
+    "ac": 13,
+    "int": 9,
+    "wis": 9,
+    "mana": 90,
+    "hp": 40,
+    "value": 30000,
+    "rec_level": 38,
+    "wear": "cloth_cap"
+  }
+}

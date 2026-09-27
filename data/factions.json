@@ -395,5 +395,50 @@
       "hoofborn": -8,
       "galehold": 3
     }
+  },
+  "salamanders": {
+    "name": "Salamander-Kin",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "salamanders": -8,
+      "forgehold": 3
+    }
+  },
+  "hearth_flames": {
+    "name": "Flames of the Hearth",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "hearth_flames": -8,
+      "forgehold": 3
+    }
+  },
+  "heretics": {
+    "name": "The Fallen Priests",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "heretics": -8,
+      "forgehold": 3
+    }
+  },
+  "smokewood_wild": {
+    "name": "Beasts of Smokewood",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "smokewood_wild": -8,
+      "forgehold": 3
+    }
+  },
+  "sootmask": {
+    "name": "The Sootmask Cult",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "sootmask": -8,
+      "forgehold": 3
+    }
   }
 }

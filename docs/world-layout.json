@@ -1,5 +1,6 @@
 {
  "built": [
+  "agnavars_hearth",
   "blackglass",
   "cinderpass",
   "dawnwatch",
@@ -19,6 +20,7 @@
   "rainhold",
   "reedmere",
   "silted_reach",
+  "smokewood",
   "sunward_steps",
   "the_bleach",
   "the_burn",
@@ -469,8 +471,8 @@
     5
    ],
    "kind": "wood",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -487,8 +489,8 @@
     5
    ],
    "kind": "burn",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

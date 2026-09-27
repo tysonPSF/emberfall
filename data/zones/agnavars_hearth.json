@@ -1,0 +1,1034 @@
+{
+  "name": "Agnavar's Hearth",
+  "levels": [
+    35,
+    38
+  ],
+  "music": "agnavars_hearth",
+  "seed": 9611,
+  "size": 512,
+  "height_amplitude": 7,
+  "bind_point": [
+    -192,
+    4
+  ],
+  "flat_radius": 20,
+  "trees": 60,
+  "tree_mix": [
+    "charred_tree",
+    "charred_tree_tall"
+  ],
+  "groves": 0.4,
+  "rocks": 130,
+  "grass_colors": [
+    "#4a3a30",
+    "#5a4636"
+  ],
+  "fog_density": 0.009,
+  "fog_color": "#7a4a34",
+  "sun_energy": 0.85,
+  "rain": {
+    "amount": 900,
+    "color": "#a09a94cc",
+    "ash": true
+  },
+  "clutter": {
+    "pebbles": {
+      "density": 0.05,
+      "patch": 0.6,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    },
+    "charred_log": {
+      "density": 0.001,
+      "patch": 0.4,
+      "range": 100,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -60
+      ],
+      "radius": 90,
+      "color": "#2e2622",
+      "flatten": 0.4,
+      "bare": true
+    },
+    {
+      "pos": [
+        0,
+        -140
+      ],
+      "radius": 70,
+      "color": "#281e1a",
+      "flatten": 0.3,
+      "bare": true
+    }
+  ],
+  "rivers": [
+    {
+      "points": [
+        [
+          -60,
+          -210
+        ],
+        [
+          -80,
+          -150
+        ],
+        [
+          -50,
+          -100
+        ],
+        [
+          -20,
+          -70
+        ]
+      ],
+      "width": 8,
+      "depth": 1.3,
+      "bank": 6,
+      "flow": 0.3,
+      "lava": true
+    },
+    {
+      "points": [
+        [
+          70,
+          -210
+        ],
+        [
+          80,
+          -150
+        ],
+        [
+          50,
+          -100
+        ],
+        [
+          20,
+          -70
+        ]
+      ],
+      "width": 8,
+      "depth": 1.3,
+      "bank": 6,
+      "flow": 0.3,
+      "lava": true
+    }
+  ],
+  "passes": [
+    [
+      -256,
+      0,
+      9
+    ],
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -256,
+          0
+        ],
+        [
+          -150,
+          10
+        ],
+        [
+          -60,
+          10
+        ],
+        [
+          0,
+          20
+        ],
+        [
+          0,
+          256
+        ]
+      ],
+      "width": 3.2
+    },
+    {
+      "points": [
+        [
+          0,
+          20
+        ],
+        [
+          80,
+          10
+        ],
+        [
+          256,
+          0
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "forgehold",
+      "arrive": [
+        46,
+        0
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "mirror_flats",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "smokewood",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -40
+      ],
+      "id": "eternal_forge",
+      "collide": "mesh",
+      "face": [
+        0,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -70
+      ],
+      "id": "colossal_anvil",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        45,
+        -60
+      ],
+      "id": "colossal_anvil",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        120,
+        -120
+      ],
+      "id": "colossal_anvil",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -130
+      ],
+      "id": "magma_pool",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -150
+      ],
+      "id": "magma_pool",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -80,
+        -40
+      ],
+      "id": "magma_pool",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        80
+      ],
+      "id": "salamander_den",
+      "collide": "box",
+      "face": [
+        120,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        130
+      ],
+      "id": "salamander_den",
+      "collide": "box",
+      "face": [
+        120,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        90,
+        140
+      ],
+      "id": "salamander_den",
+      "collide": "box",
+      "face": [
+        120,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        110
+      ],
+      "id": "salamander_idol",
+      "collide": "box",
+      "face": [
+        80,
+        80
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        120
+      ],
+      "id": "heretic_ruin",
+      "collide": "box",
+      "face": [
+        -80,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        150
+      ],
+      "id": "heretic_ruin",
+      "collide": "box",
+      "face": [
+        -100,
+        120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        160
+      ],
+      "id": "heretic_ruin",
+      "collide": "box",
+      "face": [
+        -80,
+        130
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        -110
+      ],
+      "id": "giant_hall_ruin",
+      "collide": "mesh",
+      "face": [
+        80,
+        -80
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        -90
+      ],
+      "id": "giant_anvil",
+      "collide": "box",
+      "face": [
+        80,
+        -80
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        10
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        0
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        10
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        20
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        120
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        180
+      ],
+      "id": "pilgrim_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "vent",
+      "pos": [
+        70,
+        -30
+      ],
+      "scale": 1.1
+    },
+    {
+      "type": "vent",
+      "pos": [
+        -70,
+        60
+      ],
+      "scale": 1.0
+    },
+    {
+      "type": "vent",
+      "pos": [
+        60,
+        40
+      ],
+      "scale": 0.9
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -200,
+        -12
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        -190,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -205,
+        14
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        -190,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -180,
+        -8
+      ],
+      "id": "ember_banner",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -190,
+        2
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -226,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Forgehold",
+        "Agnavar's Hearth"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        226
+      ],
+      "yaw": -90,
+      "labels": [
+        "Mirror Flats",
+        "Agnavar's Hearth"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        226,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Smokewood",
+        "Agnavar's Hearth"
+      ]
+    },
+    {
+      "type": "rockslide",
+      "pos": [
+        0,
+        -232
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "labels": [
+        "Pass closed",
+        "Agnavar's Hearth"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "flamewarden_isak",
+      "pos": [
+        -196,
+        -4
+      ],
+      "face": [
+        -188,
+        2
+      ]
+    },
+    {
+      "id": "pyre_priestess_olusola",
+      "pos": [
+        -184,
+        10
+      ],
+      "face": [
+        -188,
+        2
+      ]
+    },
+    {
+      "id": "forge_sage_kalinda",
+      "pos": [
+        -198,
+        12
+      ],
+      "face": [
+        -188,
+        2
+      ]
+    },
+    {
+      "id": "inquisitor_tobiah",
+      "pos": [
+        -180,
+        -6
+      ],
+      "face": [
+        -188,
+        2
+      ]
+    },
+    {
+      "id": "pilgrim_trader_aziz",
+      "pos": [
+        -206,
+        2
+      ],
+      "face": [
+        -188,
+        2
+      ]
+    },
+    {
+      "id": "hearth_flamewarden",
+      "pos": [
+        -170,
+        2
+      ],
+      "patrol": [
+        [
+          -170,
+          2
+        ],
+        [
+          -190,
+          25
+        ],
+        [
+          -210,
+          2
+        ],
+        [
+          -190,
+          -20
+        ],
+        [
+          -170,
+          2
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        110,
+        -100
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        -130
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        -140
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        -90
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        -160
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        125,
+        -130
+      ],
+      "pool": {
+        "ember_giant_queen": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        110,
+        90
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        120
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        130
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        80
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        150
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        125,
+        110
+      ],
+      "pool": {
+        "salamander_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        105
+      ],
+      "pool": {
+        "salamander_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        128,
+        128
+      ],
+      "pool": {
+        "scorchtongue": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -30,
+        -120
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        -130
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -90
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        -80
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        -90
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        -160
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        -170
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -70,
+        -140
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -150
+      ],
+      "pool": {
+        "living_forgeheart": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -110,
+        110
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -140,
+        140
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -90,
+        150
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        90
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        170
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -125,
+        135
+      ],
+      "pool": {
+        "caldris_unburnt": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    }
+  ]
+}

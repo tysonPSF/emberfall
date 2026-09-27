@@ -6541,6 +6541,663 @@ def death_mask_cowl():
 	return p.build()
 
 
+# ---------------------------------------------------------------- Agnavar's Hearth and Smokewood
+# The Hearth is the fire god's forge-temple: black iron, molten gold, court red
+# and salamander orange. Smokewood is a smoldering forest: charred wood and ash
+# gray split by ember cracks, lit by the fire moths' amber glow.
+
+
+def _heart(p, c, s, sw, glow=0.0, grad=(0.0, 0.7)):
+	"""A plump heart facing the camera, its lobes at the top, point down; c its middle."""
+	x, y, z = c
+	for sx in (-1, 1):
+		p.blob((0.58 * s, 0.5 * s, 0.56 * s), (x + sx * 0.2 * s, y, z + 0.14 * s), sw, segs=(12, 8), grad=grad, glow=glow)
+	p.seg((x, y, z + 0.12 * s), (x, y, z - 0.5 * s), 0.42 * s, 0.0, sw, sides=12, grad=grad, glow=glow)
+
+
+def _antler(p, base, sx, s=1.0, sw=ASH, tip=EMBER, glow=2.0):
+	"""A branched antler rising from base and sweeping out to side sx: a beam, three tines,
+	a bony burr at the root and charred tips still glowing."""
+	bx, by, bz = base
+	beam = [(bx, by, bz), (bx + sx * 0.18 * s, by, bz + 0.28 * s), (bx + sx * 0.32 * s, by + 0.04 * s, bz + 0.6 * s),
+			(bx + sx * 0.3 * s, by + 0.08 * s, bz + 0.95 * s), (bx + sx * 0.18 * s, by + 0.1 * s, bz + 1.2 * s)]
+	_line(p, beam, 0.075 * s, 0.035 * s, sw, sides=6, grad=(0.0, 0.7))
+	p.seg(beam[-1], (bx + sx * 0.12 * s, by + 0.1 * s, bz + 1.36 * s), 0.035 * s, 0.0, tip, sides=5, glow=glow)
+	for k, dx, dz in ((1, 0.3, 0.16), (2, 0.3, 0.26), (3, -0.26, 0.26)):
+		a = beam[k]
+		mid = (a[0] + sx * dx * 0.5 * s, a[1] - 0.02 * s, a[2] + dz * 0.3 * s)
+		end = (a[0] + sx * dx * s, a[1] - 0.03 * s, a[2] + dz * s)
+		_line(p, [a, mid, end], 0.05 * s, 0.028 * s, sw, sides=5, grad=(0.0, 0.7))
+		p.seg(end, (end[0] + sx * dx * 0.3 * s, end[1], end[2] + dz * 0.4 * s), 0.028 * s, 0.0, tip, sides=5, glow=glow)
+	p.seg((bx, by, bz - 0.04 * s), (bx + sx * 0.02 * s, by, bz + 0.06 * s), 0.1 * s, 0.09 * s, BONE, sides=8, jitter=0.01 * s)   # the burr
+
+
+def _moth_wings(p, fore_sw, hind_sw, border, vein, eye, org=(-0.6, 0.15), s=1.0, y=0.0, vein_glow=0.0, eye_glow=2.0):
+	"""A moth's fore and hind wing from org, spread up and right, with veins, a border and an eye spot."""
+	sc = lambda pts: [(x * s, z * s) for x, z in pts]
+	fore = _rot2(sc([(0, 0), (0.3, 0.14), (0.8, 0.26), (1.2, 0.26), (1.34, 0.12), (1.24, -0.12), (0.8, -0.24), (0.3, -0.14)]), 25, org)
+	hind = _rot2(sc([(0, 0), (0.3, 0.12), (0.62, 0.1), (0.82, -0.05), (0.74, -0.32), (0.4, -0.4), (0.12, -0.18)]), -22, (org[0], org[1] - 0.05 * s))
+	_slab(p, hind, y + 0.05 * s, y + 0.09 * s, hind_sw, grad=(0.2, 0.9))
+	_slab(p, fore, y - 0.02 * s, y + 0.02 * s, fore_sw, grad=(0.0, 0.6))
+	for outline, yy in ((fore, y - 0.03 * s), (hind, y + 0.04 * s)):
+		base = outline[0]
+		for q in outline[2:6]:
+			p.seg((base[0], yy, base[1]), (q[0] * 0.85 + base[0] * 0.15, yy, q[1] * 0.85 + base[1] * 0.15), 0.014 * s, 0.009 * s, vein, sides=3,
+				  glow=vein_glow)
+		for a, b in zip(outline[2:], outline[3:] + outline[:1]):
+			p.seg((a[0], yy - 0.005, a[1]), (b[0], yy - 0.005, b[1]), 0.04 * s, 0.04 * s, border, sides=4)
+	for (lx, lz), es, yy, rot, o in (((0.86, 0.02), 1.0, y - 0.04 * s, 25, org), ((0.5, -0.16), 0.65, y + 0.03 * s, -22, (org[0], org[1] - 0.05 * s))):
+		c = _rot2([(lx * s, lz * s)], rot, o)[0]
+		p.blob((0.36 * es * s, 0.02, 0.32 * es * s), (c[0], yy, c[1]), STONE_DARK, segs=(12, 4))
+		p.blob((0.26 * es * s, 0.02, 0.23 * es * s), (c[0], yy - 0.01, c[1]), eye, segs=(12, 4), grad=(0.0, 0.4), glow=eye_glow * 0.5)
+		p.blob((0.1 * es * s, 0.02, 0.09 * s * es), (c[0] + 0.02 * s, yy - 0.02, c[1] + 0.02 * s), GOLD, segs=(8, 4), glow=eye_glow)
+	return fore, hind
+
+
+# the Hearth's drops
+
+def court_signet():
+	p = Prop("court_signet", 1601)
+	for k in range(14):                                                                   # a heavy band sized for a giant's finger
+		a0, a1 = k * math.tau / 14, (k + 1) * math.tau / 14
+		p.seg((math.cos(a0) * 0.42, 0, 0.42 + math.sin(a0) * 0.42), (math.cos(a1) * 0.42, 0, 0.42 + math.sin(a1) * 0.42), 0.13, 0.13, GOLD, sides=6)
+	p.seg((0, 0.1, 0.9), (0, -0.12, 0.9), 0.34, 0.34, GOLD, sides=8, grad=(0.0, 0.6))          # an octagonal seal
+	p.seg((0, -0.12, 0.9), (0, -0.14, 0.9), 0.28, 0.28, CLOTH_RED, sides=8)                    # of court-red enamel
+	y, cz = -0.16, 0.82                                                                    # stamped with the ember court's crown
+	p.box((0.3, 0.04, 0.08), (0, y, cz), GOLD, glow=1.2)
+	for x, h in ((-0.12, 0.15), (0.0, 0.22), (0.12, 0.15)):
+		p.seg((x, y, cz + 0.03), (x, y, cz + 0.03 + h), 0.05, 0.0, GOLD, sides=4, glow=1.2)
+		p.blob((0.05, 0.03, 0.05), (x, y - 0.01, cz + 0.05 + h), FLAME, segs=(5, 3), glow=2.6)
+	return p.build()
+
+
+def salamander_scale():
+	p = Prop("salamander_scale", 1603)
+	outline = [(math.cos(math.radians(a)) * 0.5, 0.55 + math.sin(math.radians(a)) * 0.58) for a in range(90, 450, 30)]
+	_slab(p, outline, -0.05, 0.06, ORANGE, grad=(0.0, 0.85))                                 # a round orange scale, bright at the top
+	for a, b in zip(outline, outline[1:] + outline[:1]):                                  # its rim still glowing hot
+		p.seg((a[0], -0.06, a[1]), (b[0], -0.06, b[1]), 0.035, 0.035, EMBER, sides=4, glow=1.8)
+	p.blob((0.46, 0.14, 0.5), (0, -0.05, 0.56), CLOTH_RED, segs=(12, 6), grad=(0.0, 0.7))       # a raised boss
+	p.seg((0, -0.1, 0.56), (0.02, -0.26, 0.64), 0.1, 0.0, CLOTH_RED, sides=6)                 # with a little spine
+	for k in range(8):                                                                    # black spots round it
+		a = k * math.tau / 8 + 0.3
+		p.blob((0.1, 0.03, 0.09), (math.cos(a) * 0.36, -0.07, 0.56 + math.sin(a) * 0.4), STONE_DARK, segs=(6, 4))
+	return p.build()
+
+
+def heart_of_flame():
+	p = Prop("heart_of_flame", 1605)
+	_heart(p, (0, 0, 0.6), 1.0, EMBER, glow=1.6)                                           # a heart made of fire
+	_heart(p, (-0.03, -0.14, 0.64), 0.6, FLAME, glow=2.2)
+	_heart(p, (-0.05, -0.24, 0.68), 0.26, CLOTH_WHITE, glow=2.6)                              # white-hot at its middle
+	for x, h in ((-0.3, 0.45), (-0.1, 0.62), (0.12, 0.7), (0.32, 0.5)):                       # flames licking up off it
+		p.seg((x, 0.0, 0.78), (x + 0.04, 0.0, 0.78 + h), 0.13, 0.0, FLAME, sides=6, glow=2.0)
+	for x, z in ((-0.5, 0.15), (0.45, 0.25), (0.35, 1.45)):
+		p.blob((0.06, 0.06, 0.06), (x, -0.1, z), GOLD, segs=(5, 3), glow=2.6)
+	return p.build()
+
+
+def heretics_charm():
+	p = Prop("heretics_charm", 1607)
+	_cord(p, 0.45, 0.86, WOOD_GRAY)
+	c = (0, -0.3, 0.36)
+	p.seg((0, c[1] + 0.04, c[2]), (0, c[1] - 0.04, c[2]), 0.3, 0.3, STONE_DARK, sides=14, grad=(0.1, 0.8))   # a blackened iron disc
+	_loop(p, (0, c[1] - 0.04, c[2]), 0.3, False, 0.03, EMBER, n=14)
+	y = c[1] - 0.06                                                                        # its flame turned upside down
+	p.seg((0.0, y, c[2] + 0.14), (0.02, y, c[2] - 0.22), 0.1, 0.0, FLAME, sides=5, glow=2.0)
+	for sx in (-1, 1):
+		p.seg((sx * 0.08, y, c[2] + 0.14), (sx * 0.14, y, c[2] - 0.06), 0.065, 0.0, FLAME, sides=4, glow=2.0)
+	p.blob((0.24, 0.04, 0.1), (0, y, c[2] + 0.15), FLAME, segs=(6, 4), glow=2.0)
+	_line(p, [(-0.24, y - 0.01, c[2] + 0.2), (-0.06, y - 0.01, c[2] + 0.02), (0.02, y - 0.01, c[2] + 0.06), (0.22, y - 0.01, c[2] - 0.18)],
+		  0.02, 0.02, IRON, sides=4)                                                      # a crack struck through it
+	for sx in (-1, 1):                                                                    # tied up with torn red cloth
+		p.seg((sx * 0.02, c[1], c[2] + 0.3), (sx * 0.2, c[1] - 0.02, c[2] + 0.46), 0.05, 0.03, CLOTH_RED, sides=4)
+	p.seg((0, c[1], c[2] + 0.28), (0, c[1], c[2] + 0.5), 0.04, 0.04, STONE_DARK, sides=6)
+	return p.build()
+
+
+def brannaghs_molten_crown():
+	p = Prop("brannaghs_molten_crown", 1609)
+	p.seg((0, 0, 0.0), (0, 0, 0.3), 0.5, 0.52, GOLD, sides=20, grad=(0.0, 0.6))               # a great gold band
+	p.seg((0, 0, 0.295), (0, 0, 0.305), 0.44, 0.44, STONE_DARK, sides=20)
+	_loop(p, (0, 0, 0.02), 0.51, True, 0.035, STONE_DARK, n=20)
+	for k in range(8):                                                                    # tall points, each tipped with a molten bead
+		a = k * math.tau / 8 + 0.2
+		h = 0.62 if k % 2 == 0 else 0.44
+		x, y = math.cos(a) * 0.5, math.sin(a) * 0.5
+		p.seg((x, y, 0.28), (x * 1.06, y * 1.06, 0.28 + h), 0.12, 0.0, GOLD, sides=5, grad=(0.0, 0.6))
+		p.blob((0.12, 0.12, 0.12), (x * 1.06, y * 1.06, 0.3 + h), FLAME, segs=(6, 4), glow=2.6)
+	for k in range(7):                                                                    # molten gold running down it
+		a = math.radians(215 + k * 19)
+		x, y = math.cos(a) * 0.53, math.sin(a) * 0.53
+		ln = 0.14 + 0.12 * ((k * 5) % 3)
+		p.seg((x, y, 0.3), (x * 1.01, y * 1.01, 0.3 - ln), 0.035, 0.03, FLAME, sides=5, glow=2.4)
+		p.blob((0.08, 0.08, 0.1), (x * 1.01, y * 1.01, 0.3 - ln), FLAME, segs=(6, 4), glow=2.6)
+	a = math.radians(FRONT_A)
+	p.blob((0.2, 0.12, 0.24), (math.cos(a) * 0.54, math.sin(a) * 0.54, 0.16), CLOTH_RED, segs=(10, 6), glow=1.4)   # a great ruby
+	return p.build()
+
+
+def scorchtongues_brazier():
+	p = Prop("scorchtongues_brazier", 1611)
+	p.seg((0, 0, 0.42), (0, 0, 0.72), 0.24, 0.52, IRON, sides=16, grad=(0.0, 0.6))            # a black iron bowl
+	_loop(p, (0, 0, 0.72), 0.52, True, 0.04, GOLD, n=18)
+	for k in range(3):                                                                    # on three clawed legs
+		a = k * math.tau / 3 + 0.9
+		d = (math.cos(a), math.sin(a))
+		pts = [(d[0] * 0.2, d[1] * 0.2, 0.46), (d[0] * 0.36, d[1] * 0.36, 0.28), (d[0] * 0.38, d[1] * 0.38, 0.1), (d[0] * 0.46, d[1] * 0.46, 0.0)]
+		_line(p, pts, 0.05, 0.04, STONE_DARK, sides=6)
+		p.blob((0.12, 0.12, 0.06), pts[-1], STONE_DARK, segs=(6, 4))
+	for k in range(7):                                                                    # heaped coals
+		a = k * 0.9
+		p.rock((0.2, 0.2, 0.14), (math.cos(a) * 0.26, math.sin(a) * 0.26, 0.74), EMBER, jitter=0.03)
+	for x, h in ((-0.2, 0.55), (0.0, 0.8), (0.2, 0.6), (0.08, 0.45)):                       # tall flames
+		p.seg((x, -0.05, 0.72), (x + 0.04, -0.05, 0.72 + h), 0.16, 0.0, FLAME, sides=6, glow=2.6)
+	for sx in (-1, 1):                                                                    # salamander heads for handles
+		p.blob((0.22, 0.16, 0.14), (sx * 0.58, -0.08, 0.68), ORANGE, segs=(8, 5), grad=(0.0, 0.7))
+		p.seg((sx * 0.64, -0.08, 0.68), (sx * 0.74, -0.08, 0.66), 0.06, 0.02, ORANGE, sides=5)
+		p.blob((0.05, 0.04, 0.05), (sx * 0.6, -0.17, 0.72), GOLD, segs=(5, 3), glow=2.2)
+	return p.build()
+
+
+def forgeheart_core():
+	p = Prop("forgeheart_core", 1613)
+	p.blob((0.8, 0.8, 0.8), (0, 0, 0.55), EMBER, segs=(16, 12), glow=1.8)                    # a molten sphere
+	p.blob((0.36, 0.16, 0.36), (-0.06, -0.34, 0.6), FLAME, segs=(8, 6), glow=2.6)
+	c = Vector((0, 0, 0.55))
+	z = Vector((0, 0, 1))
+	for deg in (-61 + 90, -61 + 30, -61 - 30):                                             # caged in heavy iron bands
+		a = math.radians(deg)
+		_oval(p, tuple(c), Vector((math.cos(a), math.sin(a), 0)), z, 0.44, 0.44, 0.06, IRON, n=24)
+	_oval(p, tuple(c), Vector((1, 0, 0)), Vector((0, 1, 0)), 0.44, 0.44, 0.07, STONE_DARK, n=24)
+	for deg in (-61 + 30, -61 - 30):                                                         # riveted where they cross
+		a = math.radians(deg + 90)
+		p.blob((0.1, 0.1, 0.1), (math.cos(a) * 0.46, math.sin(a) * 0.46, 0.55), GOLD, segs=(6, 4))
+	p.blob((0.12, 0.12, 0.12), (0, 0, 1.0), GOLD, segs=(6, 4))
+	for x, z in ((-0.5, 1.0), (0.44, 1.05), (0.1, 1.2)):                                     # sparks thrown off
+		p.blob((0.05, 0.05, 0.05), (x, -0.1, z), GOLD, segs=(5, 3), glow=2.6)
+	return p.build()
+
+
+def stolen_ember():
+	p = Prop("stolen_ember", 1615)
+	piv = Vector((0.0, 0.0, 0.4))
+	for sgn in (1, -1):                                                                   # a pair of smith's tongs
+		handle = [piv, piv + Vector((-0.5, 0.0, -0.36 + sgn * 0.1)), piv + Vector((-0.72, 0.0, -0.5 + sgn * 0.16))]
+		jaw = [piv, piv + Vector((0.3, 0.0, 0.3 - sgn * 0.04)), piv + Vector((0.46, 0.0, 0.52 - sgn * 0.12))]
+		_line(p, [tuple(q + Vector((0, -0.03 * sgn, 0))) for q in handle], 0.045, 0.04, STONE_DARK, sides=6)
+		_line(p, [tuple(q + Vector((0, -0.03 * sgn, 0))) for q in jaw], 0.045, 0.05, IRON, sides=6)
+	p.seg((0, 0.08, 0.4), (0, -0.1, 0.4), 0.07, 0.07, GOLD, sides=8)                           # the rivet
+	e = (0.58, -0.02, 0.72)                                                                # gripping one live ember
+	p.rock((0.4, 0.34, 0.36), e, EMBER, jitter=0.05)
+	p.blob((0.24, 0.12, 0.22), (e[0] - 0.02, e[1] - 0.14, e[2] + 0.02), FLAME, segs=(8, 5), glow=3.0)
+	for k in range(3):
+		p.seg((e[0] - 0.1 + k * 0.1, e[1] - 0.02, e[2] + 0.16), (e[0] - 0.08 + k * 0.1, e[1] - 0.02, e[2] + 0.36 + (k % 2) * 0.12), 0.07, 0.0,
+			  FLAME, sides=5, glow=2.6)
+	return p.build()
+
+
+# Smokewood's drops
+
+def ember_heartwood():
+	p = Prop("ember_heartwood", 1621)
+	a, b = Vector((-0.45, 0.45, 0.36)), Vector((0.3, -0.3, 0.36))                            # a split log, its end to the camera
+	p.seg(tuple(a), tuple(b), 0.36, 0.36, STONE_DARK, sides=12, grad=(0.1, 0.8), jitter=0.02)   # charred bark
+	d = (b - a).normalized()
+	for r, sw, glow in ((0.33, WOOD, 0.0), (0.26, HIDE, 0.0), (0.19, WOOD, 0.0), (0.12, EMBER, 1.8), (0.06, FLAME, 3.0)):
+		p.seg(tuple(b), tuple(b + d * (0.02 + (0.33 - r) * 0.06)), r, r, sw, sides=12, glow=glow)   # rings round a burning heart
+	n = Vector((0, 0, 1)).cross(d).normalized()
+	for k, t in enumerate((0.2, 0.45, 0.7)):                                               # ember cracks down the bark
+		q = a + (b - a) * t
+		pts = [q + Vector((0, 0, 0.33)) + n * 0.04 * ((j % 2) * 2 - 1) + d * j * 0.06 for j in range(4)]
+		_seam(p, [tuple(v) for v in pts], r=0.02, glow=2.2)
+		side = q + Vector((0, 0, 0.08)) - n * 0.35                                       # and down its near side
+		_seam(p, [tuple(side + Vector((0, 0, j * 0.08)) + d * (j % 2) * 0.05) for j in range(3)], r=0.02, glow=2.2)
+	return p.build()
+
+
+def smoke_pelt():
+	p = Prop("smoke_pelt", 1623)
+	p.blob((1.1, 0.8, 0.14), (0, 0, 0.07), STONE_DARK, segs=(12, 6), grad=(0.0, 0.6), jitter=0.05)   # a charcoal pelt
+	for x in (-1, 1):
+		for y in (-1, 1):
+			p.blob((0.3, 0.22, 0.1), (x * 0.4, y * 0.34, 0.05), STONE_DARK, segs=(6, 4), grad=(0.0, 0.6))
+			p.blob((0.12, 0.12, 0.08), (x * 0.44, y * 0.46, 0.05), IRON, segs=(6, 4))   # sooty paws
+	p.blob((0.36, 0.3, 0.18), (-0.6, 0, 0.12), STONE_DARK, segs=(8, 5), grad=(0.0, 0.6))               # the head end
+	p.blob((0.16, 0.2, 0.1), (-0.76, 0, 0.12), ASH, segs=(8, 5))
+	for sy in (-1, 1):
+		p.seg((-0.58, sy * 0.12, 0.18), (-0.6, sy * 0.16, 0.34), 0.07, 0.0, IRON, sides=5)
+	p.blob((0.9, 0.18, 0.06), (0.0, 0, 0.14), IRON, segs=(10, 4))                               # a black stripe down the spine
+	p.seg((0.5, 0, 0.1), (0.8, 0.08, 0.11), 0.11, 0.08, STONE_DARK, sides=6, grad=(0.0, 0.6))     # a bushy tail, its tip gone to smoke
+	p.seg((0.8, 0.08, 0.11), (0.98, 0.14, 0.13), 0.08, 0.02, ASH, sides=6)
+	for k, (x, y) in enumerate(((-0.2, 0.3), (0.32, 0.36))):                             # smoke still curling off its far edge
+		for j in range(3):
+			s = 0.12 + j * 0.06
+			p.blob((s * 1.4, s * 0.8, s), (x + 0.1 * math.sin(j * 1.9 + k), y + 0.05, 0.2 + j * 0.13), ASH, segs=(8, 5), grad=(0.5, 1.0))
+	return _tip_back(p.build(), 22)
+
+
+def soot_mask_fragment():
+	p = Prop("soot_mask_fragment", 1625)
+	outline = [(0.02, 1.02), (-0.18, 0.98), (-0.34, 0.86), (-0.44, 0.66), (-0.44, 0.44), (-0.36, 0.22), (-0.2, 0.06), (0.0, 0.0),
+			   (0.1, 0.14), (-0.02, 0.28), (0.12, 0.42), (0.0, 0.56), (0.14, 0.72), (0.02, 0.86)]   # half a carved mask, snapped down the middle
+	_slab(p, outline, -0.05, 0.05, WOOD_GRAY, grad=(0.1, 0.9))
+	for x, z, s in ((-0.3, 0.3, 0.18), (-0.1, 0.12, 0.14), (-0.36, 0.72, 0.12)):              # smeared with soot
+		p.blob((s, 0.03, s * 0.8), (x, -0.055, z), STONE_DARK, segs=(8, 4))
+	eye = [(-0.3, 0.62), (-0.2, 0.68), (-0.08, 0.64), (-0.14, 0.56), (-0.26, 0.56)]
+	_slab(p, eye, -0.07, -0.055, IRON, grad=(0.6, 1.0))                                     # an empty eye
+	p.blob((0.05, 0.02, 0.05), (-0.18, -0.075, 0.61), EMBER, segs=(5, 3), glow=2.2)
+	_line(p, [(-0.36, -0.07, 0.76), (-0.2, -0.07, 0.8), (-0.04, -0.07, 0.76)], 0.03, 0.02, STONE_DARK, sides=5)   # a heavy brow
+	for k in range(3):                                                                    # carved flame grooves on the cheek
+		x = -0.34 + k * 0.1
+		_line(p, [(x, -0.06, 0.2), (x + 0.04, -0.06, 0.34), (x - 0.01, -0.06, 0.46)], 0.018, 0.01, EMBER, sides=4, glow=1.4)
+	obj = p.build()
+	return _tip_back(obj, -12)
+
+
+def fire_moth_dust():
+	p = Prop("fire_moth_dust", 1627)
+	p.blob((0.8, 0.7, 0.66), (-0.1, 0.1, 0.33), HIDE, segs=(12, 8), grad=(0.1, 0.9))          # a little hide pouch, open
+	_loop(p, (-0.1, 0.1, 0.62), 0.28, True, 0.05, WOOD, n=14)
+	p.blob((0.46, 0.4, 0.2), (-0.1, 0.1, 0.66), GOLD, segs=(10, 6), glow=2.4)                   # heaped with glowing dust
+	p.blob((0.56, 0.4, 0.12), (0.34, -0.3, 0.05), GOLD, segs=(10, 5), glow=2.0)                  # spilled at its foot
+	p.blob((0.3, 0.2, 0.08), (0.2, -0.1, 0.08), ORANGE, segs=(8, 4), glow=1.6)
+	import random
+	rnd = random.Random(1627)
+	for k in range(12):                                                                   # motes drifting up
+		x, z = rnd.uniform(-0.5, 0.6), rnd.uniform(0.7, 1.35)
+		s = rnd.uniform(0.035, 0.07)
+		p.blob((s, s, s), (x, -0.2, z), GOLD if k % 3 else FLAME, segs=(5, 3), glow=2.8)
+	p.seg((-0.3, 0.1, 0.62), (-0.55, -0.05, 0.3), 0.025, 0.02, WOOD, sides=4)                   # its loose drawstring
+	return p.build()
+
+
+def glowcap():
+	p = Prop("glowcap", 1629)
+	p.blob((1.0, 0.8, 0.14), (0, 0, 0.04), WOOD_GRAY, segs=(12, 5), jitter=0.04)             # a clod of ashy earth
+	for (x, y, h, r, tilt) in ((-0.12, 0.05, 0.62, 0.36, -6), (0.3, -0.18, 0.36, 0.22, 14), (-0.4, -0.2, 0.26, 0.16, -18)):
+		top = (x + math.sin(math.radians(tilt)) * h, y, h)
+		p.seg((x, y, 0.04), top, r * 0.35, r * 0.28, BONE, sides=8, grad=(0.0, 0.6))          # pale stems
+		p.blob((r * 2.1, r * 2.1, r * 0.7), (top[0], top[1], top[2] + r * 0.12), ORANGE, rot=(0, tilt, 0), segs=(14, 8), grad=(0.1, 0.8), glow=0.7)
+		p.blob((r * 1.8, r * 1.8, r * 0.2), (top[0], top[1], top[2] - r * 0.08), EMBER, rot=(0, tilt, 0), segs=(12, 4), glow=2.2)   # glowing gills
+		for k in range(4):                                                                # bright spots on the cap
+			a = math.radians(200 + k * 40)
+			p.blob((r * 0.28, r * 0.2, r * 0.16), (top[0] + math.cos(a) * r * 0.6, top[1] + math.sin(a) * r * 0.6, top[2] + r * 0.36), GOLD,
+				   segs=(6, 4), glow=2.6)
+	return p.build()
+
+
+def emberhearts_heart():
+	p = Prop("emberhearts_heart", 1631)
+	_heart(p, (0, 0, 0.6), 1.0, WOOD, grad=(0.55, 1.0))                                    # a heart of living wood
+	for x, z, s in ((-0.32, 0.8, 0.16), (0.3, 0.64, 0.14)):                                  # knots in its bark
+		p.rock((s, s * 0.6, s), (x, -0.27, z), STONE_DARK, jitter=0.03)
+	p.blob((0.3, 0.12, 0.3), (0.02, -0.26, 0.6), FLAME, segs=(10, 6), glow=2.4)                 # burning inside
+	for a, b in (((-0.3, 0.9), (-0.08, 0.64)), ((-0.08, 0.64), (0.02, 0.38)), ((0.02, 0.38), (0.0, 0.16)), ((-0.08, 0.64), (0.26, 0.82)),
+				 ((0.02, 0.38), (0.24, 0.36))):
+		p.seg((a[0], -0.3, a[1]), (b[0], -0.3, b[1]), 0.03, 0.03, EMBER, sides=4, glow=2.4)
+	for k, (dx, ln) in enumerate(((-0.3, 0.4), (0.0, 0.5), (0.28, 0.36))):                 # roots trailing below
+		_line(p, [(dx * 0.3, 0, 0.2), (dx * 0.9, -0.04, 0.06), (dx * 1.5 + 0.06, -0.02, 0.02 - ln * 0.25)], 0.06, 0.015, STONE_DARK, sides=5)
+	return p.build()
+
+
+def ashen_antler():
+	p = Prop("ashen_antler", 1633)
+	_antler(p, (-0.3, 0.0, 0.0), 1, s=1.3, sw=ASH, tip=EMBER, glow=2.4)                     # a great ash-gray antler, its tips smoldering
+	p.blob((0.24, 0.2, 0.1), (-0.3, 0.0, -0.08), STONE_DARK, segs=(8, 5))                    # a charred stump of skull
+	return p.build()
+
+
+def kolts_antlered_mask():
+	p = Prop("kolts_antlered_mask", 1635)
+	mf = _mask_face(p, 0.0, 0.5, 0.38, 0.5, 0.0, 0.18, WOOD_GRAY, FLAME, eye_glow=0.0, beard=False)   # a carved wooden face
+	for sx in (-1, 1):                                                                    # soot-black around glowing eyes
+		p.blob((0.26, 0.04, 0.14), mf(sx * 0.14, 0.12, 0.0), STONE_DARK, segs=(10, 4))
+		p.blob((0.1, 0.03, 0.05), mf(sx * 0.14, 0.12, 0.02), FLAME, segs=(6, 4), glow=2.8)
+		for k in range(3):                                                                # black soot stripes down the cheeks
+			x = sx * (0.12 + k * 0.07)
+			_line(p, [mf(x, -0.02, 0.005), mf(x + sx * 0.01, -0.3, 0.005)], 0.02, 0.012, STONE_DARK, sides=4)
+		_antler(p, (sx * 0.26, 0.04, 0.82), sx, s=0.62, sw=ASH, tip=EMBER, glow=2.0)       # antlers from its brow
+	return p.build()
+
+
+def moth_queens_wing():
+	p = Prop("moth_queens_wing", 1637)
+	_moth_wings(p, ORANGE, CLOTH_RED, STONE_DARK, EMBER, FLAME, org=(-0.7, 0.1), s=1.2, vein_glow=1.8, eye_glow=2.8)   # a great ember-bright wing
+	for k, (x, z) in enumerate(((0.9, 1.0), (0.6, 1.25), (1.05, 0.55), (0.3, -0.45))):      # dust shed off it
+		p.blob((0.05, 0.05, 0.05), (x, -0.1, z), GOLD, segs=(5, 3), glow=2.6)
+	p.blob((0.24, 0.16, 0.2), (-0.7, 0.02, 0.08), HIDE, segs=(8, 5), jitter=0.02)              # a tuft of fuzz where it tore free
+	return p.build()
+
+
+# rewards
+
+def courtiers_bracer():
+	p = Prop("courtiers_bracer", 1641)
+	_vambrace(p, IRON, GOLD, CLOTH_RED, GOLD, grad=(0.0, 0.6), glow_line=EMBER)              # black iron trimmed in gold
+	p.seg(_fa(0.0, 0.3, -10), _fa(0.0, 0.37, -10), 0.15, 0.15, CLOTH_RED, sides=12)          # the court's badge: a gold crown on red
+	to3 = _fa_to3(0.0, 0.38, -10)
+	p.box((0.16, 0.03, 0.05), to3(-0.04, 0.0), GOLD, rot=(0, -45, 0), glow=1.0)
+	for v in (-0.06, 0.0, 0.06):
+		p.seg(to3(-0.02, v), to3(0.06, v * 1.2), 0.03, 0.0, GOLD, sides=4, glow=1.0)
+	return p.build()
+
+
+def brannaghs_scepter():
+	p = Prop("brannaghs_scepter", 1643)
+	org, rot = (-0.5, -0.8), 62
+	_haft(p, org, rot, -0.2, 1.6, 0.07, swatch=STONE_DARK, bands=(-0.1, 0.4, 0.9, 1.4), band_swatch=GOLD)   # a long black iron haft
+	bf = _blade_frame(rot, org, 0.0)
+	c = bf(1.95, 0.0)
+	p.blob((0.56, 0.56, 0.56), c, FLAME, segs=(14, 10), glow=2.8)                            # a molten orb
+	p.blob((0.2, 0.1, 0.2), (c[0] - 0.04, c[1] - 0.26, c[2] + 0.04), CLOTH_WHITE, segs=(8, 5), glow=3.0)
+	p.seg(bf(1.56, 0.0), bf(1.7, 0.0), 0.12, 0.2, GOLD, sides=10)                              # in a crown of gold
+	for v in (-1, 1, 0):                                                                  # its points curling round the orb
+		y = -0.18 if v == 0 else 0.0
+		pts = [bf(1.68, v * 0.16), bf(1.82, v * 0.36), bf(2.08, v * 0.36), bf(2.26, v * 0.18)]
+		_line(p, [(q[0], y, q[2]) for q in pts], 0.055, 0.03, GOLD, sides=6, grad=(0.0, 0.6))
+		p.blob((0.08, 0.08, 0.08), (pts[-1][0], y, pts[-1][2]), CLOTH_RED, segs=(6, 4), glow=1.4)
+	e = bf(-0.26, 0.0)
+	p.blob((0.2, 0.2, 0.2), e, GOLD, segs=(8, 6))                                             # a gold pommel
+	p.blob((0.08, 0.05, 0.08), (e[0], e[1] - 0.1, e[2]), CLOTH_RED, segs=(6, 4), glow=1.4)
+	return p.build()
+
+
+def salamanderscale_boots():
+	p = Prop("salamanderscale_boots", 1645)
+	for ox, oy in ((-0.34, 0.3), (0.26, -0.12)):
+		r = _boot(p, ox, oy, ORANGE, CLOTH_RED, STONE_DARK, grad=(0.1, 0.9), shaft=0.76)
+		pts = []
+		for row, z in enumerate((0.66, 0.54, 0.42, 0.3)):                                # orange scales down the shin
+			for k in range(2):
+				pts.append((ox + (k - 0.5) * 0.14 + (0.07 if row % 2 else 0.0), oy - r - 0.01, z))
+		_scales(p, pts, [CLOTH_RED, ORANGE, STONE_DARK])
+		for k in range(4):                                                                # black spots along the foot
+			p.blob((0.08, 0.04, 0.06), (ox - 0.48 + k * 0.12, oy - 0.26, 0.2 + 0.02 * (k % 2)), STONE_DARK, segs=(6, 4))
+		for k in range(4):                                                                # a crest of little spines up the back
+			z = 0.3 + k * 0.14
+			p.seg((ox + r + 0.02, oy, z), (ox + r + 0.14, oy, z + 0.08), 0.04, 0.0, CLOTH_RED, sides=4)
+	return p.build()
+
+
+def scorchtongue_staff():
+	p = Prop("scorchtongue_staff", 1647)
+	org, rot = (-0.3, -0.7), 72
+	_haft(p, org, rot, 0.0, 1.7, 0.06, swatch=STONE_DARK, bands=(0.2, 1.6), band_swatch=GOLD)   # a charred staff
+	bf = _blade_frame(rot, org, 0.0)
+	c = bf(1.85, 0.0)                                                                      # topped with a little brazier
+	top = (c[0] + 0.02, c[1], c[2] + 0.12)
+	p.seg((c[0], c[1], c[2] - 0.12), top, 0.1, 0.3, IRON, sides=12, grad=(0.0, 0.6))
+	_loop(p, top, 0.3, True, 0.03, GOLD, n=14)
+	for k in range(4):
+		a = k * 1.4
+		p.rock((0.14, 0.14, 0.1), (top[0] + math.cos(a) * 0.14, top[1] + math.sin(a) * 0.14, top[2]), EMBER, jitter=0.02)
+	for dx, h in ((-0.12, 0.4), (0.02, 0.6), (0.14, 0.42)):
+		p.seg((top[0] + dx, top[1] - 0.04, top[2]), (top[0] + dx + 0.03, top[1] - 0.04, top[2] + h), 0.1, 0.0, FLAME, sides=6, glow=2.6)
+	a = math.radians(rot)                                                                   # an orange salamander coiled up the staff
+	d, n = Vector((math.cos(a), 0, math.sin(a))), Vector((-math.sin(a), 0, math.cos(a)))
+	base = Vector((org[0], 0, org[1]))
+	pts = []
+	for k in range(25):
+		t = k / 24
+		s = 0.55 + t * 1.1
+		ang = t * 2.4 * math.tau
+		pts.append(tuple(base + d * s + n * math.cos(ang) * 0.1 + Vector((0, -1, 0)) * math.sin(ang) * 0.1))
+	_line(p, pts, 0.015, 0.075, ORANGE, sides=6, grad=(0.0, 0.7))
+	head = Vector(pts[-1]) + d * 0.1
+	p.blob((0.2, 0.15, 0.13), tuple(head), ORANGE, rot=(0, -rot, 0), segs=(8, 5), grad=(0.0, 0.7))
+	for sy in (-1, 1):
+		p.blob((0.05, 0.04, 0.05), tuple(head + n * 0.05 + Vector((0, sy * 0.06, 0))), GOLD, segs=(5, 3), glow=2.2)
+	for k in range(0, 24, 4):                                                             # black spots along its back
+		p.blob((0.05, 0.04, 0.05), tuple(Vector(pts[k]) + Vector((0, -0.05, 0.02))), STONE_DARK, segs=(5, 3))
+	return p.build()
+
+
+def flameheart_ring():
+	p = Prop("flameheart_ring", 1649)
+	_ring(p, GOLD)
+	_loop(p, (0, -0.02, 0.4), 0.4, False, 0.035, EMBER, n=14, glow=1.8)                      # an ember inlay round the band
+	p.seg((0, 0.06, 0.86), (0, -0.08, 0.86), 0.2, 0.2, GOLD, sides=10)
+	_heart(p, (0, -0.12, 0.98), 0.44, CLOTH_RED, glow=1.8)                                    # a heart-shaped fire stone
+	_heart(p, (-0.02, -0.2, 1.0), 0.2, FLAME, glow=3.0)
+	for sx in (-1, 1):                                                                    # held in gold prongs
+		p.seg((sx * 0.14, -0.06, 0.84), (sx * 0.2, -0.16, 1.04), 0.035, 0.0, GOLD, sides=4)
+	return p.build()
+
+
+def forgeheart_amulet():
+	p = Prop("forgeheart_amulet", 1651)
+	_cord(p, 0.45, 0.88, STONE_DARK)
+	anvil = [(-0.36, 0.52), (0.4, 0.52), (0.4, 0.44), (0.22, 0.4), (0.14, 0.3), (0.14, 0.14), (0.28, 0.06), (0.28, 0.0),
+			 (-0.26, 0.0), (-0.26, 0.06), (-0.12, 0.14), (-0.12, 0.3), (-0.2, 0.4), (-0.46, 0.46)]   # a little iron anvil
+	outline = [(x, z - 0.02) for x, z in anvil]
+	_slab(p, outline, -0.36, -0.24, IRON, grad=(0.0, 0.6))
+	for a, b in zip(outline, outline[1:] + outline[:1]):
+		p.seg((a[0], -0.37, a[1]), (b[0], -0.37, b[1]), 0.02, 0.02, GOLD, sides=4)
+	p.blob((0.26, 0.1, 0.26), (0.01, -0.38, 0.22), FLAME, segs=(10, 6), glow=3.0)             # the forge's heart glowing in its waist
+	_loop(p, (0.01, -0.38, 0.22), 0.13, False, 0.02, GOLD, n=12)
+	p.seg((0.02, -0.3, 0.5), (0.02, -0.3, 0.72), 0.04, 0.04, STONE_DARK, sides=6)
+	return p.build()
+
+
+def penitents_sash():
+	p = Prop("penitents_sash", 1653)
+	c = Vector((0, 0.1, 0.62))
+	_twist_ring(p, tuple(c), (1, 0, 0), (0, 1, 0), 0.55, 0.045, (HIDE, BONE), turns=14)      # a plain twisted rope
+	a = math.radians(FRONT_A)
+	k0 = c + Vector((math.cos(a), math.sin(a), 0)) * 0.57
+	p.blob((0.2, 0.18, 0.18), tuple(k0), HIDE, segs=(8, 6), grad=(0.1, 0.8))                  # knotted at the front
+	cloth = [(-0.14, 0.0), (0.14, 0.0), (0.16, -0.5), (0.02, -0.42), (-0.12, -0.52)]          # a strip of ashy sackcloth
+	_slab(p, [(k0.x - 0.1 + x, k0.z - 0.06 + z) for x, z in cloth], k0.y - 0.02, k0.y + 0.02, ASH, grad=(0.1, 0.9))
+	for j, dx in enumerate((-0.2, 0.16)):                                                   # two cords hanging with penance knots
+		pts = [k0 + Vector((dx * 0.3, -0.06, -0.06)), k0 + Vector((dx * 0.8, -0.08, -0.3)), k0 + Vector((dx, -0.08, -0.6))]
+		_line(p, [tuple(q) for q in pts], 0.03, 0.025, BONE, sides=5)
+		for q in pts[1:]:
+			p.blob((0.08, 0.08, 0.08), tuple(q), HIDE, segs=(6, 4))
+	t = k0 + Vector((-0.2, -0.1, -0.64))                                                    # a scorched wooden token
+	p.seg(tuple(t + Vector((0, 0.03, 0))), tuple(t - Vector((0, 0.03, 0))), 0.13, 0.13, STONE_DARK, sides=12)
+	_flame_mark(p, tuple(t - Vector((0, 0.04, 0.06))), 0.5, GOLD, glow=1.6)
+	return p.build()
+
+
+def unburnt_mantle():
+	p = Prop("unburnt_mantle", 1655)
+	outline = [(-0.26, 1.0), (0.26, 1.0), (0.5, 0.86), (0.66, 0.6), (0.7, 0.3), (0.58, 0.12), (0.3, 0.02), (0.0, 0.0), (-0.3, 0.02),
+			   (-0.58, 0.12), (-0.7, 0.3), (-0.66, 0.6), (-0.5, 0.86)]                        # a pale mantle the fire cannot touch
+	_slab(p, outline, -0.02, 0.06, CLOTH_WHITE, grad=(0.1, 0.8))
+	for a, b in zip(outline[2:12], outline[3:13]):                                        # its gold hem
+		p.seg((a[0], -0.03, a[1]), (b[0], -0.03, b[1]), 0.04, 0.04, GOLD, sides=5)
+	for k in range(9):                                                                    # flames licking up round the hem, harmless
+		t = k / 8
+		x = -0.62 + t * 1.24
+		z = 0.1 + 0.2 * (2 * abs(t - 0.5)) ** 2
+		h = 0.24 + 0.12 * (k % 2)
+		p.seg((x, -0.05, z), (x + 0.03, -0.05, z + h), 0.08, 0.0, FLAME, sides=5, glow=2.4)
+	for k in range(9):                                                                    # a gold-embroidered collar
+		t = k / 8
+		x = -0.36 + t * 0.72
+		p.blob((0.16, 0.1, 0.14), (x, -0.05, 0.97 - math.sin(t * math.pi) * 0.1), GOLD, segs=(6, 4), grad=(0.0, 0.6))
+	_flame_mark(p, (0, -0.06, 0.52), 1.1, CLOTH_RED, glow=1.0)                                # the unburnt flame on its back
+	p.seg((0, -0.08, 0.82), (0, -0.14, 0.82), 0.11, 0.11, GOLD, sides=10)                     # a gold clasp with a ruby
+	p.blob((0.1, 0.06, 0.1), (0, -0.15, 0.82), CLOTH_RED, segs=(6, 4), glow=1.4)
+	obj = p.build()
+	obj.data.transform(Matrix.Rotation(math.radians(-15), 4, "X"))
+	return obj
+
+
+def heartwood_shield():
+	p = Prop("heartwood_shield", 1657)
+	c = (0, 0, 0.7)
+	p.seg((0, 0.06, 0.7), (0, -0.06, 0.7), 0.7, 0.7, WOOD, sides=24, grad=(0.1, 0.9))          # a round of heartwood
+	for r, sw in ((0.58, HIDE), (0.44, WOOD_GRAY), (0.3, HIDE)):                              # its growth rings
+		_loop(p, (0, -0.07, 0.7), r, False, 0.018, sw, n=22)
+	for k in range(14):                                                                   # rimmed in rough bark
+		a0, a1 = k * math.tau / 14, (k + 1) * math.tau / 14
+		p.seg((math.cos(a0) * 0.7, -0.02, 0.7 + math.sin(a0) * 0.7), (math.cos(a1) * 0.7, -0.02, 0.7 + math.sin(a1) * 0.7), 0.08, 0.08,
+			  STONE_DARK, sides=5, jitter=0.012)
+	for a in (0.5, 1.9, 3.3, 4.6, 5.7):                                                    # ember cracks running out from the heart
+		pts = [(math.cos(a) * r + 0.03 * math.sin(r * 20), -0.075, 0.7 + math.sin(a) * r) for r in (0.18, 0.3, 0.42, 0.52)]
+		_seam(p, pts, r=0.02, glow=2.0)
+	_heart(p, (0, -0.1, 0.72), 0.34, EMBER, glow=2.4)                                        # its heart still burning
+	_heart(p, (-0.01, -0.16, 0.74), 0.16, FLAME, glow=3.0)
+	for k in range(4):                                                                    # iron studs
+		a = k * math.tau / 4 + math.pi / 4
+		p.blob((0.08, 0.06, 0.08), (math.cos(a) * 0.52, -0.08, 0.7 + math.sin(a) * 0.52), IRON, segs=(6, 4))
+	return p.build()
+
+
+def emberheart_bow():
+	p = Prop("emberheart_bow", 1659)
+	org, rot = (0.0, 0.6), 50
+	pts = []
+	for k in range(17):                                                                   # a gnarled limb of charred wood
+		t = -1 + k / 8
+		w = 0.3 * (1 - t * t) + 0.025 * math.sin(k * 2.1)
+		pts.append((t * 1.1, w))
+	lp = _rot2(pts, rot, org)
+	for i, (a, b) in enumerate(zip(lp, lp[1:])):
+		r = 0.08 - abs(i - 7.5) / 8 * 0.04
+		p.seg((a[0], 0, a[1]), (b[0], 0, b[1]), r, r, STONE_DARK, sides=6, grad=(0.1, 0.8))
+	for rng in ((1, 7), (9, 15)):                                                           # an ember crack running down each limb
+		_seam(p, [(lp[k][0] + 0.015 * (k % 2), -0.07, lp[k][1] + 0.015 * (k % 2)) for k in range(*rng)], r=0.02, glow=2.4)
+	for k, sgn in ((3, 1), (12, -1)):                                                     # twigs still sprouting, one ember leaf each
+		q = lp[k]
+		tip = (q[0] + 0.12, -0.02, q[1] + 0.16 * sgn + 0.08)
+		p.seg((q[0], 0, q[1]), tip, 0.03, 0.012, STONE_DARK, sides=4)
+		p.blob((0.16, 0.04, 0.09), (tip[0] + 0.05, -0.03, tip[2] + 0.02), ORANGE, rot=(0, -30, 0), segs=(6, 4), glow=1.4)
+	g0, g1 = lp[7], lp[9]
+	p.seg((g0[0], 0, g0[1]), (g1[0], 0, g1[1]), 0.095, 0.095, ASH, sides=8)                  # an ash-gray grip
+	p.blob((0.12, 0.08, 0.12), ((g0[0] + g1[0]) / 2, -0.09, (g0[1] + g1[1]) / 2), FLAME, segs=(6, 4), glow=2.8)   # an ember at its heart
+	p.seg((lp[0][0], 0.02, lp[0][1]), (lp[16][0], 0.02, lp[16][1]), 0.012, 0.012, CLOTH_WHITE, sides=4)   # the string
+	return p.build()
+
+
+def smokehide_gloves():
+	p, fr = _glove_pair("smokehide_gloves", 1661, ASH, STONE_DARK, WOOD_GRAY, grad=(0.2, 0.9))
+	for f in fr:
+		for k in range(3):                                                                # dark bands across the back, like a smoke wolf's
+			p.seg(f(-0.22, -0.13, 0.44 + k * 0.1), f(0.22, -0.13, 0.48 + k * 0.1), 0.025, 0.025, STONE_DARK, sides=4)
+		_seam(p, [f(-0.24, -0.25, 0.3), f(0, -0.27, 0.28), f(0.24, -0.25, 0.3)], r=0.014, glow=1.8)   # ember stitching at the cuff
+		for j in range(3):                                                                # smoke rising off it
+			s = 0.1 + j * 0.05
+			x, y, z = f(-0.1 + j * 0.06, -0.1, 1.2 + j * 0.16)
+			p.blob((s, s * 0.7, s), (x, y, z), ASH, segs=(6, 4), grad=(0.3, 0.9))
+	return p.build()
+
+
+def ashen_antler_helm():
+	p = Prop("ashen_antler_helm", 1663)
+	for z0, z1, r0, r1 in ((0.0, 0.3, 0.42, 0.42), (0.3, 0.52, 0.42, 0.34), (0.52, 0.68, 0.34, 0.2), (0.68, 0.76, 0.2, 0.0)):
+		p.seg((0, 0, z0), (0, 0, z1), r0, r1, IRON, sides=16, grad=(0.0, 0.6))              # a blackened iron helm
+	_loop(p, (0, 0, 0.04), 0.43, True, 0.045, ASH, n=18)
+	_loop(p, (0, 0, 0.3), 0.425, True, 0.03, EMBER, n=18, glow=1.8)
+	p.box((0.1, 0.1, 0.4), (0, -0.43, 0.08), IRON, grad=(0.0, 0.6))                           # a nasal
+	for sx in (-1, 1):
+		p.blob((0.16, 0.08, 0.1), (sx * 0.16, -0.4, 0.18), FLAME, segs=(6, 4), glow=2.2)      # glowing eye-holes behind it
+		_antler(p, (sx * 0.3, 0.02, 0.5), sx, s=0.8, sw=ASH, tip=EMBER, glow=2.2)           # the Ashen Stag's antlers
+	return p.build()
+
+
+def sootveil_hood():
+	p = Prop("sootveil_hood", 1665)
+	p.seg((0, 0.1, -0.2), (0, 0.1, 0.25), 0.62, 0.44, ASH, sides=18, grad=(0.2, 1.0))          # an ash-gray hood over the shoulders
+	p.blob((0.96, 0.9, 1.1), (0, 0.1, 0.62), ASH, segs=(16, 10), grad=(0.1, 0.9))
+	p.seg((0, 0.1, 1.12), (0.08, 0.32, 1.22), 0.1, 0.0, ASH, sides=8)
+	outline = [(math.sin(math.radians(a)) * 0.3, 0.6 + math.cos(math.radians(a)) * 0.42) for a in range(0, 360, 24)]
+	_slab(p, outline, -0.36, -0.3, IRON, grad=(0.3, 1.0))                                      # the shadow inside
+	for sx in (-1, 1):
+		p.blob((0.1, 0.03, 0.05), (sx * 0.1, -0.37, 0.74), FLAME, segs=(6, 4), glow=2.8)       # eyes glowing out of it
+	veil = [(-0.34, 0.66), (0.34, 0.66), (0.3, 0.3), (0.2, 0.08), (0.08, -0.02), (0.0, 0.06), (-0.1, -0.04), (-0.22, 0.08), (-0.32, 0.3)]
+	_slab(p, veil, -0.42, -0.38, STONE_DARK, grad=(0.2, 1.0))                                  # a sooty veil over the face
+	_seam(p, [(x, -0.43, z) for x, z in veil[:2]], r=0.02, glow=1.8)                          # hemmed in ember thread
+	for a, b in zip(outline, outline[1:] + outline[:1]):
+		p.seg((a[0], -0.37, a[1]), (b[0], -0.37, b[1]), 0.028, 0.028, STONE_DARK, sides=5)
+	return p.build()
+
+
+def kolts_brand():
+	p = Prop("kolts_brand", 1667)
+	org, rot = (-0.55, -0.42), 48
+	up = [(0.32, 0.1), (0.8, 0.11), (1.2, 0.1), (1.44, 0.06)]
+	tip = (1.6, 0.0)
+	outline = up + [tip] + [(x, -z) for x, z in reversed(up)]
+	_slab(p, _rot2(outline, rot, org), -0.035, 0.035, STONE_DARK, grad=(0.0, 0.6))             # a sooty blade
+	bf = _blade_frame(rot, org, -0.045)
+	_line(p, [bf(0.36, 0.0), bf(1.0, 0.0), bf(1.45, 0.0)], 0.035, 0.02, EMBER, sides=4, glow=2.6)   # burning down its middle
+	for k, u in enumerate((0.45, 0.62, 0.8, 0.98, 1.16, 1.34)):                            # flames licking off its edge
+		v = 0.1 if u < 1.3 else 0.07
+		h = 0.2 + 0.08 * (k % 2)
+		p.seg(bf(u, v), bf(u + 0.08, v + h), 0.06, 0.0, FLAME, sides=5, glow=2.4)
+	g = [bf(0.3, -0.3, -0.04), bf(0.26, 0.0, -0.04), bf(0.3, 0.3, -0.04)]
+	_line(p, g, 0.05, 0.05, ASH, sides=6)                                                      # a guard of antler
+	for end, s in ((g[0], -1), (g[2], 1)):
+		e2 = bf(0.46, s * 0.4, -0.04)
+		p.seg(end, e2, 0.045, 0.0, ASH, sides=5)
+		p.seg(end, bf(0.2, s * 0.44, -0.04), 0.04, 0.0, EMBER, sides=5, glow=1.8)
+	h = _rot2([(0.26, 0.0), (-0.12, 0.0), (-0.2, 0.0)], rot, org)
+	p.seg((h[0][0], 0, h[0][1]), (h[1][0], 0, h[1][1]), 0.055, 0.06, STONE_DARK, sides=6)     # a soot-black grip
+	for t in (0.25, 0.55, 0.85):
+		q = (h[0][0] + (h[1][0] - h[0][0]) * t, h[0][1] + (h[1][1] - h[0][1]) * t)
+		p.seg((q[0] - 0.02, 0, q[1] - 0.02), (q[0] + 0.02, 0, q[1] + 0.02), 0.068, 0.068, ASH, sides=6)
+	p.blob((0.16, 0.16, 0.16), (h[2][0], 0, h[2][1]), ASH, segs=(8, 6))
+	p.blob((0.08, 0.05, 0.08), (h[2][0], -0.08, h[2][1]), FLAME, segs=(6, 4), glow=2.6)
+	return p.build()
+
+
+def mothwing_cloak():
+	p = Prop("mothwing_cloak", 1669)
+	_slab(p, _cape_outline(0.3, 0.6, 0.12), 0.08, 0.12, WOOD, grad=(0.2, 1.0))                # a dusky brown cape
+	for sx in (-1, 1):                                                                    # laid over with two great moth wings
+		fore = [(0.0, 0.98), (0.5, 0.94), (0.72, 0.7), (0.66, 0.42), (0.36, 0.34), (0.06, 0.42)]
+		hind = [(0.02, 0.46), (0.4, 0.38), (0.56, 0.16), (0.44, -0.04), (0.16, -0.06), (0.02, 0.1)]
+		for outline, y, sw in ((hind, 0.05, HIDE), (fore, 0.0, BONE)):
+			pts = [(sx * x, z) for x, z in outline]
+			_slab(p, pts, y - 0.02, y + 0.02, sw, grad=(0.0, 0.7))
+			for a, b in zip(pts[1:5], pts[2:6]):
+				p.seg((a[0], y - 0.03, a[1]), (b[0], y - 0.03, b[1]), 0.03, 0.03, WOOD, sides=4)
+		for (x, z, s, y) in ((0.4, 0.66, 1.0, -0.03), (0.3, 0.16, 0.7, 0.02)):             # eye spots glowing like embers
+			p.blob((0.26 * s, 0.02, 0.24 * s), (sx * x, y, z), STONE_DARK, segs=(12, 4))
+			p.blob((0.18 * s, 0.02, 0.17 * s), (sx * x, y - 0.01, z), ORANGE, segs=(12, 4), glow=1.2)
+			p.blob((0.07 * s, 0.02, 0.07 * s), (sx * x, y - 0.02, z), GOLD, segs=(8, 4), glow=2.4)
+	for k in range(7):                                                                    # a furry collar
+		x = -0.3 + k * 0.1
+		p.blob((0.16, 0.12, 0.14), (x, -0.08, 0.99 + 0.02 * math.cos(x * 5)), ASH, segs=(6, 4), grad=(0.0, 0.6))
+	for sx in (-1, 1):                                                                    # feathery antennae over the clasp
+		_line(p, [(sx * 0.04, -0.14, 0.98), (sx * 0.14, -0.16, 1.16), (sx * 0.26, -0.16, 1.24)], 0.02, 0.012, WOOD, sides=4)
+	p.blob((0.18, 0.1, 0.18), (0, -0.16, 0.96), GOLD, segs=(8, 5), glow=1.6)
+	return p.build()
+
+
+def moth_queens_diadem():
+	p = Prop("moth_queens_diadem", 1671)
+	_loop(p, (0, 0, 0.12), 0.46, True, 0.04, GOLD, n=20)                                     # a slender gold circlet
+	a = math.radians(FRONT_A)
+	f = Vector((math.cos(a), math.sin(a), 0)) * 0.48
+	to3 = lambda x, z, off=0.0: tuple(f + Vector((-math.sin(a), math.cos(a), 0)) * x + Vector((math.cos(a), math.sin(a), 0)) * (0.02 + off)
+									 + Vector((0, 0, z)))
+	for sx in (-1, 1):                                                                    # a golden moth spread across its brow
+		fore = [(0.04, 0.2), (0.24, 0.5), (0.46, 0.56), (0.5, 0.36), (0.3, 0.18)]
+		hind = [(0.04, 0.14), (0.28, 0.08), (0.34, -0.12), (0.16, -0.14)]
+		for outline, sw, off in ((hind, CLOTH_RED, 0.0), (fore, ORANGE, 0.01)):
+			pts = [to3(sx * x, z, off) for x, z in outline]
+			p.poly(pts, [tuple(range(len(pts)))], sw, grad=(0.0, 0.6))
+			_line(p, [to3(sx * x, z, off + 0.01) for x, z in outline + outline[:1]], 0.018, 0.018, GOLD, sides=4)
+		p.blob((0.1, 0.03, 0.09), to3(sx * 0.34, 0.4, 0.03), GOLD, segs=(6, 4), glow=2.4)
+		_line(p, [to3(sx * 0.02, 0.3, 0.02), to3(sx * 0.1, 0.52, 0.02), to3(sx * 0.2, 0.66, 0.02)], 0.016, 0.01, GOLD, sides=4)   # antennae
+		p.blob((0.05, 0.05, 0.05), to3(sx * 0.2, 0.66, 0.02), GOLD, segs=(5, 3), glow=2.0)
+	_line(p, [to3(0, 0.34, 0.03), to3(0, 0.12, 0.04), to3(0, -0.06, 0.03)], 0.05, 0.03, GOLD, sides=6, grad=(0.0, 0.6))   # its body
+	p.blob((0.12, 0.08, 0.14), to3(0, 0.16, 0.06), FLAME, segs=(8, 5), glow=2.8)               # an amber gem for its heart
+	return p.build()
+
+
+AGNAVAR_HEARTH_SMOKEWOOD = [court_signet, salamander_scale, heart_of_flame, heretics_charm, brannaghs_molten_crown, scorchtongues_brazier,
+							forgeheart_core, stolen_ember, ember_heartwood, smoke_pelt, soot_mask_fragment, fire_moth_dust, glowcap,
+							emberhearts_heart, ashen_antler, kolts_antlered_mask, moth_queens_wing, courtiers_bracer, brannaghs_scepter,
+							salamanderscale_boots, scorchtongue_staff, flameheart_ring, forgeheart_amulet, penitents_sash, unburnt_mantle,
+							heartwood_shield, emberheart_bow, smokehide_gloves, ashen_antler_helm, sootveil_hood, kolts_brand, mothwing_cloak,
+							moth_queens_diadem]
+
+
 STANDING_SKY = [skyforged_helm, skyforged_breastplate, skyforged_vambraces, skyforged_gauntlets, skyforged_greaves, skyforged_boots,
 				skyforged_shield, windrunner_jerkin, windrunner_leggings, windrunner_gloves, windrunner_boots, galeweave_cap, galeweave_robe,
 				galeweave_gloves, galeweave_slippers, skyforged_sword, skyforged_war_axe, skyforged_greataxe, zephyr_dirk, stormwood_staff,
@@ -6621,7 +7278,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

@@ -2538,5 +2538,341 @@
     "faction": {
       "galehold": 30
     }
+  },
+  "court_signet_q": {
+    "name": "Ember Court Signets",
+    "giver": "flamewarden_isak",
+    "start_keyword": "signets",
+    "wants": {
+      "court_signet": 4
+    },
+    "reward": {
+      "xp": 9450,
+      "coin": 1050
+    },
+    "first_reward_item": "courtiers_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Ember Court Signets. Bring Flamewarden Isak 4 ember court signets.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8,
+      "ember_giants": -10
+    }
+  },
+  "brannaghs_molten_crown_q": {
+    "name": "Brannagh's Molten Crown",
+    "giver": "flamewarden_isak",
+    "start_keyword": "crown",
+    "wants": {
+      "brannaghs_molten_crown": 1
+    },
+    "reward": {
+      "xp": 21000,
+      "coin": 2520
+    },
+    "first_reward_item": "brannaghs_scepter",
+    "accept_text": "You have taken on a task: Brannagh's Molten Crown. Bring Flamewarden Isak Brannagh's Molten Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30,
+      "ember_giants": -30
+    }
+  },
+  "salamander_scale_q": {
+    "name": "Salamander Scales",
+    "giver": "pyre_priestess_olusola",
+    "start_keyword": "scales",
+    "wants": {
+      "salamander_scale": 4
+    },
+    "reward": {
+      "xp": 9450,
+      "coin": 1050
+    },
+    "first_reward_item": "salamanderscale_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Salamander Scales. Bring Pyre-Priestess Olusola 4 salamander scales.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8,
+      "salamanders": -10
+    }
+  },
+  "scorchtongues_brazier_q": {
+    "name": "Scorchtongue's Brazier",
+    "giver": "pyre_priestess_olusola",
+    "start_keyword": "brazier",
+    "wants": {
+      "scorchtongues_brazier": 1
+    },
+    "reward": {
+      "xp": 21000,
+      "coin": 2520
+    },
+    "first_reward_item": "scorchtongue_staff",
+    "accept_text": "You have taken on a task: Scorchtongue's Brazier. Bring Pyre-Priestess Olusola Scorchtongue's Brazier.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30,
+      "salamanders": -30
+    }
+  },
+  "heart_of_flame_q": {
+    "name": "Hearts Of Flame",
+    "giver": "forge_sage_kalinda",
+    "start_keyword": "flame",
+    "wants": {
+      "heart_of_flame": 4
+    },
+    "reward": {
+      "xp": 9450,
+      "coin": 1050
+    },
+    "first_reward_item": "flameheart_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Hearts Of Flame. Bring Forge-Sage Kalinda 4 hearts of flame.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "forgeheart_core_q": {
+    "name": "The Forgeheart's Core",
+    "giver": "forge_sage_kalinda",
+    "start_keyword": "core",
+    "wants": {
+      "forgeheart_core": 1
+    },
+    "reward": {
+      "xp": 21000,
+      "coin": 2520
+    },
+    "first_reward_item": "forgeheart_amulet",
+    "accept_text": "You have taken on a task: The Forgeheart's Core. Bring Forge-Sage Kalinda the Forgeheart's Core.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "heretics_charm_q": {
+    "name": "Heretic's Charms",
+    "giver": "inquisitor_tobiah",
+    "start_keyword": "charms",
+    "wants": {
+      "heretics_charm": 4
+    },
+    "reward": {
+      "xp": 9450,
+      "coin": 1050
+    },
+    "first_reward_item": "penitents_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Heretic's Charms. Bring Inquisitor Tobiah 4 heretic's charms.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8,
+      "heretics": -10
+    }
+  },
+  "stolen_ember_q": {
+    "name": "The Stolen Ember",
+    "giver": "inquisitor_tobiah",
+    "start_keyword": "ember",
+    "wants": {
+      "stolen_ember": 1
+    },
+    "reward": {
+      "xp": 21000,
+      "coin": 2520
+    },
+    "first_reward_item": "unburnt_mantle",
+    "accept_text": "You have taken on a task: The Stolen Ember. Bring Inquisitor Tobiah the Stolen Ember.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30,
+      "heretics": -30
+    }
+  },
+  "ember_heartwood_q": {
+    "name": "Pieces Of Ember Heartwood",
+    "giver": "woodwarden_sefa",
+    "start_keyword": "heartwood",
+    "wants": {
+      "ember_heartwood": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "first_reward_item": "heartwood_shield",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Ember Heartwood. Bring Woodwarden Sefa 4 pieces of ember heartwood.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "emberhearts_heart_q": {
+    "name": "Old Emberheart's Heart",
+    "giver": "woodwarden_sefa",
+    "start_keyword": "heart",
+    "wants": {
+      "emberhearts_heart": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "first_reward_item": "emberheart_bow",
+    "accept_text": "You have taken on a task: Old Emberheart's Heart. Bring Woodwarden Sefa Old Emberheart's Heart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "smoke_pelt_q": {
+    "name": "Smoke Pelts",
+    "giver": "hunter_bartek",
+    "start_keyword": "pelts",
+    "wants": {
+      "smoke_pelt": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "first_reward_item": "smokehide_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Smoke Pelts. Bring Hunter Bartek 4 smoke pelts.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "ashen_antler_q": {
+    "name": "The Ashen Stag's Antler",
+    "giver": "hunter_bartek",
+    "start_keyword": "antler",
+    "wants": {
+      "ashen_antler": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "first_reward_item": "ashen_antler_helm",
+    "accept_text": "You have taken on a task: The Ashen Stag's Antler. Bring Hunter Bartek the Ashen Stag's Antler.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30
+    }
+  },
+  "soot_mask_fragment_q": {
+    "name": "Soot-mask Fragments",
+    "giver": "scout_liesl",
+    "start_keyword": "fragments",
+    "wants": {
+      "soot_mask_fragment": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "first_reward_item": "sootveil_hood",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Soot-mask Fragments. Bring Scout Liesl 4 soot-mask fragments.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8,
+      "sootmask": -10
+    }
+  },
+  "kolts_antlered_mask_q": {
+    "name": "Kolt's Antlered Mask",
+    "giver": "scout_liesl",
+    "start_keyword": "mask",
+    "wants": {
+      "kolts_antlered_mask": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "first_reward_item": "kolts_brand",
+    "accept_text": "You have taken on a task: Kolt's Antlered Mask. Bring Scout Liesl Kolt's Antlered Mask.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30,
+      "sootmask": -30
+    }
+  },
+  "fire_moth_dust_q": {
+    "name": "Pinches Of Fire Moth Dust",
+    "giver": "moth_catcher_ondine",
+    "start_keyword": "dust",
+    "wants": {
+      "fire_moth_dust": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "first_reward_item": "mothwing_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pinches Of Fire Moth Dust. Bring Moth-Catcher Ondine 4 pinches of fire moth dust.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "forgehold": 8
+    }
+  },
+  "moth_queens_wing_q": {
+    "name": "The Moth Queen's Wing",
+    "giver": "moth_catcher_ondine",
+    "start_keyword": "wings",
+    "wants": {
+      "moth_queens_wing": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "first_reward_item": "moth_queens_diadem",
+    "accept_text": "You have taken on a task: The Moth Queen's Wing. Bring Moth-Catcher Ondine the Moth Queen's Wing.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Agnavar's fire burns brighter for it.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "forgehold": 30
+    }
   }
 }

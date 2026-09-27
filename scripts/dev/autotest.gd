@@ -135,6 +135,9 @@ const SECTIONS := [
 	["galehold", "galehold"],
 	["magician_nukes", "greenmoor"],
 	["pet_messages", "greenmoor"],
+	["hearth_borders", "forgehold"],
+	["hearth_life", "agnavars_hearth"],
+	["smoke_life", "smokewood"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -2168,7 +2171,7 @@ func _ensure_zone(zone_id: String) -> void:
 	if p.dead:
 		await _wait(5.0)
 	# step into the zone line that starts the shortest way there
-	for hop in 5:
+	for hop in 12:
 		if main.zone.zone_id == zone_id:
 			break
 		var next := _next_hop(main.zone.zone_id, zone_id)
@@ -5475,6 +5478,31 @@ func _t_pet_messages() -> void:
 	p.char_class = saved_class
 	p.level = 1
 	p.recalc_stats()
+
+
+## Agnavar's Hearth and Smokewood: every border both ways.
+func _t_hearth_borders() -> void:
+	for leg: Array in [["forgehold", Vector2(80, 0), Vector2(1, 0), "agnavars_hearth"], ["agnavars_hearth", Vector2(225, 0), Vector2(1, 0), "smokewood"],
+			["smokewood", Vector2(-225, 0), Vector2(-1, 0), "agnavars_hearth"], ["agnavars_hearth", Vector2(0, 225), Vector2(0, 1), "mirror_flats"],
+			["mirror_flats", Vector2(0, -225), Vector2(0, -1), "agnavars_hearth"], ["agnavars_hearth", Vector2(-225, 0), Vector2(-1, 0), "forgehold"]]:
+		if not await _walk_border("hearth_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_hearth_life() -> void:
+	await _zone_life("hearth_life", {"flamewarden_isak": ["court_signet_q", "brannaghs_molten_crown_q"], "pyre_priestess_olusola": ["salamander_scale_q", "scorchtongues_brazier_q"],
+			"forge_sage_kalinda": ["heart_of_flame_q", "forgeheart_core_q"], "inquisitor_tobiah": ["heretics_charm_q", "stolen_ember_q"]}, [],
+			["ember_court_guard", "ember_giant_queen", "salamander_kin", "salamander_priest", "scorchtongue", "greater_fire_elemental", "living_magma", "living_forgeheart", "fallen_fire_priest", "caldris_unburnt"])
+	await _zone_views("hearth", [[Vector2(-170, 10), Vector2(-195, 0), "camp"], [Vector2(0, 30), Vector2(0, -40), "forge"],
+			[Vector2(90, -70), Vector2(125, -120), "court"], [Vector2(90, 70), Vector2(125, 110), "salamanders"]])
+
+
+func _t_smoke_life() -> void:
+	await _zone_life("smoke_life", {"woodwarden_sefa": ["ember_heartwood_q", "emberhearts_heart_q"], "hunter_bartek": ["smoke_pelt_q", "ashen_antler_q"],
+			"scout_liesl": ["soot_mask_fragment_q", "kolts_antlered_mask_q"], "moth_catcher_ondine": ["fire_moth_dust_q", "moth_queens_wing_q"]}, [],
+			["ember_treant", "old_emberheart", "smoke_wolf", "smoke_bear", "smoke_stag", "ashen_stag", "sootmask_cultist", "sootmask_chief", "fire_moth", "walking_fungus", "cinder_moth_queen"])
+	await _zone_views("smoke", [[Vector2(-170, 10), Vector2(-190, 0), "camp"], [Vector2(-40, 10), Vector2(10, -10), "treants"],
+			[Vector2(100, 30), Vector2(145, 55), "sootmask"], [Vector2(0, 100), Vector2(20, 160), "moths"]])
 
 
 ## Screenshots from a few spots: [from, looking at, name].

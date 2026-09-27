@@ -1,0 +1,917 @@
+{
+  "name": "Smokewood",
+  "levels": [
+    33,
+    37
+  ],
+  "music": "smokewood",
+  "seed": 9631,
+  "size": 512,
+  "height_amplitude": 5,
+  "bind_point": [
+    -188,
+    4
+  ],
+  "flat_radius": 18,
+  "trees": 950,
+  "tree_mix": [
+    "smoldering_tree",
+    "smoldering_tree_b",
+    "smoldering_tree",
+    "charred_tree_tall"
+  ],
+  "groves": 0.8,
+  "rocks": 60,
+  "grass_colors": [
+    "#4a3826",
+    "#5e4630"
+  ],
+  "fog_density": 0.016,
+  "fog_color": "#5c4a44",
+  "sun_energy": 0.75,
+  "rain": {
+    "amount": 700,
+    "color": "#8a8480aa",
+    "ash": true
+  },
+  "clutter": {
+    "grass_b": {
+      "density": 0.26,
+      "patch": 0.45,
+      "sway": 0.12,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.25
+      ]
+    },
+    "fern": {
+      "density": 0.035,
+      "patch": 0.8,
+      "sway": 0.06,
+      "range": 60,
+      "scale": [
+        0.9,
+        1.4
+      ]
+    },
+    "glowing_roots": {
+      "density": 0.004,
+      "patch": 0.6,
+      "range": 70,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "mushrooms": {
+      "density": 0.008,
+      "patch": 0.9,
+      "range": 45,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "charred_log": {
+      "density": 0.0014,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "stump": {
+      "density": 0.0014,
+      "patch": 0.4,
+      "range": 110,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "bush_b": {
+      "density": 0.003,
+      "patch": 0.6,
+      "range": 100,
+      "shadow": true,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
+  },
+  "passes": [
+    [
+      -256,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -256,
+          0
+        ],
+        [
+          -160,
+          5
+        ],
+        [
+          -60,
+          -10
+        ],
+        [
+          40,
+          10
+        ],
+        [
+          120,
+          40
+        ]
+      ],
+      "width": 2.6
+    },
+    {
+      "points": [
+        [
+          -60,
+          -10
+        ],
+        [
+          -20,
+          -100
+        ],
+        [
+          10,
+          -170
+        ]
+      ],
+      "width": 2.2
+    },
+    {
+      "points": [
+        [
+          40,
+          10
+        ],
+        [
+          30,
+          110
+        ],
+        [
+          20,
+          170
+        ]
+      ],
+      "width": 2.2
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "agnavars_hearth",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -190,
+        20
+      ],
+      "id": "charcoal_kiln",
+      "collide": "box",
+      "face": [
+        -180,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -205,
+        -20
+      ],
+      "id": "charcoal_kiln",
+      "collide": "box",
+      "face": [
+        -180,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -195,
+        8
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        -180,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -184,
+        0
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        40
+      ],
+      "id": "sootmask_hut",
+      "collide": "box",
+      "face": [
+        145,
+        55
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        160,
+        70
+      ],
+      "id": "sootmask_hut",
+      "collide": "box",
+      "face": [
+        145,
+        55
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        85
+      ],
+      "id": "sootmask_hut",
+      "collide": "box",
+      "face": [
+        145,
+        55
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        145,
+        55
+      ],
+      "id": "sootmask_totem",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        50
+      ],
+      "id": "sootmask_totem",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        30
+      ],
+      "id": "charcoal_kiln",
+      "collide": "box",
+      "face": [
+        145,
+        55
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        120
+      ],
+      "id": "giant_fungus",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        140
+      ],
+      "id": "giant_fungus",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        170
+      ],
+      "id": "giant_fungus",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        190
+      ],
+      "id": "giant_fungus",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        150
+      ],
+      "id": "moth_cocoon",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        50,
+        140
+      ],
+      "id": "moth_cocoon",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        170
+      ],
+      "id": "moth_cocoon",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        20
+      ],
+      "id": "ember_treant_stump",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -10
+      ],
+      "id": "ember_treant_stump",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        -20
+      ],
+      "id": "ember_treant_stump",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -10
+      ],
+      "id": "glowing_roots",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        20
+      ],
+      "id": "glowing_roots",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        10
+      ],
+      "id": "glowing_roots",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -40
+      ],
+      "id": "glowing_roots",
+      "collide": "none"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -226,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Agnavar's Hearth",
+        "Smokewood"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "woodwarden_sefa",
+      "pos": [
+        -196,
+        -6
+      ],
+      "face": [
+        -184,
+        0
+      ]
+    },
+    {
+      "id": "hunter_bartek",
+      "pos": [
+        -178,
+        12
+      ],
+      "face": [
+        -184,
+        0
+      ]
+    },
+    {
+      "id": "scout_liesl",
+      "pos": [
+        -192,
+        16
+      ],
+      "face": [
+        -184,
+        0
+      ]
+    },
+    {
+      "id": "moth_catcher_ondine",
+      "pos": [
+        -176,
+        -10
+      ],
+      "face": [
+        -184,
+        0
+      ]
+    },
+    {
+      "id": "charcoal_seller_vard",
+      "pos": [
+        -204,
+        4
+      ],
+      "face": [
+        -184,
+        0
+      ]
+    },
+    {
+      "id": "smokewood_warden",
+      "pos": [
+        -168,
+        0
+      ],
+      "patrol": [
+        [
+          -168,
+          0
+        ],
+        [
+          -185,
+          22
+        ],
+        [
+          -205,
+          0
+        ],
+        [
+          -185,
+          -22
+        ],
+        [
+          -168,
+          0
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        0
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        40,
+        -30
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -60,
+        40
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        30,
+        50
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -30,
+        -60
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        80,
+        10
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        10,
+        -10
+      ],
+      "pool": {
+        "old_emberheart": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -40,
+        -130
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        20,
+        -150
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -80,
+        -110
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        60,
+        -120
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        0,
+        -180
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -100,
+        -160
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        -160
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        -100
+      ],
+      "pool": {
+        "smoke_stag": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        40,
+        -90
+      ],
+      "pool": {
+        "smoke_stag": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -70,
+        -70
+      ],
+      "pool": {
+        "smoke_stag": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        10,
+        -170
+      ],
+      "pool": {
+        "ashen_stag": 1
+      },
+      "respawn": 1500,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        30
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        60
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        130,
+        90
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        160,
+        20
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        110,
+        70
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        170,
+        80
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        145,
+        55
+      ],
+      "pool": {
+        "sootmask_chief": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        20,
+        130
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -40,
+        150
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        70,
+        150
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -10,
+        180
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        40,
+        110
+      ],
+      "pool": {
+        "walking_fungus": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -20,
+        120
+      ],
+      "pool": {
+        "walking_fungus": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        0,
+        160
+      ],
+      "pool": {
+        "walking_fungus": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        60,
+        180
+      ],
+      "pool": {
+        "walking_fungus": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        20,
+        170
+      ],
+      "pool": {
+        "cinder_moth_queen": 1
+      },
+      "respawn": 1500,
+      "wander": 10
+    }
+  ]
+}

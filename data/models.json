@@ -1,5 +1,81 @@
 {
   "characters": {
+    "ember_treant": {
+      "path": "res://assets/creatures/ember_treant.glb",
+      "rig": "own"
+    },
+    "old_emberheart": {
+      "path": "res://assets/creatures/old_emberheart.glb",
+      "rig": "own"
+    },
+    "smoke_wolf": {
+      "path": "res://assets/creatures/smoke_wolf.glb",
+      "rig": "own"
+    },
+    "smoke_bear": {
+      "path": "res://assets/creatures/smoke_bear.glb",
+      "rig": "own"
+    },
+    "smoke_stag": {
+      "path": "res://assets/creatures/smoke_stag.glb",
+      "rig": "own"
+    },
+    "ashen_stag": {
+      "path": "res://assets/creatures/ashen_stag.glb",
+      "rig": "own"
+    },
+    "fire_moth": {
+      "path": "res://assets/creatures/fire_moth.glb",
+      "rig": "own"
+    },
+    "cinder_moth_queen": {
+      "path": "res://assets/creatures/cinder_moth_queen.glb",
+      "rig": "own"
+    },
+    "walking_fungus": {
+      "path": "res://assets/creatures/walking_fungus.glb",
+      "rig": "own"
+    },
+    "sootmask_cultist": {
+      "path": "res://assets/creatures/sootmask_cultist_body.glb",
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sootmask_mask.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sootmask_harness.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/sootmask_belt.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
+    "sootmask_chief": {
+      "path": "res://assets/creatures/sootmask_chief_body.glb",
+      "scale": 0.95,
+      "hide": [
+        "Rogue_Cape"
+      ],
+      "attach": [
+        {
+          "bone": "head",
+          "path": "res://assets/creatures/sootmask_chief_mask.glb"
+        },
+        {
+          "bone": "chest",
+          "path": "res://assets/creatures/sootmask_chief_cloak.glb"
+        },
+        {
+          "bone": "hips",
+          "path": "res://assets/creatures/sootmask_chief_belt.glb"
+        }
+      ],
+      "wearable_slots": []
+    },
     "grass_stalker": {
       "path": "res://assets/creatures/grass_stalker.glb",
       "rig": "own"
@@ -2042,6 +2118,16 @@
     "smoke_spirit": {"path": "res://assets/creatures/smoke_spirit.glb", "rig": "own"},
     "firebird": {"path": "res://assets/creatures/firebird.glb", "rig": "own", "scale": 0.9},
     "phoenix": {"path": "res://assets/creatures/phoenix.glb", "rig": "own", "scale": 1.25},
+    "ember_court_guard": {"path": "res://assets/creatures/hearth_guard_body.glb", "scale": 2.0, "hide": ["Barbarian_Head", "Barbarian_BearHat"], "attach": [{"bone": "head", "path": "res://assets/creatures/hearth_guard_helm.glb"}, {"bone": "chest", "path": "res://assets/creatures/hearth_guard_cuirass.glb"}, {"bone": "hips", "path": "res://assets/creatures/hearth_guard_fauld.glb"}, {"bone": "upperarm.l", "path": "res://assets/creatures/hearth_guard_arm_l.glb"}, {"bone": "upperarm.r", "path": "res://assets/creatures/hearth_guard_arm_r.glb"}, {"bone": "lowerarm.l", "path": "res://assets/creatures/hearth_guard_bracer_l.glb"}, {"bone": "lowerarm.r", "path": "res://assets/creatures/hearth_guard_bracer_r.glb"}, {"bone": "lowerleg.l", "path": "res://assets/creatures/hearth_guard_greave_l.glb"}, {"bone": "lowerleg.r", "path": "res://assets/creatures/hearth_guard_greave_r.glb"}], "wearable_slots": []},
+    "ember_giant_queen": {"path": "res://assets/creatures/ember_queen_body.glb", "scale": 2.4, "hide": ["Barbarian_Head", "Barbarian_BearHat", "Barbarian_LegLeft", "Barbarian_LegRight"], "attach": [{"bone": "head", "path": "res://assets/creatures/ember_queen_head.glb"}, {"bone": "chest", "path": "res://assets/creatures/ember_queen_chest.glb"}, {"bone": "hips", "path": "res://assets/creatures/ember_queen_gown.glb"}, {"bone": "upperarm.l", "path": "res://assets/creatures/ember_queen_arm_l.glb"}, {"bone": "upperarm.r", "path": "res://assets/creatures/ember_queen_arm_r.glb"}, {"bone": "lowerarm.l", "path": "res://assets/creatures/ember_queen_bracer_l.glb"}, {"bone": "lowerarm.r", "path": "res://assets/creatures/ember_queen_bracer_r.glb"}], "wearable_slots": []},
+    "salamander_kin": {"path": "res://assets/creatures/salamander_kin_body.glb", "scale": 0.8, "hide": ["Rogue_Head", "Rogue_Cape"], "attach": [{"bone": "head", "path": "res://assets/creatures/salamander_head.glb"}, {"bone": "hips", "path": "res://assets/creatures/salamander_tail.glb"}, {"bone": "chest", "path": "res://assets/creatures/salamander_cuirass.glb"}], "wearable_slots": []},
+    "salamander_priest": {"path": "res://assets/creatures/salamander_priest_body.glb", "scale": 0.8, "hide": ["Mage_Head", "Mage_Hat", "Mage_Cape"], "attach": [{"bone": "head", "path": "res://assets/creatures/salamander_priest_head.glb"}, {"bone": "hips", "path": "res://assets/creatures/salamander_tail.glb"}], "wearable_slots": []},
+    "scorchtongue": {"path": "res://assets/creatures/scorchtongue_body.glb", "scale": 0.95, "hide": ["Mage_Head", "Mage_Hat", "Mage_Cape"], "attach": [{"bone": "head", "path": "res://assets/creatures/scorchtongue_head.glb"}, {"bone": "hips", "path": "res://assets/creatures/salamander_tail.glb"}, {"bone": "chest", "path": "res://assets/creatures/scorchtongue_mantle.glb"}], "wearable_slots": []},
+    "fallen_fire_priest": {"path": "res://assets/creatures/fallen_fire_priest_body.glb", "hide": ["Mage_Head", "Mage_Hat"], "attach": [{"bone": "head", "path": "res://assets/creatures/fallen_priest_head.glb"}, {"bone": "chest", "path": "res://assets/creatures/fallen_priest_smolder.glb"}, {"bone": "hips", "path": "res://assets/creatures/fallen_priest_rags.glb"}], "wearable_slots": []},
+    "caldris_unburnt": {"path": "res://assets/creatures/caldris_body.glb", "scale": 0.95, "hide": ["Mage_Hat"], "attach": [{"bone": "head", "path": "res://assets/creatures/caldris_head.glb"}, {"bone": "chest", "path": "res://assets/creatures/caldris_robes.glb"}, {"bone": "hips", "path": "res://assets/creatures/caldris_hem.glb"}], "wearable_slots": []},
+    "greater_fire_elemental": {"path": "res://assets/creatures/greater_fire_elemental.glb", "rig": "own"},
+    "living_magma": {"path": "res://assets/creatures/living_magma.glb", "rig": "own"},
+    "living_forgeheart": {"path": "res://assets/creatures/living_forgeheart.glb", "rig": "own"},
     "gale_spirit": {"path": "res://assets/creatures/gale_spirit.glb", "rig": "own"},
     "dust_devil": {"path": "res://assets/creatures/dust_devil.glb", "rig": "own"},
     "storm_eye": {"path": "res://assets/creatures/storm_eye.glb", "rig": "own"},
@@ -2762,6 +2848,8 @@
     }
   },
   "weapons": {
+    "charburner_axe": "res://assets/creatures/charburner_axe.glb",
+    "sootmask_brand": "res://assets/creatures/sootmask_brand.glb",
     "barrow_blade": "res://assets/creatures/barrow_blade.glb",
     "barrow_lord_sword": "res://assets/creatures/barrow_lord_sword.glb",
     "river_trident": "res://assets/creatures/river_trident.glb",
@@ -2784,6 +2872,12 @@
     "bow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/bow_withString.gltf",
     "ember_hammer": "res://assets/creatures/ember_hammer.glb",
     "ember_greathammer": "res://assets/creatures/ember_greathammer.glb",
+    "court_maul": "res://assets/creatures/court_maul.glb",
+    "queen_scepter": "res://assets/creatures/queen_scepter.glb",
+    "salamander_glaive": "res://assets/creatures/salamander_glaive.glb",
+    "brazier_staff": "res://assets/creatures/brazier_staff.glb",
+    "scorchtongue_staff": "res://assets/creatures/scorchtongue_staff.glb",
+    "ember_cage_staff": "res://assets/creatures/ember_cage_staff.glb",
     "stonebrow_club": "res://assets/creatures/stonebrow_club.glb",
     "stonebrow_skull_staff": "res://assets/creatures/stonebrow_skull_staff.glb",
     "kite_hook": "res://assets/creatures/kite_hook.glb",
@@ -3455,7 +3549,23 @@
     "hoofborn_yurt": {"path": "res://assets/props/hoofborn_yurt.glb"},
     "horse_totem": {"path": "res://assets/props/horse_totem.glb"},
     "barrow_mound": {"path": "res://assets/props/barrow_mound.glb"},
-    "herd_bones": {"path": "res://assets/props/herd_bones.glb"}
+    "herd_bones": {"path": "res://assets/props/herd_bones.glb"},
+    "eternal_forge": {"path": "res://assets/props/eternal_forge.glb", "lights": [{"pos": [0, 9.5, -4], "color": "#ff9040", "energy": 6.0, "range": 40, "night": false}, {"pos": [-7.5, 3.2, 12.5], "color": "#ff9040", "energy": 1.4, "range": 9, "night": false}, {"pos": [7.5, 3.2, 12.5], "color": "#ff9040", "energy": 1.4, "range": 9, "night": false}]},
+    "colossal_anvil": {"path": "res://assets/props/colossal_anvil.glb", "lights": [{"pos": [-1.2, 5.2, -0.1], "color": "#ff8a3a", "energy": 1.6, "range": 10, "night": false}]},
+    "pilgrim_brazier": {"path": "res://assets/props/pilgrim_brazier.glb", "lights": [{"pos": [0, 2.6, 0], "color": "#ff9a50", "energy": 1.0, "range": 7, "night": false}]},
+    "salamander_idol": {"path": "res://assets/props/salamander_idol.glb", "lights": [{"pos": [0, 3.3, 0.7], "color": "#ff7a30", "energy": 0.5, "range": 4, "night": true}]},
+    "salamander_den": {"path": "res://assets/props/salamander_den.glb", "lights": [{"pos": [0, 0.6, 2.9], "color": "#ff7a30", "energy": 1.0, "range": 6, "night": false}]},
+    "heretic_ruin": {"path": "res://assets/props/heretic_ruin.glb"},
+    "magma_pool": {"path": "res://assets/props/magma_pool.glb", "lights": [{"pos": [0, 0.8, 0], "color": "#ff7030", "energy": 2.0, "range": 10, "night": false}]},
+    "smoldering_tree": {"path": "res://assets/props/smoldering_tree.glb"},
+    "smoldering_tree_b": {"path": "res://assets/props/smoldering_tree_b.glb"},
+    "glowing_roots": {"path": "res://assets/props/glowing_roots.glb"},
+    "charcoal_kiln": {"path": "res://assets/props/charcoal_kiln.glb", "lights": [{"pos": [0, 0.4, 2.2], "color": "#ff8040", "energy": 0.6, "range": 5, "night": true}]},
+    "sootmask_totem": {"path": "res://assets/props/sootmask_totem.glb", "lights": [{"pos": [0, 4.4, 0], "color": "#ff8040", "energy": 0.5, "range": 5, "night": true}]},
+    "sootmask_hut": {"path": "res://assets/props/sootmask_hut.glb", "lights": [{"pos": [0, 3.0, 0], "color": "#ff8040", "energy": 0.4, "range": 4, "night": true}]},
+    "giant_fungus": {"path": "res://assets/props/giant_fungus.glb", "lights": [{"pos": [0, 2.6, 0], "color": "#ffa860", "energy": 0.8, "range": 7, "night": true}]},
+    "moth_cocoon": {"path": "res://assets/props/moth_cocoon.glb", "lights": [{"pos": [0.5, 3.2, 0], "color": "#ffc070", "energy": 0.6, "range": 6, "night": true}]},
+    "ember_treant_stump": {"path": "res://assets/props/ember_treant_stump.glb", "lights": [{"pos": [0.3, 1.3, 0.33], "color": "#ff7a30", "energy": 1.0, "range": 7, "night": false}]}
   },
   "gear": {
     "cloth_cap": {
