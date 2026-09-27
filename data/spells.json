@@ -1138,5 +1138,682 @@
       "kind": "buff",
       "color": "#ff9a3a"
     }
+  },
+  "skybreaker": {
+    "name": "Skybreaker",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 18,
+    "range": 3.4,
+    "min": 75,
+    "max": 110,
+    "per_level": 3.0,
+    "verb": [
+      "break",
+      "breaks"
+    ],
+    "stun_chance": 0.3,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "classes": {
+      "warrior": 36
+    },
+    "cost": 10400,
+    "skill": "offense",
+    "desc": "A blow that could crack the sky: heavy damage and a chance to stun for 2 seconds (not foes more than 3 levels above you).",
+    "fx": {
+      "kind": "impact",
+      "color": "#d8e0f0"
+    }
+  },
+  "rallying_standard": {
+    "name": "Rallying Standard",
+    "ability": true,
+    "type": "buff",
+    "target": "group",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 600,
+    "range": 30,
+    "duration": 900,
+    "stats": {
+      "str": 15,
+      "ac": 25,
+      "hp": 60
+    },
+    "classes": {
+      "warrior": 38
+    },
+    "cost": 11200,
+    "land_text": "A standard snaps in the wind above you; you stand taller.",
+    "fade_text": "The standard is furled.",
+    "desc": "Your group, for fifteen minutes: +15 strength, +25 armor and +60 health. Once every ten minutes.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d8c070"
+    }
+  },
+  "gale_cleave": {
+    "name": "Gale Cleave",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 24,
+    "range": 3.4,
+    "min": 80,
+    "max": 115,
+    "per_level": 3.0,
+    "splash": 10.0,
+    "splash_pct": 0.9,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "classes": {
+      "warrior": 40
+    },
+    "cost": 12000,
+    "skill": "offense",
+    "desc": "A cleave like a gale: your target and every foe near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8d8e8"
+    }
+  },
+  "sunrise_ward": {
+    "name": "Sunrise Ward",
+    "type": "buff",
+    "target": "group",
+    "mana": 130,
+    "cast_time": 5.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "ac": 28,
+      "hp": 140,
+      "hp_regen": 4
+    },
+    "classes": {
+      "cleric": 36
+    },
+    "cost": 10400,
+    "skill": "abjuration",
+    "land_text": "The first light of morning wards you.",
+    "fade_text": "The sunrise ward fades.",
+    "desc": "Your group, for thirty minutes: +28 armor, +140 health and +4 health every tick.",
+    "fx": {
+      "kind": "buff",
+      "color": "#ffe8a0"
+    }
+  },
+  "radiant_smite": {
+    "name": "Radiant Smite",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 95,
+    "cast_time": 3.0,
+    "recast": 6,
+    "range": 30,
+    "min": 190,
+    "max": 250,
+    "per_level": 6.0,
+    "classes": {
+      "cleric": 38
+    },
+    "cost": 11200,
+    "skill": "evocation",
+    "desc": "Radiance strikes your foe like noon.",
+    "fx": {
+      "kind": "burst",
+      "color": "#fff4c0"
+    }
+  },
+  "circle_of_radiance": {
+    "name": "Circle of Radiance",
+    "type": "heal",
+    "target": "group",
+    "mana": 140,
+    "cast_time": 4.0,
+    "recast": 10,
+    "range": 30,
+    "min": 170,
+    "max": 210,
+    "per_level": 5.0,
+    "classes": {
+      "cleric": 40
+    },
+    "cost": 12000,
+    "skill": "alteration",
+    "desc": "Radiance heals everyone in your group nearby.",
+    "fx": {
+      "kind": "heal",
+      "color": "#fff0b0"
+    }
+  },
+  "tempest_lance": {
+    "name": "Tempest Lance",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 110,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 230,
+    "max": 290,
+    "per_level": 7.0,
+    "classes": {
+      "wizard": 36
+    },
+    "cost": 10400,
+    "skill": "evocation",
+    "desc": "A lance of storm-wind and lightning.",
+    "fx": {
+      "kind": "burst",
+      "color": "#b0d0ff"
+    }
+  },
+  "windshear": {
+    "name": "Windshear",
+    "type": "snare",
+    "target": "enemy",
+    "mana": 45,
+    "cast_time": 1.5,
+    "recast": 6,
+    "range": 30,
+    "duration": 40,
+    "classes": {
+      "wizard": 38
+    },
+    "cost": 11200,
+    "skill": "alteration",
+    "snare_text": "Shearing winds slow %s.",
+    "snare_you": "Shearing winds drag at your limbs.",
+    "desc": "Winds drag at your target: half speed for 40 seconds.",
+    "fx": {
+      "kind": "root",
+      "color": "#c8e0f0"
+    }
+  },
+  "skyfall": {
+    "name": "Skyfall",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 200,
+    "cast_time": 5.5,
+    "recast": 18,
+    "range": 30,
+    "min": 290,
+    "max": 360,
+    "per_level": 7.0,
+    "splash": 12.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "wizard": 40
+    },
+    "cost": 12000,
+    "skill": "evocation",
+    "desc": "The sky itself falls on your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#d0e0ff"
+    }
+  },
+  "windstep_strike": {
+    "name": "Windstep Strike",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 22,
+    "range": 3.4,
+    "min": 95,
+    "max": 130,
+    "per_level": 4.0,
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "classes": {
+      "rogue": 36
+    },
+    "cost": 10400,
+    "skill": "offense",
+    "desc": "A step like the wind and a strike before it's seen.",
+    "fx": {
+      "kind": "impact",
+      "color": "#e0e8f0"
+    }
+  },
+  "razor_wind": {
+    "name": "Razor Wind",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 20,
+    "stats": {
+      "haste": 35,
+      "dmg": 10
+    },
+    "classes": {
+      "rogue": 38
+    },
+    "cost": 11200,
+    "land_text": "Your blades are a razor wind.",
+    "fade_text": "The razor wind dies.",
+    "desc": "For 20 seconds: 35% faster attacks and +10 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#c0c8d8"
+    }
+  },
+  "assassins_mark": {
+    "name": "Assassin's Mark",
+    "ability": true,
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 40,
+    "range": 3.4,
+    "tick": 30,
+    "ticks": 6,
+    "per_level": 1.2,
+    "classes": {
+      "rogue": 40
+    },
+    "cost": 12000,
+    "skill": "offense",
+    "dot_text": "%s bleeds from the assassin's mark.",
+    "land_text": "A marked wound opens; you bleed heavily.",
+    "desc": "A mark that bleeds heavily for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#b02030"
+    }
+  },
+  "skyforge_mantle": {
+    "name": "Skyforge Mantle",
+    "type": "buff",
+    "target": "pet",
+    "mana": 80,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 40,
+    "duration": 900,
+    "stats": {
+      "ac": 50,
+      "hp": 400,
+      "dmg": 8
+    },
+    "classes": {
+      "magician": 36
+    },
+    "cost": 10400,
+    "skill": "alteration",
+    "land_text": "Your pet is wrapped in skyforged air.",
+    "fade_text": "The skyforge mantle fades.",
+    "desc": "Your pet, for fifteen minutes: +50 armor, +400 health and +8 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#b8d8f0"
+    }
+  },
+  "cyclone_blast": {
+    "name": "Cyclone Blast",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 100,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 200,
+    "max": 260,
+    "per_level": 6.5,
+    "classes": {
+      "magician": 38
+    },
+    "cost": 11200,
+    "skill": "evocation",
+    "desc": "A howling cyclone of elemental air.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8e8f8"
+    }
+  },
+  "elemental_maelstrom": {
+    "name": "Elemental Maelstrom",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 180,
+    "cast_time": 5.0,
+    "recast": 16,
+    "range": 30,
+    "min": 250,
+    "max": 310,
+    "per_level": 6.5,
+    "splash": 10.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "magician": 40
+    },
+    "cost": 12000,
+    "skill": "evocation",
+    "desc": "Every element at once, on your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffc080"
+    }
+  },
+  "barrow_rot": {
+    "name": "Barrow Rot",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 85,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 25,
+    "tick": 36,
+    "ticks": 6,
+    "per_level": 1.3,
+    "classes": {
+      "necromancer": 36
+    },
+    "cost": 10400,
+    "skill": "conjuration",
+    "dot_text": "%s rots like a barrow's dead.",
+    "land_text": "Barrow rot eats at you.",
+    "desc": "The rot of the barrows: heavy damage every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#5a7a3a"
+    }
+  },
+  "unholy_frenzy": {
+    "name": "Unholy Frenzy",
+    "type": "buff",
+    "target": "pet",
+    "mana": 70,
+    "cast_time": 1.0,
+    "recast": 120,
+    "range": 40,
+    "duration": 60,
+    "stats": {
+      "haste": 50,
+      "dmg": 15
+    },
+    "classes": {
+      "necromancer": 38
+    },
+    "cost": 11200,
+    "skill": "alteration",
+    "land_text": "Your servant falls into an unholy frenzy.",
+    "fade_text": "The frenzy passes.",
+    "desc": "Your pet, for a minute: 50% faster attacks and +15 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#8a3ab0"
+    }
+  },
+  "soul_eater": {
+    "name": "Soul Eater",
+    "type": "lifetap",
+    "target": "enemy",
+    "mana": 125,
+    "cast_time": 3.5,
+    "recast": 10,
+    "range": 25,
+    "min": 230,
+    "max": 290,
+    "per_level": 6.5,
+    "classes": {
+      "necromancer": 40
+    },
+    "cost": 12000,
+    "skill": "alteration",
+    "desc": "You eat your foe's soul and take its life.",
+    "fx": {
+      "kind": "impact",
+      "color": "#5a1a80"
+    }
+  },
+  "windbite_curse": {
+    "name": "Windbite Curse",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 80,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 30,
+    "tick": 32,
+    "ticks": 6,
+    "per_level": 1.2,
+    "classes": {
+      "shaman": 36
+    },
+    "cost": 10400,
+    "skill": "conjuration",
+    "dot_text": "%s is bitten by the cold wind.",
+    "land_text": "A biting wind flays you.",
+    "desc": "The cold wind bites your foe every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#c8e8ff"
+    }
+  },
+  "spirit_of_the_plains": {
+    "name": "Spirit of the Plains",
+    "type": "buff",
+    "target": "group",
+    "mana": 110,
+    "cast_time": 4.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "agi": 20,
+      "sta": 15,
+      "hp": 80
+    },
+    "classes": {
+      "shaman": 38
+    },
+    "cost": 11200,
+    "skill": "alteration",
+    "land_text": "The spirit of the plains runs through you.",
+    "fade_text": "The spirit of the plains departs.",
+    "desc": "Your group, for thirty minutes: +20 agility, +15 stamina and +80 health.",
+    "fx": {
+      "kind": "buff",
+      "color": "#c8b060"
+    }
+  },
+  "gale_of_torpor": {
+    "name": "Gale of Torpor",
+    "type": "slow",
+    "target": "enemy",
+    "mana": 70,
+    "cast_time": 2.5,
+    "recast": 3,
+    "range": 30,
+    "slow": 70,
+    "duration": 180,
+    "classes": {
+      "shaman": 40
+    },
+    "cost": 12000,
+    "skill": "alteration",
+    "slow_text": "A gale of torpor settles on %s; its blows barely come.",
+    "slow_you": "A heavy wind settles on you; your arms are lead.",
+    "desc": "Your foe attacks 70% slower for three minutes. Named foes shrug off half of it.",
+    "fx": {
+      "kind": "dot",
+      "color": "#a8c0d0"
+    }
+  },
+  "windrider_shot": {
+    "name": "Windrider Shot",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 0,
+    "shot_mult": 3.4,
+    "classes": {
+      "ranger": 36
+    },
+    "cost": 10400,
+    "skill": "archery",
+    "desc": "An arrow that rides the wind, for 340% of a normal shot."
+  },
+  "gale_snare": {
+    "name": "Gale Snare",
+    "type": "snare",
+    "target": "enemy",
+    "mana": 40,
+    "cast_time": 1.5,
+    "recast": 6,
+    "range": 30,
+    "duration": 40,
+    "classes": {
+      "ranger": 38
+    },
+    "cost": 11200,
+    "skill": "alteration",
+    "snare_text": "Grass and wind tangle %s.",
+    "snare_you": "Grass and wind tangle your legs.",
+    "desc": "Grass and wind tangle your target: half speed for 40 seconds.",
+    "fx": {
+      "kind": "root",
+      "color": "#a0c070"
+    }
+  },
+  "skystorm_volley": {
+    "name": "Skystorm Volley",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 45,
+    "range": 0,
+    "shot_mult": 1.6,
+    "shots": 12,
+    "spread": 16.0,
+    "classes": {
+      "ranger": 40
+    },
+    "cost": 12000,
+    "skill": "archery",
+    "desc": "A storm of arrows from the sky: your target and up to eleven foes near it, each for 160% of a normal shot."
+  },
+  "vayuketh_breath": {
+    "name": "Vayuketh's Breath",
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 0,
+    "duration": 1800,
+    "stats": {
+      "agi": 12,
+      "haste": 8,
+      "hp": 50
+    },
+    "classes": {},
+    "land_text": "A great warm wind fills your lungs: the Sky-Eared sees you.",
+    "fade_text": "Vayuketh's breath leaves you.",
+    "desc": "For half an hour: +12 agility, 8% faster attacks and +50 hit points. Vayuketh's gift to his followers, once an hour at his shrine in Galehold.",
+    "fx": {
+      "kind": "buff",
+      "color": "#c8e0f8"
+    }
+  },
+  "gale_buffet": {
+    "name": "Gale Buffet",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 8,
+    "min": 34,
+    "max": 52,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A buffet of hard wind.",
+    "fx": {
+      "kind": "impact",
+      "color": "#c8e0f0"
+    }
+  },
+  "thunder_strike": {
+    "name": "Thunder Strike",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 10,
+    "min": 38,
+    "max": 58,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A thunderbird's lightning.",
+    "fx": {
+      "kind": "burst",
+      "color": "#a0c8ff"
+    }
+  },
+  "barrow_chill": {
+    "name": "Barrow Chill",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 17,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s shivers in the barrow's cold.",
+    "land_text": "The cold of the grave seeps into you.",
+    "desc": "A barrow wight's touch.",
+    "fx": {
+      "kind": "dot",
+      "color": "#8ab08a"
+    }
+  },
+  "trample": {
+    "name": "Trample",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "min": 36,
+    "max": 56,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A great beast's trample.",
+    "fx": {
+      "kind": "impact",
+      "color": "#a08060"
+    }
   }
 }

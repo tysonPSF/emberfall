@@ -1,0 +1,349 @@
+{
+  "gale_essence": {
+    "name": "Gale Essence",
+    "value": 40,
+    "stack": 20
+  },
+  "eagle_talon": {
+    "name": "Giant Eagle Talon",
+    "value": 36,
+    "stack": 20
+  },
+  "thunder_feather": {
+    "name": "Thunderbird Feather",
+    "value": 44,
+    "stack": 20
+  },
+  "kite_silk": {
+    "name": "Kite Silk",
+    "value": 40,
+    "stack": 20
+  },
+  "giants_standing_stone": {
+    "name": "A Giant's Hand-Stone",
+    "value": 44,
+    "stack": 20
+  },
+  "stalker_pelt": {
+    "name": "Grass Stalker Pelt",
+    "value": 44,
+    "stack": 20
+  },
+  "thunderhoof_horn": {
+    "name": "Thunderhoof Horn",
+    "value": 44,
+    "stack": 20
+  },
+  "horsetail_braid": {
+    "name": "Horsetail Braid",
+    "value": 44,
+    "stack": 20
+  },
+  "barrow_bronze": {
+    "name": "Barrow Bronze",
+    "value": 48,
+    "stack": 20
+  },
+  "storm_eye_heart": {
+    "name": "The Storm-Eye's Heart",
+    "value": 250,
+    "lore": true
+  },
+  "skarrows_crest": {
+    "name": "Skarrow's Crest",
+    "value": 250,
+    "lore": true
+  },
+  "tarns_painted_sail": {
+    "name": "Tarn's Painted Sail",
+    "value": 250,
+    "lore": true
+  },
+  "stackstones_capstone": {
+    "name": "Stackstone's Capstone",
+    "value": 250,
+    "lore": true
+  },
+  "tawnyjaws_fang": {
+    "name": "Tawnyjaw's Fang",
+    "value": 250,
+    "lore": true
+  },
+  "herd_kings_horn": {
+    "name": "The Herd-King's Horn",
+    "value": 250,
+    "lore": true
+  },
+  "khans_horsetail_banner": {
+    "name": "The Khan's Horsetail Banner",
+    "value": 250,
+    "lore": true
+  },
+  "barrow_lords_death_mask": {
+    "name": "The Barrow Lord's Death Mask",
+    "value": 250,
+    "lore": true
+  },
+  "galescout_bracer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Galescout Bracer",
+    "slot": "arms",
+    "ac": 15,
+    "agi": 5,
+    "sta": 4,
+    "value": 11000,
+    "rec_level": 33,
+    "wear": "leather_sleeves"
+  },
+  "storm_eye_amulet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Storm-Eye Amulet",
+    "slot": "neck",
+    "ac": 8,
+    "int": 7,
+    "wis": 7,
+    "mana": 70,
+    "value": 20000,
+    "rec_level": 37
+  },
+  "talon_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Talon Ring",
+    "slot": "ring",
+    "ac": 6,
+    "str": 5,
+    "agi": 4,
+    "hp": 35,
+    "value": 11000,
+    "rec_level": 33
+  },
+  "thunderwing_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Thunderwing Cloak",
+    "slot": "arms",
+    "ac": 16,
+    "agi": 6,
+    "sta": 5,
+    "hp": 40,
+    "value": 22000,
+    "rec_level": 37,
+    "wear": "leather_sleeves"
+  },
+  "kitesilk_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Kitesilk Sash",
+    "slot": "waist",
+    "ac": 8,
+    "agi": 5,
+    "str": 3,
+    "value": 11000,
+    "rec_level": 33,
+    "wear": "rope_belt"
+  },
+  "tarns_skyblade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tarn's Skyblade",
+    "slot": "primary",
+    "dmg": 28,
+    "delay": 2.7,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 6,
+    "agi": 6,
+    "hp": 50,
+    "value": 26000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "handstone_pendant": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Handstone Pendant",
+    "slot": "neck",
+    "ac": 8,
+    "sta": 6,
+    "str": 4,
+    "hp": 45,
+    "value": 12000,
+    "rec_level": 34
+  },
+  "capstone_maul": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Capstone Maul",
+    "slot": "primary",
+    "dmg": 44,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 8,
+    "sta": 6,
+    "hp": 60,
+    "value": 28000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "stalkerhide_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Stalkerhide Boots",
+    "slot": "feet",
+    "ac": 15,
+    "agi": 6,
+    "sta": 4,
+    "value": 12000,
+    "rec_level": 35,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "tawnyjaw_fang_dirk": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tawnyjaw Fang Dirk",
+    "slot": "primary",
+    "dmg": 21,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 7,
+    "value": 28000,
+    "rec_level": 39,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "hornbone_gauntlets": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Hornbone Gauntlets",
+    "slot": "hands",
+    "ac": 18,
+    "str": 6,
+    "sta": 4,
+    "value": 12000,
+    "rec_level": 35,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "herd_kings_helm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Herd-King's Helm",
+    "slot": "head",
+    "ac": 26,
+    "sta": 8,
+    "str": 6,
+    "hp": 60,
+    "value": 28000,
+    "rec_level": 39,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "horsetail_charm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Horsetail Charm",
+    "slot": "ring",
+    "ac": 6,
+    "agi": 6,
+    "sta": 4,
+    "hp": 35,
+    "value": 12000,
+    "rec_level": 35
+  },
+  "khans_curved_blade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "The Khan's Curved Blade",
+    "slot": "primary",
+    "dmg": 26,
+    "delay": 2.5,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "agi": 8,
+    "str": 5,
+    "value": 28000,
+    "rec_level": 39,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "barrow_bronze_greaves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Barrow-Bronze Greaves",
+    "slot": "legs",
+    "ac": 29,
+    "sta": 7,
+    "value": 12000,
+    "rec_level": 35,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "death_mask_cowl": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Death-Mask Cowl",
+    "slot": "head",
+    "ac": 12,
+    "int": 8,
+    "wis": 8,
+    "mana": 80,
+    "hp": 40,
+    "value": 28000,
+    "rec_level": 39,
+    "wear": "cloth_cap"
+  }
+}

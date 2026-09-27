@@ -2204,5 +2204,339 @@
     "faction": {
       "rainhold": 30
     }
+  },
+  "kite_silk_q": {
+    "name": "Scraps Of Kite Silk",
+    "giver": "scout_leader_emeka",
+    "start_keyword": "silk",
+    "wants": {
+      "kite_silk": 4
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 800
+    },
+    "first_reward_item": "kitesilk_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Scraps Of Kite Silk. Bring Scout-Leader Emeka 4 scraps of kite silk.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "kitewing": -10
+    }
+  },
+  "tarns_painted_sail_q": {
+    "name": "Tarn's Painted Sail",
+    "giver": "scout_leader_emeka",
+    "start_keyword": "sail",
+    "wants": {
+      "tarns_painted_sail": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 1920
+    },
+    "first_reward_item": "tarns_skyblade",
+    "accept_text": "You have taken on a task: Tarn's Painted Sail. Bring Scout-Leader Emeka Tarn's Painted Sail.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "kitewing": -30
+    }
+  },
+  "giants_standing_stone_q": {
+    "name": "Giant's Hand-stones",
+    "giver": "stonecaller_hild",
+    "start_keyword": "stones",
+    "wants": {
+      "giants_standing_stone": 4
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 800
+    },
+    "first_reward_item": "handstone_pendant",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Giant's Hand-stones. Bring Stonecaller Hild 4 giant's hand-stones.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "stone_giants": -10
+    }
+  },
+  "stackstones_capstone_q": {
+    "name": "Stackstone's Capstone",
+    "giver": "stonecaller_hild",
+    "start_keyword": "capstone",
+    "wants": {
+      "stackstones_capstone": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 1920
+    },
+    "first_reward_item": "capstone_maul",
+    "accept_text": "You have taken on a task: Stackstone's Capstone. Bring Stonecaller Hild Stackstone's Capstone.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "stone_giants": -30
+    }
+  },
+  "gale_essence_q": {
+    "name": "Gale Essences",
+    "giver": "windwatcher_reyes",
+    "start_keyword": "essences",
+    "wants": {
+      "gale_essence": 4
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 800
+    },
+    "first_reward_item": "galescout_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Gale Essences. Bring Windwatcher Reyes 4 gale essences.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "storm_eye_heart_q": {
+    "name": "The Storm-Eye's Heart",
+    "giver": "windwatcher_reyes",
+    "start_keyword": "heart",
+    "wants": {
+      "storm_eye_heart": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 1920
+    },
+    "first_reward_item": "storm_eye_amulet",
+    "accept_text": "You have taken on a task: The Storm-Eye's Heart. Bring Windwatcher Reyes the Storm-Eye's Heart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "eagle_talon_q": {
+    "name": "Giant Eagle Talons",
+    "giver": "falconer_ines",
+    "start_keyword": "talons",
+    "wants": {
+      "eagle_talon": 4
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 800
+    },
+    "first_reward_item": "talon_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Giant Eagle Talons. Bring Falconer Ines 4 giant eagle talons.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "skarrows_crest_q": {
+    "name": "Skarrow's Crest",
+    "giver": "falconer_ines",
+    "start_keyword": "crest",
+    "wants": {
+      "skarrows_crest": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 1920
+    },
+    "first_reward_item": "thunderwing_cloak",
+    "accept_text": "You have taken on a task: Skarrow's Crest. Bring Falconer Ines Skarrow's Crest.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "horsetail_braid_q": {
+    "name": "Horsetail Braids",
+    "giver": "plainswarden_hakon",
+    "start_keyword": "braids",
+    "wants": {
+      "horsetail_braid": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "first_reward_item": "horsetail_charm",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Horsetail Braids. Bring Plainswarden Hakon 4 horsetail braids.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "hoofborn": -10
+    }
+  },
+  "khans_horsetail_banner_q": {
+    "name": "The Khan's Horsetail Banner",
+    "giver": "plainswarden_hakon",
+    "start_keyword": "banner",
+    "wants": {
+      "khans_horsetail_banner": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "first_reward_item": "khans_curved_blade",
+    "accept_text": "You have taken on a task: The Khan's Horsetail Banner. Bring Plainswarden Hakon the Khan's Horsetail Banner.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "hoofborn": -30
+    }
+  },
+  "stalker_pelt_q": {
+    "name": "Grass Stalker Pelts",
+    "giver": "huntress_zawadi",
+    "start_keyword": "pelts",
+    "wants": {
+      "stalker_pelt": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "first_reward_item": "stalkerhide_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Grass Stalker Pelts. Bring Huntress Zawadi 4 grass stalker pelts.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "tawnyjaws_fang_q": {
+    "name": "Tawnyjaw's Fang",
+    "giver": "huntress_zawadi",
+    "start_keyword": "fang",
+    "wants": {
+      "tawnyjaws_fang": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "first_reward_item": "tawnyjaw_fang_dirk",
+    "accept_text": "You have taken on a task: Tawnyjaw's Fang. Bring Huntress Zawadi Tawnyjaw's Fang.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "thunderhoof_horn_q": {
+    "name": "Thunderhoof Horns",
+    "giver": "herdmaster_bolat",
+    "start_keyword": "horns",
+    "wants": {
+      "thunderhoof_horn": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "first_reward_item": "hornbone_gauntlets",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Thunderhoof Horns. Bring Herdmaster Bolat 4 thunderhoof horns.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "herd_kings_horn_q": {
+    "name": "The Herd-King's Horn",
+    "giver": "herdmaster_bolat",
+    "start_keyword": "horn",
+    "wants": {
+      "herd_kings_horn": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "first_reward_item": "herd_kings_helm",
+    "accept_text": "You have taken on a task: The Herd-King's Horn. Bring Herdmaster Bolat the Herd-King's Horn.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "barrow_bronze_q": {
+    "name": "Pieces Of Barrow Bronze",
+    "giver": "barrowkeeper_moira",
+    "start_keyword": "bronze",
+    "wants": {
+      "barrow_bronze": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "first_reward_item": "barrow_bronze_greaves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Barrow Bronze. Bring Barrow-Keeper Moira 4 pieces of barrow bronze.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "barrow_lords_death_mask_q": {
+    "name": "The Barrow Lord's Death Mask",
+    "giver": "barrowkeeper_moira",
+    "start_keyword": "mask",
+    "wants": {
+      "barrow_lords_death_mask": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "first_reward_item": "death_mask_cowl",
+    "accept_text": "You have taken on a task: The Barrow Lord's Death Mask. Bring Barrow-Keeper Moira the Barrow Lord's Death Mask.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
   }
 }

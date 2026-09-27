@@ -1,0 +1,945 @@
+{
+  "name": "Galehold",
+  "music": "galehold",
+  "seed": 9551,
+  "size": 224,
+  "height_amplitude": 1.2,
+  "bind_point": [
+    0,
+    12
+  ],
+  "bindstone": true,
+  "flat_radius": 75,
+  "clear_radius": 70,
+  "tree_mix": [
+    "pine_b",
+    "tree_round"
+  ],
+  "rocks": 20,
+  "road_lamps": 10,
+  "grass_colors": [
+    "#8aa060",
+    "#a0b470"
+  ],
+  "fog_density": 0.0018,
+  "fog_color": "#cfdcea",
+  "sun_energy": 1.15,
+  "ground_tint": {
+    "color": "#9a9078",
+    "radius": 60,
+    "amount": 0.5
+  },
+  "passes": [
+    [
+      112,
+      0,
+      9
+    ],
+    [
+      0,
+      112,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          112,
+          0
+        ],
+        [
+          14,
+          0
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          0,
+          112
+        ],
+        [
+          0,
+          16
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          -14,
+          0
+        ],
+        [
+          -80,
+          0
+        ]
+      ],
+      "width": 4
+    },
+    {
+      "points": [
+        [
+          0,
+          -20
+        ],
+        [
+          0,
+          -70
+        ]
+      ],
+      "width": 4
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_long_grass",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "tidemouth",
+      "arrive": [
+        0,
+        -199
+      ],
+      "arrive_face": [
+        0,
+        -159
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        90,
+        0
+      ],
+      "id": "galehold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        90
+      ],
+      "id": "galehold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -8
+      ],
+      "id": "vayuketh_shrine",
+      "collide": "mesh",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "windmill",
+      "pos": [
+        -60,
+        -50
+      ],
+      "yaw": 90
+    },
+    {
+      "type": "windmill",
+      "pos": [
+        -65,
+        40
+      ],
+      "yaw": 90
+    },
+    {
+      "type": "windmill",
+      "pos": [
+        40,
+        -70
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        30
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        -24
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -40
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44,
+        -20
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        58
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -14,
+        60
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        64,
+        22
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -58
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -64
+      ],
+      "id": "cliff_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -20
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        24
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -50
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        12,
+        10
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -12,
+        10
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        20
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -30
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        30
+      ],
+      "id": "prayer_flags",
+      "collide": "none",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        0
+      ],
+      "id": "prayer_flags",
+      "collide": "none",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "market",
+      "pos": [
+        34,
+        18
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -30
+      ],
+      "id": "forge",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        48,
+        -8
+      ],
+      "id": "oven",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        54,
+        4
+      ],
+      "id": "loom",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        48,
+        14
+      ],
+      "id": "brew_barrel",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        80,
+        -10
+      ],
+      "yaw": 0,
+      "labels": [
+        "Galehold",
+        "The Long Grass"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        10,
+        82
+      ],
+      "yaw": 90,
+      "labels": [
+        "Galehold",
+        "Tidemouth"
+      ]
+    },
+    {
+      "type": "sail_tower",
+      "pos": [
+        -40,
+        -20
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "sail_tower",
+      "pos": [
+        50,
+        40
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "sail_tower",
+      "pos": [
+        -30,
+        60
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -80
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -72
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -64
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -56
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -48
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -40
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -32
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -24
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -16
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -8
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        0
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        8
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        16
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        24
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        32
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        40
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        48
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        56
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        64
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        72
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        80
+      ],
+      "id": "cliff_edge_rail",
+      "collide": "box",
+      "yaw": -90
+    }
+  ],
+  "npcs": [
+    {
+      "id": "windspeaker_sabine",
+      "pos": [
+        0,
+        6
+      ],
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "id": "gm_rurik",
+      "pos": [
+        -30,
+        -14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_oriane",
+      "pos": [
+        -12,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_ilya",
+      "pos": [
+        12,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_whisper",
+      "pos": [
+        30,
+        -14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_juno",
+      "pos": [
+        -30,
+        14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gm_sable",
+      "pos": [
+        -14,
+        40
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "gm_nkiru",
+      "pos": [
+        14,
+        40
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "gm_fen",
+      "pos": [
+        -44,
+        8
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "banker_corwin",
+      "pos": [
+        26,
+        30
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "provisioner_maelle",
+      "pos": [
+        42,
+        24
+      ],
+      "face": [
+        30,
+        18
+      ]
+    },
+    {
+      "id": "armorer_dagmar",
+      "pos": [
+        36,
+        -30
+      ],
+      "face": [
+        30,
+        -10
+      ]
+    },
+    {
+      "id": "weaponsmith_ansel",
+      "pos": [
+        20,
+        -40
+      ],
+      "face": [
+        20,
+        -20
+      ]
+    },
+    {
+      "id": "plainswarden_hakon",
+      "pos": [
+        66,
+        -6
+      ],
+      "face": [
+        80,
+        0
+      ]
+    },
+    {
+      "id": "huntress_zawadi",
+      "pos": [
+        66,
+        8
+      ],
+      "face": [
+        80,
+        0
+      ]
+    },
+    {
+      "id": "herdmaster_bolat",
+      "pos": [
+        56,
+        -14
+      ],
+      "face": [
+        80,
+        0
+      ]
+    },
+    {
+      "id": "barrowkeeper_moira",
+      "pos": [
+        -24,
+        -40
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "galehold_guard",
+      "pos": [
+        76,
+        -6
+      ]
+    },
+    {
+      "id": "galehold_guard",
+      "pos": [
+        76,
+        6
+      ]
+    },
+    {
+      "id": "galehold_guard",
+      "pos": [
+        -6,
+        76
+      ]
+    },
+    {
+      "id": "galehold_guard",
+      "pos": [
+        6,
+        76
+      ]
+    }
+  ],
+  "spawns": []
+}

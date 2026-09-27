@@ -175,6 +175,44 @@
         0,
         -191
       ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "windbreak",
+      "arrive": [
+        -199,
+        0
+      ],
+      "arrive_face": [
+        -159,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "galehold",
+      "arrive": [
+        0,
+        46
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
     }
   ],
   "fish": {
@@ -397,36 +435,6 @@
       "yaw": -90,
       "labels": [
         "The Silted Reach",
-        "Tidemouth"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        200,
-        0
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Tidemouth"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -200
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
         "Tidemouth"
       ]
     }

@@ -406,6 +406,32 @@ TRACKS = {
 		"snare": [1], "snare_sections": ["B"], "snare_gain": 0.7,
 		"reverb": 2.0, "sparse": 0.05, "bells": 0.15, "bell_octave": 0,
 	},
+	"galehold": {  # the windmill city on the cliff's edge, Vayuketh's: a bright lilting flute over harp and bells, wind chimes all round, a light pulse
+		"key": (62, "lydian"), "bpm": 100, "beats": 3, "seed": 479,
+		"sections": {"A": [0, 1, 4, 0, 5, 1, 4, 0], "B": [3, 4, 0, 5, 3, 1, 4, 4]},
+		"form": ["A", "A", "B", "A", "B"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, 2, 4, 2, 1, 2], "pad": True, "bass": True,
+		"drum": [0, 2], "drum_sections": ["A", "B"], "drum_gain": 0.45,
+		"reverb": 2.6, "sparse": 0.1, "bells": 0.35, "bell_octave": 1, "chimes": 0.45, "wind": 0.18,
+	},
+	"windbreak": {  # a broken plateau of wind-cut mesas: open fifths droning under a lonely soaring flute, a far sparse drum, wind across it all
+		"key": (57, "dorian"), "bpm": 56, "beats": 4, "seed": 487,
+		"sections": {"A": [0, 4, 0, 6], "B": [3, 4, 6, 0], "C": [5, 4, 3, 4]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "melody_octave": 1, "avoid": [5], "arp": "harp", "arp_pattern": [0, -1, 2, -1, -1, -1, 4, -1],
+		"pad": False, "fifths": 0.45, "bass": False,
+		"drone": 0.45, "drum": [0], "drum_sections": ["B", "C"], "drum_low": 0.6, "drum_gain": 0.6,
+		"reverb": 5.0, "sparse": 0.45, "bells": 0.1, "bell_octave": 1, "wind": 0.4,
+	},
+	"the_long_grass": {  # an endless tallgrass sea and the horse-folk: a rolling horn tune over a galloping lute and a steady hoofbeat drum, wide and vast
+		"key": (55, "mixolydian"), "bpm": 104, "beats": 4, "seed": 499,
+		"sections": {"A": [0, 6, 3, 0], "B": [3, 0, 6, 4], "C": [5, 3, 6, 0]},
+		"form": ["A", "A", "B", "A", "C", "A", "B", "A"],
+		"melody": "horn", "melody_double": "lute", "melody_double_octave": 1, "arp": "lute",
+		"arp_pattern": [0, 0, 2, 0, 1, 0, 2, 4, 0, 0, 2, 0, 1, 0, 4, 2], "pad": True, "bass": True,
+		"drum": [0, 0.5, 0.75, 1, 1.5, 1.75, 2, 2.5, 2.75, 3, 3.5, 3.75], "drum_sections": ["A", "B", "C"], "drum_gain": 0.55, "drum_low": 0.85,
+		"reverb": 3.4, "sparse": 0.1, "bells": 0.0, "wind": 0.12,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},
@@ -462,8 +488,9 @@ def render(name, spec):
 			vel = 0.55 + 0.1 * rng.random()
 			at = t0 + s * beat + rng.normal(0, 0.006)
 			put(_voice(spec["melody"], f, l * beat * 0.95, vel, rng), at, pan=0.15)
-			if spec.get("melody_double"):  # a second voice on the tune an octave down, for weight
-				put(_voice(spec["melody_double"], f / 2, l * beat * 0.95, vel * 0.7, rng), at + 0.004, pan=-0.1)
+			if spec.get("melody_double"):  # a second voice on the tune (an octave down unless told), for weight
+				f2 = f * 2 ** spec.get("melody_double_octave", -1)
+				put(_voice(spec["melody_double"], f2, l * beat * 0.95, vel * 0.7, rng), at + 0.004, pan=-0.1)
 		# a drone under the whole section: the tonic and its fifth, two octaves down
 		if spec.get("drone"):
 			sec_len = len(chords) * beats * beat
@@ -476,6 +503,9 @@ def render(name, spec):
 			if spec["pad"]:
 				for m in triad:
 					put(pad(midi_hz(m), beats * beat * 1.02, 0.45), tb, pan=-0.2)
+			if spec.get("fifths"):  # open fifths, no third: root, fifth and octave spread wide
+				for m, pan in ((key.note(ch, -1), -0.5), (key.note(ch, -1) + 7, 0.5), (key.note(ch, 0), 0.0)):
+					put(pad(midi_hz(m), beats * beat * 1.02, spec["fifths"]), tb, pan=pan)
 			if spec.get("bass_eighths"):  # a driving ostinato: root and octave on every half beat
 				for k in range(beats * 2):
 					m = key.note(ch, -2) + (12 if k % 4 == 3 else 0)
@@ -510,6 +540,14 @@ def render(name, spec):
 			if spec.get("bells") and rng.random() < spec["bells"]:
 				put(bell(midi_hz(key.note(rng.choice(key.chord(ch)), spec.get("bell_octave", 1))), 2.0, 0.5),
 					tb + beat * rng.integers(1, beats), pan=0.4)
+			if spec.get("chimes") and rng.random() < spec["chimes"]:
+				# wind chimes: a few high pentatonic tinkles in a quick cluster, where the breeze catches them
+				at = tb + beat * rng.uniform(0, beats - 0.5)
+				pan = rng.uniform(-0.8, 0.8)
+				for k in range(int(rng.integers(3, 7))):
+					d = int(rng.choice([0, 1, 2, 4, 5])) + 7 * int(rng.integers(0, 2))
+					put(bell(midi_hz(key.note(d, 2)), 1.2, 0.22 + 0.12 * rng.random()), at + k * rng.uniform(0.07, 0.22),
+						pan=float(np.clip(pan + rng.uniform(-0.2, 0.2), -1, 1)))
 			if spec.get("thunder") and rng.random() < spec["thunder"]:
 				# far thunder: a slow low swell on the chord's root and a few deep drum rolls under it
 				at = tb + beat * rng.uniform(0.5, beats - 1)
@@ -528,6 +566,18 @@ def render(name, spec):
 			noise = np.convolve(noise, np.ones(14) / 14, mode="same")
 			swell = 0.8 + 0.2 * np.sin(2 * np.pi * np.arange(m) / SR / length * 2 + seed)  # whole cycles over the loop
 			chan[:m] += noise * swell * spec["rain"] * 0.12
+
+	if spec.get("wind"):
+		# wind: a band of airy noise (a light blur minus a heavy one) rising and
+		# falling in gusts, whole cycles over the loop so the seam hides in it
+		m = int(length * SR)
+		tt = np.arange(m) / SR
+		for chan, seed in ((L, 505), (R, 606)):
+			noise = np.random.default_rng(seed).standard_normal(m)
+			band = np.convolve(noise, np.ones(9) / 9, mode="same") - np.convolve(noise, np.ones(120) / 120, mode="same")
+			gust = sum(np.sin(2 * np.pi * tt / length * c + seed * k) * a for k, (c, a) in enumerate(((3, 0.5), (7, 0.3), (13, 0.2)), 1))
+			swell = np.clip(0.35 + 0.5 * gust, 0.05, 1.0)
+			chan[:m] += band * swell * spec["wind"] * 1.2
 
 	# the room: a decaying-noise reverb, a little different on each side
 	for chan, seed in ((L, 101), (R, 202)):

@@ -8392,6 +8392,886 @@ def storm_brazier():
 	return p.build(bevel=0.02)
 
 
+# ---------------------------------------------------------------- The Standing Sky (Vayuketh)
+# Galehold, Windbreak and the Long Grass. The wind always blows toward +X:
+# banners, ribbons, horsetails and kites stream that way, so props placed
+# with the same yaw agree with each other.
+
+SKY = RUNE             # pale sky blue at the top of its gradient
+OCHRE = FLAG_YELLOW    # warm ochre-orange
+GALE_STONE = SEA_STONE  # wind-scoured blue-gray stone
+
+
+def _streamer(p, root, length, width, swatch, waves=1.6, droop=0.25, taper=0.75, n=8, phase=None, ripple=0.12):
+	"""A long banner or ribbon hanging from its top edge at `root` and
+	streaming down-wind (+X), rippling side to side and drooping a little
+	toward its tail; it narrows to `taper` of its width."""
+	x0, y0, z0 = root
+	ph = p.rng.uniform(0, math.tau) if phase is None else phase
+	verts = []
+	for i in range(n + 1):
+		t = i / n
+		x = x0 + length * t
+		y = y0 + math.sin(t * waves * math.pi + ph) * ripple * length * t
+		z = z0 - droop * t * t
+		w = width * (1.0 - taper * t)
+		verts += [(x, y, z), (x, y + 0.02 * t, z - w)]
+	faces = [(2 * i, 2 * i + 1, 2 * i + 3, 2 * i + 2) for i in range(n)]
+	return p.poly(verts, faces, swatch, grad=(0.05, 0.45))
+
+
+def _chime_cluster(p, top, r=0.2, n=6, length=(0.25, 0.55), swatch=GOLD):
+	"""Wind chimes hanging from a little disc at `top`: tubes on strings in a
+	ring round a clapper, and a sail below to catch the wind."""
+	x, y, z = top
+	p.seg((x, y, z), (x, y, z - 0.05), r + 0.05, r + 0.05, WOOD, sides=10, grad=(0.1, 0.8))
+	for k in range(n):
+		a = k * math.tau / n + p.rng.uniform(-0.15, 0.15)
+		cx, cy = x + math.cos(a) * r, y + math.sin(a) * r
+		L = p.rng.uniform(*length)
+		p.seg((cx, cy, z - 0.05), (cx, cy, z - 0.14), 0.006, 0.006, HIDE, sides=3)
+		p.seg((cx + 0.02, cy, z - 0.14), (cx + 0.05, cy, z - 0.14 - L), 0.022, 0.022, swatch, sides=6, grad=(0.0, 0.6))
+	p.seg((x, y, z - 0.05), (x, y, z - 0.42), 0.006, 0.006, HIDE, sides=3)
+	p.seg((x, y, z - 0.30), (x, y, z - 0.33), 0.08, 0.08, WOOD, sides=8)             # clapper
+	p.box((0.02, 0.16, 0.2), (x + 0.02, y, z - 0.54), SKY, rot=(0, 12, 0), grad=(0.1, 0.5))   # the wind sail
+
+
+def _gable_roof(p, w, d, h, z0, swatch, trim=WOOD):
+	"""A steep gable roof over a w x d room whose walls top out at z0, ridge along Y."""
+	half = w / 2
+	slope = math.hypot(half, h)
+	ang = math.atan2(h, half)
+	rows = 6
+	for s in (1, -1):
+		down = Vector((math.cos(ang) * s, 0, -math.sin(ang)))
+		out = Vector((math.sin(ang) * s, 0, math.cos(ang)))
+		base = Vector((0, 0, z0 + h))
+		p.box((slope, d, 0.16), base + down * slope / 2, WOOD_GRAY, rot=(0, math.degrees(ang) * s, 0))
+		for i in range(rows):
+			c = base + down * slope * (i + 0.55) / rows + out * 0.13
+			p.box((slope / rows * 1.12, d + 0.1, 0.12), c, swatch, rot=(0, math.degrees(ang) * s, 0), grad=(0.0, 0.8))
+	for y in (-d / 2 + 0.3, d / 2 - 0.3):
+		t = 0.14
+		tri = [(-half + 0.3, 0, z0), (half - 0.3, 0, z0), (0, 0, z0 + h - 0.2)]
+		verts = [(x, y - t / 2, z) for x, _, z in tri] + [(x, y + t / 2, z) for x, _, z in tri]
+		p.poly(verts, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], WOOD, grad=(0.3, 1.0))
+	p.seg((0, -d / 2 - 0.15, z0 + h + 0.12), (0, d / 2 + 0.15, z0 + h + 0.12), 0.13, 0.13, trim, sides=6)
+
+
+# ---- Galehold
+
+def galehold_gate():
+	"""Galehold's gate: two square towers of wind-scoured blue-gray stone
+	under pale blue pyramid roofs, a timber walkway between them, and above it
+	a sail-wing arch (curved spars fanned with white and blue sail cloth, an
+	ochre roundel at the apex, about 12.6 m up). The passage between the towers
+	is 6 m wide (x -3..3) and 5 m clear; the whole gate is 12.4 x 4.4 m, facing
+	-Y. Open gate leaves, two lanterns and chimes on the front. Collide it as a
+	mesh (the passage is open)."""
+	p = Prop("galehold_gate", 601)
+	d = Prop("galehold_gate_detail", 602)
+	TW, TD, TH = 3.2, 4.0, 7.6
+	for s in (-1, 1):
+		x = s * (3.0 + TW / 2)
+		p.box((TW + 0.4, TD + 0.4, 0.8), (x, 0, 0.3), STONE_DARK, grad=(0.3, 1.0))
+		p.box((TW, TD, TH - 0.7), (x, 0, 0.7 + (TH - 0.7) / 2), GALE_STONE, grad=(0.05, 0.9))
+		for k in range(7):                                                   # darker courses in the stone
+			zz = 1.4 + k * 0.85 + p.rng.uniform(-0.15, 0.15)
+			for side in (-1, 1):
+				p.box((p.rng.uniform(0.7, 1.4), 0.06, 0.32), (x + p.rng.uniform(-0.9, 0.9), side * (TD / 2 + 0.01), zz), STONE_DARK, grad=(0.3, 0.6))
+		p.box((TW + 0.3, TD + 0.3, 0.3), (x, 0, TH - 0.2), STONE_LIGHT, grad=(0.1, 0.6))    # cornice
+		for side in (-1, 1):                                                 # arrow slits front and back
+			p.box((0.16, 0.12, 1.2), (x, side * (TD / 2 + 0.01), 4.6), IRON)
+		for cx in (-1, 1):                                                   # the timber hoarding on top
+			for cy in (-1, 1):
+				p.seg((x + cx * 1.5, cy * 1.85, TH), (x + cx * 1.5, cy * 1.85, TH + 1.5), 0.1, 0.09, WOOD, sides=6)
+		for side in (-1, 1):
+			p.box((TW + 0.2, 0.1, 0.8), (x, side * 1.85, TH + 0.45), WOOD_GRAY, grad=(0.2, 0.9))
+			p.box((0.1, TD - 0.2, 0.8), (x + side * 1.55, 0, TH + 0.45), WOOD_GRAY, grad=(0.2, 0.9))
+		p.seg((x, 0, TH + 1.45), (x, 0, TH + 4.0), 2.95, 0.0, SKY, sides=4, grad=(0.0, 0.55), twist=45)   # pale blue roof
+		p.seg((x, 0, TH + 1.35), (x, 0, TH + 1.5), 2.95, 2.95, WOOD, sides=4, twist=45)
+		p.seg((x, 0, TH + 3.8), (x, 0, TH + 5.2), 0.05, 0.04, IRON, sides=4)
+		p.blob((0.2, 0.2, 0.2), (x, 0, TH + 5.2), GOLD, grad=(0.0, 0.5))
+		_streamer(d, (x, 0, TH + 5.1), 3.4, 0.5, SKY if s < 0 else CLOTH_WHITE, droop=0.5)
+		_streamer(d, (x, 0, TH + 4.6), 2.6, 0.3, OCHRE, droop=0.5)
+		# the open gate leaves against the passage walls, and a lantern on each front corner
+		p.box((0.2, 2.1, 4.4), (s * 2.85, -0.9, 2.2), WOOD, grad=(0.2, 1.0))
+		for zz in (0.9, 3.5):
+			p.box((0.24, 2.15, 0.18), (s * 2.85, -0.9, zz), IRON)
+		lx = s * 2.75
+		d.box((0.08, 0.5, 0.08), (lx, -TD / 2 - 0.25, 3.5), IRON)
+		d.seg((lx, -TD / 2 - 0.5, 3.45), (lx, -TD / 2 - 0.5, 3.2), 0.01, 0.01, IRON, sides=3)
+		d.box((0.3, 0.3, 0.42), (lx, -TD / 2 - 0.5, 2.98), EMBER, glow=1.6, grad=(0.1, 0.6))
+		d.seg((lx, -TD / 2 - 0.5, 3.19), (lx, -TD / 2 - 0.5, 3.29), 0.22, 0.05, IRON, sides=4, twist=45)
+	# the walkway between the towers, 5 m clear under it
+	p.box((6.2, TD - 0.4, 0.5), (0, 0, 5.3), WOOD, grad=(0.2, 1.0))
+	for side in (-1, 1):
+		p.box((6.4, 0.35, 0.55), (0, side * (TD / 2 - 0.3), 5.1), WOOD_GRAY, grad=(0.2, 0.9))
+		for k in range(5):
+			p.seg((-2.4 + k * 1.2, side * (TD / 2 - 0.3), 5.55), (-2.4 + k * 1.2, side * (TD / 2 - 0.3), 6.5), 0.07, 0.06, WOOD, sides=5)
+		p.box((6.0, 0.12, 0.12), (0, side * (TD / 2 - 0.3), 6.45), WOOD)
+	for s in (-1, 1):
+		p.box((0.6, TD - 0.6, 0.6), (s * 2.7, 0, 4.85), WOOD, rot=(0, s * 40, 0))   # brackets under the walkway
+	# the sail-wing arch over the walkway, front and back
+	apex = 12.6
+	for side in (-1, 1):
+		y = side * 1.55
+		for s in (-1, 1):
+			pts = [(s * 3.0, y, 6.5), (s * 2.9, y, 8.8), (s * 2.2, y, 10.8), (s * 1.1, y, 12.0), (0, y, apex)]
+			_chain(p, pts, 0.16, 0.11, WOOD, sides=6)
+			for k in range(4):                                               # fan of sail panels, alternating colors
+				a, b = pts[k], pts[k + 1]
+				d.poly([(0, y - side * 0.05, 6.6), (a[0], y - side * 0.05, a[2]), (b[0], y - side * 0.05, b[2])], [(0, 1, 2)],
+					   CLOTH_WHITE if (k + (s > 0)) % 2 else SKY, grad=(0.05, 0.5))
+				d.seg((0, y - side * 0.08, 6.6), (b[0], y - side * 0.08, b[2]), 0.035, 0.03, WOOD_GRAY, sides=4)   # battens
+		d.seg((0, y - side * 0.12, apex - 0.45), (0, y - side * 0.2, apex - 0.45), 0.62, 0.62, OCHRE, sides=14, grad=(0.1, 0.6))
+		d.seg((0, y - side * 0.2, apex - 0.45), (0, y - side * 0.24, apex - 0.45), 0.4, 0.4, SKY, sides=14, grad=(0.0, 0.4))
+	p.seg((0, -1.7, apex), (0, 1.7, apex), 0.15, 0.15, WOOD, sides=6)
+	_chime_cluster(d, (0, -TD / 2 - 0.1, 5.0), r=0.24, n=7, length=(0.3, 0.6))
+	p.box((6.0, TD + 0.4, 0.1), (0, 0, 0.03), STONE_DARK, grad=(0.5, 0.9))      # paving
+	obj = p.build(bevel=0.05)
+	return join_into(obj, [d.build()])
+
+
+def sail_tower():
+	"""A tall slender Galehold sail tower: a round blue-gray stone shaft
+	(3.8 m across at the foot) with a timber gallery 8 m up, a timber head and a
+	pale blue conical cap about 16 m to its finial, and an axle out the front
+	(-Y). The rotor is its own prop, sail_tower_rotor, hung with its hub at
+	(0, 13.3, 2.35) in Godot coordinates (Blender (0, -2.35, 13.3)) and turned
+	on its local Z like windmill_sails. Collide it as a cylinder (r 1.8) or trunk."""
+	p = Prop("sail_tower", 603)
+	d = Prop("sail_tower_detail", 604)
+	p.seg((0, 0, -0.3), (0, 0, 0.8), 1.95, 1.85, STONE_DARK, sides=12, grad=(0.3, 1.0))
+	z, r = 0.8, 1.7
+	for k in range(10):
+		r2 = r - 0.045
+		p.seg((0, 0, z), (0, 0, z + 1.2), r, r2, GALE_STONE if k % 2 == 0 else STONE_LIGHT, sides=12, grad=(0.05, 0.85), jitter=0.02)
+		z += 1.2
+		r = r2
+	# z is now 12.8, r about 1.25
+	p.seg((0, 0, 8.0), (0, 0, 8.25), 2.4, 2.4, WOOD, sides=12, grad=(0.2, 0.9))          # the gallery
+	for k in range(12):
+		a = k * math.tau / 12
+		p.seg((math.cos(a) * 2.25, math.sin(a) * 2.25, 8.25), (math.cos(a) * 2.25, math.sin(a) * 2.25, 9.2), 0.05, 0.05, WOOD, sides=4)
+		p.seg((math.cos(a) * 1.5, math.sin(a) * 1.5, 7.2), (math.cos(a) * 2.3, math.sin(a) * 2.3, 8.0), 0.06, 0.05, WOOD_GRAY, sides=4)   # struts
+	p.seg((0, 0, 9.1), (0, 0, 9.2), 2.3, 2.3, WOOD, sides=12)
+	p.seg((0, 0, 12.8), (0, 0, 14.0), 1.45, 1.5, WOOD_GRAY, sides=12, grad=(0.1, 0.9))    # the timber head
+	p.seg((0, 0, 13.9), (0, 0, 14.1), 1.7, 1.7, WOOD, sides=12)
+	p.seg((0, 0, 14.1), (0, 0, 16.0), 1.75, 0.15, SKY, sides=12, grad=(0.0, 0.6))          # the cap
+	p.seg((0, 0, 15.8), (0, 0, 16.8), 0.04, 0.03, IRON, sides=4)
+	p.blob((0.16, 0.16, 0.16), (0, 0, 16.8), GOLD)
+	_streamer(d, (0, 0, 16.7), 3.0, 0.35, SKY, droop=0.4)
+	_streamer(d, (0, 0, 16.35), 2.2, 0.22, OCHRE, droop=0.4)
+	p.seg((0, -1.3, 13.3), (0, -2.25, 13.3), 0.24, 0.2, WOOD, sides=8)                    # the axle
+	p.box((1.0, 0.3, 1.9), (0, -1.8, 0.95), WOOD_GRAY, grad=(0.3, 1.0))                   # door
+	p.box((1.3, 0.35, 0.2), (0, -1.82, 2.0), WOOD)
+	for zz, a in ((3.6, 35), (6.2, -40), (10.6, 20), (13.3, 90)):                          # windows
+		ra = math.radians(a)
+		rr = 1.7 - (zz - 0.8) / 1.2 * 0.045 + 0.02
+		p.box((0.42, 0.3, 0.7), (math.sin(ra) * rr, -math.cos(ra) * rr, zz), SHADE, rot=(0, 0, a), grad=(0.9, 1.0))
+	obj = p.build(bevel=0.04)
+	return join_into(obj, [d.build()])
+
+
+def sail_tower_rotor():
+	"""The sail tower's rotor, hub at the origin, in the X-Z plane facing -Y:
+	six spars 5 m long, each carrying a triangular jib sail (white and pale blue
+	by turns) and joined at the tips by a rope ring. Turned on its local Z."""
+	p = Prop("sail_tower_rotor", 605)
+	p.blob((0.6, 0.5, 0.6), (0, 0, 0), WOOD, segs=(8, 6))
+	p.seg((0, 0.1, 0), (0, -0.45, 0), 0.2, 0.12, OCHRE, sides=8)
+	tips = []
+	for k in range(6):
+		a = k * math.tau / 6 + math.radians(8)
+		dx, dz = math.cos(a), math.sin(a)
+		sx, sz = -dz, dx
+		tip = (dx * 5.0, -0.05, dz * 5.0)
+		tips.append(tip)
+		p.seg((0, -0.05, 0), tip, 0.1, 0.06, WOOD, sides=5)
+		root = (dx * 0.8, -0.12, dz * 0.8)
+		clew = (dx * 3.3 + sx * 1.5, -0.12, dz * 3.3 + sz * 1.5)
+		mid = (dx * 2.2 + sx * 1.15, -0.13, dz * 2.2 + sz * 1.15)                          # a little belly in the sail
+		p.poly([root, (tip[0], -0.12, tip[2]), clew, mid], [(0, 1, 2, 3)], CLOTH_WHITE if k % 2 else SKY, grad=(0.05, 0.4))
+	ring = tips + [tips[0]]
+	_chain(p, [(x, -0.05, z) for x, _, z in ring], 0.025, 0.025, HIDE, sides=4)
+	for k in range(6):                                                                    # a ribbon off each tip
+		x, _, z = tips[k]
+		_streamer(p, (x, -0.05, z), 0.9, 0.08, OCHRE if k % 2 else CLOTH_WHITE, droop=0.1, n=4)
+	return p.build()
+
+
+def cliff_house():
+	"""A tall narrow Galehold house leaning into the wind (its top about 0.5 m
+	toward -X): a KayKit stone ground storey 3 x 6 m (walls 3 m, door in the
+	front, -Y), a jettied timber upper storey with blue shutters, a steep pale
+	blue slate roof ridged front to back, a chimney, and a small windmill vane
+	on the back of the ridge (static). About 4.6 x 7.6 m, 10.3 m to the vane
+	tip. Collide it as a mesh."""
+	p = Prop("cliff_house", 606)
+	hx, hy = 1.5, 3.0
+	# the timber upper storey, jettied out 0.25 m over the stone
+	U0, U1 = 3.0, 5.8
+	p.box((2 * hx + 0.7, 2 * hy + 0.7, 0.25), (0, 0, U0 + 0.12), WOOD_GRAY, grad=(0.2, 0.9))
+	p.box((2 * hx + 0.5, 2 * hy + 0.5, U1 - U0 - 0.25), (0, 0, (U0 + 0.25 + U1) / 2), CLOTH_WHITE, grad=(0.1, 0.5))   # limewashed panels
+	for x in (-hx - 0.25, hx + 0.25):                                      # the frame on the long sides
+		for y in (-hy - 0.25, -1.0, 1.0, hy + 0.25):
+			p.box((0.18, 0.18, U1 - U0), (x, y, (U0 + U1) / 2), WOOD, grad=(0.2, 1.0))
+		p.box((0.2, 2 * hy + 0.6, 0.18), (x, 0, U1 - 0.05), WOOD)
+		for y0, y1 in ((-hy - 0.25, -1.0), (1.0, hy + 0.25)):              # braces
+			p.seg((x, y0, U0 + 0.3), (x, y1, U1 - 0.2), 0.07, 0.07, WOOD, sides=4, twist=45)
+		sgn = 1 if x > 0 else -1
+		p.box((0.1, 0.8, 1.0), (x + sgn * 0.05, 0.0, U0 + 1.5), SHADE, grad=(0.9, 1.0))  # window
+		for s in (-1, 1):
+			p.box((0.08, 0.42, 1.05), (x + sgn * 0.08, s * 0.66, U0 + 1.5), SKY, grad=(0.1, 0.7))   # shutters
+	for y in (-hy - 0.25, hy + 0.25):                                      # the frame on the gable ends
+		for x in (-hx - 0.25, 0.0, hx + 0.25):
+			p.box((0.18, 0.18, U1 - U0), (x, y, (U0 + U1) / 2), WOOD, grad=(0.2, 1.0))
+		sgn = 1 if y > 0 else -1
+		p.box((0.9, 0.1, 1.0), (-0.8, y + sgn * 0.05, U0 + 1.5), SHADE, grad=(0.9, 1.0))
+		p.box((0.95, 0.12, 0.12), (-0.8, y + sgn * 0.07, U0 + 0.95), WOOD)
+	p.box((0.8, 0.5, 0.18), (0.8, -hy - 0.55, U0 - 0.25), WOOD)            # a flower box under the front
+	_gable_roof(p, 2 * hx + 1.4, 2 * hy + 1.3, 3.3, U1, SKY)
+	p.box((0.7, 0.7, 2.4), (0.9, 1.6, U1 + 2.0), GALE_STONE, grad=(0.1, 0.9))   # chimney
+	p.box((0.9, 0.9, 0.18), (0.9, 1.6, U1 + 3.25), STONE_LIGHT, grad=(0.2, 0.7))
+	# the little windmill vane on the back of the ridge
+	vz = U1 + 3.3 + 0.1
+	vy = hy + 0.2
+	p.seg((0, vy, vz), (0, vy, vz + 0.9), 0.05, 0.04, IRON, sides=5)
+	p.seg((0, vy - 0.35, vz + 0.9), (0, vy + 0.7, vz + 0.9), 0.05, 0.04, WOOD, sides=5)
+	p.box((0.04, 0.6, 0.45), (0, vy + 0.72, vz + 0.95), OCHRE, grad=(0.1, 0.5))     # tail fin
+	for k in range(4):
+		a = k * math.pi / 2 + 0.4
+		c = (math.cos(a) * 0.35, vy - 0.4, vz + 0.9 + math.sin(a) * 0.35)
+		p.box((0.62, 0.03, 0.22), c, CLOTH_WHITE if k % 2 else SKY, rot=(0, -math.degrees(a), 0), grad=(0.1, 0.5))
+	p.blob((0.14, 0.12, 0.14), (0, vy - 0.4, vz + 0.9), OCHRE)
+	obj = p.build(bevel=0.04)
+	pieces = []
+	pieces += kaykit("wall_doorway", (0, -hy, 0.0), 0.0)
+	pieces += kaykit("wall", (0, hy, 0.0), math.pi)
+	for s in (-1, 1):
+		for i, y in enumerate((-1.5, 1.5)):
+			pieces += kaykit("wall_window_open" if i == (0 if s < 0 else 1) else "wall", (s * hx, y, 0.0), -s * math.pi / 2)
+	for x in (-hx, hx):
+		for y in (-hy, hy):
+			pieces += kaykit("pillar", (x, y, 0.0))
+	for y in (-1.5, 1.5):
+		pieces += kaykit("floor_tile_large", (0, y, -0.07))
+	obj = _merge_materials(join_into(obj, _restone(pieces, {(1, 0): GALE_STONE})))
+	lean = Matrix(((1, 0, -0.05, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
+	obj.data.transform(lean)
+	return obj
+
+
+def wind_chimes():
+	"""A post about 2.4 m tall under a little pale blue hat, hung with brass
+	wind chimes and three ribbons streaming down-wind (+X). Clutter: no collision."""
+	p = Prop("wind_chimes", 607)
+	p.rock((0.4, 0.4, 0.2), (0, 0, 0.02), STONE_DARK)
+	p.seg((0, 0, -0.1), (0, 0, 2.3), 0.06, 0.05, WOOD, sides=6, grad=(0.2, 1.0))
+	p.seg((0, 0, 2.28), (0, 0, 2.55), 0.38, 0.0, SKY, sides=8, grad=(0.0, 0.5))
+	p.seg((0, 0, 2.55), (0, 0, 2.7), 0.02, 0.02, IRON, sides=3)
+	_chime_cluster(p, (0, 0, 2.27), r=0.2, n=7)
+	for k, sw in enumerate((SKY, CLOTH_WHITE, OCHRE)):
+		a = k * math.tau / 3 + 0.5
+		_streamer(p, (math.cos(a) * 0.3, math.sin(a) * 0.3, 2.3), 0.6, 0.07, sw, droop=0.3, n=5, taper=0.5)
+	return p.build()
+
+
+def kite_pole():
+	"""A 6 m pole on a stone foot with a reel of line at its base, flying a big
+	diamond kite (3.6 m tall, sky blue and white panels round an ochre sun, a
+	bowed tail) about 12 m up and 4.5 m down-wind (+X) on a taut line. Collide
+	it as a trunk."""
+	p = Prop("kite_pole", 608)
+	p.box((0.8, 0.8, 0.5), (0, 0, 0.2), GALE_STONE, grad=(0.2, 0.9), jitter=0.03)
+	p.seg((0, 0, 0.4), (0, 0, 6.0), 0.1, 0.07, WOOD, sides=6, grad=(0.2, 1.0))
+	p.seg((0, 0, 5.9), (0, 0, 6.15), 0.12, 0.05, OCHRE, sides=6)
+	for s in (-1, 1):                                                   # the reel
+		p.seg((0.12, s * 0.15, 1.1), (0.4, s * 0.15, 1.1), 0.03, 0.03, WOOD, sides=4)
+	p.seg((0.3, -0.18, 1.1), (0.3, 0.18, 1.1), 0.18, 0.18, WOOD_GRAY, sides=10)
+	p.seg((0.3, -0.12, 1.1), (0.3, 0.12, 1.1), 0.2, 0.2, HIDE, sides=10)
+	p.seg((0.3, 0.2, 1.1), (0.3, 0.35, 1.25), 0.02, 0.02, WOOD, sides=3)
+	p.seg((0.3, 0.0, 1.3), (0.08, 0.0, 5.9), 0.008, 0.008, HIDE, sides=3)   # the line up the pole
+	# the kite, built flat in X-Z then turned to face the wind
+	k = Prop("kite_pole_kite", 609)
+	C = (0, 0, 0.35)
+	top, rt, bot, lt = (0, 0, 1.4), (1.0, 0, 0.35), (0, 0, -1.2), (-1.0, 0, 0.35)
+	for i, (a, b) in enumerate(((top, rt), (rt, bot), (bot, lt), (lt, top))):
+		k.poly([C, a, b], [(0, 1, 2)], SKY if i % 2 == 0 else CLOTH_WHITE, grad=(0.05, 0.4))
+	k.seg((0, -0.03, 0.35), (0, -0.07, 0.35), 0.38, 0.38, OCHRE, sides=12, grad=(0.0, 0.5))
+	for j in range(8):                                                   # the sun's rays
+		a = j * math.tau / 8
+		k.seg((math.cos(a) * 0.42, -0.05, 0.35 + math.sin(a) * 0.42), (math.cos(a) * 0.62, -0.05, 0.35 + math.sin(a) * 0.62), 0.05, 0.0, OCHRE, sides=3)
+	k.seg((0, 0.04, 1.4), (0, 0.04, -1.2), 0.03, 0.03, WOOD, sides=4)
+	k.seg((-1.0, 0.04, 0.35), (1.0, 0.04, 0.35), 0.03, 0.03, WOOD, sides=4)
+	tail = [(0, 0, -1.2)]
+	for j in range(1, 9):
+		tail.append((0.28 * j, 0.1 * math.sin(j * 1.3), -1.2 - 0.32 * j + 0.012 * j * j))
+	_chain(k, tail, 0.012, 0.012, HIDE, sides=3)
+	for j, (x, y, z) in enumerate(tail[1:]):                           # bows on the tail
+		for s in (-1, 1):
+			k.box((0.2, 0.02, 0.1), (x + s * 0.1, y, z), OCHRE if j % 2 else SKY, rot=(0, s * 25, 0), grad=(0.1, 0.4))
+	kite = k.build()
+	kc = Vector((4.5, 0.8, 11.5))
+	kite.data.transform(Matrix.Translation(kc) @ Euler((math.radians(-20), 0, math.radians(-15))).to_matrix().to_4x4() @ Matrix.Scale(1.4, 4))
+	a, b = Vector((0, 0, 6.05)), kc + Vector((0, 0, 0.2))
+	pts = [tuple(a.lerp(b, t / 10) - Vector((0, 0, 0.35 * math.sin(math.pi * t / 10)))) for t in range(11)]
+	_chain(p, pts, 0.022, 0.022, HIDE, sides=3)
+	obj = p.build(bevel=0.02)
+	return join_into(obj, [kite])
+
+
+def vayuketh_shrine():
+	"""Galehold's bindstone: Vayuketh of the Standing Sky, a pale stone
+	elephant whose ears spread like sails (painted sky blue inside, ribbed
+	like battened sails), trunk raised high into a swirl of glowing wind, on a
+	pedestal at the back of a two-stepped round plinth 11 m across (0.8 m
+	high), facing -Y. Four banner poles on the plinth: the back two stream long
+	banners down-wind (+X), the front two carry short pennants and chimes. About 9.5 m to the top of
+	the wind swirl. Collide it as a mesh (or a cylinder r 5.5)."""
+	p = Prop("vayuketh_shrine", 610)
+	d = Prop("vayuketh_shrine_detail", 611)
+	for k, (r, z0, z1, sw) in enumerate(((5.5, -0.2, 0.4, GALE_STONE), (4.6, 0.4, 0.8, STONE_LIGHT))):
+		p.seg((0, 0, z0), (0, 0, z1), r, r - 0.05, sw, sides=24, grad=(0.1, 0.9))
+		p.seg((0, 0, z1 - 0.14), (0, 0, z1 - 0.06), r + 0.04, r + 0.04, OCHRE if k else SKY, sides=24, grad=(0.3, 0.8))
+	P = 0.8
+	cy = 1.0
+	p.box((3.2, 4.6, 1.1), (0, cy + 0.3, P + 0.55), GALE_STONE, grad=(0.1, 0.9))         # pedestal
+	p.box((3.5, 4.9, 0.2), (0, cy + 0.3, P + 1.2), STONE_LIGHT, grad=(0.0, 0.7))
+	p.box((3.56, 4.96, 0.1), (0, cy + 0.3, P + 0.95), OCHRE, grad=(0.3, 0.8))
+	B = P + 1.3
+	p.blob((2.5, 3.7, 2.3), (0, cy + 0.6, B + 2.2), STONE_LIGHT, segs=(14, 10), grad=(0.05, 0.8))     # body
+	for x in (-0.78, 0.78):
+		for y in (-0.9, 1.5):
+			p.seg((x, cy + y, B), (x, cy + y, B + 1.6), 0.48, 0.52, STONE_LIGHT, sides=8, grad=(0.2, 0.9))
+			p.seg((x, cy + y, B), (x, cy + y, B + 0.16), 0.55, 0.55, OCHRE, sides=8, grad=(0.1, 0.6))
+	p.blob((2.58, 1.6, 2.38), (0, cy + 0.7, B + 2.22), SKY, segs=(14, 10), grad=(0.05, 0.5))       # a sky blue saddle cloth
+	p.blob((2.62, 0.16, 2.42), (0, cy - 0.1, B + 2.22), CLOTH_WHITE, segs=(14, 10), grad=(0.1, 0.5))
+	p.blob((2.62, 0.16, 2.42), (0, cy + 1.5, B + 2.22), CLOTH_WHITE, segs=(14, 10), grad=(0.1, 0.5))
+	p.seg((0, cy + 2.3, B + 2.7), (0.35, cy + 2.7, B + 1.7), 0.09, 0.04, STONE_LIGHT, sides=5)     # tail, blown aside
+	# the head
+	hc = Vector((0, cy - 1.75, B + 3.4))
+	s = 1.75
+	p.blob((1.0 * s, 0.9 * s, 1.0 * s), tuple(hc), STONE_LIGHT, segs=(10, 8), grad=(0.05, 0.85))
+	p.blob((0.7 * s, 0.4 * s, 0.35 * s), tuple(hc + Vector((0, -0.28 * s, 0.35 * s))), STONE_LIGHT, segs=(8, 6), grad=(0.05, 0.6))
+	for x in (-1, 1):
+		p.blob((0.12 * s, 0.08 * s, 0.1 * s), tuple(hc + Vector((x * 0.26 * s, -0.42 * s, 0.15 * s))), IRON, segs=(6, 4))
+		p.seg(tuple(hc + Vector((x * 0.25 * s, -0.35 * s, -0.35 * s))), tuple(hc + Vector((x * 0.34 * s, -0.75 * s, -0.5 * s))), 0.08 * s, 0.02 * s, BONE, sides=6)
+	p.blob((0.3, 0.12, 0.3), tuple(hc + Vector((0, -0.58 * s, 0.42 * s))), SKY, glow=1.2, segs=(8, 5))   # a pale blue stone on the brow
+	# the ears, spread out like sails: a stone plate with a sky blue sail painted inside and battens
+	ear = [(0.0, 0.7), (1.0, 1.4), (2.2, 1.55), (3.1, 1.0), (3.4, 0.0), (3.0, -1.1), (2.3, -2.3), (1.4, -1.9), (0.3, -0.8)]
+	inner = [(0.35 + x * 0.82, z * 0.82) for x, z in ear]
+	for side in (-1, 1):
+		M = Matrix.Translation(hc + Vector((side * 0.62 * s, 0.25, 0.1))) @ Matrix.Rotation(math.radians(side * 24), 4, "Z") @ Matrix.Rotation(math.radians(-side * 6), 4, "Y")
+		for outline, y, sw, th in ((ear, 0.0, STONE_LIGHT, 0.22), (inner, -0.13, SKY, 0.05)):
+			o = _plate(p if sw == STONE_LIGHT else d, [(side * x, z) for x, z in outline], y, th, sw, grad=(0.05, 0.7))
+			o.data.transform(M)
+		for j, (x, z) in enumerate(((2.9, 1.0), (3.1, -0.1), (2.7, -1.3))):  # battens radiating from the root
+			o = d.seg((side * 0.4, -0.17, 0.05), (side * x * 0.84, -0.17, z * 0.84), 0.045, 0.03, OCHRE, sides=4)
+			o.data.transform(M)
+	# the trunk, raised high
+	trunk = [(0, -0.4, -0.15), (0, -0.62, -0.55), (0, -0.9, -0.55), (0, -1.12, -0.1), (0, -1.18, 0.5), (0, -1.05, 1.05), (0, -0.85, 1.45), (0, -0.9, 1.75)]
+	_chain(p, [tuple(hc + Vector(v) * s) for v in trunk], 0.22 * s, 0.1 * s, STONE_LIGHT, sides=8, grad=(0.1, 0.8))
+	tip = hc + Vector(trunk[-1]) * s
+	# a swirl of glowing wind rising from the trunk
+	for j, (r0, ph, sw) in enumerate(((0.55, 0.0, SKY), (0.4, 2.1, CLOTH_WHITE), (0.7, 4.2, SKY))):
+		pts = []
+		for i in range(13):
+			t = i / 12
+			a = ph + t * math.tau * 1.3
+			rr = r0 * (0.4 + t)
+			pts.append(tuple(tip + Vector((math.cos(a) * rr + t * 0.6, math.sin(a) * rr, 0.3 + t * 2.0))))
+		_chain(d, pts, 0.07, 0.015, sw, sides=5, grad=(0.0, 0.4), glow=0.9)
+	# banner poles on the plinth
+	for k, (x, y) in enumerate(((-3.0, -3.3), (3.0, -3.3), (-3.0, 3.3), (3.0, 3.3))):
+		p.seg((x, y, P - 0.05), (x, y, P + 0.35), 0.28, 0.24, GALE_STONE, sides=8)
+		p.seg((x, y, P + 0.35), (x, y, P + 6.2), 0.08, 0.06, WOOD, sides=6, grad=(0.2, 1.0))
+		p.seg((x - 0.6, y, P + 6.0), (x + 0.6, y, P + 6.0), 0.05, 0.05, WOOD, sides=5)
+		p.blob((0.2, 0.2, 0.2), (x, y, P + 6.25), OCHRE)
+		if y > 0:                                                    # long banners behind the statue
+			_streamer(d, (x + 0.2, y, P + 6.0), 4.2, 0.7, (SKY, CLOTH_WHITE)[k % 2], droop=0.9, taper=0.8)
+			_streamer(d, (x + 0.2, y, P + 5.5), 3.0, 0.3, OCHRE, droop=0.8)
+		else:                                                        # short pennants and chimes before it
+			_streamer(d, (x + 0.2, y, P + 6.0), 1.5, 0.4, (SKY, CLOTH_WHITE)[k % 2], droop=0.3, taper=0.8, n=5)
+			_chime_cluster(d, (x - 0.55, y, P + 5.95), r=0.18, n=6)
+	obj = p.build(bevel=0.04)
+	return join_into(obj, [d.build()])
+
+
+def cliff_edge_rail():
+	"""An 8 m run of weathered timber railing along X for a cliff's edge (the
+	drop in front, -Y): five posts on stone footings, a top and a mid rail,
+	rope lashings, struts on the land side (+Y), a pennant and a chime.
+	Collide it as a box (8 x 0.4 x 1.2)."""
+	p = Prop("cliff_edge_rail", 612)
+	xs = (-4.0, -2.0, 0.0, 2.0, 4.0)
+	for i, x in enumerate(xs):
+		x += p.rng.uniform(-0.08, 0.08)
+		p.rock((0.5, 0.5, 0.3), (x, 0, 0.02), GALE_STONE)
+		p.seg((x, 0, -0.2), (x, 0, 1.25), 0.09, 0.08, WOOD_GRAY, sides=6, grad=(0.1, 1.0))
+		p.blob((0.22, 0.22, 0.14), (x, 0, 1.08), HIDE, segs=(6, 4))
+		p.blob((0.2, 0.2, 0.12), (x, 0, 0.6), HIDE, segs=(6, 4))
+		if i % 2 == 0:
+			p.seg((x, 0.05, 0.9), (x, 0.9, -0.1), 0.06, 0.06, WOOD, sides=4)   # a strut on the land side
+	p.seg((-4.15, 0, 1.1), (4.15, 0, 1.12), 0.07, 0.07, WOOD, sides=5, grad=(0.1, 0.9))
+	p.seg((-4.1, 0.02, 0.6), (-0.1, 0.02, 0.63), 0.055, 0.055, WOOD, sides=5)
+	p.seg((0.1, 0.02, 0.62), (4.1, 0.02, 0.57), 0.055, 0.055, WOOD, sides=5)
+	_streamer(p, (0.0, 0, 1.25), 1.6, 0.22, SKY, droop=0.3, n=6)
+	p.seg((-2.0, 0, 1.25), (-2.0, -0.35, 1.3), 0.03, 0.03, WOOD, sides=4)
+	_chime_cluster(p, (-2.0, -0.4, 1.3), r=0.1, n=5, length=(0.15, 0.3))
+	return p.build(bevel=0.02)
+
+
+# ---- Windbreak
+
+def kite_glider():
+	"""A sky-bandit's kite-wing glider resting on the ground: a patched hide
+	wing 7.2 m across and 4 m nose to tail on a pole frame, tipped over onto its
+	left wingtip, nose (-Y) a little down, a control bar under the keel and a
+	painted black claw mark. About 2.2 m high. Collide it as a box, or not at all."""
+	p = Prop("kite_glider", 613)
+	nose, tipL, tipR = (0, -1.9, 0), (-3.6, 1.1, 0), (3.6, 1.1, 0)
+	trail = [(-2.5, 1.8, 0), (-1.3, 2.2, 0), (0, 1.9, 0), (1.3, 2.2, 0), (2.5, 1.8, 0)]
+	outline = [tipL] + trail + [tipR]
+	for i, (a, b) in enumerate(zip(outline, outline[1:])):                  # the wing cloth, a fan from the nose
+		p.poly([(nose[0], nose[1], 0.02), (a[0], a[1], 0.02), (b[0], b[1], 0.02)], [(0, 1, 2)], (HIDE, WOOD_GRAY, HIDE, CLOTH_RED, HIDE, WOOD_GRAY)[i], grad=(0.3, 0.5))
+	for c, sz, sw in (((-1.6, 0.6), (0.9, 0.7), CLOTH_RED), ((1.9, 0.9), (0.7, 0.9), WOOD_GRAY), ((0.5, 1.2), (0.6, 0.5), HIDE)):
+		p.box((sz[0], sz[1], 0.02), (c[0], c[1], 0.05), sw, rot=(0, 0, p.rng.uniform(-20, 20)), grad=(0.2, 0.4))   # patches
+	for k in range(3):                                                       # the claw mark
+		p.box((0.12, 1.1, 0.02), (0.6 + k * 0.28, 0.5, 0.06), IRON, rot=(0, 0, -18 + k * 4), grad=(0.6, 0.8))
+	p.seg((0, -2.0, 0.08), (0, 2.1, 0.08), 0.07, 0.05, WOOD, sides=5)        # keel
+	for t in (tipL, tipR):
+		p.seg((0, -1.95, 0.08), (t[0], t[1], 0.08), 0.06, 0.04, WOOD, sides=5)   # leading edges
+	p.seg((-2.3, 0.4, 0.1), (2.3, 0.4, 0.1), 0.05, 0.05, WOOD, sides=5)      # cross spar
+	for s in (-1, 1):                                                        # the control bar under the keel
+		p.seg((0, 0.3, 0.05), (s * 0.7, 0.1, -0.95), 0.035, 0.035, WOOD, sides=4)
+	p.seg((-0.75, 0.1, -0.95), (0.75, 0.1, -0.95), 0.04, 0.04, WOOD, sides=4)
+	p.blob((0.5, 0.4, 0.2), (0, 0.9, -0.05), HIDE, segs=(6, 4))                # the harness, slung under
+	for o in p.parts:                                                         # tip it onto its left wing
+		o.data.transform(Matrix.Translation((0, 0, 1.12)) @ Matrix.Rotation(math.radians(13), 4, "Y") @ Matrix.Rotation(math.radians(-5), 4, "X"))
+	p.rock((0.6, 0.5, 0.35), (2.4, 1.6, 0.1), STONE_WARM)
+	return p.build()
+
+
+def bandit_lookout():
+	"""A rickety sky-bandit lookout: four splayed timber legs (3.8 m square at
+	the foot) crossed with crooked braces, a plank platform 6 m up under a
+	patched hide lean-to, a ladder up the front (-Y), a davit with a pulley
+	and a hanging basket on the +X side, and a rope line anchored at the
+	platform running 11 m down-wind to a stake in the ground at (11, 0).
+	About 8.5 m tall. Collide it as a mesh (or a box 4 x 4 round the legs)."""
+	p = Prop("bandit_lookout", 614)
+	rng = p.rng
+	top = 6.0
+	legs = []
+	for sx in (-1, 1):
+		for sy in (-1, 1):
+			a = (sx * 1.9 + rng.uniform(-0.1, 0.1), sy * 1.9 + rng.uniform(-0.1, 0.1), -0.3)
+			b = (sx * 1.15, sy * 1.15, top + 1.1)
+			legs.append((a, b))
+			p.seg(a, b, 0.15, 0.11, WOOD_GRAY, sides=6, grad=(0.1, 1.0))
+			p.rock((0.6, 0.6, 0.3), (a[0], a[1], 0.0), STONE_WARM)
+
+	def leg_at(i, z):
+		a, b = legs[i]
+		t = (z - a[2]) / (b[2] - a[2])
+		return Vector(a).lerp(Vector(b), t)
+
+	faces = ((0, 1), (2, 3), (0, 2), (1, 3))
+	for f, (i, j) in enumerate(faces):                                  # crooked X braces, one of them broken
+		for lvl, (z0, z1) in enumerate(((0.6, 3.1), (3.1, 5.6))):
+			a, b = leg_at(i, z0), leg_at(j, z1)
+			c, e = leg_at(j, z0), leg_at(i, z1)
+			p.seg(tuple(a), tuple(b), 0.06, 0.06, WOOD, sides=4)
+			if (f, lvl) == (1, 0):
+				p.seg(tuple(c), tuple(c.lerp(e, 0.45) + Vector((0, 0, -0.15))), 0.06, 0.05, WOOD, sides=4)
+			else:
+				p.seg(tuple(c), tuple(e), 0.06, 0.06, WOOD, sides=4)
+			p.blob((0.18, 0.18, 0.18), tuple(a.lerp(b, 0.5)), HIDE, segs=(5, 4))
+	for k in range(9):                                                   # the platform, one plank missing
+		if k == 6:
+			continue
+		y = -1.5 + k * 0.375
+		p.box((3.2 + rng.uniform(-0.2, 0.2), 0.34, 0.08), (rng.uniform(-0.1, 0.1), y, top), WOOD if k % 3 else WOOD_GRAY,
+			  rot=(rng.uniform(-2, 2), 0, rng.uniform(-3, 3)), grad=(0.2, 0.8))
+	for s in (-1, 1):
+		p.box((0.14, 3.4, 0.16), (s * 1.3, 0, top - 0.12), WOOD_GRAY)
+	corners = [(sx * 1.45, sy * 1.45) for sx in (-1, 1) for sy in (-1, 1)]
+	for x, y in corners:
+		h = 2.4 if y > 0 else 1.2
+		p.seg((x, y, top), (x, y, top + h), 0.07, 0.06, WOOD_GRAY, sides=5)
+	for (x0, y0), (x1, y1) in (((-1.45, -1.45), (1.45, -1.45)), ((-1.45, -1.45), (-1.45, 1.45)), ((1.45, -1.45), (1.45, 1.45))):
+		if y0 == y1:                                                     # the front rail: rope, a gap for the ladder
+			_rope(p, (x0, y0, top + 1.0), (-0.45, y0, top + 1.0), 0.12, r=0.02)
+			_rope(p, (0.45, y0, top + 1.0), (x1, y1, top + 1.0), 0.12, r=0.02)
+		else:
+			p.box((0.08, 2.9, 0.18), (x0, 0, top + 0.95 + rng.uniform(-0.1, 0.1)), WOOD, rot=(rng.uniform(-3, 3), 0, 0))
+	# the lean-to: patched hides on poles, high at the back
+	for i, x in enumerate((-1.2, -0.4, 0.4, 1.2)):
+		p.box((0.84, 3.4, 0.04), (x, 0.0, top + 1.8), (HIDE, CLOTH_RED, HIDE, WOOD_GRAY)[i], rot=(-10, 0, rng.uniform(-2, 2)), grad=(0.2, 0.6))
+	for x in (-1.45, 1.45):
+		p.seg((x, -1.6, top + 1.52), (x, 1.6, top + 2.1), 0.05, 0.05, WOOD, sides=4)
+	# the ladder
+	for x in (-0.35, 0.35):
+		p.seg((x, -2.5, -0.1), (x, -1.45, top + 0.9), 0.05, 0.05, WOOD, sides=4)
+	for k in range(14):
+		t = (k + 0.5) / 14
+		y = -2.5 + (1.05) * t
+		z = -0.1 + (top + 1.0) * t
+		if k != 9:
+			p.seg((-0.37, y, z), (0.37, y, z), 0.03, 0.03, WOOD_GRAY, sides=4)
+	# the davit and pulley on the +X side, a basket on the line
+	p.seg((1.45, 1.45, top + 2.3), (3.0, 0.6, top + 2.5), 0.07, 0.06, WOOD, sides=5)
+	p.seg((1.45, 1.45, top + 1.4), (2.3, 1.0, top + 2.4), 0.05, 0.05, WOOD, sides=4)
+	p.seg((3.0, 0.52, top + 2.3), (3.0, 0.68, top + 2.3), 0.22, 0.22, IRON, sides=10)
+	p.seg((3.0, 0.6, top + 2.1), (3.0, 0.6, 1.9), 0.018, 0.018, HIDE, sides=3)
+	p.seg((2.78, 0.6, top + 2.3), (1.5, 1.3, top + 0.6), 0.018, 0.018, HIDE, sides=3)
+	p.seg((3.0, 0.6, 1.0), (3.0, 0.6, 1.7), 0.45, 0.5, HIDE, sides=8, grad=(0.2, 0.9))
+	for k in range(3):
+		a = k * math.tau / 3
+		p.seg((3.0 + math.cos(a) * 0.45, 0.6 + math.sin(a) * 0.45, 1.7), (3.0, 0.6, 1.95), 0.012, 0.012, HIDE, sides=3)
+	# the rope line, anchored on the back +X post, running down-wind to a stake
+	a, b = Vector((1.45, 1.45, top + 2.2)), Vector((11.0, 0.0, 0.7))
+	_rope(p, tuple(a), tuple(b), 0.5, r=0.03, n=12)
+	p.seg((11.0, 0.0, -0.3), (10.8, 0.0, 1.0), 0.14, 0.1, WOOD, sides=5)
+	p.rock((0.9, 0.8, 0.5), (11.3, 0.3, 0.1), STONE_WARM)
+	p.rock((0.7, 0.7, 0.4), (10.6, -0.4, 0.1), STONE_WARM)
+	for z in (0.55, 0.7, 0.85):
+		p.seg((10.7, 0.0, z), (11.0, 0.0, z), 0.15, 0.15, HIDE, sides=6)
+	p.seg((1.35, 1.35, top + 2.05), (1.6, 1.6, top + 2.35), 0.1, 0.1, HIDE, sides=6)
+	_streamer(p, (-1.45, 1.45, top + 2.4), 1.8, 0.3, CLOTH_RED, droop=0.3, n=6)
+	return p.build(bevel=0.02)
+
+
+def rope_anchor():
+	"""A stone-and-timber anchor: a heavy post driven into a stone collar and
+	banded in iron, a coil of rope at its foot, two tie-downs to stakes, and a
+	slack line trailing off down-wind (+X) along the ground. About 1.7 m tall,
+	3.5 m across. Clutter: no collision (or a trunk)."""
+	p = Prop("rope_anchor", 615)
+	for k in range(6):
+		a = k * math.tau / 6 + p.rng.uniform(-0.2, 0.2)
+		p.rock((0.5, 0.45, 0.4), (math.cos(a) * 0.45, math.sin(a) * 0.45, 0.12), STONE_WARM if k % 2 else STONE_LIGHT)
+	p.seg((0, 0, -0.2), (0.05, 0.0, 1.7), 0.2, 0.17, WOOD_GRAY, sides=7, grad=(0.1, 1.0))
+	for z in (0.7, 1.4):
+		p.seg((0, 0, z), (0, 0, z + 0.1), 0.22, 0.22, IRON, sides=7)
+	for z in (1.0, 1.12, 1.24):
+		p.seg((0.02, 0, z), (0.02, 0, z + 0.1), 0.23, 0.23, HIDE, sides=8)
+	for k in range(3):                                                 # the coil
+		p.seg((0.62, -0.5, 0.05 + k * 0.07), (0.62, -0.5, 0.11 + k * 0.07), 0.38 - k * 0.03, 0.38 - k * 0.03, HIDE, sides=10)
+	p.seg((0.62, -0.5, 0.0), (0.62, -0.5, 0.26), 0.18, 0.18, SHADE, sides=8, grad=(0.9, 1.0))
+	for a in (2.2, 3.8):                                               # tie-downs
+		st = (math.cos(a) * 1.8, math.sin(a) * 1.8)
+		_rope(p, (0, 0, 1.2), (st[0], st[1], 0.3), 0.08, r=0.022)
+		p.seg((st[0], st[1], -0.1), (st[0] * 1.05, st[1] * 1.05, 0.45), 0.05, 0.04, WOOD, sides=4)
+	pts = [(0.15, 0.0, 1.15), (0.9, 0.1, 0.4), (1.5, 0.2, 0.05)]
+	for k in range(5):
+		pts.append((1.5 + 0.45 * (k + 1), 0.2 + 0.15 * math.sin(k * 1.4), 0.04))
+	_chain(p, pts, 0.025, 0.02, HIDE, sides=4)
+	return p.build(bevel=0.015)
+
+
+def giant_cairn():
+	"""A stone giants' cairn: great flat stones stacked about 6.3 m high on a
+	ring of footing boulders (5 m across), a tall capstone on top, a faint
+	blue rune on its face (-Y), smaller stones scattered round. Collide it as
+	a box (or a cylinder r 2.4)."""
+	p = Prop("giant_cairn", 616)
+	for k in range(6):
+		a = k * math.tau / 6 + p.rng.uniform(-0.2, 0.2)
+		p.rock((1.9, 1.6, 1.1), (math.cos(a) * 1.5, math.sin(a) * 1.5, 0.35), STONE_WARM if k % 2 else STONE_LIGHT, rot=(0, 0, math.degrees(a)))
+	z = 0.9
+	for k, (sx, sy, sz) in enumerate(((3.4, 3.0, 1.3), (2.9, 2.5, 1.2), (2.4, 2.1, 1.1), (1.9, 1.7, 1.0), (1.5, 1.3, 0.9))):
+		off = (p.rng.uniform(-0.2, 0.2), p.rng.uniform(-0.2, 0.2))
+		p.rock((sx, sy, sz), (off[0], off[1], z + sz * 0.4), STONE_LIGHT if k % 2 else STONE_WARM, rot=(p.rng.uniform(-5, 5), p.rng.uniform(-5, 5), p.rng.uniform(0, 360)), jitter=0.05)
+		z += sz * 0.8
+	p.seg((0, 0, z - 0.2), (0.1, 0.05, z + 1.6), 0.5, 0.32, STONE_LIGHT, sides=5, grad=(0.05, 0.85), jitter=0.04, twist=12)
+	for (x0, z0), (x1, z1) in (((-0.35, 2.0), (0.0, 2.7)), ((0.0, 2.7), (0.35, 2.0)), ((0.0, 2.7), (0.0, 1.5)), ((-0.3, 1.8), (0.3, 1.8))):
+		p.seg((x0, -1.12, z0), (x1, -1.12, z1), 0.05, 0.05, SKY, sides=4, glow=0.5)   # a giant's wind rune
+	for k in range(7):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(2.6, 3.6)
+		sz = p.rng.uniform(0.3, 0.7)
+		p.rock((sz, sz * 0.9, sz * 0.6), (math.cos(a) * r, math.sin(a) * r, 0.05), STONE_LIGHT)
+	return p.build()
+
+
+def thunderbird_nest():
+	"""A thunderbird's nest on a rock spire: stacked blue-gray rock about 5.8 m
+	tall (3.6 m across at the foot) crowned by a ring of pale storm-bleached
+	branches 3.2 m across, rim about 6.9 m up, holding two glowing blue eggs,
+	with crackling blue sparks between the sticks and down the rock, and dark
+	blue feathers caught in it. Collide it as a trunk (or cylinder r 1.6)."""
+	p = Prop("thunderbird_nest", 617)
+	rng = p.rng
+	z = 0.0
+	for k, (sx, sy, sz) in enumerate(((3.6, 3.2, 2.2), (2.8, 2.5, 2.0), (2.2, 2.0, 1.8), (1.8, 1.7, 1.4))):
+		off = (rng.uniform(-0.25, 0.25), rng.uniform(-0.25, 0.25))
+		p.rock((sx, sy, sz), (off[0], off[1], z + sz * 0.45), GALE_STONE if k % 2 else STONE_DARK, rot=(0, 0, rng.uniform(0, 360)))
+		z += sz * 0.75
+	top = 5.8
+	p.blob((2.8, 2.8, 0.7), (0, 0, top + 0.2), WOOD_GRAY, segs=(12, 6), grad=(0.1, 0.9), jitter=0.05)
+	for layer, (R, zz, n) in enumerate(((1.45, top + 0.4, 16), (1.4, top + 0.65, 14), (1.3, top + 0.88, 12))):
+		for k in range(n):
+			a = k * math.tau / n + rng.uniform(-0.2, 0.2) + layer * 0.3
+			c = Vector((math.cos(a) * R, math.sin(a) * R, zz))
+			tv = Vector((-math.sin(a), math.cos(a), 0)).lerp(Vector((math.cos(a), math.sin(a), 0)), rng.uniform(-0.5, 0.5))
+			tv.z = rng.uniform(-0.25, 0.25)
+			L = rng.uniform(0.9, 1.6)
+			p.seg(tuple(c - tv * L / 2), tuple(c + tv * L / 2), 0.065, 0.04, WOOD_GRAY if (k + layer) % 3 else BONE, sides=5, grad=(0.1, 0.9))
+	for k in range(9):                                                  # sticks poking out
+		a = rng.uniform(0, math.tau)
+		p.seg((math.cos(a) * 1.1, math.sin(a) * 1.1, top + 0.55), (math.cos(a) * 2.2, math.sin(a) * 2.2, top + rng.uniform(0.2, 1.2)), 0.045, 0.015, WOOD_GRAY, sides=4)
+	p.blob((2.2, 2.2, 0.3), (0, 0, top + 0.62), HIDE, segs=(10, 5), grad=(0.3, 0.8))  # the lining
+	for k, (x, y) in enumerate(((-0.3, 0.05), (0.3, 0.2))):
+		p.blob((0.42, 0.42, 0.56), (x, y, top + 0.95), SKY, segs=(8, 6), rot=(rng.uniform(-15, 15), rng.uniform(-15, 15), 0), grad=(0.0, 0.5), glow=0.8)
+	for k in range(6):                                                  # feathers
+		a = rng.uniform(0, math.tau)
+		p.blob((0.8, 0.14, 0.03), (math.cos(a) * 1.45, math.sin(a) * 1.45, top + 0.8), WATER if k % 2 else CLOTH_WHITE, rot=(0, 25, math.degrees(a)), segs=(6, 3))
+	# crackling sparks: jagged glowing lines
+	for k in range(6):
+		a = rng.uniform(0, math.tau)
+		start = Vector((math.cos(a) * 1.5, math.sin(a) * 1.5, top + rng.uniform(0.5, 1.0)))
+		pts = [start]
+		for j in range(4):
+			pts.append(pts[-1] + Vector((rng.uniform(-0.25, 0.25), rng.uniform(-0.25, 0.25), rng.uniform(0.1, 0.3))))
+		_chain(p, [tuple(v) for v in pts], 0.03, 0.012, SKY, sides=4, grad=(0.0, 0.2), glow=2.5)
+	pts = [Vector((1.0, -0.6, top - 0.2))]
+	for j in range(7):                                                  # one crackling down the rock
+		pts.append(pts[-1] + Vector((rng.uniform(-0.05, 0.25), rng.uniform(-0.25, -0.05), -rng.uniform(0.35, 0.6))))
+	_chain(p, [tuple(v) for v in pts], 0.035, 0.015, SKY, sides=4, grad=(0.0, 0.2), glow=2.5)
+	return p.build()
+
+
+# ---- The Long Grass
+
+def tallgrass():
+	"""A clump of head-high golden-green grass, 1.7-2.2 m, about 0.9 m across:
+	bent two-part blades and a few seed heads. Colored (not tinted), light
+	enough to scatter densely; use a sway of about 0.12. No collision."""
+	p = Prop("tallgrass", 618)
+	for k in range(13):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.3)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = p.rng.uniform(1.6, 2.2)
+		la = p.rng.uniform(0, math.tau)
+		lean = p.rng.uniform(0.15, 0.55)
+		w = p.rng.uniform(0.045, 0.07)
+		sx, sy = math.cos(a + 1.57) * w, math.sin(a + 1.57) * w
+		mx, my = x + math.cos(la) * lean * 0.3, y + math.sin(la) * lean * 0.3
+		tx, ty = x + math.cos(la) * lean, y + math.sin(la) * lean
+		sw = BAMBOO if k % 3 == 0 else LEAF
+		p.poly([(x - sx, y - sy, 0), (x + sx, y + sy, 0), (mx + sx * 0.7, my + sy * 0.7, h * 0.55), (mx - sx * 0.7, my - sy * 0.7, h * 0.55), (tx, ty, h)],
+			   [(0, 1, 2, 3), (3, 2, 4)], sw, grad=(0.0, 0.45) if sw == LEAF else (0.0, 0.35))
+		if k % 4 == 1:                                                  # a seed head on its own stalk
+			p.seg((x, y, 0), (tx * 0.6, ty * 0.6, h + 0.1), 0.01, 0.008, BAMBOO, sides=3, grad=(0.0, 0.4))
+			p.blob((0.07, 0.07, 0.3), (tx * 0.6, ty * 0.6, h + 0.22), BAMBOO, segs=(4, 3), grad=(0.0, 0.3))
+	return p.build()
+
+
+def lone_tree():
+	"""A broad flat-topped plains tree: a short leaning trunk forking into four
+	limbs that spread a flat canopy about 11 m across, its top about 7 m up.
+	Collide it as a trunk (r 0.5)."""
+	p = Prop("lone_tree", 619)
+	fork = (0.4, 0.1, 2.6)
+	_chain(p, [(0, 0, -0.4), (0.15, 0.05, 1.3), fork], 0.5, 0.36, WOOD, sides=7, grad=(0.2, 0.9))
+	for k in range(3):
+		a = k * math.tau / 3 + 0.4
+		p.seg((0, 0, 0.2), (math.cos(a) * 1.0, math.sin(a) * 1.0, -0.2), 0.3, 0.1, WOOD, sides=5)   # root flare
+	ends = []
+	for k, (a, L, zt) in enumerate(((0.3, 3.8, 5.5), (1.9, 3.4, 5.8), (3.3, 4.0, 5.4), (4.6, 3.2, 5.9))):
+		end = (fork[0] + math.cos(a) * L, fork[1] + math.sin(a) * L, zt)
+		mid = (fork[0] + math.cos(a) * L * 0.45, fork[1] + math.sin(a) * L * 0.45, (fork[2] + zt) / 2 + 0.6)
+		_chain(p, [fork, mid, end], 0.3, 0.1, WOOD, sides=6, grad=(0.2, 0.9))
+		ends.append(end)
+		for j in range(2):
+			b = a + (j - 0.5) * 0.9
+			p.seg(end, (end[0] + math.cos(b) * 1.3, end[1] + math.sin(b) * 1.3, end[2] + 0.4), 0.09, 0.03, WOOD, sides=4)
+	for k, e in enumerate(ends):                                         # the flat canopy
+		p.blob((4.6, 4.0, 0.8), (e[0] * 0.9, e[1] * 0.9, 6.3), LEAF, segs=(10, 5), rot=(0, 0, p.rng.uniform(0, 180)), grad=(0.0, 0.75), jitter=0.12)
+	p.blob((5.2, 5.0, 0.9), (fork[0], fork[1], 6.5), LEAF, segs=(10, 5), grad=(0.0, 0.7), jitter=0.12)
+	return p.build()
+
+
+def _horse_mark(p, a, R, z, size, swatch):
+	"""A little painted horse on a round wall at angle a (radians), facing
+	along the wall: body, neck, head, legs and tail as thin strokes."""
+	t = Vector((-math.sin(a), math.cos(a), 0))
+	n = Vector((math.cos(a), math.sin(a), 0))
+	yaw = math.degrees(a) + 90
+	base = n * R
+
+	def at(u, v, off=0.0):
+		c = base + t * u * size + n * off
+		return (c.x, c.y, z + v * size)
+
+	p.box((0.55 * size, 0.03, 0.2 * size), at(0, 0), swatch, rot=(0, 0, yaw), grad=(0.2, 0.5))           # body
+	p.box((0.3 * size, 0.03, 0.1 * size), at(0.32, 0.14), swatch, rot=(0, -50, yaw), grad=(0.2, 0.5))     # neck
+	p.box((0.2 * size, 0.03, 0.08 * size), at(0.45, 0.24), swatch, rot=(0, 20, yaw), grad=(0.2, 0.5))     # head
+	for u, sw in ((-0.22, -20), (-0.12, 15), (0.16, -15), (0.24, 25)):                                    # legs mid-gallop
+		p.box((0.05 * size, 0.03, 0.28 * size), at(u, -0.2), swatch, rot=(0, sw, yaw), grad=(0.2, 0.5))
+	p.box((0.28 * size, 0.03, 0.06 * size), at(-0.38, 0.02), swatch, rot=(0, 30, yaw), grad=(0.2, 0.5))   # tail
+
+
+def hoofborn_yurt():
+	"""A horse-folk yurt: a round felt tent 6 m across, walls 1.8 m and a low
+	conical roof to 3.6 m, a band of painted galloping horses round the wall,
+	rope straps, a red and ochre door at the front (-Y), a crown ring with a
+	horsetail pole, and weighted ropes over the roof. Collide it as a cylinder
+	(r 3)."""
+	p = Prop("hoofborn_yurt", 620)
+	R, W, H = 3.0, 1.8, 3.6
+	p.seg((0, 0, -0.1), (0, 0, W), R, R - 0.05, CLOTH_WHITE, sides=20, grad=(0.1, 0.6))
+	for z in (0.35, 1.55):
+		p.seg((0, 0, z), (0, 0, z + 0.07), R + 0.03, R + 0.03, HIDE, sides=20)
+	p.seg((0, 0, 0.62), (0, 0, 0.66), R + 0.02, R + 0.02, OCHRE, sides=20)
+	p.seg((0, 0, 1.3), (0, 0, 1.34), R + 0.02, R + 0.02, OCHRE, sides=20)
+	for k in range(12):                                                 # the horses, galloping round (not over the door)
+		a = -math.pi / 2 + (k + 0.5) * math.tau / 12
+		if abs(math.sin(a) + 1) < 0.08:
+			continue
+		_horse_mark(p, a, R + 0.02, 1.0, 0.9, CLOTH_RED if k % 2 else IRON)
+	p.seg((0, 0, W - 0.05), (0, 0, H - 0.1), R + 0.25, 0.55, HIDE, sides=20, grad=(0.0, 0.55))    # felt roof
+	p.seg((0, 0, W - 0.08), (0, 0, W + 0.02), R + 0.28, R + 0.26, OCHRE, sides=20)
+	p.seg((0, 0, H - 0.15), (0, 0, H + 0.05), 0.6, 0.55, WOOD, sides=12)                              # crown ring
+	p.box((1.0, 0.8, 0.05), (0.2, 0.1, H + 0.1), CLOTH_WHITE, rot=(0, 12, 0), grad=(0.1, 0.5))       # smoke flap
+	p.seg((0, 0.25, H), (0, 0.25, H + 1.4), 0.04, 0.03, WOOD, sides=4)                                # horsetail pole
+	for j in range(5):
+		pts = [(0, 0.25 + 0.02 * j, H + 1.35)]
+		for i in range(1, 5):
+			pts.append((0.28 * i, 0.25 + 0.03 * j + 0.05 * math.sin(i + j), H + 1.35 - 0.12 * i - 0.03 * j))
+		_chain(p, pts, 0.03, 0.01, HIDE if j % 2 else WOOD_GRAY, sides=3)
+	for k in range(4):                                                  # weighted ropes over the roof
+		a = k * math.pi / 2 + math.pi / 4
+		c, s = math.cos(a), math.sin(a)
+		_chain(p, [(c * 0.6, s * 0.6, H - 0.05), (c * (R + 0.25), s * (R + 0.25), W + 0.05), (c * (R + 0.35), s * (R + 0.35), 0.6)], 0.022, 0.022, HIDE, sides=4)
+		p.rock((0.4, 0.35, 0.35), (c * (R + 0.35), s * (R + 0.35), 0.4), STONE_WARM)
+	# the door
+	p.box((1.3, 0.3, 2.0), (0, -R + 0.05, 0.95), WOOD, grad=(0.2, 0.9))
+	p.box((1.0, 0.2, 1.65), (0, -R - 0.05, 0.85), CLOTH_RED, grad=(0.1, 0.8))
+	p.box((0.8, 0.05, 0.25), (0, -R - 0.16, 1.35), OCHRE, grad=(0.1, 0.5))
+	p.box((0.8, 0.05, 0.25), (0, -R - 0.16, 0.45), OCHRE, grad=(0.1, 0.5))
+	p.seg((0, -R - 0.2, 0.9), (0, -R - 0.3, 0.9), 0.12, 0.12, SKY, sides=8)
+	p.box((0.9, 0.6, 0.2), (0, -R - 0.55, 0.05), HIDE, grad=(0.2, 0.7))                               # threshold mat
+	return p.build(bevel=0.03)
+
+
+def _horse_skull(p, c, s=1.0):
+	"""A horse skull facing -Y at c: long face, eye sockets, a jaw."""
+	c = Vector(c)
+	p.blob((0.36 * s, 0.34 * s, 0.32 * s), tuple(c), BONE, segs=(8, 6), grad=(0.0, 0.6))
+	p.seg(tuple(c + Vector((0, -0.12, -0.02)) * s), tuple(c + Vector((0, -0.62, -0.14)) * s), 0.15 * s, 0.08 * s, BONE, sides=6, grad=(0.0, 0.6))
+	p.seg(tuple(c + Vector((0, -0.1, -0.16)) * s), tuple(c + Vector((0, -0.58, -0.24)) * s), 0.07 * s, 0.05 * s, BONE, sides=5, grad=(0.1, 0.6))
+	for x in (-1, 1):
+		p.blob((0.1 * s, 0.1 * s, 0.1 * s), tuple(c + Vector((x * 0.14, -0.12, 0.05)) * s), IRON, segs=(6, 4))
+	p.blob((0.07 * s, 0.05 * s, 0.05 * s), tuple(c + Vector((0, -0.66, -0.13)) * s), IRON, segs=(5, 3))
+
+
+def horse_totem():
+	"""A horse-folk totem: a 5.5 m pole with ochre and blue painted bands, a
+	crossbar, three horse skulls facing -Y and long horsetail streamers blowing
+	down-wind (+X). Collide it as a trunk."""
+	p = Prop("horse_totem", 621)
+	p.rock((0.8, 0.8, 0.4), (0, 0, 0.1), STONE_WARM)
+	p.seg((0, 0, -0.3), (0, 0, 5.5), 0.13, 0.1, WOOD, sides=7, grad=(0.2, 1.0))
+	for z, sw in ((1.0, OCHRE), (1.2, SKY), (2.4, OCHRE), (4.8, SKY)):
+		p.seg((0, 0, z), (0, 0, z + 0.12), 0.15, 0.15, sw, sides=7)
+	p.seg((-1.0, 0, 3.8), (1.0, 0, 3.8), 0.07, 0.07, WOOD, sides=5)
+	_horse_skull(p, (0, -0.2, 5.4), 1.1)
+	for x in (-0.8, 0.8):
+		_horse_skull(p, (x, -0.12, 3.65), 0.85)
+	_horse_skull(p, (0, -0.18, 2.1), 0.9)
+	for k, (x, z) in enumerate(((-1.0, 3.75), (1.0, 3.75), (0.1, 5.1), (0.1, 4.4), (0.1, 2.0))):   # horsetails
+		for j in range(4):
+			pts = [(x, 0.02 * j, z)]
+			for i in range(1, 6):
+				pts.append((x + 0.3 * i, 0.03 * j + 0.06 * math.sin(i * 1.3 + j + k), z - 0.2 * i - 0.04 * j))
+			_chain(p, pts, 0.035, 0.008, (HIDE, WOOD_GRAY, CLOTH_WHITE, IRON)[(j + k) % 4], sides=3)
+	return p.build()
+
+
+def barrow_mound():
+	"""An old barrow: a grassy dome 12 m across and 3 m high (slopes under
+	35 degrees, walkable) with a dry-stone entrance cut into its front (-Y):
+	retaining walls, two uprights and a lintel over a dark stone slab (closed),
+	and a ring of nine standing stones (one fallen) about 14.5 m across with a
+	gap before the door. Collide it as a mesh."""
+	p = Prop("barrow_mound", 622)
+	prof = [(0.0, -0.3), (6.3, -0.3), (6.0, 0.0), (5.0, 0.45), (4.0, 1.15), (3.0, 1.85), (2.0, 2.45), (1.0, 2.85), (0.0, 3.0)]
+	mound = _lathe(p, prof, 24, LEAF, grad=(0.05, 0.6), jitter=0.1)
+	for v in mound.data.vertices:                                      # a notch for the entrance
+		if v.co.y < -2.6 and abs(v.co.x) < 1.9 and v.co.z > 0:
+			v.co.z = 0.0
+	# the entrance: a sunken way between dry-stone walls to a closed door
+	for s in (-1, 1):
+		for k in range(4):
+			y = -2.9 - k * 0.9
+			h = 2.2 - k * 0.45
+			_block(p, (0.8, 0.95, h), (s * 1.45, y, h / 2 - 0.05), STONE_WARM if k % 2 else STONE_LIGHT, rough=0.04)
+	p.box((3.8, 1.2, 1.2), (0, -2.4, 2.5), STONE_WARM, grad=(0.1, 0.9), jitter=0.04)     # stone over the door
+	for x in (-0.85, 0.85):
+		_block(p, (0.5, 0.55, 2.2), (x, -3.05, 1.05), STONE_LIGHT, rough=0.03)
+	_block(p, (2.4, 0.7, 0.45), (0, -3.05, 2.3), STONE_LIGHT, rough=0.03)
+	p.box((1.3, 0.25, 1.95), (0, -2.85, 1.0), IRON, grad=(0.3, 0.9))                        # the dark slab, closed
+	for k in range(3):
+		p.seg((-0.35 + k * 0.35, -3.0, 1.6), (-0.35 + k * 0.35 + 0.1, -3.0, 1.2), 0.03, 0.03, STONE_LIGHT, sides=3)   # worn carvings
+	p.box((2.2, 3.6, 0.1), (0, -4.2, 0.02), STONE_DARK, grad=(0.5, 0.9))                    # the way in
+	# the ring of standing stones
+	for k in range(10):
+		a = -math.pi / 2 + k * math.tau / 10
+		if k == 0:
+			continue                                                  # the gap before the door
+		x, y = math.cos(a) * 7.2, math.sin(a) * 7.2
+		h = p.rng.uniform(1.6, 2.6)
+		if k == 6:
+			p.seg((x, y, 0.25), (x + math.cos(a + 1.3) * h, y + math.sin(a + 1.3) * h, 0.3), 0.36, 0.26, STONE_LIGHT, sides=5, jitter=0.04)
+			continue
+		p.seg((x, y, -0.3), (x, y, h), 0.38, 0.26, STONE_LIGHT, sides=5, grad=(0.1, 0.9), jitter=0.04, twist=p.rng.uniform(0, 70))
+		p.rock((0.9, 0.9, 0.3), (x, y, 0.0), STONE_DARK)
+	return p.build()
+
+
+def herd_bones():
+	"""The bleached skeleton of a giant grazer sunk in the grass: a spine 5 m
+	long, arching ribs (a few broken), a long horned skull at -X, the pelvis
+	and scattered leg bones. About 6 x 3.4 m and 1.6 m high. Clutter: no
+	collision (or a box)."""
+	p = Prop("herd_bones", 623)
+	rng = p.rng
+	spine = [(-2.2 + 0.5 * i, 0.0, 0.55 + 0.25 * math.sin(i / 9 * math.pi) - 0.02 * i) for i in range(10)]
+	_chain(p, spine, 0.1, 0.07, BONE, sides=6, grad=(0.0, 0.6))
+	for x, y, z in spine:
+		p.blob((0.2, 0.22, 0.24), (x, y, z + 0.05), BONE, segs=(6, 4), grad=(0.0, 0.5))
+	for i in range(1, 7):                                              # ribs
+		x, _, z = spine[i]
+		for s in (-1, 1):
+			if (i, s) in ((3, 1), (5, -1)):
+				_chain(p, [(x, 0, z), (x + 0.05, s * 0.9, z + 0.35), (x + 0.1, s * 1.2, z + 0.05)], 0.06, 0.04, BONE, sides=5, grad=(0.0, 0.6))
+				continue                                              # broken off
+			_chain(p, [(x, 0, z), (x + 0.05, s * 0.9, z + 0.4), (x + 0.1, s * 1.5, z - 0.05), (x + 0.15, s * 1.6, -0.2)], 0.06, 0.04, BONE, sides=5, grad=(0.0, 0.6))
+	p.blob((0.9, 1.2, 0.6), (2.4, 0, 0.4), BONE, segs=(8, 5), grad=(0.0, 0.6))          # pelvis
+	for s in (-1, 1):
+		p.seg((2.4, s * 0.5, 0.4), (2.9, s * 0.8, 0.1), 0.14, 0.1, BONE, sides=5)
+	# the skull: long, low, with swept horns
+	sc = Vector((-2.9, 0.1, 0.45))
+	p.blob((0.9, 0.75, 0.6), tuple(sc), BONE, segs=(8, 6), grad=(0.0, 0.6), rot=(0, 0, 10))
+	p.seg(tuple(sc + Vector((-0.3, 0, -0.05))), tuple(sc + Vector((-1.3, -0.15, -0.25))), 0.28, 0.16, BONE, sides=6, grad=(0.0, 0.6))
+	for s in (-1, 1):
+		p.blob((0.2, 0.18, 0.16), tuple(sc + Vector((-0.2, s * 0.3, 0.1))), IRON, segs=(6, 4))
+		_chain(p, [tuple(sc + Vector((0.2, s * 0.3, 0.2))), tuple(sc + Vector((0.6, s * 0.9, 0.6))), tuple(sc + Vector((1.1, s * 1.1, 0.8))), tuple(sc + Vector((1.4, s * 0.95, 1.1)))],
+			   0.13, 0.03, BONE, sides=6, grad=(0.2, 0.9))
+	for k in range(4):                                                 # scattered leg bones
+		a = (rng.uniform(-1.5, 2.5), rng.choice([-1, 1]) * rng.uniform(1.6, 2.2), 0.1)
+		L = rng.uniform(0.9, 1.4)
+		ang = rng.uniform(0, math.tau)
+		b = (a[0] + math.cos(ang) * L, a[1] + math.sin(ang) * L, 0.12)
+		_bone(p, a, b, r=0.07)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -8586,6 +9466,25 @@ PROPS = {
 	"reaver_longship": reaver_longship,
 	"harbor_barricade": harbor_barricade,
 	"storm_brazier": storm_brazier,
+	"galehold_gate": galehold_gate,
+	"sail_tower": sail_tower,
+	"sail_tower_rotor": sail_tower_rotor,
+	"cliff_house": cliff_house,
+	"wind_chimes": wind_chimes,
+	"kite_pole": kite_pole,
+	"vayuketh_shrine": vayuketh_shrine,
+	"cliff_edge_rail": cliff_edge_rail,
+	"kite_glider": kite_glider,
+	"bandit_lookout": bandit_lookout,
+	"rope_anchor": rope_anchor,
+	"giant_cairn": giant_cairn,
+	"thunderbird_nest": thunderbird_nest,
+	"tallgrass": tallgrass,
+	"lone_tree": lone_tree,
+	"hoofborn_yurt": hoofborn_yurt,
+	"horse_totem": horse_totem,
+	"barrow_mound": barrow_mound,
+	"herd_bones": herd_bones,
 }
 
 

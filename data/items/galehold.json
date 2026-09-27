@@ -1,0 +1,334 @@
+{
+  "skyforged_helm": {
+    "name": "Skyforged Helm",
+    "slot": "head",
+    "ac": 23,
+    "sta": 6,
+    "hp": 35,
+    "value": 9000,
+    "rec_level": 36,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "skyforged_breastplate": {
+    "name": "Skyforged Breastplate",
+    "slot": "chest",
+    "ac": 41,
+    "sta": 10,
+    "hp": 65,
+    "value": 16000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "skyforged_vambraces": {
+    "name": "Skyforged Vambraces",
+    "slot": "arms",
+    "ac": 17,
+    "str": 5,
+    "value": 7000,
+    "rec_level": 36,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "skyforged_gauntlets": {
+    "name": "Skyforged Gauntlets",
+    "slot": "hands",
+    "ac": 16,
+    "str": 5,
+    "value": 6500,
+    "rec_level": 36,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "skyforged_greaves": {
+    "name": "Skyforged Greaves",
+    "slot": "legs",
+    "ac": 28,
+    "sta": 6,
+    "value": 11000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "skyforged_boots": {
+    "name": "Skyforged Boots",
+    "slot": "feet",
+    "ac": 17,
+    "agi": 5,
+    "value": 7000,
+    "rec_level": 36,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "skyforged_shield": {
+    "name": "Skyforged Kite Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 27,
+    "sta": 6,
+    "hp": 40,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 14000,
+    "rec_level": 37
+  },
+  "windrunner_jerkin": {
+    "name": "Windrunner Jerkin",
+    "slot": "chest",
+    "ac": 29,
+    "agi": 9,
+    "str": 5,
+    "value": 15000,
+    "rec_level": 37,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "windrunner_leggings": {
+    "name": "Windrunner Leggings",
+    "slot": "legs",
+    "ac": 21,
+    "agi": 6,
+    "sta": 4,
+    "value": 10000,
+    "rec_level": 37,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "windrunner_gloves": {
+    "name": "Windrunner Gloves",
+    "slot": "hands",
+    "ac": 12,
+    "agi": 5,
+    "value": 6300,
+    "rec_level": 36,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "windrunner_boots": {
+    "name": "Windrunner Boots",
+    "slot": "feet",
+    "ac": 16,
+    "agi": 5,
+    "sta": 4,
+    "value": 6500,
+    "rec_level": 36,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "galeweave_cap": {
+    "name": "Galeweave Cap",
+    "slot": "head",
+    "ac": 10,
+    "int": 6,
+    "wis": 6,
+    "mana": 65,
+    "value": 7800,
+    "rec_level": 36,
+    "wear": "cloth_cap"
+  },
+  "galeweave_robe": {
+    "name": "Galeweave Robe",
+    "slot": "chest",
+    "ac": 21,
+    "int": 10,
+    "wis": 10,
+    "mana": 110,
+    "value": 15000,
+    "rec_level": 37,
+    "wear": "patchwork_tunic"
+  },
+  "galeweave_gloves": {
+    "name": "Galeweave Gloves",
+    "slot": "hands",
+    "ac": 9,
+    "int": 6,
+    "wis": 6,
+    "mana": 40,
+    "value": 5800,
+    "rec_level": 36,
+    "wear": "cloth_gloves"
+  },
+  "galeweave_slippers": {
+    "name": "Galeweave Slippers",
+    "slot": "feet",
+    "ac": 9,
+    "int": 5,
+    "wis": 5,
+    "mana": 30,
+    "value": 5600,
+    "rec_level": 36,
+    "wear": "sandals"
+  },
+  "skyforged_sword": {
+    "name": "Skyforged Sword",
+    "slot": "primary",
+    "dmg": 27,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 17500,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "skyforged_war_axe": {
+    "name": "Skyforged War Axe",
+    "slot": "primary",
+    "dmg": 28,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 17000,
+    "rec_level": 37,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "skyforged_greataxe": {
+    "name": "Skyforged Greataxe",
+    "slot": "primary",
+    "dmg": 42,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 19000,
+    "rec_level": 38,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "zephyr_dirk": {
+    "name": "Zephyr Dirk",
+    "slot": "primary",
+    "dmg": 20,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 16000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "stormwood_staff": {
+    "name": "Stormwood Staff",
+    "slot": "primary",
+    "dmg": 22,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 10,
+    "wis": 10,
+    "mana": 95,
+    "value": 17000,
+    "rec_level": 37,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "galehold_longbow": {
+    "name": "Galehold Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 14,
+    "delay": 2.9,
+    "range": 48,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 16000,
+    "rec_level": 37,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "windcutter_arrow": {
+    "name": "Windcutter Arrow",
+    "ammo_type": "arrow",
+    "dmg": 6,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 8
+  }
+}

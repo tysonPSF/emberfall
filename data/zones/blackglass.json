@@ -172,6 +172,25 @@
         0,
         0
       ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_long_grass",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
     }
   ],
   "landmarks": [
@@ -204,21 +223,6 @@
       "pos": [
         0,
         -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
-        "Blackglass"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        -232,
-        0
       ],
       "face": [
         0,

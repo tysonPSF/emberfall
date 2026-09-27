@@ -15035,6 +15035,2661 @@ for _name in SERPENTS:
 # ================================================================ end of Silted Reach / Tidemouth
 
 
+# ================================================================ Windbreak (the Standing Sky, 32-36)
+# A high plateau broken into red-ochre mesas by the winds of Vayuketh, He Who Breathes the Plains.
+# Own rigs: the gale spirit (a hovering figure of wind streams and ribbons, legs trailing, not the air
+# elemental's tornado or the tempest's thundercloud), the dust devil (an ochre funnel of dust and
+# pebbles) and the named storm-eye (a towering cyclone with a glaring eye in a wheel of cloud at its
+# middle); one soaring-bird frame (`build_sky_bird`: three-jointed wings with fingered primaries) for
+# the giant eagle, the thunderbird and Skarrow the named thunderbird (built 1.45x); the cliff drake is
+# the ash drake recolored rust-red and frilled. The Kitewing bandits are repainted KayKit Rogues with a
+# folded kite rig on the back (their chief a spread, painted sail, a feathered hat and a long coat); the
+# stone giants are repainted Barbarians, head hidden, with bolt-ons in their mesh space like the ember
+# giants', and slabs of standing stone for weapons (models.json "weapons").
+
+def _wb_ribbon(b, pts, width, mat, bone, up=(0, 0, 1), thick=0.016, taper=0.35):
+	"""A flat ribbon of slabs through `pts`, its face toward `up`, narrowing to `taper` of its width."""
+	pts = [Vector(p) for p in pts]
+	n = len(pts) - 1
+	start = len(b.parts)
+	for k in range(n):
+		p, q = pts[k], pts[k + 1]
+		side = (q - p).cross(Vector(up))
+		if side.length < 1e-5:
+			side = Vector((1, 0, 0))
+		side.normalize()
+		w0 = width * (1 - (1 - taper) * k / n) / 2
+		w1 = width * (1 - (1 - taper) * (k + 1) / n) / 2
+		_slab(b, [tuple(p - side * w0), tuple(p + side * w0), tuple(q + side * w1), tuple(q - side * w1)], thick, mat)
+	_on_bone(b, start, bone)
+
+
+def _wb_coil(b, a, c, r0, r1, turns, phase, width, mat, bone, n=16):
+	"""A thin strand wound `turns` times round the axis a -> c, its radius going r0 -> r1."""
+	a, c = Vector(a), Vector(c)
+	ax = (c - a).normalized()
+	u = ax.orthogonal().normalized()
+	v = ax.cross(u).normalized()
+	pts = []
+	for k in range(n + 1):
+		f = k / n
+		ang = 2 * math.pi * (phase + turns * f)
+		r = r0 + (r1 - r0) * f
+		pts.append(a + (c - a) * f + (u * math.cos(ang) + v * math.sin(ang)) * r)
+	for p, q in zip(pts, pts[1:]):
+		b.seg(tuple(p), tuple(q), width, width, mat, bone, sides=4)
+
+
+def _wb_bolt(b, a, c, rng, r, mat, bone, steps=4, jag=0.08):
+	"""A jagged bolt of lightning from a to c."""
+	a, c = Vector(a), Vector(c)
+	pts = [a]
+	for k in range(1, steps):
+		p = a + (c - a) * (k / steps)
+		pts.append(p + Vector((rng.uniform(-jag, jag), rng.uniform(-jag, jag), rng.uniform(-jag, jag))))
+	pts.append(c)
+	_zigzag(b, [tuple(p) for p in pts], r, mat, bone)
+	return pts
+
+
+# ---------------------------------------------------------------- gale spirit
+
+def build_gale_spirit():
+	"""A spirit of the wind: a slender figure of pale glassy air hovering with its legs trailing behind
+	it, strands of white and sky-blue wind winding round its limbs and body, a smooth white mask of a
+	face with slit eyes, wind streaming back off its crown, and long ribbons blown out behind it from its
+	wrists, its crown and a pale gold sash. A loop of wind orbits it."""
+	import random
+	rng = random.Random(3201)
+	m = _rmats("gale_spirit", {"white": ("f4f9ff", 0.6, 0.35), "pale": ("cfe6f8", 0.6, 0.2), "sky": ("8cc6f0", 0.55, 0.2),
+							   "deep": ("5a9ad0", 0.6, 0.15), "gold": ("f2dc9a", 0.5, 0.35), "eye": ("e8fbff", 0.1, 6.0),
+							   "mask": ("eef4fa", 0.35, 0.3), "slit": ("30507a", 0.4)})
+	core = glass_material("gale_spirit_core", "bfe2fa", 0.55, 0.2, emit=0.5)
+	core_b = glass_material("gale_spirit_core_b", "e6f4ff", 0.45, 0.2, emit=0.6)
+	b = Builder("gale_spirit")
+	b.bone("root", (0, 0, 0))
+	b.bone("hips", (0, 0, 0.98), "root")
+	b.bone("swirl", (0, 0, 1.0), "hips")
+	b.bone("orbit", (0, 0, 1.2), "hips")
+	b.bone("chest", (0, 0, 1.36), "hips")
+	b.bone("head", (0, -0.02, 1.8), "chest")
+	b.bone("hair1", (0, 0.14, 2.0), "head")
+	b.bone("hair2", (0, 0.62, 1.84), "hair1")
+	b.bone("sash1", (0, 0.2, 0.98), "hips")
+	b.bone("sash2", (0, 0.66, 0.84), "sash1")
+
+	# the body: glassy air, narrow at the waist, strands of wind winding up round it
+	b.blob((0.34, 0.26, 0.3), (0, 0.0, 1.0), core, "hips", segs=(10, 7))
+	b.seg((0, 0, 0.98), (0, 0, 1.36), 0.12, 0.17, core, "hips", sides=10)
+	b.blob((0.52, 0.32, 0.36), (0, 0.0, 1.5), core, "chest", segs=(12, 8))
+	for s in (1, -1):
+		b.blob((0.18, 0.18, 0.16), (0.23 * s, 0.0, 1.6), core_b, "chest", segs=(8, 6))
+	b.seg((0, 0, 1.6), (0, -0.02, 1.78), 0.06, 0.05, core, "chest", sides=8)
+	for h, mat in enumerate((m["white"], m["pale"], m["sky"], m["white"])):
+		pts = []
+		for k in range(25):
+			f = k / 24
+			z = 0.86 + 0.86 * f
+			r = 0.16 + 0.1 * math.sin(math.pi * min(1.0, f * 1.15)) + 0.03
+			a = 2 * math.pi * (h / 4 + 1.6 * f)
+			pts.append(Vector((r * math.cos(a) * 1.25, r * math.sin(a) * 0.9, z)))
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			w = 0.014 + 0.014 * math.sin(math.pi * k / 24)
+			b.seg(tuple(p), tuple(q), w, w, mat, "swirl", sides=4)
+	_wrap(b, (0, 0, 1.0), (0.2, 0.15), 0.07, 0.02, m["gold"], rot=(-6, 0, 0), sides=16)   # a pale gold girdle
+	_on_bone(b, len(b.parts) - 1, "hips")
+	b.blob((0.1, 0.06, 0.1), (0, 0.16, 0.99), m["gold"], "hips", segs=(6, 4))            # its knot, behind
+	# the sash: two ribbons streaming back from the knot
+	for s, mat in ((1, m["gold"]), (-1, m["white"])):
+		pts = [Vector((0.03 * s, 0.18, 0.98)), Vector((0.08 * s, 0.4, 0.9)), Vector((0.06 * s, 0.66, 0.84))]
+		_wb_ribbon(b, pts, 0.08, mat, "sash1", taper=0.9)
+		pts = [pts[-1], Vector((0.1 * s, 0.9, 0.82)), Vector((0.05 * s, 1.14, 0.72)), Vector((0.1 * s, 1.36, 0.7))]
+		_wb_ribbon(b, pts, 0.072, mat, "sash2", taper=0.2)
+	# the loop of wind orbiting it, tipped, open in two places, wisps flying off
+	for rad, z, tilt, mat, gap in ((0.62, 1.12, (16, -10, 0), m["white"], (60, 130)), (0.56, 1.3, (-12, 14, 0), m["sky"], (220, 300))):
+		start = len(b.parts)
+		_wrap(b, (0, 0, z), (rad, rad * 0.9), 0.05, 0.016, mat, rot=tilt, gap=gap, sides=20)
+		_on_bone(b, start, "orbit")
+		for k in range(2):
+			a = math.radians(gap[0] - 6 - 150 * k)
+			p = Vector((rad * math.cos(a), rad * 0.9 * math.sin(a), z))
+			tang = Vector((math.sin(a), -math.cos(a), 0))
+			_flame(b, tuple(p), tuple(tang + Vector((0, 0, 0.1))), 0.3, 0.035, mat, "orbit", bend=(0, 0, 0.1), sides=4)
+
+	# the head: a smooth white mask, slit eyes, wind streaming back off the crown
+	b.blob((0.3, 0.32, 0.4), (0, -0.02, 1.92), m["mask"], "head", segs=(12, 10))
+	b.blob((0.24, 0.1, 0.26), (0, -0.14, 1.9), m["mask"], "head", segs=(10, 6))       # the face's plane
+	b.blob((0.03, 0.03, 0.12), (0, -0.19, 1.9), m["pale"], "head", segs=(5, 4))       # the ridge of a nose
+	for s in (1, -1):
+		b.blob((0.12, 0.04, 0.045), (0.07 * s, -0.175, 1.95), m["slit"], "head", rot=(0, 10 * s, -14 * s), segs=(8, 4))
+		b.blob((0.1, 0.03, 0.022), (0.07 * s, -0.19, 1.95), m["eye"], "head", rot=(0, 10 * s, -14 * s), segs=(8, 4))
+	for k in range(7):
+		x = (k - 3) * 0.045
+		ln = 0.46 + 0.14 * (1 - abs(k - 3) / 3)
+		_flame(b, (x, 0.0, 2.08 - 0.02 * abs(k - 3)), (x * 1.6, 1.0, 0.45), ln, 0.05, [m["white"], m["pale"], m["sky"]][k % 3],
+			   "head", bend=(0, 0.1, -0.22), sides=5, parts=4)
+	pts = [Vector((0, 0.14, 2.0)), Vector((0.02, 0.36, 1.98)), Vector((-0.02, 0.62, 1.84))]   # the crown's ribbon
+	_wb_ribbon(b, pts, 0.1, m["sky"], "hair1", up=(1, 0, 0.2), taper=0.9)
+	pts = [pts[-1], Vector((0.04, 0.86, 1.76)), Vector((-0.02, 1.12, 1.74)), Vector((0.02, 1.4, 1.62))]
+	_wb_ribbon(b, pts, 0.09, m["sky"], "hair2", up=(1, 0, 0.2), taper=0.2)
+
+	# arms: slender streams of air wound with wind, wispy hands, ribbons trailing from the wrists
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		arm, fore, hand, rib1, rib2 = f"arm_{side}", f"fore_{side}", f"hand_{side}", f"rib1_{side}", f"rib2_{side}"
+		sh, el, wr = Vector((0.25 * s, 0, 1.62)), Vector((0.34 * s, -0.04, 1.28)), Vector((0.4 * s, -0.08, 0.98))
+		b.bone(arm, tuple(sh), "chest")
+		b.bone(fore, tuple(el), arm)
+		b.bone(hand, tuple(wr), fore)
+		b.bone(rib1, tuple(wr + Vector((0.02 * s, 0.04, 0))), fore)
+		b.bone(rib2, (0.5 * s, 0.5, 0.92), rib1)
+		b.seg(tuple(sh), tuple(el), 0.07, 0.055, core, arm, sides=8)
+		b.seg(tuple(el), tuple(wr), 0.055, 0.045, core, fore, sides=8)
+		_wb_coil(b, sh, el, 0.08, 0.07, 1.5, 0.1, 0.012, m["white"], arm)
+		_wb_coil(b, el, wr, 0.07, 0.06, 1.5, 0.6, 0.012, m["pale"], fore)
+		b.blob((0.1, 0.08, 0.12), tuple(wr + Vector((0, 0, -0.06))), core_b, hand, segs=(8, 6))
+		for k in range(3):   # fingers of wind
+			d = Vector(((k - 1) * 0.3 * s + 0.2 * s, -0.3, -1))
+			_flame(b, tuple(wr + Vector(((k - 1) * 0.03 * s, -0.02, -0.1))), tuple(d), 0.2, 0.03, [m["white"], m["pale"]][k % 2], hand,
+				   bend=(0.05 * s, 0.1, 0), sides=4)
+		_wrap(b, tuple(wr + Vector((0, 0, 0.04))), (0.07, 0.07), 0.05, 0.015, m["gold"], sides=10)   # a band at the wrist
+		_on_bone(b, len(b.parts) - 1, fore)
+		pts = [wr + Vector((0.02 * s, 0.04, 0.04)), Vector((0.46 * s, 0.26, 0.98)), Vector((0.5 * s, 0.5, 0.92))]
+		_wb_ribbon(b, pts, 0.07, m["white"], rib1, up=(0.3 * s, 0, 1), taper=0.9)
+		pts = [pts[-1], Vector((0.58 * s, 0.76, 0.94)), Vector((0.54 * s, 1.0, 0.84)), Vector((0.62 * s, 1.24, 0.82))]
+		_wb_ribbon(b, pts, 0.063, m["white"], rib2, up=(0.3 * s, 0, 1), taper=0.2)
+
+	# legs: streams trailing back and down, wound with wind, thinning to ribbons of air
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		leg, shin = f"leg_{side}", f"shin_{side}"
+		hip, knee, end = Vector((0.1 * s, 0.0, 0.92)), Vector((0.13 * s, 0.1, 0.56)), Vector((0.1 * s, 0.42, 0.24))
+		b.bone(leg, tuple(hip), "hips")
+		b.bone(shin, tuple(knee), leg)
+		b.seg(tuple(hip), tuple(knee), 0.085, 0.06, core, leg, sides=8)
+		b.seg(tuple(knee), tuple(end), 0.06, 0.012, core, shin, sides=8)
+		_wb_coil(b, hip, knee, 0.095, 0.075, 1.25, 0.3 if s > 0 else 0.8, 0.013, m["white"], leg)
+		_wb_coil(b, knee, end, 0.075, 0.02, 1.5, 0.1, 0.012, m["sky"], shin)
+		for k in range(3):
+			_flame(b, tuple(end + Vector(((k - 1) * 0.04, -0.06, 0.02))), ((k - 1) * 0.3, 1, -0.2), 0.34, 0.035,
+				   [m["white"], m["pale"], m["sky"]][k], shin, bend=(0, 0.05, 0.12), sides=4)
+	arm = b.build()
+
+	def ribbons(t, cycles, amp, lift=0.0):
+		out = {}
+		for k, (a, c) in enumerate((("rib1_l", "rib2_l"), ("rib1_r", "rib2_r"), ("hair1", "hair2"), ("sash1", "sash2"))):
+			ph = 0.17 * k
+			out[a] = {"rot": (lift + amp * wave(t, cycles, ph), 0, amp * 0.7 * wave(t, cycles, ph + 0.25))}
+			out[c] = {"rot": (amp * 1.4 * wave(t, cycles, ph - 0.15), 0, amp * wave(t, cycles, ph + 0.1))}
+		return out
+
+	def wind(t, turns):
+		return {"swirl": {"rot": (0, 0, 360 * turns * t)}, "orbit": {"rot": (0, 0, -360 * max(1, turns // 2) * t)}}
+
+	def limbs(t, arm_p, spread, fore, leg_p, cycles=1):
+		return {"arm_l": {"rot": (arm_p + 5 * wave(t, cycles, 0.1), spread + 4 * wave(t, cycles), 0)},
+				"arm_r": {"rot": (arm_p + 5 * wave(t, cycles, 0.6), -spread - 4 * wave(t, cycles, 0.5), 0)},
+				"fore_l": {"rot": (fore, 0, 0)}, "fore_r": {"rot": (fore, 0, 0)},
+				"leg_l": {"rot": (leg_p + 6 * wave(t, cycles, 0.2), 3, 0)}, "leg_r": {"rot": (leg_p + 6 * wave(t, cycles, 0.7), -3, 0)},
+				"shin_l": {"rot": (-10 + 8 * wave(t, cycles, 0.35), 0, 0)}, "shin_r": {"rot": (-10 + 8 * wave(t, cycles, 0.85), 0, 0)}}
+
+	def body(t, lean, bob, cycles=1):
+		return {"root": {"loc": (0, 0, 0.3 + bob * wave(t, cycles * 2))},
+				"hips": {"rot": (lean + 3 * wave(t, cycles, 0.2), 3 * wave(t, cycles), 4 * wave(t, cycles, 0.4))},
+				"chest": {"rot": (lean * 0.3 + 2 * wave(t, cycles, 0.4), 0, -4 * wave(t, cycles, 0.5))},
+				"head": {"rot": (-lean * 0.5 + 3 * wave(t, cycles, 0.6), 0, 6 * wave(t, cycles, 0.1))}}
+
+	def idle(t):
+		return merge_scaled(body(t, 0, 0.06, 1), wind(t, 2), limbs(t, 8, 14, 16, -12), ribbons(t, 2, 12))
+
+	def walk(t):   # glides forward, leaning in, legs streaming out behind
+		return merge_scaled(body(t, -18, 0.04, 1), wind(t, 2), limbs(t, -18, 10, 12, -34), ribbons(t, 2, 16, -6))
+
+	def run(t):
+		return merge_scaled(body(t, -30, 0.05, 1), wind(t, 2), limbs(t, -46, 14, 10, -50), ribbons(t, 3, 18, -10))
+
+	def attack(t):   # draws its right arm up and back, then slashes a gust across, the left pushing out
+		up = seq(t, [(0, 0), (0.3, 150), (0.42, 156), (0.55, 40), (0.75, 30), (1, 0)])
+		cross = seq(t, [(0, 0), (0.3, -40), (0.42, -44), (0.55, 30), (0.75, 24), (1, 0)])
+		push = seq(t, [(0, 0), (0.35, 20), (0.5, 90), (0.75, 80), (1, 0)])
+		twist = seq(t, [(0, 0), (0.3, 24), (0.5, -26), (0.75, -20), (1, 0)])
+		surge = seq(t, [(0, 0), (0.35, -0.06), (0.52, 0.3), (0.75, 0.24), (1, 0)])
+		gust = seq(t, [(0.4, 1.0), (0.55, 1.5), (0.9, 1.0)])
+		return merge_scaled({"root": {"loc": (0, surge, 0.3)}, "hips": {"rot": (-10, 0, twist * 0.5)}, "chest": {"rot": (-4, 0, twist)},
+							 "arm_r": {"rot": (up, -12 + cross, 0)}, "fore_r": {"rot": (seq(t, [(0, 16), (0.3, 30), (0.55, 4), (1, 16)]), 0, 0)},
+							 "arm_l": {"rot": (push, 14, 0)}, "fore_l": {"rot": (8, 0, 0)},
+							 "orbit": {"scale": (gust, gust, 1)}, "leg_l": {"rot": (-24, 3, 0)}, "leg_r": {"rot": (-30, -3, 0)}},
+							wind(t, 2), ribbons(t, 2, 20, -8))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"root": {"loc": (0, -0.14 * k, 0.3 + 0.04 * k)}, "hips": {"rot": (16 * k, 6 * k, 0)},
+							 "chest": {"rot": (8 * k, 0, 10 * k)}, "head": {"rot": (14 * k, 0, -14 * k)},
+							 "orbit": {"scale": (1 + 0.3 * k, 1 + 0.3 * k, 1)}},
+							wind(t, 1), limbs(t, -20 * k, 20 + 20 * k, 20, -12 + 20 * k), ribbons(t, 2, 18))
+
+	def death(t):   # comes apart: the wind unwinds and blows away, the body thins to a last knot of air
+		d = seq(t, [(0.15, 0), (0.95, 1)])
+		reel = seq(t, [(0, 0), (0.18, 16), (0.35, -6), (0.5, 0)])
+		thin = max(0.18, 1 - 0.82 * d)
+		wide = 1 + 1.8 * d
+		return merge_scaled({"root": {"loc": (0, 0, 0.3 - 0.62 * d)},
+							 "hips": {"rot": (reel, 0, 200 * d), "scale": (thin, thin, thin)},
+							 "swirl": {"rot": (0, 0, 540 * d), "scale": (wide, wide, 1)},
+							 "orbit": {"rot": (20 * d, 0, -400 * d), "scale": (wide * 1.3, wide * 1.3, max(0.1, 1 - d)), "loc": (0, 0, 0.5 * d)},
+							 "head": {"rot": (-20 * d, 0, 0)}},
+							limbs(t, 30 * d, 14 + 40 * d, 16, -12 - 30 * d), ribbons(t, 2, 20 + 20 * d, 20 * d))
+
+	clip_scaled(arm, "idle", 2.4, idle, True)
+	clip_scaled(arm, "walk", 1.0, walk, True)
+	clip_scaled(arm, "run", 0.6, run, True)
+	clip_scaled(arm, "attack", 0.8, attack, False)
+	clip_scaled(arm, "hit", 0.4, hit, False)
+	clip_scaled(arm, "death", 1.6, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- dust devil
+
+def build_dust_devil():
+	"""A spinning funnel of red-ochre dust, narrow at the ground and flaring at the top: bands of dust at
+	their own speeds, dark streaks spiraling up it, pebbles and twigs whirling round it, a skirt of dust
+	at its foot and two dim amber slits for eyes in the murk."""
+	import random
+	rng = random.Random(3211)
+	m = _rmats("dust_devil", {"ochre": ("c8843e", 0.95), "ochre_l": ("e2b070", 0.95), "sand": ("d8bc88", 0.95),
+							  "rust": ("a4582a", 0.95), "brown": ("6e4424", 0.95), "stone": ("8a7a68", 0.9),
+							  "stone_d": ("5a4a3c", 0.9), "stone_r": ("a8603a", 0.9), "twig": ("4a3424", 0.9),
+							  "eye": ("ffb448", 0.2, 3.0), "socket": ("4a2a14", 0.95)})
+	haze = glass_material("dust_devil_haze", "c89456", 0.55, 0.9, emit=0.05)
+	b = Builder("dust_devil")
+	b.bone("root", (0, 0, 0))
+	b.bone("skirt", (0, 0, 0.02), "root")
+	b.bone("low", (0, 0, 0.05), "root")
+	b.bone("mid", (0, 0, 1.0), "low")
+	b.bone("top", (0, 0, 1.8), "mid")
+	b.bone("ring_a", (0, 0, 0.05), "low")
+	b.bone("ring_b", (0, 0, 1.0), "mid")
+	b.bone("ring_c", (0, 0, 1.8), "top")
+	b.bone("debris_a", (0, 0, 0.05), "low")
+	b.bone("debris_b", (0, 0, 1.0), "mid")
+	b.bone("face", (0, 0, 1.5), "mid")
+
+	def rad(z):
+		return 0.07 + 0.62 * (max(0.0, z) / 2.5) ** 1.5
+
+	def part(z, names):
+		return names[0] if z < 1.0 else names[1] if z < 1.8 else names[2]
+
+	# the murk inside: a cone of dusty haze
+	for z0, z1, bone in ((0.02, 1.0, "low"), (1.0, 1.8, "mid"), (1.8, 2.5, "top")):
+		b.seg((0, 0, z0), (0, 0, z1), rad(z0) * 0.85, rad(z1) * 0.85, haze, bone, sides=14)
+	mats = (m["ochre"], m["sand"], m["rust"], m["ochre_l"])
+	for k in range(15):   # bands of whirling dust, each open somewhere
+		z = 0.08 + k * 0.166
+		r = rad(z)
+		start = len(b.parts)
+		g0 = rng.uniform(0, 300)
+		_wrap(b, (0.02 * math.sin(k * 1.9), 0.02 * math.cos(k * 1.9), z), (r, r * 0.95), 0.1 + 0.04 * (z / 2.5), 0.045, mats[k % 4],
+			  rot=(rng.uniform(-6, 6), rng.uniform(-6, 6), 0), gap=(g0, g0 + rng.uniform(40, 90)), sides=16)
+		_on_bone(b, start, part(z, ("ring_a", "ring_b", "ring_c")))
+	for h in range(5):   # dark streaks spiraling up the funnel
+		pts = []
+		for k in range(31):
+			f = k / 30
+			z = 0.04 + 2.44 * f
+			a = 2 * math.pi * (h / 5 + 1.4 * f)
+			r = rad(z) + 0.035
+			pts.append(Vector((r * math.cos(a), r * math.sin(a), z)))
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			w = 0.018 + 0.03 * k / 30
+			b.seg(tuple(p), tuple(q), w, w, m["brown"] if h % 2 else m["rust"], part((p.z + q.z) / 2, ("ring_a", "ring_b", "ring_c")), sides=4)
+	for k in range(12):   # the lip: dust spilling over the top
+		a = 2 * math.pi * k / 12
+		r = rad(2.5)
+		b.blob((0.3, 0.3, 0.2), (r * math.cos(a), r * math.sin(a), 2.5 + 0.04 * math.sin(3 * a)), mats[k % 4], "ring_c", segs=(8, 5))
+	for k in range(10):   # the skirt of dust at its foot
+		a = 2 * math.pi * k / 10 + rng.uniform(-0.2, 0.2)
+		r = rng.uniform(0.26, 0.42)
+		b.blob((0.34, 0.3, 0.14), (r * math.cos(a), r * math.sin(a), 0.07), mats[k % 4], "skirt", rot=(0, 0, math.degrees(a)), segs=(8, 5))
+	# pebbles, stones and twigs whirling round it
+	for k in range(28):
+		z = rng.uniform(0.15, 2.35)
+		a = rng.uniform(0, 2 * math.pi)
+		r = rad(z) + rng.uniform(0.08, 0.22)
+		sz = rng.uniform(0.05, 0.12) * (0.7 + 0.5 * z / 2.4)
+		_rock(b, (sz, sz * rng.uniform(0.7, 1.1), sz * 0.8), (r * math.cos(a), r * math.sin(a), z),
+			  [m["stone"], m["stone_d"], m["stone_r"]][k % 3], "debris_a" if z < 1.2 else "debris_b", rng)
+	for k in range(5):
+		z = rng.uniform(0.5, 2.1)
+		a = rng.uniform(0, 2 * math.pi)
+		r = rad(z) + 0.14
+		p = Vector((r * math.cos(a), r * math.sin(a), z))
+		tang = Vector((-math.sin(a), math.cos(a), rng.uniform(-0.3, 0.3)))
+		b.seg(tuple(p - tang * 0.14), tuple(p + tang * 0.14), 0.014, 0.008, m["twig"], "debris_a" if z < 1.2 else "debris_b", sides=4)
+		b.seg(tuple(p), tuple(p + tang * 0.05 + Vector((0, 0, 0.08))), 0.009, 0.004, m["twig"], "debris_a" if z < 1.2 else "debris_b", sides=3)
+	# two dim amber slits in the murk
+	for s in (1, -1):
+		z = 1.62
+		y = -(rad(z) + 0.02)
+		b.blob((0.2, 0.06, 0.1), (0.13 * s, y + 0.03, z), m["socket"], "face", rot=(0, 0, 14 * s), segs=(8, 5))
+		b.blob((0.14, 0.05, 0.045), (0.13 * s, y, z), m["eye"], "face", rot=(0, 14 * s, 14 * s), segs=(8, 4))
+	arm = b.build()
+
+	def spin(t, turns):
+		return {"ring_a": {"rot": (0, 0, 360 * turns * 2 * t)}, "ring_b": {"rot": (0, 0, 360 * turns * t)},
+				"ring_c": {"rot": (0, 0, 360 * turns * t)}, "skirt": {"rot": (0, 0, 360 * turns * 2 * t)},
+				"debris_a": {"rot": (0, 0, 360 * turns * t)}, "debris_b": {"rot": (0, 0, 360 * max(1, turns // 2) * t)}}
+
+	def sway(t, amp, lean, cycles=1):
+		return {"low": {"rot": (lean * 0.3 + amp * wave(t, cycles), amp * wave(t, cycles, 0.25), 0)},
+				"mid": {"rot": (lean * 0.4 + amp * wave(t, cycles, 0.15), amp * wave(t, cycles, 0.4), 0)},
+				"top": {"rot": (lean * 0.3 + amp * 1.2 * wave(t, cycles, 0.3), amp * 1.2 * wave(t, cycles, 0.55), 0)},
+				"face": {"rot": (0, 0, 6 * wave(t, cycles, 0.5))}}
+
+	def idle(t):
+		return merge_scaled(sway(t, 3, 0, 1), spin(t, 3), {"root": {"loc": (0.03 * wave(t, 1), 0.03 * wave(t, 1, 0.25), 0)}})
+
+	def walk(t):
+		return merge_scaled(sway(t, 3, -10, 1), spin(t, 2))
+
+	def run(t):
+		return merge_scaled(sway(t, 4, -20, 1), spin(t, 2))
+
+	def attack(t):   # the funnel whips over and lashes down at its foe, its bands flaring
+		bend = seq(t, [(0, 0), (0.3, 8), (0.48, -26), (0.7, -22), (1, 0)])
+		lunge = seq(t, [(0, 0), (0.3, -0.08), (0.48, 0.32), (0.7, 0.26), (1, 0)])
+		flare = seq(t, [(0.3, 1.0), (0.48, 1.35), (0.8, 1.0)])
+		return merge_scaled({"root": {"loc": (0, lunge, 0)}, "low": {"rot": (bend * 0.2, 0, 0)}, "mid": {"rot": (bend * 0.7, 0, 0)},
+							 "top": {"rot": (bend, 0, 0)}, "ring_b": {"scale": (flare, flare, 1)}, "ring_c": {"scale": (flare, flare, 1)}},
+							spin(t, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"low": {"rot": (8 * k, 6 * k, 0)}, "mid": {"rot": (10 * k, -6 * k, 0)}, "top": {"rot": (12 * k, 8 * k, 0)},
+							 "ring_c": {"scale": (1 + 0.2 * k, 1 + 0.2 * k, 1)}}, spin(t, 1))
+
+	def death(t):   # it winds down and slumps into a ring of dust and stones on the ground
+		d = seq(t, [(0.15, 0), (0.9, 1)])
+		reel = seq(t, [(0, 0), (0.2, 12), (0.4, -8), (0.6, 0)])
+		spin_ = 900 * (1 - (1 - t) ** 2)
+		return merge_scaled({"low": {"rot": (reel * 0.3, 0, 0), "scale": (1 + 0.9 * d, 1 + 0.9 * d, max(0.05, 1 - 0.95 * d))},
+							 "mid": {"rot": (reel, 0, 0)}, "top": {"rot": (-reel, 0, 0)},
+							 "ring_a": {"rot": (0, 0, spin_)}, "ring_b": {"rot": (0, 0, spin_ * 0.7)}, "ring_c": {"rot": (0, 0, spin_ * 0.5)},
+							 "skirt": {"rot": (0, 0, spin_), "scale": (1 + 0.6 * d, 1 + 0.6 * d, 1)},
+							 "debris_a": {"rot": (0, 0, spin_)}, "debris_b": {"rot": (0, 0, spin_ * 0.6)}})
+
+	clip_scaled(arm, "idle", 2.0, idle, True)
+	clip_scaled(arm, "walk", 1.0, walk, True)
+	clip_scaled(arm, "run", 0.6, run, True)
+	clip_scaled(arm, "attack", 0.8, attack, False)
+	clip_scaled(arm, "hit", 0.4, hit, False)
+	clip_scaled(arm, "death", 1.6, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- the storm-eye
+
+def build_storm_eye():
+	"""The storm-eye: a towering cyclone of slate-dark cloud with an anvil head, broken at its middle by a
+	wheel of cloud turning round one great glaring eye; lightning crawling down its walls and crackling
+	from the wheel, two lashing arms of cloud that fork into lightning, stones whirling at its foot."""
+	import random
+	rng = random.Random(3221)
+	m = _rmats("storm_eye", {"dark": ("2c3240", 0.95), "cloud": ("465064", 0.95), "light": ("6c7890", 0.9, 0.05),
+							 "pale": ("98a4b8", 0.9, 0.08), "bolt": ("eef8ff", 0.2, 6.5), "bolt_b": ("98d8ff", 0.2, 4.5),
+							 "eye": ("fff4c4", 0.15, 3.5), "iris": ("ffc830", 0.2, 5.0), "pupil": ("140c04", 0.4),
+							 "stone": ("7a6a5a", 0.9), "stone_r": ("9a5634", 0.9), "dust": ("a88058", 0.95)})
+	haze = glass_material("storm_eye_haze", "3a4254", 0.6, 0.9, emit=0.05)
+	b = Builder("storm_eye")
+	b.bone("root", (0, 0, 0))
+	b.bone("low", (0, 0, 0.05), "root")
+	b.bone("mid", (0, 0, 1.7), "low")
+	b.bone("top", (0, 0, 2.9), "mid")
+	b.bone("wall_a", (0, 0, 0.05), "low")
+	b.bone("wall_b", (0, 0, 1.7), "mid")
+	b.bone("wall_c", (0, 0, 2.9), "top")
+	b.bone("anvil", (0, 0, 3.9), "top")
+	b.bone("wheel", (0, -0.2, 2.3), "mid")
+	b.bone("eye", (0, -0.3, 2.3), "mid")
+	b.bone("debris", (0, 0, 0.05), "low")
+	b.bone("skirt", (0, 0, 0.02), "root")
+
+	def rad(z):
+		return 0.18 + 1.35 * (max(0.0, z) / 3.8) ** 1.4
+
+	mats = (m["dark"], m["cloud"], m["light"], m["cloud"])
+	# the column: a core of dark haze all the way up, so the walls read as one storm
+	for z0, z1, bone in ((0.02, 1.7, "low"), (1.7, 2.9, "mid"), (2.9, 3.9, "top")):
+		b.seg((0, 0.1, z0), (0, 0.1, z1), rad(z0) * (0.8 if z0 < 1.6 else 0.45), rad(z1) * (0.45 if z1 < 3.0 and z1 > 1.8 else 0.8),
+			  haze, bone, sides=16)
+	# the walls: bands of cloud below the wheel and above it, spiral streaks through the wheel's gap
+	zs = [0.1 + 0.2 * k for k in range(9)] + [2.95 + 0.19 * k for k in range(5)]
+	for k, z in enumerate(zs):
+		r = rad(z)
+		start = len(b.parts)
+		g0 = rng.uniform(0, 300)
+		_wrap(b, (0.03 * math.sin(k * 1.7), 0.03 * math.cos(k * 1.7), z), (r, r * 0.95), 0.16 + 0.06 * z / 3.8, 0.07, mats[k % 4],
+			  rot=(rng.uniform(-5, 5), rng.uniform(-5, 5), 0), gap=(g0, g0 + rng.uniform(30, 70)), sides=20)
+		_on_bone(b, start, "wall_a" if z < 1.7 else "wall_c")
+		for j in range(3):   # puffs riding each band
+			a = rng.uniform(0, 2 * math.pi)
+			rr = rng.uniform(0.2, 0.34) * (0.7 + z / 3.8)
+			b.blob((rr, rr, rr * 0.7), (r * math.cos(a), r * math.sin(a), z), mats[(k + j) % 4], "wall_a" if z < 1.7 else "wall_c", segs=(8, 5))
+	for h in range(4):
+		pts = []
+		for k in range(41):
+			f = k / 40
+			z = 0.06 + 3.8 * f
+			a = 2 * math.pi * (h / 4 + 1.8 * f)
+			r = rad(z) + 0.06
+			pts.append(Vector((r * math.cos(a), r * math.sin(a), z)))
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			z = (p.z + q.z) / 2
+			bone = "wall_a" if z < 1.7 else "wall_b" if z < 2.9 else "wall_c"
+			w = 0.03 + 0.03 * k / 40
+			b.seg(tuple(p), tuple(q), w, w, m["pale"] if h % 2 else m["light"], bone, sides=4)
+	# the anvil: a wide cap of storm cloud spreading over the top, lightning dropping out of it
+	for k in range(16):
+		a = 2 * math.pi * k / 16 + rng.uniform(-0.1, 0.1)
+		r = rng.uniform(1.2, 1.9)
+		sz = rng.uniform(0.6, 0.9)
+		b.blob((sz, sz, sz * 0.6), (r * math.cos(a), r * math.sin(a), 4.0 + rng.uniform(-0.12, 0.16)), mats[k % 4], "anvil", segs=(9, 6))
+	for k in range(7):
+		a = 2 * math.pi * k / 7
+		r = rng.uniform(0.3, 0.9)
+		b.blob((0.9, 0.9, 0.6), (r * math.cos(a), r * math.sin(a), 4.3), mats[(k + 1) % 4], "anvil", segs=(9, 6))
+	for k in range(4):
+		a = 2 * math.pi * k / 4 + 0.4
+		p0 = Vector((1.6 * math.cos(a), 1.6 * math.sin(a), 3.82))
+		_wb_bolt(b, p0, p0 + Vector((0.3 * math.cos(a), 0.3 * math.sin(a), -0.9)), rng, 0.03, m["bolt"] if k % 2 else m["bolt_b"], "anvil", jag=0.12)
+	for k in range(6):   # lightning crawling down the walls
+		z0 = rng.uniform(0.4, 1.4) if k < 3 else rng.uniform(3.0, 3.6)
+		a = rng.uniform(0, 2 * math.pi)
+		r = rad(z0) + 0.1
+		p0 = Vector((r * math.cos(a), r * math.sin(a), z0 + 0.35))
+		p1 = Vector((r * 0.9 * math.cos(a + 0.5), r * 0.9 * math.sin(a + 0.5), z0 - 0.35))
+		_wb_bolt(b, p0, p1, rng, 0.025, m["bolt"], "wall_a" if k < 3 else "wall_c", jag=0.1)
+	# the wheel: a vertical ring of cloud turning round the eye, spokes of lightning out of it
+	c = Vector((0, -0.2, 2.3))
+	for ring, (rr, n, sz) in enumerate(((0.62, 12, 0.34), (0.9, 16, 0.4), (1.12, 14, 0.3))):
+		for k in range(n):
+			a = 2 * math.pi * k / n + ring * 0.3
+			p = c + Vector((rr * math.cos(a), 0.06 * ring, rr * math.sin(a) * 0.92))
+			b.blob((sz, sz * 0.8, sz * 0.9), tuple(p), mats[(k + ring) % 4], "wheel", segs=(8, 5))
+	for k in range(3):   # spiral arms of the wheel
+		pts = []
+		for j in range(13):
+			f = j / 12
+			a = 2 * math.pi * (k / 3 + 0.6 * f)
+			rr = 0.42 + 0.8 * f
+			pts.append(c + Vector((rr * math.cos(a), -0.05 + 0.1 * f, rr * math.sin(a) * 0.92)))
+		for j, (p, q) in enumerate(zip(pts, pts[1:])):
+			b.seg(tuple(p), tuple(q), 0.06, 0.05, m["pale"], "wheel", sides=5)
+	for k in range(5):
+		a = 2 * math.pi * k / 5 + 0.2
+		p0 = c + Vector((0.46 * math.cos(a), -0.12, 0.46 * math.sin(a)))
+		p1 = c + Vector((1.25 * math.cos(a + 0.25), -0.1, 1.2 * math.sin(a + 0.25)))
+		pts = _wb_bolt(b, p0, p1, rng, 0.028, m["bolt"] if k % 2 else m["bolt_b"], "wheel", steps=5, jag=0.08)
+		mid = pts[2]
+		_wb_bolt(b, mid, mid + Vector((0.3 * math.cos(a - 0.6), -0.05, 0.3 * math.sin(a - 0.6))), rng, 0.018, m["bolt_b"], "wheel", steps=3, jag=0.05)
+	# the eye: a great glaring orb, a golden iris and a slit pupil, heavy lids of cloud narrowing it
+	e = Vector((0, -0.34, 2.3))
+	b.blob((0.78, 0.4, 0.56), tuple(e), m["eye"], "eye", segs=(16, 10))
+	b.seg(tuple(e + Vector((0, -0.16, 0))), tuple(e + Vector((0, -0.2, 0))), 0.21, 0.19, m["iris"], "eye", sides=18)
+	b.blob((0.07, 0.05, 0.32), tuple(e + Vector((0, -0.215, 0))), m["pupil"], "eye", segs=(8, 6))
+	b.blob((0.1, 0.02, 0.07), tuple(e + Vector((0.08, -0.215, 0.09))), m["bolt"], "eye", segs=(6, 4))   # a glint
+	b.blob((1.0, 0.48, 0.34), tuple(e + Vector((0, -0.02, 0.28))), m["dark"], "eye", rot=(0, 0, 0), segs=(12, 7))   # the upper lid, lowered
+	b.blob((0.94, 0.44, 0.26), tuple(e + Vector((0, 0.0, -0.27))), m["cloud"], "eye", segs=(12, 7))
+	for s in (1, -1):   # a scowl: the lid pulled down toward the middle
+		b.blob((0.4, 0.36, 0.22), tuple(e + Vector((0.2 * s, -0.08, 0.21))), m["dark"], "eye", rot=(0, 18 * s, 0), segs=(9, 6))
+	# arms of cloud lashing out of the wheel, forking into claws of lightning
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		arm, claw = f"arm_{side}", f"claw_{side}"
+		sh, el, wr = Vector((1.05 * s, -0.1, 2.5)), Vector((1.5 * s, -0.3, 2.1)), Vector((1.62 * s, -0.5, 1.5))
+		b.bone(arm, tuple(sh), "mid")
+		b.bone(claw, tuple(el), arm)
+		for k in range(5):
+			f = k / 4
+			p = sh + (el - sh) * f
+			sz = 0.5 - 0.1 * f
+			b.blob((sz, sz, sz * 0.85), tuple(p), mats[k % 4], arm, segs=(8, 6))
+		for k in range(4):
+			f = k / 3
+			p = el + (wr - el) * f
+			sz = 0.4 - 0.1 * f
+			b.blob((sz, sz, sz * 0.85), tuple(p), mats[(k + 1) % 4], claw, segs=(8, 6))
+		for k in range(3):   # three forks of lightning for talons
+			d = Vector(((k - 1) * 0.35 * s + 0.1 * s, -0.5, -1)).normalized()
+			_wb_bolt(b, wr, wr + d * 0.7, rng, 0.035, m["bolt"], claw, steps=4, jag=0.06)
+		_wb_bolt(b, sh + Vector((0, -0.2, 0.1)), el + Vector((0, -0.25, 0)), rng, 0.02, m["bolt_b"], arm, steps=4, jag=0.06)
+	# its foot: a skirt of torn-up dust, stones and a broken branch whirling round it
+	for k in range(12):
+		a = 2 * math.pi * k / 12 + rng.uniform(-0.2, 0.2)
+		r = rng.uniform(0.35, 0.6)
+		b.blob((0.5, 0.42, 0.18), (r * math.cos(a), r * math.sin(a), 0.08), [m["dust"], m["cloud"]][k % 2], "skirt", segs=(8, 5))
+	for k in range(22):
+		z = rng.uniform(0.2, 1.6)
+		a = rng.uniform(0, 2 * math.pi)
+		r = rad(z) + rng.uniform(0.15, 0.35)
+		sz = rng.uniform(0.08, 0.2)
+		_rock(b, (sz, sz, sz * 0.8), (r * math.cos(a), r * math.sin(a), z), [m["stone"], m["stone_r"]][k % 2], "debris", rng)
+	p = Vector((rad(1.1) + 0.3, 0, 1.1))
+	b.seg(tuple(p + Vector((0, -0.4, 0.1))), tuple(p + Vector((0, 0.4, -0.1))), 0.05, 0.03, m["stone_r"], "debris", sides=5)
+	b.seg(tuple(p), tuple(p + Vector((0.1, 0.1, 0.25))), 0.03, 0.01, m["stone_r"], "debris", sides=4)
+	arm = b.build()
+
+	def spin(t, turns):
+		return {"wall_a": {"rot": (0, 0, 360 * turns * t)}, "wall_b": {"rot": (0, 0, 360 * turns * t)},
+				"wall_c": {"rot": (0, 0, 360 * max(1, turns // 2) * t)}, "anvil": {"rot": (0, 0, -360 * t)},
+				"wheel": {"rot": (0, 360 * max(1, turns // 2) * t, 0)}, "debris": {"rot": (0, 0, 360 * turns * t)},
+				"skirt": {"rot": (0, 0, 360 * turns * t)}}
+
+	def sway(t, amp, lean, cycles=1):
+		return {"low": {"rot": (lean * 0.3 + amp * wave(t, cycles), amp * wave(t, cycles, 0.25), 0)},
+				"mid": {"rot": (lean * 0.4 + amp * wave(t, cycles, 0.2), amp * 0.8 * wave(t, cycles, 0.45), 0)},
+				"top": {"rot": (lean * 0.2 - amp * wave(t, cycles, 0.3), -amp * wave(t, cycles, 0.6), 0)}}
+
+	def arms(t, lift, reach, cycles=1):
+		return {"arm_l": {"rot": (reach + 6 * wave(t, cycles), lift + 8 * wave(t, cycles, 0.2), 0)},
+				"arm_r": {"rot": (reach + 6 * wave(t, cycles, 0.5), -lift - 8 * wave(t, cycles, 0.7), 0)},
+				"claw_l": {"rot": (10 * wave(t, cycles, 0.3), 12 * wave(t, cycles, 0.1), 0)},
+				"claw_r": {"rot": (10 * wave(t, cycles, 0.8), -12 * wave(t, cycles, 0.6), 0)}}
+
+	def glare(t):   # the eye rolls round, fixes, narrows
+		look = seq(t, [(0, 0), (0.2, 0), (0.28, 24), (0.5, 24), (0.58, -20), (0.8, -20), (0.88, 0)])
+		return {"eye": {"rot": (4 * wave(t, 1), 0, look)}}
+
+	def idle(t):
+		return merge_scaled(sway(t, 2, 0, 1), spin(t, 2), arms(t, 0, 0, 1), glare(t))
+
+	def walk(t):
+		return merge_scaled(sway(t, 2, -6, 1), spin(t, 2), arms(t, 6, -14, 1), {"eye": {"rot": (-4, 0, 0)}})
+
+	def run(t):
+		return merge_scaled(sway(t, 3, -12, 1), spin(t, 2), arms(t, 14, -30, 1), {"eye": {"rot": (-6, 0, 0)}})
+
+	def attack(t):   # the arms rear up and slam down in forks of lightning, the eye flaring wide
+		up = seq(t, [(0, 0), (0.32, 36), (0.42, 40), (0.56, -24), (0.75, -20), (1, 0)])
+		reach = seq(t, [(0, 0), (0.32, -30), (0.42, -34), (0.56, 60), (0.75, 52), (1, 0)])
+		lean = seq(t, [(0, 0), (0.32, 6), (0.56, -12), (0.75, -10), (1, 0)])
+		flare = seq(t, [(0, 1.0), (0.32, 1.3), (0.56, 1.35), (0.85, 1.0)])
+		return merge_scaled({"low": {"rot": (lean * 0.3, 0, 0)}, "mid": {"rot": (lean, 0, 0)}, "top": {"rot": (-lean * 0.5, 0, 0)},
+							 "arm_l": {"rot": (reach, up, 0)}, "arm_r": {"rot": (reach, -up, 0)},
+							 "claw_l": {"rot": (reach * 0.4, 0, 0)}, "claw_r": {"rot": (reach * 0.4, 0, 0)},
+							 "eye": {"scale": (flare, 1, flare)}, "wheel": {"scale": (flare * 0.9 + 0.1, 1, flare * 0.9 + 0.1)}},
+							spin(t, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"low": {"rot": (4 * k, 3 * k, 0)}, "mid": {"rot": (8 * k, -4 * k, 0)}, "top": {"rot": (8 * k, 5 * k, 0)},
+							 "eye": {"rot": (6 * k, 0, 14 * k), "scale": (1, 1, 1 - 0.5 * k)}}, spin(t, 1), arms(t, 20 * k, -20 * k, 1))
+
+	def death(t):   # the eye shuts, the wheel flies apart, the storm unwinds and sinks into a ring of cloud
+		d = seq(t, [(0.2, 0), (0.95, 1)])
+		shut = seq(t, [(0, 1), (0.3, 0.06)])
+		reel = seq(t, [(0, 0), (0.2, 10), (0.4, -6), (0.6, 0)])
+		spin_ = 720 * (1 - (1 - t) ** 2)
+		return merge_scaled({"low": {"rot": (reel * 0.3, 0, 0), "scale": (1 + 0.5 * d, 1 + 0.5 * d, max(0.06, 1 - 0.94 * d))},
+							 "mid": {"rot": (reel, 0, 0)}, "top": {"rot": (-reel, 0, 0)},
+							 "wall_a": {"rot": (0, 0, spin_)}, "wall_b": {"rot": (0, 0, spin_)}, "wall_c": {"rot": (0, 0, spin_ * 0.6)},
+							 "anvil": {"rot": (0, 0, -spin_ * 0.3), "scale": (1 + 0.8 * d, 1 + 0.8 * d, 1)},
+							 "wheel": {"rot": (0, spin_, 0), "scale": (1 + 1.5 * d, 1, 1 + 1.5 * d)},
+							 "eye": {"scale": (1, 1, shut)}, "debris": {"rot": (0, 0, spin_)}, "skirt": {"scale": (1 + 0.8 * d, 1 + 0.8 * d, 1)}},
+							arms(t, -30 * d, 30 * d, 1))
+
+	clip_scaled(arm, "idle", 3.0, idle, True)
+	clip_scaled(arm, "walk", 1.4, walk, True)
+	clip_scaled(arm, "run", 0.9, run, True)
+	clip_scaled(arm, "attack", 1.0, attack, False)
+	clip_scaled(arm, "hit", 0.45, hit, False)
+	clip_scaled(arm, "death", 2.0, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- the sky birds: giant eagle, thunderbird, Skarrow
+
+SKY_BIRD_COLORS = {
+	# a golden eagle grown huge: dark brown, a golden nape and crown, pale-barred tail, yellow feet
+	"eagle": {"body": "5e3c1e", "back": "442a14", "breast": "6e4624", "head": "7a5028", "nape": "d8a040", "nape_l": "f0c860",
+			  "covert": "8a5a2c", "flight": "3e2814", "tip": "20150e", "tail": "5a4028", "band": "b09a74",
+			  "beak": "e8c040", "beak_d": "3a2a1a", "foot": "e8b830", "talon": "1e1612", "eye": "f0a020", "trouser": "8a6636"},
+	# the thunderbird: blue-black, steel-blue hackles, storm-barred tail, a pale beak
+	"thunder": {"body": "222a3e", "back": "141a2a", "breast": "303c58", "head": "1e2638", "nape": "3e5a88", "nape_l": "6a90c8",
+				"covert": "2a3856", "flight": "121826", "tip": "080c16", "tail": "1a2234", "band": "4a6a9a",
+				"beak": "d0c080", "beak_d": "2a2620", "foot": "9a9678", "talon": "0e0e12", "eye": "fff0a0", "trouser": "283248"},
+	# Skarrow: the same, blacker, a storm-white head and crest, white bars on the wings and tail
+	"skarrow": {"body": "1a2034", "back": "0e1220", "breast": "283450", "head": "e2eaf4", "nape": "c8d8ec", "nape_l": "ffffff",
+				"covert": "243250", "flight": "0e1424", "tip": "060a14", "tail": "141a2c", "band": "e8f0fa",
+				"beak": "e8d890", "beak_d": "3a3428", "foot": "b0aa88", "talon": "0a0a0e", "eye": "ffffff", "trouser": "222c44"},
+}
+
+
+def build_sky_bird(name="giant_eagle", kind="eagle"):
+	"""A great bird hanging in the wind on broad wings: each wing in three joints (arm, hand, the fingered
+	primaries at its tip) so a beat rolls out along it; a hooked beak under a stern brow, hackles at the
+	nape, a fanned tail, feathered legs with talons hanging. The thunderbird crackles with lightning along
+	its leading edges and off every primary; Skarrow is bigger (built 1.45x), with a storm-white head, a
+	crest and white lightning."""
+	import random
+	rng = random.Random({"eagle": 3301, "thunder": 3303, "skarrow": 3305}[kind])
+	C = SKY_BIRD_COLORS[kind]
+	storm = kind != "eagle"
+	mat = {k: material(f"{name}_{k}", v, 0.85 if k not in ("beak", "beak_d", "talon", "eye") else 0.4,
+					   emit=(1.0 if kind == "eagle" else 4.0) if k == "eye" else 0.0) for k, v in C.items()}
+	pupil = material(f"{name}_pupil", "100c08", 0.3)
+	if storm:
+		white = kind == "skarrow"
+		bolt = material(f"{name}_bolt", "ffffff" if white else "9adcff", 0.2, emit=6.0 if white else 4.5)
+		bolt_b = material(f"{name}_bolt_b", "d8ecff" if white else "e8f8ff", 0.2, emit=5.0)
+	b = Builder(name)
+	H = 1.9
+	b.bone("root", (0, 0, H))
+	b.bone("body", (0, 0, H), "root")
+	b.bone("neck", (0, -0.36, H + 0.08), "body")
+	b.bone("head", (0, -0.56, H + 0.24), "neck")
+	b.bone("tail", (0, 0.44, H - 0.04), "body")
+	b.bone("legs", (0, 0.12, H - 0.2), "body")
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		b.bone(f"wing_{side}", (0.2 * s, -0.08, H + 0.1), "body")
+		b.bone(f"hand_{side}", (0.82 * s, -0.04, H + 0.12), f"wing_{side}")
+		b.bone(f"tip_{side}", (1.32 * s, 0.0, H + 0.12), f"hand_{side}")
+
+	# the body: a heavy teardrop, dark back, the breast in overlapping feathers
+	b.blob((0.56, 1.0, 0.54), (0, 0.04, H), mat["body"], "body", rot=(-8, 0, 0), segs=(14, 9))
+	b.blob((0.44, 0.74, 0.2), (0, 0.1, H + 0.2), mat["back"], "body", rot=(-6, 0, 0), segs=(10, 6))
+	b.blob((0.44, 0.5, 0.46), (0, -0.24, H - 0.04), mat["breast"], "body", rot=(-20, 0, 0), segs=(10, 7))
+	for k in range(9):
+		x = (k % 3 - 1) * 0.11
+		z = H + 0.04 - 0.1 * (k // 3)
+		_oblob(b, (0.12, 0.17, 0.035), (x, -0.44 + 0.04 * (k // 3), z), (0, 0.3, -1), (0, -1, 0.2),
+			   mat["body"] if k % 2 else mat["breast"], "body", segs=(6, 4))
+	# the neck and head: hackles at the nape, a hooked beak, a stern brow
+	b.seg((0, -0.22, H + 0.06), (0, -0.5, H + 0.24), 0.17, 0.13, mat["nape"], "neck", sides=9)
+	for k in range(7):
+		a = math.radians(-60 + 20 * k)
+		p = Vector((0.12 * math.sin(a), -0.34 + 0.08 * math.cos(a), H + 0.2 + 0.05 * math.cos(a)))
+		_oblob(b, (0.08, 0.24, 0.03), tuple(p), (math.sin(a) * 0.3, 1, -0.4), (math.sin(a), 0, 1), mat["nape_l"] if k % 2 else mat["nape"],
+			   "neck", segs=(6, 4))
+	b.blob((0.3, 0.36, 0.3), (0, -0.6, H + 0.3), mat["head"], "head", segs=(12, 9))
+	b.blob((0.26, 0.3, 0.12), (0, -0.58, H + 0.43), mat["nape_l"] if kind != "thunder" else mat["head"], "head", segs=(10, 5))
+	b.seg((0, -0.74, H + 0.33), (0, -0.79, H + 0.32), 0.08, 0.07, mat["beak"], "head", sides=8)          # cere
+	b.seg((0, -0.79, H + 0.32), (0, -0.94, H + 0.29), 0.066, 0.04, mat["beak"], "head", sides=7)
+	b.seg((0, -0.94, H + 0.29), (0, -0.98, H + 0.19), 0.04, 0.004, mat["beak_d"], "head", sides=6)       # the hook
+	b.seg((0, -0.76, H + 0.25), (0, -0.9, H + 0.24), 0.04, 0.015, mat["beak"], "head", sides=5)
+	for s in (1, -1):
+		b.blob((0.07, 0.06, 0.07), (0.11 * s, -0.7, H + 0.34), mat["eye"], "head", segs=(7, 5))
+		b.blob((0.035, 0.03, 0.04), (0.125 * s, -0.725, H + 0.34), pupil, "head", segs=(5, 3))
+		b.blob((0.14, 0.14, 0.05), (0.1 * s, -0.7, H + 0.39), mat["back"] if kind != "skarrow" else mat["nape"], "head",
+			   rot=(0, -22 * s, 0), segs=(6, 3))
+	if kind == "thunder":   # a short swept crest
+		for k in range(3):
+			x = (k - 1) * 0.05
+			_oblob(b, (0.05, 0.26, 0.025), (x, -0.5, H + 0.5), (x, 0.8, 0.6), (0, -0.6, 0.8), mat["nape"], "head", segs=(6, 4))
+	if kind == "skarrow":   # a tall crest of white feathers tipped with sparks
+		for k in range(7):
+			x = (k - 3) * 0.045
+			ln = 0.42 + 0.2 * (1 - abs(k - 3) / 3)
+			d = Vector((x * 1.4, 0.55, 1)).normalized()
+			base = Vector((x, -0.58, H + 0.44))
+			_oblob(b, (0.07, ln, 0.025), tuple(base + d * ln * 0.5), tuple(d), (0, -1, 0.4), mat["nape_l"] if k % 2 else mat["nape"],
+				   "head", segs=(6, 4))
+			_oblob(b, (0.06, ln * 0.3, 0.03), tuple(base + d * ln * 0.88), tuple(d), (0, -1, 0.4), mat["flight"], "head", segs=(6, 4))
+			if k % 2 == 0:
+				_wb_bolt(b, base + d * ln, base + d * (ln + 0.18) + Vector((0, 0.05, 0)), rng, 0.012, bolt, "head", steps=2, jag=0.03)
+	# the wings: coverts over broad secondaries on the arm and hand, fingered primaries at the tip
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		wing, hand, tip = f"wing_{side}", f"hand_{side}", f"tip_{side}"
+		up = (0, 0, 1)
+		sh, el, wr = Vector((0.18 * s, -0.08, H + 0.1)), Vector((0.82 * s, -0.04, H + 0.12)), Vector((1.32 * s, 0.0, H + 0.12))
+		b.seg(tuple(sh), tuple(el), 0.08, 0.06, mat["covert"], wing, sides=6)
+		b.seg(tuple(el), tuple(wr), 0.06, 0.045, mat["covert"], hand, sides=6)
+		for k in range(6):   # secondaries on the arm
+			x = (0.24 + 0.1 * k) * s
+			ln = 0.62 + 0.02 * k
+			d = Vector((0.04 * s, 1, -0.04)).normalized()
+			_oblob(b, (0.14, ln, 0.035), (x, 0.0 + ln * 0.5, H + 0.09), d, up, mat["flight"] if k % 2 else mat["back"], wing, segs=(6, 4))
+			_oblob(b, (0.12, ln * 0.3, 0.04), (x, 0.0 + ln * 0.9, H + 0.085), d, up,
+				   mat["band"] if kind == "skarrow" and k % 2 else mat["tip"], wing, segs=(6, 4))
+		for k in range(4):
+			x = (0.26 + 0.15 * k) * s
+			_oblob(b, (0.18, 0.32, 0.05), (x, 0.08, H + 0.13), (0.05 * s, 1, 0), up, mat["covert"] if k % 2 else mat["body"], wing, segs=(6, 4))
+		for k in range(5):   # inner primaries on the hand
+			x = (0.86 + 0.1 * k) * s
+			ln = 0.64 - 0.02 * k
+			d = Vector((0.12 * s, 1, -0.03)).normalized()
+			_oblob(b, (0.13, ln, 0.033), (x + d.x * ln * 0.5, 0.02 + ln * 0.5, H + 0.1), d, up, mat["flight"] if k % 2 else mat["back"], hand, segs=(6, 4))
+			_oblob(b, (0.11, ln * 0.3, 0.038), (x + d.x * ln * 0.9, 0.02 + ln * 0.9, H + 0.095), d, up,
+				   mat["band"] if kind == "skarrow" and k % 2 == 0 else mat["tip"], hand, segs=(6, 4))
+		for k in range(3):
+			x = (0.9 + 0.14 * k) * s
+			_oblob(b, (0.16, 0.28, 0.05), (x, 0.1, H + 0.14), (0.1 * s, 1, 0), up, mat["covert"], hand, segs=(6, 4))
+		fingers = []
+		for k in range(6):   # the primaries splayed like fingers at the tip
+			a = math.radians(-6 + 13 * k)
+			d = Vector((math.cos(a) * s, math.sin(a), 0.03 + 0.03 * (5 - k) / 5)).normalized()
+			ln = 0.78 - 0.04 * k
+			base = wr + Vector((0, 0.02 + 0.02 * k, 0))
+			_oblob(b, (0.11, ln, 0.03), tuple(base + d * ln * 0.5), tuple(d), up, mat["flight"], tip, segs=(6, 4))
+			_oblob(b, (0.09, ln * 0.32, 0.035), tuple(base + d * ln * 0.86), tuple(d), up, mat["tip"], tip, segs=(6, 4))
+			fingers.append((base, d, ln))
+		_oblob(b, (0.2, 0.3, 0.06), tuple(wr + Vector((0.04 * s, 0.06, 0.02))), (s, 0.3, 0), up, mat["covert"], tip, segs=(6, 4))
+		if storm:   # lightning running along the leading edge and crackling off each primary
+			_wb_bolt(b, sh + Vector((0.06 * s, -0.08, 0.04)), el + Vector((0, -0.08, 0.04)), rng, 0.02, bolt, wing, steps=6, jag=0.035)
+			_wb_bolt(b, el + Vector((0, -0.07, 0.04)), wr + Vector((0, -0.07, 0.04)), rng, 0.018, bolt, hand, steps=5, jag=0.035)
+			for k, (base, d, ln) in enumerate(fingers):
+				e = base + d * ln
+				_wb_bolt(b, e - d * 0.1, e + d * (0.22 if k % 2 else 0.14) + Vector((0, 0.04, 0)), rng, 0.014, bolt_b if k % 2 else bolt, tip, steps=3, jag=0.04)
+				if kind == "skarrow" or k % 2 == 0:   # and back along the finger's edge
+					_wb_bolt(b, base + d * 0.2 + Vector((0, 0, 0.02)), e + Vector((0, 0, 0.02)), rng, 0.01, bolt, tip, steps=4, jag=0.025)
+			for k in range(3):   # sparks along the trailing edge
+				x = (0.35 + 0.22 * k) * s
+				p = Vector((x, 0.66, H + 0.08))
+				_wb_bolt(b, p, p + Vector((0.06 * s, 0.2, -0.06)), rng, 0.012, bolt_b, wing, steps=2, jag=0.03)
+	# the tail: a broad fan, barred
+	for k in range(9):
+		yaw = math.radians((k - 4) * 8)
+		d = Vector((math.sin(yaw), math.cos(yaw), -0.2)).normalized()
+		a = Vector((0, 0.4, H - 0.04))
+		ln = 0.74 - 0.03 * abs(k - 4)
+		_oblob(b, (0.15, ln, 0.03), tuple(a + d * ln * 0.5), tuple(d), (0, 0, 1), mat["tail"], "tail", segs=(6, 4))
+		_oblob(b, (0.14, 0.08, 0.035), tuple(a + d * ln * 0.62), tuple(d), (0, 0, 1), mat["band"], "tail", segs=(6, 3))
+		_oblob(b, (0.13, ln * 0.2, 0.035), tuple(a + d * ln * 0.9), tuple(d), (0, 0, 1), mat["tip"], "tail", segs=(6, 4))
+		if storm and k % 4 == 0:
+			e = a + d * ln
+			_wb_bolt(b, e - d * 0.06, e + d * 0.2 + Vector((0, 0, -0.05)), rng, 0.012, bolt, "tail", steps=3, jag=0.03)
+	if kind == "skarrow":   # two long streamers
+		for s in (1, -1):
+			d = Vector((0.12 * s, 1, -0.3)).normalized()
+			a = Vector((0.04 * s, 0.4, H - 0.06))
+			_oblob(b, (0.1, 1.3, 0.025), tuple(a + d * 0.65), tuple(d), (0, 0, 1), mat["tail"], "tail", segs=(6, 4))
+			_oblob(b, (0.1, 0.24, 0.03), tuple(a + d * 1.2), tuple(d), (0, 0, 1), mat["band"], "tail", segs=(6, 4))
+			_wb_bolt(b, a + d * 1.3, a + d * 1.62, rng, 0.014, bolt, "tail", steps=3, jag=0.04)
+	# feathered legs hanging, talons half open
+	for s in (1, -1):
+		b.blob((0.18, 0.22, 0.28), (0.1 * s, 0.1, H - 0.24), mat["trouser"], "legs", segs=(8, 6))
+		b.seg((0.1 * s, 0.12, H - 0.36), (0.1 * s, 0.16, H - 0.6), 0.045, 0.04, mat["foot"], "legs", sides=6)
+		for dx, dy in ((0.0, -0.14), (0.06, -0.1), (-0.06, -0.1), (0.0, 0.1)):
+			root = Vector((0.1 * s, 0.16, H - 0.62))
+			end = root + Vector((dx * s, dy, -0.05))
+			b.seg(tuple(root), tuple(end), 0.03, 0.024, mat["foot"], "legs", sides=5)
+			dd = (end - root).normalized()
+			b.seg(tuple(end), tuple(end + dd * 0.05 + Vector((0, 0, -0.05))), 0.022, 0.003, mat["talon"], "legs", sides=4)
+	k_size = 1.45 if kind == "skarrow" else 1.0
+	if k_size != 1.0:
+		_scaled(b, k_size)
+	H *= k_size
+	arm = b.build()
+
+	def beat(t, cycles, amp=34, lift=0.0):
+		"""A wingbeat rolling out along the wing: the arm leads, the hand and tip lag behind it."""
+		f = amp * wave(t, cycles) + lift
+		g = amp * 0.45 * wave(t, cycles, -0.1) + lift * 0.3
+		h = amp * 0.35 * wave(t, cycles, -0.2)
+		return {"wing_l": {"rot": (0, f, 0)}, "wing_r": {"rot": (0, -f, 0)}, "hand_l": {"rot": (0, g, 0)}, "hand_r": {"rot": (0, -g, 0)},
+				"tip_l": {"rot": (0, h, 0)}, "tip_r": {"rot": (0, -h, 0)}}
+
+	def tail(t, cycles, amp=5):
+		return {"tail": {"rot": (amp * wave(t, cycles, 0.2), 0, 3 * wave(t, 1))}}
+
+	def idle(t):   # hangs in the wind on slow, deep beats, head turning
+		look = seq(t, [(0, 0), (0.25, 0), (0.32, 20), (0.55, 20), (0.62, -16), (0.85, -16), (0.92, 0)])
+		return merge({"root": {"loc": (0, 0, -0.1 * wave(t, 2, 0.1))}, "body": {"rot": (4 * wave(t, 2, 0.3), 0, 0)},
+					  "head": {"rot": (-4 * wave(t, 2, 0.3), 0, look)}, "legs": {"rot": (6 * wave(t, 2), 0, 0)}},
+					 beat(t, 2, 36, 6), tail(t, 2))
+
+	def walk(t):   # flies forward nose-down
+		return merge({"root": {"loc": (0, 0, -0.07 * wave(t, 2, 0.1)), "rot": (-12, 0, 0)}, "head": {"rot": (10, 0, 0)},
+					  "legs": {"rot": (-34, 0, 0)}}, beat(t, 2, 32, 4), tail(t, 2, 4))
+
+	def run(t):
+		return merge({"root": {"loc": (0, 0, -0.06 * wave(t, 2, 0.1)), "rot": (-22, 0, 0)}, "head": {"rot": (18, 0, 0)},
+					  "legs": {"rot": (-55, 0, 0)}}, beat(t, 2, 42, 0), tail(t, 2, 3))
+
+	def attack(t):   # rears up on high wings, then stoops in raking with its talons
+		rear = seq(t, [(0, 0), (0.35, 1), (0.55, -0.6), (0.75, -0.4), (1, 0)])
+		dive = seq(t, [(0, 0), (0.35, -0.12), (0.55, 0.5), (0.75, 0.4), (1, 0)])
+		wings = seq(t, [(0, 0), (0.35, 50), (0.55, -36), (0.75, -18), (1, 0)])
+		return merge({"root": {"loc": (0, dive * k_size, (0.12 * rear - 0.25 * max(0.0, -rear)) * k_size), "rot": (28 * rear, 0, 0)},
+					  "head": {"rot": (-20 * rear + seq(t, [(0.45, 0), (0.6, -16), (0.8, 0)]), 0, 0)},
+					  "legs": {"rot": (seq(t, [(0, 0), (0.35, 20), (0.55, 85), (0.75, 65), (1, 0)]), 0, 0)},
+					  "wing_l": {"rot": (0, wings, 0)}, "wing_r": {"rot": (0, -wings, 0)},
+					  "hand_l": {"rot": (0, wings * 0.4, 0)}, "hand_r": {"rot": (0, -wings * 0.4, 0)},
+					  "tip_l": {"rot": (0, wings * 0.3, 0)}, "tip_r": {"rot": (0, -wings * 0.3, 0)}}, tail(t, 1, 14))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.2 * k, 0.1 * k), "rot": (20 * k, 14 * k, 0)}, "head": {"rot": (16 * k, 0, 20 * k)}},
+					 beat(t, 2, 28, 30 * k), tail(t, 2, 10))
+
+	def death(t):   # the wings fail; it tumbles to the ground and lies with one wing spread
+		f = seq(t, [(0.1, 0), (0.7, 1)])
+		g = seq(t, [(0.5, 0), (0.95, 1)])
+		flap = 1 - seq(t, [(0.1, 0), (0.5, 1)])
+		return merge({"root": {"loc": (0, 0.1 * f, -(H - 0.3 * k_size) * f + 0.08 * math.sin(math.pi * f)), "rot": (-16 * f, 70 * g, 0)},
+					  "neck": {"rot": (-30 * g, 0, 20 * g)}, "head": {"rot": (-20 * g, 0, 30 * g)}, "legs": {"rot": (50 * g, 0, 0)},
+					  "wing_l": {"rot": (0, 30 * flap * wave(t, 3) - 55 * g, 0)}, "wing_r": {"rot": (0, -30 * flap * wave(t, 3) - 65 * g, 0)},
+					  "hand_l": {"rot": (0, -10 * g, 0)}, "hand_r": {"rot": (0, -6 * g, 0)},
+					  "tip_l": {"rot": (0, -10 * g, 0)}, "tip_r": {"rot": (0, -4 * g, 0)}, "tail": {"rot": (10 * g, 0, 20 * g)}})
+
+	slow = 1.2 if kind == "skarrow" else 1.0
+	clip(arm, "idle", 2.4 * slow, idle, True)
+	clip(arm, "walk", 1.0 * slow, walk, True)
+	clip(arm, "run", 0.6 * slow, run, True)
+	clip(arm, "attack", 0.8 * slow, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.4 * slow, death, False)
+	return arm
+
+
+def build_giant_eagle():
+	return build_sky_bird("giant_eagle", "eagle")
+
+
+def build_thunderbird():
+	return build_sky_bird("thunderbird", "thunder")
+
+
+def build_skarrow_thunderbird():
+	return build_sky_bird("skarrow_thunderbird", "skarrow")
+
+
+# ---------------------------------------------------------------- cliff drake
+
+def build_cliff_drake():
+	"""A lean rust-red drake of the mesa walls: the ash drake's frame with its fire put out (sandy belly,
+	a spade of skin for a tail tip), a frill of ochre skin on spines fanned round its head, a ridge of
+	sail along its back, pale bands down the tail and long climbing claws."""
+	import random
+	rng = random.Random(3231)
+	arm = build_ash_drake("cliff_drake_src", False)
+	_dw_recolor(arm, "cliff_drake_src", "cliff_drake", {
+		"scale": ("8e3e22", 0.75, 0.0), "scale_light": ("b8643a", 0.75, 0.0), "scale_dark": ("4e1e10", 0.75, 0.0),
+		"belly": ("dcae78", 0.8, 0.0), "belly_dark": ("b07a4a", 0.8, 0.0), "horn": ("e8dcc0", 0.5, 0.0),
+		"horn_dark": ("7a5238", 0.6, 0.0), "membrane": ("c8703a", 0.8, 0.0), "claw": ("e0d4b8", 0.4, 0.0),
+		"eye": ("f4e040", 0.2, 3.0), "ember": ("a4401e", 0.8, 0.0), "tooth": ("f2ead4", 0.4, 0.0)})
+	frill = material("cliff_drake_frill", "e0943e", 0.8)
+	frill_d = material("cliff_drake_frill_dark", "a8502a", 0.8)
+	spine = material("cliff_drake_spine", "4e1e10", 0.6)
+	pale = material("cliff_drake_band", "d8a070", 0.8)
+
+	def more(b):
+		# the frill: spines fanned round the back of the head, skin between them, dark-edged
+		c = Vector((0, -0.9, 1.14))
+		tips = []
+		for k in range(11):
+			a = math.radians(-105 + 21 * k)
+			d = Vector((math.sin(a), 0.45, math.cos(a))).normalized()
+			ln = 0.42 + 0.1 * math.cos(a)
+			tip = c + d * ln
+			b.seg(tuple(c + d * 0.1), tuple(tip), 0.025, 0.006, spine, "head", sides=4)
+			tips.append(tip)
+		for k, (p, q) in enumerate(zip(tips, tips[1:])):
+			start = len(b.parts)
+			inner = c + ((p + q) / 2 - c) * 0.18
+			notch = c + ((p + q) / 2 - c) * 0.86
+			_slab(b, [tuple(c + (p - c) * 0.2), tuple(p), tuple(notch)], 0.02, frill if k % 2 else frill_d)
+			_slab(b, [tuple(c + (p - c) * 0.2), tuple(notch), tuple(q), tuple(c + (q - c) * 0.2)], 0.02, frill)
+			_on_bone(b, start, "head")
+		for k in range(7):   # a low sail of skin along the spine
+			y = -0.44 + k * 0.16
+			start = len(b.parts)
+			_slab(b, [(0, y - 0.08, 0.96), (0, y + 0.08, 0.96), (0, y + 0.04, 1.16 - 0.03 * abs(k - 3))], 0.02, frill_d)
+			_on_bone(b, start, "body")
+		for k, (y, z, r, bone) in enumerate(((0.8, 0.62, 0.18, "tail1"), (1.28, 0.49, 0.12, "tail2"), (1.72, 0.37, 0.07, "tail3"))):
+			start = len(b.parts)
+			_wrap(b, (0, y, z), (r * 1.02, r * 1.02), 0.08, 0.015, pale, rot=(-16, 0, 0), sides=12)
+			_on_bone(b, start, bone)
+		for name_, (x, y) in {"leg_fl": (0.26, -0.42), "leg_fr": (-0.26, -0.42), "leg_bl": (0.27, 0.44), "leg_br": (-0.27, 0.44)}.items():
+			for k in (-1, 0, 1):   # long climbing claws
+				root = Vector((x + 0.06 * k, y - 0.16, 0.05))
+				b.seg(tuple(root), tuple(root + Vector((0.015 * k, -0.12, -0.035))), 0.022, 0.0, spine, name_, sides=4)
+	return _dw_extend(arm, more)
+
+
+# ---------------------------------------------------------------- the Kitewing bandits (KayKit Rogue mesh space)
+
+# rogue cells: tunic (0,1), collar and cape (1,1), bracers and belt (5,0), buckles (3,0) (6,0), trousers (7,1),
+# boots (3,2), gloves (7,2), skin (0,0), hair (1,0). The bandits: patched brown leathers, a faded red collar,
+# sand-colored trousers; the chief in a deep sky-blue coat with ochre facings
+KITEWING_CELLS = {(0, 1): ("8a6440", "3a2616"), (1, 1): ("b0503a", "4a1c12"), (5, 0): ("4a3020", "1a0e08"),
+				  (3, 0): ("c8a060", "6a4a1c"), (6, 0): ("c8a060", "6a4a1c"), (7, 1): ("a89270", "4a3a24"),
+				  (3, 2): ("5a3e28", "1e140a"), (7, 2): ("6a4a30", "26180e"), (0, 0): ("d8a47a", "8a5a3a"),
+				  (1, 0): ("3a2a1e", "120c08")}
+KITEWING_CHIEF_CELLS = {(0, 1): ("2e4a7a", "0e1a34"), (1, 1): ("d0903a", "6a3a10"), (5, 0): ("3a2418", "140a06"),
+						(3, 0): ("e8c060", "8a5a18"), (6, 0): ("e8c060", "8a5a18"), (7, 1): ("b09a70", "54442a"),
+						(3, 2): ("3a2a1e", "120c08"), (7, 2): ("5a3e28", "1e140a"), (0, 0): ("c89470", "7a4e32"),
+						(1, 0): ("8a8a86", "2e2e2c")}
+
+
+def kitewing_materials(chief=False):
+	p = "kitewing_chief" if chief else "kitewing"
+	return _rmats(p, {"leather": ("7a5234", 0.85), "leather_d": ("3e2818", 0.9), "strap": ("4a3020", 0.85),
+					  "brass": ("c8a050", 0.35), "lens": ("6ab0d8", 0.1, 0.35), "lens_d": ("2a4a6a", 0.15),
+					  "scarf": ("b8502e", 0.9), "scarf_d": ("7a2e18", 0.9), "wood": ("8a6a44", 0.8), "wood_d": ("5a4028", 0.85),
+					  "cloth": ("e2d4b0", 0.9), "cloth_b": ("7aa0c0", 0.9), "cloth_o": ("d08a3a", 0.9), "cloth_r": ("a8442e", 0.9),
+					  "patch": ("6a7a4a", 0.9), "stitch": ("2e2418", 0.9), "rope": ("b8a070", 0.9), "iron": ("5a5a5e", 0.5),
+					  "coat": ("2e4a7a", 0.85), "coat_d": ("1a2c4e", 0.9), "ochre": ("d0903a", 0.85), "hat": ("4a3424", 0.85),
+					  "hat_d": ("2a1c12", 0.9), "sail": ("eee2c4", 0.9), "paint": ("b8401e", 0.85), "paint_b": ("2e5a8a", 0.85),
+					  "paint_y": ("e8b440", 0.8),
+					  "f_eagle": ("6a4424", 0.9), "f_gold": ("d8a040", 0.85), "f_storm": ("222a3e", 0.85),
+					  "f_white": ("f2f0ea", 0.9), "f_blue": ("5a8ac8", 0.85)})
+
+
+def _kite_goggles(b, m, z=1.86, band=True, r=0.535):
+	"""Brass flying goggles with blue lenses, pushed up on the brow, on a leather strap round the head."""
+	if band:
+		_wrap(b, (0, 0.01, z - 0.02), (r, r), 0.08, 0.025, m["strap"], rot=(-6, 0, 0), sides=20)
+	y = -math.sqrt(max(0.0, r * r - 0.16 * 0.16)) - 0.01
+	for s in (1, -1):
+		cx = 0.16 * s
+		b.seg((cx, y + 0.04, z), (cx, y - 0.06, z), 0.11, 0.12, m["brass"], "x", sides=12)
+		b.seg((cx, y - 0.05, z), (cx, y - 0.075, z), 0.09, 0.09, m["lens"], "x", sides=12)
+		b.blob((0.06, 0.02, 0.03), (cx + 0.03, y - 0.08, z + 0.03), m["cloth"], "x", segs=(5, 3))   # a glint
+	b.seg((-0.06, y - 0.03, z), (0.06, y - 0.03, z), 0.03, 0.03, m["brass"], "x", sides=5)
+
+
+def build_kitewing_goggles():
+	"""The bandit's head: goggles up on the brow and a sun-faded scarf pulled up over nose and mouth,
+	knotted behind with its tails blowing (the Rogue's own head and hair show between)."""
+	m = kitewing_materials()
+	b = Builder("kitewing_goggles")
+	_kite_goggles(b, m)
+	_shell(b, (1.16, 1.16, 1.12), (0, 0.01, 1.6), m["scarf"], lambda d: -0.6 < d.z < -0.1, segs=(18, 16))
+	_wrap(b, (0, 0.01, 1.54), (0.575, 0.575), 0.025, 0.012, m["scarf_d"], rot=(0, 0, 0), sides=20)   # a hem
+	b.blob((0.2, 0.14, 0.16), (0, 0.6, 1.5), m["scarf_d"], "x", segs=(8, 5))                        # the knot
+	for s, ln in ((1, 0.44), (-1, 0.36)):
+		_slab(b, [(0.02 * s, 0.62, 1.5), (0.12 * s, 0.64, 1.48), (0.24 * s, 0.84, 1.2 + 0.4 - ln), (0.12 * s, 0.8, 1.16 + 0.4 - ln)],
+			  0.03, m["scarf"])
+	for x, z in ((0.3, 1.36), (-0.22, 1.28)):   # patches on the scarf
+		_slab(b, [(x - 0.07, -0.56, z - 0.05), (x + 0.07, -0.56, z - 0.05), (x + 0.07, -0.55, z + 0.05), (x - 0.07, -0.55, z + 0.05)],
+			  0.02, m["patch"] if x > 0 else m["cloth_o"])
+	return b.build_static()
+
+
+def _kite_harness(b, m):
+	for s in (1, -1):   # straps over each shoulder, crossing at the back
+		b.seg((0.2 * s, -0.37, 1.18), (0.26 * s, -0.1, 1.3), 0.03, 0.03, m["strap"], "x", sides=4)
+		b.seg((0.26 * s, -0.1, 1.3), (0.24 * s, 0.25, 1.26), 0.03, 0.03, m["strap"], "x", sides=4)
+		b.seg((0.24 * s, 0.25, 1.26), (-0.16 * s, 0.38, 0.72), 0.03, 0.03, m["strap"], "x", sides=4)
+		b.seg((0.2 * s, -0.37, 1.18), (0.12 * s, -0.4, 0.78), 0.03, 0.03, m["strap"], "x", sides=4)
+	_ring(b, (0, -0.41, 1.0), (0.06, 0.06), (0, 90), 0.018, m["brass"], sides=10)
+	b.seg((0.12, -0.4, 0.98), (-0.12, -0.4, 0.98), 0.025, 0.025, m["strap"], "x", sides=4)
+
+
+def build_kitewing_rig():
+	"""The bandit's back: a harness, a pack, and a kite-wing folded shut on a mast above the head: ribs of
+	cane hinged at the top, patched cloth folded between them, a rope coiled over the pack."""
+	import random
+	rng = random.Random(3241)
+	m = kitewing_materials()
+	b = Builder("kitewing_rig")
+	_kite_harness(b, m)
+	_box(b, (0.36, 0.14, 0.4), (0, 0.42, 0.96), m["leather"])
+	_box(b, (0.3, 0.06, 0.14), (0, 0.5, 1.08), m["leather_d"])
+	_ring(b, (0, 0.52, 0.8), (0.14, 0.1), (0, 0), 0.03, m["rope"], sides=14)                      # a coil of rope
+	_ring(b, (0, 0.52, 0.84), (0.12, 0.09), (0, 0), 0.03, m["rope"], sides=14)
+	top, bottom = Vector((0, 0.56, 2.36)), Vector((0, 0.52, 0.6))
+	b.seg(tuple(bottom), tuple(top), 0.028, 0.024, m["wood_d"], "x", sides=6)                    # the mast
+	b.blob((0.08, 0.08, 0.08), tuple(top), m["brass"], "x", segs=(6, 4))
+	cloths = (m["cloth"], m["cloth_b"], m["cloth_o"], m["cloth_r"])
+	for s in (1, -1):
+		ribs = [top]
+		for k in range(4):   # the ribs, folded down like a shut fan
+			tip = Vector(((0.14 + 0.13 * k) * s, 0.6 + 0.05 * k, 0.72 + 0.1 * k))
+			b.seg(tuple(top), tuple(tip), 0.018, 0.014, m["wood"], "x", sides=5)
+			ribs.append(tip)
+		for k in range(1, 4):   # cloth folded between them, each fold its own faded color
+			p, q = ribs[k], ribs[k + 1]
+			mid = (p + q) / 2 + Vector((0.02 * s, 0.05 + 0.02 * k, 0))
+			_slab(b, [tuple(top), tuple(p), tuple(mid)], 0.018, cloths[(k + (s > 0)) % 4])
+			_slab(b, [tuple(top), tuple(mid), tuple(q)], 0.018, cloths[(k + 1 + (s > 0)) % 4])
+		_slab(b, [tuple(top), tuple(Vector((0.02 * s, 0.56, 0.7))), tuple(ribs[1])], 0.018, cloths[2])
+		for k in range(2):   # patches sewn on
+			u = rng.uniform(0.45, 0.7)
+			p = top + (ribs[2 + k] - top) * u + Vector((0.03 * s, 0.07 + 0.02 * k, 0))
+			_box(b, (0.1, 0.02, 0.1), tuple(p), m["patch"] if k else m["cloth_r"], rot=(0, rng.uniform(-20, 20), 0))
+		b.seg(tuple(ribs[-1]), tuple(ribs[-1] + Vector((0.02 * s, 0.02, -0.14))), 0.012, 0.012, m["rope"], "x", sides=4)
+	_wrap(b, (0, 0.62, 1.0), (0.46, 0.12), 0.05, 0.015, m["rope"], sides=16)                       # lashed shut
+	return b.build_static()
+
+
+def build_kitewing_belt():
+	"""A belt with a grappling hook on a coil of line at one hip and pouches at the other."""
+	m = kitewing_materials()
+	b = Builder("kitewing_belt")
+	_wrap(b, (0, 0.0, 0.66), (0.44, 0.39), 0.08, 0.025, m["strap"], sides=18)
+	b.blob((0.1, 0.04, 0.08), (0, -0.41, 0.66), m["brass"], "x", segs=(6, 4))
+	for k in range(3):   # a coil of line
+		_ring(b, (0.46, 0.02, 0.5 + 0.04 * k), (0.03, 0.14), (0, 0), 0.025, m["rope"], sides=12)
+	c = Vector((0.5, 0.06, 0.3))   # the hook: a shank and three curved tines
+	b.seg((0.48, 0.04, 0.46), tuple(c), 0.022, 0.022, m["iron"], "x", sides=5)
+	for k in range(3):
+		a = 2 * math.pi * k / 3
+		d = Vector((math.cos(a), math.sin(a), 0))
+		p1 = c + d * 0.08 + Vector((0, 0, -0.04))
+		p2 = p1 + d * 0.03 + Vector((0, 0, 0.08))
+		b.seg(tuple(c), tuple(p1), 0.018, 0.015, m["iron"], "x", sides=4)
+		b.seg(tuple(p1), tuple(p2), 0.015, 0.004, m["iron"], "x", sides=4)
+	for x, y in ((-0.36, -0.22), (-0.42, 0.06)):
+		b.blob((0.14, 0.1, 0.16), (x, y, 0.56), m["leather"], "x", segs=(8, 6))
+		b.blob((0.12, 0.08, 0.05), (x, y, 0.64), m["leather_d"], "x", segs=(6, 4))
+	return b.build_static()
+
+
+def build_kitewing_chief_hat():
+	"""The chief's hat: a broad brim cocked up at one side, goggles on the band, a great plume of eagle,
+	thunderbird and white feathers."""
+	m = kitewing_materials(True)
+	b = Builder("kitewing_chief_hat")
+	b.blob((1.7, 1.64, 0.07), (0, 0.0, 2.02), m["hat_d"], "x", rot=(-3, -10, 0), segs=(20, 5))       # brim, cocked
+	b.seg((0, 0.0, 2.0), (0, 0.02, 2.36), 0.47, 0.41, m["hat"], "x", sides=16)
+	b.blob((0.82, 0.8, 0.2), (0, 0.02, 2.36), m["hat"], "x", segs=(14, 6))
+	_wrap(b, (0, 0.0, 2.1), (0.475, 0.475), 0.08, 0.02, m["ochre"], sides=18)
+	_kite_goggles(b, m, z=2.14, band=False, r=0.48)
+	base = Vector((0.4, 0.2, 2.14))
+	for k, (mat, tip, ln, yaw, pitch) in enumerate(((m["f_eagle"], m["f_gold"], 0.9, 30, 50), (m["f_storm"], m["f_blue"], 1.0, 18, 58),
+													(m["f_white"], m["f_storm"], 0.8, 40, 40), (m["f_gold"], m["f_eagle"], 0.6, 50, 30),
+													(m["f_storm"], m["f_white"], 0.7, 8, 66))):
+		d = Vector((math.sin(math.radians(yaw)) * math.cos(math.radians(pitch)), math.cos(math.radians(yaw)) * math.cos(math.radians(pitch)),
+					math.sin(math.radians(pitch))))
+		_oblob(b, (0.13, ln, 0.02), tuple(base + d * ln * 0.5), tuple(d), (1, -0.2, 0), mat, "x", segs=(8, 3))
+		_oblob(b, (0.11, ln * 0.3, 0.025), tuple(base + d * ln * 0.86), tuple(d), (1, -0.2, 0), tip, "x", segs=(6, 3))
+	b.blob((0.12, 0.1, 0.12), tuple(base), m["brass"], "x", segs=(6, 4))
+	return b.build_static()
+
+
+def build_kitewing_chief_coat():
+	"""The chief's coat top (collar, lapels, feathered epaulettes) and the rig on his back: a great kite
+	spread on its spars behind him, the sails painted with Vayuketh's spiral wind and a red sun."""
+	m = kitewing_materials(True)
+	b = Builder("kitewing_chief_coat")
+	_wrap(b, (0, 0.04, 1.36), (0.36, 0.32), 0.18, 0.05, m["coat_d"], rot=(-12, 0, 0), gap=(245, 295), sides=18)
+	_slab(b, [(-0.1, -0.39, 1.26), (0.1, -0.39, 1.26), (0.12, -0.4, 0.74), (-0.12, -0.4, 0.74)], 0.02, m["ochre"])
+	for s in (1, -1):
+		_slab(b, [(0.1 * s, -0.4, 1.3), (0.28 * s, -0.37, 1.3), (0.2 * s, -0.4, 1.02), (0.13 * s, -0.41, 0.98)], 0.03, m["coat_d"])
+		for k in range(4):
+			b.blob((0.05, 0.03, 0.05), (0.16 * s, -0.415, 1.12 - 0.12 * k), m["brass"], "x", segs=(6, 4))
+		for k in range(6):   # epaulettes of feathers
+			a = math.radians(-60 + 24 * k)
+			p = Vector((0.4 * s, 0.14 * math.sin(a), 1.28))
+			d = Vector((0.5 * s, math.sin(a) * 0.4, -0.8)).normalized()
+			_oblob(b, (0.1, 0.26, 0.02), tuple(p + d * 0.12), tuple(d), (s, 0, 0.4), [m["f_eagle"], m["f_storm"], m["f_white"]][k % 3], "x", segs=(6, 3))
+		b.blob((0.3, 0.3, 0.1), (0.38 * s, 0.0, 1.29), m["coat"], "x", rot=(0, 16 * s, 0), segs=(10, 5))
+	_kite_harness(b, m)
+	# the kite: a mast up the back, spars out to each wingtip, sails between, all spread
+	top, bottom = Vector((0, 0.56, 2.5)), Vector((0, 0.54, 0.62))
+	b.seg(tuple(bottom), tuple(top), 0.032, 0.026, m["wood_d"], "x", sides=6)
+	b.blob((0.09, 0.09, 0.09), tuple(top), m["brass"], "x", segs=(6, 4))
+	_box(b, (0.34, 0.14, 0.36), (0, 0.44, 0.98), m["leather"])
+	for s in (1, -1):
+		wing_tip = Vector((1.36 * s, 0.78, 1.66))
+		low_tip = Vector((0.82 * s, 0.72, 0.96))
+		mid = Vector((0, 0.56, 0.8))
+		b.seg(tuple(top), tuple(wing_tip), 0.024, 0.016, m["wood"], "x", sides=5)
+		b.seg(tuple(Vector((0, 0.55, 1.5))), tuple(wing_tip), 0.02, 0.015, m["wood"], "x", sides=5)   # a cross-spar
+		b.seg(tuple(mid), tuple(low_tip), 0.02, 0.015, m["wood"], "x", sides=5)
+		b.seg(tuple(wing_tip), tuple(low_tip), 0.012, 0.012, m["rope"], "x", sides=4)                   # the trailing line
+		_slab(b, [tuple(top + Vector((0.02 * s, 0.02, 0))), tuple(wing_tip + Vector((0, 0.02, 0))), tuple(low_tip + Vector((0, 0.02, 0))),
+				  tuple(mid + Vector((0.02 * s, 0.02, 0)))], 0.02, m["sail"])
+		# the painting, on both faces: a red sun with a blue spiral of wind across it, a band at the edge
+		n = (wing_tip - top).cross(low_tip - top).normalized()
+		if n.y < 0:
+			n = -n
+		cen = (top + wing_tip + low_tip + mid) / 4 + Vector((0.06 * s, 0.02, 0))
+		for side_ in (1, -1):
+			off = n * 0.045 * side_
+			_sun(b, tuple(cen + off), tuple(n * side_), 0.2, m["paint"], m["paint_y"], count=10, ray_len=0.5, thick=0.01)
+			pts = []
+			for k in range(14):
+				f = k / 13
+				a = 2 * math.pi * 1.4 * f
+				r = 0.04 + 0.2 * f
+				u = n.cross(Vector((0, 0, 1))).normalized()
+				v = n.cross(u).normalized()
+				pts.append(cen + off * 1.6 + (u * math.cos(a) + v * math.sin(a)) * r)
+			for p, q in zip(pts, pts[1:]):
+				b.seg(tuple(p), tuple(q), 0.014, 0.014, m["paint_b"], "x", sides=4)
+			for p, q in ((top, wing_tip), (wing_tip, low_tip)):   # a painted band along the edges
+				a_ = p + (cen - p) * 0.07 + off * 1.3
+				c_ = q + (cen - q) * 0.07 + off * 1.3
+				b.seg(tuple(a_), tuple(c_), 0.02, 0.02, m["paint"], "x", sides=4)
+		for k in range(3):   # ribbons streaming off the wingtip
+			start = len(b.parts)
+			_wb_ribbon(b, [wing_tip, wing_tip + Vector((0.1 * s, 0.25, -0.1 - 0.06 * k)), wing_tip + Vector((0.06 * s, 0.5, -0.3 - 0.1 * k))],
+					   0.05, [m["paint"], m["paint_b"], m["paint_y"]][k], "x", up=(s, 0, 0.3), taper=0.4)
+	return b.build_static()
+
+
+def build_kitewing_chief_tails():
+	"""The long coat's skirts to the shins, split behind for riding the wind, an ochre sash and brass buckle."""
+	m = kitewing_materials(True)
+	b = Builder("kitewing_chief_tails")
+	_shell(b, (1.0, 0.92, 1.9), (0, 0.02, 0.74), m["coat"], lambda d: d.y > -0.45 and -0.74 < d.z < -0.02 and abs(d.x) > 0.05, segs=(18, 18))
+	_shell(b, (1.02, 0.94, 1.9), (0, 0.02, 0.74), m["ochre"], lambda d: d.y > -0.45 and -0.74 < d.z < -0.67 and abs(d.x) > 0.05, segs=(18, 18))
+	_wrap(b, (0, 0.0, 0.68), (0.45, 0.4), 0.14, 0.03, m["ochre"], sides=18)
+	_wrap(b, (0, 0.0, 0.76), (0.46, 0.41), 0.05, 0.03, m["strap"], sides=18)
+	b.blob((0.14, 0.05, 0.1), (0, -0.44, 0.76), m["brass"], "x", segs=(6, 4))
+	for k in range(3):   # a coil of line at the hip
+		_ring(b, (0.48, 0.04, 0.52 + 0.04 * k), (0.03, 0.14), (0, 0), 0.025, m["rope"], sides=12)
+	return b.build_static()
+
+
+def build_kite_hook():
+	"""The Kitewing's weapon (KayKit weapons' frame: grip at the origin, up +Z): a short cane haft with a
+	hooked iron blade for catching lines and throats, a loop of rope at the butt."""
+	m = kitewing_materials()
+	steel = metal_material("kite_hook_steel", "a8acb0", 0.3, 0.6)
+	b = Builder("kite_hook")
+	b.seg((0, 0, -0.16), (0, 0, 0.5), 0.028, 0.025, m["wood"], "x", sides=7)
+	for k in range(4):
+		z = -0.12 + 0.07 * k
+		b.seg((0, 0, z), (0, 0, z + 0.03), 0.034, 0.034, m["strap"], "x", sides=7)
+	_ring(b, (0, 0, -0.24), (0.05, 0.02), (90, 0), 0.012, m["rope"], sides=10)
+	b.seg((0, 0, 0.46), (0, 0, 0.56), 0.035, 0.035, m["iron"], "x", sides=6)
+	pts = []   # the hook: a blade curling over and back down
+	for k in range(9):
+		a = math.radians(-90 + 200 * k / 8)
+		pts.append(Vector((0.1 + 0.1 * math.cos(a), 0, 0.64 + 0.12 * math.sin(a))))
+	pts = [Vector((0, 0, 0.54))] + pts
+	for k, (p, q) in enumerate(zip(pts, pts[1:])):
+		w = 0.04 * (1 - k / len(pts)) + 0.008
+		n = Vector((0, 1, 0))
+		dd = (q - p).normalized()
+		o = dd.cross(n).normalized()
+		_slab(b, [tuple(p), tuple(q), tuple(q + o * w), tuple(p + o * w)], 0.014, steel)
+	b.seg((0, 0, 0.56), (-0.03, 0, 0.72), 0.02, 0.0, steel, "x", sides=4)   # a spike on the back
+	return b.build_static()
+
+
+# ---------------------------------------------------------------- the stone giants (KayKit Barbarian mesh space)
+
+# the barbarian as a stone giant: skin (0,0) (1,3) (3,1) weathered gray stone, trousers (7,1) hide, boots (3,2)
+# bare stone feet, vest (7,0) moss, fur trim (2,1) lichen, leather (6,0) (6,1) (5,1), iron (3,0) stone,
+# hand wraps (7,2) rope
+STONE_GIANT_CELLS = {(0, 0): ("a8a89c", "545650"), (1, 3): ("a8a89c", "545650"), (3, 1): ("9c9c90", "4a4c46"),
+					 (7, 1): ("7a6c56", "2e2618"), (3, 2): ("8a8a80", "3a3a36"), (7, 0): ("6e7a48", "2a3218"),
+					 (2, 1): ("b4ac6c", "54502c"), (6, 0): ("6a5a44", "261e14"), (6, 1): ("6a5a44", "261e14"),
+					 (3, 0): ("8a8a82", "3a3a36"), (5, 1): ("6a5a44", "261e14"), (7, 2): ("a8946a", "4a3e28")}
+STACKSTONE_CELLS = {(0, 0): ("8e9088", "3e403a"), (1, 3): ("8e9088", "3e403a"), (3, 1): ("868880", "383a34"),
+					(7, 1): ("5e5446", "221e16"), (3, 2): ("76786e", "30322c"), (7, 0): ("56663a", "1e2812"),
+					(2, 1): ("c8d0a0", "5e6a44"), (6, 0): ("5a4c3a", "1e1810"), (6, 1): ("5a4c3a", "1e1810"),
+					(3, 0): ("76786e", "30322c"), (5, 1): ("5a4c3a", "1e1810"), (7, 2): ("9a8a60", "443a22")}
+
+
+def stone_giant_materials(elder=False):
+	p = "old_stackstone" if elder else "stone_giant"
+	return _rmats(p, {"stone": ("9a9c92", 0.95) if not elder else ("868880", 0.95), "stone_d": ("5e605a", 0.95) if not elder else ("4a4c46", 0.95),
+					  "stone_l": ("bcbcb0", 0.9) if not elder else ("a8a89c", 0.9), "moss": ("5e7434", 0.95), "moss_l": ("8a9a48", 0.95),
+					  "lichen": ("c8c47a", 0.95), "lichen_o": ("d8903a", 0.95), "lichen_p": ("b8c8b0", 0.95),
+					  "eye": ("c8e4f0", 0.2, 1.4), "socket": ("26282a", 0.95), "grass": ("a8a050", 0.9),
+					  "rope": ("b09a6a", 0.9), "rope_d": ("7a6a44", 0.9), "hide": ("7a6a52", 0.9), "hide_d": ("4a4034", 0.9),
+					  "beard": ("a8b490", 0.95), "beard_d": ("7a8a66", 0.95), "cloth": ("5a8ac8", 0.9), "cloth_w": ("f0ead8", 0.9)})
+
+
+def _lichen(b, rng, center, radii, count, mats, arc=(0, 360), elev=(-40, 70), size=0.06):
+	"""Flat crusts of lichen scattered over an ellipsoid's face."""
+	c = Vector(center)
+	rx, ry, rz = radii
+	for k in range(count):
+		a = math.radians(rng.uniform(*arc))
+		e = math.radians(rng.uniform(*elev))
+		d = Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e)))
+		p = c + Vector((rx * d.x, ry * d.y, rz * d.z))
+		n = Vector((d.x / rx, d.y / ry, d.z / rz)).normalized()
+		sz = size * rng.uniform(0.6, 1.4)
+		_oblob(b, (sz, sz * rng.uniform(0.7, 1.3), 0.025), tuple(p + n * 0.005), tuple(n.orthogonal()), tuple(n), mats[k % len(mats)], "x", segs=(6, 3))
+
+
+def _stone_giant_head(b, m, elder, rng):
+	st, dk, lt = m["stone"], m["stone_d"], m["stone_l"]
+	b.blob((0.58, 0.56, 0.62), (0, -0.02, 1.64), st, "x", segs=(12, 9))                            # a blocky skull
+	for loc, size in (((0.18, -0.12, 1.84), (0.26, 0.3, 0.22)), ((-0.16, -0.08, 1.86), (0.28, 0.32, 0.2)),
+					  ((0.0, 0.12, 1.86), (0.4, 0.3, 0.2)), ((0.22, 0.06, 1.62), (0.2, 0.3, 0.3)), ((-0.22, 0.06, 1.6), (0.2, 0.3, 0.3))):
+		_rock(b, size, loc, [st, lt, dk][rng.randrange(3)], "x", rng, jitter=0.14)                  # planes chipped by the wind
+	_rock(b, (0.66, 0.24, 0.2), (0, -0.25, 1.77), dk, "x", rng, jitter=0.1)                        # the ledge of a brow
+	b.blob((0.58, 0.46, 0.3), (0, -0.1, 1.42), st, "x", segs=(10, 7))                               # a jaw like a lintel
+	_rock(b, (0.3, 0.2, 0.18), (0, -0.28, 1.36), lt, "x", rng, jitter=0.12)                        # chin
+	_rock(b, (0.15, 0.18, 0.22), (0, -0.36, 1.64), lt, "x", rng, jitter=0.12)                      # a flat nose
+	b.seg((-0.12, -0.33, 1.47), (0.12, -0.33, 1.47), 0.018, 0.018, m["socket"], "x", sides=4)      # a thin hard mouth
+	for s in (1, -1):
+		b.blob((0.15, 0.06, 0.08), (0.13 * s, -0.3, 1.69), m["socket"], "x", segs=(8, 5))
+		b.blob((0.07, 0.03, 0.04), (0.13 * s, -0.33, 1.69), m["eye"], "x", segs=(6, 4))
+		_rock(b, (0.12, 0.16, 0.18), (0.3 * s, -0.02, 1.62), st, "x", rng)                         # ears worn to nubs
+		_rock(b, (0.2, 0.18, 0.16), (0.2 * s, -0.24, 1.5), st, "x", rng)                           # cheeks
+	_lichen(b, rng, (0, -0.02, 1.64), (0.3, 0.29, 0.32), 10 if not elder else 16, (m["lichen"], m["lichen_o"], m["lichen_p"]), size=0.07)
+	# a cap of moss on the crown with tufts of dry grass in it
+	_shell(b, (0.66, 0.64, 0.68), (0, 0.0, 1.66), m["moss"], lambda d: d.z > (0.45 if not elder else 0.3), segs=(14, 10))
+	for k in range(5 if not elder else 8):
+		a = rng.uniform(0, 2 * math.pi)
+		r = rng.uniform(0.0, 0.2)
+		p = Vector((r * math.cos(a), r * math.sin(a), 1.97 - r * 0.5))
+		_tuft(b, tuple(p), (math.cos(a) * 0.4, math.sin(a) * 0.4 + 0.2, 1), 0.16, 6, 0.4, (m["grass"], m["moss_l"]), 3250 + k, width=0.014)
+	if not elder:   # a stubble of moss on the jaw
+		_shell(b, (0.6, 0.5, 0.34), (0, -0.1, 1.41), m["moss"], lambda d: d.y < -0.2 and d.z < 0.2, segs=(12, 8))
+		return
+	# the elder: a long beard of lichen hanging to the belly, stones knotted into it, a heavier brow
+	_rock(b, (0.72, 0.28, 0.24), (0, -0.27, 1.82), dk, "x", rng, jitter=0.1)
+	_shell(b, (0.64, 0.52, 0.38), (0, -0.1, 1.41), m["beard_d"], lambda d: d.y < -0.1 and d.z < 0.3, segs=(12, 8))
+	for k in range(13):
+		x = (k - 6) * 0.042
+		top = Vector((x, -0.3 - 0.04 * (1 - abs(x) / 0.3), 1.44))
+		ln = 0.72 - 0.4 * abs(x) / 0.26 + rng.uniform(-0.06, 0.06)
+		sway = rng.uniform(-0.04, 0.04)
+		pts = [top, top + Vector((sway, -0.07, -ln * 0.4)), top + Vector((sway * 2, -0.05, -ln * 0.75)), top + Vector((sway * 2.5, -0.02, -ln))]
+		_chain(b, pts, 0.04, 0.012, m["beard"] if k % 2 else m["beard_d"], sides=5)
+		if k % 4 == 1:
+			b.blob((0.06, 0.06, 0.06), tuple(pts[2]), m["stone_l"], "x", segs=(6, 4))
+	for s in (1, -1):   # moustaches of it
+		_chain(b, [(0.06 * s, -0.33, 1.52), (0.2 * s, -0.33, 1.46), (0.26 * s, -0.3, 1.22)], 0.035, 0.012, m["beard"], sides=5)
+
+
+def _stone_giant_chest(b, m, elder, rng):
+	st = m["stone"]
+	b.seg((0, 0.0, 1.22), (0, -0.04, 1.44), 0.2, 0.18, st, "x", sides=10)
+	b.blob((0.9, 0.58, 0.46), (0, -0.09, 1.16), st, "x", segs=(12, 8))
+	b.blob((0.84, 0.5, 0.52), (0, 0.12, 1.2), st, "x", segs=(12, 8))
+	for s in (1, -1):
+		_rock(b, (0.48, 0.5, 0.42), (0.36 * s, 0.02, 1.3), [st, m["stone_l"]][s > 0], "x", rng, jitter=0.12)   # boulder shoulders
+		_rock(b, (0.36, 0.16, 0.26), (0.18 * s, -0.32, 1.14), m["stone_l"], "x", rng, jitter=0.12)
+		_shell(b, (0.46, 0.46, 0.4), (0.37 * s, 0.02, 1.34), m["moss"], lambda d: d.z > 0.72, segs=(10, 7))   # moss on top
+		_tuft(b, (0.36 * s, 0.06, 1.53), (0.2 * s, 0.1, 1), 0.14, 5, 0.4, (m["grass"], m["moss_l"]), 3260 + (s > 0), width=0.014)
+	_lichen(b, rng, (0, -0.02, 1.18), (0.46, 0.34, 0.26), 12 if not elder else 18, (m["lichen"], m["lichen_o"], m["lichen_p"]), size=0.08)
+	for k in range(5):   # cracks and seams in the stone
+		x = rng.uniform(-0.3, 0.3)
+		z = rng.uniform(0.98, 1.3)
+		y = -0.09 - 0.29 * math.sqrt(max(0.0, 1 - (x / 0.45) ** 2 - ((z - 1.16) / 0.23) ** 2)) - 0.01
+		b.seg((x, y, z), (x + rng.uniform(-0.1, 0.1), y, z - rng.uniform(0.08, 0.16)), 0.01, 0.006, m["socket"], "x", sides=4)
+	# a rope sling over one shoulder to the other hip
+	b.seg((0.34, -0.34, 1.34), (-0.36, -0.36, 0.8), 0.035, 0.035, m["rope"], "x", sides=5)
+	b.seg((0.34, 0.34, 1.34), (-0.36, 0.38, 0.82), 0.035, 0.035, m["rope"], "x", sides=5)
+	if not elder:   # a small cairn of stones slung in a net at the back
+		for k, (x, z, sz) in enumerate(((0.0, 0.9, 0.34), (0.05, 1.1, 0.28), (-0.03, 1.27, 0.2))):
+			_rock(b, (sz, sz * 0.7, sz * 0.55), (x, 0.52, z), [m["stone_l"], m["stone_d"], m["stone_l"]][k], "x", rng, jitter=0.1)
+		for s in (1, -1):   # the net's cords
+			_chain(b, [(0.12 * s, 0.4, 1.34), (0.14 * s, 0.62, 1.2), (0.16 * s, 0.66, 0.9), (0.1 * s, 0.56, 0.72)], 0.018, 0.018, m["rope_d"], sides=4)
+		b.seg((-0.18, 0.66, 1.0), (0.18, 0.66, 1.0), 0.018, 0.018, m["rope_d"], "x", sides=4)
+		return
+	# the elder: a tall cairn of flat stones stacked on his back, lashed on, moss on the ledges, a
+	# strip of blue-and-white prayer cloth to Vayuketh streaming from the top stone
+	z = 0.7
+	for k in range(7):
+		w = 0.66 - 0.07 * k
+		h = 0.2 + 0.03 * (k % 2)
+		y = 0.8 + 0.03 * math.sin(k * 1.7)
+		_rock(b, (w, w * 0.75, h), (0.04 * math.sin(k * 2.3), y, z + h / 2), [st, m["stone_l"], m["stone_d"]][k % 3], "x", rng,
+			  rot=(0, rng.uniform(-6, 6), rng.uniform(0, 40)), jitter=0.08)
+		if k % 2 == 0:
+			_shell(b, (w * 0.8, w * 0.6, h * 1.3), (0.04 * math.sin(k * 2.3) + 0.06, y, z + h / 2), m["moss"], lambda d: d.z > 0.62, segs=(10, 6))
+		z += h * 0.92
+	top = Vector((0, 0.82, z + 0.02))
+	b.seg((0, 0.82, z - 0.2), tuple(top + Vector((0, 0, 0.5))), 0.025, 0.02, m["rope_d"], "x", sides=5)   # a stick jammed in the top
+	for k in range(4):
+		p = top + Vector((0, 0, 0.44 - 0.1 * k))
+		_wb_ribbon(b, [p, p + Vector((0.18, 0.1, -0.02)), p + Vector((0.34, 0.22, -0.08))], 0.07, [m["cloth"], m["cloth_w"]][k % 2], "x",
+				   up=(0, -1, 0), taper=0.6)
+	for s in (1, -1):   # the lashings: ropes from the shoulders down over the stack's face to the belt
+		_chain(b, [(0.26 * s, 0.3, 1.36), (0.2 * s, 0.6, 1.52), (0.16 * s, 0.94, 1.32), (0.2 * s, 1.0, 0.94), (0.24 * s, 0.72, 0.74), (0.3 * s, 0.4, 0.7)],
+			   0.025, 0.025, m["rope"], sides=5)
+	b.seg((-0.2, 1.0, 1.1), (0.2, 1.0, 1.1), 0.022, 0.022, m["rope"], "x", sides=4)
+
+
+def _stone_giant_kilt(b, m, elder, rng=None):
+	_wrap(b, (0, 0.0, 0.7), (0.47, 0.4), 0.1, 0.04, m["rope"], sides=18)
+	_shell(b, (0.96, 0.84, 2.0), (0, 0.0, 0.8), m["hide"], lambda d: d.y < -0.72 and -0.5 < d.z < -0.04, segs=(18, 24))
+	_shell(b, (0.96, 0.84, 2.0), (0, 0.0, 0.8), m["hide_d"], lambda d: d.y > 0.72 and -0.44 < d.z < -0.04, segs=(18, 24))
+	for s in (1, -1):   # ragged fringe at the flaps' hems
+		for k in range(3):
+			x = (0.06 + 0.1 * k) * s
+			b.seg((x, -0.43, 0.36), (x * 1.05, -0.44, 0.26 - 0.03 * (k % 2)), 0.03, 0.01, m["hide"], "x", sides=4)
+	for x, z in ((-0.36, 0.56), (0.3, 0.5), (0.44, 0.6)):   # stones hung from the belt on cords
+		b.seg((x, -0.3 if abs(x) < 0.4 else -0.1, 0.66), (x, -0.32 if abs(x) < 0.4 else -0.14, z), 0.01, 0.01, m["rope_d"], "x", sides=4)
+		b.blob((0.08, 0.06, 0.09), (x, -0.33 if abs(x) < 0.4 else -0.15, z - 0.04), m["stone_l"], "x", segs=(6, 4))
+	if elder:
+		b.blob((0.16, 0.08, 0.12), (0, -0.44, 0.7), m["stone_l"], "x", segs=(8, 5))   # a stone buckle
+
+
+def _stone_giant_arm(name, s, elder):
+	import random
+	rng = random.Random(3271 + (s > 0) + 7 * elder)
+	m = stone_giant_materials(elder)
+	b = Builder(name)
+	b.seg((0.2 * s, 0.0, 1.12), (0.47 * s, 0.01, 1.1), 0.17, 0.14, m["stone"], "x", sides=10)
+	_rock(b, (0.26, 0.28, 0.28), (0.33 * s, -0.02, 1.15), m["stone_l"], "x", rng, jitter=0.12)
+	_lichen(b, rng, (0.33 * s, 0.0, 1.12), (0.14, 0.16, 0.16), 4, (m["lichen"], m["lichen_o"]), size=0.06)
+	return b.build_static()
+
+
+def _stone_giant_bracer(name, s, elder):
+	m = stone_giant_materials(elder)
+	b = Builder(name)
+	b.seg((0.46 * s, 0.01, 1.1), (0.7 * s, 0.0, 1.1), 0.13, 0.12, m["stone"], "x", sides=10)
+	for k in range(4):   # rope wound round the forearm
+		x = 0.5 + 0.055 * k
+		b.seg((x * s, 0.0, 1.1), ((x + 0.03) * s, 0.0, 1.1), 0.14, 0.14, m["rope"] if k % 2 else m["rope_d"], "x", sides=10)
+	return b.build_static()
+
+
+def _stone_part(name, fn, elder, seed):
+	import random
+	b = Builder(name)
+	fn(b, stone_giant_materials(elder), elder, random.Random(seed))
+	return b.build_static()
+
+
+def _giant_slab(name, elder):
+	"""A slab of standing stone for a giant's hand (KayKit weapons' frame: grip at the origin, up +Z): one
+	end worked narrow and bound in rope for a grip, the face patched with lichen; the elder's is longer,
+	carved with Vayuketh's spiral and hung with a prayer cloth."""
+	import random
+	rng = random.Random(3281 + elder)
+	m = stone_giant_materials(elder)
+	b = Builder(name)
+	ln = 1.3 if elder else 1.05
+	b.seg((0, 0, -0.2), (0, 0, 0.2), 0.06, 0.07, m["stone_d"], "x", sides=7)
+	for k in range(6):
+		z = -0.17 + 0.06 * k
+		b.seg((0, 0, z), (0, 0, z + 0.035), 0.075, 0.075, m["rope"] if k % 2 else m["rope_d"], "x", sides=8)
+	_rock(b, (0.18, 0.14, 0.16), (0, 0, -0.24), m["stone"], "x", rng, jitter=0.1)
+	_rock(b, (0.26, 0.16, 0.24), (0, 0, 0.26), m["stone"], "x", rng, jitter=0.08)
+	_rock(b, (0.4 if not elder else 0.46, 0.16 if not elder else 0.19, ln), (0, 0, 0.24 + ln / 2), m["stone"], "x", rng, jitter=0.07)
+	_rock(b, (0.3, 0.17, 0.3), (0.04, 0.0, 0.2 + ln * 0.8), m["stone_l"], "x", rng, jitter=0.1)
+	_lichen(b, rng, (0, 0, 0.24 + ln / 2), (0.2, 0.08, ln / 2), 7, (m["lichen"], m["lichen_o"], m["lichen_p"]), arc=(180, 360), elev=(-60, 60), size=0.06)
+	_shell(b, (0.36, 0.18, ln * 0.3), (0.04, 0.0, 0.24 + ln * 0.9), m["moss"], lambda d: d.z > 0.55, segs=(10, 6))
+	if elder:
+		c = Vector((0, -0.1, 0.24 + ln * 0.5))
+		pts = []
+		for k in range(16):
+			f = k / 15
+			a = 2 * math.pi * 1.6 * f
+			r = 0.02 + 0.13 * f
+			pts.append(c + Vector((r * math.cos(a), 0, r * math.sin(a) * 1.4)))
+		for p, q in zip(pts, pts[1:]):
+			b.seg(tuple(p), tuple(q), 0.012, 0.012, m["socket"], "x", sides=4)
+		p = Vector((0.06, 0.0, 0.2))
+		_wb_ribbon(b, [p, p + Vector((0.12, -0.04, -0.14)), p + Vector((0.18, -0.02, -0.32))], 0.06, m["cloth"], "x", up=(0, 1, 0), taper=0.5)
+		_wb_ribbon(b, [p, p + Vector((0.06, -0.04, -0.18)), p + Vector((0.12, 0.0, -0.36))], 0.05, m["cloth_w"], "x", up=(0, 1, 0), taper=0.5)
+	return b.build_static()
+
+
+def build_stone_giant_head():
+	return _stone_part("stone_giant_head", _stone_giant_head, False, 3251)
+
+
+def build_old_stackstone_head():
+	return _stone_part("old_stackstone_head", _stone_giant_head, True, 3253)
+
+
+def build_stone_giant_chest():
+	return _stone_part("stone_giant_chest", _stone_giant_chest, False, 3255)
+
+
+def build_old_stackstone_chest():
+	return _stone_part("old_stackstone_chest", _stone_giant_chest, True, 3257)
+
+
+def build_stone_giant_kilt():
+	return _stone_part("stone_giant_kilt", _stone_giant_kilt, False, 0)
+
+
+def build_old_stackstone_kilt():
+	return _stone_part("old_stackstone_kilt", _stone_giant_kilt, True, 0)
+
+
+def build_stone_slab():
+	return _giant_slab("stone_slab", False)
+
+
+def build_stackstone_slab():
+	return _giant_slab("stackstone_slab", True)
+
+
+# Windbreak: registered here, beside its builders
+CREATURES.update({"gale_spirit": build_gale_spirit, "dust_devil": build_dust_devil, "storm_eye": build_storm_eye,
+				  "giant_eagle": build_giant_eagle, "thunderbird": build_thunderbird,
+				  "skarrow_thunderbird": build_skarrow_thunderbird, "cliff_drake": build_cliff_drake})
+BODIES.update({"kitewing_bandit_body": (KAYKIT + "Rogue.glb", "kitewing_bandit_texture", KITEWING_CELLS, None),
+			   "kitewing_chief_body": (KAYKIT + "Rogue.glb", "kitewing_chief_texture", KITEWING_CHIEF_CELLS, None),
+			   "stone_giant_body": (KAYKIT + "Barbarian.glb", "stone_giant_texture", STONE_GIANT_CELLS, None),
+			   "old_stackstone_body": (KAYKIT + "Barbarian.glb", "old_stackstone_texture", STACKSTONE_CELLS, None)})
+ATTACHMENTS.update({"kitewing_goggles": build_kitewing_goggles, "kitewing_rig": build_kitewing_rig,
+					"kitewing_belt": build_kitewing_belt, "kitewing_chief_hat": build_kitewing_chief_hat,
+					"kitewing_chief_coat": build_kitewing_chief_coat, "kitewing_chief_tails": build_kitewing_chief_tails,
+					"kite_hook": build_kite_hook,
+					"stone_giant_head": build_stone_giant_head, "old_stackstone_head": build_old_stackstone_head,
+					"stone_giant_chest": build_stone_giant_chest, "old_stackstone_chest": build_old_stackstone_chest,
+					"stone_giant_kilt": build_stone_giant_kilt, "old_stackstone_kilt": build_old_stackstone_kilt,
+					"stone_slab": build_stone_slab, "stackstone_slab": build_stackstone_slab})
+for _pre, _elder in (("stone_giant", False), ("old_stackstone", True)):
+	for _s, _side in ((1, "l"), (-1, "r")):
+		ATTACHMENTS[f"{_pre}_arm_{_side}"] = (lambda n, s, e: lambda: _stone_giant_arm(n, s, e))(f"{_pre}_arm_{_side}", _s, _elder)
+		ATTACHMENTS[f"{_pre}_bracer_{_side}"] = (lambda n, s, e: lambda: _stone_giant_bracer(n, s, e))(f"{_pre}_bracer_{_side}", _s, _elder)
+# ================================================================ end of Windbreak
+
+
+# ================================================================ The Long Grass (the Standing Sky, 34-38)
+# An endless sea of head-high grass under Vayuketh's wind: tawny grass stalkers and Tawnyjaw the
+# man-eater, spotted grass howlers, shaggy thunderhooves and Old Thunderhoof the herd-king, dirkhorns
+# with their long straight horns, the hoofborn (horse-folk: a horse's body with a rider's torso rising
+# from the shoulders; riders with spears, archers, Khan Oruk), and the dead horse-lords of the burial
+# mounds (barrow wights and the Barrow Lord: Skeleton_Warrior in bronze, a rotted fur mantle, green eye-light).
+
+
+def _lg_skin_tree(b):
+	"""A BVH of everything built so far, for laying scars and patches on the outermost skin."""
+	from mathutils.bvhtree import BVHTree
+	bm = bmesh.new()
+	for p in b.parts:
+		bm.from_mesh(p.data)
+	tree = BVHTree.FromBMesh(bm)
+	bm.free()
+	return tree
+
+
+def _lg_scars(b, tree, starts, direction, mat, bone, width=0.03, length=0.3, count=3, gap=0.1):
+	"""Parallel claw scars raked across the skin: for each start (a point outside the body and the
+	direction to cast toward it), `count` strokes `length` long, `gap` apart."""
+	for origin, cast in starts:
+		o, c = Vector(origin), Vector(cast).normalized()
+		d = Vector(direction).normalized()
+		side = d.cross(c).normalized()
+		for k in range(count):
+			line = []
+			for u in (0, 0.25, 0.5, 0.75, 1.0):
+				hit, n, _, _ = tree.ray_cast(o + side * gap * k + d * length * u, c)
+				if hit is not None:
+					line.append((hit - c * 0.006, n))
+			for (p, n), (q, _) in zip(line, line[1:]):
+				_oblob(b, (width, (q - p).length * 1.4, width * 0.45), tuple((p + q) / 2), q - p, n if n.dot(c) < 0 else -n, mat, bone, segs=(5, 3))
+
+
+def _lg_shag(b, center, radii, count, mats, bone, rng, size=(0.16, 0.3, 0.07), zmin=-1.0, ymin=-9.0, ymax=9.0, flow=(0, 1, -0.6)):
+	"""Tufts of hair laid on the outermost skin round `center` (rays in from an ellipsoid of `radii`),
+	each an ellipsoid `size` combed along `flow` over the surface."""
+	tree = _lg_skin_tree(b)
+	c, r = Vector(center), Vector(radii)
+	placed = tries = 0
+	while placed < count and tries < count * 30:
+		tries += 1
+		u = Vector((rng.gauss(0, 1), rng.gauss(0, 1), rng.gauss(0, 1))).normalized()
+		if u.z < zmin:
+			continue
+		aim = c + Vector((u.x * r.x, u.y * r.y, u.z * r.z))
+		if not ymin <= aim.y <= ymax:
+			continue
+		hit, n, _, _ = tree.ray_cast(aim + u * 3.0, -u)
+		if hit is None:
+			continue
+		if n.dot(u) < 0:
+			n = -n
+		f = Vector(flow)
+		f = (f - n * f.dot(n))
+		if f.length < 1e-3:
+			f = n.orthogonal()
+		k = rng.uniform(0.8, 1.2)
+		_oblob(b, (size[0] * k, size[1] * k, size[2]), tuple(hit + f.normalized() * size[1] * 0.3 * k), f, n, mats[placed % len(mats)], bone, segs=(6, 4))
+		placed += 1
+
+
+# ---------------------------------------------------------------- grass stalker and Tawnyjaw
+# A great tawny plains cat, low-slung for creeping through the grass: a short dark mane round the
+# neck and shoulders, faint stripes on the flanks, a tufted tail. Tawnyjaw, the man-eater, is huge
+# (built at 1.7), darker-maned, clawed across the face and flank, one ear torn, one fang broken,
+# the left eye a milky scar.
+
+def _plains_cat(name, old=False):
+	import random
+	rng = random.Random(3413 if old else 3411)
+	fur = material(f"{name}_fur", "b88a4c" if old else "cc9e5a", 0.9)
+	back = material(f"{name}_back", "9a703a" if old else "b08448", 0.9)
+	pale = material(f"{name}_pale", "e2d2b0" if old else "eee0c0", 0.9)
+	stripe = material(f"{name}_stripe", "8a6434" if old else "a47c44", 0.9)      # faint: only a shade darker
+	mane = material(f"{name}_mane", "3e2616" if old else "6e4a26", 0.95)
+	mane_l = material(f"{name}_mane_light", "5e3e22" if old else "8e6632", 0.95)
+	eye = material(f"{name}_eye", "e8b83a", 0.25, emit=1.0)
+	blind = material(f"{name}_blind", "d8dcd0", 0.3, emit=0.3)
+	nose = material(f"{name}_nose", "5a3a30", 0.5)
+	dark = material(f"{name}_dark", "2a2018", 0.6)
+	pupil = material(f"{name}_pupil", "0e0c0a", 0.2)
+	tooth = material(f"{name}_tooth", "f2ecd8", 0.4)
+	scar = material(f"{name}_scar", "c89484", 0.7)
+	gray = material(f"{name}_gray", "b8ae9a", 0.9)
+	b = Builder(name)
+	legs = {"leg_fl": (0.22, -0.54), "leg_fr": (-0.22, -0.54), "leg_bl": (0.23, 0.54), "leg_br": (-0.23, 0.54)}
+	b.bone("root", (0, 0, 0.62))
+	b.bone("body", (0, 0.0, 0.66), "root")
+	b.bone("head", (0, -0.84, 0.84), "body")
+	b.bone("jaw", (0, -1.02, 0.74), "head")
+	b.bone("tail1", (0, 0.86, 0.72), "body")
+	b.bone("tail2", (0, 1.3, 0.5), "tail1")
+	b.bone("tail3", (0, 1.74, 0.34), "tail2")
+
+	# a long, lean body slung low between the shoulders and the haunches
+	b.blob((0.66, 1.76, 0.56), (0, 0.02, 0.7), fur, "body", segs=(14, 9))
+	b.blob((0.74, 0.66, 0.64), (0, -0.5, 0.74), fur, "body", segs=(12, 8))                   # shoulders
+	b.blob((0.68, 0.64, 0.6), (0, 0.54, 0.72), fur, "body", segs=(12, 8))                    # haunches
+	b.blob((0.5, 1.36, 0.24), (0, 0.02, 0.48), pale, "body", segs=(12, 6))                   # pale belly
+	b.blob((0.42, 1.36, 0.18), (0, 0.06, 0.97), back, "body", segs=(10, 6))                  # darker spine
+	b.blob((0.4, 0.28, 0.38), (0, -0.78, 0.62), pale, "body", segs=(10, 7))                  # pale throat
+	_stripes(b, (0, 0.66), -0.24, 0.84, 7, 0.46, stripe, "body", rng, a0=24, a1=84, width=0.05, thick=0.025, slant=0.1)
+	if old:   # three raked scars down the left flank
+		_lg_scars(b, _lg_skin_tree(b), [((2.0, -0.2, 0.96), (-1, 0, 0))], (0, 0.5, -0.8), scar, "body", width=0.035, length=0.36, gap=0.1)
+	# the mane: a short ruff round the neck and over the shoulders, longer under the throat
+	grow = 1.3 if old else 1.0
+	b.blob((0.72 * grow, 0.5, 0.7 * grow), (0, -0.6, 0.84), mane, "body", segs=(12, 8))          # the collar of the mane
+	b.blob((0.4 * grow, 0.66, 0.3), (0, -0.52, 1.02), mane_l, "body", segs=(10, 6))             # over the withers
+	for layer, (y0, r0) in enumerate(((-0.72, 0.31), (-0.56, 0.33), (-0.4, 0.3))):
+		for k in range(16):
+			a = 2 * math.pi * (k + 0.5 * layer) / 16
+			out = Vector((math.cos(a), 0, math.sin(a)))
+			if math.sin(a) < -0.6 and layer == 2:
+				continue   # the belly behind the forelegs stays bare
+			root_ = Vector((0, y0, 0.86)) + Vector((out.x * r0 * grow, 0, out.z * r0 * (1.1 if out.z > 0 else 0.95)))
+			ln = (0.26 if math.sin(a) < -0.3 else 0.18) * grow * rng.uniform(0.8, 1.15)
+			tip = root_ + (out * 0.3 + Vector((0, 0.9, -0.3 if math.sin(a) < -0.3 else -0.08))).normalized() * ln
+			b.seg(tuple(root_), tuple(tip), 0.09 * grow, 0.02, (mane, mane_l)[(k + layer) % 2], "body", sides=5)
+	# the head: broad, a heavy tan muzzle, small round ears with dark backs
+	b.seg((0, -0.54, 0.8), (0, -0.8, 0.84), 0.24, 0.22, fur, "head", sides=10)
+	b.blob((0.56, 0.52, 0.46), (0, -0.92, 0.88), fur, "head", segs=(12, 9))
+	b.blob((0.38, 0.32, 0.24), (0, -1.16, 0.8), pale, "head", segs=(10, 7))                  # muzzle
+	b.blob((0.4, 0.26, 0.12), (0, -1.06, 0.7), pale, "head", segs=(8, 5))                    # chin
+	b.blob((0.13, 0.08, 0.08), (0, -1.31, 0.85), nose, "head", segs=(6, 4))
+	b.seg((0, -1.26, 0.76), (0, -1.3, 0.82), 0.012, 0.012, dark, "head", sides=3)
+	b.blob((0.24, 0.18, 0.09), (0, -1.08, 0.69), pale, "jaw", segs=(8, 5))                   # lower jaw
+	b.blob((0.2, 0.05, 0.03), (0, -1.2, 0.735), dark, "head", segs=(8, 3))                   # the dark lip line
+	for s in (1, -1):
+		scarred_eye = old and s < 0
+		b.blob((0.15, 0.08, 0.05), (0.13 * s, -1.12, 0.98), pale, "head", segs=(8, 4))      # pale brows
+		b.blob((0.1, 0.07, 0.065), (0.12 * s, -1.13, 0.935), blind if scarred_eye else eye, "head", segs=(8, 5))
+		if not scarred_eye:
+			b.blob((0.03, 0.03, 0.055), (0.125 * s, -1.16, 0.935), pupil, "head", segs=(4, 3))
+		b.seg((0.05 * s, -1.23, 0.84), (0.1 * s, -1.19, 0.94), 0.018, 0.012, dark, "head", sides=4)   # tear lines
+		torn = old and s > 0
+		if torn:
+			for dx in (-0.03, 0.035):
+				b.seg((0.2 * s + dx, -0.84, 1.08), (0.23 * s + dx * 1.5, -0.83, 1.15), 0.035, 0.02, fur, "head", sides=6)
+			b.blob((0.11, 0.05, 0.05), (0.215 * s, -0.85, 1.12), dark, "head", segs=(8, 5))
+		else:
+			b.seg((0.2 * s, -0.84, 1.07), (0.23 * s, -0.83, 1.17), 0.08, 0.05, fur, "head", sides=8)
+			b.blob((0.12, 0.05, 0.1), (0.225 * s, -0.85, 1.17), dark, "head", segs=(8, 5))
+			b.blob((0.07, 0.03, 0.05), (0.225 * s, -0.875, 1.16), pale, "head", segs=(6, 4))
+		broken = old and s > 0
+		b.seg((0.05 * s, -1.24, 0.72), (0.05 * s, -1.245, 0.7 if broken else 0.655), 0.017, 0.008 if broken else 0.003, tooth, "jaw", sides=4)   # fangs
+		b.seg((0.055 * s, -1.24, 0.79), (0.055 * s, -1.245, 0.76 if broken else 0.72), 0.018, 0.008 if broken else 0.003, tooth, "head", sides=4)
+		for k in range(3):   # whisker spots
+			b.blob((0.025, 0.02, 0.025), ((0.05 + 0.03 * k) * s, -1.29, 0.8 - 0.02 * k), dark, "head", segs=(4, 3))
+		for k in range(2):   # faint stripes on the cheek
+			_oblob(b, (0.028, 0.12, 0.02), (0.26 * s, -0.94 + 0.07 * k, 0.86), (0, 0.4, -1), (s, 0, 0), stripe, "head", segs=(5, 3))
+	# mane framing the face
+	for k in range(13):   # a fringe framing the face, from ear to ear under the chin
+		a = math.radians(-200 + 220 * k / 12)
+		out = Vector((math.cos(a), 0, math.sin(a)))
+		root_ = Vector((0, -0.84, 0.88)) + Vector((out.x * 0.27, 0, out.z * 0.22))
+		tip = root_ + (out * 0.45 + Vector((0, 0.9, 0))).normalized() * 0.17 * grow
+		b.seg(tuple(root_), tuple(tip), 0.07 * grow, 0.015, mane if k % 2 else mane_l, "head", sides=5)
+	if old:   # claw scars across the blind eye, a grizzled muzzle
+		def face(x, z):
+			k2 = 1 - (x / 0.28) ** 2 - ((z - 0.88) / 0.23) ** 2
+			return Vector((x, -0.92 - 0.26 * math.sqrt(max(0.0, k2)) - 0.004, z))
+		for k in range(3):
+			line = [face(-0.04 - 0.045 * k - 0.04 * u, 1.07 - 0.2 * u) for u in (0, 0.25, 0.5, 0.75, 1.0)]
+			for p, q in zip(line, line[1:]):
+				_oblob(b, (0.022, (q - p).length * 1.4, 0.012), tuple((p + q) / 2), q - p, (0, -1, 0.2), scar, "head", segs=(5, 3))
+		b.blob((0.3, 0.16, 0.12), (0, -1.2, 0.84), gray, "head", segs=(8, 5))
+	# the tail: long and thin, a dark tuft at the tip
+	pts = [(0, 0.84, 0.74), (0, 1.3, 0.5), (0, 1.74, 0.34), (0, 2.02, 0.32), (0, 2.16, 0.42)]
+	for k, (p, q) in enumerate(zip(pts, pts[1:])):
+		bone = CAT_TAIL[min(k, 2)]
+		b.seg(p, q, 0.075, 0.065, fur, bone, sides=8)
+		b.blob((0.14, 0.14, 0.14), q, fur, bone, segs=(8, 6))
+	b.blob((0.2, 0.26, 0.2), (0, 2.2, 0.46), mane, "tail3", segs=(8, 6))
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.56), "root")
+		back_leg = y > 0
+		b.blob((0.28, 0.42 if back_leg else 0.34, 0.46), (x * 1.08, y + (0.04 if back_leg else 0), 0.56), fur, name_, segs=(8, 6))
+		b.seg((x, y, 0.46), (x, y + (0.05 if back_leg else 0.02), 0.18), 0.1, 0.085, fur, name_, sides=8)
+		b.seg((x, y + (0.05 if back_leg else 0.02), 0.18), (x, y - 0.01, 0.06), 0.085, 0.085, fur, name_, sides=8)
+		b.blob((0.2, 0.24, 0.11), (x, y - 0.04, 0.055), pale, name_, segs=(8, 5))
+		for k in (-1, 0, 1):
+			b.blob((0.06, 0.07, 0.055), (x + 0.06 * k, y - 0.15, 0.045), pale, name_, segs=(5, 4))
+		_oblob(b, (0.045, 0.14, 0.02), (x * 1.5, y, 0.4), (0, 0.5, -1), (x, 0, 0), stripe, name_, segs=(5, 3))
+	_scaled(b, 1.7 if old else 1.25)
+	arm = b.build()
+
+	def tail(t, amp, cycles=1.0, flick=0.0):
+		return {"tail1": {"rot": (4 * wave(t, cycles, 0.2), 0, amp * wave(t, cycles))},
+				"tail2": {"rot": (0, 0, amp * wave(t, cycles, -0.15))},
+				"tail3": {"rot": (flick, 0, amp * 1.4 * wave(t, cycles, -0.3))}}
+
+	def idle(t):   # crouched, watching over the grass; the tail tip twitches
+		look = seq(t, [(0, 0), (0.3, 0), (0.4, 24), (0.6, 24), (0.7, 0)])
+		return merge({"body": {"loc": (0, 0, 0.012 * wave(t, 2))}, "head": {"rot": (3 * wave(t, 1, 0.3), 0, look)}},
+					 tail(t, 5, 1.0, 14 * wave(t, 3)))
+
+	def walk(t):   # the stalk: head low, shoulders rolling, belly near the grass
+		return merge(_quad_legs(wave(t), 20), tail(t, 6),
+					 {"root": {"loc": (0, 0, -0.05 + 0.012 * abs(wave(t, 2)))}, "body": {"rot": (0, 3 * wave(t), 0)},
+					  "head": {"rot": (-10, 0, -3 * wave(t))}})
+
+	def run(t):
+		f, k = 44 * wave(t), 44 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.85, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.85, 0, 0)},
+					  "root": {"loc": (0, 0, 0.08 * max(0.0, wave(t, 1, 0.25))), "rot": (7 * wave(t, 1, 0.1), 0, 0)},
+					  "head": {"rot": (-6 * wave(t, 1, 0.1), 0, 0)}}, tail(t, 4, 1.0, -10))
+
+	def attack(t):   # springs from a crouch, rakes with a forepaw and bites
+		crouch = seq(t, [(0, 0), (0.25, 1), (0.4, 0), (1, 0)])
+		lunge = seq(t, [(0, 0), (0.25, -0.12), (0.45, 0.42), (0.6, 0.32), (1, 0)])
+		rear = seq(t, [(0, 0), (0.25, -4), (0.42, 18), (0.6, 2), (1, 0)])
+		paw = seq(t, [(0, 0), (0.3, 30), (0.42, 80), (0.55, -10), (1, 0)])
+		jaw = seq(t, [(0, 0), (0.35, -38), (0.5, 4), (0.7, 0)])
+		return merge({"root": {"loc": (0, lunge, -0.12 * crouch + 0.1 * max(0.0, rear) / 18), "rot": (rear, 0, 0)},
+					  "leg_fl": {"rot": (paw, 0, 0)}, "leg_fr": {"rot": (paw * 0.3, 0, 0)},
+					  "leg_bl": {"rot": (-rear, 0, 0)}, "leg_br": {"rot": (-rear, 0, 0)},
+					  "head": {"rot": (seq(t, [(0, 0), (0.3, 12), (0.5, -10), (1, 0)]), 0, 0)}, "jaw": {"rot": (jaw, 0, 0)}},
+					 tail(t, 14, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.12 * k, 0.03 * k), "rot": (7 * k, 0, 0)}, "head": {"rot": (14 * k, 0, 12 * k)},
+					  "jaw": {"rot": (-26 * k, 0, 0)}}, tail(t, 18 * k, 2))
+
+	def death(t):
+		roll = seq(t, [(0.15, 0), (0.6, 86), (0.72, 80), (0.85, 88)])
+		drop = seq(t, [(0.15, 0), (0.6, -0.34)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.2, 10), (0.5, 0)]), roll, 0)},
+					  "head": {"rot": (-12 * curl, 0, 14 * curl)}, "jaw": {"rot": (-12 * curl, 0, 0)}},
+					 {"leg_fl": {"rot": (30 * curl, 0, 0)}, "leg_fr": {"rot": (14 * curl, 0, 0)},
+					  "leg_bl": {"rot": (-26 * curl, 0, 0)}, "leg_br": {"rot": (-12 * curl, 0, 0)}},
+					 {"tail1": {"rot": (-8 * curl, 0, 20 * curl)}, "tail2": {"rot": (0, 0, 24 * curl)}, "tail3": {"rot": (0, 0, 20 * curl)}})
+
+	clip(arm, "idle", 3.2, idle, True)
+	clip(arm, "walk", 1.0, walk, True)
+	clip(arm, "run", 0.5, run, True)
+	clip(arm, "attack", 0.8, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.3, death, False)
+	return arm
+
+
+def build_grass_stalker():
+	return _plains_cat("grass_stalker")
+
+
+def build_tawnyjaw():
+	return _plains_cat("tawnyjaw", old=True)
+
+
+# ---------------------------------------------------------------- grass howler
+# A lean spotted hunter of the herds: tall shoulders, a back that slopes down to short hind legs,
+# a thick neck and big crushing jaws, round ears, a bristly dark mane along the spine, a short
+# bushy tail. Its whooping call carries for miles over the grass.
+
+def build_grass_howler(name="grass_howler"):
+	import random
+	rng = random.Random(3421)
+	fur = material(f"{name}_fur", "b09a70", 0.95)
+	fur_d = material(f"{name}_fur_dark", "8a7654", 0.95)
+	pale = material(f"{name}_pale", "d0c09a", 0.95)
+	spot = material(f"{name}_spot", "3a2a1c", 0.9)
+	mane = material(f"{name}_mane", "2e2218", 0.95)
+	face = material(f"{name}_face", "2a2018", 0.8)
+	eye = material(f"{name}_eye", "d8a030", 0.25, emit=1.0)
+	pupil = material(f"{name}_pupil", "0e0c0a", 0.2)
+	tooth = material(f"{name}_tooth", "e8dcc0", 0.45)
+	mouth = material(f"{name}_mouth", "6a2a24", 0.7)
+	b = Builder(name)
+	legs = {"leg_fl": (0.2, -0.5, 0.86), "leg_fr": (-0.2, -0.5, 0.86), "leg_bl": (0.19, 0.5, 0.6), "leg_br": (-0.19, 0.5, 0.6)}
+	b.bone("root", (0, 0, 0.72))
+	b.bone("body", (0, 0.0, 0.76), "root")
+	b.bone("head", (0, -0.78, 1.04), "body")
+	b.bone("jaw", (0, -0.98, 0.94), "head")
+	b.bone("tail", (0, 0.66, 0.66), "body")
+
+	b.blob((0.6, 1.4, 0.56), (0, 0.0, 0.78), fur, "body", rot=(-12, 0, 0), segs=(12, 8))         # the sloping barrel
+	b.blob((0.7, 0.62, 0.66), (0, -0.46, 0.92), fur, "body", segs=(12, 8))                      # the big shoulders
+	b.blob((0.54, 0.5, 0.5), (0, 0.46, 0.66), fur, "body", segs=(10, 7))                        # small haunches
+	b.blob((0.44, 1.1, 0.22), (0, -0.02, 0.58), pale, "body", rot=(-10, 0, 0), segs=(10, 6))     # belly
+	_spots(b, (0, 0.0, 0.8), (0.3, 0.7, 0.3), 30, spot, "body", rng, zmin=-0.45, size=0.14, rosette=False)
+	for k in range(12):   # the bristly mane from the nape down the sloping back
+		y = -0.66 + k * 0.1
+		z = 1.2 - 0.035 * k - (0.012 * (k - 5) ** 2 if k > 5 else 0.0)
+		root_ = Vector((0, y, z))
+		b.seg(tuple(root_), tuple(root_ + Vector((0, 0.08, 0.16 - 0.008 * k))), 0.06, 0.008, mane, "body", sides=4)
+	# the head: a thick neck, a broad skull, a short heavy muzzle, round ears
+	b.seg((0, -0.5, 0.98), (0, -0.8, 1.04), 0.25, 0.22, fur, "head", sides=9)
+	b.blob((0.44, 0.44, 0.4), (0, -0.84, 1.06), fur, "head", segs=(10, 8))
+	b.blob((0.28, 0.2, 0.16), (0.0, -0.84, 0.88), fur_d, "head", segs=(8, 5))                   # heavy jaw muscles
+	b.seg((0, -0.98, 1.06), (0, -1.22, 0.98), 0.14, 0.1, face, "head", sides=8)                  # dark muzzle
+	b.blob((0.14, 0.09, 0.1), (0, -1.24, 1.0), material(f"{name}_nose", "141010", 0.4), "head", segs=(6, 4))
+	b.blob((0.24, 0.2, 0.1), (0, -1.06, 0.87), face, "jaw", segs=(8, 5))                         # the lower jaw, heavy
+	b.seg((0, -1.06, 0.9), (0, -1.2, 0.9), 0.08, 0.06, face, "jaw", sides=6)
+	b.blob((0.18, 0.2, 0.05), (0, -1.1, 0.935), mouth, "jaw", segs=(8, 3))
+	for s in (1, -1):
+		b.blob((0.08, 0.06, 0.06), (0.12 * s, -1.02, 1.14), eye, "head", segs=(6, 4))
+		b.blob((0.03, 0.02, 0.04), (0.125 * s, -1.05, 1.14), pupil, "head", segs=(4, 3))
+		b.seg((0.16 * s, -0.8, 1.22), (0.2 * s, -0.78, 1.36), 0.1, 0.08, fur_d, "head", sides=8)   # round ears
+		b.blob((0.16, 0.05, 0.16), (0.2 * s, -0.8, 1.36), fur_d, "head", segs=(8, 5))
+		b.blob((0.1, 0.03, 0.1), (0.2 * s, -0.83, 1.35), face, "head", segs=(6, 4))
+		for k in range(3):   # big teeth, top and bottom
+			x = (0.03 + 0.03 * k) * s
+			b.seg((x, -1.2 + 0.03 * k, 0.96), (x, -1.2 + 0.03 * k, 0.92), 0.016 if k == 0 else 0.012, 0.0, tooth, "head", sides=4)
+			b.seg((x, -1.17 + 0.03 * k, 0.93), (x, -1.17 + 0.03 * k, 0.965), 0.014 if k == 0 else 0.011, 0.0, tooth, "jaw", sides=4)
+	_spots(b, (0, -0.84, 1.06), (0.2, 0.2, 0.2), 6, spot, "head", rng, zmin=-0.2, ymax=0.6, size=0.07, rosette=False)
+	# a short bushy tail, dark at the end
+	b.seg((0, 0.64, 0.7), (0, 0.84, 0.52), 0.06, 0.07, fur, "tail", sides=6)
+	b.blob((0.2, 0.22, 0.36), (0, 0.9, 0.38), mane, "tail", rot=(-20, 0, 0), segs=(7, 5))
+	for name_, (x, y, hip) in legs.items():
+		b.bone(name_, (x, y, hip), "root")
+		front = y < 0
+		b.blob((0.3, 0.36, 0.5 if front else 0.42), (x * 1.08, y, hip - 0.1), fur, name_, segs=(8, 6))
+		knee = (x, y + (0.0 if front else 0.08), hip * 0.4)
+		b.seg((x, y, hip - 0.12), knee, 0.115, 0.08, fur, name_, sides=7)
+		b.seg(knee, (x, y - 0.02, 0.07), 0.075, 0.06, fur_d, name_, sides=7)
+		b.blob((0.16, 0.2, 0.09), (x, y - 0.06, 0.045), face, name_, segs=(6, 4))
+		_spots(b, (x, y, hip * 0.6), (0.08, 0.1, 0.2), 3, spot, name_, rng, zmin=-0.6, size=0.06, rosette=False)
+	_scaled(b, 1.15)
+	arm = b.build()
+
+	def tail(t, amp, cycles=1.0):
+		return {"tail": {"rot": (6 * wave(t, cycles, 0.2), 0, amp * wave(t, cycles))}}
+
+	def idle(t):   # sniffs about, then lifts its head and whoops
+		call = seq(t, [(0.5, 0), (0.58, 1), (0.8, 1), (0.88, 0)])
+		whoop = call * (0.5 + 0.5 * wave(t, 6))
+		return merge({"body": {"loc": (0, 0, 0.01 * wave(t, 2))},
+					  "head": {"rot": (-8 * (1 - call) * (0.5 + 0.5 * wave(t, 2)) + 30 * call, 0, 10 * wave(t, 0.5) * (1 - call))},
+					  "jaw": {"rot": (-22 * whoop, 0, 0)}}, tail(t, 10))
+
+	def walk(t):   # a rolling, loose-limbed lope, the head swinging low
+		return merge(_quad_legs(wave(t), 24), tail(t, 8),
+					 {"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))}, "body": {"rot": (0, 3 * wave(t), 0)},
+					  "head": {"rot": (-6 + 4 * wave(t, 2), 0, 4 * wave(t))}})
+
+	def run(t):
+		f, k = 40 * wave(t), 40 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.07 * max(0.0, wave(t, 1, 0.25))), "rot": (6 * wave(t, 1, 0.1), 0, 0)},
+					  "head": {"rot": (-8, 0, 0)}}, tail(t, 5))
+
+	def attack(t):   # lunges and bites, then wrenches its head side to side
+		lunge = seq(t, [(0, 0), (0.25, -0.1), (0.45, 0.36), (0.8, 0.2), (1, 0)])
+		head = seq(t, [(0, 0), (0.25, 16), (0.45, -16), (0.8, -8), (1, 0)])
+		jaw = seq(t, [(0, 0), (0.25, -40), (0.45, 2), (0.9, 0)])
+		shake = seq(t, [(0.45, 0), (0.55, 1), (0.8, 1), (0.9, 0)]) * 18 * wave(t, 5)
+		return merge({"root": {"loc": (0, lunge, 0.04 * max(0.0, lunge)), "rot": (seq(t, [(0, 0), (0.25, 6), (0.45, -6), (1, 0)]), 0, 0)},
+					  "head": {"rot": (head, shake * 0.4, shake)}, "jaw": {"rot": (jaw, 0, 0)}}, tail(t, 14, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.14 * k, 0.03 * k), "rot": (8 * k, 0, 0)}, "head": {"rot": (16 * k, 0, 12 * k)},
+					  "jaw": {"rot": (-26 * k, 0, 0)}}, tail(t, 18 * k, 2))
+
+	def death(t):
+		roll = seq(t, [(0.15, 0), (0.6, 86), (0.72, 80), (0.85, 88)])
+		drop = seq(t, [(0.15, 0), (0.6, -0.32)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.2, 10), (0.5, 0)]), roll, 0)},
+					  "head": {"rot": (-12 * curl, 0, 12 * curl)}, "jaw": {"rot": (-18 * curl, 0, 0)}},
+					 {"leg_fl": {"rot": (28 * curl, 0, 0)}, "leg_fr": {"rot": (14 * curl, 0, 0)},
+					  "leg_bl": {"rot": (-24 * curl, 0, 0)}, "leg_br": {"rot": (-12 * curl, 0, 0)}}, tail(t, 0))
+
+	clip(arm, "idle", 3.4, idle, True)
+	clip(arm, "walk", 0.8, walk, True)
+	clip(arm, "run", 0.45, run, True)
+	clip(arm, "attack", 0.8, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.1, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- thunderhoof and Old Thunderhoof
+# A giant shaggy grazer of the plains: a towering hump over the shoulders, the head slung low under a
+# mat of woolly hair, a beard, short black horns hooking up, a thin tufted tail; the forequarters are
+# dark and woolly, the hindquarters short-haired and lighter. Old Thunderhoof, the herd-king, is built
+# at 1.75: white streaks through his mane and beard, the left horn snapped off short, old scars.
+
+def _bison(name, old=False):
+	import random
+	rng = random.Random(3433 if old else 3431)
+	wool = material(f"{name}_wool", "3a2616" if old else "4a3020", 0.95)
+	wool_l = material(f"{name}_wool_light", "5e4028" if old else "6e4c2e", 0.95)
+	coat = material(f"{name}_coat", "6a4a2e" if old else "7a5634", 0.9)
+	coat_d = material(f"{name}_coat_dark", "4a3220", 0.9)
+	white = material(f"{name}_white", "c4bcae", 0.95)
+	horn = material(f"{name}_horn", "1e1a16", 0.45)
+	horn_l = material(f"{name}_horn_light", "4a4238", 0.5)
+	hoof = material(f"{name}_hoof", "181410", 0.5)
+	nose = material(f"{name}_nose", "1a1614", 0.4)
+	eye = material(f"{name}_eye", "1a120c", 0.2)
+	glint = material(f"{name}_glint", "f0e0b0", 0.2, emit=0.8)
+	scar = material(f"{name}_scar", "8a6a5a", 0.8)
+	gray = material(f"{name}_gray", "8a8078", 0.9)
+	b = Builder(name)
+	legs = {"leg_fl": (0.26, -0.52), "leg_fr": (-0.26, -0.52), "leg_bl": (0.25, 0.62), "leg_br": (-0.25, 0.62)}
+	b.bone("root", (0, 0, 0.66))
+	b.bone("body", (0, 0.0, 0.9), "root")
+	b.bone("head", (0, -0.86, 0.94), "body")
+	b.bone("tail", (0, 0.96, 1.02), "body")
+
+	def streak(k):   # the old king's mane is shot through with white
+		return white if old and k % 4 == 0 else None
+
+	b.blob((0.84, 1.7, 0.78), (0, 0.18, 0.98), coat, "body", segs=(14, 10))                    # the barrel
+	b.blob((0.72, 0.6, 0.66), (0, 0.72, 0.98), coat, "body", segs=(10, 8))                      # lean haunches
+	b.blob((0.98, 1.0, 0.96), (0, -0.42, 1.1), wool, "body", segs=(14, 10))                     # woolly forequarters
+	b.blob((0.74, 1.2, 0.62), (0, -0.2, 1.44), wool, "body", rot=(-14, 0, 0), segs=(12, 9))     # the hump, sloping away behind
+	b.blob((0.6, 0.7, 0.3), (0, -0.44, 1.7), wool, "body", rot=(-20, 0, 0), segs=(10, 7))       # its crest over the shoulders
+	white_ = [white] if old else []
+	_lg_shag(b, (0, -0.3, 1.3), (0.5, 0.6, 0.5), 70, [wool_l, wool, wool] + white_, "body", rng, size=(0.2, 0.34, 0.08),
+			 zmin=-0.5, ymax=0.2, flow=(0, 0.6, -1))
+	for k in range(18):   # long shaggy hair hanging from the chest and the backs of the forelegs
+		x = (k % 6 - 2.5) * 0.14
+		row = k // 6
+		ln = 0.5 - 0.1 * row
+		m = streak(k + 1) or (wool, wool_l)[k % 2]
+		_oblob(b, (0.16, 0.14, ln), (x, -0.8 + 0.16 * row, 0.86 - ln * 0.3), (0, 1, 0), (0, 0.2, 1), m, "body", segs=(6, 4))
+	# the head: massive and low, buried in wool, a dark bare muzzle, a long beard
+	b.seg((0, -0.66, 1.02), (0, -0.9, 0.94), 0.34, 0.3, wool, "head", sides=10)
+	b.blob((0.6, 0.52, 0.6), (0, -1.0, 0.92), wool, "head", segs=(12, 9))
+	b.blob((0.7, 0.5, 0.4), (0, -0.96, 1.2), wool_l, "head", segs=(12, 7))        # the woolly poll between the horns
+	b.blob((0.36, 0.3, 0.34), (0, -1.24, 0.78), coat_d, "head", segs=(10, 7))                  # muzzle
+	b.blob((0.28, 0.1, 0.18), (0, -1.38, 0.78), nose, "head", segs=(8, 5))
+	for k in range(7):   # the beard
+		x = (k - 3) * 0.07
+		ln = 0.46 - 0.04 * abs(k - 3)
+		m = streak(k) or (wool, wool_l)[k % 2]
+		_oblob(b, (0.1, 0.1, ln), (x, -1.12 + 0.02 * abs(k - 3), 0.62 - ln * 0.3), (0, 1, 0), (0, 0.25, 1), m, "head", segs=(6, 4))
+	for s in (1, -1):
+		b.blob((0.07, 0.05, 0.06), (0.2 * s, -1.2, 0.98), eye, "head", segs=(6, 4))
+		b.blob((0.025, 0.02, 0.025), (0.21 * s, -1.23, 0.99), glint, "head", segs=(4, 3))
+		b.seg((0.28 * s, -0.94, 1.02), (0.42 * s, -0.94, 0.94), 0.07, 0.03, wool, "head", sides=5)   # ears in the wool
+		broken = old and s > 0
+		# the horns: short and thick, out sideways from the wool then hooking up and in
+		pts = [(0.24 * s, -0.98, 1.16), (0.4 * s, -0.96, 1.2), (0.5 * s, -0.98, 1.32), (0.46 * s, -1.02, 1.46)]
+		radii = [0.08, 0.065, 0.045, 0.004]
+		if broken:
+			pts, radii = pts[:3], [0.08, 0.065, 0.058]
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			b.seg(p, q, radii[k], radii[k + 1], horn if k else horn_l, "head", sides=8)
+			b.blob((radii[k + 1] * 2.1,) * 3, q, horn, "head", segs=(6, 4))
+		if broken:   # the snapped end: a jagged pale stump
+			q = Vector(pts[-1])
+			for k in range(4):
+				a = k * math.pi / 2 + 0.4
+				tip = q + Vector((0.03 * math.cos(a), 0.03 * math.sin(a), 0.03 + 0.03 * (k % 2)))
+				b.seg(tuple(q), tuple(tip), 0.03, 0.0, horn_l, "head", sides=4)
+	b.seg((0, 0.96, 1.06), (0, 1.06, 0.66), 0.045, 0.03, coat, "tail", sides=6)             # the thin tail and its tuft
+	b.blob((0.14, 0.12, 0.3), (0, 1.08, 0.5), wool, "tail", segs=(7, 5))
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.66), "root")
+		front = y < 0
+		b.blob((0.34, 0.4, 0.5), (x, y, 0.62), wool if front else coat, name_, segs=(8, 6))
+		if front:   # woolly "trousers" on the forelegs
+			for k in range(4):
+				a = k * math.pi / 2 + 0.3
+				_oblob(b, (0.14, 0.1, 0.36), (x + 0.12 * math.cos(a), y + 0.12 * math.sin(a), 0.44), (0, 1, 0), (math.cos(a), math.sin(a), 0.5), streak(k) or wool_l, name_, segs=(5, 4))
+		b.seg((x, y, 0.48), (x, y + (0.0 if front else 0.04), 0.14), 0.11, 0.085, coat_d, name_, sides=7)
+		b.seg((x, y - 0.01, 0.12), (x, y - 0.03, 0.0), 0.085, 0.1, hoof, name_, sides=7)
+	if old:   # scars on the flank and a gray muzzle
+		tree = _lg_skin_tree(b)
+		_lg_scars(b, tree, [((2.0, 0.2, 1.2), (-1, 0, 0)), ((-2.0, 0.46, 1.1), (1, 0, 0))], (0, 0.4, -0.7), scar, "body", width=0.04, length=0.4, gap=0.12)
+		b.blob((0.3, 0.2, 0.22), (0, -1.3, 0.8), gray, "head", segs=(8, 5))
+	_scaled(b, 1.75 if old else 1.25)
+	arm = b.build()
+
+	def tail(t, amp, cycles=2.0):
+		return {"tail": {"rot": (0, 0, amp * wave(t, cycles))}}
+
+	def idle(t):   # grazes, then lifts its head and bellows
+		graze = seq(t, [(0, 0), (0.12, 0), (0.25, 1), (0.6, 1), (0.72, 0)])
+		snort = seq(t, [(0.8, 0), (0.84, 1), (0.92, 0)])
+		return merge({"body": {"loc": (0, 0, 0.01 * wave(t, 2))},
+					  "head": {"rot": (-24 * graze + 3 * graze * wave(t, 7) + 10 * snort, 0, 8 * snort * wave(t, 6))}},
+					 tail(t, 18, 3))
+
+	def walk(t):
+		return merge(_quad_legs(wave(t), 20), tail(t, 10),
+					 {"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))}, "body": {"rot": (0, 3 * wave(t), 0)},
+					  "head": {"rot": (-4 + 4 * wave(t, 2), 0, 4 * wave(t))}})
+
+	def run(t):   # a thundering gallop
+		f, k = 34 * wave(t), 34 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.07 * max(0.0, wave(t, 1, 0.25))), "rot": (5 * wave(t, 1, 0.1), 0, 0)},
+					  "head": {"rot": (-10, 0, 0)}}, tail(t, 8))
+
+	def attack(t):   # paws the ground, lowers its head and hooks up with the horns
+		paw = seq(t, [(0, 0), (0.12, 30), (0.24, 0)])
+		lunge = seq(t, [(0.2, 0), (0.35, -0.12), (0.52, 0.42), (0.64, 0.34), (1, 0)])
+		head = seq(t, [(0, 0), (0.35, -28), (0.5, -30), (0.6, 16), (0.74, 8), (1, 0)])
+		yaw = seq(t, [(0, 0), (0.5, -6), (0.6, 16), (1, 0)])
+		return merge({"root": {"loc": (0, lunge, 0), "rot": (seq(t, [(0.2, 0), (0.35, -4), (0.6, 6), (1, 0)]), 0, 0)},
+					  "head": {"rot": (head, 0, yaw)}, "leg_fr": {"rot": (paw, 0, 0)},
+					  "leg_bl": {"rot": (seq(t, [(0.2, 0), (0.48, -24), (0.72, 0)]), 0, 0)},
+					  "leg_br": {"rot": (seq(t, [(0.2, 0), (0.48, -20), (0.72, 0)]), 0, 0)}}, tail(t, 22, 3))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.1 * k, 0.02 * k), "rot": (6 * k, 4 * k, 0)},
+					  "head": {"rot": (14 * k, 0, -12 * k)}}, tail(t, 22 * k, 3))
+
+	def death(t):   # the knees buckle, then it rolls onto its side
+		roll = seq(t, [(0.25, 0), (0.66, 84), (0.76, 78), (0.88, 86)])
+		drop = seq(t, [(0.1, 0), (0.3, -0.14), (0.66, -0.36)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.25, -10), (0.5, 0)]), roll, 0)},
+					  "head": {"rot": (seq(t, [(0, 0), (0.2, 14), (0.6, -8)]), 0, 14 * curl)}},
+					 {"leg_fl": {"rot": (seq(t, [(0, 0), (0.25, 40), (0.6, 20)]), 0, 0)},
+					  "leg_fr": {"rot": (seq(t, [(0, 0), (0.25, 40), (0.6, 10)]), 0, 0)},
+					  "leg_bl": {"rot": (-20 * curl, 0, 0)}, "leg_br": {"rot": (-8 * curl, 0, 0)}})
+
+	clip(arm, "idle", 4.0, idle, True)
+	clip(arm, "walk", 1.2, walk, True)
+	clip(arm, "run", 0.6, run, True)
+	clip(arm, "attack", 1.1, attack, False)
+	clip(arm, "hit", 0.45, hit, False)
+	clip(arm, "death", 1.5, death, False)
+	return arm
+
+
+def build_thunderhoof():
+	return _bison("thunderhoof")
+
+
+def build_old_thunderhoof():
+	return _bison("old_thunderhoof", old=True)
+
+
+# ---------------------------------------------------------------- dirkhorn
+# A stocky plains antelope armed with two long, straight, ringed horns swept back like a pair of
+# dirks: grey-brown with a white belly, a black band along the flank, a black-and-white face mask,
+# a short dark mane and a black tail switch. It lowers its head to charge, horns leveled.
+
+def build_dirkhorn(name="dirkhorn"):
+	coat = material(f"{name}_coat", "8a7e6c", 0.9)
+	coat_d = material(f"{name}_coat_dark", "6a5e4e", 0.9)
+	white = material(f"{name}_white", "e8e2d4", 0.9)
+	black = material(f"{name}_black", "221e1a", 0.85)
+	horn = material(f"{name}_horn", "2e2a26", 0.45)
+	horn_r = material(f"{name}_horn_ring", "48423a", 0.6)
+	hoof = material(f"{name}_hoof", "1a1612", 0.5)
+	eye = material(f"{name}_eye", "120c08", 0.2)
+	glint = material(f"{name}_glint", "f0e0b0", 0.2, emit=0.8)
+	b = Builder(name)
+	legs = {"leg_fl": (0.2, -0.5), "leg_fr": (-0.2, -0.5), "leg_bl": (0.2, 0.5), "leg_br": (-0.2, 0.5)}
+	b.bone("root", (0, 0, 0.8))
+	b.bone("body", (0, 0.0, 1.0), "root")
+	b.bone("neck", (0, -0.6, 1.16), "body")
+	b.bone("head", (0, -0.86, 1.46), "neck")
+	b.bone("tail", (0, 0.72, 1.12), "body")
+
+	b.blob((0.66, 1.5, 0.62), (0, 0.0, 1.06), coat, "body", segs=(14, 9))                      # the barrel, deep and stocky
+	b.blob((0.66, 0.56, 0.66), (0, -0.46, 1.1), coat, "body", segs=(10, 8))                    # shoulders
+	b.blob((0.64, 0.54, 0.6), (0, 0.48, 1.08), coat, "body", segs=(10, 8))                     # haunches
+	b.blob((0.52, 1.2, 0.24), (0, 0.0, 0.82), white, "body", segs=(10, 6))                     # white belly
+	for s in (1, -1):   # the black band along the flank, between the gray back and the white belly
+		_oblob(b, (0.06, 1.3, 0.1), (0.3 * s, 0.0, 0.9), (0, 1, 0), (s, 0, -0.3), black, "body", segs=(10, 4))
+	# the neck, thick for a charging beast, a short dark mane along its top
+	b.seg((0, -0.46, 1.16), (0, -0.8, 1.44), 0.2, 0.15, coat, "neck", sides=9)
+	b.seg((0, -0.5, 1.02), (0, -0.78, 1.32), 0.14, 0.1, white, "neck", sides=8)
+	for k in range(6):
+		u = k / 5
+		root_ = Vector((0, -0.42 - 0.34 * u, 1.34 + 0.24 * u))
+		b.seg(tuple(root_), tuple(root_ + Vector((0, 0.07, 0.12))), 0.05, 0.01, black, "neck", sides=4)
+	# the head: long, a black-and-white mask
+	b.blob((0.28, 0.36, 0.3), (0, -0.9, 1.5), coat, "head", segs=(10, 8))
+	b.seg((0, -0.96, 1.5), (0, -1.28, 1.36), 0.13, 0.09, white, "head", sides=8)               # pale muzzle
+	b.blob((0.16, 0.1, 0.12), (0, -1.3, 1.36), black, "head", segs=(8, 5))                     # the black nose
+	b.seg((0, -0.94, 1.6), (0, -1.22, 1.44), 0.06, 0.04, black, "head", sides=6)               # a black blaze
+	for s in (1, -1):
+		b.seg((0.1 * s, -0.86, 1.56), (0.08 * s, -1.2, 1.38), 0.045, 0.03, black, "head", sides=5)   # black stripes through the eyes
+		b.blob((0.06, 0.05, 0.05), (0.12 * s, -1.0, 1.52), eye, "head", segs=(6, 4))
+		b.blob((0.02, 0.015, 0.02), (0.13 * s, -1.02, 1.53), glint, "head", segs=(4, 3))
+		b.seg((0.12 * s, -0.84, 1.6), (0.28 * s, -0.78, 1.66), 0.05, 0.02, coat, "head", sides=5)   # ears
+		# the horns: long, straight and ringed, swept back from the brow in a shallow V
+		root_ = Vector((0.06 * s, -0.9, 1.64))
+		d = Vector((0.12 * s, 0.62, 0.78)).normalized()
+		length = 1.15
+		b.seg(tuple(root_), tuple(root_ + d * length), 0.05, 0.006, horn, "head", sides=7)
+		for k in range(6):   # the rings on the lower half
+			c = root_ + d * (0.06 + 0.08 * k)
+			b.seg(tuple(c), tuple(c + d * 0.025), 0.054 - 0.005 * k, 0.052 - 0.005 * k, horn_r, "head", sides=7)
+	b.seg((0, 0.72, 1.16), (0, 0.9, 0.8), 0.04, 0.03, coat_d, "tail", sides=5)               # the tail and its black switch
+	b.blob((0.1, 0.1, 0.34), (0, 0.94, 0.62), black, "tail", segs=(6, 5))
+	for name_, (x, y) in legs.items():
+		b.bone(name_, (x, y, 0.84), "root")
+		front = y < 0
+		b.blob((0.26, 0.34, 0.5), (x, y, 0.84), coat, name_, segs=(8, 6))
+		knee = (x, y + (0.0 if front else 0.08), 0.42)
+		b.seg((x, y, 0.72), knee, 0.08, 0.055, coat, name_, sides=6)
+		b.seg(knee, (x, y - 0.01, 0.1), 0.05, 0.045, white if front else coat_d, name_, sides=6)
+		b.blob((0.08, 0.08, 0.08), (x, y, 0.42), black, name_, segs=(6, 4))                  # black knee patches
+		b.seg((x, y - 0.01, 0.1), (x, y - 0.03, 0.0), 0.05, 0.06, hoof, name_, sides=6)
+	_scaled(b, 1.15)
+	arm = b.build()
+
+	def tail(t, amp, cycles=2.0):
+		return {"tail": {"rot": (0, 0, amp * wave(t, cycles))}}
+
+	def idle(t):   # grazes, then throws its head up to look about
+		graze = seq(t, [(0, 0), (0.15, 0), (0.28, 1), (0.6, 1), (0.72, 0)])
+		look = seq(t, [(0.74, 0), (0.8, 1), (0.92, 1), (0.98, 0)])
+		return merge({"body": {"loc": (0, 0, 0.01 * wave(t, 2))},
+					  "neck": {"rot": (-44 * graze, 0, 0)}, "head": {"rot": (-10 * graze + 3 * graze * wave(t, 8), 0, 20 * look)}},
+					 tail(t, 20, 4))
+
+	def walk(t):
+		return merge(_quad_legs(wave(t), 24), tail(t, 12),
+					 {"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))}, "neck": {"rot": (3 * wave(t, 2), 0, 0)}})
+
+	def run(t):
+		f, k = 40 * wave(t), 40 * wave(t, 1, 0.5)
+		return merge({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.8, 0, 0)},
+					  "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.8, 0, 0)},
+					  "root": {"loc": (0, 0, 0.08 * max(0.0, wave(t, 1, 0.25))), "rot": (6 * wave(t, 1, 0.1), 0, 0)},
+					  "neck": {"rot": (-12, 0, 0)}}, tail(t, 6))
+
+	def attack(t):   # drops its head to level the horns and drives them forward, then tosses up
+		lower = seq(t, [(0, 0), (0.3, 1), (0.55, 1), (0.7, 0.3), (1, 0)])
+		lunge = seq(t, [(0.2, 0), (0.32, -0.1), (0.5, 0.46), (0.66, 0.36), (1, 0)])
+		toss = seq(t, [(0.5, 0), (0.62, 1), (0.8, 0)])
+		return merge({"root": {"loc": (0, lunge, 0), "rot": (-6 * lower, 0, 0)},
+					  "neck": {"rot": (-40 * lower + 20 * toss, 0, 0)}, "head": {"rot": (-40 * lower + 20 * toss, 0, 0)},
+					  "leg_bl": {"rot": (seq(t, [(0.2, 0), (0.46, -26), (0.7, 0)]), 0, 0)},
+					  "leg_br": {"rot": (seq(t, [(0.2, 0), (0.46, -22), (0.7, 0)]), 0, 0)}}, tail(t, 24, 3))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.1 * k, 0.03 * k), "rot": (6 * k, 4 * k, 0)},
+					  "neck": {"rot": (16 * k, 0, -10 * k)}}, tail(t, 22 * k, 3))
+
+	def death(t):
+		roll = seq(t, [(0.25, 0), (0.66, 84), (0.76, 78), (0.88, 86)])
+		drop = seq(t, [(0.1, 0), (0.3, -0.14), (0.66, -0.52)])
+		curl = seq(t, [(0.3, 0), (0.85, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.25, -10), (0.5, 0)]), roll, 0)},
+					  "neck": {"rot": (seq(t, [(0, 0), (0.2, 20), (0.7, -30)]), 0, 20 * curl)}},
+					 {"leg_fl": {"rot": (seq(t, [(0, 0), (0.25, 44), (0.6, 24)]), 0, 0)},
+					  "leg_fr": {"rot": (seq(t, [(0, 0), (0.25, 44), (0.6, 12)]), 0, 0)},
+					  "leg_bl": {"rot": (-24 * curl, 0, 0)}, "leg_br": {"rot": (-10 * curl, 0, 0)}})
+
+	clip(arm, "idle", 3.6, idle, True)
+	clip(arm, "walk", 0.9, walk, True)
+	clip(arm, "run", 0.5, run, True)
+	clip(arm, "attack", 1.0, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.3, death, False)
+	return arm
+
+
+# ---------------------------------------------------------------- the hoofborn (horse-folk of the plains)
+# A horse's body with a rider's torso rising from its shoulders: a chestnut coat with pale socks,
+# a dark mane of braids, leather armor sewn with plates of bone, a painted saddle-cloth over the
+# back. Own rig: four legs of two bones each walk and gallop; the torso fights. Weapons are built
+# in: the rider's spear, the archer's bow, Khan Oruk's curved blade (and his horned fur hat and the
+# horsetail standard on his back). Riders are built at 0.92, the khan at 1.12.
+
+HOOFBORN_LEGS = {"fl": (0.18, -0.52, 1.06), "fr": (-0.18, -0.52, 1.06), "bl": (0.19, 0.64, 1.1), "br": (-0.19, 0.64, 1.1)}
+
+
+def hoofborn_materials(kind):
+	khan = kind == "khan"
+	return _rmats(f"hoofborn_{kind}", {
+		"coat": ("7a3e1c" if khan else "8e4a22", 0.85), "coat_d": ("5a2c12" if khan else "6a3418", 0.85),
+		"coat_l": ("a8643a" if khan else "b06a3a", 0.85), "sock": ("e8e0d0", 0.85), "hoof": ("2a2018", 0.5),
+		"hair": ("1e140e" if khan else "2e1a10", 0.9), "hair_l": ("3a2416" if khan else "4a2c1a", 0.9),
+		"skin": ("b88058", 0.7), "skin_d": ("8a5a3a", 0.75), "lip": ("8a4e3a", 0.7),
+		"eye": ("1a120c", 0.2), "white": ("f0ece0", 0.4), "brow": ("2a1a10", 0.9),
+		"leather": ("5a3a22", 0.85), "leather_d": ("3a2414", 0.85), "bone": ("e6dcc0", 0.6), "bone_d": ("b0a282", 0.7),
+		"cloth": ("9a2a1e" if khan else "a8742a", 0.9), "cloth_d": ("5e1a12" if khan else "6a4418", 0.9),
+		"trim": ("e0b040" if khan else "3a5a6a", 0.8), "wood": ("6a4a2e", 0.85), "iron": ("8a9090", 0.35),
+		"steel": ("c8d0d4", 0.25), "gold": ("d8a83a", 0.35), "fur": ("4a3424", 0.95), "fur_l": ("6e5238", 0.95),
+		"horn": ("e8dcc0", 0.5), "horn_d": ("5a4e40", 0.55), "white_hair": ("e8e4dc", 0.9),
+		"feather": ("2a2622", 0.8), "string": ("d8ccb0", 0.8),
+	})
+
+
+def _hoofborn(name, kind="rider"):
+	import random
+	rng = random.Random({"rider": 3441, "archer": 3443, "khan": 3447}[kind])
+	khan = kind == "khan"
+	m = hoofborn_materials(kind)
+	b = Builder(name)
+	b.bone("root", (0, 0, 1.0))
+	b.bone("body", (0, 0.05, 1.15), "root")
+	b.bone("waist", (0, -0.62, 1.48), "body")
+	b.bone("chest", (0, -0.64, 1.78), "waist")
+	b.bone("head", (0, -0.68, 2.1), "chest")
+	b.bone("tail", (0, 0.9, 1.3), "body")
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		b.bone(f"upper_{side}", (0.3 * s, -0.66, 2.0), "chest")
+		b.bone(f"fore_{side}", (0.36 * s, -0.66, 1.72), f"upper_{side}")
+	b.bone("grip", (-0.37, -0.8, 1.5), "fore_r")      # the weapon hand's wrist: spear, blade
+	b.bone("bow", (0.37, -0.8, 1.5), "fore_l")        # the bow hand's wrist, so the bow stays upright as the arm rises
+
+	# ---- the horse
+	b.blob((0.66, 1.46, 0.66), (0, 0.08, 1.16), m["coat"], "body", segs=(14, 10))
+	b.blob((0.64, 0.62, 0.74), (0, -0.46, 1.22), m["coat"], "body", segs=(12, 9))             # the breast
+	b.blob((0.66, 0.66, 0.68), (0, 0.62, 1.2), m["coat"], "body", segs=(12, 9))               # the quarters
+	b.blob((0.5, 1.1, 0.2), (0, 0.06, 0.88), m["coat_l"], "body", segs=(10, 6))               # the belly
+	start = len(b.parts)
+	# the saddle-cloth: a painted blanket over the back with a trimmed edge, a girth strap
+	for s in (1, -1):
+		_slab(b, [(0.0, -0.3, 1.52), (0.0, 0.46, 1.52), (0.3 * s, 0.46, 1.36), (0.36 * s, 0.4, 1.1), (0.36 * s, -0.24, 1.1), (0.3 * s, -0.3, 1.36)], 0.03, m["cloth"])
+		_slab(b, [(0.36 * s, -0.24, 1.12), (0.36 * s, 0.4, 1.12), (0.37 * s, 0.4, 1.06), (0.37 * s, -0.24, 1.06)], 0.035, m["trim"])
+		for k in range(3):   # painted diamonds
+			y = -0.12 + 0.18 * k
+			_slab(b, [(0.345 * s, y, 1.3), (0.35 * s, y + 0.06, 1.22), (0.345 * s, y, 1.14), (0.34 * s, y - 0.06, 1.22)], 0.035, m["cloth_d"])
+	_on_bone(b, start, "body")
+	start = len(b.parts)
+	_wrap(b, (0, -0.2, 1.14), (0.35, 0.36), 0.08, 0.02, m["leather_d"], rot=(90, 0, 90), sides=16)
+	_on_bone(b, start, "body")
+	# the tail: a long dark fall of hair, braided at the root
+	for k in range(5):   # strands falling from the dock, splayed a little
+		x = (k - 2) * 0.035
+		pts = [Vector((x * 0.5, 0.9, 1.32)), Vector((x, 1.06, 1.14)), Vector((x * 1.6, 1.12, 0.86)), Vector((x * 2.2, 1.12, 0.56))]
+		_chain(b, pts, 0.07, 0.025, m["hair"] if k % 2 == 0 else m["hair_l"], "tail", sides=6)
+	for k in range(3):
+		b.seg((0, 0.96 + 0.05 * k, 1.28 - 0.05 * k), (0, 1.0 + 0.05 * k, 1.24 - 0.05 * k), 0.07, 0.07, m["trim"] if k == 1 else m["leather"], "tail", sides=6)
+	for leg, (x, y, hip) in HOOFBORN_LEGS.items():
+		front = leg[0] == "f"
+		up, low = f"leg_{leg}", f"shin_{leg}"
+		knee = (x, y + (0.0 if front else 0.1), 0.52)
+		b.bone(up, (x, y, hip), "root")
+		b.bone(low, knee, up)
+		b.blob((0.24, 0.34 if front else 0.44, 0.5), (x * 1.08, y + (0.0 if front else 0.02), hip - 0.16), m["coat"], up, segs=(8, 6))
+		b.seg((x, y, hip - 0.2), knee, 0.1, 0.07, m["coat"], up, sides=7)
+		b.blob((0.13, 0.14, 0.14), knee, m["coat_d"], low, segs=(6, 5))
+		sock = leg in ("fl", "br") or khan
+		b.seg(knee, (x, y - 0.02, 0.1), 0.06, 0.055, m["sock"] if sock else m["coat_d"], low, sides=7)
+		b.blob((0.13, 0.13, 0.1), (x, y - 0.02, 0.13), m["sock"] if sock else m["coat_d"], low, segs=(6, 4))   # feathered fetlock
+		b.seg((x, y - 0.02, 0.1), (x, y - 0.04, 0.0), 0.07, 0.085, m["hoof"], low, sides=7)
+		if khan:   # tassels bound under the knees
+			b.seg((x, knee[1], 0.46), (x, knee[1], 0.42), 0.075, 0.075, m["cloth"], low, sides=7)
+
+	# ---- the rider's torso, rising from the breast
+	b.blob((0.46, 0.4, 0.34), (0, -0.62, 1.44), m["coat"], "waist", segs=(10, 7))            # where hide meets skin
+	b.blob((0.42, 0.34, 0.3), (0, -0.63, 1.54), m["skin"], "waist", segs=(10, 7))
+	b.blob((0.46, 0.36, 0.36), (0, -0.64, 1.66), m["leather"], "waist", segs=(10, 7))         # the leather jerkin's skirt
+	start = len(b.parts)
+	_wrap(b, (0, -0.64, 1.56), (0.24, 0.19), 0.08, 0.025, m["leather_d"], sides=14)            # the belt
+	_on_bone(b, start, "waist")
+	b.blob((0.07, 0.04, 0.07), (0, -0.84, 1.56), m["gold"] if khan else m["bone"], "waist", segs=(6, 4))
+	for k in range(7):   # the hanging skirt of leather strips over the horse's breast
+		a = math.radians(200 + 140 * k / 6)
+		c = Vector((0.26 * math.cos(a), -0.64 + 0.2 * math.sin(a), 1.44))
+		_oblob(b, (0.1, 0.03, 0.22), tuple(c), (0, 0, -1), (math.cos(a), math.sin(a), 0), m["leather"] if k % 2 else m["leather_d"], "waist", segs=(5, 3))
+	b.blob((0.56, 0.36, 0.44) if not khan else (0.62, 0.4, 0.48), (0, -0.66, 1.88), m["leather"], "chest", segs=(12, 8))   # the jerkin
+	b.blob((0.24, 0.1, 0.14), (0, -0.83, 2.02), m["skin"], "chest", segs=(8, 5))              # skin at the open collar
+	# plates of bone sewn over the chest, and a necklace of teeth
+	for row in range(2):
+		for k in range(3 if row == 0 else 2):
+			x = (k - (1 if row == 0 else 0.5)) * 0.14
+			_oblob(b, (0.12, 0.14, 0.03), (x, -0.84 + 0.02 * row, 1.9 - 0.14 * row), (0, 0.2, -1), (0, -1, 0.1), m["bone"] if (k + row) % 2 else m["bone_d"], "chest", segs=(6, 3))
+	for k in range(9):
+		a = math.radians(210 + 120 * k / 8)
+		c = Vector((0.16 * math.cos(a), -0.66 + 0.2 * math.sin(a), 2.02 - 0.03 * math.sin(a * 2)))
+		b.seg(tuple(c), tuple(c + Vector((0, -0.01, -0.07))), 0.018, 0.0, m["horn"], "chest", sides=4)
+	b.seg((0, -0.66, 2.0), (0, -0.68, 2.14), 0.09, 0.08, m["skin"], "head", sides=8)           # the neck
+	# the head: a strong face, dark braided hair
+	b.blob((0.26, 0.28, 0.32), (0, -0.7, 2.26), m["skin"], "head", segs=(10, 8))
+	b.blob((0.16, 0.08, 0.14), (0, -0.82, 2.2), m["skin"], "head", segs=(8, 5))               # jaw and cheeks
+	b.seg((0, -0.83, 2.28), (0, -0.87, 2.22), 0.03, 0.035, m["skin_d"], "head", sides=5)      # the nose
+	b.blob((0.08, 0.02, 0.02), (0, -0.84, 2.17), m["lip"], "head", segs=(6, 3))
+	for s in (1, -1):
+		b.blob((0.05, 0.03, 0.03), (0.06 * s, -0.82, 2.28), m["white"], "head", segs=(6, 3))
+		b.blob((0.025, 0.02, 0.025), (0.06 * s, -0.835, 2.28), m["eye"], "head", segs=(4, 3))
+		b.blob((0.08, 0.03, 0.025), (0.06 * s, -0.83, 2.32), m["brow"], "head", rot=(0, 10 * s, 0), segs=(5, 3))
+		b.blob((0.04, 0.05, 0.07), (0.13 * s, -0.7, 2.26), m["skin_d"], "head", segs=(5, 4))   # ears
+	b.blob((0.3, 0.32, 0.2), (0, -0.68, 2.38), m["hair"], "head", segs=(10, 6))               # the hair
+	b.blob((0.28, 0.2, 0.3), (0, -0.6, 2.28), m["hair"], "head", segs=(10, 7))
+	for s in (1, -1):   # two long braids down the back
+		pts = [Vector((0.09 * s, -0.56, 2.26)), Vector((0.12 * s, -0.5, 2.06)), Vector((0.12 * s, -0.5, 1.84)), Vector((0.11 * s, -0.52, 1.66))]
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			bone = "head" if k == 0 else "chest"
+			for j in range(3):
+				c = p + (q - p) * (j + 0.5) / 3
+				b.blob((0.06, 0.06, 0.09), tuple(c), m["hair"] if j % 2 else m["hair_l"], bone, segs=(6, 4))
+		b.blob((0.05, 0.05, 0.05), tuple(pts[-1]), m["trim"], "chest", segs=(5, 4))
+		b.seg(tuple(pts[-1]), tuple(pts[-1] + Vector((0, 0, -0.12))), 0.04, 0.005, m["hair"], "chest", sides=5)
+	if khan:   # a drooping mustache and a braided beard
+		for s in (1, -1):
+			b.seg((0.02 * s, -0.85, 2.2), (0.08 * s, -0.84, 2.14), 0.018, 0.012, m["hair"], "head", sides=4)
+			b.seg((0.08 * s, -0.84, 2.14), (0.08 * s, -0.83, 2.04), 0.012, 0.004, m["hair"], "head", sides=4)
+		b.seg((0, -0.83, 2.12), (0, -0.84, 1.98), 0.03, 0.012, m["hair"], "head", sides=5)
+	# the arms, with bone pauldrons and leather bracers
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		up, fore = f"upper_{side}", f"fore_{side}"
+		b.blob((0.18, 0.18, 0.18), (0.3 * s, -0.66, 2.0), m["skin"], up, segs=(8, 6))
+		b.seg((0.3 * s, -0.66, 2.0), (0.36 * s, -0.66, 1.72), 0.075, 0.06, m["skin"], up, sides=7)
+		_oblob(b, (0.24, 0.26, 0.06), (0.33 * s, -0.66, 2.06), (0, 1, 0), (0.6 * s, 0, 1), m["bone"], up, segs=(8, 4))   # pauldron
+		_oblob(b, (0.18, 0.2, 0.05), (0.37 * s, -0.66, 1.98), (0, 1, 0), (0.9 * s, 0, 0.6), m["bone_d"], up, segs=(8, 4))
+		b.seg((0.36 * s, -0.66, 1.72), (0.37 * s, -0.8, 1.5), 0.06, 0.05, m["skin"], fore, sides=7)
+		b.seg((0.362 * s, -0.7, 1.64), (0.37 * s, -0.78, 1.52), 0.068, 0.06, m["leather_d"], fore, sides=7)
+		b.blob((0.09, 0.1, 0.1), (0.37 * s, -0.81, 1.47), m["skin"], fore, segs=(6, 5))          # the fist
+	if kind == "rider":   # the spear: an ash shaft, a long iron head, a tuft of horsehair below it
+		d = Vector((0, -0.34, 0.94)).normalized()
+		h = Vector((-0.37, -0.81, 1.47))
+		b.seg(tuple(h - d * 0.9), tuple(h + d * 1.44), 0.025, 0.022, m["wood"], "grip", sides=6)
+		tip = h + d * 1.44
+		_oblob(b, (0.1, 0.4, 0.03), tuple(tip + d * 0.18), tuple(d), (1, 0, 0), m["iron"], "grip", segs=(6, 4))
+		b.seg(tuple(tip - d * 0.04), tuple(tip + d * 0.02), 0.035, 0.035, m["leather_d"], "grip", sides=6)
+		for k in range(5):
+			a = 2 * math.pi * k / 5
+			o = Vector((0.03 * math.cos(a), 0.03 * math.sin(a), 0))
+			b.seg(tuple(tip - d * 0.04 + o), tuple(tip - d * 0.3 + o * 2.4 + Vector((0, 0.03, 0))), 0.022, 0.006, m["cloth"] if k % 2 else m["hair"], "grip", sides=4)
+		b.seg(tuple(h - d * 0.9), tuple(h - d * 0.98), 0.024, 0.0, m["iron"], "grip", sides=5)
+		# a round hide shield on the left forearm
+		c = Vector((0.46, -0.76, 1.6))
+		_oblob(b, (0.46, 0.46, 0.06), tuple(c), (0, 0, 1), (1, -0.25, 0), m["leather"], "fore_l", segs=(12, 4))
+		start = len(b.parts)
+		_ring(b, tuple(c + Vector((0.03, -0.008, 0))), (0.22, 0.22), (90 - 14, 0), 0.02, m["bone_d"], sides=14)
+		for p in b.parts[start:]:
+			p.data.transform(Matrix.Translation(c) @ Matrix.Rotation(math.radians(0), 4, "Z") @ Matrix.Translation(-c))
+		_on_bone(b, start, "fore_l")
+		b.blob((0.1, 0.06, 0.1), tuple(c + Vector((0.04, -0.01, 0))), m["bone"], "fore_l", segs=(6, 4))
+	elif kind == "archer":   # a horn-and-sinew recurve bow in the left fist, a quiver on the back
+		c = Vector((0.37, -0.84, 1.47))
+		pts = []
+		for k in range(9):
+			u = (k - 4) / 4
+			z = 0.62 * u
+			y = -0.1 * (1 - u * u) + 0.08 * abs(u) ** 3   # bellied away, the tips recurving
+			pts.append(c + Vector((0, y - 0.02, z)))
+		for k, (p, q) in enumerate(zip(pts, pts[1:])):
+			b.seg(tuple(p), tuple(q), 0.03 if 2 <= k <= 5 else 0.022, 0.03 if 2 <= k <= 5 else 0.018, m["horn_d"] if k in (3, 4) else m["wood"], "bow", sides=6)
+		b.seg(tuple(pts[0]), tuple(pts[-1]), 0.006, 0.006, m["string"], "bow", sides=3)
+		# the quiver slung across the back, arrows with dark fletching
+		q0, q1 = Vector((-0.2, -0.44, 1.66)), Vector((0.14, -0.4, 2.16))
+		b.seg(tuple(q0), tuple(q1), 0.08, 0.09, m["leather"], "chest", sides=8)
+		for k in range(5):
+			o = Vector(((k - 2) * 0.03, 0.01 * (k % 2), 0))
+			b.seg(tuple(q1 + o), tuple(q1 + o + (q1 - q0).normalized() * 0.16), 0.01, 0.01, m["wood"], "chest", sides=3)
+			_oblob(b, (0.05, 0.1, 0.01), tuple(q1 + o + (q1 - q0).normalized() * 0.14), tuple(q1 - q0), (0, 1, 0), m["feather"], "chest", segs=(4, 3))
+		b.seg((-0.22, -0.84, 1.84), (0.3, -0.84, 2.0), 0.02, 0.02, m["leather_d"], "chest", sides=4)   # the strap across the chest
+	else:   # the khan: a curved blade in his fist, a horned fur hat, the horsetail standard on his back
+		h = Vector((-0.37, -0.81, 1.47))
+		b.seg(tuple(h + Vector((0, 0, -0.12))), tuple(h + Vector((0, 0, 0.12))), 0.03, 0.03, m["leather_d"], "grip", sides=6)
+		b.blob((0.07, 0.07, 0.07), tuple(h + Vector((0, 0, -0.14))), m["gold"], "grip", segs=(6, 5))
+		b.seg(tuple(h + Vector((0, 0.1, 0.13))), tuple(h + Vector((0, -0.1, 0.13))), 0.024, 0.024, m["gold"], "grip", sides=6)
+		pts = []
+		for k in range(9):
+			u = k / 8
+			pts.append((h + Vector((0, -0.34 * u * u, 0.15 + 0.92 * u)), 0.05 + 0.025 * math.sin(math.pi * u * 0.85)))
+		for (p, w), (q, w2) in zip(pts, pts[1:]):
+			n = Vector((0, -1, 0))
+			_slab(b, [tuple(p - n * w * 0.3), tuple(p + n * w), tuple(q + n * w2), tuple(q - n * w2 * 0.3)], 0.02, m["steel"])
+		tip, w = pts[-1]
+		_slab(b, [tuple(tip + Vector((0, 0.014, 0))), tuple(tip + Vector((0, -w, 0))), tuple(tip + Vector((0, -0.14, 0.1)))], 0.018, m["steel"])
+		_on_bone(b, len(b.parts) - 9, "grip")
+		# the hat: a crown of dark fur, a pointed felt top with a gold boss, a pair of curving horns
+		b.blob((0.4, 0.4, 0.2), (0, -0.7, 2.4), m["fur"], "head", segs=(12, 7))
+		b.seg((0, -0.7, 2.44), (0, -0.72, 2.66), 0.15, 0.04, m["cloth"], "head", sides=10)
+		b.blob((0.06, 0.06, 0.06), (0, -0.72, 2.68), m["gold"], "head", segs=(6, 5))
+		for s in (1, -1):
+			hp = [Vector((0.16 * s, -0.74, 2.44)), Vector((0.3 * s, -0.74, 2.5)), Vector((0.38 * s, -0.76, 2.64)), Vector((0.36 * s, -0.82, 2.78))]
+			rr = [0.05, 0.04, 0.025, 0.004]
+			for k, (p, q) in enumerate(zip(hp, hp[1:])):
+				b.seg(tuple(p), tuple(q), rr[k], rr[k + 1], m["horn"] if k < 2 else m["horn_d"], "head", sides=6)
+		_lg_shag(b, (0, -0.7, 2.4), (0.2, 0.2, 0.1), 16, [m["fur"], m["fur_l"]], "head", rng, size=(0.08, 0.12, 0.04), zmin=-0.3, flow=(0, 0, -1))
+		# the standard: a pole up his back, a gilt crescent atop it, horsetails hanging from a ring beneath
+		base, top = Vector((0.14, -0.44, 1.5)), Vector((0.2, -0.38, 3.2))
+		b.seg(tuple(base), tuple(top), 0.03, 0.026, m["wood"], "chest", sides=6)
+		b.seg((0.13, -0.47, 1.84), (-0.14, -0.84, 1.96), 0.02, 0.02, m["leather_d"], "chest", sides=4)   # its strap
+		for k in range(8):
+			a = math.pi * k / 7
+			p = top + Vector((0.14 * math.cos(a), 0, 0.14 * math.sin(a) + 0.02))
+			q = top + Vector((0.14 * math.cos(a + math.pi / 7), 0, 0.14 * math.sin(a + math.pi / 7) + 0.02))
+			if k < 7:
+				b.seg(tuple(p), tuple(q), 0.02, 0.02, m["gold"], "chest", sides=5)
+		b.seg(tuple(top), tuple(top + Vector((0, 0, 0.3))), 0.02, 0.0, m["gold"], "chest", sides=5)
+		ring_c = top + Vector((0, 0, -0.1))
+		b.seg(tuple(ring_c + Vector((0, 0, -0.02))), tuple(ring_c + Vector((0, 0, 0.02))), 0.11, 0.11, m["gold"], "chest", sides=10)
+		for k in range(9):   # the horsetails
+			a = 2 * math.pi * k / 9
+			root_ = ring_c + Vector((0.09 * math.cos(a), 0.09 * math.sin(a), -0.02))
+			ln = rng.uniform(0.66, 0.9)
+			hair = (m["hair"], m["white_hair"], m["hair_l"])[k % 3]
+			_oblob(b, (0.07, 0.07, ln), tuple(root_ + Vector((0.05 * math.cos(a), 0.05 * math.sin(a), -ln * 0.46))), (0, 1, 0), (0, 0, 1), hair, "chest", segs=(6, 5))
+	pivot = Vector((0, -0.68, 2.12))   # a bolder head, nearer the KayKit folk's proportions
+	for part in b.parts:
+		if part.vertex_groups[0].name == "head":
+			part.data.transform(Matrix.Translation(pivot) @ Matrix.Scale(1.22, 4) @ Matrix.Translation(-pivot))
+	_scaled(b, 1.12 if khan else 0.92)
+	arm = b.build()
+
+	def legs_walk(t, amp, bend, phases, lift=0.0):
+		out = {}
+		for leg, ph in phases.items():
+			a = wave(t, 1, ph)
+			swing = max(0.0, math.cos(2 * math.pi * (t + ph)))   # the leg coming forward bends at the knee
+			front = leg[0] == "f"
+			out[f"leg_{leg}"] = {"rot": (amp * a + (lift * swing if front else -lift * 0.4 * swing), 0, 0)}
+			out[f"shin_{leg}"] = {"rot": (-bend * swing if front else bend * 0.7 * swing, 0, 0)}
+		return out
+
+	WALK = {"bl": 0.0, "fl": 0.25, "br": 0.5, "fr": 0.75}
+	GALLOP = {"bl": 0.0, "br": 0.1, "fl": 0.45, "fr": 0.55}
+
+	def arms_rest(t, sway=0.0):
+		pose = {"upper_l": {"rot": (6 + 4 * sway, 0, 0)}, "upper_r": {"rot": (6 - 4 * sway, 0, 0)},
+				"fore_l": {"rot": (10, 0, 0)}, "fore_r": {"rot": (10, 0, 0)}}
+		if kind == "archer":   # the bow held low at the left side
+			pose["fore_l"] = {"rot": (20, 0, 0)}
+		return pose
+
+	def tail(t, amp, cycles=1.0):
+		return {"tail": {"rot": (4 * wave(t, cycles, 0.2), 0, amp * wave(t, cycles))}}
+
+	def idle(t):   # stamps a forehoof, looks about, the torso breathing
+		stamp = seq(t, [(0.6, 0), (0.65, 1), (0.7, 0), (0.75, 1), (0.8, 0)])
+		look = seq(t, [(0.1, 0), (0.2, 24), (0.4, 24), (0.5, -18), (0.62, -18), (0.72, 0)])
+		return merge({"body": {"loc": (0, 0, 0.008 * wave(t, 2))}, "chest": {"rot": (1.5 * wave(t, 2), 0, look * 0.3)},
+					  "head": {"rot": (0, 0, look * 0.7)}, "leg_fr": {"rot": (26 * stamp, 0, 0)}, "shin_fr": {"rot": (-50 * stamp, 0, 0)}},
+					 arms_rest(t, wave(t, 2)), tail(t, 10, 2))
+
+	def walk(t):
+		return merge(legs_walk(t, 20, 46, WALK, 10), tail(t, 8),
+					 {"root": {"loc": (0, 0, 0.018 * wave(t, 2))}, "body": {"rot": (0, 2 * wave(t), 0)},
+					  "chest": {"rot": (0, 0, 3 * wave(t))}}, arms_rest(t, wave(t)))
+
+	def run(t):   # a gallop, the rider leaning into it
+		return merge(legs_walk(t, 40, 70, GALLOP, 14), tail(t, 4),
+					 {"root": {"loc": (0, 0, 0.1 * max(0.0, wave(t, 1, 0.3))), "rot": (7 * wave(t, 1, 0.05), 0, 0)},
+					  "waist": {"rot": (-14 - 5 * wave(t, 1, 0.05), 0, 0)}, "head": {"rot": (10, 0, 0)}},
+					 {"tail": {"rot": (30, 0, 0)}}, arms_rest(t))
+
+	def attack(t):
+		if kind == "rider":   # draws the spear back and drives it forward, rearing a little into the thrust
+			draw = seq(t, [(0, 0), (0.3, 1), (0.42, 0), (1, 0)])
+			thrust = seq(t, [(0.3, 0), (0.45, 1), (0.65, 1), (1, 0)])
+			lean = -18 * thrust + 10 * draw
+			return merge({"waist": {"rot": (lean, 0, 14 * draw - 8 * thrust)},
+						  "upper_r": {"rot": (30 * draw + 70 * thrust, 0, 0)}, "fore_r": {"rot": (60 * draw + 20 * thrust, 0, 0)},
+						  "grip": {"rot": (-40 * draw - 150 * thrust, 0, 0)},
+						  "upper_l": {"rot": (30 * draw + 20 * thrust, -10 * thrust, 0)},
+						  "root": {"loc": (0, 0.2 * thrust, 0), "rot": (6 * draw - 3 * thrust, 0, 0)},
+						  "leg_fl": {"rot": (20 * draw, 0, 0)}, "leg_fr": {"rot": (14 * draw, 0, 0)}}, tail(t, 12, 2), {"head": {"rot": (-lean * 0.5, 0, 0)}})
+		if kind == "archer":   # raises the bow, draws to the cheek, looses
+			raise_ = seq(t, [(0, 0), (0.25, 1), (0.8, 1), (1, 0)])
+			draw = seq(t, [(0.2, 0), (0.5, 1), (0.6, 1), (0.64, 0.2), (0.8, 0.2), (1, 0)])
+			return merge({"waist": {"rot": (0, 0, 20 * raise_)}, "head": {"rot": (0, 0, -24 * raise_)},
+						  "upper_l": {"rot": (84 * raise_, 0, 16 * raise_)}, "fore_l": {"rot": (-6 * raise_, 0, 0)},
+						  "bow": {"rot": (-78 * raise_, 0, 0)},
+						  "upper_r": {"rot": (84 * raise_, 0, 6 * raise_ - 46 * draw)},
+						  "fore_r": {"rot": (0, 0, 20 * raise_ + 110 * draw)}}, tail(t, 8, 2))
+		# the khan: raises the blade overhead and cuts down and across, the horse half rearing
+		up = seq(t, [(0, 0), (0.35, 1), (0.5, 0), (1, 0)])
+		cut = seq(t, [(0.35, 0), (0.52, 1), (0.7, 1), (1, 0)])
+		rear = seq(t, [(0, 0), (0.3, 1), (0.55, 0)])
+		return merge({"root": {"rot": (10 * rear, 0, 0), "loc": (0, 0.24 * cut, 0.12 * rear)},
+					  "leg_fl": {"rot": (50 * rear, 0, 0)}, "leg_fr": {"rot": (40 * rear, 0, 0)},
+					  "shin_fl": {"rot": (-70 * rear, 0, 0)}, "shin_fr": {"rot": (-60 * rear, 0, 0)},
+					  "waist": {"rot": (8 * up - 20 * cut, 0, 20 * up - 24 * cut)},
+					  "upper_r": {"rot": (160 * up + 60 * cut, -20 * up, 0)}, "fore_r": {"rot": (30 * up + 10 * cut, 0, 0)},
+					  "grip": {"rot": (20 * up - 60 * cut, 0, 0)},
+					  "upper_l": {"rot": (30 * up, 30 * up, 0)}}, tail(t, 14, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge({"root": {"loc": (0, -0.1 * k, 0.02 * k), "rot": (6 * k, 0, 0)},
+					  "waist": {"rot": (14 * k, 0, 10 * k)}, "head": {"rot": (10 * k, 0, -14 * k)},
+					  "upper_l": {"rot": (30 * k, 20 * k, 0)}}, arms_rest(t), tail(t, 18 * k, 2))
+
+	def death(t):   # the forelegs fold, the body rolls onto its side, the rider slumps over
+		fold = seq(t, [(0, 0), (0.3, 1), (0.6, 0.4)])
+		roll = seq(t, [(0.25, 0), (0.66, 84), (0.76, 78), (0.88, 84)])
+		drop = seq(t, [(0.1, 0), (0.3, -0.26), (0.66, -0.62)])
+		slump = seq(t, [(0.2, 0), (0.8, 1)])
+		return merge({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.3, -12), (0.6, 0)]), roll, 0)},
+					  "leg_fl": {"rot": (50 * fold, 0, 0)}, "leg_fr": {"rot": (50 * fold, 0, 0)},
+					  "shin_fl": {"rot": (-100 * fold, 0, 0)}, "shin_fr": {"rot": (-90 * fold, 0, 0)},
+					  "leg_bl": {"rot": (-20 * slump, 0, 0)}, "leg_br": {"rot": (-8 * slump, 0, 0)},
+					  "waist": {"rot": (30 * slump, -30 * slump, 0)}, "head": {"rot": (30 * slump, 0, 20 * slump)},
+					  "upper_l": {"rot": (40 * slump, 50 * slump, 0)}, "upper_r": {"rot": (60 * slump, -20 * slump, 0)}},
+					 tail(t, 0))
+
+	clip(arm, "idle", 3.6, idle, True)
+	clip(arm, "walk", 1.1, walk, True)
+	clip(arm, "run", 0.6, run, True)
+	clip(arm, "attack", 0.9 if kind == "rider" else (1.2 if kind == "archer" else 1.0), attack, False)
+	clip(arm, "hit", 0.45, hit, False)
+	clip(arm, "death", 1.5, death, False)
+	return arm
+
+
+def build_hoofborn_rider():
+	return _hoofborn("hoofborn_rider", "rider")
+
+
+def build_hoofborn_archer():
+	return _hoofborn("hoofborn_archer", "archer")
+
+
+def build_khan_oruk():
+	return _hoofborn("khan_oruk", "khan")
+
+
+# ---------------------------------------------------------------- barrow wights and the Barrow Lord
+# The dead horse-lords of the burial mounds: Skeleton_Warrior repainted old yellowed bone in bronze gone
+# green at the edges, a rotted fur mantle over bronze scale armor, a bronze circlet and cold green light
+# in the sockets (the KayKit helmet and eyes are hidden). The Barrow Lord wears a tall bronze helm with a
+# horse-hair crest and a death mask, a torc and a heavier mantle. Bolt-ons in KayKit mesh space.
+
+BARROW_CELLS = {(1, 1): ("d4c8a0", "5e5238"), (3, 0): ("c8964a", "4a2e14"), (4, 0): ("c8964a", "4a2e14"),
+				(6, 0): ("4a3a2a", "16100a"), (7, 0): ("4a3a2a", "16100a"), (2, 2): ("5a4632", "1a120a"),
+				(1, 2): ("7aa08a", "24382e"), (5, 2): ("7aa08a", "24382e"), (2, 0): ("4a3a2a", "16100a"),
+				(7, 3): ("eaffd8", "58e070")}
+BARROW_LORD_CELLS = {(1, 1): ("ccc098", "564a32"), (3, 0): ("dcaa56", "5a3814"), (4, 0): ("dcaa56", "5a3814"),
+					 (6, 0): ("3a2c20", "100a06"), (7, 0): ("3a2c20", "100a06"), (2, 2): ("6a2418", "1e0806"),
+					 (1, 2): ("e0b454", "5a3a10"), (5, 2): ("e0b454", "5a3a10"), (2, 0): ("3a2c20", "100a06"),
+					 (7, 3): ("eaffd8", "58e070")}
+
+
+def barrow_materials(lord=False):
+	return _rmats("barrow_lord" if lord else "barrow", {
+		"bronze": ("d0a050" if lord else "b88a44", 0.35), "bronze_d": ("8a5e24" if lord else "7a5a2a", 0.45),
+		"verdigris": ("6a9a82", 0.7), "gold": ("e8c060", 0.3), "fur": ("4a3a2a", 0.95), "fur_d": ("2e241a", 0.95),
+		"fur_l": ("6a5840", 0.95), "ghost": ("b8ffb0", 0.2, 4.0), "ghost_d": ("58e070", 0.3, 2.0),
+		"crest": ("7a1e14", 0.9), "crest_d": ("3a0e0a", 0.9), "leather": ("3a2a1c", 0.85), "dark": ("0e0a08", 0.8),
+	})
+
+
+def _lg_kaykit_tree(path, parts):
+	"""A BVH of a KayKit model's named mesh parts in its rest pose (mesh space), so bolt-ons can be laid on it."""
+	from mathutils.bvhtree import BVHTree
+	before = set(bpy.data.objects)
+	bpy.ops.import_scene.gltf(filepath=os.path.abspath(path))
+	new = [o for o in bpy.data.objects if o not in before]
+	bm = bmesh.new()
+	for o in new:
+		if o.type == "MESH" and o.name in parts:
+			me = o.data.copy()
+			me.transform(o.matrix_world)
+			bm.from_mesh(me)
+			bpy.data.meshes.remove(me)
+	tree = BVHTree.FromBMesh(bm)
+	bm.free()
+	for o in new:
+		bpy.data.objects.remove(o, do_unlink=True)
+	return tree
+
+
+def _barrow_eyes(b, m):
+	for s in (1, -1):
+		b.blob((0.13, 0.06, 0.1), (0.155 * s, -0.27, 1.645), m["ghost"], "x", segs=(8, 5))
+		b.blob((0.2, 0.03, 0.16), (0.155 * s, -0.25, 1.645), m["ghost_d"], "x", segs=(8, 4))
+
+
+def _barrow_scales(b, m, tree, rows, xs, lord):
+	"""Rows of overlapping bronze scales laid on the chest, front and back, the lowest row greened."""
+	for side in (-1, 1):   # -1: the front
+		for r, z in enumerate(rows):
+			off = 0.04 if r % 2 else 0.0
+			for x in xs:
+				o = Vector((x + off, side * 1.5, z))
+				hit, n, _, _ = tree.ray_cast(o, Vector((0, -side, 0)))
+				if hit is None:
+					continue
+				if n.y * side < 0:
+					n = -n
+				mat = m["verdigris"] if r == len(rows) - 1 and not lord else (m["bronze"] if (r + int(x * 20)) % 3 else m["bronze_d"])
+				_oblob(b, (0.085, 0.1, 0.022), tuple(hit + n * 0.02 + Vector((0, 0, -0.02))), (0, 0.25 * side, -1), tuple(n), mat, "x", segs=(6, 3))
+
+
+def _barrow_mantle(b, m, rng, lord):
+	"""The rotted fur mantle: a thick collar over the shoulders, ragged fur hanging down the back."""
+	g = 1.12 if lord else 1.0
+	for k in range(22):
+		a = 2 * math.pi * k / 22
+		if math.sin(a) < -0.75:
+			continue   # open at the throat, so it lies on the shoulders rather than under the jaw
+		c = Vector((0.44 * g * math.cos(a), 0.34 * g * math.sin(a), 1.18 + 0.04 * abs(math.cos(a))))
+		out = Vector((math.cos(a), math.sin(a), 0))
+		_oblob(b, (0.22 * g, 0.28 * g, 0.12), tuple(c + out * 0.04), (0, 0, -1) if math.sin(a) > -0.3 else (out.x, out.y, -1.5),
+			   tuple(out + Vector((0, 0, 0.8))), (m["fur"], m["fur_d"], m["fur_l"])[k % 3], "x", segs=(7, 4))
+	for k in range(9):   # ragged fur hanging down the back
+		x = (k - 4) * 0.09
+		ln = rng.uniform(0.34, 0.6) * g
+		_oblob(b, (0.12, ln, 0.06), (x, 0.38 * g, 1.14 - ln * 0.45), (0, 0.1, -1), (0, 1, 0), (m["fur_d"], m["fur"])[k % 2], "x", segs=(6, 4))
+	for s in (1, -1):   # clasps at the collarbones
+		b.blob((0.09, 0.05, 0.09), (0.2 * s, -0.33 * g, 1.16), m["bronze"], "x", segs=(8, 5))
+		b.blob((0.04, 0.03, 0.04), (0.2 * s, -0.36 * g, 1.16), m["verdigris"] if not lord else m["gold"], "x", segs=(6, 4))
+
+
+def build_barrow_wight_circlet():
+	"""A bronze circlet round the skull, a greened boss over the brow, green light in the eyes."""
+	m = barrow_materials()
+	b = Builder("barrow_wight_circlet")
+	_wrap(b, (0, 0.0, 1.9), (0.43, 0.46), 0.07, 0.03, m["bronze"], rot=(-6, 0, 0), sides=20)
+	for k in range(7):   # studs round the band
+		a = math.radians(270 + (k - 3) * 22)
+		b.blob((0.05, 0.05, 0.05), (0.45 * math.cos(a), 0.48 * math.sin(a), 1.88 + 0.05 * math.sin(a) * 0), m["bronze_d"], "x", segs=(6, 4))
+	b.blob((0.12, 0.05, 0.14), (0, -0.5, 1.89), m["verdigris"], "x", segs=(8, 5))
+	b.blob((0.06, 0.03, 0.07), (0, -0.52, 1.89), m["ghost_d"], "x", segs=(6, 4))
+	_barrow_eyes(b, m)
+	return b.build_static()
+
+
+def build_barrow_wight_mantle():
+	import random
+	rng = random.Random(3451)
+	m = barrow_materials()
+	b = Builder("barrow_wight_mantle")
+	tree = _lg_kaykit_tree(SKELETONS + "Skeleton_Warrior.glb", {"Skeleton_Warrior_Body"})
+	_barrow_scales(b, m, tree, [1.14, 1.06, 0.98, 0.9, 0.82], [x * 0.08 for x in range(-4, 4)], False)
+	_barrow_mantle(b, m, rng, False)
+	return b.build_static()
+
+
+def build_barrow_lord_helm():
+	"""A tall bronze helm over the whole skull, a crest of dark red horse-hair from brow to nape, a
+	gilt death mask with green light behind its eye slits."""
+	import random
+	rng = random.Random(3457)
+	m = barrow_materials(True)
+	b = Builder("barrow_lord_helm")
+	b.blob((0.98, 1.02, 0.86), (0, 0.02, 1.9), m["bronze"], "x", segs=(16, 12))                   # the bowl
+	b.seg((0, 0.02, 2.2), (0, 0.04, 2.62), 0.24, 0.05, m["bronze"], "x", sides=12)              # its tall peak
+	_wrap(b, (0, 0.02, 1.62), (0.5, 0.52), 0.1, 0.03, m["bronze_d"], sides=22)                   # the rim
+	_wrap(b, (0, 0.02, 2.02), (0.46, 0.48), 0.06, 0.025, m["gold"], sides=22)
+	for s in (1, -1):   # cheek guards
+		_oblob(b, (0.3, 0.34, 0.06), (0.44 * s, -0.16, 1.5), (0, 0, -1), (s, -0.3, 0), m["bronze_d"], "x", segs=(8, 4))
+	_oblob(b, (0.6, 0.3, 0.07), (0, 0.48, 1.5), (0, 0.3, -1), (0, 1, 0), m["bronze_d"], "x", segs=(10, 4))   # neck guard
+	# the death mask: a gilt face over the front of the helm, eye slits lit green
+	_oblob(b, (0.56, 0.62, 0.08), (0, -0.5, 1.66), (0, 0, 1), (0, -1, 0), m["gold"], "x", segs=(12, 6))
+	b.seg((0, -0.55, 1.76), (0, -0.6, 1.56), 0.05, 0.06, m["gold"], "x", sides=6)                   # the nose
+	b.blob((0.42, 0.06, 0.06), (0, -0.55, 1.8), m["gold"], "x", segs=(10, 4))                       # the brow ridge
+	b.blob((0.2, 0.04, 0.03), (0, -0.55, 1.46), m["dark"], "x", segs=(8, 3))                        # the closed mouth
+	for s in (1, -1):
+		b.blob((0.13, 0.04, 0.04), (0.14 * s, -0.55, 1.7), m["ghost"], "x", rot=(0, -8 * s, 0), segs=(8, 3))
+		b.blob((0.2, 0.03, 0.08), (0.14 * s, -0.53, 1.7), m["ghost_d"], "x", segs=(8, 3))
+	# the crest: a bronze ridge from brow to nape, and a fall of horse-hair streaming back from it
+	pts = [Vector((0, -0.36 + 0.9 * u, 2.3 + 0.36 * math.sin(math.pi * (0.2 + 0.7 * u)))) for u in [k / 8 for k in range(9)]]
+	_chain(b, pts, 0.04, 0.03, m["bronze_d"], sides=5)
+	for k, p in enumerate(pts):
+		for j in range(3):
+			d = Vector((rng.uniform(-0.12, 0.12), 0.7 + 0.1 * k, 0.5 - 0.14 * k)).normalized()
+			ln = 0.34 + 0.04 * k + rng.uniform(0, 0.1)
+			b.seg(tuple(p), tuple(p + d * ln), 0.05, 0.008, (m["crest"], m["crest_d"])[(k + j) % 2], "x", sides=4)
+	return b.build_static()
+
+
+def build_barrow_lord_mantle():
+	import random
+	rng = random.Random(3461)
+	m = barrow_materials(True)
+	b = Builder("barrow_lord_mantle")
+	tree = _lg_kaykit_tree(SKELETONS + "Skeleton_Warrior.glb", {"Skeleton_Warrior_Body"})
+	_barrow_scales(b, m, tree, [1.16, 1.09, 1.02, 0.95, 0.88, 0.81], [x * 0.075 for x in range(-5, 5)], True)
+	_barrow_mantle(b, m, rng, True)
+	_wrap(b, (0, 0.0, 1.3), (0.2, 0.18), 0.05, 0.04, m["gold"], gap=(250, 290), sides=16)            # the torc
+	for s in (1, -1):
+		b.blob((0.07, 0.07, 0.07), (0.07 * s, -0.19, 1.3), m["gold"], "x", segs=(6, 5))
+	return b.build_static()
+
+
+def _barrow_sword(name, lord):
+	"""A bronze leaf-blade (KayKit weapons' frame: grip at the origin, blade up +Z): the wight's greened
+	and notched, the lord's longer, bright, with a gold pommel and a horse-head guard."""
+	m = barrow_materials(lord)
+	b = Builder(name)
+	edge = material(f"{name}_edge", "f0d494" if lord else "a8b89a", 0.3)
+	b.seg((0, 0, -0.14), (0, 0, 0.12), 0.03, 0.028, m["leather"], "x", sides=6)
+	b.blob((0.09, 0.07, 0.08) if lord else (0.07, 0.06, 0.07), (0, 0, -0.17), m["gold"] if lord else m["bronze_d"], "x", segs=(6, 5))
+	b.blob((0.26 if lord else 0.2, 0.06, 0.05), (0, 0, 0.13), m["gold"] if lord else m["bronze_d"], "x", segs=(8, 4))
+	if lord:
+		for s in (1, -1):   # the guard's ends curl up into horse heads
+			b.seg((0.12 * s, 0, 0.13), (0.15 * s, 0, 0.22), 0.025, 0.02, m["gold"], "x", sides=5)
+			b.seg((0.15 * s, 0, 0.22), (0.1 * s, 0, 0.25), 0.022, 0.012, m["gold"], "x", sides=5)
+	length = 1.0 if lord else 0.78
+	pts = []
+	for k in range(9):   # the leaf shape: narrow at the hilt, swelling, then drawn to a point
+		u = k / 8
+		w = (0.035 + 0.05 * math.sin(math.pi * min(1.0, u * 1.25) * 0.9)) * (1.12 if lord else 1.0)
+		if not lord and k in (3, 6):
+			w *= 0.75   # notches
+		pts.append((0.15 + length * u, w * (1 - u ** 3)))
+	for (z0, w0), (z1, w1) in zip(pts, pts[1:]):
+		_slab(b, [(-w0, 0, z0), (w0, 0, z0), (w1, 0, z1), (-w1, 0, z1)], 0.022, m["bronze"] if lord else (m["bronze"] if z0 < 0.5 else m["bronze_d"]))
+		for s in (1, -1):
+			_slab(b, [(s * w0, 0, z0), (s * (w0 + 0.012), 0, z0), (s * (w1 + 0.012), 0, z1), (s * w1, 0, z1)], 0.012, edge)
+	b.seg((0, 0, 0.15), (0, 0, 0.15 + length * 0.8), 0.014, 0.004, m["bronze_d"] if lord else m["verdigris"], "x", sides=4)   # the midrib
+	_slab(b, [(-0.01, 0, 0.15 + length), (0.01, 0, 0.15 + length), (0, 0, 0.23 + length)], 0.016, edge)
+	return b.build_static()
+
+
+def build_barrow_blade():
+	return _barrow_sword("barrow_blade", False)
+
+
+def build_barrow_lord_sword():
+	return _barrow_sword("barrow_lord_sword", True)
+
+
+LONG_GRASS_CREATURES = {"grass_stalker": build_grass_stalker, "tawnyjaw": build_tawnyjaw,
+						"grass_howler": build_grass_howler,
+						"thunderhoof": build_thunderhoof, "old_thunderhoof": build_old_thunderhoof, "dirkhorn": build_dirkhorn,
+						"hoofborn_rider": build_hoofborn_rider, "hoofborn_archer": build_hoofborn_archer, "khan_oruk": build_khan_oruk}
+CREATURES.update(LONG_GRASS_CREATURES)
+ATTACHMENTS.update({"barrow_wight_circlet": build_barrow_wight_circlet, "barrow_wight_mantle": build_barrow_wight_mantle,
+					"barrow_lord_helm": build_barrow_lord_helm, "barrow_lord_mantle": build_barrow_lord_mantle,
+					"barrow_blade": build_barrow_blade, "barrow_lord_sword": build_barrow_lord_sword})
+BODIES.update({"barrow_wight_body": (SKELETONS + "Skeleton_Warrior.glb", "barrow_wight_texture", BARROW_CELLS, None),
+			   "barrow_lord_body": (SKELETONS + "Skeleton_Warrior.glb", "barrow_lord_texture", BARROW_LORD_CELLS, None)})
+# ================================================================ end of The Long Grass
+
+
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

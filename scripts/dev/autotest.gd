@@ -128,6 +128,11 @@ const SECTIONS := [
 	["flats_life", "mirror_flats"],
 	["reach_life", "silted_reach"],
 	["tidemouth_life", "tidemouth"],
+	["cap40", "greenmoor"],
+	["sky_borders", "drownfast"],
+	["windbreak_life", "windbreak"],
+	["grass_life", "the_long_grass"],
+	["galehold", "galehold"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5245,6 +5250,156 @@ func _t_tidemouth_life() -> void:
 			["saltreaver", "saltreaver_king", "clawfolk", "deep_horror", "sea_serpent", "giant_gull", "sea_lion", "great_sea_serpent", "harbor_storm_spirit", "tempest_lord"])
 	await _zone_views("tidemouth", [[Vector2(20, 100), Vector2(20, 30), "harbor"], [Vector2(0, 0), Vector2(-40, -20), "lighthouse"],
 			[Vector2(-90, 100), Vector2(-130, 140), "reavers"], [Vector2(60, -100), Vector2(110, -160), "storm"]])
+
+
+## Level cap 40: every class's three new abilities (36/38/40) cast and land.
+func _t_cap40() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("cap40: max level %d" % int(World.cfg("max_level", 0)))
+	var saved_class := p.char_class
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		p.level = 40
+		p.spells = []
+		for sid: String in GameData.spells:
+			if int(GameData.spells[sid].get("classes", {}).get(cls, 0)) >= 36:
+				p.spells.append(sid)
+		p.spells.sort_custom(func(a: String, b: String) -> bool: return str(GameData.spells[a]["type"]) == "pet" and str(GameData.spells[b]["type"]) != "pet")
+		if cls == "ranger":
+			p.spells.push_front("call_of_the_hawk")
+		elif cls == "magician":
+			p.spells.push_front("call_of_the_elemental_lord")
+		elif cls == "necromancer":
+			p.spells.push_front("raise_bone_colossus")
+		p.recalc_stats()
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		var out := PackedStringArray()
+		for sid: String in p.spells:
+			var s: Dictionary = GameData.spells[sid]
+			p.cooldowns.clear()
+			p.mana = p.max_mana
+			p.hp = p.max_hp
+			p.hidden = s.get("requires_hidden", false)
+			var tgt: Entity = mob
+			if str(s.get("target", "")) in ["self", "group", "friendly"]:
+				tgt = p
+			if str(s["type"]) == "shot":
+				p.equipment["range"] = "galehold_longbow"
+				p.pack.add("crude_arrow", 20)
+			p.global_position = z.ground(mob.global_position.x + (2.0 if float(s.get("range", 0)) < 5.0 and str(s["type"]) != "shot" else 12.0), mob.global_position.z) + Vector3.UP
+			if s.get("from_behind", false) or s.get("requires_hidden", false):
+				p.global_position = mob.global_position - (-mob.global_basis.z) * 2.0 + Vector3.UP * 0.5
+			p.face_toward(mob.global_position)
+			World.request_set_target(p.entity_id, tgt.entity_id)
+			var hp0 := mob.hp
+			mob.hate.clear()
+			mob.auto_attack = false
+			World.request_cast(p.entity_id, sid)
+			await _wait(float(s.get("cast_time", 0)) + 0.4)
+			var what := ""
+			match str(s["type"]):
+				"damage", "shot", "lifetap":
+					what = "hit %d" % (hp0 - mob.hp)
+				"dot":
+					what = "dot %s" % mob.dots.any(func(d: Dictionary) -> bool: return d["spell"] == sid)
+				"buff":
+					var on: Entity = World.get_object(p.pet_id) as Entity if str(s.get("target", "")) == "pet" else p
+					what = "buff %s" % (on != null and on.buffs.has(sid))
+				"heal":
+					what = "heal cast"
+				"slow":
+					what = "slow %d%%" % mob.slow_pct
+				"root":
+					what = "root %.0f s" % mob.root_left
+				"snare":
+					what = "snare %.0f s" % mob.snare_left
+				"pet":
+					var pet := World.get_object(p.pet_id) as Pet
+					what = "pet %s (%s, %d hp)" % [pet.display_name if pet else "none", pet.model_id if pet else "", pet.max_hp if pet else 0]
+			out.append("%s: %s" % [GameData.spells[sid]["name"], what])
+			if str(s["type"]) == "pet":
+				await _wait(0.5)
+				await _shot("9zz_cap40_%s" % sid)
+		mob.dots.clear()
+		mob.slow_left = 0.0
+		print("cap40: %s -> %s" % [cls, "; ".join(out)])
+		World.request_pet(p.entity_id, "leave")
+		p.buffs.clear()
+		p.hidden = false
+		p.equipment.erase("range")
+	mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
+## Galehold: binding, Vayuketh's breath, the guildmasters, the merchants, the Long Grass quests.
+func _t_galehold() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("galehold: bindstone %s at %s" % [z.data.get("bindstone", false), z.bind_point])
+	p.global_position = z.bind_point + Vector3.UP
+	World.request_bind(p.entity_id)
+	print("galehold: bound to %s" % p.bind_zone)
+	var gms := {}
+	var npcs := _npcs()
+	for id: String in npcs:
+		if GameData.npcs[id].has("guildmaster"):
+			gms[GameData.npcs[id]["guildmaster"]["class"]] = npcs[id].display_name
+	print("galehold: guildmasters %s" % [gms])
+	var saved_deity := p.deity
+	p.deity = "wind"
+	_stand_by(p, npcs["windspeaker_sabine"])
+	World.request_say(p.entity_id, "blessing")
+	await _wait(0.3)
+	print("galehold: a follower of Vayuketh asks for his blessing -> %s" % p.buffs.has("vayuketh_breath"))
+	p.deity = saved_deity
+	p.buffs.erase("vayuketh_breath")
+	for id: String in ["armorer_dagmar", "weaponsmith_ansel", "provisioner_maelle"]:
+		var sells: Array = GameData.npcs[id]["merchant"]["sells"]
+		print("galehold: %s sells %d, unknown %s" % [id, sells.size(), sells.filter(func(i: String) -> bool: return GameData.item(i).is_empty())])
+	await _zone_life("galehold", {"plainswarden_hakon": ["horsetail_braid_q", "khans_horsetail_banner_q"], "huntress_zawadi": ["stalker_pelt_q", "tawnyjaws_fang_q"],
+			"herdmaster_bolat": ["thunderhoof_horn_q", "herd_kings_horn_q"], "barrowkeeper_moira": ["barrow_bronze_q", "barrow_lords_death_mask_q"]}, [], [])
+	await _zone_views("galehold", [[Vector2(40, 0), Vector2(0, -10), "plaza"], [Vector2(60, 10), Vector2(90, 0), "gate"],
+			[Vector2(-50, 0), Vector2(-92, 0), "cliff"], [Vector2(20, 30), Vector2(-60, -50), "windmills"]])
+
+
+## The Standing Sky's borders, every one both ways.
+func _t_sky_borders() -> void:
+	for leg: Array in [["drownfast", Vector2(0, -225), Vector2(0, -1), "windbreak"], ["windbreak", Vector2(-195, 0), Vector2(-1, 0), "tidemouth"],
+			["tidemouth", Vector2(195, 0), Vector2(1, 0), "windbreak"], ["windbreak", Vector2(195, 0), Vector2(1, 0), "the_burn"],
+			["the_burn", Vector2(-225, 0), Vector2(-1, 0), "windbreak"], ["windbreak", Vector2(0, -195), Vector2(0, -1), "the_long_grass"],
+			["the_long_grass", Vector2(225, 0), Vector2(1, 0), "blackglass"], ["blackglass", Vector2(-225, 0), Vector2(-1, 0), "the_long_grass"],
+			["the_long_grass", Vector2(-225, 0), Vector2(-1, 0), "galehold"], ["galehold", Vector2(0, 80), Vector2(0, 1), "tidemouth"],
+			["tidemouth", Vector2(0, -195), Vector2(0, -1), "galehold"], ["galehold", Vector2(80, 0), Vector2(1, 0), "the_long_grass"],
+			["the_long_grass", Vector2(0, 225), Vector2(0, 1), "windbreak"], ["windbreak", Vector2(0, 195), Vector2(0, 1), "drownfast"]]:
+		if not await _walk_border("sky_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_windbreak_life() -> void:
+	await _zone_life("windbreak_life", {"scout_leader_emeka": ["kite_silk_q", "tarns_painted_sail_q"], "stonecaller_hild": ["giants_standing_stone_q", "stackstones_capstone_q"],
+			"windwatcher_reyes": ["gale_essence_q", "storm_eye_heart_q"], "falconer_ines": ["eagle_talon_q", "skarrows_crest_q"]}, [],
+			["kitewing_bandit", "kitewing_chief", "stone_giant", "old_stackstone", "gale_spirit", "dust_devil", "storm_eye", "giant_eagle", "thunderbird", "skarrow_thunderbird", "cliff_drake"])
+	await _zone_views("windbreak", [[Vector2(10, 170), Vector2(0, 140), "camp"], [Vector2(-80, -60), Vector2(-130, -110), "bandits"],
+			[Vector2(90, -90), Vector2(135, -125), "giants"], [Vector2(0, 60), Vector2(-60, -60), "mesas"]])
+
+
+func _t_grass_life() -> void:
+	await _zone_life("grass_life", {}, ["barrow_wight", "barrow_lord"],
+			["grass_stalker", "grass_howler", "tawnyjaw", "thunderhoof", "dirkhorn", "old_thunderhoof", "hoofborn_rider", "hoofborn_archer", "khan_oruk", "barrow_wight"])
+	await _zone_views("grass", [[Vector2(-180, 10), Vector2(-100, 30), "entry"], [Vector2(20, 90), Vector2(50, 50), "herds"],
+			[Vector2(110, -70), Vector2(150, -100), "hoofborn"], [Vector2(-90, -90), Vector2(-120, -130), "barrows"]])
 
 
 ## Screenshots from a few spots: [from, looking at, name].
