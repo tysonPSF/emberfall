@@ -544,7 +544,11 @@ func _hold(bone: String, model_id: String) -> void:
 	_held.erase(bone)
 	if model_id == "" or not GameData.models["weapons"].has(model_id) or skeleton.find_bone(bone) < 0:
 		return
-	var grip: Dictionary = GameData.models.get("grips", {}).get(model_id, {})  # how it sits in the hand, if not as modeled
+	var grips: Dictionary = GameData.models.get("grips", {})
+	# how it sits in the hand, if not as modeled; a weapon in the off hand has its
+	# own "<model>@l" (the left hand slot is mirrored, so the right hand's grip
+	# would hold it upside down)
+	var grip: Dictionary = grips.get(model_id + "@l", grips.get(model_id, {})) if bone == "handslot.l" else grips.get(model_id, {})
 	var held: Node3D = (load(GameData.models["weapons"][model_id]) as PackedScene).instantiate()
 	var r: Array = grip.get("rot", [0, 0, 0])
 	var at: Array = grip.get("pos", [0, 0, 0])
