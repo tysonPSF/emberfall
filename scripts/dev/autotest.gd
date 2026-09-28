@@ -21,6 +21,8 @@ const SECTIONS := [
 	["merchants", "emberhold"],
 	["guild", "emberhold"],
 	["many_spells", "emberhold"],
+	["bag_rainhold", "rainhold"],
+	["bag_dewstep", "dewstep"],
 	["faction", "emberhold"],
 	["kos", "greenmoor"],
 	["root", "greenmoor"],
@@ -715,6 +717,39 @@ func _t_many_spells() -> void:
 	World.request_service_close(p.entity_id)
 	p.char_class = saved[0]; p.level = saved[1]; p.spells = saved[2]; p.coin = saved[3]
 	p.recalc_stats()
+
+
+## A starting city's bag quest line, every step in one zone: say the keyword to
+## the first giver, then hand each giver what the step wants.
+func _bag_chain(tag: String, keyword: String, steps: Array, bag: String) -> void:
+	var p := World.local_player
+	var npcs := _npcs()
+	for q: String in ["rain_pack_needles", "rain_pack_net", "rain_pack_clasp", "picker_satchel_thread", "picker_satchel_body", "picker_satchel_clasp"]:
+		p.quests.erase(q)
+	_stand_by(p, npcs[steps[0][0]])
+	World.request_say(p.entity_id, keyword)
+	for s: Array in steps:
+		var giver: Npc = npcs[s[0]]
+		_stand_by(p, giver)
+		var give: Array = []
+		for item: String in (s[1] as Dictionary):
+			p.pack.add(item, int(s[1][item]))
+		for item: String in GameData.quests[s[2]]["wants"]:
+			give.append(item)
+		await _hand_in(p, giver, give)
+		print("%s: %s done -> %s" % [tag, s[2], p.quests.get(s[2], {})])
+	var place := _where(p, bag)
+	print("%s: %s at %s, %d slots" % [tag, GameData.item_name(bag), place, int(GameData.item(bag).get("bag", 0)) if place != "" else 0])
+
+
+func _t_bag_rainhold() -> void:
+	await _bag_chain("bag_rainhold", "rainproof pack", [["provisioner_tamu", {"bone_chips": 4}, "rain_pack_needles"],
+			["fisher_oji", {"lagoon_snapper": 2}, "rain_pack_net"], ["provisioner_tamu", {"gnoll_fang": 3}, "rain_pack_clasp"]], "tamus_rainproof_pack")
+
+
+func _t_bag_dewstep() -> void:
+	await _bag_chain("bag_dewstep", "satchel", [["tea_seller_moti", {"moth_wing": 4}, "picker_satchel_thread"],
+			["headpicker_anjali", {"jackal_pelt": 2}, "picker_satchel_body"], ["tea_seller_moti", {"rice_beetle_shell": 2}, "picker_satchel_clasp"]], "motis_tea_pickers_satchel")
 
 
 func _t_faction() -> void:

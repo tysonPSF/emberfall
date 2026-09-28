@@ -1,0 +1,42 @@
+{
+  "bone_netting_needles": {
+    "name": "Bone Netting Needles",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "oiled_fishnet": {
+    "name": "Oiled Fishnet",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "tamus_rainproof_pack": {
+    "name": "Tamu's Rainproof Pack",
+    "bag": 10,
+    "value": 60,
+    "lore": true,
+    "no_drop": true,
+    "weight_reduction": 0.5
+  },
+  "moth_silk_thread": {
+    "name": "Moth-Silk Thread",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "stitched_pickers_satchel": {
+    "name": "Stitched Picker's Satchel",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "motis_tea_pickers_satchel": {
+    "name": "Moti's Tea-Picker's Satchel",
+    "bag": 10,
+    "value": 60,
+    "lore": true,
+    "no_drop": true,
+    "weight_reduction": 0.5
+  }
+}

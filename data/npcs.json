@@ -1215,7 +1215,8 @@
       "hail": "Rain's good for fishing, {name}. Everything is, if you're patient. Press G for a pole and worms, then [fishing].",
       "fishing": "Hold the pole, face the water, and right-click it, or type /fish. Every cast uses a worm. You'll get better the more you try. Bring me four [snapper] from the lagoon.",
       "snapper": "Four lagoon snapper, as often as you like. The first time, I'll give you a slicker that keeps the rain off.",
-      "unknown": "Ask Hunter Asha about the Throat."
+      "unknown": "Ask Hunter Asha about the Throat.",
+      "tamu": "Tamu sent you? With those needles? Then Tamu wants a net for another pack. Bring me the needles and two lagoon [snapper] for the oil, and I'll knot it."
     }
   },
   "hunter_asha": {
@@ -1391,12 +1392,13 @@
       "buy_rate": 0.5
     },
     "dialogue": {
-      "hail": "Supplies for every trade, {name}: flour and spices for the [oven], thread and salts for [tailoring], herbs and vials for [alchemy], ore and a hammer for the [forge]. Press G to see.",
+      "hail": "Supplies for every trade, {name}: flour and spices for the [oven], thread and salts for [tailoring], herbs and vials for [alchemy], ore and a hammer for the [forge]. Press G to see. And if you're new to the rain, ask me about a [rainproof pack].",
       "oven": "Ovens bake, campfires roast. Put your ingredients in, press Combine. The Hearthside Cookbook tells you what goes with what.",
       "tailoring": "A sewing kit's a bag you can combine in: tan your hides with salts, then stitch the leather with thread. Cloth wants the loom. My pattern book has the rest.",
       "alchemy": "A mortar and pestle for potions, the brew barrel for the big draughts. Herbs and clear water in everything. The Alchemist's Notes are cheap.",
       "forge": "Keep the hammer in the forge with the ore and a flask of water; it stays, the rest becomes metal. Bars first, then blades. The Smith's Handbook will set you straight.",
-      "unknown": "Ask round Rainhold, {name}."
+      "unknown": "Ask round Rainhold, {name}.",
+      "rainproof pack": "Anything you carry in Rainhold gets wet, {name}, unless it's in a proper Rainhold pack: netted, oiled, toggled. I'll make you one. First I need netting needles, and bone makes the best. The skeletons in Greenmoor, east through the gate, are made of it. Bring me four bone chips."
     }
   },
   "gm_corvane": {
@@ -2036,7 +2038,8 @@
       "monkeys": "A troop of thieving monkeys in the old orchard east of the road. They snatch baskets, bangles, anything bright, and their king, [Pilfer], is the worst of them.",
       "pilfer": "Pilfer the Troop-King. He wears a bangle he stole from the tea house itself. Bring me his [bangle] and two of the trinkets his troop took, and I'll give you something bright of your own.",
       "bangle": "Pilfer's bangle and two stolen trinkets, {name}.",
-      "unknown": "Ask Kaveri about the beasts, Brother Ravi about the old shrine, or Warden Tashi about the Dustpaw."
+      "unknown": "Ask Kaveri about the beasts, Brother Ravi about the old shrine, or Warden Tashi about the Dustpaw.",
+      "moti": "Moti's making another satchel? Then you'll need the body stitched. Bring me his thread and two jackal pelts from the west fields, and I'll do it."
     }
   },
   "hunter_kaveri": {
@@ -2097,8 +2100,9 @@
       "buy_rate": 0.5
     },
     "dialogue": {
-      "hail": "Tea, bread, bait, {name}. Press G to trade.",
-      "unknown": "I only sell things. Ask Anjali."
+      "hail": "Tea, bread, bait, {name}. Press G to trade. And every picker needs a [satchel].",
+      "unknown": "I only sell things. Ask Anjali.",
+      "satchel": "A tea-picker's satchel: light, tough, and it never snags a leaf. I'll make you one, but I'm out of thread. Lantern moth wings spin into the finest silk there is. Bring me four."
     }
   },
   "warden_tashi": {
