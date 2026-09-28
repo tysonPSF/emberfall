@@ -107,12 +107,12 @@ Stonesail (37–41) lies past it at `[-3, 5]`.
 | Stonesail **(built)** | The Standing Sky | 37–41 | 512 m | `[-3, 5]` | plain |
 | Hollow Air **(built)** | The Standing Sky | 39–43 | 512 m | `[-1, 6]` | plain |
 | Vayuketh's Step **(built)** | The Standing Sky | 42–44 | 448 m | `[-2, 6]` | outpost |
-| Barrowhold | The Boneyard | city | 224 m | `[2, 7]` | city |
-| Fogfall | The Boneyard | 40–43 | 512 m | `[0, 6]` | fog |
-| The Ivory Field | The Boneyard | 42–45 | 512 m | `[1, 6]` | fog |
-| The Unlit | The Boneyard | 44–47 | 512 m | `[2, 6]` | fog |
-| Lastwalk | The Boneyard | 46–49 | 512 m | `[0, 7]` | fog |
-| Timiraj's Table | The Boneyard | 48–50 | 512 m | `[1, 7]` | fog |
+| Barrowhold **(built)** | The Boneyard | city | 224 m | `[2, 7]` | city |
+| Fogfall **(built)** | The Boneyard | 40–43 | 512 m | `[0, 6]` | fog |
+| The Ivory Field **(built)** | The Boneyard | 42–45 | 512 m | `[1, 6]` | fog |
+| The Unlit **(built)** | The Boneyard | 44–47 | 512 m | `[2, 6]` | fog |
+| Lastwalk **(built)** | The Boneyard | 46–49 | 512 m | `[0, 7]` | fog |
+| Timiraj's Table **(built)** | The Boneyard | 48–50 | 512 m | `[1, 7]` | fog |
 
 ## Dewstep, added later
 

@@ -191,6 +191,25 @@
         191,
         0
       ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "fogfall",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
     }
   ],
   "landmarks": [
@@ -215,21 +234,6 @@
       "yaw": 180,
       "labels": [
         "Forgehold",
-        "Blackglass"
-      ]
-    },
-    {
-      "type": "rockslide",
-      "pos": [
-        0,
-        -232
-      ],
-      "face": [
-        0,
-        0
-      ],
-      "labels": [
-        "Pass closed",
         "Blackglass"
       ]
     },
@@ -499,6 +503,18 @@
       ],
       "id": "rubble_large",
       "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        -226
+      ],
+      "yaw": 90,
+      "labels": [
+        "Fogfall",
+        "Blackglass"
+      ]
     }
   ],
   "npcs": [],

@@ -22,6 +22,7 @@ var sun: DirectionalLight3D
 var moon: DirectionalLight3D
 var _day: Dictionary = {}  # the zone's midday values
 var _timer := 0.0
+var fixed_hour := -1.0  # a zone's "fixed_hour": its sky never moves from it (the rules still keep the world's clock)
 
 
 func setup(environment: Environment, sky_material: ProceduralSkyMaterial, sun_light: DirectionalLight3D) -> void:
@@ -57,7 +58,7 @@ static func sun_height(hour: float) -> float:
 
 
 func update(_force := false) -> void:
-	var h := World.game_hour()
+	var h := fixed_hour if fixed_hour >= 0.0 else World.game_hour()
 	var e := sun_height(h)
 	var day := smoothstep(-0.2, 0.22, e)  # 0 at night, 1 in full day
 	var glow := clampf(1.0 - absf(e) / 0.3, 0.0, 1.0)  # dawn and dusk

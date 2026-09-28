@@ -1,0 +1,998 @@
+{
+  "name": "The Ivory Field",
+  "levels": [
+    42,
+    45
+  ],
+  "music": "ivory_field",
+  "seed": 9831,
+  "size": 512,
+  "height_amplitude": 4,
+  "bind_point": [
+    2,
+    188
+  ],
+  "flat_radius": 18,
+  "trees": 30,
+  "tree_mix": [
+    "lone_tree",
+    "wind_bent_tree"
+  ],
+  "groves": 0.1,
+  "rocks": 60,
+  "grass_colors": [
+    "#9a8a4c",
+    "#b09e5a"
+  ],
+  "fog_density": 0.003,
+  "fog_color": "#d4c6a0",
+  "sun_energy": 1.05,
+  "clutter": {
+    "tallgrass": {
+      "density": 0.05,
+      "patch": 0.7,
+      "sway": 0.3,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.6,
+        0.9
+      ]
+    },
+    "grass_b": {
+      "density": 0.2,
+      "patch": 0.5,
+      "sway": 0.3,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "bone_scatter": {
+      "density": 0.006,
+      "patch": 0.7,
+      "range": 55,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "pebbles": {
+      "density": 0.02,
+      "patch": 0.5,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -80
+      ],
+      "radius": 90,
+      "color": "#c8bc98",
+      "flatten": 0.3,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      -256,
+      0,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ],
+    [
+      0,
+      -256,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          5,
+          150
+        ],
+        [
+          -10,
+          40
+        ],
+        [
+          0,
+          -20
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          -256,
+          0
+        ],
+        [
+          -100,
+          10
+        ],
+        [
+          -10,
+          40
+        ],
+        [
+          120,
+          20
+        ],
+        [
+          256,
+          0
+        ]
+      ],
+      "width": 2.6
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "forgehold",
+      "arrive": [
+        0,
+        -46
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "fogfall",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_unlit",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "timirajs_table",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -60
+      ],
+      "id": "giant_ribcage",
+      "collide": "mesh",
+      "face": [
+        40,
+        -60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        -110
+      ],
+      "id": "giant_ribcage",
+      "collide": "mesh",
+      "face": [
+        -80,
+        -140
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        -140
+      ],
+      "id": "giant_ribcage",
+      "collide": "mesh",
+      "face": [
+        120,
+        -120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        60
+      ],
+      "id": "giant_ribcage",
+      "collide": "mesh",
+      "face": [
+        0,
+        90
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -30
+      ],
+      "id": "elephant_skull",
+      "collide": "mesh",
+      "face": [
+        0,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        -60
+      ],
+      "id": "elephant_skull",
+      "collide": "mesh",
+      "face": [
+        -100,
+        -60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        -40
+      ],
+      "id": "elephant_skull",
+      "collide": "mesh",
+      "face": [
+        60,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        140
+      ],
+      "id": "elephant_skull",
+      "collide": "mesh",
+      "face": [
+        -40,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        150
+      ],
+      "id": "elephant_skull",
+      "collide": "mesh",
+      "face": [
+        20,
+        120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -80,
+        -30
+      ],
+      "id": "tusk_field",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        40
+      ],
+      "id": "tusk_field",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        120
+      ],
+      "id": "tusk_field",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        -80
+      ],
+      "id": "tusk_field",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -170,
+        20
+      ],
+      "id": "tusk_field",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        80
+      ],
+      "id": "poacher_wagon",
+      "collide": "mesh",
+      "face": [
+        150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        170,
+        120
+      ],
+      "id": "poacher_wagon",
+      "collide": "mesh",
+      "face": [
+        150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        100
+      ],
+      "id": "ivory_pile",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        160,
+        70
+      ],
+      "id": "ivory_pile",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        110
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        175,
+        85
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        150,
+        100
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        148,
+        92
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        110
+      ],
+      "id": "vulture_perch",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -160,
+        150
+      ],
+      "id": "vulture_perch",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        90
+      ],
+      "id": "vulture_perch",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        -130
+      ],
+      "id": "spirit_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        -80
+      ],
+      "id": "spirit_cairn",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -14,
+        196
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        14,
+        198
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        2,
+        186
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        206
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        228
+      ],
+      "yaw": -90,
+      "labels": [
+        "Forgehold",
+        "The Ivory Field"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -228,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Fogfall",
+        "The Ivory Field"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        228,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "The Unlit",
+        "The Ivory Field"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        -226
+      ],
+      "yaw": 90,
+      "labels": [
+        "Timiraj's Table",
+        "The Ivory Field"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "bonewarden_adaeze",
+      "pos": [
+        -8,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "ranger_tomas",
+      "pos": [
+        12,
+        176
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "carrion_hunter_leif",
+      "pos": [
+        -12,
+        178
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "sister_imelda",
+      "pos": [
+        10,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "supplier_nnamdi",
+      "pos": [
+        0,
+        202
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "tuskwatch_warden",
+      "pos": [
+        0,
+        168
+      ],
+      "patrol": [
+        [
+          0,
+          168
+        ],
+        [
+          22,
+          186
+        ],
+        [
+          0,
+          206
+        ],
+        [
+          -22,
+          186
+        ],
+        [
+          0,
+          168
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        -60
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        40,
+        -90
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -60,
+        -110
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        20,
+        -140
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        70,
+        -50
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        0,
+        -110
+      ],
+      "pool": {
+        "old_ossuary": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    },
+    {
+      "pos": [
+        140,
+        90
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        170,
+        60
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        120,
+        130
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        160,
+        140
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        110,
+        70
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        185,
+        100
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        150,
+        100
+      ],
+      "pool": {
+        "tuskmonger_varga": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -130,
+        80
+      ],
+      "pool": {
+        "bone_vulture": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -160,
+        120
+      ],
+      "pool": {
+        "bone_vulture": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -100,
+        140
+      ],
+      "pool": {
+        "bone_vulture": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -60,
+        110
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -140,
+        40
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -110,
+        170
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -170,
+        80
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -135,
+        120
+      ],
+      "pool": {
+        "gorgemaw": 1
+      },
+      "respawn": 1500,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -140,
+        -100
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -170,
+        -60
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -110,
+        -150
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -160,
+        -150
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -100,
+        -70
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -140,
+        -130
+      ],
+      "pool": {
+        "herd_grandmother": 1
+      },
+      "respawn": 1500,
+      "wander": 8
+    }
+  ]
+}

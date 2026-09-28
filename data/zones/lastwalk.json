@@ -1,0 +1,854 @@
+{
+  "name": "Lastwalk",
+  "levels": [
+    46,
+    49
+  ],
+  "music": "lastwalk",
+  "seed": 9911,
+  "size": 512,
+  "height_amplitude": 6,
+  "bind_point": [
+    2,
+    188
+  ],
+  "flat_radius": 18,
+  "trees": 30,
+  "tree_mix": [
+    "charred_tree_tall",
+    "wind_bent_tree"
+  ],
+  "groves": 0.2,
+  "rocks": 180,
+  "grass_colors": [
+    "#5e5848",
+    "#6e6654"
+  ],
+  "fog_density": 0.005,
+  "fog_color": "#8e8878",
+  "sun_energy": 0.85,
+  "clutter": {
+    "grass_b": {
+      "density": 0.14,
+      "patch": 0.5,
+      "sway": 0.2,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.7,
+        1.1
+      ]
+    },
+    "bone_scatter": {
+      "density": 0.004,
+      "patch": 0.7,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "pebbles": {
+      "density": 0.04,
+      "patch": 0.5,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.5
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -60
+      ],
+      "radius": 70,
+      "color": "#4e483c",
+      "flatten": 0.2,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          0,
+          120
+        ],
+        [
+          10,
+          20
+        ],
+        [
+          0,
+          -40
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          10,
+          20
+        ],
+        [
+          120,
+          10
+        ],
+        [
+          256,
+          0
+        ]
+      ],
+      "width": 2.6
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "fogfall",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "timirajs_table",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -60
+      ],
+      "id": "petrified_giant",
+      "collide": "mesh",
+      "face": [
+        0,
+        -60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -90
+      ],
+      "id": "petrified_giant",
+      "collide": "mesh",
+      "face": [
+        0,
+        -60
+      ],
+      "scale": 1.2
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        -140
+      ],
+      "id": "petrified_giant",
+      "collide": "mesh",
+      "face": [
+        -80,
+        -100
+      ],
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        100,
+        30
+      ],
+      "id": "petrified_giant",
+      "collide": "mesh",
+      "face": [
+        60,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        60
+      ],
+      "id": "petrified_giant",
+      "collide": "mesh",
+      "face": [
+        0,
+        40
+      ],
+      "scale": 0.9
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -20
+      ],
+      "id": "shattered_divine_blade",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        -30
+      ],
+      "id": "shattered_divine_blade",
+      "collide": "mesh",
+      "scale": 0.8
+    },
+    {
+      "type": "prop",
+      "pos": [
+        140,
+        -60
+      ],
+      "id": "shattered_divine_blade",
+      "collide": "mesh",
+      "scale": 1.2
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -120
+      ],
+      "id": "divine_shield_fragment",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        80
+      ],
+      "id": "divine_shield_fragment",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -60
+      ],
+      "id": "war_crater",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        20
+      ],
+      "id": "war_crater",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        120,
+        -120
+      ],
+      "id": "war_crater",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        120
+      ],
+      "id": "war_crater",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -90
+      ],
+      "id": "godwar_banner",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -40
+      ],
+      "id": "godwar_banner",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -20
+      ],
+      "id": "godwar_banner",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        -100
+      ],
+      "id": "construct_husk",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        -130
+      ],
+      "id": "construct_husk",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        100
+      ],
+      "id": "relic_cart",
+      "collide": "mesh",
+      "face": [
+        -130,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -145,
+        95
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        -130,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -115,
+        130
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        -130,
+        110
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -128,
+        108
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -14,
+        196
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        14,
+        198
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        2,
+        186
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        206
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        228
+      ],
+      "yaw": -90,
+      "labels": [
+        "Fogfall",
+        "Lastwalk"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        228,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Timiraj's Table",
+        "Lastwalk"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "chronicler_mateo",
+      "pos": [
+        -8,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "stonewright_freydis",
+      "pos": [
+        12,
+        176
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "artificer_kanoa",
+      "pos": [
+        -12,
+        178
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "relic_keeper_wilhelmina",
+      "pos": [
+        10,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "sutler_bartholomew",
+      "pos": [
+        0,
+        202
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "vigil_warden",
+      "pos": [
+        0,
+        168
+      ],
+      "patrol": [
+        [
+          0,
+          168
+        ],
+        [
+          22,
+          186
+        ],
+        [
+          0,
+          206
+        ],
+        [
+          -22,
+          186
+        ],
+        [
+          0,
+          168
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        -40
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        30,
+        -60
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -60,
+        -80
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        50,
+        -20
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        0,
+        -100
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -40,
+        0
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        0,
+        -70
+      ],
+      "pool": {
+        "last_marshal": 1
+      },
+      "respawn": 1500,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -120,
+        -120
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -150,
+        -80
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -100,
+        -160
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -160,
+        -150
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -80,
+        -110
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -130,
+        -130
+      ],
+      "pool": {
+        "unmoving_champion": 1
+      },
+      "respawn": 1500,
+      "wander": 3
+    },
+    {
+      "pos": [
+        120,
+        -120
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        150,
+        -80
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        100,
+        -160
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        160,
+        -150
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        80,
+        -110
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        130,
+        -130
+      ],
+      "pool": {
+        "godforged_engine": 1
+      },
+      "respawn": 1500,
+      "wander": 5
+    },
+    {
+      "pos": [
+        -120,
+        80
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        110
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -100,
+        130
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -160,
+        60
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -130,
+        160
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -80,
+        100
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -130,
+        110
+      ],
+      "pool": {
+        "hierarch_oszkar": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    }
+  ]
+}

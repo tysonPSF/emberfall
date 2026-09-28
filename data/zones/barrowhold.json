@@ -1,0 +1,1326 @@
+{
+  "name": "Barrowhold",
+  "music": "barrowhold",
+  "seed": 9871,
+  "size": 224,
+  "height_amplitude": 1.0,
+  "bind_point": [
+    0,
+    12
+  ],
+  "bindstone": true,
+  "fixed_hour": 20.3,
+  "flat_radius": 75,
+  "clear_radius": 70,
+  "tree_mix": [
+    "black_tree"
+  ],
+  "rocks": 10,
+  "road_lamps": 10,
+  "grass_colors": [
+    "#3a4048",
+    "#464c54"
+  ],
+  "fog_density": 0.004,
+  "fog_color": "#6a5a80",
+  "sun_energy": 0.8,
+  "ground_tint": {
+    "color": "#4a4650",
+    "radius": 70,
+    "amount": 0.6
+  },
+  "passes": [
+    [
+      0,
+      112,
+      9
+    ],
+    [
+      -112,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          112
+        ],
+        [
+          0,
+          16
+        ]
+      ],
+      "width": 5
+    },
+    {
+      "points": [
+        [
+          -14,
+          0
+        ],
+        [
+          -112,
+          0
+        ]
+      ],
+      "width": 4
+    },
+    {
+      "points": [
+        [
+          14,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "width": 4
+    },
+    {
+      "points": [
+        [
+          0,
+          -20
+        ],
+        [
+          0,
+          -70
+        ]
+      ],
+      "width": 4
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "the_unlit",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        -97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "timirajs_table",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        90
+      ],
+      "id": "barrowhold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -8
+      ],
+      "id": "timiraj_shrine",
+      "collide": "mesh",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -40
+      ],
+      "id": "black_sun",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -60
+      ],
+      "id": "obsidian_tower",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -60
+      ],
+      "id": "obsidian_tower",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        40
+      ],
+      "id": "obsidian_tower",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        40
+      ],
+      "id": "obsidian_tower",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -80
+      ],
+      "id": "observatory",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        30
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        -24
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -40
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44,
+        -20
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        58
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        60
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -66,
+        26
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -58
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        64,
+        0
+      ],
+      "id": "eclipse_house",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        30
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        30
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        60
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        60
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -20
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -20
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        10
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        10
+      ],
+      "id": "moon_lamp",
+      "collide": "box"
+    },
+    {
+      "type": "market",
+      "pos": [
+        34,
+        18
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -30
+      ],
+      "id": "forge",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        48,
+        30
+      ],
+      "id": "oven",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        54,
+        12
+      ],
+      "id": "loom",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        48,
+        44
+      ],
+      "id": "brew_barrel",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        10,
+        82
+      ],
+      "yaw": 90,
+      "labels": [
+        "Barrowhold",
+        "The Unlit"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -80,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        50,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -80
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -80
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -70
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -70
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -60
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -60
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -50
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -50
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -40
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -40
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -30
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -30
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        -20
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -20
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        -10
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        0
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        10
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        20
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        20
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        30
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        30
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        40
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        40
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        50
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        50
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        60
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        60
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        70
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        70
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        80
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        80
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -92,
+        90
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        92,
+        90
+      ],
+      "id": "eclipse_wall",
+      "collide": "box",
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -80,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -50,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        50,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        -92
+      ],
+      "id": "eclipse_wall",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        0
+      ],
+      "id": "barrowhold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -82,
+        10
+      ],
+      "yaw": 180,
+      "labels": [
+        "Barrowhold",
+        "Timiraj's Table"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "umbral_priest_casimir",
+      "pos": [
+        0,
+        6
+      ],
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "id": "bh_gm_warrior",
+      "pos": [
+        -30,
+        -14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "bh_gm_cleric",
+      "pos": [
+        -12,
+        -24
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "bh_gm_wizard",
+      "pos": [
+        30,
+        -64
+      ],
+      "face": [
+        40,
+        -80
+      ]
+    },
+    {
+      "id": "bh_gm_rogue",
+      "pos": [
+        30,
+        -14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "bh_gm_magician",
+      "pos": [
+        -30,
+        14
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "bh_gm_necromancer",
+      "pos": [
+        -14,
+        40
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "bh_gm_shaman",
+      "pos": [
+        14,
+        40
+      ],
+      "face": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "bh_gm_ranger",
+      "pos": [
+        -44,
+        8
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "banker_severin",
+      "pos": [
+        26,
+        30
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "provisioner_ilse",
+      "pos": [
+        42,
+        24
+      ],
+      "face": [
+        30,
+        18
+      ]
+    },
+    {
+      "id": "armorer_ottilie",
+      "pos": [
+        36,
+        -30
+      ],
+      "face": [
+        30,
+        -10
+      ]
+    },
+    {
+      "id": "weaponsmith_corvin",
+      "pos": [
+        20,
+        -40
+      ],
+      "face": [
+        20,
+        -20
+      ]
+    },
+    {
+      "id": "barrowhold_guard",
+      "pos": [
+        -6,
+        76
+      ]
+    },
+    {
+      "id": "barrowhold_guard",
+      "pos": [
+        6,
+        76
+      ]
+    },
+    {
+      "id": "barrowhold_guard",
+      "pos": [
+        0,
+        30
+      ],
+      "patrol": [
+        [
+          0,
+          30
+        ],
+        [
+          40,
+          0
+        ],
+        [
+          0,
+          -40
+        ],
+        [
+          -40,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ]
+    }
+  ],
+  "spawns": []
+}

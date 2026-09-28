@@ -3384,5 +3384,857 @@
       "galehold": 30,
       "fallen_breath": -30
     }
+  },
+  "tarnished_court_silver_q": {
+    "name": "Pieces Of Tarnished Court Silver",
+    "giver": "loremaster_evander",
+    "start_keyword": "silver",
+    "wants": {
+      "tarnished_court_silver": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "first_reward_item": "courtiers_signet",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Tarnished Court Silver. Bring Loremaster Evander 4 pieces of tarnished court silver.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "ysmoor_court": -10
+    }
+  },
+  "ismays_mourning_veil_q": {
+    "name": "Ismay's Mourning Veil",
+    "giver": "loremaster_evander",
+    "start_keyword": "veil",
+    "wants": {
+      "ismays_mourning_veil": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "first_reward_item": "mourning_veil_cowl",
+    "accept_text": "You have taken on a task: Ismay's Mourning Veil. Bring Loremaster Evander Ismay's Mourning Veil.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "ysmoor_court": -30
+    }
+  },
+  "gargoyle_stone_q": {
+    "name": "Gargoyle Stones",
+    "giver": "mason_hilde",
+    "start_keyword": "stones",
+    "wants": {
+      "gargoyle_stone": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "first_reward_item": "gargoyle_hide_vambraces",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Gargoyle Stones. Bring Mason Hilde 4 gargoyle stones.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "ysmoor_stones": -10
+    }
+  },
+  "grimwatchs_stone_heart_q": {
+    "name": "Grimwatch's Stone Heart",
+    "giver": "mason_hilde",
+    "start_keyword": "heart",
+    "wants": {
+      "grimwatchs_stone_heart": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "first_reward_item": "stoneheart_shield",
+    "accept_text": "You have taken on a task: Grimwatch's Stone Heart. Bring Mason Hilde Grimwatch's Stone Heart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "ysmoor_stones": -30
+    }
+  },
+  "fog_hound_pelt_q": {
+    "name": "Fog-hound Pelts",
+    "giver": "kennelwarden_osric",
+    "start_keyword": "pelts",
+    "wants": {
+      "fog_hound_pelt": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "first_reward_item": "foghound_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Fog-hound Pelts. Bring Kennelwarden Osric 4 fog-hound pelts.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8
+    }
+  },
+  "whitemaws_collar_q": {
+    "name": "Old Whitemaw's Collar",
+    "giver": "kennelwarden_osric",
+    "start_keyword": "collar",
+    "wants": {
+      "whitemaws_collar": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "first_reward_item": "whitemaw_fang_dirk",
+    "accept_text": "You have taken on a task: Old Whitemaw's Collar. Bring Kennelwarden Osric Old Whitemaw's Collar.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30
+    }
+  },
+  "stolen_grave_goods_q": {
+    "name": "Bundles Of Stolen Grave-goods",
+    "giver": "warden_cassia",
+    "start_keyword": "goods",
+    "wants": {
+      "stolen_grave_goods": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "first_reward_item": "robbers_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Bundles Of Stolen Grave-goods. Bring Warden Cassia 4 bundles of stolen grave-goods.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "grave_robbers": -10
+    }
+  },
+  "crowes_black_lantern_q": {
+    "name": "Crowe's Black Lantern",
+    "giver": "warden_cassia",
+    "start_keyword": "lantern",
+    "wants": {
+      "crowes_black_lantern": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "first_reward_item": "black_lantern_charm",
+    "accept_text": "You have taken on a task: Crowe's Black Lantern. Bring Warden Cassia Crowe's Black Lantern.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "grave_robbers": -30
+    }
+  },
+  "ivory_shard_q": {
+    "name": "Ivory Shards",
+    "giver": "bonewarden_adaeze",
+    "start_keyword": "shards",
+    "wants": {
+      "ivory_shard": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "first_reward_item": "ivory_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Ivory Shards. Bring Bonewarden Adaeze 4 ivory shards.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "herd_spirits": -10
+    }
+  },
+  "ossuary_heartbone_q": {
+    "name": "The Ossuary's Heartbone",
+    "giver": "bonewarden_adaeze",
+    "start_keyword": "heartbone",
+    "wants": {
+      "ossuary_heartbone": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "first_reward_item": "ossuary_greatmaul",
+    "accept_text": "You have taken on a task: The Ossuary's Heartbone. Bring Bonewarden Adaeze the Ossuary's Heartbone.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "herd_spirits": -30
+    }
+  },
+  "poached_ivory_q": {
+    "name": "Pieces Of Poached Ivory",
+    "giver": "ranger_tomas",
+    "start_keyword": "ivory",
+    "wants": {
+      "poached_ivory": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "first_reward_item": "poachers_bane_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Poached Ivory. Bring Ranger Tomas 4 pieces of poached ivory.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "poachers": -10
+    }
+  },
+  "vargas_tusk_saw_q": {
+    "name": "Varga's Tusk-Saw",
+    "giver": "ranger_tomas",
+    "start_keyword": "saw",
+    "wants": {
+      "vargas_tusk_saw": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "first_reward_item": "tusksaw_cleaver",
+    "accept_text": "You have taken on a task: Varga's Tusk-Saw. Bring Ranger Tomas Varga's Tusk-Saw.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "poachers": -30
+    }
+  },
+  "carrion_feather_q": {
+    "name": "Carrion Feathers",
+    "giver": "carrion_hunter_leif",
+    "start_keyword": "feathers",
+    "wants": {
+      "carrion_feather": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "first_reward_item": "carrion_feather_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Carrion Feathers. Bring Carrion-Hunter Leif 4 carrion feathers.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8
+    }
+  },
+  "gorgemaws_beak_q": {
+    "name": "Gorgemaw's Beak",
+    "giver": "carrion_hunter_leif",
+    "start_keyword": "beak",
+    "wants": {
+      "gorgemaws_beak": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "first_reward_item": "gorgemaw_beak_amulet",
+    "accept_text": "You have taken on a task: Gorgemaw's Beak. Bring Carrion-Hunter Leif Gorgemaw's Beak.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30
+    }
+  },
+  "ghost_ivory_q": {
+    "name": "Pieces Of Ghost-ivory",
+    "giver": "sister_imelda",
+    "start_keyword": "ghost-ivory",
+    "wants": {
+      "ghost_ivory": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "first_reward_item": "ghost_ivory_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Ghost-ivory. Bring Sister Imelda 4 pieces of ghost-ivory.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "herd_spirits": -10
+    }
+  },
+  "grandmothers_tusk_q": {
+    "name": "The Grandmother's Tusk",
+    "giver": "sister_imelda",
+    "start_keyword": "tusk",
+    "wants": {
+      "grandmothers_tusk": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "first_reward_item": "grandmothers_blessing",
+    "accept_text": "You have taken on a task: The Grandmother's Tusk. Bring Sister Imelda the Grandmother's Tusk.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "herd_spirits": -30
+    }
+  },
+  "shade_essence_q": {
+    "name": "Shade Essences",
+    "giver": "lampwarden_solenne",
+    "start_keyword": "essences",
+    "wants": {
+      "shade_essence": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "first_reward_item": "shade_silk_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Shade Essences. Bring Lampwarden Solenne 4 shade essences.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "shades": -10
+    }
+  },
+  "nameless_echo_q": {
+    "name": "The Nameless Echo",
+    "giver": "lampwarden_solenne",
+    "start_keyword": "echo",
+    "wants": {
+      "nameless_echo": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "first_reward_item": "echo_of_the_nameless",
+    "accept_text": "You have taken on a task: The Nameless Echo. Bring Lampwarden Solenne the Nameless Echo.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "shades": -30
+    }
+  },
+  "shadowhide_q": {
+    "name": "Pieces Of Shadowhide",
+    "giver": "nighthunter_kwame",
+    "start_keyword": "shadowhide",
+    "wants": {
+      "shadowhide": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "first_reward_item": "shadowhide_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Shadowhide. Bring Nighthunter Kwame 4 pieces of shadowhide.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8
+    }
+  },
+  "starveils_eye_q": {
+    "name": "Starveil's Eye",
+    "giver": "nighthunter_kwame",
+    "start_keyword": "eye",
+    "wants": {
+      "starveils_eye": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "first_reward_item": "starveil_bow",
+    "accept_text": "You have taken on a task: Starveil's Eye. Bring Nighthunter Kwame Starveil's Eye.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30
+    }
+  },
+  "luminous_dust_q": {
+    "name": "Pinches Of Luminous Dust",
+    "giver": "lepidarist_yuna",
+    "start_keyword": "dust",
+    "wants": {
+      "luminous_dust": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "first_reward_item": "moonsilk_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pinches Of Luminous Dust. Bring Lepidarist Yuna 4 pinches of luminous dust.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8
+    }
+  },
+  "moon_moths_antenna_q": {
+    "name": "The Moon Moth's Antenna",
+    "giver": "lepidarist_yuna",
+    "start_keyword": "antenna",
+    "wants": {
+      "moon_moths_antenna": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "first_reward_item": "moonwing_mantle",
+    "accept_text": "You have taken on a task: The Moon Moth's Antenna. Bring Lepidarist Yuna the Moon Moth's Antenna.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30
+    }
+  },
+  "morvaine_crest_q": {
+    "name": "Morvaine Crests",
+    "giver": "witch_hunter_aurelio",
+    "start_keyword": "crests",
+    "wants": {
+      "morvaine_crest": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "first_reward_item": "morvaine_signet_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Morvaine Crests. Bring Witch-Hunter Aurelio 4 Morvaine crests.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "house_morvaine": -10
+    }
+  },
+  "countess_locket_q": {
+    "name": "The Countess's Locket",
+    "giver": "witch_hunter_aurelio",
+    "start_keyword": "locket",
+    "wants": {
+      "countess_locket": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "first_reward_item": "countess_crimson_blade",
+    "accept_text": "You have taken on a task: The Countess's Locket. Bring Witch-Hunter Aurelio the Countess's Locket.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "house_morvaine": -30
+    }
+  },
+  "godwar_insignia_q": {
+    "name": "Godwar Insignia",
+    "giver": "chronicler_mateo",
+    "start_keyword": "insignia",
+    "wants": {
+      "godwar_insignia": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "first_reward_item": "godwar_pauldrons",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Godwar Insignia. Bring Chronicler Mateo 4 godwar insignia.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "godwar_dead": -10
+    }
+  },
+  "marshals_broken_standard_q": {
+    "name": "The Marshal's Broken Standard",
+    "giver": "chronicler_mateo",
+    "start_keyword": "standard",
+    "wants": {
+      "marshals_broken_standard": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "first_reward_item": "marshals_standard_blade",
+    "accept_text": "You have taken on a task: The Marshal's Broken Standard. Bring Chronicler Mateo the Marshal's Broken Standard.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "godwar_dead": -30
+    }
+  },
+  "petrified_shard_q": {
+    "name": "Petrified Shards",
+    "giver": "stonewright_freydis",
+    "start_keyword": "shards",
+    "wants": {
+      "petrified_shard": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "first_reward_item": "stoneskin_girdle",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Petrified Shards. Bring Stonewright Freydis 4 petrified shards.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "godwar_dead": -10
+    }
+  },
+  "champions_stone_crest_q": {
+    "name": "The Champion's Stone Crest",
+    "giver": "stonewright_freydis",
+    "start_keyword": "crest",
+    "wants": {
+      "champions_stone_crest": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "first_reward_item": "champions_crest_shield",
+    "accept_text": "You have taken on a task: The Champion's Stone Crest. Bring Stonewright Freydis the Champion's Stone Crest.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "godwar_dead": -30
+    }
+  },
+  "divine_bronze_q": {
+    "name": "Pieces Of Divine Bronze",
+    "giver": "artificer_kanoa",
+    "start_keyword": "bronze",
+    "wants": {
+      "divine_bronze": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "first_reward_item": "divine_bronze_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Divine Bronze. Bring Artificer Kanoa 4 pieces of divine bronze.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "divine_constructs": -10
+    }
+  },
+  "godforged_core_q": {
+    "name": "The Godforged Core",
+    "giver": "artificer_kanoa",
+    "start_keyword": "core",
+    "wants": {
+      "godforged_core": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "first_reward_item": "godforged_heart_amulet",
+    "accept_text": "You have taken on a task: The Godforged Core. Bring Artificer Kanoa the Godforged Core.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "divine_constructs": -30
+    }
+  },
+  "stolen_relic_q": {
+    "name": "Stolen Relics",
+    "giver": "relic_keeper_wilhelmina",
+    "start_keyword": "relics",
+    "wants": {
+      "stolen_relic": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "first_reward_item": "scavengers_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Stolen Relics. Bring Relic-Keeper Wilhelmina 4 stolen relics.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "relic_scavengers": -10
+    }
+  },
+  "oszkars_relic_crown_q": {
+    "name": "Oszkar's Relic Crown",
+    "giver": "relic_keeper_wilhelmina",
+    "start_keyword": "crown",
+    "wants": {
+      "oszkars_relic_crown": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "first_reward_item": "relic_crown_circlet",
+    "accept_text": "You have taken on a task: Oszkar's Relic Crown. Bring Relic-Keeper Wilhelmina Oszkar's Relic Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "relic_scavengers": -30
+    }
+  },
+  "grave_gold_q": {
+    "name": "Grave-gold Coins",
+    "giver": "steward_abelard",
+    "start_keyword": "gold",
+    "wants": {
+      "grave_gold": 4
+    },
+    "reward": {
+      "xp": 24300,
+      "coin": 2700
+    },
+    "first_reward_item": "grave_gold_signet",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Grave-gold Coins. Bring Steward Abelard 4 grave-gold coins.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "the_feast": -10
+    }
+  },
+  "long_table_goblet_q": {
+    "name": "The Long Table's Goblet",
+    "giver": "steward_abelard",
+    "start_keyword": "goblet",
+    "wants": {
+      "long_table_goblet": 1
+    },
+    "reward": {
+      "xp": 54000,
+      "coin": 6480
+    },
+    "first_reward_item": "long_table_chalice_charm",
+    "accept_text": "You have taken on a task: The Long Table's Goblet. Bring Steward Abelard the Long Table's Goblet.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "the_feast": -30
+    }
+  },
+  "star_fragment_q": {
+    "name": "Star Fragments",
+    "giver": "starwatcher_imre",
+    "start_keyword": "fragments",
+    "wants": {
+      "star_fragment": 4
+    },
+    "reward": {
+      "xp": 24300,
+      "coin": 2700
+    },
+    "first_reward_item": "starfragment_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Star Fragments. Bring Starwatcher Imre 4 star fragments.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "star_giants": -10
+    }
+  },
+  "astraels_star_heart_q": {
+    "name": "Astrael's Star-Heart",
+    "giver": "starwatcher_imre",
+    "start_keyword": "heart",
+    "wants": {
+      "astraels_star_heart": 1
+    },
+    "reward": {
+      "xp": 54000,
+      "coin": 6480
+    },
+    "first_reward_item": "star_heart_staff",
+    "accept_text": "You have taken on a task: Astrael's Star-Heart. Bring Starwatcher Imre Astrael's Star-Heart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "star_giants": -30
+    }
+  },
+  "shadowfur_q": {
+    "name": "Pieces Of Shadowfur",
+    "giver": "kennel_keeper_sabela",
+    "start_keyword": "shadowfur",
+    "wants": {
+      "shadowfur": 4
+    },
+    "reward": {
+      "xp": 24300,
+      "coin": 2700
+    },
+    "first_reward_item": "shadowfur_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Pieces Of Shadowfur. Bring Kennel-Keeper Sabela 4 pieces of shadowfur.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "the_feast": -10
+    }
+  },
+  "nightjaws_fang_q": {
+    "name": "Nightjaw's Fang",
+    "giver": "kennel_keeper_sabela",
+    "start_keyword": "fang",
+    "wants": {
+      "nightjaws_fang": 1
+    },
+    "reward": {
+      "xp": 54000,
+      "coin": 6480
+    },
+    "first_reward_item": "nightjaw_fang_bow",
+    "accept_text": "You have taken on a task: Nightjaw's Fang. Bring Kennel-Keeper Sabela Nightjaw's Fang.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The Unlit remembers.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "barrowhold": 30,
+      "the_feast": -30
+    }
+  },
+  "blackened_offering_q": {
+    "name": "Blackened Offerings",
+    "giver": "high_priestess_nadira",
+    "start_keyword": "offerings",
+    "wants": {
+      "blackened_offering": 4
+    },
+    "reward": {
+      "xp": 54000,
+      "coin": 6000
+    },
+    "first_reward_item": "offering_bearers_sash",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Blackened Offerings. Bring High Umbral Priestess Nadira 4 blackened offerings.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "barrowhold": 8,
+      "the_uninvited": -10
+    }
+  },
+  "crown_of_the_uninvited_q": {
+    "name": "Crown of the Uninvited",
+    "giver": "high_priestess_nadira",
+    "start_keyword": "crown",
+    "wants": {
+      "crown_of_the_uninvited": 1
+    },
+    "reward": {
+      "xp": 120000,
+      "coin": 14400
+    },
+    "first_reward_item": "crown_of_the_table",
+    "accept_text": "You have taken on a task: Crown of the Uninvited. Bring High Umbral Priestess Nadira Crown of the Uninvited.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "The chair is empty. Timiraj will feast again.",
+    "first_complete_text": "Wear this. Timiraj himself would have you at his table.",
+    "faction": {
+      "barrowhold": 30,
+      "the_uninvited": -30
+    }
   }
 }

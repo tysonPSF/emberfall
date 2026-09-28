@@ -512,5 +512,132 @@
       "fallen_breath": -8,
       "galehold": 3
     }
+  },
+  "barrowhold": {
+    "name": "Citizens of Barrowhold",
+    "default": 100,
+    "on_kill": {
+      "barrowhold": -200
+    },
+    "on_attack": {
+      "barrowhold": -50
+    }
+  },
+  "ysmoor_court": {
+    "name": "The Court of Ysmoor",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "ysmoor_court": -8,
+      "barrowhold": 3
+    }
+  },
+  "ysmoor_stones": {
+    "name": "The Gargoyles of Ysmoor",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "ysmoor_stones": -8,
+      "barrowhold": 3
+    }
+  },
+  "grave_robbers": {
+    "name": "The Grave Robbers",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "grave_robbers": -8,
+      "barrowhold": 3
+    }
+  },
+  "herd_spirits": {
+    "name": "Spirits of the Great Herds",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "herd_spirits": -8,
+      "barrowhold": 3
+    }
+  },
+  "poachers": {
+    "name": "The Ivory Poachers",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "poachers": -8,
+      "barrowhold": 3
+    }
+  },
+  "shades": {
+    "name": "The Shades",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "shades": -8,
+      "barrowhold": 3
+    }
+  },
+  "house_morvaine": {
+    "name": "House Morvaine",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "house_morvaine": -8,
+      "barrowhold": 3
+    }
+  },
+  "godwar_dead": {
+    "name": "The Godwar Dead",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "godwar_dead": -8,
+      "barrowhold": 3
+    }
+  },
+  "divine_constructs": {
+    "name": "The Divine Constructs",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "divine_constructs": -8,
+      "barrowhold": 3
+    }
+  },
+  "relic_scavengers": {
+    "name": "The Relic-Scavengers",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "relic_scavengers": -8,
+      "barrowhold": 3
+    }
+  },
+  "the_feast": {
+    "name": "The Host of the Feast",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "the_feast": -8,
+      "barrowhold": 3
+    }
+  },
+  "star_giants": {
+    "name": "Star-Giants",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "star_giants": -8,
+      "barrowhold": 3
+    }
+  },
+  "the_uninvited": {
+    "name": "The Court of the Uninvited",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "the_uninvited": -8,
+      "barrowhold": 3
+    }
   }
 }

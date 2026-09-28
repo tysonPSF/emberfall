@@ -1,6 +1,7 @@
 {
  "built": [
   "agnavars_hearth",
+  "barrowhold",
   "blackglass",
   "cinderpass",
   "dawnwatch",
@@ -9,6 +10,7 @@
   "emberhold",
   "emberhold_crypt",
   "emberhold_tavern",
+  "fogfall",
   "forgehold",
   "galehold",
   "greenmoor",
@@ -16,7 +18,9 @@
   "high_terrace",
   "hollow_air",
   "hollowmere",
+  "ivory_field",
   "lanternhold",
+  "lastwalk",
   "mirror_flats",
   "rainhold",
   "reedmere",
@@ -27,8 +31,10 @@
   "the_bleach",
   "the_burn",
   "the_long_grass",
+  "the_unlit",
   "thornwood",
   "tidemouth",
+  "timirajs_table",
   "vayukeths_step",
   "weeping_throat",
   "windbreak"
@@ -636,8 +642,8 @@
     6
    ],
    "kind": "fog",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -654,8 +660,8 @@
     6
    ],
    "kind": "fog",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -672,8 +678,8 @@
     6
    ],
    "kind": "fog",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -690,8 +696,8 @@
     7
    ],
    "kind": "fog",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -708,8 +714,8 @@
     7
    ],
    "kind": "fog",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -726,8 +732,8 @@
     7
    ],
    "kind": "city",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   }
  ],

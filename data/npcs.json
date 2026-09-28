@@ -4277,5 +4277,976 @@
         "slashes"
       ]
     }
+  },
+  "loremaster_evander": {
+    "name": "Loremaster Evander",
+    "level": 55,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "This was Ysmoor, {name}, a kingdom, until the fog came up out of the ground and swallowed it. Its [court] never left.",
+      "unknown": "Ask the others at the Lanternwatch.",
+      "court": "Courtiers and knights, bound in the fog. Bring me four pieces of their tarnished [silver], every time.",
+      "silver": "Four pieces of tarnished court silver. The first time, a signet.",
+      "ismay": "Queen Ismay still mourns in her throne hall. Bring me her mourning [veil], and let her rest.",
+      "veil": "Ismay's mourning veil, {name}."
+    },
+    "title": "The Lanternwatch"
+  },
+  "mason_hilde": {
+    "name": "Mason Hilde",
+    "level": 55,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Ysmoor's masons carved [gargoyles] to guard the walls, {name}. The fog woke them.",
+      "unknown": "Ask Evander.",
+      "gargoyles": "Bring me four gargoyle [stones], every time.",
+      "stones": "Four gargoyle stones. The first time, vambraces of their hide.",
+      "grimwatch": "Grimwatch, the last of the great ones, on the north tower. Bring me its stone [heart].",
+      "heart": "Grimwatch's stone heart, {name}."
+    },
+    "title": "The Lanternwatch"
+  },
+  "kennelwarden_osric": {
+    "name": "Kennelwarden Osric",
+    "level": 55,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The royal kennels ran wild in the fog, {name}. Now there are [hounds] out there white as the fog itself.",
+      "unknown": "Ask Evander.",
+      "hounds": "Bring me four fog-hound [pelts], every time.",
+      "pelts": "Four fog-hound pelts. The first time, a cloak.",
+      "whitemaw": "Old Whitemaw leads the pack. Bring me his [collar]; it still bears the royal crest.",
+      "collar": "Old Whitemaw's collar, {name}."
+    },
+    "title": "The Lanternwatch"
+  },
+  "warden_cassia": {
+    "name": "Warden Cassia",
+    "level": 55,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Where there are tombs there are [robbers], {name}, and Ysmoor has more tombs than living.",
+      "unknown": "Ask Evander.",
+      "robbers": "Bring me back four bundles of stolen grave-[goods], every time.",
+      "goods": "Four bundles of stolen grave-goods. The first time, a sash.",
+      "crowe": "Silas Crowe, the Tomb-Taker, carries a black lantern. Bring me the [lantern].",
+      "lantern": "Crowe's black lantern, {name}."
+    },
+    "title": "The Lanternwatch"
+  },
+  "sutler_wendel": {
+    "name": "Sutler Wendel",
+    "level": 40,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Evander."
+    },
+    "title": "Lanternwatch Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "stormfeather_arrow",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "lanternwatch_warden": {
+    "name": "a Barrowhold lantern-warden",
+    "level": 65,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Keep to the lanterns, {name}.",
+      "unknown": "Ask Evander."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the lanterns!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 5600,
+      "hp_regen": 90,
+      "ac": 145,
+      "dmg": [
+        36,
+        60
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "bonewarden_adaeze": {
+    "name": "Bonewarden Adaeze",
+    "level": 55,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The great beasts came here to die for ten thousand years, {name}. Now their bones [walk].",
+      "unknown": "Ask the others at Tuskwatch.",
+      "walk": "Ivory colossi, built of a hundred skeletons. Bring me four ivory [shards], every time.",
+      "shards": "Four ivory shards. The first time, a bracer.",
+      "ossuary": "The Walking Ossuary, the greatest of them. Bring me its [heartbone].",
+      "heartbone": "The Ossuary's heartbone, {name}."
+    },
+    "title": "Tuskwatch"
+  },
+  "ranger_tomas": {
+    "name": "Ranger Tomas",
+    "level": 55,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "[Poachers], {name}. They saw tusks from the dead and sell them in the south. It's a desecration.",
+      "unknown": "Ask Adaeze.",
+      "poachers": "Bring me four pieces of poached [ivory], every time, and I'll see it laid back.",
+      "ivory": "Four pieces of poached ivory. The first time, gloves.",
+      "varga": "Tuskmonger Varga runs their camp. Bring me her tusk-[saw].",
+      "saw": "Varga's tusk-saw, {name}."
+    },
+    "title": "Tuskwatch"
+  },
+  "carrion_hunter_leif": {
+    "name": "Carrion-Hunter Leif",
+    "level": 55,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Vultures and jackals, {name}: the [carrion] eaters grow fat and bold here.",
+      "unknown": "Ask Adaeze.",
+      "carrion": "Bring me four carrion [feathers], every time.",
+      "feathers": "Four carrion feathers. The first time, a mantle.",
+      "gorgemaw": "Gorgemaw, the carrion king, a vulture the size of a cart. Bring me its [beak].",
+      "beak": "Gorgemaw's beak, {name}."
+    },
+    "title": "Tuskwatch"
+  },
+  "sister_imelda": {
+    "name": "Sister Imelda",
+    "level": 55,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The spirits of the great [herds] can't rest, {name}, not with poachers in their bones.",
+      "unknown": "Ask Adaeze.",
+      "herds": "Free them. Bring me four pieces of [ghost-ivory], every time.",
+      "grandmother": "The Grandmother of Herds leads them still. Bring me her [tusk], and she'll rest.",
+      "tusk": "The Grandmother's tusk, {name}. Go gently.",
+      "ghost-ivory": "Four pieces of ghost-ivory. The first time, a ring."
+    },
+    "title": "Tuskwatch"
+  },
+  "supplier_nnamdi": {
+    "name": "Supplier Nnamdi",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Adaeze."
+    },
+    "title": "Tuskwatch Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "stormfeather_arrow",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "tuskwatch_warden": {
+    "name": "a Tuskwatch warden",
+    "level": 65,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Walk softly among the bones, {name}.",
+      "unknown": "Ask Adaeze."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near Tuskwatch!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 5600,
+      "hp_regen": 90,
+      "ac": 145,
+      "dmg": [
+        36,
+        60
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "lampwarden_solenne": {
+    "name": "Lampwarden Solenne",
+    "level": 55,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The sun never rises in the Unlit, {name}. Timiraj keeps it so. But the [shades] are no gift of his.",
+      "unknown": "Ask the others at the Lampward.",
+      "shades": "Bring me four shade [essences], every time.",
+      "essences": "Four shade essences. The first time, gloves of shade-silk.",
+      "nameless": "The Nameless Shade: no one remembers who it was. Bring me its [echo].",
+      "echo": "The Nameless Echo, {name}."
+    },
+    "title": "The Lampward"
+  },
+  "nighthunter_kwame": {
+    "name": "Nighthunter Kwame",
+    "level": 55,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Night-[stalkers], {name}: cats of the dark with starlight in their eyes.",
+      "unknown": "Ask Solenne.",
+      "stalkers": "Bring me four pieces of [shadowhide], every time.",
+      "shadowhide": "Four pieces of shadowhide. The first time, boots.",
+      "starveil": "Starveil, the eldest of them. Bring me her [eye].",
+      "eye": "Starveil's eye, {name}."
+    },
+    "title": "The Lampward"
+  },
+  "lepidarist_yuna": {
+    "name": "Lepidarist Yuna",
+    "level": 55,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Giant moon [moths], {name}, drawn to anything that shines. Like us.",
+      "unknown": "Ask Solenne.",
+      "moths": "Bring me four pinches of luminous [dust], every time.",
+      "dust": "Four pinches of luminous dust. The first time, a sash.",
+      "great": "The Great Moon Moth. Bring me its [antenna].",
+      "antenna": "The Moon Moth's antenna, {name}."
+    },
+    "title": "The Lampward"
+  },
+  "witch_hunter_aurelio": {
+    "name": "Witch-Hunter Aurelio",
+    "level": 55,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "House [Morvaine] fled into the endless night to feed where no sun could find them, {name}.",
+      "unknown": "Ask Solenne.",
+      "morvaine": "Bring me four Morvaine [crests], every time.",
+      "crests": "Four Morvaine crests. The first time, their own signet.",
+      "countess": "Countess Seraphine Morvaine, in her manor. Bring me her [locket].",
+      "locket": "The Countess's locket, {name}."
+    },
+    "title": "The Lampward"
+  },
+  "candle_seller_noor": {
+    "name": "Candle-Seller Noor",
+    "level": 40,
+    "model": "mage",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Candles, lamp oil, bread, {name}. Press G.",
+      "unknown": "Ask Solenne."
+    },
+    "title": "Candles and Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "stormfeather_arrow",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "lampward_sentinel": {
+    "name": "a Lampward sentinel",
+    "level": 65,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Stay in the lamplight, {name}.",
+      "unknown": "Ask Solenne."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not in the lamplight!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 5600,
+      "hp_regen": 90,
+      "ac": 145,
+      "dmg": [
+        36,
+        60
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "umbral_priest_casimir": {
+    "name": "Umbral-Priest Casimir",
+    "level": 60,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Welcome to Barrowhold, {name}, under the black sun. This is the shrine of [Timiraj]; I can [bind] your soul to it.",
+      "timiraj": "The Unlit. He holds the dark that lets the stars shine and the dead sleep. His followers may ask for his [blessing] once an hour.",
+      "bind": "Be still, {name}. There: the Unlit will bring you home to Barrowhold.",
+      "unknown": "Ask the guildmasters round the square."
+    },
+    "title": "Keeper of the Shrine of the Unlit",
+    "binds": true,
+    "blesses": {
+      "deity": "dark",
+      "spell": "veil_of_the_unlit",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The dark shelters everyone, {name}, but Timiraj's veil is for his own.",
+      "wait": "You've worn his veil within the hour, {name}.",
+      "give": "Close your eyes, {name}. ...Now you see as he does."
+    }
+  },
+  "bh_gm_warrior": {
+    "name": "Blackguard Aldric Vane",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The dark doesn't frighten a warrior, {name}. Mine? Then stand in it.",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Warrior Guildmaster",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_cleric": {
+    "name": "Starpriest Lucienne",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Even under the black sun there is light to give, {name}. Cleric?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Cleric Guildmaster",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_wizard": {
+    "name": "Astronomer Ptolema",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Every star is a spell, {name}, if you can read it. Wizard?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Wizard Guildmaster",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_rogue": {
+    "name": "Nyx",
+    "level": 60,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Barrowhold is all shadow, {name}. A rogue's city. One of mine?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Rogue Guildmaster",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_magician": {
+    "name": "Starbinder Orrin",
+    "level": 60,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The stars answer a magician's call, {name}. Shall we call them?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Magician Guildmaster",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_necromancer": {
+    "name": "Morwen of the Barrows",
+    "level": 60,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Here the dead are honored, {name}, and they answer us. Necromancer?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Necromancer Guildmaster",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_shaman": {
+    "name": "Night-Mother Eko",
+    "level": 60,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The ancestors are close in the dark, {name}. Shaman? Sit.",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Shaman Guildmaster",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "bh_gm_ranger": {
+    "name": "Nightstalker Brand",
+    "level": 60,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Hunting in the endless night is the finest there is, {name}. Ranger?",
+      "unknown": "Ask Umbral-Priest Casimir at the shrine."
+    },
+    "title": "Ranger Guildmaster",
+    "guildmaster": {
+      "class": "ranger",
+      "refuse": "Not my trade, {name}. The others are round the square."
+    }
+  },
+  "banker_severin": {
+    "name": "Banker Severin",
+    "level": 40,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The vault keeps accounts with every bank in the land, {name}.",
+      "unknown": "I only keep the vault."
+    },
+    "title": "The Eclipse Vault",
+    "banker": true
+  },
+  "provisioner_ilse": {
+    "name": "Provisioner Ilse",
+    "level": 40,
+    "model": "mage",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Supplies for every trade, {name}. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Provisioner",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "armorer_ottilie": {
+    "name": "Armorer Ottilie",
+    "level": 55,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Eclipsed plate, umbral leather, starweave for the casters. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Eclipsed, Umbral and Starweave",
+    "merchant": {
+      "sells": [
+        "eclipsed_helm",
+        "eclipsed_breastplate",
+        "eclipsed_vambraces",
+        "eclipsed_gauntlets",
+        "eclipsed_greaves",
+        "eclipsed_boots",
+        "eclipsed_shield",
+        "umbral_jerkin",
+        "umbral_leggings",
+        "umbral_gloves",
+        "umbral_boots",
+        "starweave_cap",
+        "starweave_robe",
+        "starweave_gloves",
+        "starweave_slippers"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "weaponsmith_corvin": {
+    "name": "Weaponsmith Corvin",
+    "level": 55,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Blades forged under the black sun, {name}. Press G.",
+      "unknown": "Couldn't say."
+    },
+    "title": "Blades of the Black Sun",
+    "merchant": {
+      "sells": [
+        "eclipse_blade",
+        "umbral_war_axe",
+        "nightfall_greataxe",
+        "starshard_dirk",
+        "moonwood_staff",
+        "barrowhold_longbow",
+        "nightwing_arrow"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "barrowhold_guard": {
+    "name": "a Barrowhold nightwarden",
+    "level": 65,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Welcome to Barrowhold, {name}. Mind the dark.",
+      "unknown": "Ask at the shrine."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not in Barrowhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 5600,
+      "hp_regen": 90,
+      "ac": 145,
+      "dmg": [
+        36,
+        60
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "chronicler_mateo": {
+    "name": "Chronicler Mateo",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Here the gods went to war, {name}, long before any of us. What fell here never stopped [fighting].",
+      "unknown": "Ask the others at the Vigil.",
+      "fighting": "Godwar revenants, soldiers of the gods' old armies. Bring me four godwar [insignia], every time. Their [marshal] leads them still.",
+      "insignia": "Four godwar insignia. The first time, vambraces.",
+      "marshal": "The Last Marshal still calls the charge. Bring me his broken [standard].",
+      "standard": "The Marshal's broken standard, {name}."
+    },
+    "title": "The Pilgrim's Vigil"
+  },
+  "stonewright_freydis": {
+    "name": "Stonewright Freydis",
+    "level": 60,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The giants you see were [warriors] once, {name}, turned to stone mid-blow by the war's last spell. Some still move.",
+      "unknown": "Ask Mateo.",
+      "warriors": "Petrified warriors. Bring me four petrified [shards], every time. The mightiest of them is the [champion].",
+      "shards": "Four petrified shards. The first time, a girdle.",
+      "champion": "The Unmoving Champion. Bring me its stone [crest].",
+      "crest": "The Champion's stone crest, {name}."
+    },
+    "title": "The Pilgrim's Vigil"
+  },
+  "artificer_kanoa": {
+    "name": "Artificer Kanoa",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The gods built [constructs] of bronze and light to fight for them, {name}. Nobody ever told them to stop.",
+      "unknown": "Ask Mateo.",
+      "constructs": "Bring me four pieces of divine [bronze], every time. The great [engine] still stands among them.",
+      "bronze": "Four pieces of divine bronze. The first time, a ring.",
+      "engine": "The Godforged Engine. Bring me its [core].",
+      "core": "The Godforged Core, {name}."
+    },
+    "title": "The Pilgrim's Vigil"
+  },
+  "relic_keeper_wilhelmina": {
+    "name": "Relic-Keeper Wilhelmina",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "[Scavengers] pick the battlefield for the gods' relics, {name}, and some of them have started eating the power inside.",
+      "unknown": "Ask Mateo.",
+      "scavengers": "Bring me back four stolen [relics], every time. Their [hierarch] eats the most.",
+      "relics": "Four stolen relics. The first time, gloves.",
+      "hierarch": "Hierarch Oszkar the Relic-Eater wears a crown of them. Bring me that [crown].",
+      "crown": "Oszkar's relic crown, {name}."
+    },
+    "title": "The Pilgrim's Vigil"
+  },
+  "sutler_bartholomew": {
+    "name": "Sutler Bartholomew",
+    "level": 44,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Mateo."
+    },
+    "title": "Vigil Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "vigil_warden": {
+    "name": "a Vigil warden",
+    "level": 68,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Walk softly among the fallen gods' dead, {name}.",
+      "unknown": "Ask Mateo."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the Vigil!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 6200,
+      "hp_regen": 100,
+      "ac": 155,
+      "dmg": [
+        40,
+        66
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "steward_abelard": {
+    "name": "Steward Abelard",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "This is Timiraj's Table, {name}, where the Unlit feasts the [honored] dead. The living were never meant to sit here.",
+      "unknown": "Ask the others at the Guest-Gate.",
+      "honored": "The honored dead guard the feast from the living. Bring me four grave-[gold] coins, every time. Their [lord] sits at the head.",
+      "gold": "Four grave-gold coins. The first time, a signet.",
+      "lord": "The Lord of the Long Table. Bring me his [goblet].",
+      "goblet": "The Long Table's goblet, {name}."
+    },
+    "title": "The Guest-Gate"
+  },
+  "starwatcher_imre": {
+    "name": "Starwatcher Imre",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Up here the stars are close enough to fall, {name}, and the star-[giants] throw them.",
+      "unknown": "Ask Steward Abelard.",
+      "giants": "Bring me four star [fragments], every time. The greatest of them is [Astrael].",
+      "fragments": "Four star fragments. The first time, boots.",
+      "astrael": "Astrael the Star-Giant. Bring me its star-[heart].",
+      "heart": "Astrael's star-heart, {name}."
+    },
+    "title": "The Guest-Gate"
+  },
+  "kennel_keeper_sabela": {
+    "name": "Kennel-Keeper Sabela",
+    "level": 60,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Timiraj's [hounds] run the Table, {name}. They answer only to him, and he has been silent.",
+      "unknown": "Ask Steward Abelard.",
+      "hounds": "Bring me four pieces of [shadowfur], every time. The pack follows [Nightjaw].",
+      "shadowfur": "Four pieces of shadowfur. The first time, a cloak.",
+      "nightjaw": "Nightjaw, first of his hounds. Bring me its [fang].",
+      "fang": "Nightjaw's fang, {name}."
+    },
+    "title": "The Guest-Gate"
+  },
+  "high_priestess_nadira": {
+    "name": "High Umbral Priestess Nadira",
+    "level": 60,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Someone sits in Timiraj's own chair at the head of the Table, {name}: an [uninvited] guest, a dead king who would not stay dead.",
+      "unknown": "Ask Steward Abelard.",
+      "uninvited": "Morcant the Uninvited, and his court of the unwelcome. Bring me four blackened [offerings] from his court, every time. And when you are ready, with friends at your side, bring me his [crown].",
+      "offerings": "Four blackened offerings. The first time, a sash.",
+      "crown": "Morcant's crown, {name}. He is no common foe; don't go alone. When the chair is empty, Timiraj will feast again."
+    },
+    "title": "The Guest-Gate"
+  },
+  "guest_gate_sutler": {
+    "name": "Sutler Yevgenia",
+    "level": 44,
+    "model": "mage",
+    "weapon": "",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Abelard."
+    },
+    "title": "Guest-Gate Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "nightwing_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "guest_gate_warden": {
+    "name": "a Guest-Gate warden",
+    "level": 68,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "Mind your manners at the god's table, {name}.",
+      "unknown": "Ask Abelard."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not at the Guest-Gate!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Barrowhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 6200,
+      "hp_regen": 100,
+      "ac": 155,
+      "dmg": [
+        40,
+        66
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }
