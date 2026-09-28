@@ -14,6 +14,8 @@ signal player_died(player: Player)
 signal trade_opened(npc: Npc)
 signal trade_changed
 signal trade_closed
+signal ptrade_opened(partner_name: String)  # a trade with another player
+signal ptrade_changed(items: Array, coin: int, their_accept: bool)  # their side of it
 signal camped(player: Player)
 signal service_opened(npc: Npc, kind: String)  # kind: "shop" or "bank"
 signal service_changed
@@ -71,6 +73,7 @@ const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
 const BIND_RANGE := 16.0  # how near a city's bindstone you must stand to bind
 const TRADE_SLOTS := 4
+const PLAYER_TRADE_SLOTS := 8
 ## EQ faction tiers: lowest standing for each, and how that NPC regards you.
 const STANDING_TIERS: Array = [
 	[1100, "Ally", "regards you as an ally"], [750, "Warmly", "looks upon you warmly"],
@@ -304,7 +307,7 @@ func _physics_process(delta: float) -> void:
 			_update_timers(obj, delta)
 			_update_cast(obj, delta)
 			_update_melee(obj)
-		if obj is Player and (obj as Player).trade_npc_id >= 0:
+		if obj is Player and trading(obj as Player):
 			_check_trade(obj)
 		if obj is Player and (obj as Player).service_npc_id >= 0:
 			_check_service(obj)
@@ -2486,7 +2489,7 @@ func request_click(player_id: int, place: String) -> void:
 		return
 	var kind := place.get_slice(":", 0)
 	var here := _entry_at(p, place)
-	if kind == "k" and _service_npc(p, "bank") == null or kind == "t" and p.trade_npc_id < 0 or kind == "c" and p.station_kind == "":
+	if kind == "pt" or kind == "k" and _service_npc(p, "bank") == null or kind == "t" and not trading(p) or kind == "c" and p.station_kind == "":
 		return
 	if p.cursor.is_empty():
 		if here.is_empty():
@@ -2517,10 +2520,9 @@ func request_click(player_id: int, place: String) -> void:
 		say(p, "A bag won't go in there.", C_WARN)
 		return
 	elif kind == "t":
-		if held.has("contents") and not Pack._bag_empty(held):
-			say(p, "Empty the bag first.", C_WARN)
+		if not _tradeable(p, held):
 			return
-		if p.trade_items.size() >= TRADE_SLOTS:
+		if p.trade_items.size() >= trade_slots(p):
 			say(p, "The trade window is full.", C_WARN)
 			return
 		p.trade_items.append(held)
@@ -2644,6 +2646,8 @@ func _entry_at(p: Player, place: String) -> Dictionary:
 			return p.bank[int(arg)] if int(arg) >= 0 and int(arg) < p.bank.size() else {}
 		"t":
 			return p.trade_items[int(arg)] if int(arg) >= 0 and int(arg) < p.trade_items.size() else {}
+		"pt":  # the other player's side of a trade (shown, never moved)
+			return p.partner_offer[int(arg)] if int(arg) >= 0 and int(arg) < p.partner_offer.size() else {}
 		"c":
 			return p.station_items[int(arg)] if int(arg) >= 0 and int(arg) < p.station_items.size() else {}
 	return {}
@@ -2676,6 +2680,8 @@ func _compact_trade(p: Player) -> void:
 
 
 func _after_move(p: Player, place: String) -> void:
+	if place.begins_with("t:") and p.trade_partner_id >= 0:
+		_trade_touched(p)
 	if place.begins_with("e:"):
 		p.recalc_stats()
 	p.inventory_changed.emit()
@@ -3223,7 +3229,10 @@ func request_trade_open(player_id: int) -> void:
 	if _remote(&"request_trade_open", [player_id]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.dead or p.trade_npc_id >= 0:
+	if p == null or p.dead or trading(p):
+		return
+	if p.valid_target_entity() is Player and p.valid_target_entity() != p:
+		_open_player_trade(p, p.valid_target_entity() as Player)
 		return
 	var npc := p.valid_target_entity() as Npc
 	if npc == null:
@@ -3270,44 +3279,66 @@ func request_give(player_id: int, npc_id: int) -> void:
 		request_click(player_id, "t:%d" % p.trade_items.size())
 
 
+## Clicking another player with an item on your cursor: opens a trade with
+## them (as with an npc) and puts the item in it.
+func request_give_player(player_id: int, other_id: int) -> void:
+	if _remote(&"request_give_player", [player_id, other_id]):
+		return
+	var p := get_object(player_id) as Player
+	var q := get_object(other_id) as Player
+	if p == null or p.dead or q == null or q == p or p.cursor.is_empty():
+		return
+	if p.trade_partner_id >= 0 and p.trade_partner_id != other_id or p.trade_npc_id >= 0:
+		request_trade_cancel(player_id)
+	if p.trade_partner_id < 0:
+		p.target = q
+		_open_player_trade(p, q)
+	if p.trade_partner_id == other_id:
+		request_click(player_id, "t:%d" % p.trade_items.size())
+
+
 ## Shortcut: offers the entry at a pack place (a whole stack) in the open trade.
 func request_trade_add(player_id: int, place: String) -> void:
 	if _remote(&"request_trade_add", [player_id, place]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.trade_npc_id < 0 or not p.cursor.is_empty():
+	if p == null or not trading(p) or not p.cursor.is_empty():
 		return
 	var e := p.pack.get_at(place)
-	if e.is_empty():
+	if e.is_empty() or not _tradeable(p, e):
 		return
-	if e.has("contents") and not Pack._bag_empty(e):
-		say(p, "Empty the bag first.", C_WARN)
-		return
-	if p.trade_items.size() >= TRADE_SLOTS:
+	if p.trade_items.size() >= trade_slots(p):
 		say(p, "The trade window is full.", C_WARN)
 		return
 	p.trade_items.append(e)
 	p.pack.set_at(place, {})
 	p.inventory_changed.emit()
 	_ui(p, &"trade_changed")
+	if p.trade_partner_id >= 0:
+		_trade_touched(p)
 
 
 func request_trade_remove(player_id: int, slot: int) -> void:
 	if _remote(&"request_trade_remove", [player_id, slot]):
 		return
 	var p := get_object(player_id) as Player
-	if p == null or p.trade_npc_id < 0 or slot < 0 or slot >= p.trade_items.size():
+	if p == null or not trading(p) or slot < 0 or slot >= p.trade_items.size():
 		return
 	_return_to_pack(p, [p.trade_items[slot]])
 	p.trade_items.remove_at(slot)
 	p.inventory_changed.emit()
 	_ui(p, &"trade_changed")
+	if p.trade_partner_id >= 0:
+		_trade_touched(p)
 
 
 func request_trade_give(player_id: int) -> void:
 	if _remote(&"request_trade_give", [player_id]):
 		return
 	var p := get_object(player_id) as Player
+	if p != null and p.trade_partner_id >= 0:
+		request_trade_accept(player_id)
+		return
 	if p == null or p.trade_npc_id < 0:
 		return
 	var npc := get_object(p.trade_npc_id) as Npc
@@ -3342,6 +3373,9 @@ func request_trade_cancel(player_id: int) -> void:
 	if _remote(&"request_trade_cancel", [player_id]):
 		return
 	var p := get_object(player_id) as Player
+	if p != null and p.trade_partner_id >= 0:
+		_end_player_trade(p, get_object(p.trade_partner_id) as Player, "%s canceled the trade." % p.display_name)
+		return
 	if p == null or p.trade_npc_id < 0:
 		return
 	_return_to_pack(p, p.trade_items)
@@ -3368,7 +3402,183 @@ func _close_trade(p: Player) -> void:
 	_ui(p, &"trade_closed")
 
 
+## Whether a trade window of any kind is open.
+func trading(p: Player) -> bool:
+	return p.trade_npc_id >= 0 or p.trade_partner_id >= 0
+
+
+func trade_slots(p: Player) -> int:
+	return PLAYER_TRADE_SLOTS if p.trade_partner_id >= 0 else TRADE_SLOTS
+
+
+## Whether this entry may go in the open trade: NO DROP never changes hands
+## (nor a bag holding it), and an npc only takes an empty bag.
+func _tradeable(p: Player, e: Dictionary) -> bool:
+	if p.trade_partner_id >= 0:
+		for inner: Dictionary in [e] + (e.get("contents", []) as Array):
+			if not inner.is_empty() and GameData.item(str(inner["item"])).get("no_drop", false):
+				say(p, "You can't trade %s: it is NO DROP." % GameData.item_name(str(inner["item"])) if inner == e
+						else "You can't trade a bag holding %s: it is NO DROP." % GameData.item_name(str(inner["item"])), C_WARN)
+				return false
+		return true
+	if e.has("contents") and not Pack._bag_empty(e):
+		say(p, "Empty the bag first.", C_WARN)
+		return false
+	return true
+
+
+## Trading between players, EQ-style: target them and press G (or click them
+## with an item on your cursor); both windows open, each side offers up to
+## PLAYER_TRADE_SLOTS items and some coin, and nothing changes hands until both
+## press Trade on the offers as they stand (any change clears both).
+func _open_player_trade(p: Player, q: Player) -> void:
+	if q.dead:
+		return
+	if p.distance_to(q) > TALK_RANGE:
+		say(p, "You are too far away to trade with %s." % q.display_name, C_WARN)
+		return
+	if trading(q) or q.service_npc_id >= 0 or q.station_kind != "":
+		say(p, "%s is busy." % q.display_name, C_WARN)
+		return
+	request_loot_close(p.entity_id)
+	request_service_close(p.entity_id)
+	for x: Player in [p, q]:
+		x.trade_partner_id = (q if x == p else p).entity_id
+		x.trade_items = []
+		x.trade_coin = 0
+		x.trade_accept = false
+		_ui(x, &"ptrade_opened", [(q if x == p else p).display_name])
+	say(q, "%s wants to trade with you." % p.display_name, C_SYSTEM)
+	_push_player_trade(p, q)
+
+
+## Each side sees the other's offer and whether they've pressed Trade.
+func _push_player_trade(p: Player, q: Player) -> void:
+	for x: Player in [p, q]:
+		var other := q if x == p else p
+		_ui(x, &"ptrade_changed", [other.trade_items.duplicate(true), other.trade_coin, other.trade_accept])
+
+
+## An offer changed: both have to look again.
+func _trade_touched(p: Player) -> void:
+	var q := get_object(p.trade_partner_id) as Player
+	if q == null:
+		return
+	p.trade_accept = false
+	q.trade_accept = false
+	_push_player_trade(p, q)
+
+
+## How much coin you put in the trade (copper; what you have at most).
+func request_trade_coin(player_id: int, amount: int) -> void:
+	if _remote(&"request_trade_coin", [player_id, amount]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_partner_id < 0:
+		return
+	p.trade_coin = clampi(amount, 0, p.coin)
+	_trade_touched(p)
+
+
+## Trade pressed: when both have, the offers change hands.
+func request_trade_accept(player_id: int) -> void:
+	if _remote(&"request_trade_accept", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.trade_partner_id < 0:
+		return
+	var q := get_object(p.trade_partner_id) as Player
+	if q == null:
+		return
+	p.trade_accept = true
+	if not q.trade_accept:
+		say(q, "%s has accepted the trade." % p.display_name, C_SYSTEM)
+		_push_player_trade(p, q)
+		return
+	var why := _trade_blocked(p, q)
+	if why == "":
+		why = _trade_blocked(q, p)
+	if why != "":
+		for x: Player in [p, q]:
+			say(x, why, C_WARN)
+			x.trade_accept = false
+		_push_player_trade(p, q)
+		return
+	for pair: Array in [[p, q], [q, p]]:
+		var giver: Player = pair[0]
+		var taker: Player = pair[1]
+		giver.coin -= giver.trade_coin
+		taker.coin += giver.trade_coin
+	var got_p := q.trade_items
+	var got_q := p.trade_items
+	p.trade_items = []
+	q.trade_items = []
+	for e: Dictionary in got_p:
+		p.pack.add_entry(e)
+	for e: Dictionary in got_q:
+		q.pack.add_entry(e)
+	for x: Player in [p, q]:
+		var other := q if x == p else p
+		var had := got_p if x == p else got_q
+		var coin := other.trade_coin
+		var parts := PackedStringArray()
+		for e: Dictionary in had:
+			parts.append(GameData.item_name(str(e["item"])) + (" x%d" % int(e["count"]) if int(e.get("count", 1)) > 1 else ""))
+		if coin > 0:
+			parts.append(format_coin(coin))
+		say(x, "You trade with %s%s." % [other.display_name, (" and receive " + ", ".join(parts)) if not parts.is_empty() else ""], C_SYSTEM)
+	for x: Player in [p, q]:
+		x.trade_coin = 0
+		x.trade_accept = false
+		x.trade_partner_id = -1
+		x.inventory_changed.emit()
+		x.stats_changed.emit()
+		_ui(x, &"trade_closed")
+
+
+## Why `giver`'s offer can't go to `taker` right now, or "".
+func _trade_blocked(giver: Player, taker: Player) -> String:
+	if giver.coin < giver.trade_coin:
+		return "%s doesn't have the coin offered." % giver.display_name
+	var owned := taker.owned_item_ids()
+	var incoming: Array = []
+	for e: Dictionary in giver.trade_items:
+		for inner: Dictionary in [e] + (e.get("contents", []) as Array):
+			if inner.is_empty():
+				continue
+			var id := str(inner["item"])
+			if GameData.item(id).get("lore", false) and (GameData.base_item(id) in owned.map(func(o: Variant) -> String: return GameData.base_item(str(o))) or GameData.base_item(id) in incoming):
+				return "%s already has %s: it is a lore item, one to a person." % [taker.display_name, GameData.item_name(id)]
+			incoming.append(GameData.base_item(id))
+	var probe := Pack.from_save(taker.pack.to_save())
+	for e: Dictionary in giver.trade_items:
+		if not probe.add_entry(e.duplicate(true)):
+			return "%s doesn't have room for everything." % taker.display_name
+	return ""
+
+
+## Ends a trade between players: everything offered goes back to its owner.
+func _end_player_trade(p: Player, q: Player, why: String) -> void:
+	for x: Player in [p, q]:
+		if x == null:
+			continue
+		var back := x.trade_items
+		x.trade_items = []  # anything with no room left in the pack stays here, as a trade's leftovers do
+		_return_to_pack(x, back)
+		x.trade_coin = 0
+		x.trade_accept = false
+		x.trade_partner_id = -1
+		x.inventory_changed.emit()
+		say(x, why, C_WARN)
+		_ui(x, &"trade_closed")
+
+
 func _check_trade(p: Player) -> void:
+	if p.trade_partner_id >= 0:
+		var q := get_object(p.trade_partner_id) as Player
+		if q == null or q.dead or p.dead or q.trade_partner_id != p.entity_id or p.distance_to(q) > TALK_RANGE:
+			_end_player_trade(p, q, "You moved too far apart and the trade was canceled." if q != null and not q.dead and not p.dead else "The trade was canceled.")
+		return
 	var npc := get_object(p.trade_npc_id)
 	if npc == null or p.distance_to(npc) > TALK_RANGE:
 		say(p, "You moved too far away and the trade was canceled.", C_WARN)

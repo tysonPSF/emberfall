@@ -104,6 +104,16 @@ var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
 var _trade_panel: PanelContainer
 var _trade_title: Label
+var _trade_theirs: VBoxContainer  # the other player's side of a trade between players
+var _trade_their_label: Label
+var _trade_their_coin: Label
+var _trade_my_slots: Array = []
+var _trade_coin_row: HBoxContainer
+var _trade_coin_boxes: Array = []
+var _trade_coin_quiet := false  # setting the coin boxes from the server, not typing
+var _trade_status: Label
+var _trade_give: Button
+var _trade_partner := ""  # whom a trade between players is with ("" for an npc)
 var _bag_hint: Label
 
 var _service_panel: PanelContainer
@@ -247,7 +257,19 @@ func _ready() -> void:
 	World.group_invited.connect(_on_group_invited)
 	World.trade_opened.connect(_on_trade_opened)
 	World.trade_changed.connect(_refresh_trade)
-	World.trade_closed.connect(func() -> void: _trade_panel.visible = false; _refresh_inventory())
+	World.trade_closed.connect(func() -> void:
+		_trade_panel.visible = false
+		_trade_partner = ""
+		player.partner_offer = []
+		player.partner_coin = 0
+		player.partner_accept = false
+		_refresh_inventory())
+	World.ptrade_opened.connect(_on_ptrade_opened)
+	World.ptrade_changed.connect(func(items: Array, coin: int, accepted: bool) -> void:
+		player.partner_offer = items
+		player.partner_coin = coin
+		player.partner_accept = accepted
+		_refresh_trade())
 	World.station_opened.connect(_on_station_opened)
 	World.track_opened.connect(_on_track_opened)
 	World.station_closed.connect(func() -> void: _station_panel.visible = false; _refresh_inventory())
@@ -1358,6 +1380,21 @@ func _build_trade_window() -> void:
 	_trade_panel.add_child(v)
 	_trade_title = UIKit.label("", 15, UIKit.GOLD)
 	v.add_child(_trade_title)
+	# the other player's side (a trade between players only): shown, not touched
+	_trade_theirs = VBoxContainer.new()
+	_trade_theirs.add_theme_constant_override("separation", 4)
+	v.add_child(_trade_theirs)
+	_trade_their_label = UIKit.label("", 12, UIKit.DIM)
+	_trade_theirs.add_child(_trade_their_label)
+	var their_grid := GridContainer.new()
+	their_grid.columns = 4
+	their_grid.add_theme_constant_override("h_separation", 6)
+	_trade_theirs.add_child(their_grid)
+	for i in World.PLAYER_TRADE_SLOTS:
+		their_grid.add_child(_make_slot("pt:%d" % i, "", 40))
+	_trade_their_coin = UIKit.label("", 12, UIKit.TEXT)
+	_trade_theirs.add_child(_trade_their_coin)
+	_trade_theirs.add_child(HSeparator.new())
 	var hint := UIKit.label("Put items here from your cursor, or shift-click them in your bags. Click one to take it back.", 12, UIKit.DIM)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.custom_minimum_size.x = 250
@@ -1366,16 +1403,39 @@ func _build_trade_window() -> void:
 	grid.columns = World.TRADE_SLOTS
 	grid.add_theme_constant_override("h_separation", 6)
 	v.add_child(grid)
-	for i in World.TRADE_SLOTS:
-		grid.add_child(_make_slot("t:%d" % i, ""))
+	for i in World.PLAYER_TRADE_SLOTS:
+		var slot := _make_slot("t:%d" % i, "")
+		_trade_my_slots.append(slot)
+		grid.add_child(slot)
+	# your coin (between players): platinum, gold, silver, copper
+	_trade_coin_row = HBoxContainer.new()
+	_trade_coin_row.add_theme_constant_override("separation", 4)
+	v.add_child(_trade_coin_row)
+	for k in 4:
+		var box := SpinBox.new()
+		box.min_value = 0
+		box.max_value = 99999 if k == 0 else 9
+		box.suffix = ["pp", "gp", "sp", "cp"][k]
+		box.custom_minimum_size.x = 60
+		box.value_changed.connect(func(_v: float) -> void:
+			if _trade_coin_quiet:
+				return
+			var total := int(_trade_coin_boxes[0].value) * 1000 + int(_trade_coin_boxes[1].value) * 100 + int(_trade_coin_boxes[2].value) * 10 + int(_trade_coin_boxes[3].value)
+			World.request_trade_coin(player.entity_id, total))
+		_trade_coin_boxes.append(box)
+		_trade_coin_row.add_child(box)
+	_trade_status = UIKit.label("", 12, UIKit.DIM)
+	_trade_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_trade_status.custom_minimum_size.x = 250
+	v.add_child(_trade_status)
 	var row := HBoxContainer.new()
-	var give := UIKit.button("Give")
-	give.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	give.pressed.connect(func() -> void: World.request_trade_give(player.entity_id))
+	_trade_give = UIKit.button("Give")
+	_trade_give.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_trade_give.pressed.connect(func() -> void: World.request_trade_give(player.entity_id))
 	var cancel := UIKit.button("Cancel")
 	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cancel.pressed.connect(func() -> void: World.request_trade_cancel(player.entity_id))
-	row.add_child(give)
+	row.add_child(_trade_give)
 	row.add_child(cancel)
 	v.add_child(row)
 	_trade_panel.visible = false
@@ -1855,6 +1915,7 @@ func _refresh_service() -> void:
 
 
 func _on_trade_opened(npc: Npc) -> void:
+	_trade_partner = ""
 	_trade_title.text = "Trading with %s" % npc.display_name
 	_trade_panel.visible = true
 	_inv_panel.visible = true
@@ -1863,7 +1924,44 @@ func _on_trade_opened(npc: Npc) -> void:
 	_refresh_trade()
 
 
+## A trade with another player: their offer on top, yours below, coin, and
+## Trade (both have to press it on the offers as they stand).
+func _on_ptrade_opened(partner_name: String) -> void:
+	_trade_partner = partner_name
+	_trade_title.text = "Trading with %s" % partner_name
+	_trade_coin_quiet = true
+	for box: SpinBox in _trade_coin_boxes:
+		box.value = 0
+	_trade_coin_quiet = false
+	_trade_panel.visible = true
+	_inv_panel.visible = true
+	_help_panel.visible = false
+	_refresh_inventory()
+	_refresh_trade()
+
+
 func _refresh_trade() -> void:
+	var with_player := _trade_partner != ""
+	_trade_theirs.visible = with_player
+	_trade_coin_row.visible = with_player
+	_trade_status.visible = with_player
+	for i in _trade_my_slots.size():
+		(_trade_my_slots[i] as Control).visible = with_player or i < World.TRADE_SLOTS
+	_trade_give.text = "Trade" if with_player else "Give"
+	if with_player:
+		var typing := _trade_coin_boxes.any(func(b: SpinBox) -> bool: return b.get_line_edit().has_focus())
+		if not typing:  # show the coin you're offering as the server has it
+			_trade_coin_quiet = true
+			var c := player.trade_coin
+			for k in 4:
+				(_trade_coin_boxes[k] as SpinBox).value = [c / 1000, (c / 100) % 10, (c / 10) % 10, c % 10][k]
+			_trade_coin_quiet = false
+		_trade_their_label.text = "%s offers:" % _trade_partner
+		_trade_their_coin.text = "Coin: %s" % (World.format_coin(player.partner_coin) if player.partner_coin > 0 else "none")
+		var mine := "You have accepted." if player.trade_accept else "Press Trade when you're happy with both offers."
+		var theirs := "%s has accepted." % _trade_partner if player.partner_accept else "%s hasn't accepted yet." % _trade_partner
+		_trade_status.text = "%s  %s" % [mine, theirs]
+		_trade_status.add_theme_color_override("font_color", Color(0.55, 0.9, 0.5) if player.partner_accept else UIKit.DIM)
 	_refresh_inventory()  # the trade slots are item slots like the rest
 
 
@@ -2142,7 +2240,7 @@ func _quick_action(place: String) -> void:
 		World.request_bank_withdraw(id, int(place.get_slice(":", 1)))
 	elif kind == "t":
 		World.request_click(id, place)
-	elif player.trade_npc_id >= 0:
+	elif World.trading(player):
 		World.request_trade_add(id, place)
 	elif player.station_kind != "" and kind != "c":
 		World.request_station_add(id, place)

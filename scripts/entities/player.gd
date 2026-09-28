@@ -39,6 +39,12 @@ var equipment: Dictionary = {}
 var quests: Dictionary = {}  # quest id -> {active, completions}
 var trade_npc_id := -1  # npc entity id while a trade window is open
 var trade_items: Array = []  # entries offered in the open trade
+var trade_partner_id := -1  # the other player while a trade between players is open
+var trade_coin := 0  # copper offered in it
+var trade_accept := false  # pressed Trade on the current offers (any change clears it)
+var partner_offer: Array = []  # what the other player offers, as the server last said (drawn in the trade window)
+var partner_coin := 0
+var partner_accept := false
 var station_kind := ""  # the crafting station whose combine window is open ("oven", "forge"...), "" when none
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
@@ -271,7 +277,7 @@ func apply_self(d: Dictionary) -> void:
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
-			"trade_items", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
+			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
 			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed"]:
 		set(key, d[key])
@@ -959,6 +965,8 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	if not cursor.is_empty():  # holding something: give it to the npc clicked, or drop it on the ground, as in EQ
 		if col is Npc:
 			World.request_give(entity_id, (col as Npc).entity_id)
+		elif col is Player and col != self:
+			World.request_give_player(entity_id, (col as Player).entity_id)  # a trade with them
 		else:
 			World.request_drop(entity_id)
 		return

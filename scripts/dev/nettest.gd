@@ -45,7 +45,10 @@ func _run() -> void:
 	var names := _list.map(func(c: Dictionary) -> String: return str(c["name"]))
 	print("[%s] logged in; characters: %s" % [who, names])
 	if not who in names:
-		if "--group" in OS.get_cmdline_user_args() and who in ["Alpha", "Bravo"]:
+		if "--trade" in OS.get_cmdline_user_args():
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "coin": 800, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"inventory": ["gnoll_fang", "rusty_short_sword"] if who == "Alpha" else ["beetle_eye"], "equipment": {"primary": "rusty_short_sword"}})
+		elif "--group" in OS.get_cmdline_user_args() and who in ["Alpha", "Bravo"]:
 			Net.import_character({"name": who, "class": "warrior" if who == "Alpha" else "cleric", "deity": "fire",
 					"level": 3 if who == "Alpha" else 5, "spells": ["kick", "taunt"] if who == "Alpha" else ["minor_healing", "circle_of_mending", "fire_bolt"],
 					"equipment": {"primary": "rusty_short_sword"} if who == "Alpha" else {"primary": "worn_staff"}})
@@ -99,6 +102,8 @@ func _run() -> void:
 					if q != p:
 						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif "--trade" in OS.get_cmdline_user_args():
+		await _trade_test(p)
 	elif "--stutter" in OS.get_cmdline_user_args():
 		# run round the zone for 30 s online and log slow frames and any jump of our own position
 		Input.action_press("move_forward")
@@ -401,6 +406,69 @@ func _group_test(p: Player) -> void:
 
 
 ## Walks at a normal run, so the server's speed check lets it through.
+## Two players trade: Alpha offers a gnoll fang and 250 copper, Bravo a beetle
+## eye; both press Trade. Then a NO DROP item is refused, and a canceled trade
+## gives everything back.
+func _trade_test(p: Player) -> void:
+	var other: Player = null
+	for k in 40:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	print("[%s] trade: sees %s; pack %s, coin %d" % [who, other.display_name if other else "nobody", p.pack.item_ids(), p.coin])
+	if other == null:
+		return
+	var place_of := func(item: String) -> String:
+		for place: String in p.pack.places():
+			if str(p.pack.get_at(place).get("item", "")) == item:
+				return place
+		return ""
+	if who == "Alpha":
+		p.global_position = other.global_position + Vector3(2, 0, 0)
+		await _wait(1.0)
+		World.request_set_target(p.entity_id, other.entity_id)
+		World.request_interact(p.entity_id)  # G on a player: a trade
+		await _wait(1.0)
+		print("[Alpha] trade open with %d" % p.trade_partner_id)
+		World.request_trade_add(p.entity_id, place_of.call("gnoll_fang"))
+		World.request_trade_coin(p.entity_id, 250)
+		World.request_trade_add(p.entity_id, place_of.call("homeward_stone"))  # NO DROP: refused
+		await _wait(3.0)
+		print("[Alpha] sees Bravo offer %s, accepted %s" % [p.partner_offer.map(func(e: Dictionary) -> String: return e["item"]), p.partner_accept])
+		await _shot("trade_window")
+		World.request_trade_give(p.entity_id)
+		await _wait(2.0)
+		print("[Alpha] after the trade: pack %s, coin %d, trading %s" % [p.pack.item_ids(), p.coin, p.trade_partner_id >= 0])
+		# a trade that Bravo cancels
+		World.request_interact(p.entity_id)
+		await _wait(1.0)
+		World.request_trade_add(p.entity_id, place_of.call("rusty_short_sword"))
+		await _wait(3.0)
+		print("[Alpha] after Bravo canceled: pack %s, trading %s" % [p.pack.item_ids(), p.trade_partner_id >= 0])
+	else:
+		for k in 40:
+			if p.trade_partner_id >= 0:
+				break
+			await _wait(0.25)
+		print("[Bravo] a trade opened: %s" % (p.trade_partner_id >= 0))
+		World.request_trade_add(p.entity_id, place_of.call("beetle_eye"))
+		await _wait(1.0)
+		World.request_trade_give(p.entity_id)  # Trade
+		await _wait(3.5)
+		print("[Bravo] after the trade: pack %s, coin %d" % [p.pack.item_ids(), p.coin])
+		for k in 40:
+			if p.trade_partner_id >= 0:
+				break
+			await _wait(0.25)
+		await _wait(1.5)
+		print("[Bravo] Alpha offers %s; canceling" % [p.partner_offer.map(func(e: Dictionary) -> String: return e["item"])])
+		World.request_trade_cancel(p.entity_id)
+		await _wait(3.0)
+
+
 func _walk_to(p: Player, goal: Vector3) -> void:
 	var zone_at_start := World.zone
 	for k in 4000:
