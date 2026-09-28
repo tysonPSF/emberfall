@@ -2681,6 +2681,9 @@ func _show_hot_slot(slot: HotSlot, entry: String, t: Entity) -> void:
 			if s.is_empty():
 				return
 			var cd := float(player.cooldowns.get(arg, 0.0))
+			var group := World.strike_group(s)
+			if group != "" and float(player.cooldowns.get(group, 0.0)) > cd:  # the shared strike (or shot) timer shows on every one of them
+				cd = float(player.cooldowns[group])
 			var on := (str(s["type"]) == "hide" and player.hidden) or (str(s["type"]) == "sneak" and player.sneaking)  # toggles glow while on
 			slot.show_state(_sweep(arg, cd), cd, _spell_usable(s, t) and arg in player.spells, on)
 		"item":

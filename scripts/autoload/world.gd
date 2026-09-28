@@ -346,6 +346,7 @@ func _update_timers(e: Entity, delta: float) -> void:
 	e.swing_timer = maxf(0.0, e.swing_timer - delta)
 	e.snare_left = maxf(0.0, e.snare_left - delta)
 	e.stun_left = maxf(0.0, e.stun_left - delta)
+	e.stun_immune_left = maxf(0.0, e.stun_immune_left - delta)
 	e.slow_left = maxf(0.0, e.slow_left - delta)
 	e.fear_left = maxf(0.0, e.fear_left - delta)
 	if e is Player:
@@ -428,7 +429,11 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 	var skill := ""
 	if p != null:
 		skill = weapon_skill(p) if hand == "primary" else str(GameData.item(p.equipment.get("secondary", "")).get("skill", "hand_to_hand"))
-	var chance := 0.72 + (e.level - t.level) * 0.04 - t.ac * 0.004
+	# armor: 0.4% a point, but a player's is measured against the attacker's level
+	# (the same at level 5, a third as much at 50): plate kept growing until
+	# nothing could touch a high-level warrior
+	var ac_cut := t.ac * 0.004 * (25.0 / (e.level + 20.0) if t is Player else 1.0)
+	var chance := 0.72 + (e.level - t.level) * 0.04 - ac_cut
 	if p != null:  # weapon skill and offense against 80% of cap
 		chance += 0.12 * ((skill_frac(p, skill) + skill_frac(p, "offense")) * 0.5 - _neutral())
 		try_skill_up(p, skill, t)
@@ -1146,7 +1151,7 @@ func _regen_tick() -> void:
 			hp_gain = maxi(hp_gain, e.max_hp / 8)
 		var mana_gain := 0
 		if e.max_mana > 0:
-			var rest := float(2 + e.level / 2) if e.sitting else 0.0
+			var rest := sitting_mana(e.level) if e.sitting else 0.0
 			if e is Player and e.sitting and skill_cap(e as Player, "meditate") > 0:  # meditate: better rest
 				rest *= 0.5 + 0.625 * skill_frac(e as Player, "meditate")
 				if e.mana < e.max_mana:
@@ -1608,6 +1613,10 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if c.cooldowns.has(spell_id):
 		say(c, "You haven't recovered yet. %s is ready in %ds." % [s["name"], ceili(float(c.cooldowns[spell_id]))], C_WARN)
 		return
+	var group := strike_group(s)
+	if group != "" and c.cooldowns.has(group):
+		say(c, "You haven't recovered from your last %s yet. Ready in %ds." % ["strike" if group == "group:strike" else "shot", ceili(float(c.cooldowns[group]))], C_WARN)
+		return
 	if c.mana < int(s.get("mana", 0)):
 		say(c, "Insufficient Mana to cast this spell!", C_WARN)
 		return
@@ -1642,7 +1651,7 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	elif t != c and c.distance_to(t) > float(s.get("range", 0)):
 		say(c, "Your target is out of range, get closer!", C_WARN)
 		return
-	if s.get("from_behind", false) and not behind(c, t):
+	if s.get("from_behind", false) and not behind(c, t) and not s.has("front_pct"):  # Backstab also works from the front, for less (front_pct)
 		say(c, "You must be behind your target to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
 	if s.get("requires_hidden", false) and not c.hidden:
@@ -1929,6 +1938,40 @@ func _update_cast(c: Entity, delta: float) -> void:
 		_finish_spell(c, spell_id, t)
 
 
+## Mana a tick from sitting at a level, before meditate and gear: it grows
+## faster than spell costs do at the top (config "sit_mana_per_level_sq"), so
+## a high-level caster rests between pulls rather than for minutes.
+func sitting_mana(level: int) -> float:
+	return 2.0 + level / 2 + float(cfg("sit_mana_per_level_sq", 0.015)) * level * level
+
+
+## Stuns someone, and then they can't be stunned again until config
+## "stun_immunity" seconds after it wears off: stuns interrupt, they can't lock.
+func _stun(t: Entity, seconds: float) -> void:
+	t.stun_left = maxf(t.stun_left, seconds)
+	t.stun_immune_left = t.stun_left + float(cfg("stun_immunity", 10.0))
+
+
+## The shared timer a spell answers to, or "": melee strikes (a warrior's
+## Kick to Worldbreaker, a rogue's Backstab to Nightblade and their bleeds)
+## share "group:strike", a ranger's special shots "group:shot". Without it a
+## high-level fighter fired a dozen of them at once.
+func strike_group(s: Dictionary) -> String:
+	if not s.get("ability", false):
+		return ""
+	if str(s["type"]) == "shot":
+		return "group:shot"
+	if str(s["type"]) in ["damage", "dot"] and float(s.get("range", 0)) <= 5.0:
+		return "group:strike"
+	return ""
+
+
+## Whether a spell is off its own recast and its group's shared timer.
+func spell_ready(e: Entity, spell_id: String) -> bool:
+	var group := strike_group(GameData.spells.get(spell_id, {"type": ""}))
+	return not e.cooldowns.has(spell_id) and (group == "" or not e.cooldowns.has(group))
+
+
 ## Lands a spell. Spells from gear (procs, clicks) cost no mana and leave the
 ## caster's own recast timer alone.
 func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -> void:
@@ -1936,10 +1979,15 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 	if not from_item:
 		c.mana -= int(s.get("mana", 0))
 		c.cooldowns[spell_id] = float(s.get("recast", 0))
+		var group := strike_group(s)
+		if group != "":  # one strike (or special shot) at a time: they share a timer, each keeping its own recast too
+			c.cooldowns[group] = float(cfg("strike_cooldown" if group == "group:strike" else "shot_cooldown", 6.0))
 	var power := randi_range(int(s.get("min", 0)), int(s.get("max", 0))) + int(float(s.get("per_level", 0)) * (c.level - 1))
 	if c.has_meta("ambush"):
 		power = roundi(power * float(c.get_meta("ambush")))
 		c.remove_meta("ambush")
+	if s.get("from_behind", false) and s.has("front_pct") and t != null and not behind(c, t):
+		power = roundi(power * float(s["front_pct"]))  # a stab from the front: half a backstab
 		say(c, "You strike from the shadows!", C_YOU_HIT)
 	if c is Player and not from_item and s.has("skill"):
 		var skill := str(s["skill"])
@@ -1971,11 +2019,14 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				if t.level > c.level + int(s.get("stun_max_over", 3)):
 					pass
 				elif randf() < float(s["stun_chance"]):
-					if not (t is Player and (t as Player).bonus("stun_immune") > 0.0):  # an ogre stands
-						t.stun_left = maxf(t.stun_left, float(s.get("stun", 2.0)))
-					say(c, "%s is stunned!" % cap(t.display_name), C_SPELL)
-					if t is Player:
-						say(t, "You are stunned!", C_HIT_YOU)
+					if t.stun_immune_left > 0.0:
+						say(c, "%s shakes off the stun." % cap(t.display_name), C_WARN)
+					else:
+						if not (t is Player and (t as Player).bonus("stun_immune") > 0.0):  # an ogre stands
+							_stun(t, float(s.get("stun", 2.0)))
+						say(c, "%s is stunned!" % cap(t.display_name), C_SPELL)
+						if t is Player:
+							say(t, "You are stunned!", C_HIT_YOU)
 			if s.has("splash"):  # Cleave, Fireball: every other foe near the target
 				var hurt := roundi(power * float(s.get("splash_pct", 1.0)))
 				for m in get_mobs():
@@ -2029,11 +2080,11 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 					say(t, str(s.get("slow_you", "Your arms feel heavy.")), C_HIT_YOU)
 			t.add_hate(c, 10.0)
 		"stun":
-			if t is Player and (t as Player).bonus("stun_immune") > 0.0:
+			if (t is Player and (t as Player).bonus("stun_immune") > 0.0) or t.stun_immune_left > 0.0:
 				say(c, "%s shrugs it off." % cap(t.display_name), C_WARN)
 				say(t, "You shrug off the stun.", C_SPELL)
 				return
-			t.stun_left = float(s.get("duration", 4))
+			_stun(t, float(s.get("duration", 4)))
 			say(c, str(s.get("stun_text", "%s is stunned.")) % t.display_name, C_SPELL)
 			if t is Player:
 				say(t, str(s.get("stun_you", "You are stunned and can't act!")), C_HIT_YOU)

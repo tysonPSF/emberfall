@@ -114,8 +114,9 @@
     "skill": "backstab",
     "requires": "piercing",
     "from_behind": true,
+    "front_pct": 0.5,
     "ambush": 2.0,
-    "desc": "Drive a piercing weapon into your target's back: you must be behind it. Double damage as an opener from hiding.",
+    "desc": "Drive a piercing weapon into your target: full damage from behind, half from the front. Double damage as an opener from hiding.",
     "fx": {
       "kind": "impact",
       "color": "#e0e0e0"

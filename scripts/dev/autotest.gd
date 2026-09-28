@@ -184,6 +184,7 @@ const SECTIONS := [
 	["bleach_life", "the_bleach"],
 	["encumbrance", "greenmoor"],
 	["carry_limits", "greenmoor"],
+	["strike_timer", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -784,6 +785,50 @@ func _t_carry_limits() -> void:
 	p.pack.add("rusty_short_sword", 2)
 	print("carry_limits: gnome wizard after an hour's loot: %.1f of %d, speed x%.2f" % [p.carried_weight(), int(p.carry_capacity()), p.encumbrance_speed()])
 	p.race = saved[0]; p.char_class = saved[1]; p.level = saved[2]; p.stat_points = saved[3]; p.equipment = saved[4]
+	p.recalc_stats()
+
+
+## One strike at a time (a shared timer for melee strikes, another for special
+## shots), and a stun can't be followed by another until the immunity runs out.
+func _t_strike_timer() -> void:
+	var p := World.local_player
+	var saved := [p.char_class, p.level, p.spells.duplicate()]
+	p.char_class = "warrior"
+	p.level = 50
+	p.spells = ["kick", "heroic_strike", "eclipse_strike", "worldbreaker", "shield_slam"]
+	p.recalc_stats()
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	p.global_position = mob.global_position + Vector3(1.5, 0.5, 0)
+	p.face_toward(mob.global_position)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	p.cooldowns.clear()
+	var hp0 := mob.hp
+	World.request_cast(p.entity_id, "eclipse_strike")
+	await _wait(0.2)
+	var after_one := hp0 - mob.hp
+	World.request_cast(p.entity_id, "worldbreaker")
+	World.request_cast(p.entity_id, "heroic_strike")
+	await _wait(0.2)
+	print("strike_timer: first strike %d damage; two more straight after -> %d more (the shared timer: %.1f s left)" % [after_one, hp0 - mob.hp - after_one, float(p.cooldowns.get("group:strike", 0.0))])
+	await _wait(float(World.cfg("strike_cooldown", 4.0)) + 0.2)
+	var hp1 := mob.hp
+	World.request_cast(p.entity_id, "worldbreaker")
+	await _wait(0.2)
+	print("strike_timer: after the timer, Worldbreaker lands -> %s" % (mob.hp < hp1))
+	# stuns: one takes, the next inside the immunity doesn't (the rogue's Blind, landed straight)
+	mob.stun_left = 0.0
+	mob.stun_immune_left = 0.0
+	World._finish_spell(p, "blind", mob, true)
+	var first := mob.stun_left
+	mob.stun_left = 0.0  # it wore off; the immunity hasn't
+	World._finish_spell(p, "blind", mob, true)
+	print("strike_timer: Blind stuns for %.1f s; a second one straight after -> stunned %.1f s (immune %.1f s more)" % [first, mob.stun_left, mob.stun_immune_left])
+	mob.stun_immune_left = 0.0
+	mob.set_physics_process(true)
+	p.char_class = saved[0]; p.level = saved[1]; p.spells = saved[2]
 	p.recalc_stats()
 
 
