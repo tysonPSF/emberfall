@@ -4236,5 +4236,129 @@
       "barrowhold": 30,
       "the_uninvited": -30
     }
+  },
+  "rain_pack_needles": {
+    "name": "A Pack for the Rain (1 of 3)",
+    "giver": "provisioner_tamu",
+    "start_keyword": "rainproof pack",
+    "wants": {
+      "bone_chips": 4
+    },
+    "reward": {
+      "xp": 40,
+      "coin": 10
+    },
+    "first_reward_item": "bone_netting_needles",
+    "next": "rain_pack_net",
+    "accept_text": "You have taken on a task: A Pack for the Rain. Bring Provisioner Tamu four bone chips.",
+    "ready_text": "Bone chips! Four good ones? Give them here, {name}.",
+    "complete_text": "A little filing, a little patience... there. Netting needles, the old way. Bone doesn't swell in the rain the way wood does.",
+    "first_complete_text": "A Rainhold pack is netted, not sewn. Take these needles to Fisher Oji on the south docks and ask about [Tamu]. Oji knots the best net in the city, and will want a fish or two for the oil.",
+    "faction": {
+      "rainhold": 5
+    }
+  },
+  "rain_pack_net": {
+    "name": "A Pack for the Rain (2 of 3)",
+    "giver": "fisher_oji",
+    "wants": {
+      "bone_netting_needles": 1,
+      "lagoon_snapper": 2
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "first_reward_item": "oiled_fishnet",
+    "next": "rain_pack_clasp",
+    "accept_text": "You have taken on a task: A Pack for the Rain. Bring Fisher Oji Tamu's needles and two lagoon snapper.",
+    "ready_text": "Tamu's needles, and snapper with them. Let's have them, {name}.",
+    "complete_text": "Snapper oil in the knots, and the rain runs straight off. Knot, pull, knot... there. The tightest net on the docks.",
+    "first_complete_text": "Take it back to Tamu, and tell Tamu that Oji says the last net still isn't paid for.",
+    "faction": {
+      "rainhold": 5
+    }
+  },
+  "rain_pack_clasp": {
+    "name": "A Pack for the Rain (3 of 3)",
+    "giver": "provisioner_tamu",
+    "wants": {
+      "oiled_fishnet": 1,
+      "gnoll_fang": 3
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 30
+    },
+    "first_reward_item": "tamus_rainproof_pack",
+    "accept_text": "You have taken on a task: A Pack for the Rain. Bring Provisioner Tamu the oiled net and three gnoll fangs for the toggles.",
+    "ready_text": "Oji's net? And fangs for the toggles! Hand them over, {name}.",
+    "complete_text": "Gnoll fang toggles: they hold fast wet or dry, and nothing in a Rainhold pack ever comes out damp.",
+    "first_complete_text": "Here. A pack for the rain, the only one I'll make this season. Mind the gnolls in Greenmoor don't want their teeth back.",
+    "faction": {
+      "rainhold": 10
+    }
+  },
+  "picker_satchel_thread": {
+    "name": "The Tea-Picker's Satchel (1 of 3)",
+    "giver": "tea_seller_moti",
+    "start_keyword": "satchel",
+    "wants": {
+      "moth_wing": 4
+    },
+    "reward": {
+      "xp": 40,
+      "coin": 10
+    },
+    "first_reward_item": "moth_silk_thread",
+    "next": "picker_satchel_body",
+    "accept_text": "You have taken on a task: The Tea-Picker's Satchel. Bring Tea-Seller Moti four lantern moth wings.",
+    "ready_text": "Moth wings! Four of them? Give them here, {name}.",
+    "complete_text": "Soak the wings, tease out the silk, spin it fine... there. Moth-silk thread, light as steam and twice as strong as cotton.",
+    "first_complete_text": "Now the satchel itself. Headpicker Anjali stitches the pickers' satchels; take her this thread and ask her about [Moti]. She'll want jackal hide for the body.",
+    "faction": {
+      "lanternhold": 5
+    }
+  },
+  "picker_satchel_body": {
+    "name": "The Tea-Picker's Satchel (2 of 3)",
+    "giver": "headpicker_anjali",
+    "wants": {
+      "moth_silk_thread": 1,
+      "jackal_pelt": 2
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "first_reward_item": "stitched_pickers_satchel",
+    "next": "picker_satchel_clasp",
+    "accept_text": "You have taken on a task: The Tea-Picker's Satchel. Bring Headpicker Anjali the moth-silk thread and two jackal pelts.",
+    "ready_text": "Moti's thread, and good pelts too. Let's have them, {name}.",
+    "complete_text": "Jackal hide on the outside for the thorns, silk stitching so it never snags a leaf... there. Every picker in Dewstep carries one like it.",
+    "first_complete_text": "Take it back to Moti for the clasp. And tell Moti I want my good shears back.",
+    "faction": {
+      "lanternhold": 5
+    }
+  },
+  "picker_satchel_clasp": {
+    "name": "The Tea-Picker's Satchel (3 of 3)",
+    "giver": "tea_seller_moti",
+    "wants": {
+      "stitched_pickers_satchel": 1,
+      "rice_beetle_shell": 2
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 30
+    },
+    "first_reward_item": "motis_tea_pickers_satchel",
+    "accept_text": "You have taken on a task: The Tea-Picker's Satchel. Bring Tea-Seller Moti the stitched satchel and two rice beetle shells for the clasp.",
+    "ready_text": "Anjali's stitching! And shells for the clasp. Give them over, {name}.",
+    "complete_text": "Rice beetle shell, polished and lacquered: it shines like the lanterns and never cracks.",
+    "first_complete_text": "Here. A tea-picker's satchel, fit for the Dawn-Tusk's own gardens. Carry it well.",
+    "faction": {
+      "lanternhold": 10
+    }
   }
 }

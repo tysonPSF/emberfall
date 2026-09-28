@@ -9120,6 +9120,276 @@ BONEYARD_SUMMIT = [godwar_insignia, petrified_shard, divine_bronze, stolen_relic
 				   unlit_worldblade, mantle_of_the_long_table, ring_of_the_empty_chair]
 
 
+# ---------------------------------------------------------------- bag quests: Tamu's rainproof pack (Rainhold) and Moti's tea-picker's satchel (Dewstep)
+# The same kind of line as Tovin's trail pack: gather the makings, have them worked,
+# get the bag. Rainhold's is oiled black netting over reed-green with gnoll-fang
+# toggles; Dewstep's is golden jackal hide sewn with pale moth silk and shut with a
+# lacquered beetle-shell clasp.
+
+
+def _egg_front(c, r, x, z, off=0.0):
+	"""The point on an egg's (a blob's) front face at (x, z), pushed out along its normal by off."""
+	cx, cy, cz = c
+	a, b, cc = r
+	q = max(1 - ((x - cx) / a) ** 2 - ((z - cz) / cc) ** 2, 0.0)
+	y = cy - b * math.sqrt(q)
+	n = Vector(((x - cx) / a ** 2, (y - cy) / b ** 2, (z - cz) / cc ** 2))
+	n = n.normalized() if n.length > 1e-6 else Vector((0, -1, 0))
+	return tuple(Vector((x, y, z)) + n * off)
+
+
+def _egg_q(c, r, x, z):
+	return 1 - ((x - c[0]) / r[0]) ** 2 - ((z - c[2]) / r[2]) ** 2
+
+
+def _egg_flap(p, c, r, fw, bottom, sag, sw, off=0.03, grad=(0.1, 0.8)):
+	"""A flap laid over an egg-shaped bag from near its top down to a rounded edge;
+	returns the points along its edge (left side, bottom, right side)."""
+	n, m = 12, 6
+	def z_top(x):
+		return c[2] + r[2] * 0.93 * math.sqrt(max(1 - (x / r[0]) ** 2, 0.0))
+	def z_bot(x):
+		return bottom + sag * (x / fw) ** 2
+	verts, faces = [], []
+	for i in range(n + 1):
+		x = -fw + 2 * fw * i / n
+		for j in range(m + 1):
+			z = z_top(x) + (z_bot(x) - z_top(x)) * j / m
+			verts.append(_egg_front(c, r, x, z, off))
+	for i in range(n):
+		for j in range(m):
+			k = i * (m + 1) + j
+			faces.append((k, k + 1, k + m + 2, k + m + 1))
+	p.poly(verts, faces, sw, grad=grad)
+	edge = [verts[j] for j in range(m + 1)] + [verts[i * (m + 1) + m] for i in range(1, n)] + [verts[n * (m + 1) + j] for j in range(m, -1, -1)]
+	_line(p, [_egg_front(c, r, v[0], v[2], off + 0.005) for v in edge], 0.028, 0.028, sw, sides=5, grad=grad)   # its thick edge
+	return edge
+
+
+def _egg_net(p, c, r, z0, z1, cell, sw, knot, off=0.035):
+	"""Diamond netting over an egg's front between heights z0 and z1, knotted where the cords cross."""
+	lim = r[0] + r[2]
+	k = -lim
+	while k <= lim:
+		for sx in (1, -1):
+			run = []
+			s = -lim
+			while s <= lim + 1e-6:
+				x, z = s, c[2] + sx * (s - k)
+				ok = z0 <= z <= z1 and _egg_q(c, r, x, z) > 0.08
+				if ok:
+					run.append(_egg_front(c, r, x, z, off))
+				if (not ok or s + 0.04 > lim) and len(run) > 1:
+					_line(p, run, 0.018, 0.018, sw, sides=4, grad=(0.1, 0.6))
+				if not ok:
+					run = []
+				s += 0.04
+		k += cell
+	k1 = -lim
+	while k1 <= lim:
+		k2 = -lim
+		while k2 <= lim:
+			x, z = (k1 + k2) / 2, c[2] + (k2 - k1) / 2
+			if z0 <= z <= z1 and _egg_q(c, r, x, z) > 0.08:
+				p.blob((0.05, 0.05, 0.05), _egg_front(c, r, x, z, off + 0.005), knot, segs=(6, 4), grad=(0.0, 0.5))
+			k2 += cell
+		k1 += cell
+
+
+def _flat_net(p, to3, x0, x1, z0, z1, cell, sw, knot, r=0.016, ragged=0.0, grad=(0.1, 0.6)):
+	"""Diamond netting on a plane (to3 maps (x, z[, off])), knots at the crossings."""
+	lim = abs(x0) + abs(x1) + abs(z0) + abs(z1)
+	def inside(x, z):
+		return x0 <= x <= x1 and z0 - ragged * math.sin(x * 9) ** 2 <= z <= z1
+	k = -lim
+	while k <= lim:
+		for sx in (1, -1):
+			run = []
+			s = x0
+			while s <= x1 + 1e-6:
+				z = sx * (s - k)
+				if inside(s, z):
+					run.append(to3(s, z))
+				elif len(run) > 1:
+					_line(p, run, r, r, sw, sides=4, grad=grad)
+					run = []
+				else:
+					run = []
+				s += 0.03
+			if len(run) > 1:
+				_line(p, run, r, r, sw, sides=4, grad=grad)
+		k += cell
+	k1 = -lim
+	while k1 <= lim:
+		k2 = -lim
+		while k2 <= lim:
+			x, z = (k1 + k2) / 2, (k2 - k1) / 2
+			if inside(x, z):
+				p.blob((r * 3.2, r * 3.2, r * 2.6), to3(x, z, 0.004), knot, segs=(6, 4), grad=grad)
+			k2 += cell
+		k1 += cell
+
+
+def bone_netting_needles():
+	p = Prop("bone_netting_needles", 1971)
+	tie = Vector((0.0, 0.0, 0.62))
+	for k, (deg, y, ln) in enumerate(((50, 0.07, 1.1), (58, 0.0, 1.1), (66, -0.07, 1.05))):   # three long needles crossing at the tie
+		d = Vector((math.cos(math.radians(deg)), 0, math.sin(math.radians(deg))))
+		butt, tip = tie - d * 0.62 * ln + Vector((0, y, 0)), tie + d * 0.72 * ln + Vector((0, y, 0))
+		p.seg(tuple(butt), tuple(butt + (tip - butt) * 0.8), 0.045, 0.04, BONE, sides=7, grad=(0.0, 0.45))
+		p.seg(tuple(butt + (tip - butt) * 0.8), tuple(tip), 0.04, 0.0, BONE, sides=7, grad=(0.0, 0.45))
+		_oval(p, butt - d * 0.04, d, Vector((d.z, 0, -d.x)), 0.08, 0.05, 0.022, BONE, n=10)       # its filed eye
+		p.blob((0.07, 0.03, 0.035), tuple(butt - d * 0.04 + Vector((0, -0.03, 0))), STONE_DARK, rot=(0, -deg, 0), segs=(6, 4))   # the hole through it
+	d = Vector((math.cos(math.radians(58)), 0, math.sin(math.radians(58))))
+	perp = Vector((d.z, 0, -d.x))
+	for k in range(4):                                                                     # a few turns of cord round the middle
+		_oval(p, tie + d * (-0.06 + k * 0.04), perp, Vector((0, 1, 0)), 0.1, 0.09, 0.017, WOOD, n=12)
+	a = tie + perp * 0.1 + Vector((0, -0.06, 0))                                           # and a loose end
+	_line(p, [tuple(a), tuple(a + Vector((0.1, -0.02, -0.06))), tuple(a + Vector((0.14, -0.03, -0.18)))], 0.017, 0.012, WOOD, sides=5)
+	return p.build()
+
+
+def oiled_fishnet():
+	p = Prop("oiled_fishnet", 1973)
+	for k in range(3):                                                                    # folded in three, each fold a rolled edge
+		w, d, z = 1.3 - k * 0.1, 0.92 - k * 0.08, 0.07 + k * 0.14
+		p.box((w, d, 0.13), (k * 0.02, k * 0.03, z), IRON, rot=(0, 0, k * 3 - 3), grad=(0.3, 0.9))
+		p.seg((-w * 0.5, -d * 0.5 + k * 0.02, z), (w * 0.5, -d * 0.5 + k * 0.02, z), 0.075, 0.075, IRON, sides=8, grad=(0.2, 0.7))
+		p.seg((-w * 0.45, -d * 0.5 - 0.05 + k * 0.02, z + 0.04), (w * 0.3, -d * 0.5 - 0.05 + k * 0.02, z + 0.05), 0.01, 0.006, CLOTH_WHITE, sides=4, glow=0.7)
+		for j in range(9):                                                                # knots along the fold
+			x = -w * 0.45 + j * w * 0.1125
+			p.blob((0.06, 0.05, 0.05), (x, -d * 0.5 - 0.06 + k * 0.02, z + 0.03 * ((j + k) % 2)), WOOD, segs=(6, 4), grad=(0.7, 1.0))
+	top = 0.07 + 2 * 0.14 + 0.066
+	_flat_net(p, lambda x, z, off=0.0: (x + 0.04, z + 0.06, top + off), -0.5, 0.5, -0.33, 0.33, 0.16, WOOD, WOOD, r=0.02, grad=(0.65, 1.0))
+	_flat_net(p, lambda x, z, off=0.0: (x - 0.1, z - 0.78, 0.02 + off), -0.55, 0.45, -0.3, 0.25, 0.16, WOOD, WOOD, r=0.02, ragged=0.12, grad=(0.65, 1.0))  # a spill of it on the ground
+	for (x0, y0, x1, y1) in ((-0.42, -0.2, -0.1, 0.12), (0.05, -0.28, 0.32, -0.05), (-0.2, -0.95, 0.1, -0.7)):   # the oil's shine
+		z = top + 0.03 if y0 > -0.5 else 0.05
+		p.seg((x0, y0, z), (x1, y1, z), 0.014, 0.008, CLOTH_WHITE, sides=4, glow=0.9)
+	p.seg((0.55, -0.72, 0.0), (0.55, -0.72, 0.16), 0.12, 0.12, AMBER, sides=10, grad=(0.1, 0.6))   # a cork float
+	p.rock((0.14, 0.12, 0.1), (-0.66, -0.95, 0.05), STONE_LIGHT, jitter=0.1)                    # and a stone sinker
+	return p.build()
+
+
+def tamus_rainproof_pack():
+	p = Prop("tamus_rainproof_pack", 1975)
+	c, r = (0, 0, 0.5), (0.43, 0.29, 0.5)
+	p.blob((0.86, 0.58, 1.0), c, LEAF, segs=(16, 10), grad=(0.2, 0.8))                         # a reed-green lining
+	for sx in (-1, 1):
+		p.blob((0.24, 0.3, 0.4), (sx * 0.47, 0.0, 0.34), LEAF, segs=(8, 6), grad=(0.35, 0.95))    # side pouches
+		_loop(p, (sx * 0.5, 0.0, 0.34), 0.13, True, 0.02, IRON, n=10, squash=1.2)              # netted round
+	_egg_net(p, c, r, 0.08, 0.66, 0.15, IRON, IRON)                                            # the oiled netting over it
+	edge = _egg_flap(p, c, r, 0.36, 0.6, 0.1, IRON, off=0.05, grad=(0.1, 0.7))                   # an oiled flap
+	for (x0, z0, x1, z1) in ((-0.24, 0.9, -0.06, 0.94), (-0.28, 0.82, -0.14, 0.84)):          # rain shining on it
+		p.seg(_egg_front(c, r, x0, z0, 0.065), _egg_front(c, r, x1, z1, 0.065), 0.012, 0.008, CLOTH_WHITE, sides=4, glow=0.9)
+	for x in (-0.17, 0.17):                                                                    # gnoll-fang toggles in cord loops
+		z = 0.6 + 0.1 * (x / 0.36) ** 2
+		a = _egg_front(c, r, x, z, 0.06)
+		b = _egg_front(c, r, x, z - 0.2, 0.08)
+		_oval(p, ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - 0.02, (a[2] + b[2]) / 2 - 0.02), (1, 0, 0), (0, 0, 1), 0.035, 0.12, 0.016, WOOD, n=10)
+		p.seg((b[0] - 0.13, b[1] - 0.05, b[2]), (b[0] + 0.13, b[1] - 0.05, b[2]), 0.04, 0.0, BONE, sides=6, grad=(0.0, 0.5))
+		p.blob((0.06, 0.06, 0.06), (b[0] - 0.13, b[1] - 0.05, b[2]), BONE, segs=(6, 4), grad=(0.3, 0.6))
+	p.seg((-0.46, 0.06, 1.02), (0.46, 0.06, 1.02), 0.13, 0.13, AMBER, sides=10, grad=(0.45, 0.85))   # a rolled reed mat on top
+	for sx in (-1, 1):
+		p.seg((sx * 0.46, 0.06, 1.02), (sx * 0.47, 0.06, 1.02), 0.1, 0.1, WOOD, sides=10, grad=(0.3, 0.7))
+		_oval(p, (sx * 0.26, 0.06, 1.02), (0, 1, 0), (0, 0, 1), 0.14, 0.14, 0.022, IRON, n=10)
+	return p.build()
+
+
+def moth_silk_thread():
+	p = Prop("moth_silk_thread", 1977)
+	p.seg((0, 0, 0), (0, 0, 0.1), 0.42, 0.42, WOOD, sides=16)                                  # a spool
+	p.seg((0, 0, 0.8), (0, 0, 0.9), 0.42, 0.42, WOOD, sides=16)
+	p.seg((0, 0, 0.1), (0, 0, 0.8), 0.33, 0.33, CLOTH_WHITE, sides=16, grad=(0.0, 0.3), glow=0.25)   # wound with pale silk
+	for k in range(9):                                                                         # that shimmers pink and blue
+		z = 0.15 + k * 0.075
+		p.seg((0, 0, z), (0, 0, z + 0.018), 0.337, 0.337, DAWN if k % 2 else AQUA, sides=16, grad=(0.0, 0.1), glow=0.9)
+	pts = [(0.3, -0.18, 0.5), (0.5, -0.36, 0.32), (0.66, -0.5, 0.12), (0.85, -0.5, 0.03)]
+	_line(p, pts, 0.016, 0.012, CLOTH_WHITE, sides=4, grad=(0.0, 0.2))                          # a loose strand
+	for q in pts[1:]:
+		p.blob((0.035, 0.035, 0.035), q, CLOTH_WHITE, segs=(5, 4), glow=2.0)
+	to3 = _tangent(FRONT_A, 0.345)                                                             # a pale silk moth resting on it
+	for sx in (-1, 1):
+		fore = [(sx * x, z) for x, z in _rot2([(0, 0), (0.12, 0.06), (0.26, 0.1), (0.34, 0.04), (0.32, -0.06), (0.18, -0.1), (0.05, -0.05)], 18)]
+		hind = [(sx * x, z) for x, z in _rot2([(0, 0), (0.1, 0.0), (0.2, -0.04), (0.22, -0.14), (0.12, -0.2), (0.03, -0.1)], -12)]
+		for outline, off, sw, g in ((hind, 0.02, HIDE, (0.0, 0.4)), (fore, 0.035, DAWN, (0.25, 0.55))):
+			pts = [to3(x, 0.5 + z, off) for x, z in outline]
+			p.poly(pts, [tuple(range(len(pts)))], sw, grad=g)
+		e = (sx * 0.2, 0.56)
+		p.blob((0.08, 0.08, 0.07), to3(e[0], e[1], 0.045), WOOD, segs=(8, 4), grad=(0.3, 0.7))          # eye spots
+		p.blob((0.03, 0.03, 0.03), to3(e[0], e[1], 0.055), CLOTH_WHITE, segs=(6, 4), glow=2.0)
+		p.seg(to3(sx * 0.02, 0.6, 0.05), to3(sx * 0.12, 0.74, 0.05), 0.008, 0.004, HIDE, sides=3)       # feathery feelers
+	p.seg(to3(0, 0.62, 0.05), to3(0, 0.38, 0.05), 0.035, 0.02, CLOTH_WHITE, sides=6, grad=(0.2, 0.5))   # its furry body
+	return p.build()
+
+
+SATCHEL_C, SATCHEL_R = (0, 0, 0.38), (0.52, 0.2, 0.38)
+
+
+def _pickers_satchel(p):
+	"""The jackal-hide satchel, sewn with pale moth silk; returns where the clasp goes."""
+	c, r = SATCHEL_C, SATCHEL_R
+	p.blob((1.04, 0.4, 0.76), c, AMBER, segs=(16, 10), grad=(0.6, 1.0))                      # golden jackal hide
+	p.blob((0.9, 0.34, 0.12), (0, 0, 0.04), AMBER, segs=(14, 5), grad=(0.8, 1.0))            # a flat bottom
+	edge = _egg_flap(p, c, r, 0.44, 0.2, 0.16, HIDE, off=0.035, grad=(0.1, 0.6))            # a paler flap
+	for k in range(len(edge) - 1):                                                          # pale silk stitching inside its edge
+		if k % 2:
+			continue
+		a, b = edge[k], edge[k + 1]
+		a2 = (a[0] * 0.9, a[2] + (c[2] + 0.2 - a[2]) * 0.1)
+		b2 = (b[0] * 0.9, b[2] + (c[2] + 0.2 - b[2]) * 0.1)
+		p.seg(_egg_front(c, r, a2[0], a2[1], 0.055), _egg_front(c, r, b2[0], b2[1], 0.055), 0.016, 0.016, CLOTH_WHITE, sides=4, glow=0.8)
+	for sx in (-1, 1):                                                                      # and down both side seams
+		for k in range(4):
+			z = 0.1 + k * 0.08
+			x = sx * r[0] * 0.86 * math.sqrt(max(1 - ((z - c[2]) / r[2]) ** 2, 0.0))
+			p.seg(_egg_front(c, r, x, z, 0.02), _egg_front(c, r, x, z + 0.04, 0.02), 0.015, 0.015, CLOTH_WHITE, sides=4, glow=0.8)
+	pts = []
+	for k in range(11):                                                                     # a long shoulder strap
+		a = math.pi * k / 10
+		pts.append((-math.cos(a) * 0.5, 0.1, 0.4 + math.sin(a) * 0.62))
+	_line(p, pts, 0.045, 0.045, HIDE, sides=5, grad=(0.3, 0.8))
+	return _egg_front(c, r, 0.0, 0.22, 0.07)
+
+
+def stitched_pickers_satchel():
+	p = Prop("stitched_pickers_satchel", 1979)
+	clasp = _pickers_satchel(p)
+	_oval(p, (clasp[0], clasp[1] + 0.02, clasp[2] - 0.05), (1, 0, 0), (0, 0, 1), 0.05, 0.04, 0.014, WOOD, n=10)   # an empty loop where the clasp will go
+	a = _egg_front(SATCHEL_C, SATCHEL_R, 0.44, 0.39, 0.05)                                   # the needle still hanging on its silk
+	pts = [a, (a[0] + 0.08, a[1] - 0.06, a[2] - 0.12), (a[0] + 0.12, a[1] - 0.1, a[2] - 0.28)]
+	_line(p, pts, 0.012, 0.012, CLOTH_WHITE, sides=4, grad=(0.0, 0.2))
+	e = Vector(pts[-1])
+	p.seg(tuple(e), tuple(e + Vector((0.03, -0.02, -0.3))), 0.025, 0.0, BONE, sides=6, grad=(0.0, 0.4))
+	return p.build()
+
+
+def _tea_leaf(p, base, deg, ln, y):
+	w = ln * 0.3
+	pts = [(0, 0), (w * 0.8, ln * 0.3), (w, ln * 0.55), (w * 0.6, ln * 0.82), (0, ln), (-w * 0.6, ln * 0.82), (-w, ln * 0.55), (-w * 0.8, ln * 0.3)]
+	pts = _rot2(pts, deg, (0, 0))
+	_slab(p, [(base[0] + x, base[1] + z) for x, z in pts], y - 0.012, y + 0.012, LEAF, grad=(0.1, 0.7))
+	tip = _rot2([(0, ln * 0.9)], deg, (0, 0))[0]
+	p.seg((base[0], y - 0.016, base[1]), (base[0] + tip[0], y - 0.016, base[1] + tip[1]), 0.012, 0.004, SEAFOAM, sides=3)   # its midrib
+
+
+def motis_tea_pickers_satchel():
+	p = Prop("motis_tea_pickers_satchel", 1981)
+	clasp = _pickers_satchel(p)
+	x, y, z = clasp
+	p.blob((0.36, 0.16, 0.3), (x, y - 0.02, z), WOOD, segs=(12, 8), grad=(0.6, 1.0))        # a lacquered beetle-shell clasp
+	p.seg((x, y - 0.1, z + 0.12), (x, y - 0.1, z - 0.12), 0.011, 0.011, STONE_DARK, sides=4)  # the seam of its wing cases
+	p.blob((0.08, 0.03, 0.05), (x - 0.07, y - 0.09, z + 0.06), CLOTH_WHITE, segs=(6, 4), glow=1.5)   # the lacquer's shine
+	p.blob((0.035, 0.02, 0.025), (x + 0.07, y - 0.09, z + 0.05), CLOTH_WHITE, segs=(5, 4), glow=1.2)
+	p.seg((x, y + 0.02, z + 0.14), (x, y - 0.04, z + 0.2), 0.02, 0.02, GOLD, sides=5)          # pinned to the flap
+	for bx, deg, ln, yy in ((-0.2, 22, 0.42, -0.02), (-0.04, -8, 0.5, 0.0), (0.14, -30, 0.4, -0.03)):   # fresh tea leaves peeking out
+		_tea_leaf(p, (bx, 0.6), deg, ln, yy)
+	return p.build()
+
+
+BAG_QUESTS = [bone_netting_needles, oiled_fishnet, tamus_rainproof_pack, moth_silk_thread, stitched_pickers_satchel,
+			  motis_tea_pickers_satchel]
+
+
 AGNAVAR_HEARTH_SMOKEWOOD = [court_signet, salamander_scale, heart_of_flame, heretics_charm, brannaghs_molten_crown, scorchtongues_brazier,
 							forgeheart_core, stolen_ember, ember_heartwood, smoke_pelt, soot_mask_fragment, fire_moth_dust, glowcap,
 							emberhearts_heart, ashen_antler, kolts_antlered_mask, moth_queens_wing, courtiers_bracer, brannaghs_scepter,
@@ -9208,7 +9478,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 
