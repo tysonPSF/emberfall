@@ -2874,5 +2874,515 @@
     "faction": {
       "forgehold": 30
     }
+  },
+  "singing_stone_chip_q": {
+    "name": "Singing Stone Chips",
+    "giver": "moorwarden_aldous",
+    "start_keyword": "stone",
+    "wants": {
+      "singing_stone_chip": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "first_reward_item": "singers_torque",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Singing Stone Chips. Bring Moorwarden Aldous 4 singing stone chips.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "stone_singers": -10
+    }
+  },
+  "orlas_tuning_stone_q": {
+    "name": "Orla's Tuning Stone",
+    "giver": "moorwarden_aldous",
+    "start_keyword": "tuning",
+    "wants": {
+      "orlas_tuning_stone": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "first_reward_item": "orlas_resonant_staff",
+    "accept_text": "You have taken on a task: Orla's Tuning Stone. Bring Moorwarden Aldous Orla's Tuning Stone.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "stone_singers": -30
+    }
+  },
+  "moor_hide_q": {
+    "name": "Moor Beast Hides",
+    "giver": "hunter_wenna",
+    "start_keyword": "hides",
+    "wants": {
+      "moor_hide": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "first_reward_item": "moorhide_cloak",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Moor Beast Hides. Bring Hunter Wenna 4 moor beast hides.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "skathes_barbed_tail_q": {
+    "name": "Skathe's Barbed Tail",
+    "giver": "hunter_wenna",
+    "start_keyword": "tail",
+    "wants": {
+      "skathes_barbed_tail": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "first_reward_item": "skathes_stinger",
+    "accept_text": "You have taken on a task: Skathe's Barbed Tail. Bring Hunter Wenna Skathe's Barbed Tail.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "rune_shard_q": {
+    "name": "Rune Shards",
+    "giver": "runecarver_idris",
+    "start_keyword": "shards",
+    "wants": {
+      "rune_shard": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "first_reward_item": "runeshard_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Rune Shards. Bring Runecarver Idris 4 rune shards.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "moor_stones": -10
+    }
+  },
+  "thrums_heartstone_q": {
+    "name": "Old Thrum's Heartstone",
+    "giver": "runecarver_idris",
+    "start_keyword": "heartstone",
+    "wants": {
+      "thrums_heartstone": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "first_reward_item": "thrumstone_greathammer",
+    "accept_text": "You have taken on a task: Old Thrum's Heartstone. Bring Runecarver Idris Old Thrum's Heartstone.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "moor_stones": -30
+    }
+  },
+  "hags_hair_knot_q": {
+    "name": "Hag's Hair-knots",
+    "giver": "hedge_witch_agathe",
+    "start_keyword": "knots",
+    "wants": {
+      "hags_hair_knot": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "first_reward_item": "hagknot_charm",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Hag's Hair-knots. Bring Hedge-Witch Agathe 4 hag's hair-knots.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "bog_hags": -10
+    }
+  },
+  "mirewhistles_ladle_q": {
+    "name": "Granny Mirewhistle's Ladle",
+    "giver": "hedge_witch_agathe",
+    "start_keyword": "ladle",
+    "wants": {
+      "mirewhistles_ladle": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "first_reward_item": "mirewhistle_shawl",
+    "accept_text": "You have taken on a task: Granny Mirewhistle's Ladle. Bring Hedge-Witch Agathe Granny Mirewhistle's Ladle.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "bog_hags": -30
+    }
+  },
+  "tempest_mote_q": {
+    "name": "Tempest Motes",
+    "giver": "skywatcher_imani",
+    "start_keyword": "motes",
+    "wants": {
+      "tempest_mote": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "first_reward_item": "tempest_bracer",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Tempest Motes. Bring Skywatcher Imani 4 tempest motes.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "sky_spirits": -10
+    }
+  },
+  "hollow_winds_eye_q": {
+    "name": "The Hollow Wind's Eye",
+    "giver": "skywatcher_imani",
+    "start_keyword": "eye",
+    "wants": {
+      "hollow_winds_eye": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "first_reward_item": "hollow_eye_amulet",
+    "accept_text": "You have taken on a task: The Hollow Wind's Eye. Bring Skywatcher Imani the Hollow Wind's Eye.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "sky_spirits": -30
+    }
+  },
+  "serpent_plume_q": {
+    "name": "Sky Serpent Plumes",
+    "giver": "serpent_hunter_kael",
+    "start_keyword": "plumes",
+    "wants": {
+      "serpent_plume": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "first_reward_item": "plumed_belt",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Sky Serpent Plumes. Bring Serpent-Hunter Kael 4 sky serpent plumes.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "coilclouds_fang_q": {
+    "name": "Coilcloud's Fang",
+    "giver": "serpent_hunter_kael",
+    "start_keyword": "fang",
+    "wants": {
+      "coilclouds_fang": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "first_reward_item": "coilcloud_bow",
+    "accept_text": "You have taken on a task: Coilcloud's Fang. Bring Serpent-Hunter Kael Coilcloud's Fang.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "cloudstone_q": {
+    "name": "Cloudstones",
+    "giver": "cloudscholar_benedikt",
+    "start_keyword": "cloudstones",
+    "wants": {
+      "cloudstone": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "first_reward_item": "cloudstone_pauldrons",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Cloudstones. Bring Cloudscholar Benedikt 4 cloudstones.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "cloud_giants": -10
+    }
+  },
+  "hauvars_mist_crown_q": {
+    "name": "Hauvar's Mist-Crown",
+    "giver": "cloudscholar_benedikt",
+    "start_keyword": "crown",
+    "wants": {
+      "hauvars_mist_crown": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "first_reward_item": "mistcrown_helm",
+    "accept_text": "You have taken on a task: Hauvar's Mist-Crown. Bring Cloudscholar Benedikt Hauvar's Mist-Crown.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "cloud_giants": -30
+    }
+  },
+  "skyship_sailcloth_q": {
+    "name": "Scraps Of Skyship Sailcloth",
+    "giver": "bosun_tarrow",
+    "start_keyword": "sailcloth",
+    "wants": {
+      "skyship_sailcloth": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "first_reward_item": "sailcloth_gloves",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Scraps Of Skyship Sailcloth. Bring Bosun Tarrow 4 scraps of skyship sailcloth.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "sky_pirates": -10
+    }
+  },
+  "mirelas_spyglass_q": {
+    "name": "Mirela's Spyglass",
+    "giver": "bosun_tarrow",
+    "start_keyword": "spyglass",
+    "wants": {
+      "mirelas_spyglass": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "first_reward_item": "driftwind_cutlass",
+    "accept_text": "You have taken on a task: Mirela's Spyglass. Bring Bosun Tarrow Mirela's Spyglass.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "sky_pirates": -30
+    }
+  },
+  "titans_thunderstone_q": {
+    "name": "Titan's Thunderstones",
+    "giver": "stairwarden_hesketh",
+    "start_keyword": "thunderstones",
+    "wants": {
+      "titans_thunderstone": 4
+    },
+    "reward": {
+      "xp": 13050,
+      "coin": 1450
+    },
+    "first_reward_item": "thunderstone_girdle",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Titan's Thunderstones. Bring Stairwarden Hesketh 4 titan's thunderstones.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "storm_titans": -10
+    }
+  },
+  "vorlaugs_thunder_torc_q": {
+    "name": "Vorlaug's Thunder-Torc",
+    "giver": "stairwarden_hesketh",
+    "start_keyword": "torc",
+    "wants": {
+      "vorlaugs_thunder_torc": 1
+    },
+    "reward": {
+      "xp": 29000,
+      "coin": 3480
+    },
+    "first_reward_item": "vorlaugs_torc",
+    "accept_text": "You have taken on a task: Vorlaug's Thunder-Torc. Bring Stairwarden Hesketh Vorlaug's Thunder-Torc.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "storm_titans": -30
+    }
+  },
+  "temple_bronze_q": {
+    "name": "Plates Of Temple Bronze",
+    "giver": "sister_mireille",
+    "start_keyword": "bronze",
+    "wants": {
+      "temple_bronze": 4
+    },
+    "reward": {
+      "xp": 13050,
+      "coin": 1450
+    },
+    "first_reward_item": "temple_bronze_boots",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Plates Of Temple Bronze. Bring Sister Mireille 4 plates of temple bronze.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "step_guardians": -10
+    }
+  },
+  "first_guardians_seal_q": {
+    "name": "The First Guardian's Seal",
+    "giver": "sister_mireille",
+    "start_keyword": "seal",
+    "wants": {
+      "first_guardians_seal": 1
+    },
+    "reward": {
+      "xp": 29000,
+      "coin": 3480
+    },
+    "first_reward_item": "guardians_sealblade",
+    "accept_text": "You have taken on a task: The First Guardian's Seal. Bring Sister Mireille the First Guardian's Seal.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "step_guardians": -30
+    }
+  },
+  "stormscale_q": {
+    "name": "Stormscales",
+    "giver": "stormrider_kasimir",
+    "start_keyword": "stormscales",
+    "wants": {
+      "stormscale": 4
+    },
+    "reward": {
+      "xp": 13050,
+      "coin": 1450
+    },
+    "first_reward_item": "stormscale_leggings",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Stormscales. Bring Stormrider Kasimir 4 stormscales.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8
+    }
+  },
+  "elder_drakes_stormheart_q": {
+    "name": "The Elder Drake's Stormheart",
+    "giver": "stormrider_kasimir",
+    "start_keyword": "stormheart",
+    "wants": {
+      "elder_drakes_stormheart": 1
+    },
+    "reward": {
+      "xp": 29000,
+      "coin": 3480
+    },
+    "first_reward_item": "stormheart_shield",
+    "accept_text": "You have taken on a task: The Elder Drake's Stormheart. Bring Stormrider Kasimir the Elder Drake's Stormheart.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30
+    }
+  },
+  "shard_of_broken_breath_q": {
+    "name": "Shards Of Broken Breath",
+    "giver": "high_windspeaker_obiageli",
+    "start_keyword": "breath",
+    "wants": {
+      "shard_of_broken_breath": 4
+    },
+    "reward": {
+      "xp": 14400,
+      "coin": 1600
+    },
+    "first_reward_item": "breathshard_ring",
+    "repeatable": true,
+    "accept_text": "You have taken on a task: Shards Of Broken Breath. Bring High Windspeaker Obiageli 4 shards of broken breath.",
+    "ready_text": "Let's have them, {name}.",
+    "complete_text": "Here's your pay.",
+    "first_complete_text": "And this, as I promised.",
+    "faction": {
+      "galehold": 8,
+      "fallen_breath": -10
+    }
+  },
+  "fallen_breaths_sigh_q": {
+    "name": "The Fallen Breath's Last Sigh",
+    "giver": "high_windspeaker_obiageli",
+    "start_keyword": "sigh",
+    "wants": {
+      "fallen_breaths_sigh": 1
+    },
+    "reward": {
+      "xp": 32000,
+      "coin": 3840
+    },
+    "first_reward_item": "mantle_of_the_last_breath",
+    "accept_text": "You have taken on a task: The Fallen Breath's Last Sigh. Bring High Windspeaker Obiageli the Fallen Breath's Last Sigh.",
+    "ready_text": "Is that it? Give it here, {name}.",
+    "complete_text": "Well done. The wind will carry your name.",
+    "first_complete_text": "Take this. You've earned it.",
+    "faction": {
+      "galehold": 30,
+      "fallen_breath": -30
+    }
   }
 }

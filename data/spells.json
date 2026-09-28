@@ -1947,5 +1947,663 @@
       "kind": "burst",
       "color": "#c8e0ff"
     }
+  },
+  "thunderclap_strike": {
+    "name": "Thunderclap Strike",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 18,
+    "range": 3.4,
+    "min": 85,
+    "max": 125,
+    "per_level": 3.2,
+    "verb": [
+      "thunder",
+      "thunders"
+    ],
+    "stun_chance": 0.3,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "classes": {
+      "warrior": 41
+    },
+    "cost": 12400,
+    "skill": "offense",
+    "desc": "A blow like a thunderclap: heavy damage and a chance to stun for 2 seconds (not foes more than 3 levels above you).",
+    "fx": {
+      "kind": "impact",
+      "color": "#c8d8ff"
+    }
+  },
+  "bulwark_of_the_sky": {
+    "name": "Bulwark of the Sky",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 300,
+    "range": 0,
+    "duration": 30,
+    "stats": {
+      "ac": 90,
+      "hp": 400
+    },
+    "classes": {
+      "warrior": 43
+    },
+    "cost": 13200,
+    "land_text": "You stand like the mountain under the sky.",
+    "fade_text": "The bulwark of the sky passes.",
+    "desc": "For 30 seconds: +90 armor and +400 health. Once every five minutes.",
+    "fx": {
+      "kind": "buff",
+      "color": "#b0c8e8"
+    }
+  },
+  "tempest_whirl": {
+    "name": "Tempest Whirl",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 24,
+    "range": 3.4,
+    "min": 90,
+    "max": 130,
+    "per_level": 3.2,
+    "splash": 10.0,
+    "splash_pct": 0.9,
+    "verb": [
+      "whirl into",
+      "whirls into"
+    ],
+    "classes": {
+      "warrior": 45
+    },
+    "cost": 14000,
+    "skill": "offense",
+    "desc": "You spin like a tempest: your target and every foe near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#d0e0f0"
+    }
+  },
+  "zenith_ward": {
+    "name": "Zenith Ward",
+    "type": "buff",
+    "target": "group",
+    "mana": 145,
+    "cast_time": 5.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "ac": 32,
+      "hp": 160,
+      "hp_regen": 5
+    },
+    "classes": {
+      "cleric": 41
+    },
+    "cost": 12400,
+    "skill": "abjuration",
+    "land_text": "The noon sun stands over you.",
+    "fade_text": "The zenith ward fades.",
+    "desc": "Your group, for thirty minutes: +32 armor, +160 health and +5 health every tick.",
+    "fx": {
+      "kind": "buff",
+      "color": "#fff0b0"
+    }
+  },
+  "skyfire_judgment": {
+    "name": "Skyfire Judgment",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 105,
+    "cast_time": 3.0,
+    "recast": 6,
+    "range": 30,
+    "min": 215,
+    "max": 280,
+    "per_level": 6.5,
+    "classes": {
+      "cleric": 43
+    },
+    "cost": 13200,
+    "skill": "evocation",
+    "desc": "Fire falls from a clear sky on your foe.",
+    "fx": {
+      "kind": "burst",
+      "color": "#fff0a0"
+    }
+  },
+  "breath_of_life": {
+    "name": "Breath of Life",
+    "type": "heal",
+    "target": "group",
+    "mana": 155,
+    "cast_time": 4.0,
+    "recast": 10,
+    "range": 30,
+    "min": 195,
+    "max": 240,
+    "per_level": 5.5,
+    "classes": {
+      "cleric": 45
+    },
+    "cost": 14000,
+    "skill": "alteration",
+    "desc": "A warm wind of healing for everyone in your group nearby.",
+    "fx": {
+      "kind": "heal",
+      "color": "#f8f0c8"
+    }
+  },
+  "lightning_spear": {
+    "name": "Lightning Spear",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 120,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 260,
+    "max": 325,
+    "per_level": 7.5,
+    "classes": {
+      "wizard": 41
+    },
+    "cost": 12400,
+    "skill": "evocation",
+    "desc": "A spear of lightning hurled from the clouds.",
+    "fx": {
+      "kind": "burst",
+      "color": "#a8c8ff"
+    }
+  },
+  "cloudbind": {
+    "name": "Cloudbind",
+    "type": "root",
+    "target": "enemy",
+    "mana": 55,
+    "cast_time": 2.0,
+    "recast": 8,
+    "range": 30,
+    "duration": 36,
+    "classes": {
+      "wizard": 43
+    },
+    "cost": 13200,
+    "skill": "alteration",
+    "desc": "Cloud wraps your target and holds it where it stands for 36 seconds.",
+    "fx": {
+      "kind": "root",
+      "color": "#e0e8f0"
+    }
+  },
+  "heavenfall": {
+    "name": "Heavenfall",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 220,
+    "cast_time": 5.5,
+    "recast": 18,
+    "range": 30,
+    "min": 325,
+    "max": 400,
+    "per_level": 7.5,
+    "splash": 12.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "wizard": 45
+    },
+    "cost": 14000,
+    "skill": "evocation",
+    "desc": "The heavens come down on your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c0d8ff"
+    }
+  },
+  "cloudcutter": {
+    "name": "Cloudcutter",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 22,
+    "range": 3.4,
+    "min": 110,
+    "max": 145,
+    "per_level": 4.2,
+    "verb": [
+      "cut",
+      "cuts"
+    ],
+    "classes": {
+      "rogue": 41
+    },
+    "cost": 12400,
+    "skill": "offense",
+    "desc": "A cut so quick it parts the clouds.",
+    "fx": {
+      "kind": "impact",
+      "color": "#e8f0f8"
+    }
+  },
+  "whirling_edges": {
+    "name": "Whirling Edges",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 20,
+    "stats": {
+      "haste": 40,
+      "dmg": 12
+    },
+    "classes": {
+      "rogue": 43
+    },
+    "cost": 13200,
+    "land_text": "Your blades whirl like the high winds.",
+    "fade_text": "Your blades slow.",
+    "desc": "For 20 seconds: 40% faster attacks and +12 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#c8d0e0"
+    }
+  },
+  "hollow_heart": {
+    "name": "Hollow Heart",
+    "ability": true,
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 40,
+    "range": 3.4,
+    "tick": 34,
+    "ticks": 6,
+    "per_level": 1.3,
+    "classes": {
+      "rogue": 45
+    },
+    "cost": 14000,
+    "skill": "offense",
+    "dot_text": "%s bleeds from a hollowing wound.",
+    "land_text": "A deep wound opens; your heart runs hollow.",
+    "desc": "A wound that bleeds very heavily for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#a01830"
+    }
+  },
+  "stormbound_mantle": {
+    "name": "Stormbound Mantle",
+    "type": "buff",
+    "target": "pet",
+    "mana": 90,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 40,
+    "duration": 900,
+    "stats": {
+      "ac": 60,
+      "hp": 480,
+      "dmg": 10
+    },
+    "classes": {
+      "magician": 41
+    },
+    "cost": 12400,
+    "skill": "alteration",
+    "land_text": "Your pet is bound in a mantle of storm.",
+    "fade_text": "The stormbound mantle fades.",
+    "desc": "Your pet, for fifteen minutes: +60 armor, +480 health and +10 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#a8c8f0"
+    }
+  },
+  "thunderhead": {
+    "name": "Thunderhead",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 110,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 225,
+    "max": 290,
+    "per_level": 7.0,
+    "classes": {
+      "magician": 43
+    },
+    "cost": 13200,
+    "skill": "evocation",
+    "desc": "A thunderhead breaks over your foe.",
+    "fx": {
+      "kind": "burst",
+      "color": "#b0c8f0"
+    }
+  },
+  "wrath_of_the_sky": {
+    "name": "Wrath of the Sky",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 195,
+    "cast_time": 5.0,
+    "recast": 16,
+    "range": 30,
+    "min": 280,
+    "max": 345,
+    "per_level": 7.0,
+    "splash": 10.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "magician": 45
+    },
+    "cost": 14000,
+    "skill": "evocation",
+    "desc": "Every wind of the sky, on your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8e0ff"
+    }
+  },
+  "grave_wind": {
+    "name": "Grave Wind",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 95,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 25,
+    "tick": 40,
+    "ticks": 6,
+    "per_level": 1.4,
+    "classes": {
+      "necromancer": 41
+    },
+    "cost": 12400,
+    "skill": "conjuration",
+    "dot_text": "%s withers in the grave wind.",
+    "land_text": "A wind from the grave withers you.",
+    "desc": "A wind from the grave: very heavy damage every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#6a8a5a"
+    }
+  },
+  "deathless_fury": {
+    "name": "Deathless Fury",
+    "type": "buff",
+    "target": "pet",
+    "mana": 80,
+    "cast_time": 1.0,
+    "recast": 120,
+    "range": 40,
+    "duration": 60,
+    "stats": {
+      "haste": 55,
+      "dmg": 18
+    },
+    "classes": {
+      "necromancer": 43
+    },
+    "cost": 13200,
+    "skill": "alteration",
+    "land_text": "Your servant rages beyond death.",
+    "fade_text": "The deathless fury passes.",
+    "desc": "Your pet, for a minute: 55% faster attacks and +18 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#7a2aa0"
+    }
+  },
+  "breathtaker": {
+    "name": "Breathtaker",
+    "type": "lifetap",
+    "target": "enemy",
+    "mana": 135,
+    "cast_time": 3.5,
+    "recast": 10,
+    "range": 25,
+    "min": 260,
+    "max": 325,
+    "per_level": 7.0,
+    "classes": {
+      "necromancer": 45
+    },
+    "cost": 14000,
+    "skill": "alteration",
+    "desc": "You take your foe's last breath and live on it.",
+    "fx": {
+      "kind": "impact",
+      "color": "#4a1a70"
+    }
+  },
+  "hailbite_curse": {
+    "name": "Hailbite Curse",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 90,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 30,
+    "tick": 36,
+    "ticks": 6,
+    "per_level": 1.3,
+    "classes": {
+      "shaman": 41
+    },
+    "cost": 12400,
+    "skill": "conjuration",
+    "dot_text": "%s is battered by biting hail.",
+    "land_text": "Biting hail batters you.",
+    "desc": "Biting hail batters your foe every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#d8f0ff"
+    }
+  },
+  "spirit_of_the_summit": {
+    "name": "Spirit of the Summit",
+    "type": "buff",
+    "target": "group",
+    "mana": 120,
+    "cast_time": 4.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "sta": 20,
+      "str": 15,
+      "hp": 100
+    },
+    "classes": {
+      "shaman": 43
+    },
+    "cost": 13200,
+    "skill": "alteration",
+    "land_text": "The spirit of the high peaks fills you.",
+    "fade_text": "The spirit of the summit departs.",
+    "desc": "Your group, for thirty minutes: +20 stamina, +15 strength and +100 health.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d0d8e8"
+    }
+  },
+  "stillness_of_stone": {
+    "name": "Stillness of Stone",
+    "type": "slow",
+    "target": "enemy",
+    "mana": 80,
+    "cast_time": 2.5,
+    "recast": 3,
+    "range": 30,
+    "slow": 75,
+    "duration": 180,
+    "classes": {
+      "shaman": 45
+    },
+    "cost": 14000,
+    "skill": "alteration",
+    "slow_text": "The stillness of stone settles on %s.",
+    "slow_you": "Your limbs go heavy as stone.",
+    "desc": "Your foe attacks 75% slower for three minutes. Named foes shrug off half of it.",
+    "fx": {
+      "kind": "dot",
+      "color": "#a0a098"
+    }
+  },
+  "skypiercer": {
+    "name": "Skypiercer",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 0,
+    "shot_mult": 3.8,
+    "classes": {
+      "ranger": 41
+    },
+    "cost": 12400,
+    "skill": "archery",
+    "desc": "An arrow that could pierce the sky, for 380% of a normal shot."
+  },
+  "heights_eye": {
+    "name": "Eye of the Heights",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 30,
+    "stats": {
+      "haste": 30,
+      "dmg": 10,
+      "agi": 20
+    },
+    "classes": {
+      "ranger": 43
+    },
+    "cost": 13200,
+    "land_text": "You see the field as a hawk from the heights.",
+    "fade_text": "Your eye loses the heights.",
+    "desc": "For 30 seconds: 30% faster attacks, +10 damage and +20 agility.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d8c890"
+    }
+  },
+  "tempest_of_arrows": {
+    "name": "Tempest of Arrows",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 45,
+    "range": 0,
+    "shot_mult": 1.8,
+    "shots": 14,
+    "spread": 16.0,
+    "classes": {
+      "ranger": 45
+    },
+    "cost": 14000,
+    "skill": "archery",
+    "desc": "A tempest of arrows: your target and up to thirteen foes near it, each for 180% of a normal shot."
+  },
+  "stone_song": {
+    "name": "Stone Song",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 10,
+    "min": 40,
+    "max": 60,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A note that shakes the bones.",
+    "fx": {
+      "kind": "impact",
+      "color": "#b0a890"
+    }
+  },
+  "wyvern_venom": {
+    "name": "Wyvern Venom",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 20,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s burns with wyvern venom.",
+    "land_text": "Wyvern venom burns in your blood.",
+    "desc": "A moor wyvern's sting.",
+    "fx": {
+      "kind": "dot",
+      "color": "#6a8a3a"
+    }
+  },
+  "bog_curse": {
+    "name": "Bog Curse",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 10,
+    "tick": 20,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s rots under a bog curse.",
+    "land_text": "A bog hag's curse rots at you.",
+    "desc": "A bog hag's curse.",
+    "fx": {
+      "kind": "dot",
+      "color": "#5a6a3a"
+    }
+  },
+  "tempest_bolt": {
+    "name": "Tempest Bolt",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 12,
+    "min": 46,
+    "max": 68,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A bolt of the storm.",
+    "fx": {
+      "kind": "burst",
+      "color": "#a0c0ff"
+    }
   }
 }

@@ -1,0 +1,884 @@
+{
+  "name": "Vayuketh's Step",
+  "levels": [
+    42,
+    44
+  ],
+  "music": "vayukeths_step",
+  "seed": 9751,
+  "size": 448,
+  "height_amplitude": 1.5,
+  "bind_point": [
+    4,
+    180
+  ],
+  "flat_radius": 20,
+  "trees": 50,
+  "tree_mix": [
+    "pine_a",
+    "pine_b"
+  ],
+  "groves": 0.4,
+  "rocks": 110,
+  "grass_colors": [
+    "#5e7a48",
+    "#728a54"
+  ],
+  "fog_density": 0.0028,
+  "fog_color": "#b8c8dc",
+  "sun_energy": 1.0,
+  "terraces": {
+    "start": -150,
+    "end": 130,
+    "steps": 8,
+    "rise": 64,
+    "riser": 13,
+    "wobble": 0,
+    "toward": "north",
+    "face_color": "#9a927e"
+  },
+  "clutter": {
+    "grass_a": {
+      "density": 0.18,
+      "patch": 0.5,
+      "sway": 0.35,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.7,
+        1.1
+      ]
+    },
+    "flowers_white": {
+      "density": 0.004,
+      "patch": 0.9,
+      "sway": 0.2,
+      "range": 50,
+      "scale": [
+        0.9,
+        1.3
+      ]
+    },
+    "pebbles": {
+      "density": 0.02,
+      "patch": 0.5,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    }
+  },
+  "passes": [
+    [
+      0,
+      224,
+      9
+    ],
+    [
+      224,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          224
+        ],
+        [
+          0,
+          -150
+        ]
+      ],
+      "width": 4.0
+    },
+    {
+      "points": [
+        [
+          0,
+          -10
+        ],
+        [
+          120,
+          -5
+        ],
+        [
+          224,
+          0
+        ]
+      ],
+      "width": 2.4
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        213
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "galehold",
+      "arrive": [
+        0,
+        -46
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    },
+    {
+      "pos": [
+        213,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "hollow_air",
+      "arrive": [
+        -231,
+        0
+      ],
+      "arrive_face": [
+        -191,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        128
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        93
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        58
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        23
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -12
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -47
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -82
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -117
+      ],
+      "id": "summit_stair",
+      "collide": "none",
+      "yaw": 0,
+      "slope": true
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -176
+      ],
+      "id": "vayuketh_temple",
+      "collide": "mesh",
+      "face": [
+        0,
+        -140
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        100
+      ],
+      "id": "guardian_statue",
+      "collide": "box",
+      "face": [
+        0,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        100
+      ],
+      "id": "guardian_statue",
+      "collide": "box",
+      "face": [
+        0,
+        60
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        -10
+      ],
+      "id": "guardian_statue",
+      "collide": "box",
+      "face": [
+        0,
+        -50
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -10
+      ],
+      "id": "guardian_statue",
+      "collide": "box",
+      "face": [
+        0,
+        -50
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        130
+      ],
+      "id": "prayer_flags",
+      "collide": "none",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        40
+      ],
+      "id": "prayer_flags",
+      "collide": "none",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -60
+      ],
+      "id": "prayer_flags",
+      "collide": "none",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        135
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        135
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        -150
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -150
+      ],
+      "id": "wind_chimes",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -125,
+        -120
+      ],
+      "id": "titan_throne",
+      "collide": "mesh",
+      "face": [
+        -100,
+        -80
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        -60
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        -150
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        90
+      ],
+      "id": "drake_ledge",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        160,
+        60
+      ],
+      "id": "drake_ledge",
+      "collide": "mesh"
+    },
+    {
+      "type": "waystation",
+      "pos": [
+        -30,
+        180
+      ],
+      "yaw": 90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        24,
+        170
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        180
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        192
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        180
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        182
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8,
+        200
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        18,
+        200
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        196
+      ],
+      "yaw": -90,
+      "labels": [
+        "Galehold",
+        "Vayuketh's Step"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        196,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Hollow Air",
+        "Vayuketh's Step"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "stairwarden_hesketh",
+      "pos": [
+        -6,
+        170
+      ],
+      "face": [
+        10,
+        182
+      ]
+    },
+    {
+      "id": "sister_mireille",
+      "pos": [
+        22,
+        184
+      ],
+      "face": [
+        10,
+        182
+      ]
+    },
+    {
+      "id": "stormrider_kasimir",
+      "pos": [
+        -4,
+        192
+      ],
+      "face": [
+        10,
+        182
+      ]
+    },
+    {
+      "id": "high_windspeaker_obiageli",
+      "pos": [
+        14,
+        166
+      ],
+      "face": [
+        10,
+        182
+      ]
+    },
+    {
+      "id": "pilgrim_sutler_hamid",
+      "pos": [
+        -14,
+        184
+      ],
+      "face": [
+        10,
+        182
+      ]
+    },
+    {
+      "id": "step_stairwarden",
+      "pos": [
+        0,
+        160
+      ],
+      "patrol": [
+        [
+          0,
+          160
+        ],
+        [
+          20,
+          180
+        ],
+        [
+          0,
+          200
+        ],
+        [
+          -20,
+          180
+        ],
+        [
+          0,
+          160
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -12,
+        60
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        12,
+        20
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -12,
+        -20
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        12,
+        -55
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -30,
+        90
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        30,
+        -90
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        0,
+        -140
+      ],
+      "pool": {
+        "first_guardian": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -110,
+        -60
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -140,
+        -100
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -90,
+        -120
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        -40
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -120,
+        -150
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -125,
+        -110
+      ],
+      "pool": {
+        "vorlaug": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        110,
+        70
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        150,
+        40
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        120,
+        110
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        160,
+        100
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        90,
+        130
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        135,
+        90
+      ],
+      "pool": {
+        "thunderwing": 1
+      },
+      "respawn": 1500,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -30,
+        -155
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        30,
+        -158
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -45,
+        -172
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        45,
+        -172
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -20,
+        -185
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        0,
+        -176
+      ],
+      "pool": {
+        "fallen_breath": 1
+      },
+      "respawn": 1800,
+      "wander": 4
+    }
+  ]
+}

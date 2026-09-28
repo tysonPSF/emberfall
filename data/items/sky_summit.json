@@ -1,0 +1,531 @@
+{
+  "singing_stone_chip": {
+    "name": "Singing Stone Chip",
+    "value": 54,
+    "stack": 20
+  },
+  "moor_hide": {
+    "name": "Moor Beast Hide",
+    "value": 52,
+    "stack": 20
+  },
+  "rune_shard": {
+    "name": "Rune Shard",
+    "value": 56,
+    "stack": 20
+  },
+  "hags_hair_knot": {
+    "name": "Hag's Hair-Knot",
+    "value": 52,
+    "stack": 20
+  },
+  "tempest_mote": {
+    "name": "Tempest Mote",
+    "value": 58,
+    "stack": 20
+  },
+  "serpent_plume": {
+    "name": "Sky Serpent Plume",
+    "value": 58,
+    "stack": 20
+  },
+  "cloudstone": {
+    "name": "Cloudstone",
+    "value": 62,
+    "stack": 20
+  },
+  "skyship_sailcloth": {
+    "name": "Skyship Sailcloth",
+    "value": 56,
+    "stack": 20
+  },
+  "titans_thunderstone": {
+    "name": "Titan's Thunderstone",
+    "value": 66,
+    "stack": 20
+  },
+  "temple_bronze": {
+    "name": "Temple Bronze",
+    "value": 62,
+    "stack": 20
+  },
+  "stormscale": {
+    "name": "Stormscale",
+    "value": 62,
+    "stack": 20
+  },
+  "shard_of_broken_breath": {
+    "name": "Shard of Broken Breath",
+    "value": 66,
+    "stack": 20
+  },
+  "orlas_tuning_stone": {
+    "name": "Orla's Tuning Stone",
+    "value": 300,
+    "lore": true
+  },
+  "skathes_barbed_tail": {
+    "name": "Skathe's Barbed Tail",
+    "value": 300,
+    "lore": true
+  },
+  "thrums_heartstone": {
+    "name": "Old Thrum's Heartstone",
+    "value": 300,
+    "lore": true
+  },
+  "mirewhistles_ladle": {
+    "name": "Granny Mirewhistle's Ladle",
+    "value": 300,
+    "lore": true
+  },
+  "hollow_winds_eye": {
+    "name": "The Hollow Wind's Eye",
+    "value": 300,
+    "lore": true
+  },
+  "coilclouds_fang": {
+    "name": "Coilcloud's Fang",
+    "value": 300,
+    "lore": true
+  },
+  "hauvars_mist_crown": {
+    "name": "Hauvar's Mist-Crown",
+    "value": 300,
+    "lore": true
+  },
+  "mirelas_spyglass": {
+    "name": "Mirela's Spyglass",
+    "value": 300,
+    "lore": true
+  },
+  "vorlaugs_thunder_torc": {
+    "name": "Vorlaug's Thunder-Torc",
+    "value": 300,
+    "lore": true
+  },
+  "first_guardians_seal": {
+    "name": "The First Guardian's Seal",
+    "value": 300,
+    "lore": true
+  },
+  "elder_drakes_stormheart": {
+    "name": "The Elder Drake's Stormheart",
+    "value": 300,
+    "lore": true
+  },
+  "fallen_breaths_sigh": {
+    "name": "The Fallen Breath's Last Sigh",
+    "value": 300,
+    "lore": true
+  },
+  "singers_torque": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Singer's Torque",
+    "slot": "neck",
+    "ac": 9,
+    "int": 7,
+    "wis": 7,
+    "mana": 70,
+    "value": 15000,
+    "rec_level": 38
+  },
+  "orlas_resonant_staff": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Orla's Resonant Staff",
+    "slot": "primary",
+    "dmg": 25,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 12,
+    "wis": 12,
+    "mana": 125,
+    "value": 36000,
+    "rec_level": 42,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ],
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.06
+    }
+  },
+  "moorhide_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Moorhide Cloak",
+    "slot": "arms",
+    "ac": 18,
+    "agi": 6,
+    "sta": 6,
+    "value": 15000,
+    "rec_level": 38,
+    "wear": "leather_sleeves"
+  },
+  "skathes_stinger": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Skathe's Stinger",
+    "slot": "primary",
+    "dmg": 23,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 8,
+    "value": 34000,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "wyvern_venom",
+      "chance": 0.07
+    }
+  },
+  "runeshard_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Runeshard Ring",
+    "slot": "ring",
+    "ac": 8,
+    "str": 6,
+    "sta": 6,
+    "hp": 50,
+    "value": 15000,
+    "rec_level": 38
+  },
+  "thrumstone_greathammer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Thrumstone Greathammer",
+    "slot": "primary",
+    "dmg": 50,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 10,
+    "sta": 8,
+    "hp": 80,
+    "value": 36000,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "hagknot_charm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Hag-Knot Charm",
+    "slot": "ring",
+    "ac": 7,
+    "int": 6,
+    "wis": 6,
+    "mana": 60,
+    "value": 15000,
+    "rec_level": 38
+  },
+  "mirewhistle_shawl": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mirewhistle's Shawl",
+    "slot": "chest",
+    "ac": 26,
+    "int": 12,
+    "wis": 12,
+    "mana": 130,
+    "hp": 50,
+    "value": 36000,
+    "rec_level": 42,
+    "wear": "patchwork_tunic"
+  },
+  "tempest_bracer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tempest Bracer",
+    "slot": "arms",
+    "ac": 19,
+    "agi": 7,
+    "sta": 6,
+    "value": 16000,
+    "rec_level": 40,
+    "wear": "leather_sleeves"
+  },
+  "hollow_eye_amulet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Hollow-Eye Amulet",
+    "slot": "neck",
+    "ac": 11,
+    "int": 9,
+    "wis": 9,
+    "mana": 95,
+    "value": 38000,
+    "rec_level": 44
+  },
+  "plumed_belt": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Plumed Belt",
+    "slot": "waist",
+    "ac": 10,
+    "agi": 7,
+    "str": 5,
+    "value": 16000,
+    "rec_level": 40,
+    "wear": "rope_belt"
+  },
+  "coilcloud_bow": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Coilcloud Bow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 17,
+    "delay": 2.8,
+    "range": 50,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "agi": 8,
+    "value": 36000,
+    "rec_level": 44,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "cloudstone_pauldrons": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Cloudstone Vambraces",
+    "slot": "arms",
+    "ac": 22,
+    "str": 7,
+    "sta": 7,
+    "hp": 50,
+    "value": 16000,
+    "rec_level": 40,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "mistcrown_helm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mistcrown Helm",
+    "slot": "head",
+    "ac": 29,
+    "sta": 9,
+    "str": 7,
+    "hp": 70,
+    "value": 38000,
+    "rec_level": 44,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "sailcloth_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Sailcloth Gloves",
+    "slot": "hands",
+    "ac": 15,
+    "agi": 7,
+    "sta": 5,
+    "value": 16000,
+    "rec_level": 40,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "driftwind_cutlass": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Driftwind Cutlass",
+    "slot": "primary",
+    "dmg": 31,
+    "delay": 2.7,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 7,
+    "agi": 8,
+    "hp": 55,
+    "value": 38000,
+    "rec_level": 44,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "thunderstone_girdle": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Thunderstone Girdle",
+    "slot": "waist",
+    "ac": 12,
+    "str": 7,
+    "sta": 7,
+    "hp": 45,
+    "value": 18000,
+    "rec_level": 42,
+    "wear": "rope_belt"
+  },
+  "vorlaugs_torc": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Vorlaug's Torc",
+    "slot": "neck",
+    "ac": 12,
+    "str": 9,
+    "sta": 9,
+    "hp": 95,
+    "value": 42000,
+    "rec_level": 45
+  },
+  "temple_bronze_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Temple-Bronze Boots",
+    "slot": "feet",
+    "ac": 21,
+    "sta": 7,
+    "agi": 6,
+    "value": 18000,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "guardians_sealblade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Guardian's Sealblade",
+    "slot": "primary",
+    "dmg": 33,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 8,
+    "sta": 7,
+    "hp": 60,
+    "value": 42000,
+    "rec_level": 45,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "stormscale_leggings": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Stormscale Leggings",
+    "slot": "legs",
+    "ac": 26,
+    "agi": 8,
+    "sta": 6,
+    "value": 18000,
+    "rec_level": 42,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "stormheart_shield": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Stormheart Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 34,
+    "sta": 9,
+    "hp": 65,
+    "model": "shield_round",
+    "value": 42000,
+    "rec_level": 45,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "breathshard_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Breathshard Ring",
+    "slot": "ring",
+    "ac": 8,
+    "int": 7,
+    "wis": 7,
+    "mana": 75,
+    "value": 18000,
+    "rec_level": 42
+  },
+  "mantle_of_the_last_breath": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mantle of the Last Breath",
+    "slot": "arms",
+    "ac": 22,
+    "agi": 8,
+    "sta": 8,
+    "hp": 70,
+    "mana": 60,
+    "value": 46000,
+    "rec_level": 45,
+    "wear": "leather_sleeves"
+  }
+}

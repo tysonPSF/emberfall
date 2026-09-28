@@ -14,6 +14,7 @@
   "greenmoor",
   "harrowfield",
   "high_terrace",
+  "hollow_air",
   "hollowmere",
   "lanternhold",
   "mirror_flats",
@@ -21,12 +22,14 @@
   "reedmere",
   "silted_reach",
   "smokewood",
+  "stonesail",
   "sunward_steps",
   "the_bleach",
   "the_burn",
   "the_long_grass",
   "thornwood",
   "tidemouth",
+  "vayukeths_step",
   "weeping_throat",
   "windbreak"
  ],
@@ -561,8 +564,8 @@
     5
    ],
    "kind": "plain",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -579,8 +582,8 @@
     6
    ],
    "kind": "plain",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
@@ -597,8 +600,8 @@
     6
    ],
    "kind": "outpost",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {

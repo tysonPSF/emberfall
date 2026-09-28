@@ -3417,7 +3417,8 @@
         "smiths_handbook",
         "windcutter_arrow",
         "greater_healing_potion",
-        "clarity_tonic"
+        "clarity_tonic",
+        "stormfeather_arrow"
       ],
       "buy_rate": 0.5
     }
@@ -3449,7 +3450,22 @@
         "galeweave_cap",
         "galeweave_robe",
         "galeweave_gloves",
-        "galeweave_slippers"
+        "galeweave_slippers",
+        "stormcrest_helm",
+        "stormcrest_breastplate",
+        "stormcrest_vambraces",
+        "stormcrest_gauntlets",
+        "stormcrest_greaves",
+        "stormcrest_boots",
+        "stormcrest_shield",
+        "cloudhide_jerkin",
+        "cloudhide_leggings",
+        "cloudhide_gloves",
+        "cloudhide_boots",
+        "skysilk_cap",
+        "skysilk_robe",
+        "skysilk_gloves",
+        "skysilk_slippers"
       ],
       "buy_rate": 0.5
     }
@@ -3473,7 +3489,14 @@
         "zephyr_dirk",
         "stormwood_staff",
         "galehold_longbow",
-        "windcutter_arrow"
+        "windcutter_arrow",
+        "stormcrest_sword",
+        "stormcrest_war_axe",
+        "stormcrest_greataxe",
+        "cloudpiercer_dirk",
+        "thundercloud_staff",
+        "summit_longbow",
+        "stormfeather_arrow"
       ],
       "buy_rate": 0.5
     }
@@ -3845,6 +3868,408 @@
       "dmg": [
         28,
         48
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "moorwarden_aldous": {
+    "name": "Moorwarden Aldous",
+    "level": 50,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Listen, {name}. Hear that hum? The stones of Stonesail sing when the wind blows, and the [singers] sing back.",
+      "unknown": "Ask the others at the watch.",
+      "singers": "A cult that worships the stones' song. Bring me four chips of singing [stone], every time.",
+      "stone": "Four singing stone chips. The first time, a torque.",
+      "cantor": "Cantor Orla leads their choir in the north circle. Bring me her [tuning] stone.",
+      "tuning": "Orla's tuning stone, {name}."
+    },
+    "title": "The Moorwatch"
+  },
+  "hunter_wenna": {
+    "name": "Hunter Wenna",
+    "level": 50,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Moor [wolves] in the heather, {name}, and wyverns on the crags. Keep your eyes up and down at once.",
+      "unknown": "Ask Aldous.",
+      "wolves": "Wolves and wyverns both. Bring me four moor [hides], every time.",
+      "hides": "Four moor beast hides. The first time, a cloak.",
+      "skathe": "Skathe, the great wyrm of the north-west crags. Bring me her barbed [tail].",
+      "tail": "Skathe's barbed tail, {name}."
+    },
+    "title": "The Moorwatch"
+  },
+  "runecarver_idris": {
+    "name": "Runecarver Idris",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Some of the stones out there [walk], {name}. The runes woke them, and nobody knows how to put them back to sleep.",
+      "unknown": "Ask Aldous.",
+      "walk": "Animated menhirs, round the great circle. Bring me four rune [shards], every time.",
+      "shards": "Four rune shards. The first time, a ring cut from one.",
+      "thrum": "Old Thrum, the oldest and loudest of them. Bring me his [heartstone].",
+      "heartstone": "Old Thrum's heartstone, {name}."
+    },
+    "title": "The Moorwatch"
+  },
+  "hedge_witch_agathe": {
+    "name": "Hedge-Witch Agathe",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The bog in the south-west belongs to the [hags], {name}. I'd know; I nearly joined them.",
+      "unknown": "Ask Aldous.",
+      "hags": "Bring me four of their hair-[knots], every time. Don't ask what I do with them.",
+      "knots": "Four hag's hair-knots. The first time, a charm.",
+      "granny": "Granny Mirewhistle, the eldest. Bring me her [ladle].",
+      "ladle": "Granny Mirewhistle's ladle, {name}."
+    },
+    "title": "The Moorwatch"
+  },
+  "peddler_rook": {
+    "name": "Peddler Rook",
+    "level": 38,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Supplies for the moor, {name}. Press G.",
+      "unknown": "Ask Aldous."
+    },
+    "title": "Moorwatch Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "windcutter_arrow",
+        "stormfeather_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "moorwatch_ranger": {
+    "name": "a Moorwatch ranger",
+    "level": 60,
+    "model": "ranger",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Mind the heather, {name}; it hides things.",
+      "unknown": "Ask Aldous."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near the watch!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Galehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4800,
+      "hp_regen": 80,
+      "ac": 130,
+      "dmg": [
+        32,
+        54
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "skywatcher_imani": {
+    "name": "Skywatcher Imani",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Look up, {name}. The land hangs in the sky here, torn loose when Vayuketh breathed too hard. The [tempests] never settle.",
+      "unknown": "Ask the others at Driftwatch.",
+      "tempests": "Tempest elementals, round the rift. Bring me four tempest [motes], every time.",
+      "motes": "Four tempest motes. The first time, a bracer.",
+      "hollow": "The Hollow Wind, the storm at the heart of the rift. Bring me its [eye].",
+      "eye": "The Hollow Wind's eye, {name}."
+    },
+    "title": "Driftwatch"
+  },
+  "serpent_hunter_kael": {
+    "name": "Serpent-Hunter Kael",
+    "level": 50,
+    "model": "ranger_class",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Sky [serpents], {name}. They swim the air like eels swim a river, and they bite like it too.",
+      "unknown": "Ask Imani.",
+      "serpents": "Bring me four serpent [plumes], every time.",
+      "plumes": "Four sky serpent plumes. The first time, a belt of them.",
+      "coilcloud": "Coilcloud, the great one of the east. Bring me her [fang].",
+      "fang": "Coilcloud's fang, {name}."
+    },
+    "title": "Driftwatch"
+  },
+  "cloudscholar_benedikt": {
+    "name": "Cloudscholar Benedikt",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The cloud [giants] built their hall on the highest isle, {name}, and they come down only to take.",
+      "unknown": "Ask Imani.",
+      "giants": "Bring me four [cloudstones] from them, every time.",
+      "cloudstones": "Four cloudstones. The first time, vambraces.",
+      "hauvar": "Cloudlord Hauvar wears a crown of mist. Bring me the [crown].",
+      "crown": "Hauvar's mist-crown, {name}."
+    },
+    "title": "Driftwatch"
+  },
+  "bosun_tarrow": {
+    "name": "Bosun Tarrow",
+    "level": 50,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "I sailed with the sky [pirates] once, {name}. Kites, rope-lines and a wrecked skyship. I got out. Help me finish them.",
+      "unknown": "Ask Imani.",
+      "pirates": "Bring me four scraps of skyship [sailcloth], every time.",
+      "sailcloth": "Four scraps of skyship sailcloth. The first time, gloves.",
+      "mirela": "Captain Mirela Driftwind. Bring me her [spyglass].",
+      "spyglass": "Mirela's spyglass, {name}. Ha!"
+    },
+    "title": "Driftwatch"
+  },
+  "quartermaster_lise": {
+    "name": "Quartermaster Lise",
+    "level": 38,
+    "model": "knight",
+    "weapon": "",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Supplies, {name}. Press G.",
+      "unknown": "Ask Imani."
+    },
+    "title": "Driftwatch Stores",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "windcutter_arrow",
+        "stormfeather_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "driftwatch_sentinel": {
+    "name": "a Driftwatch sentinel",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Keep your feet, {name}.",
+      "unknown": "Ask Imani."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not near Driftwatch!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Galehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4800,
+      "hp_regen": 80,
+      "ac": 130,
+      "dmg": [
+        32,
+        54
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "stairwarden_hesketh": {
+    "name": "Stairwarden Hesketh",
+    "level": 50,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "This is the Step, {name}: Vayuketh's stair to his summit. Storm [titans] walk the upper terraces now.",
+      "unknown": "Ask the others at the foot.",
+      "titans": "Bring me four titan's [thunderstones], every time.",
+      "thunderstones": "Four titan's thunderstones. The first time, a girdle.",
+      "vorlaug": "Vorlaug the Thunder-Titan leads them. Bring me his thunder-[torc].",
+      "torc": "Vorlaug's thunder-torc, {name}."
+    },
+    "title": "The Pilgrims' Foot"
+  },
+  "sister_mireille": {
+    "name": "Sister Mireille",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The temple [guardians] were made to keep the stair, {name}. Since the Breath fell, they keep it from everyone.",
+      "unknown": "Ask Hesketh.",
+      "guardians": "Bring me four plates of temple [bronze], every time.",
+      "bronze": "Four plates of temple bronze. The first time, boots of it.",
+      "first": "The First Guardian stands at the top of the stair. Bring me its [seal].",
+      "seal": "The First Guardian's seal, {name}."
+    },
+    "title": "The Pilgrims' Foot"
+  },
+  "stormrider_kasimir": {
+    "name": "Stormrider Kasimir",
+    "level": 50,
+    "model": "ranger",
+    "weapon": "dagger",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Thunder [drakes] nest on the terrace ledges, {name}. They ride the lightning down.",
+      "unknown": "Ask Hesketh.",
+      "drakes": "Bring me four [stormscales], every time.",
+      "stormscales": "Four stormscales. The first time, leggings.",
+      "thunderwing": "Thunderwing, the elder drake. Bring me its [stormheart].",
+      "stormheart": "The elder drake's stormheart, {name}."
+    },
+    "title": "The Pilgrims' Foot"
+  },
+  "high_windspeaker_obiageli": {
+    "name": "High Windspeaker Obiageli",
+    "level": 50,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Vayuketh's avatar walked the summit once, {name}. Now it has [fallen]: a breath of the god gone cold and cruel.",
+      "unknown": "Ask Hesketh.",
+      "fallen": "Its zephyrs have fallen with it. Bring me four shards of broken [breath], every time.",
+      "breath": "Four shards of broken breath. The first time, a ring.",
+      "avatar": "The Fallen Breath itself, in the temple at the top. Bring me its last [sigh], and let it rest.",
+      "sigh": "The Fallen Breath's last sigh, {name}. Vayuketh thanks you."
+    },
+    "title": "The Pilgrims' Foot"
+  },
+  "pilgrim_sutler_hamid": {
+    "name": "Pilgrim-Sutler Hamid",
+    "level": 38,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "Supplies for the climb, {name}. Press G.",
+      "unknown": "Ask Hesketh."
+    },
+    "title": "Pilgrims' Supplies",
+    "merchant": {
+      "sells": [
+        "loaf_of_bread",
+        "vial_of_water",
+        "bundle_of_herbs",
+        "windcutter_arrow",
+        "stormfeather_arrow",
+        "greater_healing_potion",
+        "clarity_tonic",
+        "draught_of_homecoming"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "step_stairwarden": {
+    "name": "a stairwarden",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The stair is long, {name}. Pace yourself.",
+      "unknown": "Ask Hesketh."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}! We're coming!"
+      ],
+      "hunt_shouts": [
+        "Not at the foot of the stair!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Galehold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4800,
+      "hp_regen": 80,
+      "ac": 130,
+      "dmg": [
+        32,
+        54
       ],
       "delay": 2.4,
       "verb": [

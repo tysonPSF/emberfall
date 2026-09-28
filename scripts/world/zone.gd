@@ -61,7 +61,7 @@ func load_zone(id: String) -> void:
 		for f: Dictionary in data.get("fields", []):
 			f["pos"] = _settle(Vector2(f["pos"][0], f["pos"][1]), maxf(float(f["size"][0]), float(f["size"][1])) * 0.55)
 		for lm: Dictionary in data.get("landmarks", []):
-			if not lm["type"] in ["rockslide", "signpost", "bridge"]:
+			if not lm["type"] in ["rockslide", "signpost", "bridge"] and not lm.get("slope", false):  # "slope": built for the slope (Vayuketh's Step's stair)
 				lm["pos"] = _settle(Vector2(lm["pos"][0], lm["pos"][1]), 4.0)
 	for lm: Dictionary in data.get("landmarks", []):
 		var spot := Vector2(lm["pos"][0], lm["pos"][1])
