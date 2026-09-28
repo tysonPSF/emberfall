@@ -55,7 +55,7 @@ func _ready() -> void:
 				grip["orient"] = g[7]
 			if g.size() >= 11:
 				grip["out"] = [float(g[8]), float(g[9]), float(g[10])]
-			GameData.models["grips"][offhand if offhand != "" else "shield_round"] = grip
+			GameData.models["grips"][(offhand + ("" if offhand.begins_with("shield") else "@l")) if offhand != "" else "shield_round"] = grip  # a weapon in the off hand tries its "@l" grip
 		elif a.begins_with("--worn="):
 			for pair in a.substr(7).split(",", false):
 				worn[pair.get_slice(":", 0)] = pair.get_slice(":", 1)
