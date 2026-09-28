@@ -104,9 +104,9 @@ Stonesail (37–41) lies past it at `[-3, 5]`.
 | Galehold **(built)** | The Standing Sky | city | 224 m | `[-2, 5]` | city |
 | Windbreak **(built)** | The Standing Sky | 32–36 | 448 m | `[-1, 4]` | plain |
 | The Long Grass **(built)** | The Standing Sky | 34–38 | 512 m | `[-1, 5]` | plain |
-| Stonesail | The Standing Sky | 37–41 | 512 m | `[-3, 5]` | plain |
-| Hollow Air | The Standing Sky | 39–43 | 512 m | `[-1, 6]` | plain |
-| Vayuketh's Step | The Standing Sky | 42–44 | 448 m | `[-2, 6]` | outpost |
+| Stonesail **(built)** | The Standing Sky | 37–41 | 512 m | `[-3, 5]` | plain |
+| Hollow Air **(built)** | The Standing Sky | 39–43 | 512 m | `[-1, 6]` | plain |
+| Vayuketh's Step **(built)** | The Standing Sky | 42–44 | 448 m | `[-2, 6]` | outpost |
 | Barrowhold | The Boneyard | city | 224 m | `[2, 7]` | city |
 | Fogfall | The Boneyard | 40–43 | 512 m | `[0, 6]` | fog |
 | The Ivory Field | The Boneyard | 42–45 | 512 m | `[1, 6]` | fog |

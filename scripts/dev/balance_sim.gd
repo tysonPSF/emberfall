@@ -13,7 +13,7 @@ extends RefCounted
 ## at the neutral 80% of cap. Gear: the best merchant gear the class can wear
 ## at that level. Resting afterward is measured from the regeneration rules.
 
-const LEVELS := [5, 10, 15, 20, 25, 30, 35, 40]
+const LEVELS := [5, 10, 15, 20, 25, 30, 35, 40, 45]
 const MOBS := {  # typical even-level monsters, forced to the test level
 	5: ["wild_boar", "gnoll_scout", "brigand_thug"],
 	10: ["dire_wolf", "black_bear", "orc_raider"],
@@ -23,6 +23,7 @@ const MOBS := {  # typical even-level monsters, forced to the test level
 	30: ["ash_drake", "magma_golem", "ember_cultist"],
 	35: ["ember_giant", "glass_golem", "obsidian_drake"],
 	40: ["grass_stalker", "thunderhoof", "barrow_wight"],
+	45: ["sky_serpent", "tempest_elemental", "sky_pirate"],
 }
 const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""], ["magician", "earth"], ["magician", "fire"],
 		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"], ["ranger", "hawk"]]

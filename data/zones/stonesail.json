@@ -1,0 +1,1183 @@
+{
+  "name": "Stonesail",
+  "levels": [
+    37,
+    41
+  ],
+  "music": "stonesail",
+  "seed": 9711,
+  "size": 512,
+  "height_amplitude": 6,
+  "bind_point": [
+    188,
+    4
+  ],
+  "flat_radius": 18,
+  "trees": 45,
+  "tree_mix": [
+    "wind_bent_tree",
+    "wind_bent_tree",
+    "pine_b"
+  ],
+  "groves": 0.3,
+  "rocks": 160,
+  "grass_colors": [
+    "#4e5a36",
+    "#62643e"
+  ],
+  "fog_density": 0.005,
+  "fog_color": "#8a918a",
+  "sun_energy": 0.9,
+  "clutter": {
+    "heather": {
+      "density": 0.08,
+      "patch": 0.7,
+      "sway": 0.2,
+      "range": 55,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "grass_b": {
+      "density": 0.22,
+      "patch": 0.5,
+      "sway": 0.3,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "fern": {
+      "density": 0.01,
+      "patch": 0.8,
+      "sway": 0.1,
+      "range": 55,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "pebbles": {
+      "density": 0.02,
+      "patch": 0.5,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.4
+      ]
+    }
+  },
+  "lakes": [
+    {
+      "points": [
+        [
+          -180,
+          100
+        ],
+        [
+          -150,
+          80
+        ],
+        [
+          -110,
+          95
+        ],
+        [
+          -95,
+          130
+        ],
+        [
+          -110,
+          170
+        ],
+        [
+          -150,
+          180
+        ],
+        [
+          -185,
+          160
+        ]
+      ],
+      "depth": 0.6,
+      "shelf": 0.9,
+      "bank": 6,
+      "islands": [
+        [
+          -145,
+          135,
+          16
+        ],
+        [
+          -120,
+          155,
+          7
+        ]
+      ]
+    }
+  ],
+  "passes": [
+    [
+      256,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          256,
+          0
+        ],
+        [
+          150,
+          5
+        ],
+        [
+          60,
+          -5
+        ],
+        [
+          26,
+          0
+        ]
+      ],
+      "width": 2.6
+    },
+    {
+      "points": [
+        [
+          60,
+          -5
+        ],
+        [
+          30,
+          -90
+        ],
+        [
+          10,
+          -140
+        ]
+      ],
+      "width": 2.2
+    }
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "galehold",
+      "arrive": [
+        -46,
+        0
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        22.0,
+        0.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        19.1,
+        11.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        11.0,
+        19.1
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.0,
+        22.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -11.0,
+        19.1
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -19.1,
+        11.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -22.0,
+        -0.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -19.1,
+        -11.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -11.0,
+        -19.1
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.0,
+        -22.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        11.0,
+        -19.1
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        19.1,
+        -11.0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        16.0,
+        -160.0
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        12.3,
+        -149.7
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        2.8,
+        -144.2
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8.0,
+        -146.1
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -15.0,
+        -154.5
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -15.0,
+        -165.5
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8.0,
+        -173.9
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        2.8,
+        -175.8
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        12.3,
+        -170.3
+      ],
+      "id": "standing_stone",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -160
+      ],
+      "id": "singing_altar",
+      "collide": "box",
+      "face": [
+        0,
+        -120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -175
+      ],
+      "id": "singer_hut",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        25,
+        -178
+      ],
+      "id": "singer_hut",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -35,
+        -140
+      ],
+      "id": "singer_hut",
+      "collide": "box",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        0
+      ],
+      "id": "rune_menhir",
+      "collide": "box",
+      "scale": 1.5
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        -60
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        120,
+        -120
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -80,
+        60
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        140
+      ],
+      "id": "standing_stone",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        -40
+      ],
+      "id": "rune_menhir",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        30
+      ],
+      "id": "rune_menhir",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        50,
+        -110
+      ],
+      "id": "rune_menhir",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -165,
+        -110
+      ],
+      "id": "wyvern_nest",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -140,
+        -150
+      ],
+      "id": "wyvern_nest",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -180,
+        -90
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        -120
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -190,
+        -140
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -155,
+        135
+      ],
+      "id": "hag_hut",
+      "collide": "box",
+      "face": [
+        -140,
+        120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -120,
+        150
+      ],
+      "id": "hag_hut",
+      "collide": "box",
+      "face": [
+        -140,
+        120
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -145,
+        125
+      ],
+      "id": "hag_cauldron",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        110
+      ],
+      "id": "bog_totem",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -170,
+        125
+      ],
+      "id": "bog_totem",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        196,
+        -12
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        184,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        198,
+        14
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        184,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        186,
+        2
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        206,
+        0
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        178,
+        -16
+      ],
+      "id": "kite_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        228,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Galehold",
+        "Stonesail"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "moorwarden_aldous",
+      "pos": [
+        192,
+        -8
+      ],
+      "face": [
+        184,
+        2
+      ]
+    },
+    {
+      "id": "hunter_wenna",
+      "pos": [
+        178,
+        12
+      ],
+      "face": [
+        184,
+        2
+      ]
+    },
+    {
+      "id": "runecarver_idris",
+      "pos": [
+        194,
+        14
+      ],
+      "face": [
+        184,
+        2
+      ]
+    },
+    {
+      "id": "hedge_witch_agathe",
+      "pos": [
+        176,
+        -8
+      ],
+      "face": [
+        184,
+        2
+      ]
+    },
+    {
+      "id": "peddler_rook",
+      "pos": [
+        204,
+        6
+      ],
+      "face": [
+        184,
+        2
+      ]
+    },
+    {
+      "id": "moorwatch_ranger",
+      "pos": [
+        168,
+        0
+      ],
+      "patrol": [
+        [
+          168,
+          0
+        ],
+        [
+          186,
+          22
+        ],
+        [
+          206,
+          0
+        ],
+        [
+          186,
+          -22
+        ],
+        [
+          168,
+          0
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        -140
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        20,
+        -160
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        -170
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        -130
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -185
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -50,
+        -130
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -160
+      ],
+      "pool": {
+        "cantor_orla": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        60,
+        60
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        20,
+        110
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        100,
+        120
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -20,
+        60
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        130,
+        60
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        70,
+        170
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -150,
+        -110
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -180,
+        -70
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -120,
+        -150
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -170,
+        -150
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -160,
+        -120
+      ],
+      "pool": {
+        "skathe": 1
+      },
+      "respawn": 1500,
+      "wander": 10
+    },
+    {
+      "pos": [
+        40,
+        0
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -40,
+        10
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        0,
+        40
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        10,
+        -40
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -30,
+        -30
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        35,
+        35
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        0,
+        0
+      ],
+      "pool": {
+        "old_thrum": 1
+      },
+      "respawn": 1500,
+      "wander": 3
+    },
+    {
+      "pos": [
+        -140,
+        120
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -170,
+        150
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -110,
+        160
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        90
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -180,
+        110
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -150,
+        140
+      ],
+      "pool": {
+        "granny_mirewhistle": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    }
+  ]
+}

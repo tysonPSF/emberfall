@@ -1,0 +1,334 @@
+{
+  "stormcrest_helm": {
+    "name": "Stormcrest Helm",
+    "slot": "head",
+    "ac": 26,
+    "sta": 7,
+    "hp": 42,
+    "value": 11000,
+    "rec_level": 41,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "stormcrest_breastplate": {
+    "name": "Stormcrest Breastplate",
+    "slot": "chest",
+    "ac": 46,
+    "sta": 11,
+    "hp": 75,
+    "value": 19500,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "stormcrest_vambraces": {
+    "name": "Stormcrest Vambraces",
+    "slot": "arms",
+    "ac": 19,
+    "str": 6,
+    "value": 8500,
+    "rec_level": 41,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "stormcrest_gauntlets": {
+    "name": "Stormcrest Gauntlets",
+    "slot": "hands",
+    "ac": 18,
+    "str": 6,
+    "value": 8000,
+    "rec_level": 41,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "stormcrest_greaves": {
+    "name": "Stormcrest Greaves",
+    "slot": "legs",
+    "ac": 31,
+    "sta": 7,
+    "value": 13500,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "stormcrest_boots": {
+    "name": "Stormcrest Boots",
+    "slot": "feet",
+    "ac": 19,
+    "agi": 6,
+    "value": 8500,
+    "rec_level": 41,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "stormcrest_shield": {
+    "name": "Stormcrest Tower Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 30,
+    "sta": 7,
+    "hp": 48,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 17000,
+    "rec_level": 42
+  },
+  "cloudhide_jerkin": {
+    "name": "Cloudhide Jerkin",
+    "slot": "chest",
+    "ac": 33,
+    "agi": 10,
+    "str": 6,
+    "value": 18000,
+    "rec_level": 42,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "cloudhide_leggings": {
+    "name": "Cloudhide Leggings",
+    "slot": "legs",
+    "ac": 24,
+    "agi": 7,
+    "sta": 5,
+    "value": 12000,
+    "rec_level": 42,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "cloudhide_gloves": {
+    "name": "Cloudhide Gloves",
+    "slot": "hands",
+    "ac": 14,
+    "agi": 6,
+    "value": 7600,
+    "rec_level": 41,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "cloudhide_boots": {
+    "name": "Cloudhide Boots",
+    "slot": "feet",
+    "ac": 18,
+    "agi": 6,
+    "sta": 5,
+    "value": 7800,
+    "rec_level": 41,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "skysilk_cap": {
+    "name": "Skysilk Cap",
+    "slot": "head",
+    "ac": 12,
+    "int": 7,
+    "wis": 7,
+    "mana": 75,
+    "value": 9400,
+    "rec_level": 41,
+    "wear": "cloth_cap"
+  },
+  "skysilk_robe": {
+    "name": "Skysilk Robe",
+    "slot": "chest",
+    "ac": 24,
+    "int": 11,
+    "wis": 11,
+    "mana": 125,
+    "value": 18000,
+    "rec_level": 42,
+    "wear": "patchwork_tunic"
+  },
+  "skysilk_gloves": {
+    "name": "Skysilk Gloves",
+    "slot": "hands",
+    "ac": 10,
+    "int": 7,
+    "wis": 7,
+    "mana": 46,
+    "value": 7000,
+    "rec_level": 41,
+    "wear": "cloth_gloves"
+  },
+  "skysilk_slippers": {
+    "name": "Skysilk Slippers",
+    "slot": "feet",
+    "ac": 10,
+    "int": 6,
+    "wis": 6,
+    "mana": 35,
+    "value": 6800,
+    "rec_level": 41,
+    "wear": "sandals"
+  },
+  "stormcrest_sword": {
+    "name": "Stormcrest Sword",
+    "slot": "primary",
+    "dmg": 30,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 21000,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "stormcrest_war_axe": {
+    "name": "Stormcrest War Axe",
+    "slot": "primary",
+    "dmg": 31,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 20500,
+    "rec_level": 42,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "stormcrest_greataxe": {
+    "name": "Stormcrest Greataxe",
+    "slot": "primary",
+    "dmg": 47,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 23000,
+    "rec_level": 43,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "cloudpiercer_dirk": {
+    "name": "Cloudpiercer Dirk",
+    "slot": "primary",
+    "dmg": 22,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 19500,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "thundercloud_staff": {
+    "name": "Thundercloud Staff",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 11,
+    "wis": 11,
+    "mana": 110,
+    "value": 20500,
+    "rec_level": 42,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "summit_longbow": {
+    "name": "Summit Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 16,
+    "delay": 2.9,
+    "range": 50,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 19500,
+    "rec_level": 42,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "stormfeather_arrow": {
+    "name": "Stormfeather Arrow",
+    "ammo_type": "arrow",
+    "dmg": 7,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 10
+  }
+}

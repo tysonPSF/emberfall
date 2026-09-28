@@ -39,6 +39,16 @@
       0,
       112,
       9
+    ],
+    [
+      -112,
+      0,
+      9
+    ],
+    [
+      0,
+      -112,
+      9
     ]
   ],
   "roads": [
@@ -75,7 +85,7 @@
           0
         ],
         [
-          -80,
+          -112,
           0
         ]
       ],
@@ -89,7 +99,7 @@
         ],
         [
           0,
-          -70
+          -112
         ]
       ],
       "width": 4
@@ -132,6 +142,44 @@
       "arrive_face": [
         0,
         -159
+      ]
+    },
+    {
+      "pos": [
+        -97,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "stonesail",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        0,
+        -97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "vayukeths_step",
+      "arrive": [
+        0,
+        199
+      ],
+      "arrive_face": [
+        0,
+        159
       ]
     }
   ],
@@ -607,36 +655,6 @@
       "type": "prop",
       "pos": [
         -92,
-        -8
-      ],
-      "id": "cliff_edge_rail",
-      "collide": "box",
-      "yaw": -90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -92,
-        0
-      ],
-      "id": "cliff_edge_rail",
-      "collide": "box",
-      "yaw": -90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -92,
-        8
-      ],
-      "id": "cliff_edge_rail",
-      "collide": "box",
-      "yaw": -90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -92,
         16
       ],
       "id": "cliff_edge_rail",
@@ -722,6 +740,56 @@
       "id": "cliff_edge_rail",
       "collide": "box",
       "yaw": -90
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        0
+      ],
+      "id": "galehold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -90
+      ],
+      "id": "galehold_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -82,
+        10
+      ],
+      "yaw": 180,
+      "labels": [
+        "Galehold",
+        "Stonesail"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        10,
+        -82
+      ],
+      "yaw": 90,
+      "labels": [
+        "Galehold",
+        "Vayuketh's Step"
+      ]
     }
   ],
   "npcs": [

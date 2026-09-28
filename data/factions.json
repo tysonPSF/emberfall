@@ -440,5 +440,77 @@
       "sootmask": -8,
       "forgehold": 3
     }
+  },
+  "stone_singers": {
+    "name": "The Stone-Singers",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "stone_singers": -8,
+      "galehold": 3
+    }
+  },
+  "moor_stones": {
+    "name": "The Waking Stones",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "moor_stones": -8,
+      "galehold": 3
+    }
+  },
+  "bog_hags": {
+    "name": "The Bog Hags",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "bog_hags": -8,
+      "galehold": 3
+    }
+  },
+  "cloud_giants": {
+    "name": "Cloud Giants",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "cloud_giants": -8,
+      "galehold": 3
+    }
+  },
+  "sky_pirates": {
+    "name": "The Sky Pirates",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "sky_pirates": -8,
+      "galehold": 3
+    }
+  },
+  "storm_titans": {
+    "name": "Storm Titans",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "storm_titans": -8,
+      "galehold": 3
+    }
+  },
+  "step_guardians": {
+    "name": "Guardians of the Step",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "step_guardians": -8,
+      "galehold": 3
+    }
+  },
+  "fallen_breath": {
+    "name": "The Fallen Breath",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "fallen_breath": -8,
+      "galehold": 3
+    }
   }
 }

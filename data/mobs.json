@@ -10761,5 +10761,1187 @@
       "chance": 0.3,
       "text": "%s's wings shed %s!"
     }
+  },
+  "stone_singer": {
+    "name": "a stone-singer",
+    "level": [
+      37,
+      40
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.7,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "stone_singers",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a7060",
+    "scale": 1.0,
+    "coin": [
+      80,
+      260
+    ],
+    "loot": [
+      {
+        "item": "singing_stone_chip",
+        "chance": 0.5
+      }
+    ],
+    "model": "stone_singer",
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.15,
+      "text": "%s sings, and %s shakes your bones!"
+    },
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "raider_weapons"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "ashfall_rings"
+      }
+    ]
+  },
+  "cantor_orla": {
+    "name": "Cantor Orla of the Stones",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 9840,
+    "hp_per_level": 0,
+    "dmg_min": 44,
+    "dmg_max": 84,
+    "attack_delay": 2.7,
+    "ac": 100,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "stone_singers",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#9a9080",
+    "scale": 1.0,
+    "coin": [
+      1200,
+      3200
+    ],
+    "loot": [
+      {
+        "item": "orlas_tuning_stone",
+        "chance": 1.0
+      },
+      {
+        "item": "singing_stone_chip",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "cantor_orla",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.3,
+      "text": "%s sings, and %s shakes your bones!"
+    },
+    "weapon": "orla_tuning_staff"
+  },
+  "moor_wolf": {
+    "name": "a moor wolf",
+    "level": [
+      37,
+      39
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.4,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6a6258",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "moor_hide",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "moor_wolf"
+  },
+  "moor_wyvern": {
+    "name": "a moor wyvern",
+    "level": [
+      39,
+      41
+    ],
+    "hp_base": 292,
+    "hp_per_level": 39,
+    "dmg_min": 28,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#5a6a4a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "moor_hide",
+        "chance": 0.4
+      }
+    ],
+    "model": "moor_wyvern",
+    "proc": {
+      "spell": "wyvern_venom",
+      "chance": 0.15,
+      "text": "%s's sting leaves %s!"
+    }
+  },
+  "skathe": {
+    "name": "Skathe the Moor-Wyrm",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 9840,
+    "hp_per_level": 0,
+    "dmg_min": 44,
+    "dmg_max": 84,
+    "attack_delay": 2.7,
+    "ac": 100,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "beetle",
+    "color": "#4a5a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "skathes_barbed_tail",
+        "chance": 1.0
+      },
+      {
+        "item": "moor_hide",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "skathe",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "wyvern_venom",
+      "chance": 0.3,
+      "text": "%s's sting leaves %s!"
+    }
+  },
+  "menhir": {
+    "name": "an animated menhir",
+    "level": [
+      38,
+      41
+    ],
+    "hp_base": 397,
+    "hp_per_level": 53,
+    "dmg_min": 27,
+    "dmg_max": 52,
+    "attack_delay": 3.6,
+    "ac": 101,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": true,
+    "flees": false,
+    "faction": "moor_stones",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#8a8478",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rune_shard",
+        "chance": 0.5
+      }
+    ],
+    "model": "menhir"
+  },
+  "old_thrum": {
+    "name": "Old Thrum, the Humming Stone",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 9840,
+    "hp_per_level": 0,
+    "dmg_min": 44,
+    "dmg_max": 84,
+    "attack_delay": 3.6,
+    "ac": 100,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "moor_stones",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#a09a88",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "thrums_heartstone",
+        "chance": 1.0
+      },
+      {
+        "item": "rune_shard",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "old_thrum",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.25,
+      "text": "%s hums, and %s shakes your bones!"
+    }
+  },
+  "bog_hag": {
+    "name": "a bog hag",
+    "level": [
+      37,
+      40
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.7,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "bog_hags",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#5a6a4a",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "hags_hair_knot",
+        "chance": 0.5
+      }
+    ],
+    "model": "bog_hag",
+    "proc": {
+      "spell": "bog_curse",
+      "chance": 0.15,
+      "text": "%s cackles and lays %s on you!"
+    }
+  },
+  "granny_mirewhistle": {
+    "name": "Granny Mirewhistle",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 9840,
+    "hp_per_level": 0,
+    "dmg_min": 44,
+    "dmg_max": 84,
+    "attack_delay": 2.7,
+    "ac": 100,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "bog_hags",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#6a7a4a",
+    "scale": 1.0,
+    "coin": [
+      1000,
+      2800
+    ],
+    "loot": [
+      {
+        "item": "mirewhistles_ladle",
+        "chance": 1.0
+      },
+      {
+        "item": "hags_hair_knot",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "granny_mirewhistle",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "bog_curse",
+      "chance": 0.3,
+      "text": "%s cackles and lays %s on you!"
+    },
+    "weapon": "mirewhistle_ladle"
+  },
+  "tempest_elemental": {
+    "name": "a tempest elemental",
+    "level": [
+      39,
+      42
+    ],
+    "hp_base": 292,
+    "hp_per_level": 39,
+    "dmg_min": 28,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#b8d0f0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tempest_mote",
+        "chance": 0.5
+      }
+    ],
+    "model": "tempest_elemental",
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.15,
+      "text": "%s hurls %s at you!"
+    }
+  },
+  "the_hollow_wind": {
+    "name": "the Hollow Wind",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 10480,
+    "hp_per_level": 0,
+    "dmg_min": 46,
+    "dmg_max": 88,
+    "attack_delay": 2.7,
+    "ac": 105,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#d8e8ff",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "hollow_winds_eye",
+        "chance": 1.0
+      },
+      {
+        "item": "tempest_mote",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "the_hollow_wind",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "sky_serpent": {
+    "name": "a sky serpent",
+    "level": [
+      40,
+      43
+    ],
+    "hp_base": 300,
+    "hp_per_level": 40,
+    "dmg_min": 28,
+    "dmg_max": 55,
+    "attack_delay": 2.7,
+    "ac": 76,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a8ab0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "serpent_plume",
+        "chance": 0.5
+      }
+    ],
+    "model": "sky_serpent",
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "coilcloud": {
+    "name": "Coilcloud the Sky Serpent",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 10480,
+    "hp_per_level": 0,
+    "dmg_min": 46,
+    "dmg_max": 88,
+    "attack_delay": 2.7,
+    "ac": 105,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#8ac0e0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "coilclouds_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "serpent_plume",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "coilcloud",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "cloud_giant": {
+    "name": "a cloud giant",
+    "level": [
+      41,
+      43
+    ],
+    "hp_base": 400,
+    "hp_per_level": 53,
+    "dmg_min": 29,
+    "dmg_max": 56,
+    "attack_delay": 3.4,
+    "ac": 101,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "cloud_giants",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#d0d4e0",
+    "scale": 1.0,
+    "coin": [
+      100,
+      340
+    ],
+    "loot": [
+      {
+        "item": "cloudstone",
+        "chance": 0.5
+      }
+    ],
+    "model": "cloud_giant",
+    "weapon": "cloud_giant_maul",
+    "proc": {
+      "spell": "trample",
+      "chance": 0.12,
+      "text": "%s's maul brings down %s!"
+    }
+  },
+  "cloudlord_hauvar": {
+    "name": "Cloudlord Hauvar",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 10480,
+    "hp_per_level": 0,
+    "dmg_min": 46,
+    "dmg_max": 88,
+    "attack_delay": 3.4,
+    "ac": 105,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "cloud_giants",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#e8ecf4",
+    "scale": 1.0,
+    "coin": [
+      1400,
+      3600
+    ],
+    "loot": [
+      {
+        "item": "hauvars_mist_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "cloudstone",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "cloudlord_hauvar",
+    "weapon": "hauvar_spear",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.25,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "sky_pirate": {
+    "name": "a sky pirate",
+    "level": [
+      39,
+      42
+    ],
+    "hp_base": 292,
+    "hp_per_level": 39,
+    "dmg_min": 28,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sky_pirates",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#6a5a4a",
+    "scale": 1.0,
+    "coin": [
+      80,
+      280
+    ],
+    "loot": [
+      {
+        "item": "skyship_sailcloth",
+        "chance": 0.5
+      }
+    ],
+    "model": "sky_pirate",
+    "gear": [
+      {
+        "slot": "primary",
+        "chance": 0.7,
+        "table": "raider_weapons"
+      },
+      {
+        "slot": "ring",
+        "chance": 0.04,
+        "table": "ashfall_rings"
+      }
+    ]
+  },
+  "captain_mirela": {
+    "name": "Captain Mirela Driftwind",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 10480,
+    "hp_per_level": 0,
+    "dmg_min": 46,
+    "dmg_max": 88,
+    "attack_delay": 2.7,
+    "ac": 105,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "sky_pirates",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#8a6a4a",
+    "scale": 1.0,
+    "coin": [
+      1400,
+      3600
+    ],
+    "loot": [
+      {
+        "item": "mirelas_spyglass",
+        "chance": 1.0
+      },
+      {
+        "item": "skyship_sailcloth",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "captain_mirela",
+    "weapon": "mirela_cutlass",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "storm_titan": {
+    "name": "a storm titan",
+    "level": [
+      43,
+      44
+    ],
+    "hp_base": 453,
+    "hp_per_level": 60,
+    "dmg_min": 30,
+    "dmg_max": 59,
+    "attack_delay": 3.6,
+    "ac": 114,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "storm_titans",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#5a6a8a",
+    "scale": 1.0,
+    "coin": [
+      120,
+      380
+    ],
+    "loot": [
+      {
+        "item": "titans_thunderstone",
+        "chance": 0.5
+      }
+    ],
+    "model": "storm_titan",
+    "weapon": "titan_thunder_hammer",
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.15,
+      "text": "%s calls down %s!"
+    }
+  },
+  "vorlaug": {
+    "name": "Vorlaug the Thunder-Titan",
+    "level": [
+      45,
+      45
+    ],
+    "hp_base": 10800,
+    "hp_per_level": 0,
+    "dmg_min": 47,
+    "dmg_max": 90,
+    "attack_delay": 3.5,
+    "ac": 108,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "storm_titans",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a8ab0",
+    "scale": 1.0,
+    "coin": [
+      1500,
+      3800
+    ],
+    "loot": [
+      {
+        "item": "vorlaugs_thunder_torc",
+        "chance": 1.0
+      },
+      {
+        "item": "titans_thunderstone",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "vorlaug",
+    "weapon": "vorlaug_maul",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.3,
+      "text": "%s calls down %s!"
+    }
+  },
+  "sky_guardian": {
+    "name": "a temple guardian",
+    "level": [
+      42,
+      44
+    ],
+    "hp_base": 410,
+    "hp_per_level": 54,
+    "dmg_min": 30,
+    "dmg_max": 57,
+    "attack_delay": 3.2,
+    "ac": 103,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "step_guardians",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#a08a5a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "temple_bronze",
+        "chance": 0.5
+      }
+    ],
+    "model": "sky_guardian",
+    "weapon": "guardian_glaive"
+  },
+  "first_guardian": {
+    "name": "the First Guardian",
+    "level": [
+      45,
+      45
+    ],
+    "hp_base": 10800,
+    "hp_per_level": 0,
+    "dmg_min": 47,
+    "dmg_max": 90,
+    "attack_delay": 3.2,
+    "ac": 108,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "step_guardians",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#c0a060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "first_guardians_seal",
+        "chance": 1.0
+      },
+      {
+        "item": "temple_bronze",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "first_guardian",
+    "weapon": "first_guardian_blade",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.3,
+      "text": "%s's blade throws %s at you!"
+    }
+  },
+  "thunder_drake": {
+    "name": "a thunder drake",
+    "level": [
+      42,
+      44
+    ],
+    "hp_base": 316,
+    "hp_per_level": 42,
+    "dmg_min": 30,
+    "dmg_max": 57,
+    "attack_delay": 2.7,
+    "ac": 79,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#3a4a7a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "stormscale",
+        "chance": 0.5
+      }
+    ],
+    "model": "thunder_drake",
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "thunderwing": {
+    "name": "Thunderwing the Elder Drake",
+    "level": [
+      45,
+      45
+    ],
+    "hp_base": 10800,
+    "hp_per_level": 0,
+    "dmg_min": 47,
+    "dmg_max": 90,
+    "attack_delay": 2.7,
+    "ac": 108,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#5a70b0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "elder_drakes_stormheart",
+        "chance": 1.0
+      },
+      {
+        "item": "stormscale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "thunderwing",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.3,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "fallen_zephyr": {
+    "name": "a fallen zephyr",
+    "level": [
+      43,
+      44
+    ],
+    "hp_base": 324,
+    "hp_per_level": 43,
+    "dmg_min": 30,
+    "dmg_max": 59,
+    "attack_delay": 2.7,
+    "ac": 81,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "fallen_breath",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#8a90a8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "shard_of_broken_breath",
+        "chance": 0.5
+      }
+    ],
+    "model": "fallen_zephyr",
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.15,
+      "text": "%s hurls %s at you!"
+    }
+  },
+  "fallen_breath": {
+    "name": "the Fallen Breath of Vayuketh",
+    "level": [
+      46,
+      46
+    ],
+    "hp_base": 11120,
+    "hp_per_level": 0,
+    "dmg_min": 48,
+    "dmg_max": 92,
+    "attack_delay": 2.7,
+    "ac": 110,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "fallen_breath",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d0f0",
+    "scale": 1.0,
+    "coin": [
+      2000,
+      5000
+    ],
+    "loot": [
+      {
+        "item": "fallen_breaths_sigh",
+        "chance": 1.0
+      },
+      {
+        "item": "shard_of_broken_breath",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "fallen_breath",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "tempest_bolt",
+      "chance": 0.35,
+      "text": "%s's attack carries %s!"
+    }
   }
 }
