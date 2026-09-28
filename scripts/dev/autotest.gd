@@ -6147,9 +6147,17 @@ func _t_stutter() -> void:
 	var spikes := PackedStringArray()
 	var frames := 0
 	var turn := 0.0
+	var still := 0  # frames the camera didn't move although we were running
+	var moving := 0
+	var last_cam := p.camera.global_position
 	while t < secs:
 		var before := Time.get_ticks_usec()
 		await get_tree().process_frame
+		if t > 1.0 and Vector2(p.velocity.x, p.velocity.z).length() > 2.0 and p.camera.global_position.distance_to(last_cam) < 0.001:
+			still += 1
+		if t > 1.0 and Vector2(p.velocity.x, p.velocity.z).length() > 2.0:
+			moving += 1
+		last_cam = p.camera.global_position
 		var ms := (Time.get_ticks_usec() - before) / 1000.0
 		t += ms / 1000.0
 		frames += 1
@@ -6161,6 +6169,7 @@ func _t_stutter() -> void:
 			spikes.append("%.1fs:%.0fms" % [t, ms])
 	Input.action_release("move_forward")
 	print("stutter: %s: %d frames in %.0f s (%.0f fps), %d over 25 ms: %s" % [get_parent().zone.zone_id, frames, t, frames / t, spikes.size(), ", ".join(spikes)])
+	print("stutter: the camera stood still on %d frames while running (%.0f%%)" % [still, 100.0 * still / maxf(1.0, moving)])
 
 
 ## Screenshots from a few spots: [from, looking at, name].
