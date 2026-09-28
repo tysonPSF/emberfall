@@ -526,9 +526,11 @@ func coin_weight() -> float:
 	return coins * float(World.cfg("coin_weight", 0.1))
 
 
-## How much you can carry before it slows you: grows with level and strength.
+## How much you can carry before it slows you: grows with level and with
+## strength above the usual 75. Strength below it (a gnome's, a high elf's)
+## takes nothing away, or the small races could barely lift a staff.
 func carry_capacity() -> float:
-	return float(World.cfg("carry_base", 40)) + level * float(World.cfg("carry_per_level", 2)) + int(attributes.get("str", 0)) * float(World.cfg("carry_per_str", 3))
+	return float(World.cfg("carry_base", 60)) + level * float(World.cfg("carry_per_level", 3)) + maxi(0, int(attributes.get("str", 0))) * float(World.cfg("carry_per_str", 3))
 
 
 ## Your speed under your load: 1 up to capacity, then 10% slower for every 10%

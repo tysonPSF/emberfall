@@ -144,7 +144,9 @@ func item_weight(item_id: String) -> float:
 	if slot == "primary":
 		if skill == "piercing":
 			return 1.5
-		if skill.begins_with("2h") or "staff" in name_:
+		if "staff" in name_:
+			return 4.0
+		if skill.begins_with("2h"):
 			return 6.0
 		return 5.0 if "axe" in name_ or "cleaver" in name_ else 4.0
 	if slot == "range":
@@ -161,7 +163,7 @@ func item_weight(item_id: String) -> float:
 		return base * (2.4 if heavy else (0.4 if light else 1.0))
 	for bulky: String in ["pelt", "hide", "fleece", "shell", "skin"]:
 		if bulky in name_:
-			return 1.5
+			return 0.5
 	return 0.2
 
 

@@ -183,6 +183,7 @@ const SECTIONS := [
 	["bleach", "the_bleach"],
 	["bleach_life", "the_bleach"],
 	["encumbrance", "greenmoor"],
+	["carry_limits", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -750,6 +751,40 @@ func _t_bag_rainhold() -> void:
 func _t_bag_dewstep() -> void:
 	await _bag_chain("bag_dewstep", "satchel", [["tea_seller_moti", {"moth_wing": 4}, "picker_satchel_thread"],
 			["headpicker_anjali", {"jackal_pelt": 2}, "picker_satchel_body"], ["tea_seller_moti", {"rice_beetle_shell": 2}, "picker_satchel_clasp"]], "motis_tea_pickers_satchel")
+
+
+## Every race's carry limit at level 1 (a caster with no strength spent, and a
+## warrior's recommended spread), and whether a first hour's loot slows them.
+func _t_carry_limits() -> void:
+	var p := World.local_player
+	var saved := [p.race, p.char_class, p.level, p.stat_points.duplicate(), p.equipment.duplicate()]
+	var rows := PackedStringArray()
+	for race: String in GameData.races:
+		p.race = race
+		p.level = 1
+		p.char_class = "wizard"
+		p.stat_points = {"int": 15, "sta": 10}
+		p.recalc_stats()
+		var caster := p.carry_capacity()
+		p.char_class = "warrior"
+		p.stat_points = {"str": 10, "sta": 10, "agi": 5}
+		p.recalc_stats()
+		rows.append("%s %d/%d" % [race, int(caster), int(p.carry_capacity())])
+	print("carry_limits: level 1, caster/warrior: %s" % ", ".join(rows))
+	# a gnome wizard with a staff, a cloth robe and a first hour's pickings
+	p.race = "gnome"
+	p.char_class = "wizard"
+	p.stat_points = {"int": 15, "sta": 10}
+	p.pack.clear()
+	p.equipment = {"primary": "worn_staff"}
+	p.recalc_stats()
+	for item: String in ["rat_whiskers", "gnoll_fang", "beetle_eye", "bone_chips"]:
+		p.pack.add(item, 6)
+	p.pack.add("blackpaw_pelt", 6)
+	p.pack.add("rusty_short_sword", 2)
+	print("carry_limits: gnome wizard after an hour's loot: %.1f of %d, speed x%.2f" % [p.carried_weight(), int(p.carry_capacity()), p.encumbrance_speed()])
+	p.race = saved[0]; p.char_class = saved[1]; p.level = saved[2]; p.stat_points = saved[3]; p.equipment = saved[4]
+	p.recalc_stats()
 
 
 func _t_faction() -> void:
@@ -7104,14 +7139,14 @@ func _t_encumbrance() -> void:
 	p.pack.slots[0] = bag
 	print("encumbrance: 20 wolf pelts loose %.1f, in a leather backpack %.1f" % [loose, p.carried_weight()])
 	p.pack.clear()
-	p.coin = 500 * 1000  # 500 platinum
+	p.coin = 1000 * 1000  # 1000 platinum
 	await _wait(1.3)
-	print("encumbrance: 500 platinum on hand -> %.1f of %d, speed x%.2f; told '%s'" % [p.carried_weight(), int(p.carry_capacity()), p.encumbrance_speed(),
+	print("encumbrance: 1000 platinum on hand -> %.1f of %d, speed x%.2f; told '%s'" % [p.carried_weight(), int(p.carry_capacity()), p.encumbrance_speed(),
 			said.filter(func(t: String) -> bool: return "burden" in t).back() if said.any(func(t: String) -> bool: return "burden" in t) else "-"])
-	p.coin = 900 * 1000
+	p.coin = 1600 * 1000
 	said.clear()
 	World.request_sprint(p.entity_id, true)
-	print("encumbrance: 900 platinum -> speed x%.2f; sprinting %s (%s)" % [p.encumbrance_speed(), p.sprinting, said.back() if not said.is_empty() else "-"])
+	print("encumbrance: 1600 platinum -> speed x%.2f; sprinting %s (%s)" % [p.encumbrance_speed(), p.sprinting, said.back() if not said.is_empty() else "-"])
 	p.bank_coin += p.coin  # the banker's vault weighs nothing
 	p.coin = 0
 	await _wait(1.3)
