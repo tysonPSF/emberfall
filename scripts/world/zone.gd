@@ -473,6 +473,42 @@ func keep_reason() -> String:
 	return ""
 
 
+## Server: a zone nobody is in sleeps (main._watch_zone_sleep): its monsters,
+## spawners and npcs stop, and so do its physics and navigation, since each
+## running zone costs the server every tick whether anyone is there or not.
+## Waking picks up where it left off, with respawns and corpses moved on by
+## the time it slept, so a player walking in can't tell.
+var asleep := false
+var _slept_at := 0
+
+
+func sleep() -> void:
+	if asleep:
+		return
+	asleep = true
+	_slept_at = Time.get_ticks_msec()
+	process_mode = Node.PROCESS_MODE_DISABLED
+	PhysicsServer3D.space_set_active(get_world_3d().space, false)
+	NavigationServer3D.map_set_active(get_world_3d().navigation_map, false)
+
+
+func wake() -> void:
+	if not asleep:
+		return
+	asleep = false
+	process_mode = Node.PROCESS_MODE_INHERIT
+	PhysicsServer3D.space_set_active(get_world_3d().space, true)
+	NavigationServer3D.map_set_active(get_world_3d().navigation_map, true)
+	var slept := (Time.get_ticks_msec() - _slept_at) / 1000.0
+	for child in get_children():
+		if child is SpawnPoint:
+			(child as SpawnPoint)._timer -= slept
+		elif child is Corpse:
+			(child as Corpse).decay_left -= slept
+		elif child is GroundItem:
+			(child as GroundItem).decay_left -= slept
+
+
 ## Server: how long the zone must stay empty before it's taken down: past its
 ## slowest respawn (timers run 15% either way), so every monster is back up and
 ## it would be built exactly as it stands. Never less than at_least.

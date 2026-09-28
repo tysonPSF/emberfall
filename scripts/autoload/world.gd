@@ -184,6 +184,12 @@ func _ui(p: Player, sig: StringName, args: Array = []) -> void:
 		Net.send_ui(p, sig, args)
 
 
+## Whether this thing is in a zone that's asleep (Zone.sleep).
+func _asleep(obj: Node) -> bool:
+	var z := zone_of(obj)
+	return z != null and z.asleep
+
+
 ## On a client, sends a request to the server instead of running it here.
 func _remote(method: StringName, args: Array) -> bool:
 	if Net.is_authority():
@@ -303,6 +309,8 @@ func _physics_process(delta: float) -> void:
 		_update_group_views()
 		_update_threat()
 	for obj: Node3D in objects.values():
+		if obj is Entity and is_instance_valid(obj) and not (obj is Player) and _asleep(obj):
+			continue  # a sleeping zone's monsters and npcs wait (nobody is there)
 		if obj is Entity and is_instance_valid(obj) and not obj.dead:
 			_update_timers(obj, delta)
 			_update_cast(obj, delta)
