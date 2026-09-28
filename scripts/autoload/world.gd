@@ -3716,8 +3716,6 @@ func train_block(p: Player, spell_id: String) -> String:
 		return "Requires level %d." % int(need)
 	if p.coin < int(s.get("cost", 0)):
 		return "You can't afford it."
-	if p.spells.size() >= int(cfg("max_spells", 8)):
-		return "You can't remember any more spells."
 	return ""
 
 

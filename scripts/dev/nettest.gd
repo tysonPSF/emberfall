@@ -99,6 +99,33 @@ func _run() -> void:
 					if q != p:
 						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif "--stutter" in OS.get_cmdline_user_args():
+		# run round the zone for 30 s online and log slow frames and any jump of our own position
+		Input.action_press("move_forward")
+		var t := 0.0
+		var turn := 0.0
+		var last := p.global_position
+		var spikes := PackedStringArray()
+		var jumps := PackedStringArray()
+		var frames := 0
+		while t < 30.0:
+			var before := Time.get_ticks_usec()
+			await get_tree().process_frame
+			var ms := (Time.get_ticks_usec() - before) / 1000.0
+			t += ms / 1000.0
+			frames += 1
+			turn += ms / 1000.0
+			if turn > 3.0:
+				turn = 0.0
+				p.rotate_y(1.3)
+			if ms > 25.0:
+				spikes.append("%.1fs:%.0fms" % [t, ms])
+			var moved := p.global_position.distance_to(last)
+			if moved > 1.0:
+				jumps.append("%.1fs:%.1fm" % [t, moved])
+			last = p.global_position
+		Input.action_release("move_forward")
+		print("[%s] stutter: %d frames in %.0f s (%.0f fps); %d slow frames: %s; %d position jumps: %s" % [who, frames, t, frames / t, spikes.size(), ", ".join(spikes), jumps.size(), ", ".join(jumps)])
 	elif who == "Petter":
 		# a pet's swings must show on a client: summon, send it at a mob, sample the puppet's clip
 		World.request_cast(p.entity_id, "call_of_earth")
