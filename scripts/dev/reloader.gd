@@ -12,6 +12,11 @@ var save_game: Callable  # main's save, called before restarting
 
 var _stamps: Dictionary = {}  # path -> modified time when the game started
 var _timer := 0.0
+## The scan looks at some 1,600 files, over 100 ms on a Mac: on the main thread
+## it froze the game every SCAN_SECONDS (a stutter-step while running), so it
+## runs on a worker and only its answer comes back.
+var _task := -1
+var _changed := false
 var _notice: Label
 var _reloading := false
 
@@ -29,12 +34,25 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _notice.visible or _reloading:
 		return
+	if _task >= 0:
+		if not WorkerThreadPool.is_task_completed(_task):
+			return
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = -1
+		if _changed:
+			_notice.visible = true
+			return
 	_timer += delta
 	if _timer < SCAN_SECONDS:
 		return
 	_timer = 0.0
-	if _scan() != _stamps:
-		_notice.visible = true
+	_task = WorkerThreadPool.add_task(func() -> void: _changed = _scan() != _stamps)
+
+
+func _exit_tree() -> void:
+	if _task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = -1
 
 
 func _unhandled_input(event: InputEvent) -> void:
