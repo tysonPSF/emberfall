@@ -153,6 +153,8 @@ const SECTIONS := [
 	["lastwalk_life", "lastwalk"],
 	["table_life", "timirajs_table"],
 	["swimming", "rainhold"],
+	["town_views", "rainhold"],
+	["porch_reach", "rainhold"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5900,6 +5902,75 @@ func _t_swimming() -> void:
 	print("swimming: /stuck -> %s, dry %s, swimming %s" % [at, z.swim_level(at.x, at.y) == -INF, p.swimming])
 	World.request_chat(p.entity_id, "/stuck")
 	await _wait(0.3)
+
+## Street-level views of a town, to see what stands in the way (TOWN_VIEWS="fx,fz,lx,lz;...").
+func _t_town_views() -> void:
+	var spots := []
+	for s: String in OS.get_environment("TOWN_VIEWS").split(";", false):
+		var v := s.split(",")
+		spots.append([Vector2(float(v[0]), float(v[1])), Vector2(float(v[2]), float(v[3])), "v%d" % spots.size()])
+	await _zone_views("town", spots)
+	if OS.get_environment("TOP_AT") != "":  # and a look straight down on it
+		var z: Zone = get_parent().zone
+		var cam := Camera3D.new()
+		cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+		cam.size = float(OS.get_environment("TOP_SIZE")) if OS.get_environment("TOP_SIZE") != "" else 60.0
+		z.add_child(cam)
+		var c := OS.get_environment("TOP_AT").split(",")
+		cam.global_position = Vector3(float(c[0]), 80.0, float(c[1]))
+		cam.rotation_degrees = Vector3(-90, 0, 0)
+		cam.make_current()
+		await _wait(0.5)
+		await _shot("9zt_top_%s" % z.zone_id)
+		cam.queue_free()
+
+## Rainhold's porches: from the street in front of each guildmaster and merchant,
+## walk straight at them; can you get close?
+func _t_porch_reach() -> void:
+	var p := World.local_player
+	var z: Zone = get_parent().zone
+	var npcs := _npcs()
+	var stuck := PackedStringArray()
+	for id: String in npcs:
+		var n: Npc = npcs[id]
+		if GameData.npcs[id].has("guard") or absf(n.global_position.z) < 3.0 or absf(n.global_position.z) > 8.0 or n.global_position.x < -13.0:
+			continue  # the porch rows only (z about +-5.5); the far west end, behind the shrine, is walked below
+		var start := Vector3(n.global_position.x, 0, 0.0)
+		p.global_position = Vector3(start.x, z.surface_at(start.x, start.z) + 0.3, start.z)
+		p.velocity = Vector3.ZERO
+		await _wait(0.2)
+		var t := 0.0
+		while t < 4.0 and Vector2(n.global_position.x - p.global_position.x, n.global_position.z - p.global_position.z).length() > 1.2:
+			var d := Vector3(n.global_position.x - p.global_position.x, 0, n.global_position.z - p.global_position.z).normalized()
+			p.velocity.x = d.x * Player.RUN_SPEED
+			p.velocity.z = d.z * Player.RUN_SPEED
+			p.velocity.y -= 22.0 * get_physics_process_delta_time()
+			p.move_and_slide()
+			await get_tree().physics_frame
+			t += get_physics_process_delta_time()
+		var dist := Vector2(n.global_position.x - p.global_position.x, n.global_position.z - p.global_position.z).length()
+		print("porch_reach: %s: %.1f m away" % [n.display_name, dist])
+		if dist > 1.5:
+			stuck.append(n.display_name)
+	print("porch_reach: blocked %s" % [stuck])
+	# the far ends: along the porch, and round the shrine to the tidepriest
+	for route: Array in [[Vector2(-9, -3), Vector2(-9, -5.5), Vector2(-18, -5.5)], [Vector2(-7.5, 2), Vector2(-7.5, 4.8), Vector2(-16.5, 5.0), Vector2(-16.5, 6.5)]]:
+		p.global_position = Vector3(route[0].x, z.surface_at(route[0].x, route[0].y) + 0.3, route[0].y)
+		p.velocity = Vector3.ZERO
+		await _wait(0.2)
+		for w: Vector2 in route.slice(1):
+			var t := 0.0
+			while t < 4.0 and Vector2(w.x - p.global_position.x, w.y - p.global_position.z).length() > 0.4:
+				var d := Vector3(w.x - p.global_position.x, 0, w.y - p.global_position.z).normalized()
+				p.velocity.x = d.x * Player.RUN_SPEED
+				p.velocity.z = d.z * Player.RUN_SPEED
+				p.velocity.y -= 22.0 * get_physics_process_delta_time()
+				p.move_and_slide()
+				await get_tree().physics_frame
+				t += get_physics_process_delta_time()
+		var end: Vector2 = route[-1]
+		print("porch_reach: route to %s: ended %.1f m off, on the deck %s" % [end, Vector2(end.x - p.global_position.x, end.y - p.global_position.z).length(),
+				absf(p.global_position.y - z.surface_at(p.global_position.x, p.global_position.z)) < 0.5])
 
 
 ## Screenshots from a few spots: [from, looking at, name].

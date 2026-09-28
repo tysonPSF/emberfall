@@ -2451,15 +2451,13 @@ def _longhouse(p, w, d, porch, wall_h, rise, sweep, door=(1.6, 2.4), windows=Tru
 	for x in (-hw, hw):  # corner posts
 		for y in (front, hd):
 			p.seg((x, y, 0), (x, y, roof_z(x, y)), 0.13, 0.12, WOOD, sides=6, grad=(0.2, 1.0))
-	# the porch: posts at the front edge up to the roof, and a low rail with a gap
+	# the porch: posts at the front edge up to the roof, open between them (the
+	# guildmasters and merchants stand on these porches: players walk straight up),
+	# a low rail only at the two ends
 	n_posts = max(2, int(round(w / 3.0)) + 1)
 	px = [-hw + 0.2 + k * (w - 0.4) / (n_posts - 1) for k in range(n_posts)]
 	for x in px:
 		p.seg((x, -hd + 0.2, 0), (x, -hd + 0.2, roof_z(x, -hd + 0.2) - 0.05), 0.12, 0.11, WOOD, sides=6, grad=(0.2, 1.0))
-	for a, b in zip(px, px[1:]):
-		if a < 0 < b or abs((a + b) / 2) < 1.2:
-			continue
-		p.box((b - a, 0.1, 0.1), ((a + b) / 2, -hd + 0.2, 0.85), WOOD_GRAY, grad=(0.2, 0.8))
 	for s in (-1, 1):
 		p.box((0.1, porch - 0.2, 0.1), (s * (hw - 0.0), -hd + porch / 2 + 0.1, 0.85), WOOD_GRAY, grad=(0.2, 0.8))
 	# the roof: a sheet on each side, bundles of thatch in courses, the ridge beam and finials
