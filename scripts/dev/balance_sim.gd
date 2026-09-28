@@ -28,7 +28,7 @@ const MOBS := {  # typical even-level monsters, forced to the test level
 }
 const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""], ["magician", "earth"], ["magician", "fire"],
 		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"], ["ranger", "hawk"]]
-const FIGHTS := 2
+const FIGHTS := 2  # a fight per monster (BALANCE_FIGHTS overrides it, for steadier numbers)
 const TIME_LIMIT := 150.0
 const TRAVEL := 15.0  # seconds to find and pull the next one
 const ARENA := Vector2(-110, 110)  # open ground in Greenmoor, far from the road and the guards
@@ -54,7 +54,7 @@ func run(t: Node) -> void:
 				continue
 			var row := {"class": v[0], "pet": v[1], "level": lvl, "fights": []}
 			for mob_id: String in MOBS[lvl]:
-				for k in FIGHTS:
+				for k in (int(OS.get_environment("BALANCE_FIGHTS")) if OS.get_environment("BALANCE_FIGHTS") != "" else FIGHTS):
 					row["fights"].append(await _fight(p, z, str(v[0]), str(v[1]), lvl, mob_id))
 			_summarize(row)
 			results.append(row)
@@ -169,6 +169,9 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 			"mana_used": (float(mana0 - p.mana) / p.max_mana) if p.max_mana > 0 else 0.0,
 			"pet_died": had_pet and World.get_object(p.pet_id) == null}
 	out["rest"] = _rest_seconds(p, out)
+	out["ac"] = p.ac
+	out["max_hp"] = p.max_hp
+	out["mob_ac"] = int(d.get("ac", 0))
 	# clean up: the monster, its corpse, the pet
 	if is_instance_valid(mob):
 		mob.queue_free()
@@ -236,6 +239,23 @@ func _decide(p: Player, mob: Mob) -> void:
 			World.request_cast(p.entity_id, ph)
 			return
 	World.request_set_target(p.entity_id, mob.entity_id)
+	# a wizard roots it first, then keeps out of its reach and nukes
+	if p.char_class == "wizard" and pet == null:
+		if mob.root_left > 0.0 and p.distance_to(mob) < 7.0:
+			var zz := World.zone_of(p)
+			var away := p.global_position - mob.global_position
+			away.y = 0.0
+			var to := p.global_position + away.normalized() * 1.75
+			p.global_position = Vector3(to.x, zz.surface_at(to.x, to.z) + 0.1, to.z)
+		elif mob.root_left <= 0.0:
+			var root := ""
+			for sid: String in p.spells:
+				var s: Dictionary = GameData.spells[sid]
+				if str(s["type"]) == "root" and _ready(p, sid) and (root == "" or int(s.get("classes", {}).get("wizard", 0)) > int(GameData.spells[root].get("classes", {}).get("wizard", 0))):
+					root = sid
+			if root != "":
+				World.request_cast(p.entity_id, root)
+				return
 	# a shaman slows first: the strongest slow it knows, whenever the foe isn't slowed
 	if mob.slow_left <= 0.0:
 		var slow := ""
@@ -254,8 +274,9 @@ func _decide(p: Player, mob: Mob) -> void:
 		var kind := str(s["type"])
 		if not kind in ["damage", "dot", "lifetap", "shot"] or str(s.get("target", "enemy")) != "enemy" or not _ready(p, sid):
 			continue
-		if s.has("requires") or s.get("from_behind", false) or s.get("requires_hidden", false):
-			continue  # shield, piercing, behind, hidden: situational
+		if (s.has("requires") and not (str(s["requires"]) == "piercing" and GameData.item(str(p.equipment.get("primary", ""))).get("skill", "") == "piercing")) \
+				or (s.get("from_behind", false) and not s.has("front_pct")) or s.get("requires_hidden", false):
+			continue  # a shield, behind, hidden: situational (a rogue with a dagger stabs from the front)
 		if p.distance_to(mob) > (World.ranged_reach(p) if kind == "shot" else float(s.get("range", 0))) + 0.5:
 			continue
 		var value := 0.0
@@ -278,7 +299,7 @@ func _decide(p: Player, mob: Mob) -> void:
 
 
 func _ready(p: Player, sid: String) -> bool:
-	return not p.cooldowns.has(sid) and p.mana >= int(GameData.spells[sid].get("mana", 0))
+	return World.spell_ready(p, sid) and p.mana >= int(GameData.spells[sid].get("mana", 0))
 
 
 ## Seconds of sitting to be back to full health and mana, by the rules in
@@ -288,7 +309,7 @@ func _rest_seconds(p: Player, out: Dictionary) -> float:
 	var hp_per := maxf(1.0, p.hp_regen * 3.0)
 	var hp_need := float(out["hp_lost"]) * p.max_hp
 	var mana_need := float(out["mana_used"]) * p.max_mana
-	var rest := float(2 + p.level / 2)
+	var rest := World.sitting_mana(p.level)
 	if World.skill_cap(p, "meditate") > 0:
 		rest *= 0.5 + 0.625 * World.skill_frac(p, "meditate")
 	var mana_per := maxf(1.0, p.mana_regen + roundf(rest))
@@ -307,6 +328,8 @@ func _summarize(row: Dictionary) -> void:
 			total += float(f[key]) if f[key] is float or f[key] is int else (1.0 if f[key] else 0.0)
 		return total
 	row["kill_time"] = sum.call("time") / n
+	row["ac"] = int(sum.call("ac") / n)
+	row["max_hp"] = int(sum.call("max_hp") / n)
 	row["hp_lost"] = sum.call("hp_lost") / n
 	row["mana_used"] = sum.call("mana_used") / n
 	row["rest"] = sum.call("rest") / n
@@ -353,4 +376,21 @@ func _kit(cls: String, lvl: int) -> Dictionary:
 		if score > float(score_of.get(key, -1.0)):
 			score_of[key] = score
 			best[key] = id
+	# rogues and rangers dual wield from 13: the best one-handed weapon in the off hand too
+	if cls in ["rogue", "ranger"] and lvl >= int(GameData.skills["skills"]["dual_wield"].get("from", {}).get(cls, 99)):
+		var off := ""
+		var off_score := -1.0
+		for id: String in sold:
+			var it := GameData.item(id)
+			if str(it.get("slot", "")) != "primary" or not str(it.get("skill", "")) in ["1h_slashing", "1h_blunt", "piercing"] or int(it.get("rec_level", 1)) > lvl:
+				continue
+			var classes: Array = it.get("classes", [])
+			if not classes.is_empty() and not cls in classes:
+				continue
+			var sc := float(it.get("dmg", 0)) / float(it.get("delay", 3.0))
+			if sc > off_score:
+				off_score = sc
+				off = id
+		if off != "":
+			best["secondary"] = off
 	return best

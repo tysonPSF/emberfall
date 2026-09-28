@@ -44,6 +44,7 @@ var dots: Array = []  # [{spell, caster_id, damage, ticks, next}]
 var root_left := 0.0  # seconds this entity can't move
 var snare_left := 0.0  # seconds at half speed (Frost Snare)
 var stun_left := 0.0  # seconds unable to move or fight (Blind)
+var stun_immune_left := 0.0  # seconds before another stun can take hold (World._stun)
 var slow_left := 0.0  # seconds of a shaman's slow: every swing waits longer
 var slow_pct := 0  # how much slower (Heavy Limbs 20 ... Hornet Plague 50)
 var hidden := false  # a rogue's Hide: unseen by monsters (and other players) until it breaks
