@@ -20,6 +20,7 @@ const SECTIONS := [
 	["emberhold", "greenmoor"],
 	["merchants", "emberhold"],
 	["guild", "emberhold"],
+	["many_spells", "emberhold"],
 	["faction", "emberhold"],
 	["kos", "greenmoor"],
 	["root", "greenmoor"],
@@ -155,6 +156,7 @@ const SECTIONS := [
 	["swimming", "rainhold"],
 	["town_views", "rainhold"],
 	["porch_reach", "rainhold"],
+	["stutter", "rainhold"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -690,6 +692,29 @@ func _t_guild() -> void:
 	await _wait(2.4)
 	print("shielding: ac %d -> %d buffs=%s" % [ac0, p.ac, p.buffs.keys()])
 	await _shot("7k_buffed")
+
+
+## No cap on what you know: a level-16 warrior who knows his first eight
+## abilities can still learn Provoke, his ninth (there was once a cap of eight).
+func _t_many_spells() -> void:
+	var p := World.local_player
+	var npcs := _npcs()
+	var saved := [p.char_class, p.level, p.spells.duplicate(), p.coin]
+	p.char_class = "warrior"
+	p.level = 16
+	p.spells = ["kick", "taunt", "bind_wound", "bash", "battle_cry", "heroic_strike", "rally", "shield_wall"]
+	p.coin = 5000
+	p.recalc_stats()
+	var gm: Npc = npcs["gm_brask"]
+	p.global_position = gm.global_position + Vector3(0, 0.5, -2.5)
+	World.request_set_target(p.entity_id, gm.entity_id)
+	World.request_interact(p.entity_id)
+	print("many_spells: knows %d; Provoke: %s" % [p.spells.size(), "ok" if World.train_block(p, "provoke") == "" else World.train_block(p, "provoke")])
+	World.request_train(p.entity_id, "provoke")
+	print("many_spells: learned Provoke -> %s (knows %d)" % ["provoke" in p.spells, p.spells.size()])
+	World.request_service_close(p.entity_id)
+	p.char_class = saved[0]; p.level = saved[1]; p.spells = saved[2]; p.coin = saved[3]
+	p.recalc_stats()
 
 
 func _t_faction() -> void:
@@ -5971,6 +5996,30 @@ func _t_porch_reach() -> void:
 		var end: Vector2 = route[-1]
 		print("porch_reach: route to %s: ended %.1f m off, on the deck %s" % [end, Vector2(end.x - p.global_position.x, end.y - p.global_position.z).length(),
 				absf(p.global_position.y - z.surface_at(p.global_position.x, p.global_position.z)) < 0.5])
+
+## Frame hitches: run around the zone for a while and log every slow frame (STUTTER_SECONDS, default 20).
+func _t_stutter() -> void:
+	var p := World.local_player
+	var secs := float(OS.get_environment("STUTTER_SECONDS")) if OS.get_environment("STUTTER_SECONDS") != "" else 20.0
+	Input.action_press("move_forward")
+	var t := 0.0
+	var spikes := PackedStringArray()
+	var frames := 0
+	var turn := 0.0
+	while t < secs:
+		var before := Time.get_ticks_usec()
+		await get_tree().process_frame
+		var ms := (Time.get_ticks_usec() - before) / 1000.0
+		t += ms / 1000.0
+		frames += 1
+		turn += ms / 1000.0
+		if turn > 3.0:
+			turn = 0.0
+			p.rotate_y(1.3)  # keep running round the zone, not into the mountains
+		if ms > 25.0:
+			spikes.append("%.1fs:%.0fms" % [t, ms])
+	Input.action_release("move_forward")
+	print("stutter: %s: %d frames in %.0f s (%.0f fps), %d over 25 ms: %s" % [get_parent().zone.zone_id, frames, t, frames / t, spikes.size(), ", ".join(spikes)])
 
 
 ## Screenshots from a few spots: [from, looking at, name].
