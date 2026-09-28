@@ -185,6 +185,7 @@ const SECTIONS := [
 	["encumbrance", "greenmoor"],
 	["carry_limits", "greenmoor"],
 	["strike_timer", "greenmoor"],
+	["timer_speed", "greenmoor"],
 	["elowen", "thornwood"],
 	["signs", "greenmoor"],
 	["river", "thornwood"],
@@ -830,6 +831,31 @@ func _t_strike_timer() -> void:
 	mob.set_physics_process(true)
 	p.char_class = saved[0]; p.level = saved[1]; p.spells = saved[2]
 	p.recalc_stats()
+
+
+## Timers run at real speed: a skill's recast and the camp countdown, sampled against the clock.
+func _t_timer_speed() -> void:
+	var p := World.local_player
+	p.spells.append("kick")
+	p.cooldowns.clear()
+	var mob := _nearest_mob(p, "gnoll_pup")
+	p.global_position = mob.global_position + Vector3(1.5, 0.5, 0)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_cast(p.entity_id, "kick")
+	var t0 := Time.get_ticks_msec()
+	var cd0 := float(p.cooldowns.get("kick", -1.0))
+	var g0 := float(p.cooldowns.get("group:strike", -1.0))
+	await get_tree().create_timer(3.0, true, false, true).timeout
+	var real := (Time.get_ticks_msec() - t0) / 1000.0
+	print("timer_speed: kick recast %.2f -> %.2f and strike timer %.2f -> %.2f over %.2f real seconds (time scale %.2f)" % [cd0, float(p.cooldowns.get("kick", 0.0)), g0, float(p.cooldowns.get("group:strike", 0.0)), real, Engine.time_scale])
+	World.request_sit(p.entity_id, true)
+	World.request_camp(p.entity_id)
+	var c0 := p.camp_left
+	t0 = Time.get_ticks_msec()
+	await get_tree().create_timer(3.0, true, false, true).timeout
+	real = (Time.get_ticks_msec() - t0) / 1000.0
+	print("timer_speed: camp %.2f -> %.2f over %.2f real seconds" % [c0, p.camp_left, real])
+	World.request_sit(p.entity_id, false)
 
 
 func _t_faction() -> void:

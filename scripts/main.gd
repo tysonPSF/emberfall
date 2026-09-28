@@ -17,6 +17,7 @@ const AUTOSAVE_SECONDS := 30.0
 ## so 60 frames a second changes nothing about play. (Not the project's
 ## run/max_fps setting: that would cap players' games too.)
 const SERVER_FPS := 60
+const ZONE_SLEEP_SECONDS := 60.0  # an empty zone sleeps after this (_watch_zone_sleep)
 ## Server: a zone nobody has been in for at least this long may be taken down
 ## (see _watch_idle_zones). Dropped items last 15 minutes and aren't saved.
 const ZONE_IDLE_SECONDS := 900.0
@@ -332,6 +333,51 @@ func _start_server(args: PackedStringArray) -> void:
 	_watch_for_updates(data_dir)
 	if not "--preload-zones" in args:
 		_watch_idle_zones()
+	_watch_zone_sleep()
+	_log_server_load()
+
+
+## A zone with no players (or pets) in it for ZONE_SLEEP_SECONDS goes to sleep
+## (Zone.sleep): each running zone costs the server every tick, and with a few
+## dozen zones up a busy server fell far behind, so timers counted slowly.
+## It wakes the moment a player is sent there (_server_zone).
+## EMBERFALL_ZONE_SLEEP=<seconds> (testing) changes the wait.
+func _watch_zone_sleep() -> void:
+	var wait := float(OS.get_environment("EMBERFALL_ZONE_SLEEP")) if OS.get_environment("EMBERFALL_ZONE_SLEEP") != "" else ZONE_SLEEP_SECONDS
+	var empty_since := {}
+	var timer := Timer.new()
+	timer.wait_time = 1.0
+	timer.autostart = true
+	add_child(timer)
+	timer.timeout.connect(func() -> void:
+		for zone_id: String in _server_zones.keys():
+			var z := _server_zones[zone_id] as Zone
+			if not is_instance_valid(z):
+				continue
+			if z.keep_reason() in ["occupied", "navigation still baking"]:
+				empty_since.erase(zone_id)
+				z.wake()
+				continue
+			var since: int = empty_since.get_or_add(zone_id, Time.get_ticks_msec())
+			if not z.asleep and Time.get_ticks_msec() - since >= wait * 1000.0:
+				z.sleep()
+				print("zone asleep: %s" % zone_id))
+
+
+## Every half minute: how fast the server runs and what it's carrying. Under
+## about 8 frames a second Godot drops physics steps, and everything (timers,
+## casting, monsters) runs slower than the clock.
+func _log_server_load() -> void:
+	while true:
+		await get_tree().create_timer(30.0, true, false, true).timeout
+		var mobs := 0
+		for obj: Node3D in World.objects.values():
+			if obj is Mob:
+				mobs += 1
+		var awake := _server_zones.values().filter(func(z: Zone) -> bool: return is_instance_valid(z) and not z.asleep).size()
+		print("server load: %d fps, a frame %.1f ms (physics %.1f ms), %d zones (%d awake), %d monsters, %d players" % [Engine.get_frames_per_second(),
+				Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0, Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0,
+				_server_zones.size(), awake, mobs, World.get_players().size()])
 
 
 ## Updates (tools/server/auto_update.sh): a "restart_notice" file in the data
@@ -400,6 +446,7 @@ func _watch_idle_zones() -> void:
 ## overlapping coordinates) never meet.
 func _server_zone(zone_id: String) -> Zone:
 	if _server_zones.has(zone_id):
+		(_server_zones[zone_id] as Zone).wake()  # someone's on the way
 		return _server_zones[zone_id]
 	var holder := SubViewport.new()
 	holder.name = "zone_" + zone_id

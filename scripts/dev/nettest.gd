@@ -45,7 +45,10 @@ func _run() -> void:
 	var names := _list.map(func(c: Dictionary) -> String: return str(c["name"]))
 	print("[%s] logged in; characters: %s" % [who, names])
 	if not who in names:
-		if "--trade" in OS.get_cmdline_user_args():
+		if "--wake" in OS.get_cmdline_user_args():
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "greenmoor", "position": [0, 2, 20]})
+		elif "--trade" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "coin": 800, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"inventory": ["gnoll_fang", "rusty_short_sword"] if who == "Alpha" else ["beetle_eye"], "equipment": {"primary": "rusty_short_sword"}})
 		elif "--group" in OS.get_cmdline_user_args() and who in ["Alpha", "Bravo"]:
@@ -104,6 +107,19 @@ func _run() -> void:
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
 	elif "--trade" in OS.get_cmdline_user_args():
 		await _trade_test(p)
+	elif "--wake" in OS.get_cmdline_user_args():
+		# into a zone that's gone to sleep on the server: its monsters must be there and moving
+		await _wait(3.0)
+		var mobs := World.get_mobs()
+		var before := {}
+		for m in mobs:
+			before[m.entity_id] = m.global_position
+		await _wait(8.0)
+		var moved := 0
+		for m in World.get_mobs():
+			if before.has(m.entity_id) and m.global_position.distance_to(before[m.entity_id]) > 0.5:
+				moved += 1
+		print("[%s] wake: in %s; %d monsters here, %d moved in 8 s" % [who, World.zone.zone_id if World.zone else "-", mobs.size(), moved])
 	elif "--stutter" in OS.get_cmdline_user_args():
 		# run round the zone for 30 s online and log slow frames and any jump of our own position
 		Input.action_press("move_forward")
