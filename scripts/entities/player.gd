@@ -111,6 +111,11 @@ var camera: Camera3D
 var zoom := 6.0
 var _zoom_before_first_person := 6.0
 var pitch := -0.3
+## Local player: where the body stood after the last two physics steps. The
+## body moves 60 times a second, but a 120 Hz screen draws twice per step, so
+## the model and camera are drawn part way between the two (_smooth_motion).
+var _step_from := Vector3.INF
+var _step_to := Vector3.INF
 var mouse_looking := false
 var _cursor_hud: Node = null  # cached HUD, asked each frame whether a window needs the cursor
 var _autotest := "--autotest" in OS.get_cmdline_user_args() or Array(OS.get_cmdline_user_args()).any(func(a: String) -> bool: return a.begins_with("--nettest="))
@@ -723,6 +728,20 @@ func _process(delta: float) -> void:
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, zoom, minf(1.0, delta * 10.0))
 	camera_pivot.rotation.x = pitch
 	visual.visible = not dead and zoom > 0.6
+	_smooth_motion()
+
+
+## Draws the model and camera where the body would be between physics steps,
+## so running looks smooth on a screen faster than the physics (a 120 Hz Mac
+## otherwise sees it move on every other frame). A teleport, or the body
+## moved outside a step, just shows where it is.
+func _smooth_motion() -> void:
+	var off := Vector3.ZERO
+	if _step_from != Vector3.INF and global_position.is_equal_approx(_step_to) and _step_from.distance_to(_step_to) < 3.0:
+		var at := _step_from.lerp(_step_to, Engine.get_physics_interpolation_fraction())
+		off = global_basis.inverse() * (at - _step_to)
+	visual.position = off
+	camera_pivot.position = Vector3(0.0, 1.6, 0.0) + off
 
 
 # --- input ------------------------------------------------------------------
@@ -1120,3 +1139,5 @@ func _physics_process(delta: float) -> void:
 	if global_position.y < -60.0:  # fell out of the world: back to the last solid ground, not across the map
 		global_position = (last_ground if last_ground != Vector3.INF else World.zone_of(self).bind_point) + Vector3.UP
 		velocity = Vector3.ZERO
+	_step_from = _step_to if _step_to != Vector3.INF else global_position
+	_step_to = global_position
