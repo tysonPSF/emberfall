@@ -1,0 +1,863 @@
+{
+  "name": "Timiraj's Table",
+  "levels": [
+    48,
+    50
+  ],
+  "music": "timirajs_table",
+  "seed": 9931,
+  "size": 512,
+  "height_amplitude": 2.5,
+  "bind_point": [
+    2,
+    188
+  ],
+  "flat_radius": 20,
+  "fixed_hour": 23.5,
+  "trees": 40,
+  "tree_mix": [
+    "black_tree",
+    "black_tree_b"
+  ],
+  "groves": 0.3,
+  "rocks": 60,
+  "grass_colors": [
+    "#3a4250",
+    "#46505e"
+  ],
+  "fog_density": 0.004,
+  "fog_color": "#303a50",
+  "sun_energy": 0.7,
+  "clutter": {
+    "grass_b": {
+      "density": 0.16,
+      "patch": 0.5,
+      "sway": 0.15,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.7,
+        1.1
+      ]
+    },
+    "star_lily": {
+      "density": 0.012,
+      "patch": 0.8,
+      "sway": 0.1,
+      "range": 60,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "bone_scatter": {
+      "density": 0.002,
+      "patch": 0.7,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    }
+  },
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -60
+      ],
+      "radius": 110,
+      "color": "#4a4c58",
+      "flatten": 0.6,
+      "bare": true
+    }
+  ],
+  "passes": [
+    [
+      0,
+      256,
+      9
+    ],
+    [
+      -256,
+      0,
+      9
+    ],
+    [
+      256,
+      0,
+      9
+    ]
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          256
+        ],
+        [
+          0,
+          120
+        ],
+        [
+          0,
+          60
+        ]
+      ],
+      "width": 3.4
+    },
+    {
+      "points": [
+        [
+          -256,
+          0
+        ],
+        [
+          -120,
+          10
+        ],
+        [
+          -40,
+          60
+        ],
+        [
+          0,
+          60
+        ]
+      ],
+      "width": 2.8
+    },
+    {
+      "points": [
+        [
+          0,
+          60
+        ],
+        [
+          40,
+          60
+        ],
+        [
+          120,
+          10
+        ],
+        [
+          256,
+          0
+        ]
+      ],
+      "width": 2.8
+    }
+  ],
+  "road_lamps": 26,
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        245
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "ivory_field",
+      "arrive": [
+        0,
+        -231
+      ],
+      "arrive_face": [
+        0,
+        -191
+      ]
+    },
+    {
+      "pos": [
+        -245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "lastwalk",
+      "arrive": [
+        231,
+        0
+      ],
+      "arrive_face": [
+        191,
+        0
+      ]
+    },
+    {
+      "pos": [
+        245,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "barrowhold",
+      "arrive": [
+        -46,
+        0
+      ],
+      "arrive_face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -40
+      ],
+      "id": "long_table",
+      "collide": "mesh",
+      "face": [
+        0,
+        -160
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -165
+      ],
+      "id": "table_throne",
+      "collide": "mesh",
+      "face": [
+        0,
+        -40
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -130
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        -130
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        40
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        30,
+        40
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -60
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -60
+      ],
+      "id": "feast_brazier",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        -150
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        -150
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -60
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        -60
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        40
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        40
+      ],
+      "id": "star_pillar",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        140,
+        120
+      ],
+      "id": "fallen_star",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        60
+      ],
+      "id": "fallen_star",
+      "collide": "mesh",
+      "scale": 0.7
+    },
+    {
+      "type": "prop",
+      "pos": [
+        170,
+        160
+      ],
+      "id": "fallen_star",
+      "collide": "mesh",
+      "scale": 0.8
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -130,
+        100
+      ],
+      "id": "hound_kennel_stones",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -14,
+        196
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        14,
+        198
+      ],
+      "id": "scout_tent",
+      "collide": "box",
+      "face": [
+        0,
+        184
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        2,
+        186
+      ],
+      "id": "campfire",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        206
+      ],
+      "id": "banner_pole",
+      "collide": "box"
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        228
+      ],
+      "yaw": -90,
+      "labels": [
+        "The Ivory Field",
+        "Timiraj's Table"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -228,
+        8
+      ],
+      "yaw": 180,
+      "labels": [
+        "Lastwalk",
+        "Timiraj's Table"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        228,
+        8
+      ],
+      "yaw": 0,
+      "labels": [
+        "Barrowhold",
+        "Timiraj's Table"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "steward_abelard",
+      "pos": [
+        -8,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "starwatcher_imre",
+      "pos": [
+        12,
+        176
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "kennel_keeper_sabela",
+      "pos": [
+        -12,
+        178
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "high_priestess_nadira",
+      "pos": [
+        10,
+        192
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "guest_gate_sutler",
+      "pos": [
+        0,
+        202
+      ],
+      "face": [
+        2,
+        184
+      ]
+    },
+    {
+      "id": "guest_gate_warden",
+      "pos": [
+        0,
+        168
+      ],
+      "patrol": [
+        [
+          0,
+          168
+        ],
+        [
+          22,
+          186
+        ],
+        [
+          0,
+          206
+        ],
+        [
+          -22,
+          186
+        ],
+        [
+          0,
+          168
+        ]
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        -20,
+        -10
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        20,
+        -10
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -20,
+        -50
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        20,
+        -50
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -20,
+        -90
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        20,
+        -90
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -40,
+        -30
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        40,
+        -70
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        0,
+        10
+      ],
+      "pool": {
+        "lord_of_the_long_table": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    },
+    {
+      "pos": [
+        130,
+        80
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        160,
+        120
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        110,
+        140
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        170,
+        60
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        140,
+        170
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        145,
+        125
+      ],
+      "pool": {
+        "astrael": 1
+      },
+      "respawn": 1500,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -120,
+        60
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -150,
+        100
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -100,
+        120
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -160,
+        40
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -130,
+        150
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -80,
+        80
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -130,
+        100
+      ],
+      "pool": {
+        "nightjaw": 1
+      },
+      "respawn": 1500,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -18,
+        -135
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        18,
+        -135
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -30,
+        -155
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        30,
+        -155
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        0,
+        -125
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        0,
+        -160
+      ],
+      "pool": {
+        "the_uninvited": 1
+      },
+      "respawn": 3600,
+      "wander": 2
+    }
+  ]
+}

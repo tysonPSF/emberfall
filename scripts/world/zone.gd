@@ -521,6 +521,7 @@ func _build_environment() -> void:
 	add_child(sun)
 	if not Net.dedicated:  # the sun's path and the sky are looks; the rules read the hour from World.game_hour()
 		var cycle := DayNight.new()
+		cycle.fixed_hour = float(data.get("fixed_hour", -1.0))  # The Unlit's endless night, Barrowhold's eclipse: the sky stays at that hour
 		add_child(cycle)
 		cycle.setup(env, sky_mat, sun)
 

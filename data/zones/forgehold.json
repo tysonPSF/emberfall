@@ -44,6 +44,11 @@
       112,
       0,
       9
+    ],
+    [
+      0,
+      -112,
+      9
     ]
   ],
   "roads": [
@@ -68,7 +73,7 @@
         ],
         [
           0,
-          -94
+          -112
         ]
       ],
       "width": 4.5
@@ -157,6 +162,25 @@
         -191,
         0
       ]
+    },
+    {
+      "pos": [
+        0,
+        -97
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "ivory_field",
+      "arrive": [
+        0,
+        231
+      ],
+      "arrive_face": [
+        0,
+        191
+      ]
     }
   ],
   "landmarks": [
@@ -202,21 +226,21 @@
     {
       "type": "prop",
       "pos": [
-        0,
-        -100
+        -30,
+        -102
       ],
       "id": "mine_entrance",
       "face": [
-        0,
-        0
+        -30,
+        -60
       ],
       "collide": "mesh"
     },
     {
       "type": "prop",
       "pos": [
-        10,
-        -90
+        -18,
+        -94
       ],
       "id": "ore_cart",
       "face": [
@@ -228,8 +252,8 @@
     {
       "type": "prop",
       "pos": [
-        -12,
-        -86
+        -24,
+        -88
       ],
       "id": "ore_cart",
       "face": [
@@ -885,6 +909,31 @@
       "labels": [
         "Forgehold",
         "Agnavar's Hearth"
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -92
+      ],
+      "id": "forge_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        10,
+        -84
+      ],
+      "yaw": 90,
+      "labels": [
+        "Forgehold",
+        "The Ivory Field"
       ]
     }
   ],

@@ -4507,6 +4507,668 @@ LEVEL_45 = [thunderclap_strike, bulwark_of_the_sky, tempest_whirl, zenith_ward, 
 			stone_song, wyvern_venom, bog_curse, tempest_bolt]
 
 
+# ---------------------------------------------------------------- level 50: night, the stars, the eclipse and the Unlit
+
+NIGHT = WATER          # its deep end (grad near 1) is a night-sky navy
+LILAC = (0.0, 0.3)     # PURPLE's pale end
+SILVER = STONE_LIGHT
+
+
+def _twinkle(p, x, z, s, swatch=CLOTH_WHITE, glow=2.6, y=-0.2):
+	"""A four-pointed glint of starlight."""
+	_star(p, x, z, s, swatch, glow=glow, y=y, points=4, inner=0.3, spin=90.0)
+
+
+def _eclipse(p, cx, cz, r, y=0.1, corona=CLOTH_WHITE, glow=2.6, rays=12):
+	"""A black sun: a dark disk ringed by a burning pale corona."""
+	p.seg((cx, y - 0.06, cz), (cx, y + 0.06, cz), r, r, IRON, sides=24)
+	_ring_at(p, cx, cz, r * 1.04, r * 0.08, corona, glow=glow, sides=24, y=y)
+	_ring_at(p, cx, cz, r * 1.18, r * 0.05, PURPLE, glow=glow * 0.8, sides=24, y=y + 0.03)
+	for k in range(rays):
+		a = k * math.tau / rays + 0.1
+		r1 = r * (1.75 if k % 2 else 1.45)
+		p.seg((cx + math.cos(a) * r * 1.1, y + 0.05, cz + math.sin(a) * r * 1.1), (cx + math.cos(a) * r1, y + 0.05, cz + math.sin(a) * r1),
+			  r * 0.12, 0.0, corona if k % 2 else PURPLE, sides=4, glow=glow)
+
+
+def _silver_moon(p, cx, cz, r, glow=1.6, y=0.0, a0=110.0):
+	"""A crescent moon in silver-white (the older _moon is gold)."""
+	_crescent(p, cx, cz, r, math.radians(a0), math.radians(a0 + 150), 0.26 * r, CLOTH_WHITE, glow=glow, y=y, steps=20)
+
+
+def eclipse_strike():
+	p = Prop("eclipse_strike", 1301)
+	_eclipse(p, 0.3, 1.0, 0.5, y=0.3)                                                      # the light blotted out...
+	c = Vector((0.0, -0.2, 0.72))                                                         # ...by a great hammer's blow
+	d = Vector((0.7, 0, 0.72)).normalized()
+	perp = Vector((-d.z, 0, d.x))
+	p.seg(tuple(c - d * 1.15), tuple(c), 0.065, 0.065, WOOD, sides=6)
+	p.blob((0.12, 0.12, 0.12), tuple(c - d * 1.18), SILVER, segs=(6, 4))
+	head = c - perp * 0.05
+	p.seg(tuple(head - perp * 0.34), tuple(head + perp * 0.3), 0.23, 0.23, SILVER, sides=8)
+	for sgn in (-1, 1):
+		p.seg(tuple(head + perp * sgn * 0.32), tuple(head + perp * sgn * 0.38), 0.26, 0.26, STONE_DARK, sides=8)
+	p.seg(tuple(head - Vector((0, 0.2, 0)) - perp * 0.3), tuple(head - Vector((0, 0.2, 0)) + perp * 0.26), 0.03, 0.03, PURPLE, sides=4, glow=2.4, grad=LILAC)
+	for x, z in ((-0.62, 1.3), (-0.4, 1.55)):                                              # stunned, under dark stars
+		_star(p, x, z, 0.1, CLOTH_WHITE, glow=2.4, y=-0.3)
+	return p.build()
+
+
+def wall_of_the_unlit():
+	p = Prop("wall_of_the_unlit", 1303)
+	for row in range(4):                                                                  # a wall of black stone...
+		z = 0.12 + row * 0.33
+		off = 0.2 if row % 2 else 0.0
+		for k in range(5):
+			x = -0.95 + off + k * 0.42
+			if x > 0.95:
+				continue
+			p.box((0.38, 0.3, 0.29), (x, 0.35, z), STONE_DARK, jitter=0.02)
+		p.seg((-1.0, 0.18, z + 0.165), (1.0, 0.18, z + 0.165), 0.02, 0.02, PURPLE, sides=4, glow=2.2, grad=LILAC)   # mortared with violet light
+	outline = [(-0.5, 1.2), (0.5, 1.2), (0.54, 0.55), (0.0, -0.1), (-0.54, 0.55)]            # ...behind a dark shield
+	icons._slab(p, outline, -0.05, 0.12, PURPLE, grad=(0.6, 1.0))
+	edge = outline + outline[:1]
+	for u, v in zip(edge, edge[1:]):
+		p.seg((u[0], -0.07, u[1]), (v[0], -0.07, v[1]), 0.055, 0.055, SILVER, sides=5, glow=0.8)
+	_silver_moon(p, 0.02, 0.62, 0.3, glow=2.2, y=-0.12, a0=100)                               # the Unlit's crescent on it
+	for x, z, s in ((0.14, 0.88, 0.07), (0.25, 0.5, 0.05), (-0.05, 0.28, 0.05)):
+		_twinkle(p, x, z, s, glow=2.6, y=-0.14)
+	return p.build()
+
+
+def worldbreaker():
+	p = Prop("worldbreaker", 1305)
+	_ring(p, 1.02, -0.05, 0.045, CLOTH_RED, glow=1.8, sides=26)                               # every foe near it...
+	cx, cz = 0.0, 0.8
+	p.blob((1.3, 1.3, 1.3), (cx, 0.1, cz), WATER, segs=(16, 12), grad=(0.0, 0.55))              # ...and the world itself
+	for x, z, w, h in ((-0.3, 0.25, 0.42, 0.3), (0.25, 0.05, 0.36, 0.42), (-0.15, -0.3, 0.3, 0.2), (0.35, 0.4, 0.2, 0.16)):
+		yy = -math.sqrt(max(0.0, 0.42 - x * x - z * z)) + 0.1
+		p.blob((w, 0.14, h), (cx + x, yy, cz + z), LEAF, segs=(8, 5))
+	crack = [(0.12, 1.5), (-0.08, 1.2), (0.1, 0.95), (-0.12, 0.7), (0.06, 0.45), (-0.06, 0.1)]   # broken by a blazing crack
+	_bolt_line(p, crack, 0.16, PURPLE, 2.4, y=-0.62)
+	_bolt_line(p, crack, 0.07, CLOTH_WHITE, 3.2, y=-0.72)
+	_bolt_line(p, [(0.1, 0.95), (0.42, 1.05), (0.55, 0.92)], 0.05, CLOTH_WHITE, 3.0, y=-0.62)
+	_bolt_line(p, [(-0.12, 0.7), (-0.45, 0.6), (-0.58, 0.72)], 0.05, CLOTH_WHITE, 3.0, y=-0.62)
+	for k in range(10):                                                                   # its light bursting out
+		a = k * math.tau / 10 + 0.25
+		p.seg((cx + math.cos(a) * 0.75, -0.3, cz + math.sin(a) * 0.75), (cx + math.cos(a) * 1.02, -0.3, cz + math.sin(a) * 1.02),
+			  0.05, 0.0, CLOTH_WHITE if k % 2 else PURPLE, sides=4, glow=2.6)
+	for x, z, sz in ((-0.9, 1.35, 0.14), (0.95, 0.35, 0.12), (0.82, 1.45, 0.1)):          # chunks of it flung off
+		p.rock((sz, sz, sz), (x, -0.1, z), STONE_WARM, jitter=0.2)
+	return p.build()
+
+
+def starlight_ward():
+	p = Prop("starlight_ward", 1307)
+	_ring(p, 0.9, 0.0, 0.045, GOLD, glow=1.8, sides=24)                                    # over the group...
+	for k in range(7):                                                                    # ...a dome of starlight
+		a = math.radians(15 + k * 25)
+		p.seg((math.cos(a) * 0.9, 0.2, 0.0), (math.cos(a) * 0.25, 0.2, 1.05), 0.018, 0.018, RUNE, sides=4, glow=1.6)
+	_ring_at(p, 0, 0.0, 0.9, 0.03, CLOTH_WHITE, glow=1.8, sides=16, a0=0.0, a1=math.pi, y=0.15)
+	cz = 0.72                                                                             # a great silver star keeps it
+	_star(p, 0, cz, 0.4, CLOTH_WHITE, glow=2.8, y=-0.2, points=8, inner=0.32, spin=90)
+	_star(p, 0, cz, 0.27, RUNE, glow=2.4, y=-0.1, points=8, inner=0.4, spin=112.5)
+	p.box((0.08, 0.06, 0.26), (0, -0.35, cz), LEAF, glow=2.4)                               # its mending cross
+	p.box((0.24, 0.06, 0.08), (0, -0.35, cz + 0.03), LEAF, glow=2.4)
+	for x, z, s in ((-0.62, 0.45, 0.07), (0.6, 0.55, 0.08), (-0.35, 1.05, 0.06), (0.4, 1.12, 0.06)):
+		_twinkle(p, x, z, s, glow=2.6, y=-0.25)
+	return p.build()
+
+
+def dawn_in_darkness():
+	p = Prop("dawn_in_darkness", 1309)
+	cx, cz = 0.0, 0.7
+	p.seg((cx, 0.15, cz), (cx, 0.3, cz), 0.95, 0.95, NIGHT, sides=28, grad=(0.85, 1.0))       # the dark around the foe...
+	_ring_at(p, cx, cz, 0.95, 0.04, PURPLE, glow=1.6, sides=28, y=0.1)
+	for x, z in ((-0.6, 1.2), (0.55, 1.28), (-0.72, 0.4), (0.72, 0.3)):
+		_twinkle(p, x, z, 0.05, glow=2.2, y=0.05)
+	p.seg((cx, 0.0, cz), (cx, -0.05, cz), 0.3, 0.3, GOLD, sides=20, glow=3.0)                 # ...a dawn breaking in it
+	p.blob((0.22, 0.1, 0.22), (cx, -0.12, cz), CLOTH_WHITE, segs=(10, 6), glow=3.2)
+	for k in range(16):
+		a = k * math.tau / 16
+		r1 = 0.9 if k % 2 == 0 else 0.58
+		p.seg((cx + math.cos(a) * 0.32, -0.08, cz + math.sin(a) * 0.32), (cx + math.cos(a) * r1, -0.08, cz + math.sin(a) * r1),
+			  0.06 if k % 2 == 0 else 0.04, 0.0, GOLD if k % 2 == 0 else FLAME, sides=4, glow=2.8)
+	return p.build()
+
+
+def covenant_of_light():
+	p = Prop("covenant_of_light", 1311)
+	_ring(p, 0.92, 0.0, 0.045, GOLD, glow=1.8, sides=24)                                   # for the whole group...
+	for sx in (-1, 1):                                                                    # ...two hands clasped in a covenant
+		p.seg((sx * 1.05, 0.0, 0.1), (sx * 0.34, -0.05, 0.55), 0.2, 0.17, CLOTH_WHITE, sides=8)
+		p.seg((sx * 1.02, 0.0, 0.08), (sx * 0.8, 0.0, 0.22), 0.24, 0.24, GOLD, sides=8)
+	p.blob((0.62, 0.46, 0.42), (-0.2, -0.08, 0.6), HIDE, segs=(10, 6))
+	p.blob((0.62, 0.46, 0.42), (0.2, -0.18, 0.56), HIDE, segs=(10, 6))
+	for k in range(4):                                                                    # fingers wrapped over
+		p.seg((0.08 + k * 0.03, -0.38, 0.76 - k * 0.1), (-0.36, -0.36, 0.72 - k * 0.1), 0.065, 0.055, HIDE, sides=5)
+	p.seg((-0.18, -0.42, 0.8), (0.16, -0.44, 0.88), 0.07, 0.055, HIDE, sides=5)
+	cz = 1.3                                                                              # under the light they swore by
+	p.blob((0.42, 0.16, 0.42), (0, -0.05, cz), CLOTH_WHITE, segs=(10, 6), glow=3.2)
+	for k in range(12):
+		a = k * math.tau / 12 + math.pi / 2
+		r1 = 0.7 if k % 3 == 0 else 0.46
+		p.seg((math.cos(a) * 0.2, 0.0, cz + math.sin(a) * 0.2), (math.cos(a) * r1, 0.0, cz + math.sin(a) * r1), 0.05, 0.0, GOLD, sides=4, glow=2.6)
+	for sx in (-1, 1):                                                                    # its healing falling on them
+		p.box((0.08, 0.05, 0.24), (sx * 0.62, -0.3, 0.95), LEAF, glow=2.4)
+		p.box((0.22, 0.05, 0.08), (sx * 0.62, -0.3, 0.98), LEAF, glow=2.4)
+	return p.build()
+
+
+def starfire_lance():
+	p = Prop("starfire_lance", 1313)
+	a, b = Vector((-0.85, -0.05, -0.05)), Vector((0.35, -0.05, 1.0))                        # a lance of starfire...
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	p.seg(tuple(a), tuple(b), 0.02, 0.12, PURPLE, sides=8, glow=2.0, grad=LILAC)
+	p.seg(tuple(a - Vector((0, 0.08, 0))), tuple(b - Vector((0, 0.08, 0))), 0.01, 0.06, CLOTH_WHITE, sides=6, glow=3.0)
+	tip = b + d * 0.32
+	_star(p, tip.x, tip.z, 0.26, CLOTH_WHITE, glow=3.0, y=-0.15, points=6, inner=0.35)          # ...headed with a star
+	_ring_at(p, tip.x, tip.z, 0.42, 0.025, RUNE, glow=2.2, sides=16, y=-0.05)
+	for k, t in enumerate((0.2, 0.42, 0.62, 0.82)):                                      # shedding sparks of the night sky
+		q = a + (b - a) * t + n * (0.22 if k % 2 else -0.22)
+		_twinkle(p, q.x, q.z, 0.06 + 0.02 * t, swatch=CLOTH_WHITE if k % 2 else RUNE, glow=2.6, y=-0.2)
+	return p.build()
+
+
+def shadowbind():
+	p = Prop("shadowbind", 1315)
+	p.blob((1.2, 0.8, 0.05), (0.0, 0.0, 0.0), IRON, segs=(14, 5))                             # the foe's own shadow...
+	_ring(p, 0.8, 0.02, 0.045, PURPLE, glow=2.2, sides=22)
+	p.seg((0, 0.15, 0.05), (0, 0.15, 0.95), 0.22, 0.16, STONE_LIGHT, sides=8)                 # ...rising round the foe
+	p.blob((0.34, 0.34, 0.36), (0, 0.15, 1.15), STONE_LIGHT, segs=(8, 6))
+	for sx in (-1, 1):
+		p.blob((0.08, 0.05, 0.06), (sx * 0.07, -0.02, 1.17), CLOTH_RED, segs=(5, 3), glow=2.6)
+	for k in range(5):                                                                    # in grasping dark hands of it
+		a = k * math.tau / 5 + 0.3
+		base = Vector((math.cos(a) * 0.55, math.sin(a) * 0.4, 0.02))
+		pts = []
+		for j in range(9):
+			t = j / 8
+			ang = a + t * 2.2
+			rr = 0.55 - 0.32 * t
+			pts.append((math.cos(ang) * rr, math.sin(ang) * rr * 0.75, 0.02 + t * (0.55 + 0.1 * (k % 2))))
+		for j, (u, v) in enumerate(zip(pts, pts[1:])):
+			w = 0.1 * (1 - 0.7 * j / 8)
+			p.seg(u, v, w, w, PURPLE, sides=5, grad=(0.3, 0.8), glow=1.2)
+		p.blob((0.05, 0.05, 0.05), pts[-1], PURPLE, segs=(5, 3), glow=2.2, grad=LILAC)
+	return p.build()
+
+
+def black_sun():
+	p = Prop("black_sun", 1317)
+	_ring(p, 1.0, -0.05, 0.045, CLOTH_RED, glow=1.8, sides=26)                               # on the target and all near it...
+	for x, s in ((-0.5, 0.45), (0.0, 0.6), (0.5, 0.45)):                                  # ...violet fire, raining down
+		_fl(p, x, -0.1, 0.0, s, glow=2.0, core=PURPLE, tongue=PURPLE)
+	cz = 1.2                                                                              # from a black sun burning above
+	for k in range(14):
+		a = k * math.tau / 14
+		r1 = 0.72 if k % 2 else 0.55
+		p.seg((math.cos(a) * 0.4, 0.15, cz + math.sin(a) * 0.4), (math.cos(a) * r1 * 1.25, 0.15, cz + math.sin(a) * r1 * 1.25), 0.1, 0.0, PURPLE, sides=5, glow=2.4, grad=LILAC)
+	p.blob((0.8, 0.8, 0.8), (0, 0.0, cz), IRON, segs=(14, 10))
+	_ring_at(p, 0, cz, 0.42, 0.045, PURPLE, glow=2.8, sides=24, y=-0.05)
+	for x in (-0.35, 0.0, 0.35):
+		p.seg((x * 0.5, 0.05, cz - 0.4), (x * 1.3, 0.05, 0.55), 0.04, 0.02, PURPLE, sides=4, glow=2.2, grad=LILAC)
+	return p.build()
+
+
+def nightblade():
+	p = Prop("nightblade", 1319)
+	_silver_moon(p, -0.15, 0.85, 0.72, glow=1.8, y=0.35, a0=95)                              # out of the night...
+	for x, z, s in ((0.45, 1.35, 0.07), (0.7, 0.95, 0.05), (0.2, 1.55, 0.05)):
+		_twinkle(p, x, z, s, glow=2.4, y=0.3)
+	base, tip = Vector((0.55, -0.1, 1.25)), Vector((-0.35, -0.1, 0.05))                     # ...a dark blade, striking unseen
+	d = (tip - base).normalized()
+	nn = Vector((-d.z, 0, d.x))
+	p.seg(tuple(base), tuple(tip), 0.2, 0.0, PURPLE, sides=4, grad=(0.45, 0.9))
+	p.seg(tuple(base + d * 0.05 - Vector((0, 0.08, 0)) + nn * 0.06), tuple(tip - Vector((0, 0.08, 0))), 0.025, 0.0, CLOTH_WHITE, sides=4, glow=2.6)
+	p.seg(tuple(base - nn * 0.26), tuple(base + nn * 0.26), 0.045, 0.045, SILVER, sides=5)
+	p.seg(tuple(base), tuple(base - d * 0.3), 0.05, 0.05, IRON, sides=6)
+	p.blob((0.08, 0.08, 0.08), tuple(base - d * 0.34), PURPLE, segs=(6, 4), glow=2.4, grad=LILAC)
+	for k in range(3):                                                                    # the cut
+		off = nn * (k - 1) * 0.13
+		p.seg(tuple(tip + d * 0.1 + off - Vector((0, 0.2, 0))), tuple(tip + d * 0.35 + off - Vector((0, 0.2, 0))), 0.035, 0.0, CRIMSON, sides=4, glow=2.0)
+	return p.build()
+
+
+def nightfall_edges():
+	p = Prop("nightfall_edges", 1321)
+	cx, cz = 0.0, 0.62
+	for sgn in (-1, 1):                                                                   # two blades, crossed...
+		base = Vector((cx - sgn * 0.45, -0.1 - (0.05 if sgn > 0 else 0.0), cz - 0.45))
+		tip = Vector((cx + sgn * 0.55, -0.1 - (0.05 if sgn > 0 else 0.0), cz + 0.62))
+		_dagger(p, tuple(base), tuple(tip), w=0.11, blade=SILVER, edge=CLOTH_WHITE)
+	for sgn in (-1, 1):                                                                   # ...trailing nightfall behind them
+		a0 = math.radians(90 + sgn * 30)
+		a1 = math.radians(90 + sgn * 150)
+		_crescent(p, cx, cz, 0.95, a0, a1, 0.14, PURPLE, glow=1.2, y=0.2)
+		for k in range(4):
+			a = a0 + (a1 - a0) * (0.2 + k * 0.2)
+			_twinkle(p, cx + math.cos(a) * 0.95, cz + math.sin(a) * 0.95, 0.055, glow=2.8, y=0.05)
+	for x in (0.82, 0.98):                                                                # faster
+		p.seg((x, -0.3, 0.0), (x, -0.3, 0.35), 0.03, 0.03, GOLD, sides=4, glow=2.2)
+		p.seg((x, -0.3, 0.42), (x, -0.3, 0.3), 0.08, 0.0, GOLD, sides=4, glow=2.2)
+	return p.build()
+
+
+def umbral_wound():
+	p = Prop("umbral_wound", 1323)
+	cx, cz, ang = 0.0, 0.85, math.radians(28)
+	ca, sa = math.cos(ang), math.sin(ang)
+	rot = lambda x, z: (cx + x * ca - z * sa, cz + x * sa + z * ca)
+	upper = [rot(-1.0 + 2.0 * k / 16, 0.3 * math.sin(math.pi * k / 16)) for k in range(17)]
+	lower = [rot(1.0 - 2.0 * k / 16, -0.3 * math.sin(math.pi * k / 16)) for k in range(1, 16)]
+	outline = upper + lower                                                               # a deep gash, cut through...
+	icons._slab(p, outline[::-1], 0.0, 0.1, IRON, grad=(0.3, 1.0))
+	for u, v in zip(outline, outline[1:] + outline[:1]):
+		p.seg((u[0], -0.03, u[1]), (v[0], -0.03, v[1]), 0.07, 0.07, PURPLE, sides=5, glow=1.8, grad=LILAC)
+	for t, off, sz in ((-0.55, 0.05, 0.05), (-0.15, -0.08, 0.08), (0.25, 0.08, 0.055), (0.6, -0.03, 0.045)):   # ...into the starry dark
+		x, z = rot(t, off)
+		_twinkle(p, x, z, sz, glow=2.8, y=-0.06)
+	for x, z, sz in ((-0.4, 0.2, 0.55), (0.05, -0.15, 0.65), (0.45, 0.3, 0.45), (0.12, -0.72, 0.42)):   # bleeding darkness, heavily
+		_drop(p, x, z, sz, PURPLE, 2.0)
+	return p.build()
+
+
+def starforged_mantle():
+	p = Prop("starforged_mantle", 1325)
+	for k in range(7):                                                                    # a mantle of the night sky...
+		a = math.radians(-15 + k * 35)
+		p.blob((0.34, 0.28, 0.3), (math.cos(a) * 0.45, 0.12, 0.62 + math.sin(a) * 0.3), PURPLE, segs=(8, 5), grad=(0.55, 0.95))
+	_elemental(p, SILVER, s=1.0, glow=0.3)                                                # ...on the pet
+	for sx in (-1, 1):
+		p.blob((0.1, 0.06, 0.07), (sx * 0.07, -0.16, 0.98), RUNE, segs=(5, 3), glow=2.8)
+	_star(p, 0.0, 0.52, 0.13, CLOTH_WHITE, glow=3.0, y=-0.25)                                  # forged with a star
+	for x, z, s in ((-0.55, 1.05, 0.06), (0.52, 1.0, 0.07), (-0.72, 0.45, 0.05), (0.66, 0.4, 0.05)):
+		_twinkle(p, x, z, s, glow=2.6, y=-0.1)
+	for k, x in enumerate((-0.62, 0.62)):                                                 # made stronger
+		for z in (1.2, 1.38):
+			p.seg((x - 0.1, -0.3, z - 0.08), (x, -0.3, z), 0.035, 0.035, GOLD, sides=4, glow=2.2)
+			p.seg((x + 0.1, -0.3, z - 0.08), (x, -0.3, z), 0.035, 0.035, GOLD, sides=4, glow=2.2)
+	return p.build()
+
+
+def starcall():
+	p = Prop("starcall", 1327)
+	_conjure_ring(p, -0.5, 1.25, 0.32, PURPLE, runes=(CLOTH_WHITE, RUNE, CLOTH_WHITE, RUNE))   # a ring opened on the night sky...
+	for x, z in ((-0.62, 1.32), (-0.42, 1.18)):
+		_twinkle(p, x, z, 0.04, glow=2.6, y=0.0)
+	a, b = Vector((-0.4, -0.1, 1.1)), Vector((0.3, -0.15, 0.3))                             # ...and a star called down out of it
+	p.seg(tuple(a), tuple(b), 0.02, 0.2, RUNE, sides=8, glow=1.8)
+	p.seg(tuple(a - Vector((0, 0.05, 0))), tuple(b - Vector((0, 0.05, 0))), 0.01, 0.11, CLOTH_WHITE, sides=6, glow=2.8)
+	_star(p, b.x, b.z + 0.1, 0.4, CLOTH_WHITE, glow=3.0, y=-0.3, spin=70)
+	p.blob((1.6, 1.0, 0.1), (0.3, 0.2, -0.05), STONE_DARK, segs=(12, 4))                       # onto the foe
+	for k in range(7):
+		ang = math.pi * (0.05 + k * 0.15)
+		p.seg((0.3, -0.3, 0.0), (0.3 + math.cos(ang) * 0.6, -0.3, math.sin(ang) * 0.3), 0.045, 0.0, RUNE if k % 2 else CLOTH_WHITE, sides=4, glow=2.4)
+	return p.build()
+
+
+def cataclysm():
+	p = Prop("cataclysm", 1329)
+	_ring(p, 1.02, -0.05, 0.045, CLOTH_RED, glow=1.8, sides=26)                               # on all near the target...
+	for k in range(6):                                                                    # ...the ground heaving up in plates
+		a = k * math.tau / 6 + 0.3
+		x, y = math.cos(a) * 0.62, math.sin(a) * 0.45
+		p.box((0.6, 0.48, 0.12), (x, y, 0.1), STONE_DARK, rot=(math.sin(a) * 25, -math.cos(a) * 25, math.degrees(a)), jitter=0.05)
+	p.seg((0, 0, 0.0), (0, 0, 1.15), 0.42, 0.18, EMBER, sides=10, glow=2.4)                    # every element breaking loose:
+	p.seg((0, -0.12, 0.1), (0, -0.12, 1.35), 0.22, 0.02, FLAME, sides=8, glow=2.8)            # fire,
+	_drop(p, -0.72, 1.1, 0.28, WATER, 1.6)                                                   # water,
+	_drop(p, -0.5, 1.45, 0.18, WATER, 1.6)
+	for x, z, s in ((0.62, 1.2, 0.16), (0.8, 0.85, 0.12), (0.45, 1.5, 0.1)):               # earth,
+		p.rock((s, s, s), (x, -0.1, z), STONE_WARM, jitter=0.2)
+	_wind(p, (-0.95, 0.55), (-0.35, 0.72), swatch=CLOTH_WHITE, r=0.06, curl=0.14, glow=2.0, y=-0.3)   # and air
+	_wind(p, (0.95, 0.5), (0.4, 0.62), swatch=CLOTH_WHITE, r=0.06, curl=0.14, up=-1, glow=2.0, y=-0.3)
+	_star(p, 0.0, 1.5, 0.16, CLOTH_WHITE, glow=3.0, y=-0.2, points=8, inner=0.3)
+	return p.build()
+
+
+def unlit_rot():
+	p = Prop("unlit_rot", 1331)
+	cx, cz, r = 0.0, 1.1, 0.4                                                             # a dead black moon...
+	p.blob((r * 2, r * 1.2, r * 2), (cx, 0.1, cz), IRON, segs=(14, 10))
+	_ring_at(p, cx, cz, r * 1.02, 0.035, SICKLY, glow=2.0, sides=24, y=0.05)
+	for x, z, s in ((-0.15, 1.2, 0.2), (0.18, 0.98, 0.16), (0.08, 1.35, 0.12)):
+		p.blob((s, 0.04, s), (cx + x, -0.32, z), MIST, segs=(8, 5), grad=(0.6, 1.0))
+	for x, z, s in ((-0.25, 0.48, 0.2), (0.08, 0.36, 0.24), (0.3, 0.52, 0.17)):              # ...dripping its rot
+		_drop(p, x, z, s, SICKLY, 1.6)
+		p.seg((x, -0.2, cz - r * 0.75), (x, -0.2, z + s * 0.4), 0.05, 0.03, SICKLY, sides=4, glow=1.6)
+	p.blob((1.7, 1.0, 0.12), (0, 0.1, -0.02), PINE, segs=(12, 4), grad=(0.6, 1.0))             # onto blighted ground
+	for x, s in ((-0.5, 0.1), (0.4, 0.12), (-0.1, 0.08), (0.65, 0.07)):
+		p.blob((s, s, s * 0.8), (x, -0.2, 0.08), SICKLY, segs=(6, 4), glow=1.8)
+	_bone(p, (-0.75, -0.25, 0.1), (-0.3, -0.25, 0.14), 0.04)
+	return p.build()
+
+
+def grave_ascendance():
+	p = Prop("grave_ascendance", 1333)
+	p.blob((1.5, 0.9, 0.12), (0, 0.2, -0.02), PINE, segs=(12, 4))                              # out of an open grave...
+	p.box((0.9, 0.5, 0.06), (0, 0.0, 0.06), IRON)
+	for sx in (-1, 1):                                                                    # ...rising on dark wings
+		_feather_fan(p, sx * 0.25, 0.85, [90 - sx * 90 + sx * dd for dd in (-40, -18, 4, 26, 48)], 0.72, PURPLE, tip=CLOTH_WHITE, glow=1.0, r=0.1)
+	for k in range(3):                                                                    # its bones
+		_bone(p, (0, -0.05, 0.25 + k * 0.05), (0, -0.05, 0.65), 0.05)
+		p.seg((-0.22 + 0.0, -0.08, 0.4 + k * 0.1), (0.22, -0.08, 0.4 + k * 0.1), 0.03, 0.03, BONE, sides=5)
+	_skull(p, 0.0, 0.95, 0.72, eyes=PURPLE, eye_glow=3.2)                                   # the undead, crowned
+	for k in range(5):
+		x = -0.2 + k * 0.1
+		p.seg((x, -0.05, 1.18), (x * 1.1, -0.05, 1.18 + (0.18 if k % 2 == 0 else 0.1)), 0.035, 0.0, SILVER, sides=4, glow=1.2)
+	p.seg((-0.23, -0.05, 1.17), (0.23, -0.05, 1.17), 0.03, 0.03, SILVER, sides=5, glow=1.2)
+	for x in (0.8, 0.95):                                                                 # made faster
+		p.seg((x, -0.3, 0.25), (x, -0.3, 0.6), 0.03, 0.03, GOLD, sides=4, glow=2.2)
+		p.seg((x, -0.3, 0.67), (x, -0.3, 0.55), 0.08, 0.0, GOLD, sides=4, glow=2.2)
+	return p.build()
+
+
+def soul_reaver():
+	p = Prop("soul_reaver", 1335)
+	a, b = Vector((0.85, 0.05, -0.15)), Vector((0.25, 0.05, 1.5))                             # a reaper's scythe...
+	p.seg(tuple(a), tuple(b), 0.06, 0.06, IRON, sides=6)
+	p.blob((0.12, 0.12, 0.12), tuple(a), SILVER, segs=(6, 4))
+	pts = []
+	for k in range(17):                                                                   # ...its long curved blade, sweeping left
+		t = k / 16
+		pts.append((b.x - t * 1.15, 0.0, b.z + 0.05 - math.sin(t * math.pi * 0.85) * 0.05 - t * t * 0.45))
+	for k, (u, v) in enumerate(zip(pts, pts[1:])):
+		w0 = 0.16 * (1 - k / 16) + 0.01
+		w1 = 0.16 * (1 - (k + 1) / 16) + 0.01
+		p.seg((u[0], 0.0, u[2] - w0 * 0.4), (v[0], 0.0, v[2] - w1 * 0.4), w0, w1, SILVER, sides=4)
+		p.seg((u[0], -0.12, u[2] - w0 * 1.1), (v[0], -0.12, v[2] - w1 * 1.1), 0.03, 0.02, PURPLE, sides=4, glow=2.8, grad=LILAC)
+	p.box((0.16, 0.16, 0.2), tuple(b - Vector((0, 0.02, 0.05))), IRON)
+	sx, sz = -0.35, 0.55                                                                  # reaping a soul...
+	p.blob((0.6, 0.42, 0.62), (sx, -0.1, sz), CLOTH_WHITE, segs=(12, 8), glow=1.6)
+	p.seg((sx, -0.1, sz - 0.2), (sx - 0.2, -0.1, sz - 0.8), 0.24, 0.0, CLOTH_WHITE, sides=8, glow=1.6)
+	for ex in (-1, 1):
+		p.blob((0.11, 0.06, 0.15), (sx + ex * 0.12, -0.32, sz + 0.07), STONE_DARK, segs=(6, 4))
+	p.blob((0.1, 0.06, 0.15), (sx, -0.32, sz - 0.13), STONE_DARK, segs=(6, 4))
+	_stream(p, -0.1, 0.55, 0.1, 0.08, 0.04, CLOTH_RED, 2.0, n=10)                             # ...its life for yours
+	_heart(p, 0.68, 0.22, 0.2, swatch=CLOTH_RED, y=-0.25, depth=0.1, rim=FLAME, glow=2.0)
+	return p.build()
+
+
+def frostfang_curse():
+	p = Prop("frostfang_curse", 1337)
+	_swirl(p, 0.0, 0.4, 0.05, 0.5, 1.6, PURPLE, 2.0, thick=0.09)                            # a curse on the foe...
+	for k in range(9):                                                                    # ...a frost wolf's upper jaw
+		t = k / 8
+		x = -0.8 + t * 1.6
+		z = 1.45 - math.sin(t * math.pi) * 0.2
+		p.blob((0.3, 0.26, 0.26), (x, 0.0, z), CLOTH_WHITE, segs=(8, 5), glow=0.6)
+	for sx in (-1, 1):                                                                    # its two great fangs of ice, biting down
+		pts = []
+		for k in range(10):
+			t = k / 9
+			pts.append((sx * (0.55 - 0.3 * t ** 1.4), -0.15, 1.32 - t * 0.95))
+		for k, (u, v) in enumerate(zip(pts, pts[1:])):
+			w0, w1 = 0.19 * (1 - k / 9) + 0.01, 0.19 * (1 - (k + 1) / 9) + 0.005
+			p.seg(u, v, w0, w1, WATER, sides=6, glow=1.0, grad=(0.0, 0.4))
+			p.seg((u[0] - sx * 0.05, -0.32, u[2]), (v[0] - sx * 0.05, -0.32, v[2]), w0 * 0.3, w1 * 0.3, CLOTH_WHITE, sides=4, glow=2.4)
+	for x in (-0.2, 0.0, 0.2):                                                            # and the small ones between
+		p.seg((x, -0.12, 1.3), (x, -0.12, 1.05), 0.06, 0.0, WATER, sides=5, glow=1.2, grad=(0.0, 0.4))
+	_drop(p, 0.25, 0.18, 0.12, WATER, 1.6)
+	_snowflake(p, 0.85, 0.75, 0.15, 2.2)
+	_snowflake(p, -0.85, 0.6, 0.12, 2.2)
+	return p.build()
+
+
+def spirit_of_the_ancients():
+	p = Prop("spirit_of_the_ancients", 1339)
+	_ring(p, 0.92, 0.0, 0.045, GOLD, glow=1.8, sides=24)                                   # over the group...
+	hx, hz = 0.0, 0.98                                                                    # ...the face of an ancient spirit
+	for k in range(5):                                                                    # a crown of old feathers
+		a = math.radians(50 + k * 20)
+		p.seg((hx + math.cos(a) * 0.2, 0.15, hz + 0.2), (hx + math.cos(a) * 0.62, 0.15, hz + 0.2 + math.sin(a) * 0.55), 0.08, 0.02, GOLD if k % 2 else CLOTH_RED, sides=5, glow=0.6)
+	p.blob((0.74, 0.58, 0.8), (hx, 0.0, hz), RUNE, segs=(12, 8), glow=0.8, grad=(0.0, 0.3))
+	p.seg((hx, -0.12, hz - 0.28), (hx, -0.22, hz - 1.0), 0.42, 0.0, CLOTH_WHITE, sides=8, glow=0.9)   # his long beard
+	for sx in (-1, 1):
+		p.seg((hx + sx * 0.27, -0.05, hz - 0.15), (hx + sx * 0.2, -0.14, hz - 0.72), 0.12, 0.0, CLOTH_WHITE, sides=6, glow=0.9)
+		p.blob((0.12, 0.05, 0.08), (hx + sx * 0.14, -0.3, hz + 0.06), CLOTH_WHITE, segs=(6, 4), glow=3.2)   # glowing eyes
+		p.seg((hx + sx * 0.03, -0.3, hz + 0.18), (hx + sx * 0.32, -0.26, hz + 0.22), 0.06, 0.02, CLOTH_WHITE, sides=4, glow=0.6)   # heavy brows
+	p.seg((hx, -0.34, hz + 0.02), (hx, -0.4, hz - 0.14), 0.06, 0.045, RUNE, sides=5, grad=(0.0, 0.3))   # nose
+	for x, z in ((-0.72, 1.45), (0.75, 1.4), (-0.85, 0.75), (0.82, 0.7)):                 # from the old night sky
+		_twinkle(p, x, z, 0.06, glow=2.6, y=-0.2)
+	return p.build()
+
+
+def timeless_stillness():
+	p = Prop("timeless_stillness", 1341)
+	cx, cz = 0.0, 0.7
+	p.seg((cx, 0.1, cz), (cx, 0.22, cz), 0.72, 0.72, NIGHT, sides=28, grad=(0.85, 1.0))       # a clock face of the night sky...
+	_ring_at(p, cx, cz, 0.74, 0.07, SILVER, sides=28, y=0.05)
+	for k in range(12):                                                                   # stars for its hours
+		a = k * math.tau / 12
+		_twinkle(p, cx + math.cos(a) * 0.58, cz + math.sin(a) * 0.58, 0.05 if k % 3 else 0.08, glow=2.4, y=0.02)
+	p.seg((cx, -0.02, cz), (cx, -0.02, cz + 0.48), 0.045, 0.01, SILVER, sides=4, glow=0.6)      # ...its hands stopped
+	p.seg((cx, -0.04, cz), (cx + 0.3, -0.04, cz - 0.18), 0.055, 0.01, SILVER, sides=4, glow=0.6)
+	p.blob((0.07, 0.05, 0.07), (cx, -0.06, cz), GOLD, segs=(6, 4), glow=1.6)
+	for k in range(3):                                                                    # by a ring of still frost
+		_ring_at(p, cx, cz, 0.86 + k * 0.1, 0.022, MIST if k % 2 else WATER, glow=1.4, sides=24, a0=math.radians(200 + k * 20), a1=math.radians(340 + k * 20), y=-0.1)
+	for x, z in ((-0.8, 1.3), (0.8, 0.15)):
+		_snowflake(p, x, z, 0.11, 1.8)
+	return p.build()
+
+
+def starpiercer():
+	p = Prop("starpiercer", 1343)
+	cx, cz = 0.25, 0.95
+	_star(p, cx, cz, 0.36, CLOTH_WHITE, glow=2.6, y=0.1, spin=90)                             # a star...
+	_ring_at(p, cx, cz, 0.62, 0.025, RUNE, glow=2.0, sides=18, y=0.15)
+	_arrow(p, (-0.9, -0.1, 0.05), (0.8, -0.1, 1.6), hs=1.4, r=0.05, head=CLOTH_WHITE, glow=2.4, fletch=PURPLE)   # ...pierced through
+	for k in range(6):                                                                    # shards of its light
+		a = math.radians(-30 + k * 60)
+		p.seg((cx + math.cos(a) * 0.5, -0.2, cz + math.sin(a) * 0.5), (cx + math.cos(a) * 0.75, -0.2, cz + math.sin(a) * 0.75), 0.04, 0.0, GOLD, sides=4, glow=2.4)
+	for x, z in ((-0.55, 0.6), (-0.25, 0.25)):
+		_twinkle(p, x, z, 0.05, glow=2.4, y=-0.25)
+	return p.build()
+
+
+def nighthunters_eye():
+	p = Prop("nighthunters_eye", 1345)
+	_silver_moon(p, 0.6, 1.35, 0.32, glow=2.0, y=0.45, a0=100)                                 # by moonlight...
+	hx, hz = 0.0, 0.78                                                                    # ...an owl's face
+	p.blob((0.95, 0.5, 0.82), (hx, 0.1, hz), WOOD_GRAY, segs=(14, 10))
+	for sx in (-1, 1):
+		p.seg((hx + sx * 0.3, 0.05, hz + 0.3), (hx + sx * 0.5, 0.05, hz + 0.72), 0.14, 0.0, WOOD_GRAY, sides=5)   # ear tufts
+		p.blob((0.46, 0.1, 0.46), (hx + sx * 0.25, -0.28, hz + 0.02), HIDE, segs=(12, 6))                   # facial discs
+		p.blob((0.3, 0.08, 0.3), (hx + sx * 0.25, -0.36, hz + 0.02), GOLD, segs=(12, 6), glow=2.8)           # great glowing eyes
+		p.blob((0.15, 0.05, 0.17), (hx + sx * 0.25, -0.43, hz + 0.02), IRON, segs=(8, 5))
+		p.blob((0.045, 0.02, 0.045), (hx + sx * 0.22, -0.47, hz + 0.07), CLOTH_WHITE, segs=(5, 3), glow=2.0)
+		p.seg((hx + sx * 0.05, -0.4, hz + 0.22), (hx + sx * 0.5, -0.35, hz + 0.3), 0.045, 0.02, IRON, sides=4)   # fierce brows
+	p.seg((hx, -0.42, hz - 0.08), (hx, -0.48, hz - 0.3), 0.08, 0.0, GOLD, sides=5)            # its hooked beak
+	for x, z in ((-0.8, 1.45), (0.8, 1.2), (0.62, 1.55)):
+		_twinkle(p, x, z, 0.05, glow=2.4, y=-0.1)
+	return p.build()
+
+
+def starfall_volley():
+	p = Prop("starfall_volley", 1347)
+	_ring(p, 1.0, -0.05, 0.045, CLOTH_RED, glow=1.8, sides=26)                               # on all near the target
+	d = Vector((0.45, 0, -1.0)).normalized()
+	for k, (x, z) in enumerate(((-0.75, 1.55), (-0.3, 1.7), (0.15, 1.6), (-0.55, 1.05), (-0.05, 1.12), (0.45, 1.2))):   # arrows falling like stars
+		tip = Vector((x, -0.1, z)) + d * 0.9
+		base = Vector((x, -0.1, z))
+		p.seg(tuple(base - d * 0.55 + Vector((0, 0.08, 0))), tuple(base + Vector((0, 0.08, 0))), 0.0, 0.07, RUNE if k % 2 else PURPLE, sides=6, glow=2.0, grad=LILAC)
+		_arrow(p, tuple(base), tuple(tip), hs=0.9, r=0.03, head=CLOTH_WHITE, glow=2.6, fletch=CLOTH_WHITE)
+		_twinkle(p, tip.x + d.x * 0.25, tip.z + d.z * 0.25, 0.06, glow=2.8, y=-0.2)
+	return p.build()
+
+
+def veil_of_the_unlit():
+	p = Prop("veil_of_the_unlit", 1349)
+	outline = [(-0.3, 1.45), (0.3, 1.45), (0.62, 0.95), (0.8, 0.1), (0.55, -0.05), (0.3, 0.08), (0.05, -0.08),
+			   (-0.22, 0.06), (-0.5, -0.06), (-0.8, 0.1), (-0.62, 0.95)]                          # a veil of the dark sky...
+	icons._slab(p, outline[::-1], 0.0, 0.1, PURPLE, grad=(0.55, 1.0))
+	for u, v in zip(outline, outline[1:] + outline[:1]):
+		p.seg((u[0], -0.03, u[1]), (v[0], -0.03, v[1]), 0.04, 0.04, SILVER, sides=5, glow=1.2)
+	for x in (-0.35, 0.0, 0.35):                                                          # ...falling in folds
+		p.seg((x * 0.6, -0.02, 1.35), (x * 1.5, -0.02, 0.1), 0.025, 0.04, PURPLE, sides=5, grad=(0.85, 1.0))
+	_silver_moon(p, 0.0, 1.05, 0.22, glow=2.2, y=-0.08, a0=100)                              # Timiraj's moon on its crown
+	for x, z, s in ((-0.35, 0.7, 0.07), (0.3, 0.5, 0.06), (-0.1, 0.35, 0.05), (0.45, 0.95, 0.05), (-0.5, 0.3, 0.045), (0.1, 0.75, 0.05)):   # and its stars
+		_twinkle(p, x, z, s, glow=2.6, y=-0.08)
+	return p.build()
+
+
+def crimson_kiss():
+	p = Prop("crimson_kiss", 1351)
+	cx, cz = 0.0, 0.85
+	for sgn in (1, -1):                                                                   # red lips, parted...
+		pts = []
+		for k in range(15):
+			t = k / 14
+			x = -0.8 + t * 1.6
+			bow = 0.12 * math.cos(t * math.tau * 2) * (1 if sgn > 0 else 0) if 0.3 < t < 0.7 else 0.0
+			h = math.sin(t * math.pi) * (0.28 if sgn > 0 else 0.34)
+			pts.append((cx + x, -0.05, cz + sgn * (0.08 + h - bow * 0.3)))
+		for k, (u, v) in enumerate(zip(pts, pts[1:])):
+			w = 0.03 + 0.13 * math.sin(math.pi * (k + 0.5) / 14)
+			p.seg(u, v, w, w, CRIMSON, sides=8)
+	p.seg((cx - 0.72, 0.05, cz), (cx + 0.72, 0.05, cz), 0.07, 0.07, IRON, sides=6)
+	for sx in (-1, 1):                                                                    # ...over two fangs
+		p.seg((cx + sx * 0.28, -0.02, cz + 0.12), (cx + sx * 0.26, -0.08, cz - 0.35), 0.075, 0.0, CLOTH_WHITE, sides=6, glow=0.8)
+	_drop(p, cx + 0.26, cz - 0.62, 0.22, CLOTH_RED, 1.6)                                    # and a drop of blood
+	p.seg((cx + 0.26, -0.1, cz - 0.38), (cx + 0.26, -0.1, cz - 0.5), 0.03, 0.05, CLOTH_RED, sides=5, glow=1.6)
+	return p.build()
+
+
+def shade_touch():
+	p = Prop("shade_touch", 1353)
+	_hand(p, 0.0, 0.65, 1.3, PURPLE, curl=0.4, glow=1.8, y=0.15)                              # a shade's glow...
+	_hand(p, 0.0, 0.66, 1.2, IRON, curl=0.4, glow=0.0, y=0.0)                                # ...round its cold dark hand, reaching
+	for k, (x0, z0) in enumerate(((0.55, 0.05), (-0.55, 0.15))):                         # shadow wisping off it
+		_wind(p, (x0, z0), (x0 * 1.3, z0 + 0.75), swatch=MIST, r=0.06, up=1 if k else -1, curl=0.15, glow=0.8, y=-0.1)
+	for x, z in ((-0.26, 1.55), (-0.08, 1.68), (0.1, 1.66), (0.27, 1.52)):                # frost at its fingertips
+		p.blob((0.1, 0.08, 0.1), (x, -0.3, z), WATER, segs=(6, 4), glow=2.6, grad=(0.0, 0.3))
+	_snowflake(p, 0.78, 1.3, 0.15, 2.2)
+	_snowflake(p, -0.78, 1.1, 0.12, 2.2)
+	return p.build()
+
+
+def spirit_trumpet():
+	p = Prop("spirit_trumpet", 1355)
+	GHOST = (0.0, 0.3)                                                                    # RUNE's pale end: a ghost's blue
+	hx, hz = 0.0, 0.7                                                                     # a great herd's ghost...
+	for sx in (-1, 1):                                                                    # its broad ears
+		p.blob((0.62, 0.14, 0.85), (hx + sx * 0.52, 0.15, hz + 0.02), RUNE, rot=(0, sx * 12, 0), segs=(10, 6), glow=0.6, grad=GHOST)
+		p.blob((0.46, 0.1, 0.66), (hx + sx * 0.52, 0.06, hz + 0.02), CLOTH_WHITE, rot=(0, sx * 12, 0), segs=(10, 6), glow=0.8)
+	p.blob((0.78, 0.66, 0.8), (hx, 0.0, hz), RUNE, segs=(12, 8), glow=0.8, grad=GHOST)
+	for sx in (-1, 1):
+		p.blob((0.1, 0.05, 0.1), (hx + sx * 0.17, -0.34, hz + 0.1), CLOTH_WHITE, segs=(6, 4), glow=3.2)   # its eyes
+		p.seg((hx + sx * 0.15, -0.3, hz - 0.2), (hx + sx * 0.36, -0.42, hz - 0.5), 0.07, 0.0, BONE, sides=5, glow=0.4)   # tusks
+	pts = []                                                                              # ...its trunk raised, trumpeting
+	for k in range(15):
+		t = k / 14
+		pts.append((hx + 0.62 * t ** 1.3, -0.35 - 0.1 * t, hz - 0.1 - 0.45 * math.sin(t * math.pi * 0.9) + t * 1.0))
+	for k, (u, v) in enumerate(zip(pts, pts[1:])):
+		w = 0.15 - 0.07 * k / 14
+		p.seg(u, v, w, w * 0.95, RUNE, sides=6, glow=0.8, grad=GHOST)
+	tx, tz = pts[-1][0], pts[-1][2]
+	p.blob((0.2, 0.1, 0.2), (tx, -0.46, tz), CLOTH_WHITE, segs=(8, 5), glow=1.6)
+	for k in range(3):                                                                    # rings of sound
+		_ring_at(p, tx, tz, 0.2 + k * 0.16, 0.04, CLOTH_WHITE if k % 2 else GOLD, glow=2.4, sides=8, a0=math.radians(-30), a1=math.radians(100), y=-0.5)
+	for k in range(3):                                                                    # fading away below
+		x = hx - 0.25 + k * 0.25
+		p.seg((x, 0.1, hz - 0.3), (x - 0.08, 0.15, hz - 0.85 - (k % 2) * 0.12), 0.12, 0.0, RUNE, sides=5, glow=0.8, grad=GHOST)
+	return p.build()
+
+
+LEVEL_50 = [eclipse_strike, wall_of_the_unlit, worldbreaker, starlight_ward, dawn_in_darkness, covenant_of_light, starfire_lance, shadowbind,
+			black_sun, nightblade, nightfall_edges, umbral_wound, starforged_mantle, starcall, cataclysm, unlit_rot, grave_ascendance,
+			soul_reaver, frostfang_curse, spirit_of_the_ancients, timeless_stillness, starpiercer, nighthunters_eye, starfall_volley,
+			veil_of_the_unlit, crimson_kiss, shade_touch, spirit_trumpet]
+
+
+
+# ---------------------------------------------------------------- the Boneyard's summit: Lastwalk's stone soldiers and Timiraj's Table
+
+def godfire():
+	p = Prop("godfire", 1351)
+	_ring_at(p, 0.0, 0.75, 0.78, 0.035, GOLD, glow=1.8, sides=26, y=0.3)                     # the gods' fire, under a halo
+	for k in range(12):
+		a = k * math.tau / 12 + 0.13
+		r1 = 1.1 if k % 2 else 0.95
+		p.seg((math.cos(a) * 0.84, 0.3, 0.75 + math.sin(a) * 0.84), (math.cos(a) * r1, 0.3, 0.75 + math.sin(a) * r1), 0.05, 0.0, GOLD, sides=4, glow=2.2)
+	p.blob((0.9, 0.6, 0.6), (0.0, 0.0, 0.3), AMBER, segs=(12, 8), glow=1.2, grad=(0.0, 0.5))   # a flame of gold
+	p.seg((0.0, 0.0, 0.34), (0.06, 0.0, 1.6), 0.42, 0.0, GOLD, sides=10, glow=1.3)
+	for sx, h, lean in ((-1, 1.15, 0.18), (1, 1.05, 0.2), (-1, 0.75, 0.42), (1, 0.7, 0.44)):
+		p.seg((sx * 0.2, 0.0, 0.3), (sx * (0.2 + lean), 0.0, h), 0.2, 0.0, GOLD, sides=8, glow=1.1, grad=(0.0, 0.6))
+	p.blob((0.4, 0.3, 0.36), (0.0, -0.2, 0.36), CLOTH_WHITE, segs=(10, 6), glow=3.2)           # white-hot at its heart
+	p.seg((0.0, -0.2, 0.4), (0.03, -0.2, 1.1), 0.18, 0.0, CLOTH_WHITE, sides=8, glow=3.2)
+	for x, z, s in ((-0.7, 1.4, 0.08), (0.66, 1.52, 0.07), (0.5, 0.2, 0.06)):                 # sparks
+		_twinkle(p, x, z, s, swatch=GOLD, glow=2.8, y=-0.3)
+	return p.build()
+
+
+def petrifying_blow():
+	p = Prop("petrifying_blow", 1353)
+	p.rock((0.95, 0.8, 0.9), (0.1, 0, 0.6), MIST, jitter=0.06)                               # a fist of gray stone
+	for k in range(4):                                                                    # knuckles
+		p.rock((0.28, 0.28, 0.28), (-0.26 + k * 0.23, -0.34, 1.0), MIST, jitter=0.04)
+	p.rock((0.3, 0.3, 0.42), (0.6, -0.2, 0.6), MIST, jitter=0.04)                            # thumb
+	p.seg((0.1, 0.05, 0.2), (0.25, 0.05, -0.3), 0.3, 0.34, MIST, sides=7, grad=(0.1, 0.9))     # its wrist
+	for pts in (((-0.2, 1.04), (-0.12, 0.8), (-0.22, 0.6), (-0.08, 0.36)), ((0.3, 1.02), (0.24, 0.78), (0.36, 0.58)),
+				((-0.12, 0.8), (0.1, 0.72)), ((0.24, 0.78), (0.46, 0.7))):                # cracking open
+		_bolt_line(p, pts, 0.03, STONE_DARK, 0.0, y=-0.46)
+		_bolt_line(p, pts, 0.014, GOLD, 2.6, y=-0.5)
+	for a in (100, 140, 180, 60, 20):                                                     # as it strikes
+		r = math.radians(a)
+		p.seg((0.1 + math.cos(r) * 0.8, -0.3, 1.25 + math.sin(r) * 0.4 - 0.2), (0.1 + math.cos(r) * 1.1, -0.3, 1.25 + math.sin(r) * 0.6 - 0.2),
+			  0.04, 0.0, CLOTH_WHITE, sides=4, glow=2.4)
+	for x, z, s in ((-0.72, 1.3, 0.13), (0.86, 1.2, 0.1), (-0.8, 0.8, 0.09), (0.8, 1.55, 0.08)):   # stone chips flying
+		p.rock((s, s, s), (x, -0.3, z), STONE_LIGHT, jitter=0.2)
+	return p.build()
+
+
+def starfall_bolt():
+	p = Prop("starfall_bolt", 1355)
+	sx, sz = -0.3, 0.3                                                                    # a star falling...
+	d = Vector((1.0, 0, 1.0)).normalized()
+	n = Vector((-d.z, 0, d.x))
+	for k, (w, sw, g, off) in enumerate(((0.3, NIGHT, 0.6, 0.12), (0.2, RUNE, 1.8, 0.0), (0.09, CLOTH_WHITE, 3.0, -0.06))):
+		a = Vector((sx, off, sz)) + d * 0.1
+		b = Vector((sx, off, sz)) + d * (1.8 - 0.3 * k)
+		p.seg(tuple(a), tuple(b), w, 0.0, sw, sides=8, glow=g, grad=(0.0, 0.6) if sw == NIGHT else (0.1, 0.8))   # its long blazing tail
+	for s, off in ((1, 0.2), (-1, 0.14)):
+		a = Vector((sx, -0.02, sz)) + n * s * off + d * 0.2
+		p.seg(tuple(a), tuple(a + d * 1.0), 0.03, 0.0, CLOTH_WHITE, sides=4, glow=2.6)
+	_star(p, sx, sz, 0.32, CLOTH_WHITE, glow=3.2, y=-0.2, spin=-45)                             # ...its head a burning star
+	p.blob((0.2, 0.12, 0.2), (sx, -0.3, sz), CLOTH_WHITE, segs=(8, 5), glow=3.6)
+	for x, z, s in ((0.6, 0.3, 0.1), (-0.8, 1.2, 0.08), (0.2, 1.5, 0.07), (-0.84, 0.7, 0.06)):
+		_twinkle(p, x, z, s, glow=2.6, y=-0.2)
+	return p.build()
+
+
+def uninvited_curse():
+	p = Prop("uninvited_curse", 1357)
+	for k, (x0, h, ph) in enumerate(((-0.46, 1.25, 0.0), (0.06, 1.45, 2.0), (0.5, 1.15, 4.0))):   # a violet curse smoking up behind...
+		pts = [(x0 + 0.16 * math.sin(ph + t * 6.0) * (0.3 + t), 0.3, 0.5 + h * t) for t in (i / 12 for i in range(13))]
+		for i, (a, b) in enumerate(zip(pts, pts[1:])):
+			w = 0.05 * (1 - i / 13) + 0.012
+			p.seg(a, b, w, w * 0.9, PURPLE, sides=5, glow=2.0, grad=LILAC if k % 2 else (0.2, 0.7))
+	cz = 0.2                                                                              # ...a dark crown
+	band = [(-0.66, cz), (0.66, cz), (0.66, cz + 0.32), (-0.66, cz + 0.32)]
+	icons._slab(p, band, -0.08, 0.08, IRON, grad=(0.1, 0.7))
+	for z in (cz, cz + 0.32):
+		p.seg((-0.68, -0.09, z), (0.68, -0.09, z), 0.035, 0.035, SILVER, sides=5)
+	for k in range(7):                                                                    # of crooked black thorns
+		x = -0.57 + k * 0.19
+		h = (0.5, 0.7, 0.46, 0.95, 0.46, 0.7, 0.5)[k]
+		lean = 0.09 * (1 if k % 2 else -1)
+		mid = (x + lean, 0.0, cz + 0.3 + h * 0.55)
+		p.seg((x, 0.0, cz + 0.3), mid, 0.1, 0.055, IRON, sides=5, grad=(0.1, 0.7))
+		p.seg(mid, (x - lean * 0.5, 0.0, cz + 0.3 + h), 0.055, 0.0, SILVER, sides=5, grad=(0.2, 0.8))
+	p.blob((0.26, 0.12, 0.24), (0.0, -0.1, cz + 0.16), PURPLE, segs=(8, 6), glow=2.8)         # a violet stone for an eye
+	for x in (-0.4, 0.4):
+		p.blob((0.12, 0.08, 0.12), (x, -0.08, cz + 0.16), PURPLE, segs=(6, 4), glow=2.2)
+	for x, h in ((-0.3, 0.3), (0.12, 0.42), (0.46, 0.26)):                                  # its curse dripping down
+		p.seg((x, -0.1, cz + 0.02), (x, -0.1, cz - h), 0.045, 0.0, PURPLE, sides=5, glow=2.2)
+	for x, z, s in ((-0.62, 1.2, 0.1), (0.66, 1.5, 0.08)):
+		p.blob((s, s * 0.8, s), (x, 0.1, z), PURPLE, segs=(6, 4), glow=1.6, grad=LILAC)
+	return p.build()
+
+
+BONEYARD_SUMMIT = [godfire, petrifying_blow, starfall_bolt, uninvited_curse]
+
+
 MONSOON_WEST = [mud_spit, bog_bolt, eel_shock, bogwing_sting, hex_of_rot, mire_grip, undertow, naga_venom, tidal_bolt, lightning_lash,
 				crushing_claw, drowning_grasp, cobra_venom]
 
@@ -4537,7 +5199,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
 

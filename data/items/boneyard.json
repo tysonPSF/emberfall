@@ -1,0 +1,507 @@
+{
+  "tarnished_court_silver": {
+    "name": "Tarnished Court Silver",
+    "value": 64,
+    "stack": 20
+  },
+  "gargoyle_stone": {
+    "name": "Gargoyle Stone",
+    "value": 62,
+    "stack": 20
+  },
+  "fog_hound_pelt": {
+    "name": "Fog-Hound Pelt",
+    "value": 60,
+    "stack": 20
+  },
+  "stolen_grave_goods": {
+    "name": "Stolen Grave-Goods",
+    "value": 64,
+    "stack": 20
+  },
+  "ivory_shard": {
+    "name": "Ivory Shard",
+    "value": 68,
+    "stack": 20
+  },
+  "poached_ivory": {
+    "name": "Poached Ivory",
+    "value": 70,
+    "stack": 20
+  },
+  "carrion_feather": {
+    "name": "Carrion Feather",
+    "value": 64,
+    "stack": 20
+  },
+  "ghost_ivory": {
+    "name": "Ghost-Ivory",
+    "value": 70,
+    "stack": 20
+  },
+  "shade_essence": {
+    "name": "Shade Essence",
+    "value": 74,
+    "stack": 20
+  },
+  "shadowhide": {
+    "name": "Shadowhide",
+    "value": 72,
+    "stack": 20
+  },
+  "luminous_dust": {
+    "name": "Luminous Dust",
+    "value": 72,
+    "stack": 20
+  },
+  "morvaine_crest": {
+    "name": "Morvaine Crest",
+    "value": 76,
+    "stack": 20
+  },
+  "ismays_mourning_veil": {
+    "name": "Ismay's Mourning Veil",
+    "value": 340,
+    "lore": true
+  },
+  "grimwatchs_stone_heart": {
+    "name": "Grimwatch's Stone Heart",
+    "value": 340,
+    "lore": true
+  },
+  "whitemaws_collar": {
+    "name": "Old Whitemaw's Collar",
+    "value": 340,
+    "lore": true
+  },
+  "crowes_black_lantern": {
+    "name": "Crowe's Black Lantern",
+    "value": 340,
+    "lore": true
+  },
+  "ossuary_heartbone": {
+    "name": "The Ossuary's Heartbone",
+    "value": 340,
+    "lore": true
+  },
+  "vargas_tusk_saw": {
+    "name": "Varga's Tusk-Saw",
+    "value": 340,
+    "lore": true
+  },
+  "gorgemaws_beak": {
+    "name": "Gorgemaw's Beak",
+    "value": 340,
+    "lore": true
+  },
+  "grandmothers_tusk": {
+    "name": "The Grandmother's Tusk",
+    "value": 340,
+    "lore": true
+  },
+  "nameless_echo": {
+    "name": "The Nameless Echo",
+    "value": 340,
+    "lore": true
+  },
+  "starveils_eye": {
+    "name": "Starveil's Eye",
+    "value": 340,
+    "lore": true
+  },
+  "moon_moths_antenna": {
+    "name": "The Moon Moth's Antenna",
+    "value": 340,
+    "lore": true
+  },
+  "countess_locket": {
+    "name": "The Countess's Locket",
+    "value": 340,
+    "lore": true
+  },
+  "courtiers_signet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Courtier's Signet",
+    "slot": "ring",
+    "ac": 8,
+    "int": 7,
+    "wis": 7,
+    "mana": 75,
+    "value": 18000,
+    "rec_level": 41
+  },
+  "mourning_veil_cowl": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Mourning-Veil Cowl",
+    "slot": "head",
+    "ac": 15,
+    "int": 10,
+    "wis": 10,
+    "mana": 100,
+    "hp": 50,
+    "value": 42000,
+    "rec_level": 44,
+    "wear": "cloth_cap"
+  },
+  "gargoyle_hide_vambraces": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Gargoyle-Hide Vambraces",
+    "slot": "arms",
+    "ac": 23,
+    "str": 7,
+    "sta": 7,
+    "hp": 55,
+    "value": 18000,
+    "rec_level": 41,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "stoneheart_shield": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Stoneheart Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 36,
+    "sta": 9,
+    "hp": 70,
+    "model": "shield_round",
+    "value": 42000,
+    "rec_level": 44,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "foghound_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Fog-Hound Cloak",
+    "slot": "arms",
+    "ac": 20,
+    "agi": 7,
+    "sta": 7,
+    "value": 18000,
+    "rec_level": 41,
+    "wear": "leather_sleeves"
+  },
+  "whitemaw_fang_dirk": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Whitemaw Fang Dirk",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 9,
+    "value": 42000,
+    "rec_level": 44,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "robbers_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tomb-Robber's Sash",
+    "slot": "waist",
+    "ac": 11,
+    "agi": 7,
+    "str": 6,
+    "value": 18000,
+    "rec_level": 41,
+    "wear": "rope_belt"
+  },
+  "black_lantern_charm": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Black Lantern Charm",
+    "slot": "neck",
+    "ac": 12,
+    "int": 9,
+    "wis": 9,
+    "mana": 100,
+    "value": 42000,
+    "rec_level": 44
+  },
+  "ivory_bracer": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ivory Bracer",
+    "slot": "arms",
+    "ac": 22,
+    "str": 7,
+    "sta": 7,
+    "value": 20000,
+    "rec_level": 43,
+    "wear": "leather_sleeves"
+  },
+  "ossuary_greatmaul": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ossuary Greatmaul",
+    "slot": "primary",
+    "dmg": 54,
+    "delay": 3.8,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "str": 11,
+    "sta": 9,
+    "hp": 90,
+    "value": 46000,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ]
+  },
+  "poachers_bane_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Poacher's-Bane Gloves",
+    "slot": "hands",
+    "ac": 17,
+    "agi": 8,
+    "sta": 6,
+    "value": 20000,
+    "rec_level": 43,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "tusksaw_cleaver": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Tusk-Saw Cleaver",
+    "slot": "primary",
+    "dmg": 34,
+    "delay": 2.8,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 8,
+    "agi": 7,
+    "hp": 60,
+    "value": 46000,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "carrion_feather_cloak": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Carrion-Feather Mantle",
+    "slot": "arms",
+    "ac": 21,
+    "agi": 8,
+    "sta": 6,
+    "value": 20000,
+    "rec_level": 43,
+    "wear": "leather_sleeves"
+  },
+  "gorgemaw_beak_amulet": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Gorgemaw Beak Amulet",
+    "slot": "neck",
+    "ac": 13,
+    "str": 9,
+    "sta": 9,
+    "hp": 100,
+    "value": 46000,
+    "rec_level": 46
+  },
+  "ghost_ivory_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Ghost-Ivory Ring",
+    "slot": "ring",
+    "ac": 9,
+    "int": 7,
+    "wis": 7,
+    "mana": 80,
+    "value": 20000,
+    "rec_level": 43
+  },
+  "grandmothers_blessing": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Grandmother's Tusk Charm",
+    "slot": "neck",
+    "ac": 13,
+    "int": 10,
+    "wis": 10,
+    "mana": 110,
+    "hp": 60,
+    "value": 46000,
+    "rec_level": 46
+  },
+  "shade_silk_gloves": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Shade-Silk Gloves",
+    "slot": "hands",
+    "ac": 12,
+    "int": 8,
+    "wis": 8,
+    "mana": 60,
+    "value": 22000,
+    "rec_level": 45,
+    "wear": "cloth_gloves"
+  },
+  "echo_of_the_nameless": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Echo of the Nameless",
+    "slot": "ring",
+    "ac": 10,
+    "int": 9,
+    "wis": 9,
+    "mana": 95,
+    "hp": 45,
+    "value": 50000,
+    "rec_level": 48
+  },
+  "shadowhide_boots": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Shadowhide Boots",
+    "slot": "feet",
+    "ac": 22,
+    "agi": 8,
+    "sta": 7,
+    "value": 22000,
+    "rec_level": 45,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "starveil_bow": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Starveil Bow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 19,
+    "delay": 2.8,
+    "range": 52,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "agi": 9,
+    "value": 50000,
+    "rec_level": 48,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "moonsilk_sash": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Moonsilk Sash",
+    "slot": "waist",
+    "ac": 12,
+    "int": 8,
+    "wis": 8,
+    "mana": 70,
+    "value": 22000,
+    "rec_level": 45,
+    "wear": "rope_belt"
+  },
+  "moonwing_mantle": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Moonwing Mantle",
+    "slot": "arms",
+    "ac": 24,
+    "int": 9,
+    "wis": 9,
+    "mana": 90,
+    "hp": 60,
+    "value": 50000,
+    "rec_level": 48,
+    "wear": "leather_sleeves"
+  },
+  "morvaine_signet_ring": {
+    "no_drop": true,
+    "lore": true,
+    "name": "Morvaine Signet",
+    "slot": "ring",
+    "ac": 9,
+    "str": 7,
+    "sta": 7,
+    "hp": 60,
+    "value": 22000,
+    "rec_level": 45
+  },
+  "countess_crimson_blade": {
+    "no_drop": true,
+    "lore": true,
+    "name": "The Countess's Crimson Blade",
+    "slot": "primary",
+    "dmg": 35,
+    "delay": 2.6,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 8,
+    "agi": 9,
+    "hp": 70,
+    "value": 52000,
+    "rec_level": 48,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "proc": {
+      "spell": "crimson_kiss",
+      "chance": 0.06
+    }
+  }
+}

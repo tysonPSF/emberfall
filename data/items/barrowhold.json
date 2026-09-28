@@ -1,0 +1,334 @@
+{
+  "eclipsed_helm": {
+    "name": "Eclipsed Helm",
+    "slot": "head",
+    "ac": 29,
+    "sta": 8,
+    "hp": 50,
+    "value": 13500,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_coif"
+  },
+  "eclipsed_breastplate": {
+    "name": "Eclipsed Breastplate",
+    "slot": "chest",
+    "ac": 51,
+    "sta": 12,
+    "hp": 85,
+    "value": 23500,
+    "rec_level": 47,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "studded_tunic"
+  },
+  "eclipsed_vambraces": {
+    "name": "Eclipsed Vambraces",
+    "slot": "arms",
+    "ac": 21,
+    "str": 7,
+    "value": 10000,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "leather_sleeves"
+  },
+  "eclipsed_gauntlets": {
+    "name": "Eclipsed Gauntlets",
+    "slot": "hands",
+    "ac": 20,
+    "str": 7,
+    "value": 9500,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_gauntlets"
+  },
+  "eclipsed_greaves": {
+    "name": "Eclipsed Greaves",
+    "slot": "legs",
+    "ac": 34,
+    "sta": 8,
+    "value": 16000,
+    "rec_level": 47,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_greaves"
+  },
+  "eclipsed_boots": {
+    "name": "Eclipsed Boots",
+    "slot": "feet",
+    "ac": 21,
+    "agi": 7,
+    "value": 10000,
+    "rec_level": 46,
+    "classes": [
+      "warrior",
+      "cleric"
+    ],
+    "wear": "iron_boots"
+  },
+  "eclipsed_shield": {
+    "name": "Eclipsed Tower Shield",
+    "slot": "secondary",
+    "shield": true,
+    "ac": 33,
+    "sta": 8,
+    "hp": 56,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman"
+    ],
+    "value": 20500,
+    "rec_level": 47
+  },
+  "umbral_jerkin": {
+    "name": "Umbral Jerkin",
+    "slot": "chest",
+    "ac": 37,
+    "agi": 11,
+    "str": 7,
+    "value": 21500,
+    "rec_level": 47,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_tunic"
+  },
+  "umbral_leggings": {
+    "name": "Umbral Leggings",
+    "slot": "legs",
+    "ac": 27,
+    "agi": 8,
+    "sta": 6,
+    "value": 14500,
+    "rec_level": 47,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_leggings"
+  },
+  "umbral_gloves": {
+    "name": "Umbral Gloves",
+    "slot": "hands",
+    "ac": 16,
+    "agi": 7,
+    "value": 9000,
+    "rec_level": 46,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_gloves"
+  },
+  "umbral_boots": {
+    "name": "Umbral Boots",
+    "slot": "feet",
+    "ac": 20,
+    "agi": 7,
+    "sta": 6,
+    "value": 9300,
+    "rec_level": 46,
+    "classes": [
+      "rogue",
+      "warrior",
+      "shaman",
+      "ranger"
+    ],
+    "wear": "leather_boots"
+  },
+  "starweave_cap": {
+    "name": "Starweave Cap",
+    "slot": "head",
+    "ac": 14,
+    "int": 8,
+    "wis": 8,
+    "mana": 85,
+    "value": 11200,
+    "rec_level": 46,
+    "wear": "cloth_cap"
+  },
+  "starweave_robe": {
+    "name": "Starweave Robe",
+    "slot": "chest",
+    "ac": 27,
+    "int": 12,
+    "wis": 12,
+    "mana": 140,
+    "value": 21500,
+    "rec_level": 47,
+    "wear": "patchwork_tunic"
+  },
+  "starweave_gloves": {
+    "name": "Starweave Gloves",
+    "slot": "hands",
+    "ac": 11,
+    "int": 8,
+    "wis": 8,
+    "mana": 52,
+    "value": 8400,
+    "rec_level": 46,
+    "wear": "cloth_gloves"
+  },
+  "starweave_slippers": {
+    "name": "Starweave Slippers",
+    "slot": "feet",
+    "ac": 11,
+    "int": 7,
+    "wis": 7,
+    "mana": 40,
+    "value": 8200,
+    "rec_level": 46,
+    "wear": "sandals"
+  },
+  "eclipse_blade": {
+    "name": "Eclipse Blade",
+    "slot": "primary",
+    "dmg": 33,
+    "delay": 2.9,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "value": 25000,
+    "rec_level": 47,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ]
+  },
+  "umbral_war_axe": {
+    "name": "Umbral War Axe",
+    "slot": "primary",
+    "dmg": 34,
+    "delay": 3.1,
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "value": 24500,
+    "rec_level": 47,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "nightfall_greataxe": {
+    "name": "Nightfall Greataxe",
+    "slot": "primary",
+    "dmg": 52,
+    "delay": 3.8,
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "model": "axe_2handed",
+    "skill": "2h_blunt",
+    "value": 27500,
+    "rec_level": 48,
+    "classes": [
+      "warrior"
+    ]
+  },
+  "starshard_dirk": {
+    "name": "Starshard Dirk",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 2.2,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "value": 23500,
+    "rec_level": 47,
+    "classes": [
+      "warrior",
+      "rogue",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger"
+    ]
+  },
+  "moonwood_staff": {
+    "name": "Moonwood Staff",
+    "slot": "primary",
+    "dmg": 26,
+    "delay": 3.2,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 12,
+    "wis": 12,
+    "mana": 125,
+    "value": 24500,
+    "rec_level": 47,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  },
+  "barrowhold_longbow": {
+    "name": "Barrowhold Longbow",
+    "slot": "range",
+    "skill": "archery",
+    "dmg": 18,
+    "delay": 2.9,
+    "range": 52,
+    "ammo": "arrow",
+    "ammo_name": "arrows",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "model": "bow",
+    "value": 23500,
+    "rec_level": 47,
+    "classes": [
+      "warrior",
+      "ranger"
+    ]
+  },
+  "nightwing_arrow": {
+    "name": "Nightwing Arrow",
+    "ammo_type": "arrow",
+    "dmg": 8,
+    "projectile": "arrow",
+    "stack": 100,
+    "value": 12
+  }
+}

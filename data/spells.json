@@ -2605,5 +2605,742 @@
       "kind": "burst",
       "color": "#a0c0ff"
     }
+  },
+  "eclipse_strike": {
+    "name": "Eclipse Strike",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 18,
+    "range": 3.4,
+    "min": 95,
+    "max": 140,
+    "per_level": 3.4,
+    "verb": [
+      "eclipse",
+      "eclipses"
+    ],
+    "stun_chance": 0.3,
+    "stun": 2.0,
+    "stun_max_over": 3,
+    "classes": {
+      "warrior": 46
+    },
+    "cost": 14400,
+    "skill": "offense",
+    "desc": "A blow that blots out the light: heavy damage and a chance to stun for 2 seconds (not foes more than 3 levels above you).",
+    "fx": {
+      "kind": "impact",
+      "color": "#8a80c0"
+    }
+  },
+  "wall_of_the_unlit": {
+    "name": "Wall of the Unlit",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 300,
+    "range": 0,
+    "duration": 30,
+    "stats": {
+      "ac": 100,
+      "hp": 480
+    },
+    "classes": {
+      "warrior": 48
+    },
+    "cost": 15200,
+    "land_text": "You stand like a wall against the dark.",
+    "fade_text": "The wall of the unlit crumbles.",
+    "desc": "For 30 seconds: +100 armor and +480 health. Once every five minutes.",
+    "fx": {
+      "kind": "buff",
+      "color": "#6a6090"
+    }
+  },
+  "worldbreaker": {
+    "name": "Worldbreaker",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 24,
+    "range": 3.4,
+    "min": 100,
+    "max": 145,
+    "per_level": 3.4,
+    "splash": 10.0,
+    "splash_pct": 0.9,
+    "verb": [
+      "break",
+      "breaks"
+    ],
+    "classes": {
+      "warrior": 50
+    },
+    "cost": 16000,
+    "skill": "offense",
+    "desc": "A blow to break the world: your target and every foe near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c0b0e0"
+    }
+  },
+  "starlight_ward": {
+    "name": "Starlight Ward",
+    "type": "buff",
+    "target": "group",
+    "mana": 160,
+    "cast_time": 5.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "ac": 36,
+      "hp": 180,
+      "hp_regen": 6
+    },
+    "classes": {
+      "cleric": 46
+    },
+    "cost": 14400,
+    "skill": "abjuration",
+    "land_text": "Starlight gathers round you.",
+    "fade_text": "The starlight ward fades.",
+    "desc": "Your group, for thirty minutes: +36 armor, +180 health and +6 health every tick.",
+    "fx": {
+      "kind": "buff",
+      "color": "#e0e8ff"
+    }
+  },
+  "dawn_in_darkness": {
+    "name": "Dawn in Darkness",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 115,
+    "cast_time": 3.0,
+    "recast": 6,
+    "range": 30,
+    "min": 240,
+    "max": 310,
+    "per_level": 7.0,
+    "classes": {
+      "cleric": 48
+    },
+    "cost": 15200,
+    "skill": "evocation",
+    "desc": "A dawn breaks on your foe alone, wherever it stands.",
+    "fx": {
+      "kind": "burst",
+      "color": "#fff0c0"
+    }
+  },
+  "covenant_of_light": {
+    "name": "Covenant of Light",
+    "type": "heal",
+    "target": "group",
+    "mana": 170,
+    "cast_time": 4.0,
+    "recast": 10,
+    "range": 30,
+    "min": 220,
+    "max": 270,
+    "per_level": 6.0,
+    "classes": {
+      "cleric": 50
+    },
+    "cost": 16000,
+    "skill": "alteration",
+    "desc": "The light keeps its covenant: a great heal for everyone in your group nearby.",
+    "fx": {
+      "kind": "heal",
+      "color": "#fff8d8"
+    }
+  },
+  "starfire_lance": {
+    "name": "Starfire Lance",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 130,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 290,
+    "max": 360,
+    "per_level": 8.0,
+    "classes": {
+      "wizard": 46
+    },
+    "cost": 14400,
+    "skill": "evocation",
+    "desc": "A lance of starfire from the night sky.",
+    "fx": {
+      "kind": "burst",
+      "color": "#c8d0ff"
+    }
+  },
+  "shadowbind": {
+    "name": "Shadowbind",
+    "type": "root",
+    "target": "enemy",
+    "mana": 60,
+    "cast_time": 2.0,
+    "recast": 8,
+    "range": 30,
+    "duration": 40,
+    "classes": {
+      "wizard": 48
+    },
+    "cost": 15200,
+    "skill": "alteration",
+    "desc": "Your target's own shadow holds it where it stands for 40 seconds.",
+    "fx": {
+      "kind": "root",
+      "color": "#4a4070"
+    }
+  },
+  "black_sun": {
+    "name": "Black Sun",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 240,
+    "cast_time": 5.5,
+    "recast": 18,
+    "range": 30,
+    "min": 360,
+    "max": 445,
+    "per_level": 8.0,
+    "splash": 12.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "wizard": 50
+    },
+    "cost": 16000,
+    "skill": "evocation",
+    "desc": "A black sun burns over your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#6a50a0"
+    }
+  },
+  "nightblade": {
+    "name": "Nightblade",
+    "ability": true,
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 22,
+    "range": 3.4,
+    "min": 120,
+    "max": 160,
+    "per_level": 4.5,
+    "verb": [
+      "cut",
+      "cuts"
+    ],
+    "classes": {
+      "rogue": 46
+    },
+    "cost": 14400,
+    "skill": "offense",
+    "desc": "A cut from the dark that no one sees coming.",
+    "fx": {
+      "kind": "impact",
+      "color": "#6a5a90"
+    }
+  },
+  "nightfall_edges": {
+    "name": "Nightfall Edges",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 20,
+    "stats": {
+      "haste": 45,
+      "dmg": 14
+    },
+    "classes": {
+      "rogue": 48
+    },
+    "cost": 15200,
+    "land_text": "Night falls along your blades.",
+    "fade_text": "Your blades are only steel again.",
+    "desc": "For 20 seconds: 45% faster attacks and +14 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#5a5080"
+    }
+  },
+  "umbral_wound": {
+    "name": "Umbral Wound",
+    "ability": true,
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 40,
+    "range": 3.4,
+    "tick": 38,
+    "ticks": 6,
+    "per_level": 1.4,
+    "classes": {
+      "rogue": 50
+    },
+    "cost": 16000,
+    "skill": "offense",
+    "dot_text": "%s bleeds darkness.",
+    "land_text": "A wound opens that bleeds darkness.",
+    "desc": "A wound that bleeds darkness very heavily for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#401860"
+    }
+  },
+  "starforged_mantle": {
+    "name": "Starforged Mantle",
+    "type": "buff",
+    "target": "pet",
+    "mana": 100,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 40,
+    "duration": 900,
+    "stats": {
+      "ac": 70,
+      "hp": 560,
+      "dmg": 12
+    },
+    "classes": {
+      "magician": 46
+    },
+    "cost": 14400,
+    "skill": "alteration",
+    "land_text": "Your pet is wrapped in starforged light.",
+    "fade_text": "The starforged mantle fades.",
+    "desc": "Your pet, for fifteen minutes: +70 armor, +560 health and +12 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d0d8ff"
+    }
+  },
+  "starcall": {
+    "name": "Starcall",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 120,
+    "cast_time": 3.0,
+    "recast": 4,
+    "range": 30,
+    "min": 250,
+    "max": 320,
+    "per_level": 7.5,
+    "classes": {
+      "magician": 48
+    },
+    "cost": 15200,
+    "skill": "evocation",
+    "desc": "You call down a falling star on your foe.",
+    "fx": {
+      "kind": "burst",
+      "color": "#e0e0ff"
+    }
+  },
+  "cataclysm": {
+    "name": "Cataclysm",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 215,
+    "cast_time": 5.0,
+    "recast": 16,
+    "range": 30,
+    "min": 310,
+    "max": 385,
+    "per_level": 7.5,
+    "splash": 10.0,
+    "splash_pct": 0.8,
+    "classes": {
+      "magician": 50
+    },
+    "cost": 16000,
+    "skill": "evocation",
+    "desc": "Every element breaks loose on your target and all near it.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffb080"
+    }
+  },
+  "unlit_rot": {
+    "name": "Unlit Rot",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 105,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 25,
+    "tick": 45,
+    "ticks": 6,
+    "per_level": 1.5,
+    "classes": {
+      "necromancer": 46
+    },
+    "cost": 14400,
+    "skill": "conjuration",
+    "dot_text": "%s rots in the unlit dark.",
+    "land_text": "The rot of the unlit dark eats at you.",
+    "desc": "The rot of the endless night: very heavy damage every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#3a4a3a"
+    }
+  },
+  "grave_ascendance": {
+    "name": "Grave Ascendance",
+    "type": "buff",
+    "target": "pet",
+    "mana": 90,
+    "cast_time": 1.0,
+    "recast": 120,
+    "range": 40,
+    "duration": 60,
+    "stats": {
+      "haste": 60,
+      "dmg": 20
+    },
+    "classes": {
+      "necromancer": 48
+    },
+    "cost": 15200,
+    "skill": "alteration",
+    "land_text": "Your servant rises in terrible strength.",
+    "fade_text": "The grave's strength leaves your servant.",
+    "desc": "Your pet, for a minute: 60% faster attacks and +20 damage.",
+    "fx": {
+      "kind": "buff",
+      "color": "#6a2090"
+    }
+  },
+  "soul_reaver": {
+    "name": "Soul Reaver",
+    "type": "lifetap",
+    "target": "enemy",
+    "mana": 150,
+    "cast_time": 3.5,
+    "recast": 10,
+    "range": 25,
+    "min": 290,
+    "max": 360,
+    "per_level": 7.5,
+    "classes": {
+      "necromancer": 50
+    },
+    "cost": 16000,
+    "skill": "alteration",
+    "desc": "You reap your foe's soul and take its life for your own.",
+    "fx": {
+      "kind": "impact",
+      "color": "#3a1060"
+    }
+  },
+  "frostfang_curse": {
+    "name": "Frostfang Curse",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 100,
+    "cast_time": 2.5,
+    "recast": 2,
+    "range": 30,
+    "tick": 40,
+    "ticks": 6,
+    "per_level": 1.4,
+    "classes": {
+      "shaman": 46
+    },
+    "cost": 14400,
+    "skill": "conjuration",
+    "dot_text": "%s is bitten by frost fangs.",
+    "land_text": "Fangs of frost bite into you.",
+    "desc": "Fangs of frost bite your foe every tick for 18 seconds.",
+    "fx": {
+      "kind": "dot",
+      "color": "#c8e8ff"
+    }
+  },
+  "spirit_of_the_ancients": {
+    "name": "Spirit of the Ancients",
+    "type": "buff",
+    "target": "group",
+    "mana": 130,
+    "cast_time": 4.0,
+    "recast": 6,
+    "range": 30,
+    "duration": 1800,
+    "stats": {
+      "sta": 22,
+      "str": 18,
+      "agi": 12,
+      "hp": 120
+    },
+    "classes": {
+      "shaman": 48
+    },
+    "cost": 15200,
+    "skill": "alteration",
+    "land_text": "The ancient spirits walk with you.",
+    "fade_text": "The ancients depart.",
+    "desc": "Your group, for thirty minutes: +22 stamina, +18 strength, +12 agility and +120 health.",
+    "fx": {
+      "kind": "buff",
+      "color": "#c8b890"
+    }
+  },
+  "timeless_stillness": {
+    "name": "Timeless Stillness",
+    "type": "slow",
+    "target": "enemy",
+    "mana": 90,
+    "cast_time": 2.5,
+    "recast": 3,
+    "range": 30,
+    "slow": 80,
+    "duration": 180,
+    "classes": {
+      "shaman": 50
+    },
+    "cost": 16000,
+    "skill": "alteration",
+    "slow_text": "Time itself stills round %s.",
+    "slow_you": "Time stills round you; every move takes an age.",
+    "desc": "Your foe attacks 80% slower for three minutes. Named foes shrug off half of it.",
+    "fx": {
+      "kind": "dot",
+      "color": "#9090a8"
+    }
+  },
+  "starpiercer": {
+    "name": "Starpiercer",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 20,
+    "range": 0,
+    "shot_mult": 4.2,
+    "classes": {
+      "ranger": 46
+    },
+    "cost": 14400,
+    "skill": "archery",
+    "desc": "An arrow that could pierce the stars, for 420% of a normal shot."
+  },
+  "nighthunters_eye": {
+    "name": "Nighthunter's Eye",
+    "ability": true,
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 180,
+    "range": 0,
+    "duration": 30,
+    "stats": {
+      "haste": 35,
+      "dmg": 12,
+      "agi": 24
+    },
+    "classes": {
+      "ranger": 48
+    },
+    "cost": 15200,
+    "land_text": "Your eyes open wide in the dark.",
+    "fade_text": "Your nighthunter's eye closes.",
+    "desc": "For 30 seconds: 35% faster attacks, +12 damage and +24 agility.",
+    "fx": {
+      "kind": "buff",
+      "color": "#a0a0d0"
+    }
+  },
+  "starfall_volley": {
+    "name": "Starfall Volley",
+    "type": "shot",
+    "ability": true,
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 45,
+    "range": 0,
+    "shot_mult": 2.0,
+    "shots": 16,
+    "spread": 16.0,
+    "classes": {
+      "ranger": 50
+    },
+    "cost": 16000,
+    "skill": "archery",
+    "desc": "Arrows fall like stars: your target and up to fifteen foes near it, each for 200% of a normal shot."
+  },
+  "veil_of_the_unlit": {
+    "name": "Veil of the Unlit",
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 0,
+    "duration": 1800,
+    "stats": {
+      "int": 12,
+      "wis": 12,
+      "mana": 80,
+      "hp": 50
+    },
+    "classes": {},
+    "land_text": "A cool darkness settles on you like a cloak: the Unlit sees you.",
+    "fade_text": "The veil of the Unlit lifts.",
+    "desc": "For half an hour: +12 intelligence, +12 wisdom, +80 mana and +50 hit points. Timiraj's gift to his followers, once an hour at his shrine in Barrowhold.",
+    "fx": {
+      "kind": "buff",
+      "color": "#5a4a90"
+    }
+  },
+  "crimson_kiss": {
+    "name": "Crimson Kiss",
+    "type": "lifetap",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "min": 44,
+    "max": 66,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A vampire's kiss.",
+    "fx": {
+      "kind": "impact",
+      "color": "#a01830"
+    }
+  },
+  "shade_touch": {
+    "name": "Shade Touch",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "tick": 22,
+    "ticks": 4,
+    "per_level": 0.6,
+    "classes": {},
+    "dot_text": "%s withers at a shade's touch.",
+    "land_text": "A shade's touch withers you.",
+    "desc": "A shade's cold touch.",
+    "fx": {
+      "kind": "dot",
+      "color": "#4a4a6a"
+    }
+  },
+  "spirit_trumpet": {
+    "name": "Spirit Trumpet",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 10,
+    "min": 48,
+    "max": 70,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "The trumpet of a great herd's ghost.",
+    "fx": {
+      "kind": "impact",
+      "color": "#d0d8e0"
+    }
+  },
+  "godfire": {
+    "name": "Godfire",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 12,
+    "min": 52,
+    "max": 76,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "Fire of the gods' old war.",
+    "fx": {
+      "kind": "burst",
+      "color": "#ffe0a0"
+    }
+  },
+  "petrifying_blow": {
+    "name": "Petrifying Blow",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 6,
+    "min": 54,
+    "max": 78,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A blow from a warrior of stone.",
+    "fx": {
+      "kind": "impact",
+      "color": "#a09888"
+    }
+  },
+  "starfall_bolt": {
+    "name": "Starfall Bolt",
+    "type": "damage",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 14,
+    "min": 56,
+    "max": 82,
+    "per_level": 1.0,
+    "classes": {},
+    "desc": "A falling star, hurled.",
+    "fx": {
+      "kind": "burst",
+      "color": "#d8e0ff"
+    }
+  },
+  "uninvited_curse": {
+    "name": "Curse of the Uninvited",
+    "type": "dot",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 12,
+    "tick": 30,
+    "ticks": 5,
+    "per_level": 0.8,
+    "classes": {},
+    "dot_text": "%s withers under the Uninvited's curse.",
+    "land_text": "The Uninvited curses you; your strength drains away.",
+    "desc": "The curse of the one who sat in the god's chair.",
+    "fx": {
+      "kind": "dot",
+      "color": "#6a3a8a"
+    }
   }
 }

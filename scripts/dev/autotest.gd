@@ -143,6 +143,15 @@ const SECTIONS := [
 	["stonesail_life", "stonesail"],
 	["hollow_life", "hollow_air"],
 	["step_life", "vayukeths_step"],
+	["cap50", "greenmoor"],
+	["bone_borders", "hollow_air"],
+	["fogfall_life", "fogfall"],
+	["ivory_life", "ivory_field"],
+	["unlit_life", "the_unlit"],
+	["barrowhold", "barrowhold"],
+	["bone_borders_2", "fogfall"],
+	["lastwalk_life", "lastwalk"],
+	["table_life", "timirajs_table"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5444,6 +5453,97 @@ func _t_cap45() -> void:
 
 ## Galehold: binding, Vayuketh's breath, the guildmasters, the merchants, the Long Grass quests.
 
+func _t_cap50() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("cap50: max level %d" % int(World.cfg("max_level", 0)))
+	var saved_class := p.char_class
+	var mob := _nearest_mob(p, "gnoll_scout")
+	mob.max_hp = 1000000
+	mob.hp = mob.max_hp
+	mob.set_physics_process(false)
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		p.level = 50
+		p.spells = []
+		for sid: String in GameData.spells:
+			if int(GameData.spells[sid].get("classes", {}).get(cls, 0)) >= 46:
+				p.spells.append(sid)
+		p.spells.sort_custom(func(a: String, b: String) -> bool: return str(GameData.spells[a]["type"]) == "pet" and str(GameData.spells[b]["type"]) != "pet")
+		if cls == "ranger":
+			p.spells.push_front("call_of_the_hawk")
+		elif cls == "magician":
+			p.spells.push_front("call_of_the_elemental_lord")
+		elif cls == "necromancer":
+			p.spells.push_front("raise_bone_colossus")
+		p.recalc_stats()
+		for sk: String in GameData.skills["skills"]:
+			if World.skill_cap(p, sk) > 0:
+				p.skills[sk] = World.skill_cap(p, sk)
+		var out := PackedStringArray()
+		for sid: String in p.spells:
+			var s: Dictionary = GameData.spells[sid]
+			p.cooldowns.clear()
+			p.mana = p.max_mana
+			p.hp = p.max_hp
+			p.hidden = s.get("requires_hidden", false)
+			var tgt: Entity = mob
+			if str(s.get("target", "")) in ["self", "group", "friendly"]:
+				tgt = p
+			if str(s["type"]) == "shot":
+				p.equipment["range"] = "barrowhold_longbow"
+				p.pack.add("crude_arrow", 20)
+			p.global_position = z.ground(mob.global_position.x + (2.0 if float(s.get("range", 0)) < 5.0 and str(s["type"]) != "shot" else 12.0), mob.global_position.z) + Vector3.UP
+			if s.get("from_behind", false) or s.get("requires_hidden", false):
+				p.global_position = mob.global_position - (-mob.global_basis.z) * 2.0 + Vector3.UP * 0.5
+			p.face_toward(mob.global_position)
+			World.request_set_target(p.entity_id, tgt.entity_id)
+			var hp0 := mob.hp
+			mob.hate.clear()
+			mob.auto_attack = false
+			World.request_cast(p.entity_id, sid)
+			await _wait(float(s.get("cast_time", 0)) + 0.4)
+			var what := ""
+			match str(s["type"]):
+				"damage", "shot", "lifetap":
+					what = "hit %d" % (hp0 - mob.hp)
+				"dot":
+					what = "dot %s" % mob.dots.any(func(d: Dictionary) -> bool: return d["spell"] == sid)
+				"buff":
+					var on: Entity = World.get_object(p.pet_id) as Entity if str(s.get("target", "")) == "pet" else p
+					what = "buff %s" % (on != null and on.buffs.has(sid))
+				"heal":
+					what = "heal cast"
+				"slow":
+					what = "slow %d%%" % mob.slow_pct
+				"root":
+					what = "root %.0f s" % mob.root_left
+				"snare":
+					what = "snare %.0f s" % mob.snare_left
+				"pet":
+					var pet := World.get_object(p.pet_id) as Pet
+					what = "pet %s (%s, %d hp)" % [pet.display_name if pet else "none", pet.model_id if pet else "", pet.max_hp if pet else 0]
+			out.append("%s: %s" % [GameData.spells[sid]["name"], what])
+			if str(s["type"]) == "pet":
+				await _wait(0.5)
+				await _shot("9zz_cap50_%s" % sid)
+		mob.dots.clear()
+		mob.slow_left = 0.0
+		print("cap50: %s -> %s" % [cls, "; ".join(out)])
+		World.request_pet(p.entity_id, "leave")
+		p.buffs.clear()
+		p.hidden = false
+		p.equipment.erase("range")
+	mob.set_physics_process(true)
+	p.char_class = saved_class
+	p.level = 1
+	p.recalc_stats()
+	p.hp = p.max_hp
+
+
+## Galehold: binding, Vayuketh's breath, the guildmasters, the merchants, the Long Grass quests.
+
 func _t_galehold() -> void:
 	var main := get_parent()
 	var p := World.local_player
@@ -5631,6 +5731,97 @@ func _t_step_life() -> void:
 			["storm_titan", "vorlaug", "sky_guardian", "first_guardian", "thunder_drake", "thunderwing", "fallen_zephyr", "fallen_breath"])
 	await _zone_views("step", [[Vector2(10, 160), Vector2(0, 185), "camp"], [Vector2(8, 150), Vector2(0, 60), "stair"],
 			[Vector2(0, -120), Vector2(0, -176), "temple"], [Vector2(-80, -60), Vector2(-125, -110), "titans"]])
+
+func _t_bone_borders() -> void:
+	for leg: Array in [["hollow_air", Vector2(225, 0), Vector2(1, 0), "fogfall"], ["fogfall", Vector2(0, 225), Vector2(0, 1), "blackglass"],
+			["blackglass", Vector2(0, -225), Vector2(0, -1), "fogfall"], ["fogfall", Vector2(225, 0), Vector2(1, 0), "ivory_field"],
+			["ivory_field", Vector2(0, 225), Vector2(0, 1), "forgehold"], ["forgehold", Vector2(0, -80), Vector2(0, -1), "ivory_field"],
+			["ivory_field", Vector2(225, 0), Vector2(1, 0), "the_unlit"], ["the_unlit", Vector2(0, -225), Vector2(0, -1), "barrowhold"],
+			["barrowhold", Vector2(0, 80), Vector2(0, 1), "the_unlit"], ["the_unlit", Vector2(0, 225), Vector2(0, 1), "agnavars_hearth"],
+			["agnavars_hearth", Vector2(0, -225), Vector2(0, -1), "the_unlit"], ["the_unlit", Vector2(-225, 0), Vector2(-1, 0), "ivory_field"],
+			["ivory_field", Vector2(-225, 0), Vector2(-1, 0), "fogfall"], ["fogfall", Vector2(-225, 0), Vector2(-1, 0), "hollow_air"]]:
+		if not await _walk_border("bone_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_fogfall_life() -> void:
+	await _zone_life("fogfall_life", {"loremaster_evander": ["tarnished_court_silver_q", "ismays_mourning_veil_q"], "mason_hilde": ["gargoyle_stone_q", "grimwatchs_stone_heart_q"],
+			"kennelwarden_osric": ["fog_hound_pelt_q", "whitemaws_collar_q"], "warden_cassia": ["stolen_grave_goods_q", "crowes_black_lantern_q"]}, [],
+			["fog_courtier", "fog_knight", "queen_ismay", "fog_gargoyle", "grimwatch", "fog_hound", "whitemaw", "grave_robber", "silas_crowe"])
+	await _zone_views("fogfall", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(0, -60), Vector2(0, -140), "throne"],
+			[Vector2(90, -80), Vector2(140, -130), "gargoyles"], [Vector2(100, 60), Vector2(135, 105), "robbers"]])
+
+
+func _t_ivory_life() -> void:
+	await _zone_life("ivory_life", {"bonewarden_adaeze": ["ivory_shard_q", "ossuary_heartbone_q"], "ranger_tomas": ["poached_ivory_q", "vargas_tusk_saw_q"],
+			"carrion_hunter_leif": ["carrion_feather_q", "gorgemaws_beak_q"], "sister_imelda": ["ghost_ivory_q", "grandmothers_tusk_q"]}, [],
+			["ivory_colossus", "old_ossuary", "ivory_poacher", "tuskmonger_varga", "bone_vulture", "marrow_jackal", "gorgemaw", "herd_spirit", "herd_grandmother"])
+	await _zone_views("ivory", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(30, 0), Vector2(0, -60), "ribcage"],
+			[Vector2(110, 60), Vector2(150, 100), "poachers"], [Vector2(-100, -80), Vector2(-140, -130), "herds"]])
+
+
+func _t_unlit_life() -> void:
+	await _zone_life("unlit_life", {"lampwarden_solenne": ["shade_essence_q", "nameless_echo_q"], "nighthunter_kwame": ["shadowhide_q", "starveils_eye_q"],
+			"lepidarist_yuna": ["luminous_dust_q", "moon_moths_antenna_q"], "witch_hunter_aurelio": ["morvaine_crest_q", "countess_locket_q"]}, [],
+			["shade", "nameless_shade", "night_stalker", "starveil", "moth_giant", "moon_moth", "morvaine_thrall", "morvaine_noble", "countess_morvaine"])
+	await _zone_views("unlit", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(20, 30), Vector2(0, 0), "well"],
+			[Vector2(95, -95), Vector2(140, -168), "manor"], [Vector2(-80, 100), Vector2(-120, 130), "moths"]])
+
+
+func _t_barrowhold() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	print("barrowhold: bindstone %s at %s" % [z.data.get("bindstone", false), z.bind_point])
+	p.global_position = z.bind_point + Vector3.UP
+	World.request_bind(p.entity_id)
+	print("barrowhold: bound to %s" % p.bind_zone)
+	var gms := {}
+	var npcs := _npcs()
+	for id: String in npcs:
+		if GameData.npcs[id].has("guildmaster"):
+			gms[GameData.npcs[id]["guildmaster"]["class"]] = npcs[id].display_name
+	print("barrowhold: guildmasters %s" % [gms])
+	var saved_deity := p.deity
+	p.deity = "dark"
+	_stand_by(p, npcs["umbral_priest_casimir"])
+	World.request_say(p.entity_id, "blessing")
+	await _wait(0.3)
+	print("barrowhold: a follower of Timiraj asks for his blessing -> %s" % p.buffs.has("veil_of_the_unlit"))
+	p.deity = saved_deity
+	p.buffs.erase("veil_of_the_unlit")
+	for id: String in ["armorer_ottilie", "weaponsmith_corvin", "provisioner_ilse"]:
+		var sells: Array = GameData.npcs[id]["merchant"]["sells"]
+		print("barrowhold: %s sells %d, unknown %s" % [id, sells.size(), sells.filter(func(i: String) -> bool: return GameData.item(i).is_empty())])
+	await _zone_views("barrowhold", [[Vector2(0, 50), Vector2(0, -10), "shrine"], [Vector2(0, 40), Vector2(0, 90), "gate"],
+			[Vector2(-20, 20), Vector2(40, -80), "observatory"], [Vector2(30, 40), Vector2(-60, -60), "towers"]])
+
+func _t_bone_borders_2() -> void:
+	for leg: Array in [["fogfall", Vector2(0, -225), Vector2(0, -1), "lastwalk"], ["lastwalk", Vector2(225, 0), Vector2(1, 0), "timirajs_table"],
+			["timirajs_table", Vector2(225, 0), Vector2(1, 0), "barrowhold"], ["barrowhold", Vector2(-80, 0), Vector2(-1, 0), "timirajs_table"],
+			["timirajs_table", Vector2(0, 225), Vector2(0, 1), "ivory_field"], ["ivory_field", Vector2(0, -225), Vector2(0, -1), "timirajs_table"],
+			["timirajs_table", Vector2(-225, 0), Vector2(-1, 0), "lastwalk"], ["lastwalk", Vector2(0, 225), Vector2(0, 1), "fogfall"]]:
+		if not await _walk_border("bone_borders_2", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+func _t_lastwalk_life() -> void:
+	await _zone_life("lastwalk_life", {"chronicler_mateo": ["godwar_insignia_q", "marshals_broken_standard_q"], "stonewright_freydis": ["petrified_shard_q", "champions_stone_crest_q"],
+			"artificer_kanoa": ["divine_bronze_q", "godforged_core_q"], "relic_keeper_wilhelmina": ["stolen_relic_q", "oszkars_relic_crown_q"]}, [],
+			["godwar_revenant", "last_marshal", "petrified_warrior", "unmoving_champion", "divine_construct", "godforged_engine", "relic_scavenger", "hierarch_oszkar"])
+	await _zone_views("lastwalk", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(30, 20), Vector2(-40, -60), "battlefield"],
+			[Vector2(90, -80), Vector2(130, -130), "constructs"], [Vector2(-100, 70), Vector2(-130, 110), "scavengers"]])
+
+
+func _t_table_life() -> void:
+	var boss: Dictionary = GameData.mobs["the_uninvited"]
+	print("table_life: the Uninvited: level %s, hp %d, hits %d-%d, ac %d (a level-51 named: hp %d)" % [boss["level"], int(boss["hp_base"]), int(boss["dmg_min"]), int(boss["dmg_max"]), int(boss["ac"]),
+			int(GameData.mobs["astrael"]["hp_base"])])
+	await _zone_life("table_life", {"steward_abelard": ["grave_gold_q", "long_table_goblet_q"], "starwatcher_imre": ["star_fragment_q", "astraels_star_heart_q"],
+			"kennel_keeper_sabela": ["shadowfur_q", "nightjaws_fang_q"], "high_priestess_nadira": ["blackened_offering_q", "crown_of_the_uninvited_q"]}, [],
+			["honored_dead", "lord_of_the_long_table", "star_giant", "astrael", "unlit_hound", "nightjaw", "uninvited_courtier", "the_uninvited"])
+	await _zone_views("table", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(30, 60), Vector2(0, -40), "table"],
+			[Vector2(0, -100), Vector2(0, -165), "throne"], [Vector2(100, 80), Vector2(145, 125), "stars"]])
 
 
 ## Screenshots from a few spots: [from, looking at, name].
