@@ -61,7 +61,7 @@ const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
 const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
-const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp  /stuck (back to open ground)\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
 const GROUP_MAX := 6
 const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
 const LOOT_RIGHTS_SECONDS := 180.0
@@ -319,6 +319,7 @@ func _physics_process(delta: float) -> void:
 			_check_pet(obj as Player)
 			_check_burden(obj as Player, delta)
 			_check_lava(obj as Player, delta)
+			_check_swim(obj as Player, delta)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -1565,6 +1566,9 @@ func request_sit(entity_id: int, sit: bool) -> void:
 	if sit:
 		if not e.cast.is_empty():
 			return
+		if e.swimming:
+			say(e, "You can't sit down in deep water.", C_WARN)
+			return
 		e.auto_attack = false
 		say(e, "You sit down to rest.")
 	e.sitting = sit
@@ -1689,6 +1693,54 @@ func _go_home(p: Player) -> void:
 
 ## Binds your soul to the city you stand in: near its bindstone (/bind), or by
 ## asking one of its priests ("bind").
+## /stuck: someone wedged where they can't walk out (under a dock, between
+## rocks) is put back on the nearest open ground: the zone's camp or bind
+## point, an arrival point, or a road. Not in a fight, once every five minutes.
+func request_stuck(player_id: int) -> void:
+	if _remote(&"request_stuck", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	var z := zone_of(p)
+	if p == null or p.dead or z == null:
+		return
+	if p.threatened:
+		say(p, "Not while something is after you.", C_WARN)
+		return
+	if float(p.cooldowns.get("stuck", 0.0)) > 0.0:
+		say(p, "You can't do that again for %d more seconds." % ceili(float(p.cooldowns["stuck"])), C_WARN)
+		return
+	var here := Vector2(p.global_position.x, p.global_position.z)
+	var spots: Array[Vector2] = [Vector2(z.bind_point.x, z.bind_point.z)]
+	for zl: Dictionary in z.data.get("zone_lines", []):
+		if zl.has("arrive") and zl["arrive"] != null:
+			spots.append(Vector2(zl["arrive"][0], zl["arrive"][1]))
+	for road: Dictionary in z.data.get("roads", []):
+		for pt: Array in road["points"]:
+			spots.append(Vector2(pt[0], pt[1]))
+	var best := spots[0]
+	for s: Vector2 in spots:
+		if absf(s.x) < z.size * 0.5 - 20.0 and absf(s.y) < z.size * 0.5 - 20.0 and s.distance_to(here) < best.distance_to(here) and z.swim_level(s.x, s.y) == -INF:
+			best = s
+	p.global_position = Vector3(best.x, z.surface_at(best.x, best.y) + 0.5, best.y)
+	p.velocity = Vector3.ZERO
+	Net.teleport(p, p.global_position)
+	p.cooldowns["stuck"] = 300.0
+	say(p, "You find your way back to open ground.", C_SYSTEM)
+
+
+## Swimming trains the Swimming skill (every class has it), a little every few seconds in the water.
+func _check_swim(p: Player, delta: float) -> void:
+	p.update_swimming(delta)  # the server works it out too: remote players' bodies are moved by their clients
+	if not p.swimming or p.dead:
+		p.set_meta("swim_train", 5.0)
+		return
+	var t := float(p.get_meta("swim_train", 5.0)) - delta
+	if t <= 0.0:
+		t = 5.0
+		try_skill_up(p, "swimming")
+	p.set_meta("swim_train", t)
+
+
 func request_bind(player_id: int) -> void:
 	if _remote(&"request_bind", [player_id]):
 		return
@@ -2951,6 +3003,8 @@ func request_chat(player_id: int, text: String) -> void:
 				say(p, "Pet commands: /pet attack, back, follow, guard, sit, taunt, health, leave.", C_SYSTEM)
 		"/fish":
 			request_item_click(player_id, "primary")
+		"/stuck":
+			request_stuck(player_id)
 		"/bind":
 			request_bind(player_id)
 		"/g", "/gsay", "/group":

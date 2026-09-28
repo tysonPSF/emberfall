@@ -30,6 +30,7 @@
     "hide": {"name": "Hide", "group": "Abilities", "caps": {"rogue": 5}},
     "sneak": {"name": "Sneak", "group": "Abilities", "caps": {"rogue": 5}, "from": {"rogue": 3}},
     "fishing": {"name": "Fishing", "group": "Abilities", "caps": {"warrior": 5, "cleric": 5, "wizard": 5, "rogue": 5, "magician": 5, "necromancer": 5, "shaman": 5, "ranger": 5}},
+    "swimming": {"name": "Swimming", "group": "Abilities", "caps": {"warrior": 5, "cleric": 5, "wizard": 5, "rogue": 5, "magician": 5, "necromancer": 5, "shaman": 5, "ranger": 5}},
     "cooking": {"name": "Cooking", "group": "Tradeskills", "flat": 100},
     "tailoring": {"name": "Tailoring", "group": "Tradeskills", "flat": 100},
     "alchemy": {"name": "Alchemy", "group": "Tradeskills", "flat": 100},

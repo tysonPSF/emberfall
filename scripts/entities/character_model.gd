@@ -8,12 +8,13 @@ extends Node3D
 
 const KAYKIT_SCALE := 0.75
 const BLEND := 0.18
-const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump", "sit"]
+const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump", "sit", "swim", "tread"]
 const KAYKIT_ANIMS := {
 	"idle": "Idle_A", "walk": "Walking_A", "run": "Running_A", "jump": "Jump_Idle",
 	"attack": "Throw", "hit": "Hit_A", "death": "Death_A", "dead": "Death_A_Pose",
 	"sit": "Sit_Floor_Idle", "sit_down": "Sit_Floor_Down", "cast": "Use_Item",  # the sits are ours (tools/blender/anims.py)
 	"kick": "Kick", "bash": "Shield_Bash", "shoot": "Bow_Shoot",  # so are these
+	"swim": "Swim_Forward", "tread": "Swim_Idle",  # and these: swimming, and treading water
 }
 
 static var _library: AnimationLibrary
@@ -655,6 +656,12 @@ func _process(delta: float) -> void:
 		if _ranged_left <= 0.0:
 			_end_ranged()
 	var moving := Vector2(e.velocity.x, e.velocity.z).length()
+	if e.swimming:  # a stroke or treading water (a rig without them walks or stands)
+		if _one_shot_left > 0.0:
+			return
+		var stroke := "swim" if moving > 0.3 else "tread"
+		_loop(stroke if _clip(stroke) != "" else ("walk" if moving > 0.3 else "idle"))
+		return
 	if not e.is_on_floor() and absf(e.velocity.y) > 2.0:
 		_loop("jump")
 	elif moving > 4.2:

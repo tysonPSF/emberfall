@@ -1012,6 +1012,31 @@ func _cycle_interact() -> void:
 	World.request_set_target(entity_id, id)
 
 
+## How fast you swim, as a share of running: from half speed untrained up to
+## four fifths at the Swimming skill's cap.
+func swim_speed_share() -> float:
+	return 0.5 + 0.3 * clampf(World.skill_frac(self, "swimming"), 0.0, 1.0)
+
+
+## Climbs out of the water onto whatever is just ahead (a dock, a bank, a
+## boat's deck) when its top is within reach of the surface. True if it did.
+func climb_out(dir: Vector3) -> bool:
+	for reach: float in [0.7, 1.1, 1.5, 1.9]:  # the nearest foothold just ahead
+		var ahead := global_position + dir.normalized() * reach
+		var q := PhysicsRayQueryParameters3D.create(Vector3(ahead.x, swim_surface + 2.2, ahead.z), Vector3(ahead.x, swim_surface - 1.0, ahead.z), Layers.WORLD)
+		var hit := get_world_3d().direct_space_state.intersect_ray(q)
+		if hit.is_empty():
+			continue
+		var top := float(hit["position"].y)
+		if top < swim_surface - 0.3 or top > swim_surface + 1.9:
+			continue
+		global_position = Vector3(hit["position"].x, top + 0.05, hit["position"].z)
+		velocity = Vector3.ZERO
+		_swim_check = 0.0
+		return true
+	return false
+
+
 func _physics_process(delta: float) -> void:
 	if not is_local:
 		if not Net.is_authority():
@@ -1044,7 +1069,7 @@ func _physics_process(delta: float) -> void:
 	var spd := BACK_SPEED if fwd < 0.0 else RUN_SPEED * (1.0 + bonus("run_speed_pct") / 100.0)
 	# Sprinting is forward-only, and asked for every frame rather than toggled:
 	# World decides whether it is allowed and ends it when the wind runs out.
-	var want_sprint := Input.is_action_pressed("sprint") and fwd > 0.0
+	var want_sprint := Input.is_action_pressed("sprint") and fwd > 0.0 and not swimming
 	if want_sprint != sprinting and _may_ask("sprint"):
 		World.request_sprint(entity_id, want_sprint)
 	if sprinting:
@@ -1054,6 +1079,8 @@ func _physics_process(delta: float) -> void:
 	if snare_left > 0.0:
 		spd *= 0.5
 	spd *= _load_speed()
+	if swimming:
+		spd *= swim_speed_share()
 	# Online, walking into a zone line: stand still until the server moves us.
 	# Building a zone it hasn't loaded yet can take it a few seconds, and the
 	# zone's edge is only a few steps past the line: without this you'd run
@@ -1075,6 +1102,9 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor() and not typing and Input.is_action_just_pressed("jump"):
 		velocity.y = JUMP_VELOCITY
 	move_and_slide()
+	# Swimming into a dock or a steep bank, or jumping in the water: climb out onto it.
+	if swimming and dir != Vector3.ZERO and ((fwd > 0.0 and is_on_wall()) or (not typing and Input.is_action_just_pressed("jump"))):
+		climb_out(dir)
 	if is_on_floor():
 		last_ground = global_position
 	if global_position.y < -60.0:  # fell out of the world: back to the last solid ground, not across the map

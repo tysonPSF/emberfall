@@ -382,6 +382,21 @@ func water_level(x: float, z: float) -> float:
 	return -INF
 
 
+## The water surface to swim at: a lake's level, or a wet river's where you're
+## in its channel; -INF where there's no water. Swimming only happens where
+## this is well above the bottom (Entity.SWIM_DEPTH).
+func swim_level(x: float, z: float) -> float:
+	var level := water_level(x, z)
+	if level > -INF:
+		return level
+	for river: Dictionary in _rivers:
+		if not river["dry"] and not river["lava"]:
+			var at := _river_at(river, x, z)
+			if float(at[0]) < float(river["width"]) * 0.5:
+				level = maxf(level, float(at[1]))
+	return level
+
+
 ## Whether there's water to fish at a point: a lake, or a river that isn't
 ## dry, and open water, not under a boardwalk's planks.
 func fishable_at(x: float, z: float) -> bool:

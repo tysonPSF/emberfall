@@ -8,6 +8,9 @@ signal stats_changed
 const GRAVITY := 22.0
 const NAV_DIRECT := 3.0  # closer than this, walk straight at the goal (melee, the last step)
 const NAV_REPLAN := 0.6  # seconds between re-planning a path to a moving goal
+const SWIM_DEPTH := 1.1  # water deeper than this over the bottom is swum, not waded
+const FLOAT_DEPTH := 0.72  # a swimmer's feet ride this far under the surface: head and shoulders out
+const SWIM_SLOW := 0.75  # monsters and pets swim at this share of their speed
 static var nav_enabled := true  # tests switch pathfinding off to compare
 
 var entity_id := -1
@@ -48,6 +51,10 @@ var sneaking := false  # a rogue's Sneak: half speed, and walking keeps Hide
 var feigning := false  # a necromancer's Feign Death: lying still, forgotten by everything hunting them
 var afk := false  # a player away from the keyboard (/afk, or idle): "[AFK]" on the nameplate, tells answered for them
 var fear_left := 0.0  # seconds a feared monster runs from whoever scared it
+var swimming := false  # in water deeper than SWIM_DEPTH: floating at the surface (every machine works it out from the zone's water)
+var swim_surface := -INF  # that water's level
+var _swim_check := 0.0
+var _swim_checked_at := Vector3.INF
 var feared_by := -1
 
 var body_height := 1.8
@@ -187,8 +194,31 @@ func face_toward(pos: Vector3) -> void:
 
 
 func apply_gravity(delta: float) -> void:
-	if not is_on_floor():
+	update_swimming(delta)
+	if swimming:  # float up to ride the surface instead of sinking to the bottom
+		velocity.y = clampf((swim_surface - FLOAT_DEPTH - global_position.y) * 4.0, -5.0, 3.0)
+	elif not is_on_floor():
 		velocity.y -= GRAVITY * delta
+
+
+## Whether this body is swimming: in a lake or river deeper than SWIM_DEPTH
+## and down in the water (not on a boardwalk over it). Checked a few times a
+## second, since the water's shape is worked out from the zone's noise.
+func update_swimming(delta: float) -> void:
+	_swim_check -= delta
+	if _swim_check > 0.0:
+		return
+	_swim_check = 0.2
+	if global_position.distance_squared_to(_swim_checked_at) < 0.0025:
+		return  # hasn't moved since the last look (most monsters, most of the time)
+	_swim_checked_at = global_position
+	var z := World.zone_of(self)
+	if z == null or not (z.data.has("lakes") or z.data.has("rivers")):
+		swimming = false
+		return
+	var p := global_position
+	swim_surface = z.swim_level(p.x, p.z)
+	swimming = swim_surface > -INF and swim_surface - z.height_at(p.x, p.z) > SWIM_DEPTH and p.y < swim_surface - FLOAT_DEPTH + 0.5
 
 
 ## Client: glides toward the server's latest position for this entity, and
@@ -204,6 +234,7 @@ func puppet(delta: float) -> void:
 	rotation.y = lerp_angle(rotation.y, net_rot, minf(1.0, delta * 10.0))
 	velocity = (global_position - before) / maxf(delta, 0.001)
 	velocity.y = 0.0
+	update_swimming(delta)  # a client works out who's swimming for itself, for the stroke
 
 
 ## Client: dead, sitting and casting as the server reports them.
