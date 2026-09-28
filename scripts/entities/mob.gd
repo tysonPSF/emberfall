@@ -220,6 +220,8 @@ func _physics_process(delta: float) -> void:
 		move = Vector3.ZERO  # rooted: turns and swings, but can't walk (stunned: not even swings)
 	if snare_left > 0.0:
 		move_speed *= 0.5
+	if swimming:
+		move_speed *= SWIM_SLOW
 	if move != Vector3.ZERO:
 		face_toward(global_position + move)  # walking (a path around a rock, too) faces the way it goes; in reach, it faces its target
 		velocity.x = move.x * move_speed

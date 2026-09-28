@@ -152,6 +152,7 @@ const SECTIONS := [
 	["bone_borders_2", "fogfall"],
 	["lastwalk_life", "lastwalk"],
 	["table_life", "timirajs_table"],
+	["swimming", "rainhold"],
 	["monsoon_west_borders", "weeping_throat"],
 	["reedmere_life", "reedmere"],
 	["drownfast_life", "drownfast"],
@@ -5822,6 +5823,83 @@ func _t_table_life() -> void:
 			["honored_dead", "lord_of_the_long_table", "star_giant", "astrael", "unlit_hound", "nightjaw", "uninvited_courtier", "the_uninvited"])
 	await _zone_views("table", [[Vector2(10, 170), Vector2(0, 190), "camp"], [Vector2(30, 60), Vector2(0, -40), "table"],
 			[Vector2(0, -100), Vector2(0, -165), "throne"], [Vector2(100, 80), Vector2(145, 125), "stars"]])
+
+## Swimming: fall off a Rainhold dock into the lagoon, float up to the surface,
+## swim, climb back onto a deck; the Swimming skill; /stuck.
+func _t_swimming() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	# a deep spot in open water, and one under the city's decks
+	var open := Vector2.INF
+	var under := Vector2.INF
+	for x in range(-40, 50, 2):
+		for zz in range(-45, 52, 2):
+			var lv := z.swim_level(x, zz)
+			if lv == -INF or lv - z.height_at(x, zz) < 1.6:
+				continue
+			var decked := z.surface_at(x, zz) > z.height_at(x, zz) + 0.5
+			if decked and under == Vector2.INF:
+				under = Vector2(x, zz)
+			elif not decked and open == Vector2.INF:
+				open = Vector2(x, zz)
+	print("swimming: open water at %s, under a deck at %s" % [open, under])
+	p.global_position = Vector3(under.x, z.height_at(under.x, under.y) + 0.3, under.y)  # fell off the dock, down on the bottom
+	p.velocity = Vector3.ZERO
+	await _wait(2.0)
+	var lv := z.swim_level(under.x, under.y)
+	print("swimming: under the deck: swimming %s, feet %.2f under the surface (water %.2f deep), clip %s" % [p.swimming, lv - p.global_position.y, lv - z.height_at(under.x, under.y),
+			(p.visual as CharacterModel).anim.current_animation if p.visual is CharacterModel else "-"])
+	p.global_position = Vector3(open.x, z.height_at(open.x, open.y) + 0.3, open.y)
+	await _wait(2.0)
+	await _shot("9zs_swimming")
+	print("swimming: open water: swimming %s, feet %.2f under the surface" % [p.swimming, z.swim_level(open.x, open.y) - p.global_position.y])
+	p.face_toward(Vector3(10, p.global_position.y, 0))
+	Input.action_press("move_forward")  # a few strokes out across the lagoon
+	await _wait(1.2)
+	var stroke: String = (p.visual as CharacterModel).anim.current_animation if p.visual is CharacterModel else "-"
+	await _shot("9zs_stroke")
+	Input.action_release("move_forward")
+	print("swimming: swimming forward: clip %s, speed %.1f (a run is %.1f)" % [stroke, Vector2(p.velocity.x, p.velocity.z).length(), Player.RUN_SPEED])
+	# climb out: face the nearest deck edge from the open water and swim at it
+	var edge := Vector2.INF
+	for k in 72:
+		var d := Vector2.from_angle(k * TAU / 72.0)
+		for r in range(1, 30):
+			var q := open + d * r
+			if z.surface_at(q.x, q.y) > z.height_at(q.x, q.y) + 0.5:
+				if edge == Vector2.INF or open.distance_to(q) < open.distance_to(edge):
+					edge = q
+				break
+	var dir := Vector3(edge.x - open.x, 0, edge.y - open.y).normalized()
+	p.global_position = Vector3(edge.x, 0, edge.y) - dir * 1.2
+	p.global_position.y = z.swim_level(edge.x, edge.y) - Entity.FLOAT_DEPTH
+	p.face_toward(p.global_position + dir)
+	await _wait(0.5)
+	var climbed := p.climb_out(dir)
+	await _wait(0.5)
+	print("swimming: climb out at a deck edge %s -> %s, now %.2f above the water, swimming %s" % [edge, climbed, p.global_position.y - z.swim_level(edge.x, edge.y), p.swimming])
+	await _shot("9zs_climbed")
+	# the skill
+	p.skills["swimming"] = 0
+	var slow := p.swim_speed_share()
+	p.global_position = Vector3(open.x, z.swim_level(open.x, open.y) - Entity.FLOAT_DEPTH, open.y)
+	await _wait(0.5)
+	for k in 40:
+		World._check_swim(p, 5.1)
+	print("swimming: skill 0 -> %d after 40 tries (cap %d); speed %.2f of a run untrained, %.2f now" % [int(p.skills.get("swimming", 0)), World.skill_cap(p, "swimming"), slow, p.swim_speed_share()])
+	World.request_sit(p.entity_id, true)
+	print("swimming: sitting in the water -> %s" % p.sitting)
+	# /stuck from under the deck
+	p.global_position = Vector3(under.x, z.height_at(under.x, under.y) + 0.3, under.y)
+	p.cooldowns.erase("stuck")
+	await _wait(1.0)
+	World.request_chat(p.entity_id, "/stuck")
+	await _wait(1.0)
+	var at := Vector2(p.global_position.x, p.global_position.z)
+	print("swimming: /stuck -> %s, dry %s, swimming %s" % [at, z.swim_level(at.x, at.y) == -INF, p.swimming])
+	World.request_chat(p.entity_id, "/stuck")
+	await _wait(0.3)
 
 
 ## Screenshots from a few spots: [from, looking at, name].
