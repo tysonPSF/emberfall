@@ -49,6 +49,8 @@ var station_kind := ""  # the crafting station whose combine window is open ("ov
 var station_pos := Vector3.ZERO
 var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while it's open
 var pet_id := -1  # your pet's entity id, -1 with none
+var companion_id := -1  # an NPC fighting beside you (Watchman Corran in the Wellspring: World._check_companion), -1 with none
+var companion_back_at := 0  # msec: a fallen companion gets back up then
 var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
 var race_changed := false  # a character's one change of race has been used
 var grove_deities: Array = []  # the gods who have come to the Grove for this character (World.unlock_grove_deity)
@@ -220,6 +222,11 @@ func _group_key(event: InputEvent) -> int:
 
 func target_group_member(index: int) -> void:
 	var others := group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != entity_id)
+	if index == others.size():  # the next key after your group: your companion (F2 alone), to heal him without clicking past a boss
+		var buddy := _companion()
+		if buddy != null:
+			World.request_set_target(entity_id, buddy.entity_id)
+		return
 	if index >= others.size():
 		return
 	var m: Dictionary = others[index]
@@ -227,6 +234,16 @@ func target_group_member(index: int) -> void:
 		World.say(self, "%s is not in this zone." % m["name"], World.C_WARN)
 		return
 	World.request_set_target(entity_id, int(m["id"]))
+
+
+## The companion fighting beside you (Watchman Corran), if one is here: the
+## server only ever sends a player their own, so the one in view is yours.
+func _companion() -> Npc:
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and not (obj as Npc).dead and (obj as Npc).data.has("companion_levels") and World.sees(self, obj) \
+				and World.zone_of(obj) == World.zone_of(self):
+			return obj as Npc
+	return null
 
 
 ## /follow: walk after your target (a groupmate, usually) until you move
@@ -687,6 +704,7 @@ func respawn() -> void:
 func _ready() -> void:
 	var mirrored := look.duplicate()
 	var weapon: String = GameData.item(equipment.get("primary", "")).get("model", "")
+	collision_mask |= Layers.BARRIER  # webs across a passage stop you until you tear them down
 	if not mirrored.is_empty():
 		weapon = str(mirrored.get("weapon", ""))
 	var looks_race := str(mirrored.get("race", race)) if not mirrored.is_empty() else race

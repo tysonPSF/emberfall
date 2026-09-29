@@ -32,6 +32,10 @@
       {
         "item": "rat_whiskers",
         "chance": 0.5
+      },
+      {
+        "item": "rat_sinew",
+        "chance": 0.4
       }
     ],
     "model": "rat"
@@ -15025,5 +15029,132 @@
     ],
     "model": "ancient_croc",
     "named": true
+  },
+  "cave_spider": {
+    "name": "a cave spider",
+    "level": [2, 5],
+    "hp_base": 18, "hp_per_level": 9, "dmg_min": 2, "dmg_max": 5, "attack_delay": 2.3, "ac": 6, "speed": 6.6,
+    "aggressive": true, "aggro_radius": 9, "social": false, "flees": false, "faction": "blight_brood",
+    "verb": ["bite", "bites"], "shape": "beetle", "color": "#8d887c", "scale": 0.5, "coin": [0, 0],
+    "loot": [{"item": "spider_silk", "chance": 0.3}],
+    "model": "cave_spider",
+    "proc": {"spell": "thornback_venom", "chance": 0.08, "text": "%s's bite drips with %s!"}
+  },
+  "blight_broodling": {
+    "name": "a Blightmother broodling",
+    "level": [5, 6],
+    "hp_base": 24, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.3, "ac": 10, "speed": 6.6,
+    "aggressive": true, "aggro_radius": 10, "social": true, "flees": false, "faction": "blight_brood",
+    "verb": ["bite", "bites"], "shape": "beetle", "color": "#33381f", "scale": 0.7, "coin": [0, 0],
+    "loot": [{"item": "spider_silk", "chance": 0.4}],
+    "model": "cave_spider",
+    "proc": {"spell": "blight_venom", "chance": 0.08, "text": "%s's bite drips with %s!"}
+  },
+  "cave_bat": {
+    "name": "a cave bat",
+    "level": [2, 4],
+    "hp_base": 12, "hp_per_level": 7, "dmg_min": 1, "dmg_max": 4, "attack_delay": 1.8, "ac": 4, "speed": 7.5,
+    "aggressive": true, "aggro_radius": 8, "social": false, "flees": false, "faction": "cave_bats",
+    "verb": ["bite", "bites"], "shape": "humanoid", "color": "#4a3f3c", "scale": 0.8, "coin": [0, 0],
+    "loot": [],
+    "model": "cave_bat"
+  },
+  "water_snake": {
+    "name": "a water snake",
+    "level": [3, 5],
+    "hp_base": 16, "hp_per_level": 9, "dmg_min": 2, "dmg_max": 5, "attack_delay": 2.5, "ac": 5, "speed": 5.5,
+    "aggressive": true, "aggro_radius": 8, "social": false, "flees": false, "faction": "creek_snakes",
+    "verb": ["bite", "bites"], "shape": "beetle", "color": "#3f4a2a", "scale": 1.0, "coin": [0, 0],
+    "loot": [],
+    "model": "water_snake",
+    "proc": {"spell": "cobra_venom", "chance": 0.06, "text": "%s's fangs sink in; %s!"}
+  },
+  "lost_miner": {
+    "name": "a lost miner",
+    "level": [4, 6],
+    "hp_base": 20, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.8, "ac": 8, "speed": 5.2,
+    "aggressive": true, "aggro_radius": 10, "social": false, "flees": false, "faction": "undead",
+    "verb": ["hit", "hits"], "shape": "skeleton", "color": "#e0dccb", "scale": 0.95, "coin": [0, 12],
+    "loot": [{"item": "bone_chips", "chance": 0.5}],
+    "model": ["skeleton_minion", "skeleton_warrior"],
+    "weapon": "miners_pick",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "lost_miner_torch": {
+    "name": "a lost miner",
+    "level": [4, 6],
+    "hp_base": 20, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.8, "ac": 8, "speed": 5.2,
+    "aggressive": true, "aggro_radius": 10, "social": false, "flees": false, "faction": "undead",
+    "verb": ["burn", "burns"], "shape": "skeleton", "color": "#e0dccb", "scale": 0.95, "coin": [0, 12],
+    "loot": [{"item": "bone_chips", "chance": 0.5}],
+    "model": ["skeleton_minion", "skeleton_rogue"],
+    "weapon": "torch",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "thick_web": {
+    "name": "a thick web",
+    "level": [1, 1],
+    "hp_base": 12, "hp_per_level": 0, "hp_regen": 0, "dmg_min": 0, "dmg_max": 0, "attack_delay": 99, "ac": 0, "speed": 0,
+    "aggressive": false, "aggro_radius": 0, "social": false, "flees": false, "faction": "webs",
+    "verb": ["tangle", "tangles"], "shape": "prop:cobweb", "color": "#dddddd", "scale": 1.6, "coin": [0, 0],
+    "loot": [],
+    "inert": true,
+    "block": [9.0, 5.0]
+  },
+  "old_leatherwing": {
+    "name": "Old Leatherwing",
+    "level": [7, 7],
+    "hp_base": 120, "hp_per_level": 0, "dmg_min": 3, "dmg_max": 9, "attack_delay": 1.8, "ac": 14, "speed": 7.5,
+    "aggressive": true, "aggro_radius": 14, "social": true, "flees": false, "faction": "cave_bats",
+    "verb": ["bite", "bites"], "xp_bonus": 2.0, "shape": "humanoid", "color": "#3a302e", "scale": 1.5, "coin": [20, 60],
+    "loot": [{"item": "leatherwing_charm", "chance": 0.6}],
+    "model": "cave_bat",
+    "named": true
+  },
+  "foreman_grisk": {
+    "name": "Foreman Grisk",
+    "level": [8, 8],
+    "hp_base": 150, "hp_per_level": 0, "dmg_min": 4, "dmg_max": 10, "attack_delay": 2.6, "ac": 16, "speed": 5.4,
+    "aggressive": true, "aggro_radius": 16, "social": true, "flees": false, "faction": "undead",
+    "verb": ["hit", "hits"], "xp_bonus": 2.0, "shape": "skeleton", "color": "#e0dccb", "scale": 1.15, "coin": [30, 90],
+    "loot": [{"item": "foremans_pick", "chance": 0.6}, {"item": "bone_chips", "chance": 1.0}],
+    "model": "skeleton_warrior",
+    "weapon": "miners_pick",
+    "named": true,
+    "spawn_anim": "Spawn_Ground"
+  },
+  "coilback": {
+    "name": "Coilback",
+    "level": [7, 7],
+    "hp_base": 130, "hp_per_level": 0, "dmg_min": 3, "dmg_max": 9, "attack_delay": 2.4, "ac": 14, "speed": 5.8,
+    "aggressive": true, "aggro_radius": 12, "social": false, "flees": false, "faction": "creek_snakes",
+    "verb": ["bite", "bites"], "xp_bonus": 2.0, "shape": "beetle", "color": "#2c3620", "scale": 1.7, "coin": [20, 60],
+    "loot": [{"item": "coilback_scale_band", "chance": 0.6}],
+    "model": "water_snake",
+    "named": true,
+    "proc": {"spell": "cobra_venom", "chance": 0.12, "text": "%s's fangs sink in; %s!"}
+  },
+  "brood_nurse": {
+    "name": "the Brood Nurse",
+    "level": [8, 8],
+    "hp_base": 140, "hp_per_level": 0, "dmg_min": 4, "dmg_max": 9, "attack_delay": 2.2, "ac": 15, "speed": 6.6,
+    "aggressive": true, "aggro_radius": 14, "social": true, "flees": false, "faction": "blight_brood",
+    "verb": ["bite", "bites"], "xp_bonus": 2.0, "shape": "beetle", "color": "#6f6a58", "scale": 0.95, "coin": [20, 70],
+    "loot": [{"item": "nurses_fang", "chance": 0.6}, {"item": "spider_silk", "chance": 1.0}],
+    "model": "cave_spider",
+    "named": true,
+    "proc": {"spell": "thornback_venom", "chance": 0.15, "text": "%s's bite drips with %s!"}
+  },
+  "blightmother": {
+    "name": "the Blightmother",
+    "level": [8, 8],
+    "hp_base": 260, "hp_per_level": 0, "hp_regen": 2, "dmg_min": 4, "dmg_max": 10, "attack_delay": 2.6, "ac": 18, "speed": 6.0,
+    "aggressive": true, "aggro_radius": 18, "social": true, "flees": false, "faction": "blight_brood",
+    "verb": ["bite", "bites"], "xp_bonus": 3.0, "shape": "beetle", "color": "#33381f", "scale": 2.2, "coin": [80, 220],
+    "loot": [{"item": "blight_heart", "chance": 1.0}, {"item": "blightmothers_venom_sac", "chance": 1.0}, {"item": "blightfang", "chance": 0.35}, {"item": "spider_silk", "chance": 1.0, "count": [2, 4]}],
+    "model": "blightmother",
+    "named": true,
+    "boss_music": "blightmother",
+    "proc": {"spell": "blight_venom", "chance": 0.15, "text": "%s's fangs pump %s into you!"}
   }
 }

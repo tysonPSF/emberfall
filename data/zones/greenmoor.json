@@ -141,7 +141,7 @@
     {"type": "camp", "pos": [115, -100]},
     {"type": "ruins", "pos": [-100, -80]},
     {"type": "outpost", "pos": [40, -138]},
-    {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50},
+    {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true, "tainted_until": "merricks_line_spring"},
     {"type": "cave", "pos": [-150, -30], "face": [0, -30]},
     {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
     {"type": "signpost", "pos": [12.5, -168], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]},
@@ -156,9 +156,12 @@
     {"pos": [0, 181], "size": [18, 8], "to": "emberhold", "arrive": [0, -46], "arrive_face": [0, 0]},
     {"pos": [0, -181], "size": [18, 8], "to": "thornwood", "arrive": [0, 228], "arrive_face": [0, 190]},
     {"pos": [181, 0], "size": [8, 18], "to": "harrowfield", "arrive": [-167, 0], "arrive_face": [-127, 0]},
-    {"pos": [-181, 0], "size": [8, 18], "to": "rainhold", "arrive": [46, 0], "arrive_face": [6, 0]}
+    {"pos": [-181, 0], "size": [8, 18], "to": "rainhold", "arrive": [46, 0], "arrive_face": [6, 0]},
+    {"pos": [-157.5, -30], "size": [3, 4], "to": "wellspring", "arrive": [128, 128], "arrive_face": [100, 126],
+     "requires_started": "merricks_line_spring", "refused_by": "watchman_corran", "refused_to": [-140, -30]}
   ],
   "npcs": [
+    {"id": "watchman_corran", "pos": [-142, -25.5], "face": [-120, -30]},
     {"id": "warden_holt", "pos": [38.8, -133.9], "face": [0, 0]},
     {"id": "watch_patrol", "pos": [0, 170], "patrol": [[0, 170], [0, 150], [-2, 120], [3, 60], [1, 20], [7, 11], [11, 4], [11, -4], [7, -11], [3, -22], [6, -60], [22, -105], [24, -150], [8, -170]]},
     {"id": "merrick", "pos": [-114.8, 136.3], "face": [0, 0]},

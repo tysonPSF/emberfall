@@ -4,6 +4,7 @@ class_name Layers
 const WORLD := 1      # terrain, trees, buildings
 const ENTITIES := 2   # players and mobs (they pass through each other)
 const CORPSES := 4    # clickable, never blocks movement
+const BARRIER := 8    # blocks players only: a web across a passage (spiders go through their own webs)
 
 ## Render layer bits (VisualInstance3D.layers), separate from physics.
 const RENDER_ENTITIES := 2  # character and corpse meshes; ground decals skip them

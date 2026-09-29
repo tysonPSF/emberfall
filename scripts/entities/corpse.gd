@@ -18,7 +18,7 @@ var _restored := false
 
 func setup(name_: String, look_: Dictionary, contents: Array, coin_amount: int,
 		decay_seconds: float, owner := "", restored := false) -> void:
-	display_name = "%s's corpse" % name_
+	display_name = name_ if str(look_.get("shape", "")).begins_with("prop:") else "%s's corpse" % name_  # a chest is just a chest
 	look = look_.duplicate()
 	_restored = restored
 	entries = contents
@@ -47,6 +47,8 @@ func _ready() -> void:
 	add_child(v)
 	if v is CharacterModel:
 		(v as CharacterModel).pose_dead(_restored)
+	elif str(look.get("shape", "")).begins_with("prop:"):
+		pass  # a chest stands as it is
 	elif str(look.get("shape", "")) == "beetle":
 		v.rotation.z = PI
 		v.position.y = 0.9 * s

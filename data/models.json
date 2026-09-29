@@ -374,6 +374,22 @@
       "path": "res://assets/creatures/spider.glb",
       "rig": "own"
     },
+    "cave_spider": {
+      "path": "res://assets/creatures/cave_spider.glb",
+      "rig": "own"
+    },
+    "blightmother": {
+      "path": "res://assets/creatures/blightmother.glb",
+      "rig": "own"
+    },
+    "cave_bat": {
+      "path": "res://assets/creatures/cave_bat.glb",
+      "rig": "own"
+    },
+    "water_snake": {
+      "path": "res://assets/creatures/water_snake.glb",
+      "rig": "own"
+    },
     "orc": {
       "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
       "hide": [
@@ -2924,6 +2940,7 @@
   },
   "weapons": {
     "orla_tuning_staff": "res://assets/creatures/orla_tuning_staff.glb",
+    "miners_pick": "res://assets/creatures/miners_pick.glb",
     "mirewhistle_ladle": "res://assets/creatures/mirewhistle_ladle.glb",
     "titan_thunder_hammer": "res://assets/creatures/titan_thunder_hammer.glb",
     "vorlaug_maul": "res://assets/creatures/vorlaug_maul.glb",
@@ -3738,6 +3755,13 @@
     "black_tree_b": {"path": "res://assets/props/black_tree_b.glb"},
     "star_lily": {"path": "res://assets/props/star_lily.glb"},
     "glowcap_cluster": {"path": "res://assets/props/glowcap_cluster.glb"},
+    "stalactite_a": {"path": "res://assets/props/stalactite_a.glb"},
+    "stalactite_b": {"path": "res://assets/props/stalactite_b.glb"},
+    "stalagmite_a": {"path": "res://assets/props/stalagmite_a.glb"},
+    "stalagmite_b": {"path": "res://assets/props/stalagmite_b.glb"},
+    "sour_fungus": {"path": "res://assets/props/sour_fungus.glb"},
+    "spring_crystal": {"path": "res://assets/props/spring_crystal.glb"},
+    "spring_crystal_cocooned": {"path": "res://assets/props/spring_crystal_cocooned.glb"},
     "morvaine_manor": {"path": "res://assets/props/morvaine_manor.glb", "lights": [{"pos": [0, 3.0, 3.8], "color": "#ff4030", "energy": 1.0, "range": 9, "night": false}]},
     "morvaine_gate": {"path": "res://assets/props/morvaine_gate.glb"},
     "iron_fence": {"path": "res://assets/props/iron_fence.glb"},

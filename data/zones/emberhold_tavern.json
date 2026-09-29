@@ -68,6 +68,17 @@
       ]
     },
     {
+      "id": "merrick_tavern",
+      "pos": [
+        -6.6,
+        2.35
+      ],
+      "face": [
+        -6.6,
+        1.0
+      ]
+    },
+    {
       "id": "tavern_bard",
       "pos": [
         6.6,

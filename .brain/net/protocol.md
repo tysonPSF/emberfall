@@ -19,9 +19,11 @@ There is no compatibility layer. Two ways a mismatch fails:
 turns the client away with a clear message instead of the silent
 breakage above. That is its whole job.
 
-It went unbumped at 16 from 2026-09-26 through several wire changes (trading,
-emotes, the Grove, guilds, the swing timer); it was bumped to **17** on
-2026-09-29 with the Blackwater. Keep it moving with the wire.
+It went unbumped at 16 from 2026-09-26 through several wire changes
+(trading, emotes, the Grove, guilds, the swing timer). On 2026-09-29 two
+branches bumped it at once (the Blackwater to 17, quest sharing to 18);
+the Blackwater merged second and took **19**. When two branches both
+touch the wire, the one merged last bumps past the other.
 
 Checklist when you touch the wire: new `@rpc` func, new/changed RPC
 arguments, a new key in `_send_self` / `apply_self`, a new `_s_ui`

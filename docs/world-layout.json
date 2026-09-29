@@ -43,6 +43,7 @@
   "timirajs_table",
   "vayukeths_step",
   "weeping_throat",
+  "wellspring",
   "windbreak"
  ],
  "note": "Emberfall world layout. Cells are grid squares; gy rises NORTH (+z is south in the engine). Links are derived from the grid, never typed: one border = a pass and a zone_line on each side.",

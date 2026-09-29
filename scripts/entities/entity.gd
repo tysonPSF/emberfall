@@ -362,7 +362,18 @@ static func make_visual(look_: Dictionary) -> Node3D:
 	var dark := StandardMaterial3D.new()
 	dark.albedo_color = color.darkened(0.55)
 	dark.roughness = 0.9
+	if shape.begins_with("prop:"):  # a world prop as the body: a web across a passage, the spring crystal (the Wellspring)
+		var spec: Dictionary = GameData.models["props"][shape.substr(5)]
+		var prop: Node3D = (load(str(spec["path"])) as PackedScene).instantiate()
+		prop.scale = Vector3.ONE * float(spec.get("scale", 1.0))
+		root.add_child(prop)
+		var lid := prop.find_child("chest_lid", true, false) as Node3D
+		if lid != null and look_.get("open", false):  # an opened chest: the lid thrown back on its hinge
+			lid.rotation.x = -1.9
+		shape = "none"
 	match shape:
+		"none":
+			pass
 		"beetle":
 			_part(root, _sphere(0.6), mat, Vector3(0, 0.45, 0.1), Vector3(1.0, 0.65, 1.35))
 			_part(root, _sphere(0.28), dark, Vector3(0, 0.42, -0.72), Vector3.ONE)

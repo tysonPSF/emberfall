@@ -164,6 +164,8 @@ BUILT = discover_built()
 EXISTING = BUILT
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
+# Dungeons under a zone, entered by a cave's zone line: off the grid like the interiors.
+DUNGEONS = {'wellspring'}
 # The passes CLAUDE.md reserved for future zones ("a future zone replaces one
 # with a zone line"). This is NOT a list of passes still closed: the check below
 # only makes sure the layout gives each of them a neighbour. Thornwood's east
@@ -221,7 +223,7 @@ def check(by_id, by_cell, links):
     ok(len(by_cell) == len(on_grid),
        f'{len(on_grid)} zones on {len(by_cell)} distinct cells - no two share one')
     stray = sorted(BUILT - set(by_id))
-    ok(not stray or all('_' in x for x in stray),
+    ok(not stray or all('_' in x or x in DUNGEONS for x in stray),
        f'{len(BUILT)} zone files on disk'
        + (f'; not on the grid: {", ".join(stray)} (interiors are expected)' if stray else ''))
     ok(all(not by_id[d]['cell'] and by_id[h]['cell'] for d, h in DOORS.items()),

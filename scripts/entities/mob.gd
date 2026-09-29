@@ -130,6 +130,8 @@ func _pick_model(choices: Array) -> String:
 func _ready() -> void:
 	var mirrored := look.duplicate()
 	build_body(shape, color, body_scale, model_id, weapon_id)
+	if data.has("block"):  # a web across a passage: players can't pass until it's torn down (on every machine: players move themselves)
+		_add_barrier(data["block"])
 	if Net.dedicated:
 		set_process(false)  # _process only colors the nameplate for a local player; a server has none
 	if not Net.is_authority():
@@ -153,6 +155,32 @@ func _ready() -> void:
 		animate(data["spawn_anim"])
 	home = global_position
 	_think_timer = randf_range(1.0, 5.0)
+
+
+## A wall on the BARRIER layer ([width, height] m, across the way it faces)
+## that stops players, not monsters or the camera, and goes when this does.
+## Its pick shape grows to match, so you can click the web anywhere.
+func _add_barrier(size: Array) -> void:
+	var w := float(size[0])
+	var h := float(size[1])
+	var wall := StaticBody3D.new()
+	wall.collision_layer = Layers.BARRIER
+	wall.collision_mask = 0
+	var col := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(w, h, 0.8)
+	col.shape = box
+	col.position.y = h * 0.5
+	wall.add_child(col)
+	add_child(wall)
+	for c in get_children():
+		if c is CollisionShape3D and c.shape is CapsuleShape3D:
+			var pick := BoxShape3D.new()
+			pick.size = Vector3(w, h, 0.8)
+			(c as CollisionShape3D).shape = pick
+			(c as CollisionShape3D).position.y = h * 0.5
+	body_height = h
+	nameplate.position.y = h + 0.3
 
 
 func _process(delta: float) -> void:
@@ -201,8 +229,8 @@ func _physics_process(delta: float) -> void:
 		puppet(delta)
 		return
 	apply_gravity(delta)
-	if dead:
-		return
+	if dead or data.get("inert", false):
+		return  # a web hangs there: it doesn't move, notice anyone or fight back
 	_think_timer -= delta
 	var move := Vector3.ZERO
 	var move_speed := speed

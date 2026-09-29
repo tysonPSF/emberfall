@@ -14,6 +14,8 @@ uniform float shine = 0.6;  // how much it mirrors the sky (a black bog barely d
 uniform float murk = 0.9;  // meters of water until it looks fully deep
 uniform float flow_speed = 0.0;  // meters per second downstream
 uniform float lava = 0.0;  // 1: molten rock instead of water (Cinderpass): a glowing flow under a drifting dark crust
+uniform float taint = 0.0;  // 1: fouled water (Greenmoor's pond, Merrick's line): bile-green, drifting scum, an oily sheen
+uniform float glow = 0.0;  // fouled water that glows faintly (the Wellspring's creek, in the dark)
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
 
 void fragment() {
@@ -42,6 +44,23 @@ void fragment() {
 	ALPHA = (mix(0.7, 0.95, t) + rim * 0.2) * smoothstep(0.0, 0.03, thick);
 	ROUGHNESS = mix(0.4, 0.06, shine / 0.6);
 	SPECULAR = shine;
+	if (taint > 0.0) {
+		vec3 foul = mix(mix(vec3(0.20, 0.27, 0.05), vec3(0.06, 0.09, 0.02), t), sky * vec3(0.6, 0.7, 0.4), 0.03 + fresnel * 0.2);
+		// scum: slow blotches drifting on the surface, matte and nearly opaque
+		float d = TIME * 0.05;
+		float blot = sin(world.x * 0.55 + d) * sin(world.z * 0.6 - d * 0.7) + sin(world.x * 1.3 - world.z * 1.1 + d * 1.6) * 0.45
+				+ sin(world.x * 3.1 + world.z * 2.7 - d * 2.0) * 0.18;
+		float scum = smoothstep(0.25, 0.6, blot);
+		// an oily sheen where the light catches it
+		vec3 oil = 0.5 + 0.5 * cos(vec3(0.0, 2.1, 4.2) + blot * 5.0 + fresnel * 6.0);
+		foul += oil * 0.025 * (1.0 - scum);
+		vec3 muck = mix(vec3(0.30, 0.33, 0.08), vec3(0.22, 0.18, 0.07), smoothstep(0.6, 0.9, blot));
+		ALBEDO = mix(ALBEDO, mix(foul, muck, scum), taint);
+		ALPHA = mix(ALPHA, max(ALPHA, mix(0.95, 1.0, scum)), taint);
+		ROUGHNESS = mix(ROUGHNESS, mix(0.6, 0.95, scum), taint);  // stagnant: no bright sky in it
+		SPECULAR = mix(SPECULAR, 0.12, taint);
+		EMISSION = vec3(0.35, 0.55, 0.12) * glow * taint * (0.75 + 0.25 * sin(TIME * 0.8 + world.x * 0.2 + world.z * 0.15)) * (1.0 - scum * 0.6);
+	}
 	if (lava > 0.5) {
 		float run = UV.y - TIME * max(flow_speed, 0.15);
 		float cells = sin(run * 2.9 + UV.x * 4.3) * sin(world.x * 2.1 + run * 1.3) + sin(world.z * 2.4 - run * 1.9 + UV.x * 3.1) * 0.7
