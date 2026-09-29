@@ -3530,6 +3530,8 @@ func _t_wellspring() -> void:
 	if z.tunnel == null:
 		print("wellspring: FAIL no tunnel in %s" % z.zone_id)
 		return
+	var bp: Vector3 = z.bind_point
+	print("wellspring: respawn point %s: in the passage %s, %.1f m over the floor, roof %.1f m above it" % [bp, z.tunnel.inside(bp.x, bp.z, 1.0), bp.y - z.tunnel.sample(bp.x, bp.z).y, z.tunnel.ceiling_at(bp.x, bp.z, 0.0) - bp.y])
 	World.time_override = 12.0
 	var views := [["entrance", Vector2(126, 127), Vector2(100, 121)], ["narrows", Vector2(20, 80), Vector2(2, 62)],
 			["chamber", Vector2(-96, 14), Vector2(-104, -4)], ["creek", Vector2(-40, -30), Vector2(-62, -40)],

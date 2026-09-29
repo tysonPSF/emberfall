@@ -93,6 +93,11 @@ func load_zone(id: String) -> void:
 		_roads.append({"points": pts, "width": float(road.get("width", 3.0))})
 	_clear_radius = float(data.get("clear_radius", 0.0))
 	bind_point = ground(_bind_xz.x, _bind_xz.y + 4.0)  # just south of the obelisk
+	if tunnel != null:  # a cave has no obelisk, and 4 m south may be solid rock: wake on the passage floor itself
+		var at := _bind_xz
+		if not tunnel.inside(at.x, at.y, 1.0):
+			at = (tunnel.paths[0]["points"] as Array)[1]
+		bind_point = ground(at.x, at.y)
 	World.zone = self
 
 	_build_environment()
@@ -303,14 +308,67 @@ func _add_river(river: Dictionary) -> void:
 	var pts: Array[Vector2] = []
 	for pt: Array in river["points"]:
 		pts.append(Vector2(pt[0], pt[1]))
+	var width := float(river.get("width", 10.0))
+	if float(river.get("meander", 0.0)) > 0.0:  # a creek winding side to side (the Wellspring's), not a straight channel
+		pts = _meander(pts, float(river["meander"]), width)
 	var levels: Array[float] = []
 	for i in pts.size():
 		var h := height_at(pts[i].x, pts[i].y) - 0.3  # before this river exists
 		levels.append(minf(h, levels[i - 1]) if i > 0 else h)
-	_rivers.append({"points": pts, "levels": levels, "width": float(river.get("width", 10.0)),
+	var entry := {"points": pts, "levels": levels, "width": width,
 			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0)), "dry": bool(river.get("dry", false)),
 			"lava": bool(river.get("lava", false)),
-			"tainted": bool(river.get("tainted", false)), "glow": float(river.get("glow", 0.0))})
+			"tainted": bool(river.get("tainted", false)), "glow": float(river.get("glow", 0.0))}
+	if float(river.get("meander", 0.0)) > 0.0:  # hundreds of little segments: look up only the ones near a point
+		var cells := {}
+		var reach: float = width * 0.5 + float(entry["bank"]) + 4.0
+		for i in pts.size() - 1:
+			var lo := Vector2(minf(pts[i].x, pts[i + 1].x), minf(pts[i].y, pts[i + 1].y)) - Vector2.ONE * reach
+			var hi := Vector2(maxf(pts[i].x, pts[i + 1].x), maxf(pts[i].y, pts[i + 1].y)) + Vector2.ONE * reach
+			for cx in range(floori(lo.x / RIVER_CELL), floori(hi.x / RIVER_CELL) + 1):
+				for cz in range(floori(lo.y / RIVER_CELL), floori(hi.y / RIVER_CELL) + 1):
+					(cells.get_or_add(Vector2i(cx, cz), []) as Array).append(i)
+		entry["cells"] = cells
+	_rivers.append(entry)
+
+
+const RIVER_CELL := 8.0
+
+
+## Rounds a river's corners (Chaikin, twice) and swings it gently side to side
+## by up to `amp` m, a point every 2 m; in a cave it never swings closer to a
+## wall than its own width allows. The ends stay put.
+func _meander(pts: Array[Vector2], amp: float, width: float) -> Array[Vector2]:
+	var smooth := pts
+	for pass_ in 2:
+		var next: Array[Vector2] = [smooth[0]]
+		for i in smooth.size() - 1:
+			next.append(smooth[i].lerp(smooth[i + 1], 0.25))
+			next.append(smooth[i].lerp(smooth[i + 1], 0.75))
+		next.append(smooth[-1])
+		smooth = next
+	var total := 0.0
+	for i in smooth.size() - 1:
+		total += smooth[i].distance_to(smooth[i + 1])
+	var out: Array[Vector2] = []
+	var s := 0.0
+	for i in smooth.size() - 1:
+		var a := smooth[i]
+		var b := smooth[i + 1]
+		var n := maxi(1, int(a.distance_to(b) / 2.0))
+		var side := (b - a).normalized().orthogonal()
+		for k in n:
+			var at := a.lerp(b, float(k) / n)
+			var along := s + a.distance_to(at)
+			var ends := smoothstep(0.0, 6.0, along) * smoothstep(0.0, 6.0, total - along)
+			var off := amp * ends * (sin(along * TAU / 11.0) * 0.75 + sin(along * TAU / 4.7 + 1.3) * 0.25)
+			if tunnel != null:
+				var room := maxf(0.0, -tunnel.sample(at.x, at.y).x - width * 0.5 - 0.8)
+				off = clampf(off, -room, room)
+			out.append(at + side * off)
+		s += a.distance_to(b)
+	out.append(smooth[-1])
+	return out
 
 
 ## [distance from the river's centerline, its water level at the nearest point].
@@ -320,6 +378,15 @@ func _river_at(river: Dictionary, x: float, z: float) -> Array:
 	var levels: Array[float] = river["levels"]
 	var best := INF
 	var level := 0.0
+	if river.has("cells"):  # a meandering creek: only the segments near here
+		for i: int in river["cells"].get(Vector2i(floori(x / RIVER_CELL), floori(z / RIVER_CELL)), []):
+			var seg := pts[i + 1] - pts[i]
+			var t := clampf((p - pts[i]).dot(seg) / maxf(seg.length_squared(), 0.0001), 0.0, 1.0)
+			var d := p.distance_to(pts[i] + seg * t)
+			if d < best:
+				best = d
+				level = lerpf(levels[i], levels[i + 1], t)
+		return [best if best < INF else 1e6, level]
 	for i in pts.size() - 1:
 		var seg := pts[i + 1] - pts[i]
 		var t := clampf((p - pts[i]).dot(seg) / seg.length_squared(), 0.0, 1.0)
@@ -789,7 +856,7 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 		var c := floor_c.lerp(rock, smoothstep(-0.5, 2.5, s.x))
 		c = c.lerp(Color(0.16, 0.14, 0.12), smoothstep(6.0, 16.0, h - s.y) * 0.5)  # darker toward the roof
 		if bool(data.get("tainted", false)) and s.x < 1.0:  # (only the floor can be near the water)
-			c = c.lerp(Color(0.22, 0.27, 0.12), (1.0 - smoothstep(0.0, 1.6, river_distance(x, z))) * 0.7)
+			c = c.lerp(Color(0.22, 0.25, 0.14), (1.0 - smoothstep(-1.0, -0.5, river_distance(x, z))) * 0.35)  # a thin wet stain, only under the water itself at the water's edge
 		return c
 	var greens: Array = data.get("grass_colors", ["#45662b", "#668538"])  # low and high patches
 	var c := Color.html(greens[0]).lerp(Color.html(greens[1]), n)
