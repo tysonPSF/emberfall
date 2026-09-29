@@ -35,7 +35,8 @@
     "riser": 13,
     "wobble": 0,
     "toward": "north",
-    "face_color": "#9a927e"
+    "face_color": "#9a927e",
+    "ramps": false
   },
   "clutter": {
     "grass_a": {
