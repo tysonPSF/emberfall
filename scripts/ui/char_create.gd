@@ -21,6 +21,7 @@ var _selected := "warrior"
 var _deity := ""
 var _stats: StatPicker
 var _race := "human"
+var _deity_buttons := {}  # deity id -> its portrait button (some gods take only some races)
 var _gender := "male"
 var _hair: HairPicker
 var _race_desc: Label
@@ -246,6 +247,7 @@ func _deity_picker(parent: Container) -> void:
 		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		b.add_theme_font_size_override("font_size", 13)
 		b.tooltip_text = "%s, %s" % [d["name"], d["title"]]
+		_deity_buttons[deity_id] = b
 		b.pressed.connect(func() -> void:
 			_deity = deity_id
 			desc.text = "%s, %s\n%s\n%s" % [d["name"], d["title"], d["description"], d["bonus_text"]]
@@ -253,6 +255,22 @@ func _deity_picker(parent: Container) -> void:
 		row.add_child(b)
 	parent.add_child(row)
 	parent.add_child(desc)
+	_fit_deities()
+
+
+## Gods who take only some races ("races" in deities.json: the bog gods) are
+## grayed out for the rest; a choice that no longer fits is cleared.
+func _fit_deities() -> void:
+	for deity_id: String in _deity_buttons:
+		var b: Button = _deity_buttons[deity_id]
+		if not is_instance_valid(b):
+			continue
+		var ok := GameData.deity_allows(deity_id, _race)
+		b.disabled = not ok
+		b.modulate.a = 1.0 if ok else 0.4
+		if not ok and _deity == deity_id:
+			_deity = ""
+			b.button_pressed = false
 
 
 ## Connecting..., or why it failed.
@@ -266,6 +284,7 @@ func set_status(text: String, is_error := false) -> void:
 ## open one if it must), its stats become the picker's starting values.
 func _select_race(race_id: String) -> void:
 	_race = race_id
+	_fit_deities()
 	var r: Dictionary = GameData.races[race_id]
 	var open: Array = r.get("classes", [])
 	for class_id: String in _class_buttons:

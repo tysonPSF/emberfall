@@ -65,6 +65,8 @@ func create_character(account: String, name: String, cls: String, deity: String,
 		return "Choose a deity."
 	if not GameData.races.has(race):
 		return "Choose a race."
+	if not GameData.deity_allows(deity, race):
+		return "%s does not accept a %s." % [GameData.deities[deity]["name"], GameData.races[race]["name"]]
 	if not cls in GameData.races[race].get("classes", []):
 		return "A %s can't be a %s." % [GameData.races[race]["name"], GameData.classes[cls]["name"]]
 	var home := str(GameData.races[race].get("home", start_zone))  # every race starts, and is bound, in its home city

@@ -1008,6 +1008,20 @@ func _build_landmarks() -> void:
 				_build_grove(p, lm)
 
 
+## A zone's own water ("water": {shallow, deep, sky} hex colors, and murk,
+## foam and shine): a black bog,
+## an inky cavern lake. Zones without it keep the shader's clear blue-green.
+func _tint_water(mat: ShaderMaterial) -> void:
+	var w: Dictionary = data.get("water", {})
+	for key: String in ["shallow", "deep", "sky"]:
+		if w.has(key):
+			var c := Color.html(str(w[key]))
+			mat.set_shader_parameter(key, Vector3(c.r, c.g, c.b))
+	for key: String in ["murk", "foam", "shine"]:
+		if w.has(key):
+			mat.set_shader_parameter(key, float(w[key]))
+
+
 ## The Grove's pond (a `lakes` entry around pos): lotus floating on it, and
 ## golden motes drifting over the water in the dawn light.
 func _build_grove(p: Vector3, lm: Dictionary) -> void:
@@ -1282,6 +1296,7 @@ func _build_field(f: Array) -> void:
 		sheet.mesh = plane
 		var mat := ShaderMaterial.new()
 		mat.shader = WATER_SHADER
+		_tint_water(mat)
 		mat.set_shader_parameter("murk", 0.35)
 		sheet.material_override = mat
 		sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -1810,6 +1825,7 @@ func _build_pond(lm: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	var tainted := bool(lm.get("tainted", false))
 	if tainted:
 		mat.set_shader_parameter("taint", 1.0)
@@ -2084,6 +2100,7 @@ func _build_river(river: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	mat.set_shader_parameter("flow_speed", float(river.get("flow", 1.0)))
 	var lava := bool(river.get("lava", false))
 	mat.set_shader_parameter("lava", 1.0 if lava else 0.0)
@@ -2146,6 +2163,7 @@ func _build_lake(lake: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	if lake.get("tainted", false):  # the Wellspring's spring, fouled at its source
 		mat.set_shader_parameter("taint", 1.0)
 		mat.set_shader_parameter("glow", float(lake.get("glow", 0.0)))

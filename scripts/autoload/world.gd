@@ -1864,6 +1864,8 @@ func _online(char_name: String) -> Player:
 func player_entered(p: Player) -> void:
 	if not Net.is_authority() or p == null:
 		return
+	apply_alignment(p)
+	_follow_home(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
 	if not g.is_empty():
@@ -2463,6 +2465,7 @@ func request_change_race(player_id: int, race: String) -> void:
 		return
 	p.race = race
 	p.race_changed = true
+	apply_alignment(p)  # a new race can mean a new side
 	p.look["race"] = race
 	p.recalc_stats()
 	p.stats_changed.emit()
@@ -5015,6 +5018,62 @@ static func standing_tier(value: int) -> Array:
 		if value >= tier[0]:
 			return tier
 	return STANDING_TIERS[-1]
+
+
+## A character's alignment: its race's "alignment" in races.json (a race
+## without one is neutral).
+func alignment_of(p: Player) -> String:
+	return str(GameData.races.get(p.race if p.race != "" else "human", {}).get("alignment", "neutral"))
+
+
+## The faction offsets a character's alignment calls for (data/alignment.json):
+## an evil race starts hostile with every good-side faction, a good or neutral
+## one with every evil-side faction; a class can shift it further.
+func alignment_offsets(p: Player) -> Dictionary:
+	var a: Dictionary = GameData.alignment
+	var sides: Dictionary = a.get("sides", {})
+	var out := {}
+	var mine := alignment_of(p)
+	var against: Array = sides.get("good", []) if mine == "evil" else sides.get("evil", [])
+	for fid: String in against:
+		out[fid] = int(out.get(fid, 0)) + int(a.get("hostile", -1500))
+	for side: String in a.get("classes", {}).get(p.char_class, {}):
+		for fid: String in sides.get(side, []):
+			out[fid] = int(out.get(fid, 0)) + int(a["classes"][p.char_class][side])
+	return out
+
+
+## When a race's home city changes (races.json "home"; "moved_from" names the
+## old one, as when the evil races got homelands of their own), a character
+## still bound to the old home is bound to the new one, once, and told.
+## Anyone who bound somewhere else on purpose keeps it.
+func _follow_home(p: Player) -> void:
+	var r: Dictionary = GameData.races.get(p.race if p.race != "" else "human", {})
+	var home := str(r.get("home", ""))
+	if home == "" or not FileAccess.file_exists("res://data/zones/%s.json" % home):
+		return
+	var before := p.home_seen if p.home_seen != "" else str(r.get("moved_from", home))
+	if before != home and p.bind_zone in [before, ""]:
+		p.bind_zone = home
+		say(p, "Your people have a home of their own now: your soul is bound in %s. Your Homeward Stone will take you there." % GameData.load_zone(home).get("name", home), C_SYSTEM)
+	p.home_seen = home
+
+
+## Puts a character's standings where their alignment says, as offsets on top
+## of whatever they've earned: only the difference from what was applied
+## before, so it's safe on every login and follows a change of race.
+func apply_alignment(p: Player) -> void:
+	var want := alignment_offsets(p)
+	var had := p.alignment_mods
+	var keys := want.keys()
+	for fid: String in had:
+		if not fid in keys:
+			keys.append(fid)
+	for fid: String in keys:
+		var diff := int(want.get(fid, 0)) - int(had.get(fid, 0))
+		if diff != 0 and GameData.factions.has(fid):
+			p.factions[fid] = clampi(standing(p, fid) + diff, -FACTION_MAX, FACTION_MAX)
+	p.alignment_mods = want
 
 
 ## Shifts standings, e.g. {"watch": 5, "gnolls": -10}, with EQ's messages.

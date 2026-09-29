@@ -1,0 +1,321 @@
+{
+  "bog_rat_tail": {
+    "name": "Bog Rat Tail",
+    "value": 3,
+    "stack": 20
+  },
+  "wallow_toad_skin": {
+    "name": "Wallow Toad Skin",
+    "value": 6,
+    "stack": 20
+  },
+  "swamp_leech_teeth": {
+    "name": "Swamp Leech Teeth",
+    "value": 6,
+    "stack": 20
+  },
+  "pondkin_bead": {
+    "name": "Pondkin Bead",
+    "value": 8,
+    "stack": 20
+  },
+  "mud_turtle_shell": {
+    "name": "Mud Turtle Shell",
+    "value": 12,
+    "stack": 20
+  },
+  "bog_wisp_light": {
+    "name": "Bog Wisp Light",
+    "value": 10,
+    "stack": 20
+  },
+  "gulpmaws_tongue": {
+    "name": "Gulpmaw's Tongue",
+    "value": 40,
+    "lore": true
+  },
+  "wetbellys_crown": {
+    "name": "Wetbelly's Reed Crown",
+    "value": 40,
+    "lore": true
+  },
+  "gloom_rat_tail": {
+    "name": "Gloom Rat Tail",
+    "value": 3,
+    "stack": 20
+  },
+  "duskwood_silk": {
+    "name": "Duskwood Spider Silk",
+    "value": 6,
+    "stack": 20
+  },
+  "gloomfang_pelt": {
+    "name": "Gloomfang Pelt",
+    "value": 10,
+    "stack": 20
+  },
+  "hearth_scout_badge": {
+    "name": "Hearth Scout's Badge",
+    "value": 12,
+    "stack": 20
+  },
+  "shade_dust": {
+    "name": "Shade Dust",
+    "value": 10,
+    "stack": 20
+  },
+  "vyss_fang": {
+    "name": "The Silkmother's Fang",
+    "value": 40,
+    "lore": true
+  },
+  "aldrens_orders": {
+    "name": "Scout-Captain Aldren's Orders",
+    "value": 40,
+    "lore": true
+  },
+  "plague_rat_tail": {
+    "name": "Plague Rat Tail",
+    "value": 6,
+    "stack": 20
+  },
+  "rotfen_lurker_hide": {
+    "name": "Rotfen Lurker Hide",
+    "value": 14,
+    "stack": 20
+  },
+  "fen_eel_skin": {
+    "name": "Fen Eel Skin",
+    "value": 12,
+    "stack": 20
+  },
+  "hag_charm": {
+    "name": "Hag's Bone Charm",
+    "value": 16,
+    "stack": 20
+  },
+  "chief_sisskas_totem": {
+    "name": "Chief Sisska's Totem",
+    "value": 60,
+    "lore": true
+  },
+  "gristleworts_heart": {
+    "name": "Gristlewort's Withered Heart",
+    "value": 60,
+    "lore": true
+  },
+  "mudjaws_tooth": {
+    "name": "Old Mudjaw's Tooth",
+    "value": 60,
+    "lore": true
+  },
+  "toadskin_panel": {
+    "name": "Tanned Toadskin Panel",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "bogtanner_pack_body": {
+    "name": "Stitched Bogtanner Pack",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "gorras_bogtanner_pack": {
+    "name": "Gorra's Bogtanner Pack",
+    "bag": 10,
+    "value": 60,
+    "lore": true,
+    "no_drop": true,
+    "weight_reduction": 0.5
+  },
+  "spun_duskwood_silk": {
+    "name": "Spun Duskwood Silk",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "gloomfang_satchel_body": {
+    "name": "Gloomfang Satchel",
+    "value": 0,
+    "lore": true,
+    "no_drop": true
+  },
+  "dresnas_silkweave_satchel": {
+    "name": "Dresna's Silkweave Satchel",
+    "bag": 10,
+    "value": 60,
+    "lore": true,
+    "no_drop": true,
+    "weight_reduction": 0.5
+  },
+  "toadhide_sandals": {
+    "name": "Toadhide Sandals",
+    "slot": "feet",
+    "ac": 2,
+    "sta": 1,
+    "agi": 1,
+    "value": 90,
+    "rec_level": 3,
+    "no_drop": true,
+    "lore": true,
+    "wear": "sandals"
+  },
+  "pondkin_reed_spear": {
+    "name": "Pondkin Reed Spear",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 2.8,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "str": 1,
+    "value": 500,
+    "rec_level": 7,
+    "no_drop": true,
+    "lore": true
+  },
+  "gulpmaw_hide_bracer": {
+    "name": "Gulpmaw-Hide Bracer",
+    "slot": "arms",
+    "ac": 5,
+    "sta": 2,
+    "hp": 10,
+    "value": 700,
+    "rec_level": 8,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "wetbellys_ring": {
+    "name": "Wetbelly's Signet",
+    "slot": "ring",
+    "ac": 1,
+    "sta": 2,
+    "wis": 1,
+    "value": 500,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true
+  },
+  "gloomsilk_gloves": {
+    "name": "Gloomsilk Gloves",
+    "slot": "hands",
+    "ac": 2,
+    "agi": 1,
+    "int": 1,
+    "value": 90,
+    "rec_level": 3,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "gloomfang_mantle": {
+    "name": "Gloomfang Mantle",
+    "slot": "arms",
+    "ac": 5,
+    "agi": 2,
+    "sta": 1,
+    "value": 700,
+    "rec_level": 8,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "silkmother_stiletto": {
+    "name": "Silkmother's Stiletto",
+    "slot": "primary",
+    "dmg": 6,
+    "delay": 2.1,
+    "verb": [
+      "pierce",
+      "pierces"
+    ],
+    "model": "dagger",
+    "skill": "piercing",
+    "agi": 2,
+    "value": 900,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "wizard",
+      "rogue",
+      "magician",
+      "necromancer",
+      "shaman",
+      "ranger",
+      "cleric"
+    ]
+  },
+  "scout_captains_ring": {
+    "name": "Scout-Captain's Ring",
+    "slot": "ring",
+    "ac": 1,
+    "int": 2,
+    "wis": 2,
+    "mana": 10,
+    "value": 500,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true
+  },
+  "fenwalker_boots": {
+    "name": "Fenwalker Boots",
+    "slot": "feet",
+    "ac": 6,
+    "sta": 2,
+    "agi": 2,
+    "value": 1500,
+    "rec_level": 13,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "sisskas_scaled_belt": {
+    "name": "Sisska's Scaled Belt",
+    "slot": "waist",
+    "ac": 6,
+    "str": 3,
+    "sta": 2,
+    "hp": 20,
+    "value": 2200,
+    "rec_level": 16,
+    "no_drop": true,
+    "lore": true
+  },
+  "gristlewort_amulet": {
+    "name": "Gristlewort's Amulet",
+    "slot": "neck",
+    "ac": 2,
+    "int": 3,
+    "wis": 3,
+    "mana": 30,
+    "value": 2200,
+    "rec_level": 17,
+    "no_drop": true,
+    "lore": true
+  },
+  "mudjaw_tooth_club": {
+    "name": "Mudjaw-Tooth Club",
+    "slot": "primary",
+    "dmg": 14,
+    "delay": 3.0,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_blunt",
+    "str": 3,
+    "sta": 2,
+    "value": 3000,
+    "rec_level": 17,
+    "no_drop": true,
+    "lore": true
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_about": "EverQuest-style alignment. A race is good, neutral or evil (races.json \"alignment\"); it sets where a new character starts with the cities' factions: an evil race starts hostile (scowls: guards attack on sight) with the good side's factions, and good and neutral races with the evil side's. Classes can shift it (necromancers are distrusted by the good cities). Applied once, as offsets on top of the faction's default (World.apply_alignment), and re-applied on a race change. Factions on neither side (Rainhold, Barrowhold, traders) are neutral ground.",
+  "sides": {
+    "good": [
+      "emberhold",
+      "watch",
+      "lanternhold",
+      "forgehold",
+      "galehold",
+      "dawn_pilgrims",
+      "hollowfolk"
+    ],
+    "evil": [
+      "murkhold",
+      "duskhold"
+    ]
+  },
+  "hostile": -1500,
+  "classes": {
+    "necromancer": {
+      "good": -300
+    }
+  }
+}

@@ -38,5 +38,23 @@
     "bonus": {"xp_loss_pct": -50},
     "bonus_text": "Remembered: dying costs half the experience.",
     "portrait": [1, 1]
+  },
+  "mire": {
+    "name": "Makarosh",
+    "title": "the Deep-Jawed",
+    "description": "The crocodile beneath the black water. He waits longer than anything alive, and everything that drinks from the bog drinks from his mouth. His faithful learn to be still.",
+    "bonus": {"notice_pct": -10},
+    "bonus_text": "Still as the deep: monsters notice you 10% later.",
+    "portrait": [261, 131],
+    "races": ["troll", "ogre"]
+  },
+  "horn": {
+    "name": "Mahishra",
+    "title": "the Mud-Horned",
+    "description": "The great buffalo who churned the first mud out of the world's floor. He is strength that doesn't hurry, and he despises anything that runs.",
+    "bonus": {"hp_pct": 5},
+    "bonus_text": "Hide like the herd's: +5% maximum health.",
+    "portrait": [1, 261],
+    "races": ["troll", "ogre"]
   }
 }

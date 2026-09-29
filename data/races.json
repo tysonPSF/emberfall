@@ -26,7 +26,8 @@
     "trait": {
       "xp_pct": 5
     },
-    "trait_text": "Adaptable: 5% more experience."
+    "trait_text": "Adaptable: 5% more experience.",
+    "alignment": "neutral"
   },
   "barbarian": {
     "name": "Barbarian",
@@ -55,7 +56,8 @@
     "trait": {
       "hp_pct": 5
     },
-    "trait_text": "Northern blood: 5% more health."
+    "trait_text": "Northern blood: 5% more health.",
+    "alignment": "neutral"
   },
   "wood_elf": {
     "name": "Wood Elf",
@@ -84,7 +86,8 @@
     "trait": {
       "run_speed_pct": 5
     },
-    "trait_text": "Fleet: 5% faster on foot."
+    "trait_text": "Fleet: 5% faster on foot.",
+    "alignment": "good"
   },
   "high_elf": {
     "name": "High Elf",
@@ -113,7 +116,8 @@
     "trait": {
       "mana_regen": 2
     },
-    "trait_text": "Deep wells: +2 mana every tick."
+    "trait_text": "Deep wells: +2 mana every tick.",
+    "alignment": "good"
   },
   "dark_elf": {
     "name": "Dark Elf",
@@ -133,7 +137,7 @@
       "magician",
       "necromancer"
     ],
-    "home": "rainhold",
+    "home": "duskhold",
     "scale": 1.0,
     "skin": [
       "8a90b0",
@@ -145,7 +149,9 @@
     "trait": {
       "night_vision": true
     },
-    "trait_text": "Ultravision: they see in the dark."
+    "trait_text": "Ultravision: they see in the dark.",
+    "alignment": "evil",
+    "moved_from": "rainhold"
   },
   "dwarf": {
     "name": "Dwarf",
@@ -174,7 +180,8 @@
     "trait": {
       "night_vision": true
     },
-    "trait_text": "Infravision: they see in the dark."
+    "trait_text": "Infravision: they see in the dark.",
+    "alignment": "good"
   },
   "halfling": {
     "name": "Halfling",
@@ -202,7 +209,8 @@
     "trait": {
       "notice_pct": -25
     },
-    "trait_text": "Unassuming: monsters notice them a quarter later."
+    "trait_text": "Unassuming: monsters notice them a quarter later.",
+    "alignment": "good"
   },
   "gnome": {
     "name": "Gnome",
@@ -234,7 +242,8 @@
     "trait": {
       "mana_pct": 10
     },
-    "trait_text": "Clever: 10% more mana."
+    "trait_text": "Clever: 10% more mana.",
+    "alignment": "neutral"
   },
   "troll": {
     "name": "Troll",
@@ -250,7 +259,7 @@
       "warrior",
       "shaman"
     ],
-    "home": "rainhold",
+    "home": "murkhold",
     "scale": 1.2,
     "skin": [
       "98ac86",
@@ -263,7 +272,9 @@
     "trait": {
       "hp_regen": 3
     },
-    "trait_text": "Regeneration: +3 health every tick."
+    "trait_text": "Regeneration: +3 health every tick.",
+    "alignment": "evil",
+    "moved_from": "rainhold"
   },
   "ogre": {
     "name": "Ogre",
@@ -279,7 +290,7 @@
       "warrior",
       "shaman"
     ],
-    "home": "rainhold",
+    "home": "murkhold",
     "scale": 1.25,
     "skin": [
       "c8b494",
@@ -292,6 +303,8 @@
     "trait": {
       "stun_immune": true
     },
-    "trait_text": "Unshakable: they can't be stunned."
+    "trait_text": "Unshakable: they can't be stunned.",
+    "alignment": "evil",
+    "moved_from": "rainhold"
   }
 }

@@ -56,6 +56,8 @@ var race_changed := false  # a character's one change of race has been used
 var grove_deities: Array = []  # the gods who have come to the Grove for this character (World.unlock_grove_deity)
 var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
 var friends: Array = []  # characters' names (/friend), saved with the character
+var alignment_mods: Dictionary = {}  # faction -> the offset alignment has put on it (World.apply_alignment), saved
+var home_seen := ""  # the race's home city this character was last given (World._follow_home moves the bind when it changes), saved
 var guild_name := ""  # shown as <Guild Name> under the nameplate (World._set_guild_tag)
 var guild_rank := ""  # leader, officer or member (your own; for the guild window)
 var _guild_label: Label3D
@@ -174,6 +176,8 @@ func from_save(d: Dictionary) -> void:
 	hair_changed = bool(d.get("hair_changed", false))
 	grove_deities = (d.get("grove", []) as Array).filter(func(g: Variant) -> bool: return str(g) in World.DEITY_IDS).map(func(g: Variant) -> String: return str(g))
 	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
+	alignment_mods = d.get("alignment_mods", {}) if d.get("alignment_mods") is Dictionary else {}
+	home_seen = str(d.get("home_seen", ""))
 	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
@@ -381,7 +385,7 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
-		"friends": friends,
+		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen,
 	}
 
 

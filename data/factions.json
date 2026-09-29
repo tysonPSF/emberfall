@@ -639,5 +639,45 @@
       "the_uninvited": -8,
       "barrowhold": 3
     }
+  },
+  "murkhold": {
+    "name": "Citizens of Murkhold",
+    "default": 100,
+    "on_kill": {"murkhold": -200},
+    "on_attack": {"murkhold": -50}
+  },
+  "duskhold": {
+    "name": "Citizens of Duskhold",
+    "default": 100,
+    "on_kill": {"duskhold": -200},
+    "on_attack": {"duskhold": -50}
+  },
+  "wallow_pondkin": {
+    "name": "Pondkin of the Wallow",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "wallow_pondkin": -10,
+      "murkhold": 3
+    }
+  },
+  "hearth_scouts": {
+    "name": "Scouts of the Hearth",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "hearth_scouts": -10,
+      "duskhold": 3
+    }
+  },
+  "gristle_coven": {
+    "name": "The Gristle Coven",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "gristle_coven": -10,
+      "duskhold": 3,
+      "murkhold": 2
+    }
   }
 }

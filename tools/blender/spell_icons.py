@@ -5211,6 +5211,82 @@ NEW_SPELLS = [false_sunfire, aimed_shot, track, flame_lick, ensnare, salve, stre
 			  ash_chill, searing_blow]
 
 
+# ---------------------------------------------------------------- The Blackwater gods
+
+BOG_GREEN = (6, 1)     # yellow-green into teal
+SEA_GREEN = (0, 2)     # sea green
+OCHRE = (4, 2)         # orange-yellow
+COPPER = (2, 0)        # the clay swatch reads as polished copper
+
+
+def makarosh_blessing():
+	"""Deep-Jaw's Patience: the crocodile god of the black water, jaws open, one eye burning over it."""
+	p = Prop("makarosh_blessing", 2201)
+	upper = [(-0.95, 0.66), (-0.9, 0.78), (-0.6, 0.8), (-0.2, 0.86), (0.15, 0.98), (0.45, 1.1), (0.72, 1.06), (0.9, 0.86), (0.9, 0.6),
+			 (0.5, 0.58), (0.0, 0.6), (-0.5, 0.6)]
+	icons._slab(p, upper[::-1], -0.12, 0.12, PINE, grad=(0.55, 1.0))                        # the upper jaw and skull
+	lower = [(-0.86, 0.34), (-0.8, 0.26), (-0.3, 0.2), (0.2, 0.2), (0.62, 0.3), (0.9, 0.56), (0.5, 0.46), (0.0, 0.4), (-0.5, 0.38)]
+	icons._slab(p, lower[::-1], -0.1, 0.1, PINE, grad=(0.7, 1.0))                          # the lower jaw, dropped open
+	icons._slab(p, [(-0.8, 0.36), (-0.8, 0.6), (0.85, 0.6), (0.85, 0.5)][::-1], 0.02, 0.06, CLOTH_RED, grad=(0.5, 1.0))   # its dark maw
+	for k in range(7):                                                                    # teeth down from the upper jaw...
+		x = -0.82 + k * 0.22
+		p.seg((x, -0.13, 0.63), (x + 0.02, -0.13, 0.48), 0.04, 0.0, BONE, sides=4)
+	for k in range(6):                                                                    # ...and up from the lower
+		x = -0.72 + k * 0.22
+		p.seg((x, -0.11, 0.37), (x - 0.02, -0.11, 0.5), 0.035, 0.0, BONE, sides=4)
+	for k in range(5):                                                                    # a row of scutes along the brow
+		x = -0.2 + k * 0.2
+		p.seg((x, 0.0, 0.88 + k * 0.05), (x + 0.03, 0.0, 0.98 + k * 0.05), 0.07, 0.0, IRON, sides=4)
+	p.blob((0.12, 0.1, 0.1), (-0.88, -0.1, 0.8), IRON, segs=(6, 4))                           # a nostril knob
+	p.blob((0.34, 0.26, 0.26), (0.46, -0.06, 1.1), PINE, segs=(10, 6), grad=(0.5, 1.0))      # the eye, raised
+	p.blob((0.24, 0.1, 0.18), (0.46, -0.18, 1.1), GOLD, segs=(10, 6), glow=2.4)               # burning gold
+	p.blob((0.05, 0.06, 0.17), (0.46, -0.23, 1.1), IRON, segs=(6, 4))                          # a slit pupil
+	for k in range(3):                                                                    # the black water it waits in
+		z = 0.02 - k * 0.1
+		pts = [(-0.95 + t * 0.19, -0.15, z + math.sin(t * 1.4 + k) * 0.03) for t in range(11)]
+		for a, b in zip(pts, pts[1:]):
+			p.seg(a, b, 0.028 - k * 0.006, 0.028 - k * 0.006, SEA_GREEN if k == 0 else BOG_GREEN, sides=4, glow=1.6 - k * 0.4)
+	return p.build()
+
+
+def mahishra_blessing():
+	"""Mud-Horn's Strength: the water-buffalo god's head under great sweeping horns."""
+	p = Prop("mahishra_blessing", 2203)
+	p.blob((0.56, 0.5, 0.74), (0, 0, 0.5), COPPER, segs=(12, 8), grad=(0.3, 1.0))           # a broad copper-dark head
+	p.blob((0.5, 0.4, 0.34), (0, -0.12, 0.2), COPPER, segs=(10, 6), grad=(0.0, 0.5))         # its muzzle
+	for sx in (-1, 1):
+		p.blob((0.08, 0.05, 0.1), (sx * 0.1, -0.31, 0.2), IRON, segs=(6, 4))                  # nostrils
+		p.blob((0.1, 0.08, 0.08), (sx * 0.2, -0.22, 0.58), GOLD, segs=(6, 4), glow=2.2)      # eyes, glowing
+		p.blob((0.3, 0.12, 0.14), (sx * 0.38, 0.0, 0.62), COPPER, rot=(0, sx * 20, 0), segs=(8, 5), grad=(0.2, 0.8))   # ears
+		pts = []                                                                          # great horns sweeping out, back and up
+		for k in range(12):
+			t = k / 11
+			a = math.radians(215 + t * 185)
+			pts.append((sx * (0.62 + math.cos(a) * 0.5), 0.05 + t * 0.08, 1.12 + math.sin(a) * 0.5))
+		for i, (a, b) in enumerate(zip(pts, pts[1:])):
+			r0 = 0.15 * (1 - i / 11) + 0.02
+			r1 = 0.15 * (1 - (i + 1) / 11) + 0.02 if i < 10 else 0.0
+			p.seg(a, b, r0, r1, OCHRE, sides=8, grad=(0.0, 0.8))
+		for i in (1, 3, 5):                                                               # ridged near the base
+			a = Vector(pts[i])
+			d = (Vector(pts[i + 1]) - a).normalized()
+			r = 0.15 * (1 - i / 11) + 0.035
+			p.seg(tuple(a), tuple(a + d * 0.03), r, r, WOOD, sides=8)
+	p.seg((-0.2, 0.02, 0.84), (0.2, 0.02, 0.84), 0.13, 0.13, COPPER, sides=8, grad=(0.4, 1.0))   # the boss between them
+	for k in range(5):                                                                    # a shaggy forelock
+		x = -0.14 + k * 0.07
+		p.seg((x, -0.18, 0.9), (x * 1.2, -0.28, 0.66 - (k % 2) * 0.06), 0.04, 0.0, WOOD, sides=4)
+	c = (0, -0.3, 0.04)
+	for k in range(12):                                                                   # a copper ring through its nose, gleaming
+		a0, a1 = k * math.tau / 12, (k + 1) * math.tau / 12
+		p.seg((c[0] + math.cos(a0) * 0.1, c[1], c[2] + math.sin(a0) * 0.1), (c[0] + math.cos(a1) * 0.1, c[1], c[2] + math.sin(a1) * 0.1),
+			  0.025, 0.025, GOLD, sides=5, glow=1.8)
+	return p.build()
+
+
+BLACKWATER = [makarosh_blessing, mahishra_blessing]
+
+
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
@@ -5228,7 +5304,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT + BLACKWATER}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
 								   action_friends, action_guild, action_journal]}

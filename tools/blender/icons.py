@@ -9407,27 +9407,33 @@ SATCHEL_C, SATCHEL_R = (0, 0, 0.38), (0.52, 0.2, 0.38)
 
 def _pickers_satchel(p):
 	"""The jackal-hide satchel, sewn with pale moth silk; returns where the clasp goes."""
+	return _satchel(p, AMBER, HIDE, CLOTH_WHITE, HIDE)
+
+
+def _satchel(p, body, flap, stitch, strap, body_grad=(0.6, 1.0), flap_grad=(0.1, 0.6), stitch_glow=0.8):
+	"""A round satchel with a flap sewn along its edge and seams and a long strap;
+	returns where the clasp goes."""
 	c, r = SATCHEL_C, SATCHEL_R
-	p.blob((1.04, 0.4, 0.76), c, AMBER, segs=(16, 10), grad=(0.6, 1.0))                      # golden jackal hide
-	p.blob((0.9, 0.34, 0.12), (0, 0, 0.04), AMBER, segs=(14, 5), grad=(0.8, 1.0))            # a flat bottom
-	edge = _egg_flap(p, c, r, 0.44, 0.2, 0.16, HIDE, off=0.035, grad=(0.1, 0.6))            # a paler flap
+	p.blob((1.04, 0.4, 0.76), c, body, segs=(16, 10), grad=body_grad)
+	p.blob((0.9, 0.34, 0.12), (0, 0, 0.04), body, segs=(14, 5), grad=(0.8, 1.0))            # a flat bottom
+	edge = _egg_flap(p, c, r, 0.44, 0.2, 0.16, flap, off=0.035, grad=flap_grad)
 	for k in range(len(edge) - 1):                                                          # pale silk stitching inside its edge
 		if k % 2:
 			continue
 		a, b = edge[k], edge[k + 1]
 		a2 = (a[0] * 0.9, a[2] + (c[2] + 0.2 - a[2]) * 0.1)
 		b2 = (b[0] * 0.9, b[2] + (c[2] + 0.2 - b[2]) * 0.1)
-		p.seg(_egg_front(c, r, a2[0], a2[1], 0.055), _egg_front(c, r, b2[0], b2[1], 0.055), 0.016, 0.016, CLOTH_WHITE, sides=4, glow=0.8)
+		p.seg(_egg_front(c, r, a2[0], a2[1], 0.055), _egg_front(c, r, b2[0], b2[1], 0.055), 0.016, 0.016, stitch, sides=4, glow=stitch_glow)
 	for sx in (-1, 1):                                                                      # and down both side seams
 		for k in range(4):
 			z = 0.1 + k * 0.08
 			x = sx * r[0] * 0.86 * math.sqrt(max(1 - ((z - c[2]) / r[2]) ** 2, 0.0))
-			p.seg(_egg_front(c, r, x, z, 0.02), _egg_front(c, r, x, z + 0.04, 0.02), 0.015, 0.015, CLOTH_WHITE, sides=4, glow=0.8)
+			p.seg(_egg_front(c, r, x, z, 0.02), _egg_front(c, r, x, z + 0.04, 0.02), 0.015, 0.015, stitch, sides=4, glow=stitch_glow)
 	pts = []
 	for k in range(11):                                                                     # a long shoulder strap
 		a = math.pi * k / 10
 		pts.append((-math.cos(a) * 0.5, 0.1, 0.4 + math.sin(a) * 0.62))
-	_line(p, pts, 0.045, 0.045, HIDE, sides=5, grad=(0.3, 0.8))
+	_line(p, pts, 0.045, 0.045, strap, sides=5, grad=(0.3, 0.8))
 	return _egg_front(c, r, 0.0, 0.22, 0.07)
 
 
@@ -9559,7 +9565,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

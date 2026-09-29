@@ -109,6 +109,19 @@ ZONES = [
     ('the_unlit',       'The Unlit',          'boneyard',   (44, 47), 512, (2, 6), 'fog'),
     ('lastwalk',        'Lastwalk',           'boneyard',   (46, 49), 512, (0, 7), 'fog'),
     ('timirajs_table',  "Timiraj's Table",    'boneyard',   (48, 50), 512, (1, 7), 'fog'),
+    # ---- THE BLACKWATER - the evil races' homelands, no deity of its own.
+    # ADDED 2026-09-29 with alignment: dark elves, trolls and ogres start here,
+    # not in the good races' lands, since good cities' guards attack them on
+    # sight. West and south of Rainhold, which is neutral and is how both
+    # homelands reach the rest of the world (the Weeping Throat at 20-24).
+    ('murkhold',        'Murkhold',           'blackwater', (1, 1),   224, (-3, 1), 'city'),
+    ('the_wallow',      'The Wallow',         'blackwater', (1, 10),  384, (-2, 1), 'water'),
+    ('duskwood',        'Duskwood',           'blackwater', (1, 10),  384, (-1, 0), 'wood'),
+    ('the_rotfen',      'The Rotfen',         'blackwater', (10, 18), 448, (-2, 0), 'water'),
+    # Underground, below Duskwood: no cell. It's reached on foot through a cave
+    # door in Duskwood (DOORS), like the Emberhold crypt, so it holds no cell
+    # and has no passes, but it is walkable.
+    ('duskhold',        'Duskhold',           'blackwater', (1, 1),   224, None,     'city'),
     # Touching both The Unlit and Timiraj's Table, so the last city has two ways
     # in rather than one dead-end road.
     ('barrowhold',      'Barrowhold',         'boneyard',   (40, 50), 224, (2, 7), 'city'),
@@ -121,7 +134,10 @@ AREAS = {
     'ashfall':     {'name': 'The Ashfall',    'deity': 'fire',      'accent': '#d4552f'},
     'standingsky': {'name': 'The Standing Sky','deity': 'wind',     'accent': '#b8c4cc'},
     'boneyard':    {'name': 'The Boneyard',   'deity': 'dark',      'accent': '#6b5a9e'},
+    'blackwater':  {'name': 'The Blackwater', 'deity': None,        'accent': '#4d5a3c'},
 }
+# Two homelands, two cities: Murkhold (trolls, ogres) and Duskhold (dark elves).
+CITIES_PER_AREA = {'blackwater': 2}
 
 # WHAT IS ACTUALLY BUILT, read off the disk rather than typed.
 #
@@ -148,11 +164,21 @@ BUILT = discover_built()
 EXISTING = BUILT
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
+# Dungeons under a zone, entered by a cave's zone line: off the grid like the interiors.
+DUNGEONS = {'wellspring'}
 # The passes CLAUDE.md reserved for future zones ("a future zone replaces one
 # with a zone line"). This is NOT a list of passes still closed: the check below
 # only makes sure the layout gives each of them a neighbour. Thornwood's east
 # pass stays listed though Hollowmere now opens it.
 ROCKSLIDES = {'thornwood': ['north', 'east', 'west']}
+
+# Off-grid zones walked into through a door in another zone (a cave, a
+# stair), not a pass: they count as reachable on foot through their host.
+DOORS = {'duskhold': 'duskwood'}
+# Neighboring cells that do NOT open onto each other: the mountain stays shut.
+# The Wallow's newcomers would face Reedmere at 22-26, and Duskwood's dark
+# elves would walk into Emberhold, whose guards attack them on sight.
+SEALED = {frozenset(('the_wallow', 'reedmere')), frozenset(('duskwood', 'emberhold'))}
 
 DIRS = {'north': (0, 1), 'south': (0, -1), 'east': (1, 0), 'west': (-1, 0)}
 OPPOSITE = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
@@ -166,7 +192,9 @@ def build():
                'size': size, 'cell': list(cell) if cell else None, 'kind': kind,
                'built': zid in BUILT,
                'existing': zid in EXISTING,
-               'reached': 'teleport' if zid in TELEPORT_ONLY else 'foot'}
+               'reached': 'teleport' if zid in TELEPORT_ONLY else ('door' if zid in DOORS else 'foot')}
+        if zid in DOORS:
+            rec['door_in'] = DOORS[zid]           # the zone whose door leads here
         by_id[zid] = rec
         if cell:
             by_cell[cell] = rec
@@ -177,7 +205,7 @@ def build():
         gx, gy = rec['cell']
         for d, (dx, dy) in DIRS.items():
             other = by_cell.get((gx + dx, gy + dy))
-            if not other:
+            if not other or frozenset((rec['id'], other['id'])) in SEALED:
                 continue
             if rec['id'] < other['id']:      # one entry per border
                 links.append({'a': rec['id'], 'a_edge': d,
@@ -195,9 +223,14 @@ def check(by_id, by_cell, links):
     ok(len(by_cell) == len(on_grid),
        f'{len(on_grid)} zones on {len(by_cell)} distinct cells - no two share one')
     stray = sorted(BUILT - set(by_id))
-    ok(not stray or all('_' in x for x in stray),
+    ok(not stray or all('_' in x or x in DUNGEONS for x in stray),
        f'{len(BUILT)} zone files on disk'
        + (f'; not on the grid: {", ".join(stray)} (interiors are expected)' if stray else ''))
+    ok(all(not by_id[d]['cell'] and by_id[h]['cell'] for d, h in DOORS.items()),
+       f'{len(DOORS)} zone(s) behind a door hold no cell, and their host does: '
+       f'{", ".join(by_id[d]["name"] + " (in " + by_id[h]["name"] + ")" for d, h in DOORS.items())}')
+    ok(all(frozenset((a, b)) not in SEALED for l in links for a, b in [(l['a'], l['b'])]),
+       f'{len(SEALED)} sealed neighbor pair(s) have no border')
     ok(all(not by_id[t]['cell'] for t in TELEPORT_ONLY),
        f'{len(TELEPORT_ONLY)} teleport-only zone(s) hold no cell: '
        f'{", ".join(by_id[t]["name"] for t in TELEPORT_ONLY)}')
@@ -221,6 +254,9 @@ def check(by_id, by_cell, links):
     # every zone reachable on foot from the starting zone
     seen, stack = {'emberhold'}, ['emberhold']
     adj = {}
+    for inside, host in DOORS.items():  # a door counts as a way in on foot
+        adj.setdefault(inside, []).append(host)
+        adj.setdefault(host, []).append(inside)
     for l in links:
         adj.setdefault(l['a'], []).append(l['b'])
         adj.setdefault(l['b'], []).append(l['a'])
@@ -246,7 +282,8 @@ def check(by_id, by_cell, links):
 
     for a, meta in AREAS.items():
         cities = [r['name'] for r in by_id.values() if r['area'] == a and r['kind'] == 'city']
-        ok(len(cities) == 1, f'{meta["name"]}: one city, {cities[0] if cities else "NONE"}')
+        want = CITIES_PER_AREA.get(a, 1)
+        ok(len(cities) == want, f'{meta["name"]}: {want} cit{"y" if want == 1 else "ies"}, {", ".join(cities) if cities else "NONE"}')
     bad = [r['name'] for r in by_id.values() if r['kind'] == 'city' and not r['name'].endswith('hold')]
     ok(not bad, 'every city ends in -hold' + ('' if not bad else f' (not {bad})'))
 

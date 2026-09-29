@@ -73,8 +73,15 @@ func setup(id: String, name_override := "") -> void:
 
 
 func _ready() -> void:
+	var extra := {}
+	var body_scale := 1.0
+	if data.has("race"):  # a troll or a dark elf, say: their skin, height and bolt-ons on the class body
+		extra["race"] = str(data["race"])
+		body_scale = float(GameData.races.get(str(data["race"]), {}).get("scale", 1.0))
+	if data.has("gender"):
+		extra["gender"] = str(data["gender"])
 	var body := "prop:" + str(data["prop"]) if data.has("prop") else "humanoid"  # a thing, not a person: the spring crystal
-	build_body(body, Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
+	build_body(body, Color.WHITE, body_scale, str(data.get("model", "")), str(data.get("weapon", "")), extra)
 	if Net.dedicated:
 		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name

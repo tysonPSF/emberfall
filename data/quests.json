@@ -4361,6 +4361,357 @@
       "lanternhold": 10
     }
   },
+  "wallow_pondkin_beads": {
+    "name": "Frogs in the Pools",
+    "giver": "wallow_hunter_snikk",
+    "wants": {
+      "pondkin_bead": 4
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 40
+    },
+    "accept_text": "You have taken on a task: Frogs in the Pools. Bring Hunter Snikk four pondkin beads.",
+    "ready_text": "Beads! How many frogs, {name}?",
+    "complete_text": "Four frogs fewer. Good.",
+    "faction": {
+      "murkhold": 10
+    },
+    "first_reward_item": "toadhide_sandals",
+    "first_complete_text": "Take these. Toad hide, so the bog doesn't eat your feet.",
+    "start_keyword": "pondkin",
+    "repeatable": true
+  },
+  "wallow_wetbelly": {
+    "name": "Wetbelly's Crown",
+    "giver": "wallow_hunter_snikk",
+    "wants": {
+      "wetbellys_crown": 1
+    },
+    "reward": {
+      "xp": 500,
+      "coin": 150
+    },
+    "accept_text": "You have taken on a task: Wetbelly's Crown. Bring Hunter Snikk the pondkin chief's reed crown.",
+    "ready_text": "Is that... the crown? Give it here.",
+    "complete_text": "Ha! It stinks of frog. It's perfect.",
+    "faction": {
+      "murkhold": 25
+    },
+    "first_reward_item": "wetbellys_ring",
+    "first_complete_text": "His signet was sewn into it. Yours now.",
+    "start_keyword": "wetbelly"
+  },
+  "wallow_gulpmaw": {
+    "name": "The Toad That Ate a Dog",
+    "giver": "wallow_hunter_snikk",
+    "wants": {
+      "gulpmaws_tongue": 1
+    },
+    "reward": {
+      "xp": 450,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: The Toad That Ate a Dog. Bring Hunter Snikk Gulpmaw's tongue.",
+    "ready_text": "The tongue? You killed Gulpmaw?",
+    "complete_text": "For you, Grunt. Good dog.",
+    "faction": {
+      "murkhold": 20
+    },
+    "first_reward_item": "gulpmaw_hide_bracer",
+    "first_complete_text": "Gorra made this from its hide while you were gone. Don't ask how.",
+    "start_keyword": "gulpmaw"
+  },
+  "bogtanner_skins": {
+    "name": "The Bogtanner's Pack (1 of 3)",
+    "giver": "murk_outfitter",
+    "wants": {
+      "wallow_toad_skin": 4
+    },
+    "reward": {
+      "xp": 40,
+      "coin": 10
+    },
+    "accept_text": "You have taken on a task: The Bogtanner's Pack. Bring Hidemonger Gorra four wallow toad skins.",
+    "ready_text": "Skins? Let's see them.",
+    "complete_text": "Scrape, stretch, soak in the black water... there. A panel.",
+    "faction": {
+      "murkhold": 5
+    },
+    "first_reward_item": "toadskin_panel",
+    "first_complete_text": "Hunter Snikk out in the Wallow sews the old way. Take him this and ask him about [Gorra]; he'll want leech teeth for the stitching.",
+    "start_keyword": "pack",
+    "next": "bogtanner_stitch"
+  },
+  "bogtanner_stitch": {
+    "name": "The Bogtanner's Pack (2 of 3)",
+    "giver": "wallow_hunter_snikk",
+    "wants": {
+      "toadskin_panel": 1,
+      "swamp_leech_teeth": 3
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "accept_text": "You have taken on a task: The Bogtanner's Pack. Bring Hunter Snikk the toadskin panel and three swamp leech teeth.",
+    "ready_text": "Gorra's panel, and teeth. Hand them over.",
+    "complete_text": "Leech teeth make the best needles. Stitch, stitch... done.",
+    "faction": {
+      "murkhold": 5
+    },
+    "first_reward_item": "bogtanner_pack_body",
+    "first_complete_text": "Back to Gorra for the clasp. She'll want a mud turtle's shell for it.",
+    "next": "bogtanner_clasp"
+  },
+  "bogtanner_clasp": {
+    "name": "The Bogtanner's Pack (3 of 3)",
+    "giver": "murk_outfitter",
+    "wants": {
+      "bogtanner_pack_body": 1,
+      "mud_turtle_shell": 1
+    },
+    "reward": {
+      "xp": 150,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: The Bogtanner's Pack. Bring Hidemonger Gorra the stitched pack and a mud turtle shell.",
+    "ready_text": "Shell and pack. Good.",
+    "complete_text": "Shell clasp, nothing gets in, nothing gets out unless you want it. A real bog-runner's pack.",
+    "faction": {
+      "murkhold": 10
+    },
+    "first_reward_item": "gorras_bogtanner_pack",
+    "first_complete_text": "It's yours, {name}. Don't fill it with frogs."
+  },
+  "dusk_scout_badges": {
+    "name": "Eyes in the Wood",
+    "giver": "dusk_sentinel_vaelith",
+    "wants": {
+      "hearth_scout_badge": 4
+    },
+    "reward": {
+      "xp": 140,
+      "coin": 50
+    },
+    "accept_text": "You have taken on a task: Eyes in the Wood. Bring Sentinel Vaelith four Hearth scouts' badges.",
+    "ready_text": "Badges. How many eyes closed?",
+    "complete_text": "Four fewer spies. Duskhold thanks you.",
+    "faction": {
+      "duskhold": 10
+    },
+    "first_reward_item": "gloomsilk_gloves",
+    "first_complete_text": "Take these. Silk, so your hands stay quiet.",
+    "start_keyword": "scouts",
+    "repeatable": true
+  },
+  "dusk_aldren": {
+    "name": "The Captain's Orders",
+    "giver": "dusk_sentinel_vaelith",
+    "wants": {
+      "aldrens_orders": 1
+    },
+    "reward": {
+      "xp": 500,
+      "coin": 150
+    },
+    "accept_text": "You have taken on a task: The Captain's Orders. Bring Sentinel Vaelith Scout-Captain Aldren's orders.",
+    "ready_text": "His orders? Let me read them.",
+    "complete_text": "...They know about the cave. Of course they do. Good work.",
+    "faction": {
+      "duskhold": 25
+    },
+    "first_reward_item": "scout_captains_ring",
+    "first_complete_text": "His ring. It suits you better.",
+    "start_keyword": "aldren"
+  },
+  "dusk_silkmother": {
+    "name": "The Silkmother's Fang",
+    "giver": "dusk_sentinel_vaelith",
+    "wants": {
+      "vyss_fang": 1
+    },
+    "reward": {
+      "xp": 450,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: The Silkmother's Fang. Bring Sentinel Vaelith the Silkmother's fang.",
+    "ready_text": "Her fang! Carefully, {name}.",
+    "complete_text": "Still wet with venom. Perfect.",
+    "faction": {
+      "duskhold": 20
+    },
+    "first_reward_item": "silkmother_stiletto",
+    "first_complete_text": "Our smiths set its twin into a blade. Take it.",
+    "start_keyword": "silkmother"
+  },
+  "silkweave_silk": {
+    "name": "The Silkweave Satchel (1 of 3)",
+    "giver": "dusk_outfitter",
+    "wants": {
+      "duskwood_silk": 4
+    },
+    "reward": {
+      "xp": 40,
+      "coin": 10
+    },
+    "accept_text": "You have taken on a task: The Silkweave Satchel. Bring Silkweaver Dresna four strands of Duskwood spider silk.",
+    "ready_text": "Silk? Show me.",
+    "complete_text": "Wound, drawn, spun... there. Duskwood silk, strong as wire.",
+    "faction": {
+      "duskhold": 5
+    },
+    "first_reward_item": "spun_duskwood_silk",
+    "first_complete_text": "Take it up to Huntress Ilvra by the cave mouth and ask her about [Dresna]. She'll want gloomfang pelts for the body.",
+    "start_keyword": "satchel",
+    "next": "silkweave_body"
+  },
+  "silkweave_body": {
+    "name": "The Silkweave Satchel (2 of 3)",
+    "giver": "dusk_huntress_ilvra",
+    "wants": {
+      "spun_duskwood_silk": 1,
+      "gloomfang_pelt": 2
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "accept_text": "You have taken on a task: The Silkweave Satchel. Bring Huntress Ilvra the spun silk and two gloomfang pelts.",
+    "ready_text": "Dresna's silk, and pelts. Give them here.",
+    "complete_text": "Pelt outside, silk seams... done.",
+    "faction": {
+      "duskhold": 5
+    },
+    "first_reward_item": "gloomfang_satchel_body",
+    "first_complete_text": "Back to Dresna for the clasp. She'll want shade dust to set it.",
+    "next": "silkweave_clasp"
+  },
+  "silkweave_clasp": {
+    "name": "The Silkweave Satchel (3 of 3)",
+    "giver": "dusk_outfitter",
+    "wants": {
+      "gloomfang_satchel_body": 1,
+      "shade_dust": 1
+    },
+    "reward": {
+      "xp": 150,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: The Silkweave Satchel. Bring Silkweaver Dresna the gloomfang satchel and some shade dust.",
+    "ready_text": "The satchel, and shade dust. Good.",
+    "complete_text": "A clasp of set shadow: it opens for you and no one else.",
+    "faction": {
+      "duskhold": 10
+    },
+    "first_reward_item": "dresnas_silkweave_satchel",
+    "first_complete_text": "It's yours, {name}."
+  },
+  "rotfen_scales": {
+    "name": "Scales for the Fenwarden",
+    "giver": "fen_warden_grisk",
+    "wants": {
+      "mirescale_scale": 4
+    },
+    "reward": {
+      "xp": 600,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: Scales for the Fenwarden. Bring Fenwarden Grisk four mirescale scales.",
+    "ready_text": "Scales. Good.",
+    "complete_text": "That's four lizards who won't touch my traps.",
+    "faction": {
+      "murkhold": 10,
+      "duskhold": 5
+    },
+    "first_reward_item": "fenwalker_boots",
+    "first_complete_text": "Boots for fen-walking. You'll need them.",
+    "start_keyword": "lizardfolk",
+    "repeatable": true
+  },
+  "rotfen_sisska": {
+    "name": "The Chief's Totem",
+    "giver": "fen_warden_grisk",
+    "wants": {
+      "chief_sisskas_totem": 1
+    },
+    "reward": {
+      "xp": 1800,
+      "coin": 400
+    },
+    "accept_text": "You have taken on a task: The Chief's Totem. Bring Fenwarden Grisk Chief Sisska's totem.",
+    "ready_text": "Sisska's totem!",
+    "complete_text": "Into the fire with it. The camp will be leaderless for a while.",
+    "faction": {
+      "murkhold": 25,
+      "duskhold": 10
+    },
+    "first_reward_item": "sisskas_scaled_belt",
+    "first_complete_text": "Her belt. Wear it well.",
+    "start_keyword": "sisska"
+  },
+  "rotfen_mudjaw": {
+    "name": "Old Mudjaw's Tooth",
+    "giver": "fen_warden_grisk",
+    "wants": {
+      "mudjaws_tooth": 1
+    },
+    "reward": {
+      "xp": 2000,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Old Mudjaw's Tooth. Bring Fenwarden Grisk one of Old Mudjaw's teeth.",
+    "ready_text": "A tooth that size... you really did it.",
+    "complete_text": "Makarosh must be pleased. Or jealous.",
+    "faction": {
+      "murkhold": 25,
+      "duskhold": 10
+    },
+    "first_reward_item": "mudjaw_tooth_club",
+    "first_complete_text": "I set the other half in a club. Take it.",
+    "start_keyword": "mudjaw"
+  },
+  "rotfen_hag_charms": {
+    "name": "The Gristle Coven",
+    "giver": "blade_sister_nyssa",
+    "wants": {
+      "hag_charm": 3
+    },
+    "reward": {
+      "xp": 600,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: The Gristle Coven. Bring Blade-Sister Nyssa three hag's bone charms.",
+    "ready_text": "Charms. Hand them over.",
+    "complete_text": "Three fewer pots stirring our dead.",
+    "faction": {
+      "duskhold": 10,
+      "murkhold": 5
+    },
+    "start_keyword": "hags",
+    "repeatable": true
+  },
+  "rotfen_gristlewort": {
+    "name": "Mother Gristlewort",
+    "giver": "blade_sister_nyssa",
+    "wants": {
+      "gristleworts_heart": 1
+    },
+    "reward": {
+      "xp": 1900,
+      "coin": 450
+    },
+    "accept_text": "You have taken on a task: Mother Gristlewort. Bring Blade-Sister Nyssa Mother Gristlewort's heart.",
+    "ready_text": "Her heart. Show me.",
+    "complete_text": "Withered and black. As it should be.",
+    "faction": {
+      "duskhold": 25,
+      "murkhold": 10
+    },
+    "first_reward_item": "gristlewort_amulet",
+    "first_complete_text": "Her amulet. The coven's power, turned to our use.",
+    "start_keyword": "gristlewort"
+  },
   "merricks_line_sinew": {
     "name": "A Line That'll Hold (1)",
     "giver": "merrick_tavern",

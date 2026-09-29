@@ -14,7 +14,7 @@ CELL = 1.0
 # Zones with no cell are not on the grid at all. They still have to be SEEN, so
 # each gets a display berth well clear of the map, drawn dashed and tied to
 # nothing - the picture should say "you cannot walk here" without a caption.
-BERTH = {'the_grove': (-2.0, 0.15)}
+BERTH = {'the_grove': (2.0, 0.0), 'duskhold': (-1.0, -0.95)}  # off-grid zones: where on the picture they're drawn
 BG, INK, DIM = '#14161a', '#e8e6e0', '#8b9199'
 fig, ax = plt.subplots(figsize=(18.5, 17.5), facecolor=BG)
 ax.set_facecolor(BG)
@@ -80,10 +80,17 @@ for z in ZONES.values():
         # stacked UNDER the band line, not on top of it: a small cell already
         # puts its name and level outside the box, so these are rows four and five
         base = (ty - 0.115) if tight else (gy - 0.085)
-        ax.text(gx, base - 0.125, 'TELEPORT ONLY', ha='center', va='center',
+        if z['existing']:
+            base -= 0.11                              # below the BUILT line, not on it
+        door = z.get('reached') == 'door'
+        host = ZONES.get(z.get('door_in', '')) if door else None
+        ax.text(gx, base - 0.125, 'THROUGH A DOOR' if door else 'TELEPORT ONLY', ha='center', va='center',
                 color=acc, fontsize=7.4, fontweight='bold', alpha=0.9, zorder=3)
-        ax.text(gx, base - 0.245, 'no passes, no borders', ha='center',
+        ax.text(gx, base - 0.245, f'a cave in {host["name"]}' if host else 'no passes, no borders', ha='center',
                 va='center', color=DIM, fontsize=7.4, zorder=3)
+        if host:                                      # a dotted line up to the zone its door is in
+            hx, hy = at(host)
+            ax.plot([gx, hx], [gy + s / 2, hy - 0.45], color=DIM, linestyle=(0, (2, 3)), linewidth=1.4, zorder=1)
 
 xs = [at(z)[0] for z in ZONES.values()]; ys = [at(z)[1] for z in ZONES.values()]
 ax.set_xlim(min(xs) - 0.85, max(xs) + 0.85)
@@ -113,7 +120,7 @@ leg += [Line2D([], [], color='#f0c674', lw=2.6, label='border between two areas'
                label='already built'),
         Line2D([], [], marker='s', linestyle='none', markersize=11,
                markerfacecolor=(1, 1, 1, .10), markeredgecolor=DIM,
-               label='off the grid — reached by teleport')]
+               label='off the grid — reached by teleport, or by a door')]
 lg = ax.legend(handles=leg, loc='lower left', bbox_to_anchor=(-0.02, -0.055),
                frameon=False, fontsize=10, labelcolor=INK, ncol=2,
                handletextpad=0.9, columnspacing=2.4, labelspacing=0.75)

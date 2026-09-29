@@ -9,6 +9,8 @@ render_mode blend_mix, depth_draw_opaque, cull_disabled, specular_schlick_ggx;
 uniform vec3 shallow : source_color = vec3(0.22, 0.42, 0.46);
 uniform vec3 deep : source_color = vec3(0.05, 0.16, 0.24);
 uniform vec3 sky : source_color = vec3(0.62, 0.74, 0.86);
+uniform float foam = 0.35;  // the pale edge where the water runs thin (a hand-deep bog wants little)
+uniform float shine = 0.6;  // how much it mirrors the sky (a black bog barely does)
 uniform float murk = 0.9;  // meters of water until it looks fully deep
 uniform float flow_speed = 0.0;  // meters per second downstream
 uniform float lava = 0.0;  // 1: molten rock instead of water (Cinderpass): a glowing flow under a drifting dark crust
@@ -38,10 +40,10 @@ void fragment() {
 	// the sky shows in the water more the flatter you look across it
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	vec3 water = mix(mix(shallow, deep, t), sky, 0.08 + fresnel * 0.5);
-	ALBEDO = mix(water, vec3(0.6, 0.7, 0.66), rim * 0.35);
+	ALBEDO = mix(water, vec3(0.6, 0.7, 0.66), rim * foam);
 	ALPHA = (mix(0.7, 0.95, t) + rim * 0.2) * smoothstep(0.0, 0.03, thick);
-	ROUGHNESS = 0.06;
-	SPECULAR = 0.6;
+	ROUGHNESS = mix(0.4, 0.06, shine / 0.6);
+	SPECULAR = shine;
 	if (taint > 0.0) {
 		vec3 foul = mix(mix(vec3(0.20, 0.27, 0.05), vec3(0.06, 0.09, 0.02), t), sky * vec3(0.6, 0.7, 0.4), 0.03 + fresnel * 0.2);
 		// scum: slow blotches drifting on the surface, matte and nearly opaque

@@ -5654,5 +5654,779 @@
       "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
       "unknown": "Charters and rolls, {name}. That's all I know."
     }
+  },
+  "murk_priest_makarosh": {
+    "name": "Deep-Priestess Gharra",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Be still, {name}. The black water is listening. I keep the Deep-Jawed's idol, and I can [bind] your soul to Murkhold, so the bog takes you back when the world spits you out. Followers of Makarosh may ask for his [blessing].",
+      "bind": "Down on your knees in the mud, {name}. ...There. Makarosh has your scent now: you'll wake in Murkhold.",
+      "unknown": "The water doesn't answer that. Neither do I."
+    },
+    "title": "Keeper of the Deep-Jawed",
+    "gender": "female",
+    "binds": true,
+    "blesses": {
+      "deity": "mire",
+      "spell": "makarosh_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "His blessing is for his own, {name}. The water doesn't feed strangers.",
+      "wait": "You had his blessing within the hour. Patience, {name}. He has more of it than you.",
+      "give": "Hold still... The deep takes a breath, and gives it to you."
+    }
+  },
+  "murk_priest_mahishra": {
+    "name": "Horn-Speaker Brugg",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "HRAH. Welcome to the churned ground, {name}. I speak for the Mud-Horned. Followers of Mahishra can ask me for his [blessing]; anyone can ask me to [bind] them to Murkhold.",
+      "bind": "Stand firm. Firmer. ...Good. Mahishra's mud remembers your feet now.",
+      "unknown": "Brugg does not know. Brugg does not mind."
+    },
+    "title": "Voice of the Mud-Horned",
+    "binds": true,
+    "blesses": {
+      "deity": "horn",
+      "spell": "mahishra_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The Mud-Horned lends his strength to his own herd, {name}. Not to you.",
+      "wait": "Once an hour. The herd doesn't stampede twice before breakfast.",
+      "give": "Lower your head. ...Feel that? That's the herd behind you."
+    }
+  },
+  "murk_gm_warrior": {
+    "name": "Warlord Kragga",
+    "level": 40,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "You want to hit things harder, {name}? Good. Hit them first, hit them twice, and don't stop until they're mud. I train Murkhold's warriors.",
+      "unknown": "Ask the priests. I hit things."
+    },
+    "title": "Warrior Guildmaster",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not a fighter, {name}? Then go find someone who teaches what you are."
+    }
+  },
+  "murk_gm_shaman": {
+    "name": "Bog-Mother Yeshka",
+    "level": 40,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "The spirits of the bog are hungry and patient, {name}, like everything that lives here. If you hear them, I can teach you to answer.",
+      "unknown": "The spirits don't say."
+    },
+    "title": "Shaman Guildmaster",
+    "gender": "female",
+    "guildmaster": {
+      "class": "shaman",
+      "refuse": "The spirits don't talk to you, {name}. I can't change that."
+    }
+  },
+  "murk_banker": {
+    "name": "Hoardkeeper Mulg",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "Mulg keeps your things. Mulg does not eat your things. Mostly. Press G.",
+      "unknown": "Mulg only keeps things."
+    },
+    "title": "Murkhold Hoard",
+    "banker": true
+  },
+  "murk_registrar": {
+    "name": "Registrar Oolg",
+    "level": 30,
+    "model": "mage",
+    "weapon": "",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "Oolg writes the names of the warbands, {name}. Want a [charter]?",
+      "charter": "Ten platinum, and level 10 at least. Stand here and say /guildcreate <name>. Oolg will write it big.",
+      "guild": "A warband with a name, and the others hear each other with /gu. Ask Oolg for a [charter].",
+      "unknown": "Oolg only writes names."
+    },
+    "title": "Guild Registrar",
+    "guild_registrar": true
+  },
+  "murk_provisioner": {
+    "name": "Provisioner Sleesh",
+    "level": 25,
+    "model": "rogue",
+    "weapon": "",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Flour, salt, thread, bait... all the things that aren't food yet, {name}. Press G.",
+      "unknown": "Buying or not?"
+    },
+    "title": "Provisioner",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "fishing_pole",
+        "fishing_bait",
+        "loaf_of_bread"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "murk_outfitter": {
+    "name": "Hidemonger Gorra",
+    "level": 25,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "Hides, straps, sacks. Everything a new bog-runner needs, {name}. And if you've got legs and patience, I could use help with a proper [pack].",
+      "pack": "A Bogtanner's pack, like the old hunters carried: toad skin, sewn tight, a shell clasp. Bring me four wallow toad skins from the pools east of the gate and I'll start on it.",
+      "unknown": "Ask Sleesh. Sleesh knows everything and sells half of it."
+    },
+    "title": "Outfitter",
+    "merchant": {
+      "sells": [
+        "leather_cap",
+        "leather_tunic",
+        "leather_leggings",
+        "cloth_cap",
+        "patchwork_pants",
+        "leather_gloves",
+        "leather_boots",
+        "leather_sleeves",
+        "leather_belt",
+        "leather_sling",
+        "sling_stone",
+        "small_sack",
+        "leather_backpack",
+        "hardened_leather_jerkin",
+        "hardened_leather_leggings",
+        "hardened_leather_gloves",
+        "hardened_leather_boots"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "murk_smith": {
+    "name": "Smith Thuk",
+    "level": 25,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Iron and more iron, {name}. Some of it even has an edge. Press G.",
+      "unknown": "Thuk makes weapons. Thuk doesn't make conversation."
+    },
+    "title": "Blacksmith",
+    "merchant": {
+      "sells": [
+        "iron_dagger",
+        "iron_short_sword",
+        "iron_hand_axe",
+        "oak_staff",
+        "hunting_shortbow",
+        "crude_arrow",
+        "iron_coif",
+        "iron_greaves",
+        "studded_tunic",
+        "round_shield",
+        "iron_kite_shield",
+        "iron_gauntlets",
+        "iron_boots",
+        "tempered_dirk",
+        "tempered_longsword",
+        "tempered_war_axe",
+        "tempered_helm",
+        "tempered_breastplate",
+        "tempered_vambraces",
+        "tempered_gauntlets",
+        "tempered_greaves",
+        "tempered_boots",
+        "tempered_kite_shield"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "murkhold_guard": {
+    "name": "a Murkhold bruiser",
+    "level": 35,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Keep walking, {name}. Murkhold doesn't care for strangers and cares less for trouble.",
+      "unknown": "Ask someone who cares."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For Murkhold!"
+      ],
+      "hunt_shouts": [
+        "Not in Murkhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Murkhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "murkhold_guard_ogre": {
+    "name": "a Murkhold bruiser",
+    "level": 35,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "faction": "murkhold",
+    "race": "ogre",
+    "dialogue": {
+      "hail": "Keep walking, {name}. Murkhold doesn't care for strangers and cares less for trouble.",
+      "unknown": "Ask someone who cares."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For Murkhold!"
+      ],
+      "hunt_shouts": [
+        "Not in Murkhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Murkhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "wallow_hunter_snikk": {
+    "name": "Hunter Snikk",
+    "level": 20,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Quiet, {name}. You'll scare off dinner. The Wallow feeds Murkhold: rats, toads, leeches, and the frog-things to the north-east who think it's theirs. Help me keep the [pondkin] off our pools.",
+      "pondkin": "Frog-folk. They raid our traps and call it hunting. Bring me four of their beads and I'll pay, every time. And their chief, [Wetbelly], wears a crown of reeds I'd like on my wall.",
+      "wetbelly": "Fat old thing, sits in the middle of their huts to the north-east and croaks orders. Bring me his crown.",
+      "gulpmaw": "The biggest toad in the Wallow. Swallowed my brother's dog. Bring me its tongue and I'll have something made for you.",
+      "unknown": "Ask Gorra in the city. Or the priests. Not me."
+    },
+    "title": "Wallow Hunter"
+  },
+  "dusk_sentinel_vaelith": {
+    "name": "Sentinel Vaelith",
+    "level": 25,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Keep to the shadows, {name}. The Emberhold [scouts] camp in the east of the wood, spying on the cave. Every badge you take from them is one less pair of eyes.",
+      "scouts": "Humans from the Hearth. Four of their badges, and Duskhold pays, every time. Their captain, [Aldren], carries orders I want to read.",
+      "aldren": "Scout-Captain Aldren. He never leaves their outpost. Bring me his orders.",
+      "silkmother": "The great spider in the west of the wood. Her fang is worth a great deal to the right alchemist.",
+      "unknown": "Ask below, in Duskhold."
+    },
+    "title": "Duskwood Watch",
+    "gender": "female"
+  },
+  "dusk_huntress_ilvra": {
+    "name": "Huntress Ilvra",
+    "level": 25,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The wood is kind to those who know it, {name}, and cruel to the rest. Dresna in the city sent you about the [satchel]?",
+      "satchel": "Bring Dresna's silk to me, with two gloomfang pelts, and I'll make the body of it.",
+      "dresna": "Dresna weaves in Duskhold. If she sent silk, give it here.",
+      "unknown": "The trees don't say, and neither do I."
+    },
+    "title": "Huntress",
+    "gender": "female"
+  },
+  "dusk_priest_seyra": {
+    "name": "Umbral Mother Seyra",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The Unlit remembers you, {name}, as he remembers everyone. Here, under the world, we remember him back. I can [bind] your soul to his shrine, and his followers may ask for his [blessing].",
+      "bind": "Close your eyes. It's no darker than it is with them open. ...There. You'll wake here, in his dark.",
+      "unknown": "Ask the dark. It knows."
+    },
+    "title": "Keeper of the Unlit Shrine",
+    "gender": "female",
+    "binds": true,
+    "blesses": {
+      "deity": "dark",
+      "spell": "veil_of_the_unlit",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "His veil is for his own, {name}.",
+      "wait": "Within the hour, {name}. Even the dark keeps time.",
+      "give": "Hold still. ...The veil settles."
+    }
+  },
+  "dusk_gm_warrior": {
+    "name": "Blademaster Zhaelith",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Steel is honest, {name}. Everything else down here lies.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Warrior Guildmaster",
+    "gender": "male",
+    "guildmaster": {
+      "class": "warrior",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_gm_cleric": {
+    "name": "High Priestess Ysmae",
+    "level": 40,
+    "model": "knight",
+    "weapon": "wand",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The Unlit gives mercy only to his own, {name}, and so do I. If you're mine, kneel.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Cleric Guildmaster",
+    "gender": "female",
+    "guildmaster": {
+      "class": "cleric",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_gm_rogue": {
+    "name": "Shade-Master Vessk",
+    "level": 40,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "You didn't hear me coming. Good. Neither will they, once I've finished with you.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Rogue Guildmaster",
+    "gender": "male",
+    "guildmaster": {
+      "class": "rogue",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_gm_wizard": {
+    "name": "Magister Olvaine",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Fire burns brighter in the dark, {name}. Let me show you how bright.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Wizard Guildmaster",
+    "gender": "female",
+    "guildmaster": {
+      "class": "wizard",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_gm_magician": {
+    "name": "Summoner Ilzareth",
+    "level": 40,
+    "model": "magician",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "What you call, you command, {name}. What you command, you keep.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Magician Guildmaster",
+    "gender": "male",
+    "guildmaster": {
+      "class": "magician",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_gm_necromancer": {
+    "name": "Grave-Lord Mhaerik",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The dead are patient servants, {name}. Learn to be a patient master.",
+      "unknown": "Ask the Umbral Mother."
+    },
+    "title": "Necromancer Guildmaster",
+    "gender": "male",
+    "guildmaster": {
+      "class": "necromancer",
+      "refuse": "Not my art, {name}. Look elsewhere."
+    }
+  },
+  "dusk_banker": {
+    "name": "Vaultkeeper Nyx",
+    "level": 20,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Your treasures are safe beneath the world, {name}. Safer than you are. Press G.",
+      "unknown": "I keep the vault."
+    },
+    "title": "Duskhold Vault",
+    "gender": "female",
+    "banker": true
+  },
+  "dusk_registrar": {
+    "name": "Registrar Tsyl",
+    "level": 30,
+    "model": "mage",
+    "weapon": "",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The houses of Duskhold are written in my book, {name}. Would you found one? Ask for a [charter].",
+      "charter": "Ten platinum, and you must have reached level 10. Stand before me and say /guildcreate <name>.",
+      "guild": "A house: a name, a roster, and a voice its members hear anywhere with /gu. Ask for a [charter].",
+      "unknown": "I keep the book of houses."
+    },
+    "title": "Guild Registrar",
+    "guild_registrar": true
+  },
+  "dusk_provisioner": {
+    "name": "Provisioner Aelis",
+    "level": 25,
+    "model": "rogue",
+    "weapon": "",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Salt, thread, flour and the rest, {name}, carried down the long stair at great expense. Press G.",
+      "unknown": "Buying?"
+    },
+    "title": "Provisioner",
+    "gender": "female",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "fishing_pole",
+        "fishing_bait",
+        "loaf_of_bread"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "dusk_outfitter": {
+    "name": "Silkweaver Dresna",
+    "level": 25,
+    "model": "mage",
+    "weapon": "",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Silk and leather for those who go up into the wood, {name}. And if you'll gather for me, I'll weave you a proper [satchel].",
+      "satchel": "A silkweave satchel, the kind the wood-runners carry. Start me with four strands of Duskwood spider silk; the little spiders in the wood above make it.",
+      "unknown": "I weave. I don't gossip."
+    },
+    "title": "Outfitter",
+    "gender": "female",
+    "merchant": {
+      "sells": [
+        "leather_cap",
+        "leather_tunic",
+        "leather_leggings",
+        "cloth_cap",
+        "patchwork_pants",
+        "leather_gloves",
+        "leather_boots",
+        "leather_sleeves",
+        "leather_belt",
+        "leather_sling",
+        "sling_stone",
+        "small_sack",
+        "leather_backpack",
+        "hardened_leather_jerkin",
+        "hardened_leather_leggings",
+        "hardened_leather_gloves",
+        "hardened_leather_boots"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "dusk_smith": {
+    "name": "Smith Kaelvor",
+    "level": 25,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Dark steel, forged at the heat of the deep vents. Press G, {name}.",
+      "unknown": "I forge. That's all."
+    },
+    "title": "Blacksmith",
+    "merchant": {
+      "sells": [
+        "iron_dagger",
+        "iron_short_sword",
+        "iron_hand_axe",
+        "oak_staff",
+        "hunting_shortbow",
+        "crude_arrow",
+        "iron_coif",
+        "iron_greaves",
+        "studded_tunic",
+        "round_shield",
+        "iron_kite_shield",
+        "iron_gauntlets",
+        "iron_boots",
+        "tempered_dirk",
+        "tempered_longsword",
+        "tempered_war_axe",
+        "tempered_helm",
+        "tempered_breastplate",
+        "tempered_vambraces",
+        "tempered_gauntlets",
+        "tempered_greaves",
+        "tempered_boots",
+        "tempered_kite_shield"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "duskhold_guard": {
+    "name": "a Duskhold sentinel",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Keep walking, {name}. Duskhold doesn't care for strangers and cares less for trouble.",
+      "unknown": "Ask someone who cares."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For Duskhold!"
+      ],
+      "hunt_shouts": [
+        "Not in Duskhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Duskhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "duskhold_guard_f": {
+    "name": "a Duskhold sentinel",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Keep walking, {name}. Duskhold doesn't care for strangers and cares less for trouble.",
+      "unknown": "Ask someone who cares."
+    },
+    "gender": "female",
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For Duskhold!"
+      ],
+      "hunt_shouts": [
+        "Not in Duskhold!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "Duskhold will answer that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "fen_warden_grisk": {
+    "name": "Fenwarden Grisk",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Murkhold and Duskhold both hunt the Rotfen, {name}, and neither trusts the other. I don't care, as long as the [lizardfolk] stop taking my traps.",
+      "lizardfolk": "The Mirescale, west of here. Four of their scales and I pay, every time. Their chief, [Sisska], carries a totem I want burned.",
+      "sisska": "Chief Sisska. Biggest lizard in the camp to the west. Bring me the totem.",
+      "mudjaw": "Old Mudjaw. A crocodile older than Murkhold, in the deep pool south-west. Bring me one of its teeth, if you can pull one.",
+      "unknown": "Ask Nyssa. She pretends to know everything."
+    },
+    "title": "Fenwarden"
+  },
+  "blade_sister_nyssa": {
+    "name": "Blade-Sister Nyssa",
+    "level": 30,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Grisk hunts lizards. I hunt [hags]. The coven in the south-east steals our dead for their pots.",
+      "hags": "The Gristle Coven. Bring me three of their bone charms and I'll pay each time. Their mother, [Gristlewort], I want dead.",
+      "gristlewort": "Mother Gristlewort. She stirs the big cauldron in the coven's camp. Bring me her heart.",
+      "unknown": "Grisk might know. He won't tell you, but he might know."
+    },
+    "title": "Blade of Duskhold",
+    "gender": "female"
   }
 }
