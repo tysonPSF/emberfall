@@ -105,6 +105,7 @@ const SECTIONS := [
 	["emotes", "greenmoor"],
 	["terrace_roads", "greenmoor"],
 	["social", "greenmoor"],
+	["exit_levels", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7571,4 +7572,22 @@ func _t_social() -> void:
 	print("social: left -> guild %s, guild still exists %s" % [p.guild_name if p.guild_name != "" else "none", World.guilds().name_taken("Ember Wardens")])
 	World.log_message.disconnect(grab)
 	print("social: lines %s" % [lines])
+	p.level = 1
+
+
+## The compass names the exit you face, with its levels after the name.
+func _t_exit_levels() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z := main.zone as Zone
+	p.level = 8
+	for zl: Dictionary in z.data.get("zone_lines", []):
+		var at := Vector3(float(zl["pos"][0]), 0, float(zl["pos"][1]))
+		var from := at * 0.6
+		p.global_position = Vector3(from.x, z.height_at(from.x, from.z) + 1.0, from.z)
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		await _wait(0.6)
+		print("exit_levels: facing the line to %s" % zl["to"])
+		await _shot("9exit_" + str(zl["to"]))
 	p.level = 1
