@@ -119,6 +119,7 @@ const SECTIONS := [
 	["evil_gods", "greenmoor"],
 	["dusk_gods", "greenmoor"],
 	["login_home", "rainhold"],
+	["quest_marks", "greenmoor"],
 	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
@@ -8269,6 +8270,48 @@ func _t_char_preview() -> void:
 ## time after its people moved goes to Murkhold; a dark elf who logged out in
 ## Emberhold (bound there) is bound in Duskhold and taken there; a troll who
 ## already moved may stay in Rainhold; a human in Emberhold stays.
+## The floating quest marks: "!" over Warden Holt while he has work for you,
+## gone once you've taken it all, "?" when you carry what he wants, and
+## nothing for someone his people won't talk to.
+func _t_quest_marks() -> void:
+	var p := World.local_player
+	var holt: Npc = _npcs()["warden_holt"]
+	var keep := [p.quests.duplicate(true), p.factions.duplicate()]
+	var mark := func() -> String:
+		holt._mark_check = 0.0
+		holt._update_mark(0.016)
+		return holt._mark.text if holt._mark.visible else "(none)"
+	p.quests.clear()
+	print("quest_marks: fresh -> '%s'" % mark.call())
+	_stand_by(p, holt)
+	p.global_position += Vector3(0, 0, 4)
+	p.face_toward(holt.global_position)
+	await _wait(0.6)
+	await _shot("9quest_mark_bang")
+	for quest_id: String in World._quests_of_npc("warden_holt"):
+		if str(GameData.quests[quest_id].get("start_keyword", "")) != "":
+			World._accept_quest(p, quest_id)
+	print("quest_marks: every quest of his taken -> '%s'" % mark.call())
+	p.pack.add_entry(Pack.entry("gnoll_fang", 4))
+	print("quest_marks: carrying four gnoll fangs -> '%s'" % mark.call())
+	await _wait(0.3)
+	await _shot("9quest_mark_ready")
+	p.pack.remove("gnoll_fang", 4)
+	for quest_id: String in World._quests_of_npc("warden_holt"):
+		p.quests[quest_id] = {"active": false, "completions": 1}
+	print("quest_marks: all done -> '%s'" % mark.call())
+	p.quests.clear()
+	p.factions[str(holt.faction)] = -3000
+	print("quest_marks: at -3000 with %s -> '%s'" % [holt.faction, mark.call()])
+	var marked := 0
+	for n: Npc in _npcs().values():
+		if n._mark != null:
+			marked += 1
+	print("quest_marks: %d npcs here can show a mark" % marked)
+	p.quests = keep[0]
+	p.factions = keep[1]
+
+
 func _t_login_home() -> void:
 	var main := get_parent()
 	var p := World.local_player
