@@ -55,6 +55,7 @@ const BINDINGS := {
 	"spellbook": [KEY_P],
 	"friends": [KEY_F],
 	"guild": [KEY_U],
+	"journal": [KEY_J],
 }
 
 ## Ctrl+M: mouselook on or off, anywhere.

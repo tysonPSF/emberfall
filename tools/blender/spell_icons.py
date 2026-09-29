@@ -1272,6 +1272,17 @@ def action_friends():
 	return p.build()
 
 
+def action_journal():
+	p = Prop("action_journal", 361)
+	p.box((0.7, 0.05, 0.85), (0, 0, 0.5), CLOTH_WHITE, rot=(0, 0, 8))              # a quest scroll, unrolled
+	for z in (0.08, 0.92):                                                          # its two rolled ends
+		p.seg((-0.42, 0, z), (0.42, 0, z), 0.07, 0.07, HIDE, sides=8)
+	for k in range(4):                                                              # lines of writing
+		p.box((0.42 - (k % 2) * 0.12, 0.02, 0.03), (-0.04, -0.04, 0.72 - k * 0.14), STONE_DARK)
+	p.blob((0.12, 0.05, 0.12), (0.22, -0.05, 0.22), CLOTH_RED, segs=(8, 6), glow=0.4)  # a wax seal
+	return p.build()
+
+
 def action_guild():
 	p = Prop("action_guild", 359)
 	p.seg((-0.35, 0, 0.0), (-0.35, 0, 1.1), 0.05, 0.05, WOOD, sides=6)             # a banner on its pole
@@ -5220,7 +5231,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
-								   action_friends, action_guild]}
+								   action_friends, action_guild, action_journal]}
 
 
 def main():
