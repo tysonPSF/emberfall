@@ -200,6 +200,12 @@ const SECTIONS := [
 	["landmarks_tw", "thornwood"],
 	["camp", "greenmoor"],
 	["zone_unload", "greenmoor"],
+	["merricks_line", "emberhold_tavern"],
+	["wellspring", "wellspring"],
+	["wellspring_quest", "wellspring"],
+	["corran", "greenmoor"],
+	["corran_support", "greenmoor"],
+	["corran_boss", "wellspring"],
 ]
 
 var shots_dir := ""
@@ -276,7 +282,11 @@ func _t_landmarks() -> void:
 
 func _t_merrick() -> void:
 	var p := World.local_player
-	# Merrick at the pond: hail, ask about the trout, then open his shop
+	# Merrick at the pond: hail, ask about the trout, then open his shop. He's
+	# only back at the pond once his line is done (merricks_line tests the rest).
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests[q] = {"active": false, "completions": 1}
+	await _wait(0.7)  # Npc._update_sight shows him
 	for obj: Node3D in World.objects.values():
 		if obj is Npc and (obj as Npc).npc_id == "merrick":
 			var merrick := obj as Npc
@@ -2359,6 +2369,9 @@ func _ensure_zone(zone_id: String) -> void:
 	var p := World.local_player
 	if main.zone.zone_id == zone_id:
 		return
+	if zone_id == "wellspring" and not World.quest_started(p, "merricks_line_spring"):  # Watchman Corran lets nobody in before Merrick's step 2
+		p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+		p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
 	if p.dead:
 		await _wait(5.0)
 	# step into the zone line that starts the shortest way there
@@ -3451,6 +3464,526 @@ func _t_rogue_guild() -> void:
 	await _shot("9zp_char_create")
 	print("rogue_guild: Vessa at %s; character creation offers %s" % [vessa.global_position, GameData.classes.keys()])
 	cc.queue_free()
+
+
+## Merrick's line: grumbling at a tavern table (seated), hail and "sinew" take
+## step 1, five rat sinews finish it: he jolts up (Sit_Chair_Shock), tells the
+## story a line at a time and sits up eager for this player, and step 2 (the
+## sour spring) starts once he's done talking. He stays in the tavern until
+## step 2 is done; the pond is fouled.
+func _t_merricks_line() -> void:
+	var p := World.local_player
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests.erase(q)
+	await _wait(0.7)
+	var merrick: Npc = _npcs().get("merrick_tavern")
+	if merrick == null:
+		print("merricks_line: FAIL no Merrick in %s" % get_parent().zone.zone_id)
+		return
+	var model := merrick.visual as CharacterModel
+	var rat_drops: Array = GameData.mobs["large_rat"]["loot"].map(func(l: Dictionary) -> String: return "%s %s" % [l["item"], l["chance"]])
+	print("merricks_line: large rat drops %s; sinew icon %s" % [rat_drops, GameData.item_icon("rat_sinew") != null])
+	print("merricks_line: tavern Merrick seen=%s sitting=%s shown=%s; pond Merrick seen=%s" % [World.sees(p, merrick), merrick.sitting,
+			merrick.visual.visible, World.quest_shows(p, GameData.npcs["merrick"])])
+	World.request_set_target(p.entity_id, merrick.entity_id)
+	p.global_position = merrick.global_position + Vector3(2.4, 0.5, -3.4)  # across the table from him, a little to the side
+	p.face_toward(merrick.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 0.0  # first person, so you aren't in the way
+	p.pitch = -0.25
+	World.request_say(p.entity_id, "spring")
+	print("merricks_line: 'spring' before the sinew -> step 2 %s" % p.quests.get("merricks_line_spring", {}))
+	World.request_hail(p.entity_id)
+	World.request_say(p.entity_id, "sinew")
+	await _wait(1.0)
+	print("merricks_line: seated clip %s; after 'sinew' active=%s" % [model.anim.current_animation, p.quests.get("merricks_line_sinew", {}).get("active", false)])
+	await _shot("9zz_merrick_seated")
+	p.pack.add("rat_sinew", 5)
+	await _hand_in(p, merrick, ["rat_sinew"])
+	await _wait(0.35)
+	print("merricks_line: hand-in -> clip %s" % model.anim.current_animation)
+	await _shot("9zz_merrick_shock")
+	await _wait(0.6)
+	await _shot("9zz_merrick_pump")
+	await _wait(2.5)
+	print("merricks_line: after the shock -> clip %s; step 1 %s; tavern Merrick seen=%s; pond Merrick seen=%s" % [model.anim.current_animation,
+			p.quests.get("merricks_line_sinew", {}), World.sees(p, merrick), World.quest_shows(p, GameData.npcs["merrick"])])
+	await _shot("9zz_merrick_eager")
+	for k in 40:
+		if p.quests.get("merricks_line_spring", {}).get("active", false):
+			break
+		await _wait(1.0)
+	print("merricks_line: story told -> step 2 %s" % p.quests.get("merricks_line_spring", {}))
+	World.request_hail(p.entity_id)
+	await _wait(0.5)
+	p.zoom = 6.0
+	await _shot("9zz_merrick_story")
+	await _ensure_zone("greenmoor")
+	p.global_position = get_parent().zone.ground(-114, 157) + Vector3.UP
+	p.face_toward(get_parent().zone.ground(-125, 145))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.35
+	World.time_override = 13.0
+	await _wait(1.5)
+	await _shot("9zz_pond_fouled")
+	World.time_override = -1.0
+
+
+## The Wellspring, the cave under Greenmoor (Merrick's line): its passages,
+## the fouled creek, and the spring cavern with the cocooned crystal, seen at
+## points along the way; and that you can walk the main way from end to end.
+func _t_wellspring() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 50  # a gray-con visitor: the cave leaves you be while it's looked over
+	p.recalc_stats()
+	p.hp = p.max_hp
+	var z: Zone = main.zone
+	if z.tunnel == null:
+		print("wellspring: FAIL no tunnel in %s" % z.zone_id)
+		return
+	var bp: Vector3 = z.bind_point
+	print("wellspring: respawn point %s: in the passage %s, %.1f m over the floor, roof %.1f m above it" % [bp, z.tunnel.inside(bp.x, bp.z, 1.0), bp.y - z.tunnel.sample(bp.x, bp.z).y, z.tunnel.ceiling_at(bp.x, bp.z, 0.0) - bp.y])
+	World.time_override = 12.0
+	var views := [["entrance", Vector2(126, 127), Vector2(100, 121)], ["narrows", Vector2(20, 80), Vector2(2, 62)],
+			["chamber", Vector2(-96, 14), Vector2(-104, -4)], ["creek", Vector2(-40, -30), Vector2(-62, -40)],
+			["deadend", Vector2(-60, 104), Vector2(-74, 112)], ["cavern", Vector2(68, -114), Vector2(46, -130)]]
+	for v: Array in views:
+		p.global_position = z.ground(v[1].x, v[1].y) + Vector3.UP
+		p.face_toward(z.ground(v[2].x, v[2].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		var s := z.tunnel.sample(v[1].x, v[1].y)
+		print("wellspring: %s floor %.1f clear %.1f roof %.1f above" % [v[0], s.y, s.x, z.tunnel.ceiling_at(v[1].x, v[1].y, 0.0) - z.height_at(v[1].x, v[1].y)])
+		await _shot("9zw_%s" % v[0])
+	# is the main way through one piece? ask the navigation mesh for a path end to end
+	var map := z.get_world_3d().navigation_map
+	for k in 40:
+		if NavigationServer3D.map_get_iteration_id(map) > 0:
+			break
+		await _wait(0.5)
+	var route := NavigationServer3D.map_get_path(map, z.ground(128, 127), z.ground(62, -118), true)
+	var got := route[route.size() - 1] if route.size() > 0 else Vector3.INF
+	var walked := 0.0
+	for i in route.size() - 1:
+		walked += route[i].distance_to(route[i + 1])
+	print("wellspring: path entrance -> cavern: %d points, %.0f m, ends %.1f m from the cavern" % [route.size(), walked, got.distance_to(z.ground(62, -118))])
+	# the chests at the ends of the side passages
+	var chests: Array = z.get_children().filter(func(n: Node) -> bool: return n is Corpse and (n as Corpse).owner_name == "")
+	for ch: Corpse in chests:
+		print("wellspring: %s at %s: %d coin, %s" % [ch.display_name, Vector2(ch.global_position.x, ch.global_position.z), ch.coin,
+				ch.entries.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], int(e.get("count", 1))])])
+	if not chests.is_empty():
+		var ch: Corpse = chests[0]
+		p.level = 50  # a gray-con visitor: the monsters by the chest leave you be
+		p.recalc_stats()
+		p.hp = p.max_hp
+		p.global_position = ch.global_position + Vector3(2.5, 0.5, 2.5)
+		p.face_toward(ch.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 4.0
+		await _wait(0.6)
+		await _shot("9zw_chest")
+		var coin := p.coin
+		print("wellspring: opening %s: %.1f m away, coin %d, dead %s" % [ch.display_name, p.distance_to(ch), ch.coin, p.dead])
+		var pos := ch.global_position
+		World.request_loot_open(p.entity_id, ch.object_id)
+		await _wait(0.2)
+		var opened: Corpse = null
+		for n: Node in z.get_children():
+			if n is Corpse and (n as Corpse).global_position.distance_to(pos) < 0.5 and not (n as Corpse).is_queued_for_deletion():
+				opened = n
+		p.global_position = opened.global_position + Vector3(1.5, 0.5, 0)  # right at it (a monster may have shoved you off)
+		World.request_loot_all(p.entity_id, opened.object_id)
+		await _wait(0.3)
+		print("wellspring: looted it: +%d coin; the chest still there %s, open %s, holding %d" % [p.coin - coin, is_instance_valid(opened), opened.look.get("open", false), opened.entries.size()])
+		World.request_loot_close(p.entity_id)
+		p.global_position = opened.global_position + opened.global_transform.basis.z * -2.6 + Vector3.UP * 0.5
+		p.face_toward(opened.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 0.0
+		p.pitch = -0.45
+		await _wait(0.4)
+		await _shot("9zw_chest_open")
+		p.zoom = 6.0
+	World.time_override = -1.0
+
+
+## Merrick's line, steps 2 to 4, played through: the Wellspring's monsters are
+## all there; a web stops you until it's torn down (no corpse, no XP); the
+## Blightmother brings her own music and drops her heart and venom sac; the
+## heart frees the crystal (a vial for you, the cave's water clean for you);
+## the venom sac sends Merrick walking out of the tavern; the vial poured into
+## Greenmoor's pond clears it.
+func _t_wellspring_quest() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 50  # the cave's monsters leave a gray-con player be, so the test isn't a fight
+	p.recalc_stats()
+	p.hp = p.max_hp
+	for q in ["merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests.erase(q)
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	World.time_override = 12.0
+	await _wait(1.0)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("wellspring_quest: monsters %s" % counts)
+	# a web across the passage
+	var web := _nearest_mob(p, "thick_web")
+	if web != null:
+		var ahead := -web.global_transform.basis.z  # it faces down the passage
+		p.global_position = web.global_position + ahead * 3.0 + Vector3.UP * 0.5
+		p.face_toward(web.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		await _wait(0.5)
+		await _shot("9zx_web")
+		var start := p.global_position
+		for k in 90:
+			p.velocity = -ahead * 4.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("wellspring_quest: walked at the web: %.1f m of 6 (blocked if under 3)" % start.distance_to(p.global_position))
+		var xp := p.xp
+		World.damage(web, 9999, p)
+		await _wait(0.3)
+		var corpses: int = main.zone.get_children().filter(func(c: Node) -> bool: return c is Corpse and (c as Corpse).global_position.distance_to(start) < 6.0).size()
+		start = p.global_position
+		for k in 90:
+			p.velocity = -ahead * 4.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("wellspring_quest: web torn: xp +%d, corpses %d, then walked %.1f m" % [p.xp - xp, corpses, start.distance_to(p.global_position)])
+	# the Blightmother
+	var boss := _nearest_mob(p, "blightmother")
+	if boss == null:
+		print("wellspring_quest: FAIL no Blightmother")
+		World.time_override = -1.0
+		return
+	p.global_position = boss.global_position + Vector3(14, 0.5, -4)
+	p.face_toward(boss.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.2
+	await _wait(0.6)
+	print("wellspring_quest: Blightmother level %d, %d hp, scale %.1f; fight music would be '%s'" % [boss.level, boss.max_hp, boss.body_scale, Music._boss_track(p)])
+	await _shot("9zx_blightmother")
+	var fell := boss.global_position
+	World.damage(boss, 9999, p)
+	await _wait(0.5)
+	for c: Node in main.zone.get_children():
+		if c is Corpse and (c as Corpse).global_position.distance_to(fell) < 2.0:
+			p.global_position = fell + Vector3(1.5, 0.5, 0)
+			World.request_loot_all(p.entity_id, (c as Corpse).object_id)
+	await _wait(0.3)
+	print("wellspring_quest: looted heart %d, venom sac %d" % [p.pack.count("blight_heart"), p.pack.count("blightmothers_venom_sac")])
+	# the crystal
+	var crystal: Npc = _npcs().get("spring_crystal")
+	_stand_by(p, crystal)
+	p.global_position = crystal.global_position + Vector3(7.2, 0.5, 5.4)  # on the bank, in reach
+	p.global_position.y = main.zone.ground(p.global_position.x, p.global_position.z).y + 0.5
+	p.face_toward(crystal.global_position)
+	p.zoom = 7.0
+	await _wait(0.6)
+	print("wellspring_quest: crystal before: %s" % crystal.look.get("shape"))
+	await _shot("9zx_crystal_cocooned")
+	await _hand_in(p, crystal, ["blight_heart"])
+	await _wait(1.6)
+	var clean: bool = main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"])
+	print("wellspring_quest: crystal after: %s; vial %d; cave water clean %s; step 2 %s" % [crystal.look.get("shape"), p.pack.count("vial_of_spring_water"), clean, p.quests.get("merricks_line_spring")])
+	await _shot("9zx_crystal_freed")
+	for k in 30:
+		if p.quests.has("merricks_line_word"):
+			break
+		await _wait(1.0)
+	print("wellspring_quest: step 3 %s" % p.quests.get("merricks_line_word"))
+	# Merrick, in the tavern
+	await _ensure_zone("emberhold_tavern")
+	await _wait(1.0)
+	var merrick: Npc = _npcs().get("merrick_tavern")
+	p.global_position = merrick.global_position + Vector3(2.4, 0.5, -3.4)
+	p.face_toward(merrick.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 0.0
+	World.request_set_target(p.entity_id, merrick.entity_id)
+	await _hand_in(p, merrick, ["blightmothers_venom_sac"])
+	for k in 40:
+		if p.quests.has("merricks_line_pond"):
+			break
+		await _wait(1.0)
+	await _wait(1.2)
+	var walker: Npc = _npcs().get("merrick_walker")
+	print("wellspring_quest: step 4 %s; seated Merrick seen %s; walker %s" % [p.quests.get("merricks_line_pond"), World.sees(p, merrick), walker != null])
+	p.zoom = 6.0
+	await _shot("9zx_merrick_leaves")
+	for k in 20:
+		if not is_instance_valid(walker) or walker == null:
+			break
+		await _wait(0.5)
+	print("wellspring_quest: walker gone %s" % (walker == null or not is_instance_valid(walker)))
+	# the pond
+	await _ensure_zone("greenmoor")
+	print("wellspring_quest: the moment you're back in Greenmoor, the pond is clean: %s" % main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"]))
+	await _wait(1.0)
+	var pond_merrick: Npc = _npcs().get("merrick")
+	print("wellspring_quest: pond Merrick seen %s" % World.sees(p, pond_merrick))
+	_stand_by(p, pond_merrick)
+	await _hand_in(p, pond_merrick, ["vial_of_spring_water"])
+	await _wait(1.6)
+	var pond_clean: bool = main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"])
+	print("wellspring_quest: step 4 %s; pond clean %s" % [p.quests.get("merricks_line_pond"), pond_clean])
+	print("wellspring_quest: hailing pond Merrick after the quest:")
+	World.request_hail(p.entity_id)
+	p.global_position = main.zone.ground(-114, 157) + Vector3.UP
+	p.face_toward(main.zone.ground(-125, 145))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.35
+	await _wait(1.0)
+	await _shot("9zx_pond_clean")
+	World.time_override = -1.0
+
+
+## Watchman Corran: turns you back from the Wellspring before Merrick's step
+## 2, goes in with you once it's under way (levelled to your class), follows
+## a few steps behind, sits when you sit, fights only what you fight, takes
+## your heals; and the cave's monsters stay dead.
+func _t_corran() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 6
+	p.recalc_stats()
+	p.hp = p.max_hp
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests.erase(q)
+	var line := -1
+	for i in (main.zone.data["zone_lines"] as Array).size():
+		if str(main.zone.data["zone_lines"][i]["to"]) == "wellspring":
+			line = i
+	var zl: Dictionary = main.zone.data["zone_lines"][line]
+	p.global_position = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1])) + Vector3.UP * 0.3
+	World.request_zone_line(p.entity_id, line)
+	await _wait(1.0)
+	print("corran: before the quest -> still in %s, put back at %s" % [main.zone.zone_id, Vector2(p.global_position.x, p.global_position.z)])
+	var corran: Npc = _npcs().get("watchman_corran")
+	p.face_toward(corran.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 6.0
+	await _wait(0.4)
+	await _shot("9zy_corran_refuses")
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	p.global_position = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1])) + Vector3.UP * 0.3
+	World.request_zone_line(p.entity_id, line)
+	for k in 30:
+		await _wait(0.5)
+		if main.zone != null and main.zone.zone_id == "wellspring" and World.get_object(p.companion_id) != null:
+			break
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran: FAIL no companion in %s" % main.zone.zone_id)
+		return
+	World.request_set_target(p.entity_id, c.entity_id)
+	var heals_him := World._resolve_spell_target(p, {"target": "friendly"}) == c
+	World.request_set_target(p.entity_id, -1)
+	print("corran: in %s with %s, level %d (a %s), %d hp, only for %s, your heals land on him: %s" % [main.zone.zone_id, c.display_name, c.level, p.char_class,
+			c.max_hp, c.only_for, heals_him])
+	await _wait(1.5)
+	World.request_sit(p.entity_id, true)
+	await _wait(1.5)
+	print("corran: you sit (quiet entrance) -> he sits %s" % c.sitting)
+	p.camera_pivot.rotation.y = PI
+	await _shot("9zy_corran_rests")
+	World.request_sit(p.entity_id, false)
+	# follows, a few steps behind
+	var z: Zone = main.zone
+	for goal: Vector2 in [Vector2(112, 124), Vector2(100, 120)]:
+		for k in 120:
+			var to := Vector3(goal.x, p.global_position.y, goal.y) - p.global_position
+			if Vector2(to.x, to.z).length() < 0.8:
+				break
+			p.velocity = to.normalized() * 5.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+	await _wait(2.5)
+	print("corran: walked 30 m -> he's %.1f m behind" % c.distance_to(p))
+	# a fight: nothing until you start it, then he's in
+	var spider := _nearest_mob(p, "cave_spider")
+	print("corran: a spider %.0f m off, minding its own business -> he's fighting: %s" % [spider.distance_to(p) if spider != null else -1.0, c.auto_attack])
+	if spider != null:
+		p.global_position = spider.global_position + Vector3(3, 0.5, 0)
+		World.request_set_target(p.entity_id, spider.entity_id)
+		if not p.auto_attack:
+			World.request_toggle_attack(p.entity_id)
+		await _wait(2.0)
+		print("corran: you attack it -> he's on it: %s (target %s)" % [c.auto_attack, c.target == spider])
+		await _shot("9zy_corran_fights")
+		var sp: SpawnPoint = spider.spawn_point
+		World.damage(spider, 9999, p)
+		await _wait(0.5)
+		print("corran: it died -> respawns in %s s" % sp._timer)
+	# gone with a farewell once the step is done
+	p.quests["merricks_line_spring"] = {"active": false, "completions": 1}
+	await _wait(1.0)
+	print("corran: step 2 done -> companion %s" % (World.get_object(p.companion_id) != null))
+
+
+## The Blightmother with a cleric's Corran (level 8), fought twice. Alone (no
+## heals, no help) he must lose; with the player behind him (Warm Hands every
+## 4 s while the mana lasts, three Rebukes on her) they must win. The player
+## circles the fight: Corran must hold his ground, not orbit with them, and
+## F2 must find him.
+func _t_corran_boss() -> void:
+	var p := World.local_player
+	var cls := p.char_class
+	p.char_class = "cleric"  # Corran's level goes by class
+	if World.get_object(p.companion_id) != null:  # made for the class it was: send him off to come back as a cleric's
+		World.get_object(p.companion_id).queue_free()
+		p.companion_id = -1
+	p.level = 7
+	p.recalc_stats()
+	var boss := _nearest_mob(p, "blightmother")
+	if boss == null:
+		print("corran_boss: FAIL no Blightmother")
+		p.char_class = cls
+		return
+	var sp := boss.spawn_point
+	for m in World.get_mobs():  # just her: clear the way in
+		if m != boss:
+			m.queue_free()
+	await _boss_round(p, sp, false)
+	await _boss_round(p, sp, true)
+	p.char_class = cls
+
+
+func _boss_round(p: Player, sp: SpawnPoint, supported: bool) -> void:
+	var label := "with you" if supported else "alone"
+	if sp.mob != null and is_instance_valid(sp.mob):  # a fresh one each round
+		sp.mob.queue_free()
+		await get_tree().process_frame
+	sp.spawn()
+	var boss := sp.mob
+	var boss_at := boss.global_position
+	p.hp = p.max_hp
+	p.companion_back_at = 0
+	var old := World.get_object(p.companion_id)
+	if old != null:
+		old.queue_free()
+		p.companion_id = -1
+	p.global_position = boss_at + Vector3(9, 0.5, 4)
+	await _wait(1.5)
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran_boss: FAIL no companion (%s)" % label)
+		return
+	c.global_position = p.global_position + Vector3(1.5, 0, 1.5)
+	await _wait(0.3)
+	World.damage(boss, 1, p)  # the pull
+	var t := 0.0
+	var heals := 0
+	var rebukes := 0
+	var held_at := Vector3.INF
+	var moved := 0.0
+	var angle := 0.0
+	var shot := false
+	while t < 240.0 and is_instance_valid(boss) and not boss.dead and not c.dead and not p.dead:
+		await get_tree().physics_frame
+		var dt := get_physics_process_delta_time()
+		t += dt
+		angle += dt * TAU / 40.0  # circle the fight 8 m out, a quarter turn every 10 s
+		var goal := boss_at + Vector3(cos(angle), 0, sin(angle)) * 8.0
+		var to := goal - p.global_position
+		to.y = 0.0
+		p.velocity = to.normalized() * minf(4.0, to.length() * 4.0)
+		p.move_and_slide()
+		if is_instance_valid(boss) and c.auto_attack and c.distance_to(boss) <= World.melee_range():
+			if held_at == Vector3.INF:
+				held_at = c.global_position
+			moved = maxf(moved, Vector2(c.global_position.x - held_at.x, c.global_position.z - held_at.z).length())
+		if supported:
+			if fmod(t, 4.0) < dt and heals < 11:  # Warm Hands at level 7: 24-28, about ten casts on a mana bar
+				c.hp = mini(c.max_hp, c.hp + randi_range(24, 28))
+				heals += 1
+			if rebukes < 3 and t > 10.0 + rebukes * 15.0:  # Rebuke at level 7: 13-16
+				World.damage(boss, randi_range(13, 16), p)
+				rebukes += 1
+		if supported and not shot and t > 20.0:
+			shot = true
+			p.target_group_member(0)
+			print("corran_boss: F2 -> target %s" % (p.target.display_name if p.target != null else "nothing"))
+			p.face_toward(boss_at)
+			p.camera_pivot.rotation.y = 0.0
+			p.zoom = 9.0
+			p.pitch = -0.35
+			await _shot("9zy_corran_boss")
+	var won := not is_instance_valid(boss) or boss.dead
+	print("corran_boss: %s, after %.0f s: she's %s, Corran %s (%d/%d hp), you %s; %d heals, %d rebukes; while you circled he moved at most %.1f m" % [label, t,
+			"dead" if won else "standing (%d/%d)" % [boss.hp, boss.max_hp], "down" if c.dead else "up", c.hp, c.max_hp, "down" if p.dead else "up", heals, rebukes, moved])
+
+
+## Corran as a support player sees him: the player walks the cave and never
+## swings; whatever comes at them, Corran must kill. Logs where he stands and
+## what he does every second.
+func _t_corran_support() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 5
+	p.recalc_stats()
+	p.hp = p.max_hp
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	await _ensure_zone("wellspring")
+	await _wait(1.5)
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran_support: FAIL no companion")
+		return
+	var route := [Vector2(120, 126), Vector2(106, 121), Vector2(96, 121), Vector2(88, 123), Vector2(80, 122), Vector2(70, 117), Vector2(58, 111), Vector2(46, 103), Vector2(34, 94), Vector2(24, 84), Vector2(14, 72), Vector2(2, 62)]
+	var kills := 0
+	var mobs_before := World.get_mobs().size()
+	for goal: Vector2 in route:
+		for k in 400:
+			if p.dead:
+				break
+			var fighting := World.get_mobs().any(func(m: Mob) -> bool: return not m.dead and m.hate.has(p.entity_id))
+			if fighting:
+				p.velocity = Vector3.ZERO  # stand and let him work, as a healer does
+				if k % 60 == 0:
+					var t := c.valid_target_entity()
+					print("corran_support: fight: he's %.1f m from you, attacking %s, target %s %.1f m off, hp %d/%d; you %d/%d" % [c.distance_to(p), c.auto_attack,
+							t.display_name if t != null else "-", c.distance_to(t) if t != null else -1.0, c.hp, c.max_hp, p.hp, p.max_hp])
+				p.hp = mini(p.max_hp, p.hp + 1)  # a trickle of healing on yourself
+				await get_tree().physics_frame
+				continue
+			var web := _nearest_mob(p, "thick_web")
+			if web != null and not web.dead and web.distance_to(p) < 4.0:  # hack through it, then stop swinging
+				World.request_set_target(p.entity_id, web.entity_id)
+				if not p.auto_attack:
+					World.request_toggle_attack(p.entity_id)
+				await _wait(0.5)
+				if not is_instance_valid(web) or web.dead:
+					if p.auto_attack:
+						World.request_toggle_attack(p.entity_id)
+					print("corran_support: tore a web; he's %.1f m from you" % c.distance_to(p))
+				continue
+			var to := Vector3(goal.x, p.global_position.y, goal.y) - p.global_position
+			if Vector2(to.x, to.z).length() < 0.8:
+				break
+			p.velocity = to.normalized() * 5.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("corran_support: reached %s: he's %.1f m behind (at %s, you at %s)" % [goal, c.distance_to(p), c.global_position, p.global_position])
+	kills = mobs_before - World.get_mobs().size()
+	print("corran_support: monsters gone %d; you dead %s; he dead %s" % [kills, p.dead, c.dead])
+	p.camera_pivot.rotation.y = PI
+	p.zoom = 5.0
+	await _shot("9zy_corran_support")
 
 
 ## Thornback spiders drop venom sacs (the Silk and Venom quest): kill a lot and count.

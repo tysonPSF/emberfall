@@ -4360,5 +4360,117 @@
     "faction": {
       "lanternhold": 10
     }
+  },
+  "merricks_line_sinew": {
+    "name": "A Line That'll Hold (1)",
+    "giver": "merrick_tavern",
+    "start_keyword": "sinew",
+    "wants": {
+      "rat_sinew": 5
+    },
+    "reward": {
+      "xp": 60,
+      "coin": 15
+    },
+    "accept_text": "You have taken on a task: A Line That'll Hold. Bring Merrick five lengths of rat sinew from the large rats of Greenmoor.",
+    "ready_text": "I can smell it from here. That's rat sinew you're carrying, {name}. Hand it over.",
+    "complete_anim": "Sit_Chair_Shock",
+    "complete_text": [
+      "Ha! You actually brought it. Five lengths, still warm. I was sure the rats would send you home empty-handed.",
+      "Alright. You earned the full story.",
+      "I thought the water just turned. Bad season. Algae. Gnolls dumping their mess upstream. That's what I told the bar.",
+      "I was wrong about the why. Not about the where.",
+      "Greenmoor's water starts in a cave under the first hills. Whole zone drinks from that spring. I followed the sour taste as far as the mouth. Something in the deep is fouling the source. That's why the fish won't take a hook.",
+      "You walked Greenmoor and came back. That counts for something. Might be enough to put the spring right.",
+      "Safer with a party. Friends at your back, fewer graves. And nobody goes down there alone anymore; the Watch has a man posted at the cave mouth to see to that.",
+      "Corran. Watchman Corran. He owes me for thirty years of fish. I'll send word that you're coming, and he'll go down with you. Keep him alive and he'll keep you alive.",
+      "Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat."
+    ],
+    "next": "merricks_line_spring",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "merricks_line_spring": {
+    "name": "The Sour Spring (2)",
+    "giver": "spring_crystal",
+    "starter": "merrick_tavern",
+    "start_keyword": "spring",
+    "requires_quest": "merricks_line_sinew",
+    "wants": {
+      "blight_heart": 1
+    },
+    "reward": {
+      "xp": 150
+    },
+    "first_reward_item": "vial_of_spring_water",
+    "accept_text": "You have taken on a task: The Sour Spring. Meet Watchman Corran at the cave mouth in Greenmoor's western hills; go down with him, find what is fouling the spring, and put it right.",
+    "ready_text": "The crystal's light flickers under its webs as you come near. The Blight Heart in your pack twitches, as if it knows.",
+    "complete_text": [
+      "You press the Blight Heart to the crystal. It hisses, blackens and crumbles to ash.",
+      "Light floods up through the crystal. The webs shrivel and fall away; the eggs stuck to it split and go still.",
+      "The spring stirs. Where the water touches the crystal the green sourness thins, and then it's gone: clear, cold water, running fast toward Greenmoor."
+    ],
+    "first_complete_text": "You fill a vial from the clean spring. Merrick will want to see this.",
+    "next": "merricks_line_word",
+    "hints": {
+      "blight_heart": "the Blightmother carries it, in the spring cavern at the very end of the Wellspring (the cave in Greenmoor's western hills)."
+    },
+    "faction": {
+      "emberhold": 10
+    }
+  },
+  "merricks_line_word": {
+    "name": "Word for Merrick (3)",
+    "giver": "merrick_tavern",
+    "start_keyword": "blightmother",
+    "requires_quest": "merricks_line_spring",
+    "wants": {
+      "blightmothers_venom_sac": 1
+    },
+    "reward": {
+      "xp": 100,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: Word for Merrick. Bring Merrick the Blightmother's venom sac, proof of what was in his water.",
+    "ready_text": "You're back. You found it, didn't you? I can see it on you. Show me, {name}.",
+    "complete_anim": "Sit_Chair_Shock",
+    "complete_text": [
+      "That's... that came out of something living? In our spring?",
+      "A spider the size of a cart, sitting on the source, and all of Greenmoor drinking what she dripped. No wonder the fish went off their food.",
+      "And the water runs clean down there now, you say. Clean at the source.",
+      "Thirty years I've heard stories told at this bar, {name}. I'll believe this one when I see it with my own eyes.",
+      "Meet me at the pond. Bring that vial."
+    ],
+    "exit_scene": {"npc": "merrick_walker", "to": [0, 6.8]},
+    "next": "merricks_line_pond",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "merricks_line_pond": {
+    "name": "The Proof in the Water (4)",
+    "giver": "merrick",
+    "wants": {
+      "vial_of_spring_water": 1
+    },
+    "reward": {
+      "xp": 250,
+      "coin": 100
+    },
+    "accept_text": "You have taken on a task: The Proof in the Water. Meet Merrick at his pond in Greenmoor, running clean again, and give him the vial of spring water.",
+    "ready_text": "Look at it, {name}. Just look at it. Clear to the bottom. Let's have that vial.",
+    "complete_anim": "Emote_Cheer",
+    "complete_text": [
+      "Straight from the spring, is it? Same cold, same clean. That's the water I remember.",
+      "I haven't seen the bottom of this pond in a year. The scum's gone, the stink's gone. You did that, you and Corran.",
+      "Now then. Line in the water. Let's see.",
+      "There! You feel that? A bite! A real bite!",
+      "Thirty years I've fished this pond, {name}, and I've never been so glad to feel a fish pull.",
+      "Come by any time. Poles and bait, same as ever. And if Old Gulper ever shows his face again, you'll be the first to know."
+    ],
+    "faction": {
+      "emberhold": 15
+    }
   }
 }

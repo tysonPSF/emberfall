@@ -37,6 +37,13 @@ var _torch_check := 0.0
 var _torch_light: OmniLight3D  # the guard's torch, lit at night
 var _anchor := Vector3.ZERO  # where the current fight began; the leash is measured from here
 var grove_deity := ""  # a god of the Grove, or one of its attendants: shown only to those who've earned it (World.sees)
+var quest_gated := false  # "until_quest" / "after_quest": shown only to those at that point in a quest (World.quest_shows)
+var seated := ""  # "chair": sits at its post (npcs.json "seated"), standing only to fight
+var only_for := ""  # a player's name: shown to them alone (a scene for one player: World.sees)
+var walk_to := Vector3.INF  # walks here, then leaves (Merrick heading out of the tavern)
+var follow_id := -1  # a companion: the player it follows and fights beside (World._check_companion)
+var _companion_speed := 5.5
+var _taunt_left := 0.0
 var _sight_check := 0.0
 
 
@@ -47,6 +54,9 @@ func setup(id: String, name_override := "") -> void:
 	level = int(data.get("level", 10))
 	faction = str(data.get("faction", "town"))
 	grove_deity = str(data.get("grove_deity", ""))
+	quest_gated = data.has("until_quest") or data.has("after_quest") or data.has("until_started") or data.has("after_started")
+	seated = str(data.get("seated", ""))
+	sitting = seated != ""
 	guard = data.get("guard", {})
 	if not guard.is_empty():  # guards stay out of reach: always this far over the level cap
 		level = int(World.cfg("max_level", 10)) + int(World.cfg("guard_levels_over_cap", 15))
@@ -63,7 +73,8 @@ func setup(id: String, name_override := "") -> void:
 
 
 func _ready() -> void:
-	build_body("humanoid", Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
+	var body := "prop:" + str(data["prop"]) if data.has("prop") else "humanoid"  # a thing, not a person: the spring crystal
+	build_body(body, Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
 	if Net.dedicated:
 		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name
@@ -84,6 +95,8 @@ func _ready() -> void:
 		_resize(float(data["size"][0]), float(data["size"][1]))
 	_post = global_position
 	_post_yaw = rotation.y
+	if data.has("prop_after") and World.local_player != null:
+		_update_prop()  # the freed crystal is freed from the first frame, not half a second in
 
 
 ## A body as big as its model ("size": [radius, height] in npcs.json): the
@@ -113,8 +126,9 @@ func _resize(radius: float, height: float) -> void:
 	add_collision_exception_with(solid)
 
 
-## Offline, a god you haven't earned stands in the Grove unseen and unclickable
-## (online the server never sends it: Net._replicate).
+## Offline, a god you haven't earned stands in the Grove unseen and unclickable,
+## as does an npc a quest has moved on (online the server never sends either:
+## Net._replicate).
 func _update_sight() -> void:
 	var shown := World.sees(World.local_player, self)
 	if visual.visible == shown and nameplate.visible == shown:
@@ -125,6 +139,51 @@ func _update_sight() -> void:
 	for c in get_children():
 		if c is StaticBody3D:
 			(c as StaticBody3D).collision_layer = Layers.WORLD if shown else 0
+
+
+## How a seated npc sits for whoever is watching: "seated_after" {quest: action}
+## changes it once the local player has finished that quest (Merrick sits up
+## eager once you've brought the sinew; he stays grumpy for everyone else).
+func seated_clip() -> String:
+	var after: Dictionary = data.get("seated_after", {})
+	var p := World.local_player
+	if p != null:
+		for quest_id: String in after:
+			if World.quest_done(p, quest_id):
+				return str(after[quest_id])
+	return "sit_chair"
+
+
+## A thing that changes with the watcher's quest ("prop_after" {quest: prop}):
+## the spring crystal is cocooned in webs until you've freed it, then clean
+## and shining ("light_after", a color), for you alone. Only a picture.
+func _update_prop() -> void:
+	var want := str(data.get("prop", ""))
+	var lit := false
+	var after: Dictionary = data["prop_after"]
+	for quest_id: String in after:
+		if World.quest_done(World.local_player, quest_id):
+			want = str(after[quest_id])
+			lit = true
+	if str(look.get("shape", "")) == "prop:" + want:
+		return
+	look["shape"] = "prop:" + want
+	var was_visible := visual.visible
+	visual.queue_free()
+	visual = make_visual(look)
+	visual.visible = was_visible
+	add_child(visual)
+	var glow := get_node_or_null("Glow") as OmniLight3D
+	if lit and data.has("light_after") and glow == null:
+		glow = OmniLight3D.new()
+		glow.name = "Glow"
+		glow.light_color = Color.html(str(data["light_after"]))
+		glow.light_energy = 2.5
+		glow.omni_range = 26.0
+		glow.position = Vector3(0, 4.0, 0)
+		add_child(glow)
+	elif not lit and glow != null:
+		glow.queue_free()
 
 
 ## Turns to face whoever is talking to it for a while, then back to its post.
@@ -138,11 +197,14 @@ func greet(who: Entity) -> void:
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
 func _process(delta: float) -> void:
-	if grove_deity != "" and Net.is_authority() and World.local_player != null:
+	if (grove_deity != "" or quest_gated or data.has("prop_after")) and World.local_player != null:
 		_sight_check -= delta
 		if _sight_check <= 0.0:
 			_sight_check = 0.5
-			_update_sight()
+			if Net.is_authority() and (grove_deity != "" or quest_gated):
+				_update_sight()
+			if data.has("prop_after"):
+				_update_prop()
 	_torch_check -= delta
 	if _torch_check > 0.0 or guard.is_empty() or not (visual is CharacterModel):
 		return
@@ -170,17 +232,29 @@ func _physics_process(delta: float) -> void:
 		return
 	apply_gravity(delta)
 	var move := Vector3.ZERO
-	if not dead:
-		move = _think(delta)
 	var speed := float(guard.get("speed", 5.5))
+	if follow_id >= 0:  # a companion (Watchman Corran in the Wellspring): follows its player, fights beside them
+		if not dead:
+			move = _think_companion(delta)
+		speed = _companion_speed
+	elif not dead:
+		move = _think(delta)
 	if not patrol.is_empty() and not auto_attack:
 		speed = float(guard.get("walk_speed", 2.0))
+	if walk_to != Vector3.INF and not dead:  # on its way out: walks to the door and is gone
+		if _flat(global_position, walk_to) < 0.9:
+			queue_free()
+			return
+		move = nav_dir(walk_to, delta)
+		speed = 2.6
 	velocity.x = move.x * speed
 	velocity.z = move.z * speed
 	if move != Vector3.ZERO or not is_on_floor():  # standing still on the ground needs no collision sweep
 		move_and_slide()
 	if move != Vector3.ZERO:
 		face_toward(global_position + move)  # walks forward, even on a path around something; faces its target once in reach
+	if seated != "" and not auto_attack and not dead and move == Vector3.ZERO:
+		sitting = true  # back in the chair once the fight's over
 	if _face_timer > 0.0 and not auto_attack:
 		_face_timer -= delta
 		if _face_timer <= 0.0:
@@ -212,6 +286,112 @@ func _think(delta: float) -> Vector3:
 		_scan_timer = SCAN_SECONDS
 		_look_for_trouble()
 	return Vector3.ZERO
+
+
+## A companion's turn (World._check_companion makes them). It never leads:
+## it keeps a few steps behind its player and only fights what is fighting
+## either of them, or what the player is attacking; it stops when they stop,
+## sits when they sit, runs to catch up when left behind, and drops a fight
+## that pulls it far from them.
+func _think_companion(delta: float) -> Vector3:
+	var lead := World.get_object(follow_id) as Player
+	_companion_speed = 5.5
+	if lead == null or lead.dead or World.zone_of(lead) != World.zone_of(self):
+		auto_attack = false
+		target = null
+		return Vector3.ZERO
+	var apart := _flat(global_position, lead.global_position)
+	if apart > 45.0:  # lost (a long fall, a wrong turn): back to their side
+		global_position = lead.global_position + lead.global_transform.basis.z * 2.0  # a step behind them (clients follow npc positions as sent)
+		return Vector3.ZERO
+	if auto_attack:
+		var t := valid_target_entity()
+		if t == null or t.dead or _flat(t.global_position, lead.global_position) > 25.0:
+			auto_attack = false
+			target = null
+		else:
+			# Once he can reach it he holds his ground, so walking round the fight
+			# (to see him past a big boss and heal him) doesn't drag him round with
+			# you. Getting in, he takes the monster's flank, off to one side of
+			# the line between it and you, and never stands inside you.
+			sitting = false
+			_companion_speed = 6.2
+			# A tank for a healer: every few seconds he takes back whatever is on
+			# you, and makes sure what he's fighting is fighting him.
+			_taunt_left -= delta
+			if _taunt_left <= 0.0:
+				_taunt_left = 3.0
+				var on_you := _mob_on(lead)
+				if on_you != null and on_you != t:
+					_engage(on_you)
+					t = on_you
+				if t is Mob:
+					_taunt(t as Mob)
+			face_toward(t.global_position)
+			if distance_to(t) <= World.melee_range() * 0.85 and _flat(global_position, lead.global_position) > 1.6:
+				return Vector3.ZERO
+			var line := Vector3(t.global_position.x - lead.global_position.x, 0, t.global_position.z - lead.global_position.z)
+			if line.length() < 0.3:
+				line = -t.global_transform.basis.z
+			var side := line.normalized().cross(Vector3.UP)
+			if side.dot(global_position - t.global_position) < 0.0:
+				side = -side  # the flank on his side of it: no walking round
+			var spot := nav_snap(t.global_position + (side * 0.85 + line.normalized() * 0.5).normalized() * 1.8)
+			return nav_dir(spot, delta)
+	_scan_timer -= delta
+	if _scan_timer <= 0.0:
+		_scan_timer = 0.3
+		var foe := _companion_foe(lead)
+		if foe != null:
+			_engage(foe)
+			return Vector3.ZERO
+	if apart > 3.5:  # follow, a few steps behind
+		sitting = false
+		_companion_speed = 7.0 if apart > 12.0 else 5.5
+		return nav_dir(lead.global_position, delta)
+	if apart < 1.6:  # never stands inside you: a step back out of your way
+		sitting = false
+		_companion_speed = 3.0
+		var off := Vector3(global_position.x - lead.global_position.x, 0, global_position.z - lead.global_position.z)
+		if off.length() < 0.2:
+			off = lead.global_transform.basis.z
+		return nav_dir(nav_snap(lead.global_position + off.normalized() * 2.6), delta)
+	if lead.sitting and not sitting:  # resting with you
+		sitting = true
+	elif not lead.sitting and sitting:
+		sitting = false
+	return Vector3.ZERO
+
+
+## A monster near p that is going for p (p on top of its hate).
+func _mob_on(lead: Player) -> Mob:
+	for m in World.get_mobs():
+		if not m.dead and World.zone_of(m) == World.zone_of(self) and _flat(m.global_position, lead.global_position) < 20.0 and m.top_hated() == lead:
+			return m
+	return null
+
+
+## Puts this companion on top of m's hate, as a pet's taunt does.
+func _taunt(m: Mob) -> void:
+	var top := 0.0
+	for v: float in m.hate.values():
+		top = maxf(top, v)
+	if float(m.hate.get(entity_id, 0.0)) < top + 5.0:
+		m.hate[entity_id] = top + 15.0
+
+
+## What a companion should fight: what its player is attacking, else whatever
+## is fighting its player or itself nearby. Never a monster minding its own business.
+func _companion_foe(lead: Player) -> Mob:
+	var t := lead.valid_target_entity()
+	if t is Mob and not t.dead and (lead.auto_attack or (t as Mob).hate.has(lead.entity_id)) and _flat(t.global_position, lead.global_position) < 25.0:
+		return t as Mob
+	for m in World.get_mobs():
+		if m.dead or World.zone_of(m) != World.zone_of(self) or _flat(m.global_position, lead.global_position) > 20.0:
+			continue
+		if m.hate.has(lead.entity_id) or m.hate.has(entity_id):
+			return m
+	return null
 
 
 ## Next step along the patrol: on to the next waypoint, turning back at either
@@ -311,6 +491,9 @@ func on_killed() -> void:
 	target = null
 	if visual is CharacterModel:
 		(visual as CharacterModel).pose_dead()
+	if follow_id >= 0:  # a companion lies there a moment, then is gone (World._check_companion brings him back later)
+		get_tree().create_timer(6.0).timeout.connect(queue_free)
+		return
 	get_tree().create_timer(RESPAWN_SECONDS).timeout.connect(_return_to_post)
 
 

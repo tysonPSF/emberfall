@@ -14837,6 +14837,90 @@ PROPS = {
 }
 
 
+# ---------------------------------------------------------------- the Wellspring (Merrick's cave)
+
+def stalactite(name, seed, count, reach):
+	"""A cluster of stalactites hanging from a cave ceiling. The origin is at
+	the rock they hang from: everything reaches down (-Z) up to `reach` m."""
+	p = Prop(name, seed)
+	p.rock((1.6, 1.4, 0.5), (0, 0, 0.1), STONE_DARK, grad=(0.3, 0.9), jitter=0.12)   # the rock they grow from
+	for k in range(count):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.6) if k else 0.0
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = reach * (1.0 if k == 0 else p.rng.uniform(0.3, 0.8))
+		w = 0.14 + h * 0.07
+		p.seg((x, y, 0.1), (x + p.rng.uniform(-0.08, 0.08), y, -h), w, 0.0, STONE_LIGHT, sides=6, grad=(0.1, 0.9), jitter=0.02, twist=20)
+		p.blob((w * 1.4, w * 1.4, 0.18), (x, y, 0.02), STONE_DARK, segs=(6, 3))   # its root in the ceiling
+	return p.build()
+
+
+def stalagmite(name, seed, count, reach):
+	"""Stalagmites rising from a cave floor, up to `reach` m, on a low mound."""
+	p = Prop(name, seed)
+	p.rock((1.4, 1.2, 0.35), (0, 0, 0.0), STONE_DARK, grad=(0.3, 0.9), jitter=0.1)
+	for k in range(count):
+		a = p.rng.uniform(0, math.tau)
+		r = p.rng.uniform(0.0, 0.5) if k else 0.0
+		x, y = math.cos(a) * r, math.sin(a) * r
+		h = reach * (1.0 if k == 0 else p.rng.uniform(0.3, 0.7))
+		w = 0.2 + h * 0.08
+		p.seg((x, y, -0.1), (x + p.rng.uniform(-0.06, 0.06), y, h), w, 0.02, STONE_LIGHT, sides=6, grad=(0.0, 0.8), jitter=0.02, twist=15)
+	return p.build()
+
+
+def sour_fungus():
+	"""Pale fungus shelves growing where the fouled water seeps, glowing a sick
+	green: the Wellspring's light. Half a meter across. No collision."""
+	p = Prop("sour_fungus", 993)
+	p.blob((0.55, 0.45, 0.12), (0, 0, 0.0), STONE_DARK, segs=(6, 3), grad=(0.3, 0.9))
+	for k, (x, y, h, r) in enumerate(((0.0, 0.0, 0.3, 0.13), (0.14, 0.1, 0.2, 0.1), (-0.13, 0.08, 0.16, 0.08),
+			(0.1, -0.14, 0.12, 0.07), (-0.14, -0.1, 0.24, 0.09), (0.02, 0.18, 0.1, 0.06))):
+		p.seg((x, y, 0.0), (x, y, h), r * 0.25, r * 0.2, CLOTH_WHITE, sides=4, grad=(0.0, 0.4))
+		p.blob((r * 2.2, r * 2.2, r * 0.7), (x, y, h), SLIME, segs=(7, 4), grad=(0.0, 0.4), glow=1.6)
+	return p.build()
+
+
+def spring_crystal(name, seed, cocooned):
+	"""The crystal in the heart of the Wellspring that keeps Greenmoor's water
+	pure: a cluster of pale blue crystals 6 m tall on a rock in the spring.
+	Cocooned, it's wrapped in the Blightmother's webs and choked with her egg
+	sacs, and its light is gone."""
+	p = Prop(name, seed)
+	p.rock((4.2, 3.8, 1.4), (0, 0, 0.2), STONE_DARK, grad=(0.2, 0.9), jitter=0.12)
+	shards = [((0, 0), 6.0, 0.95, (0, 0)), ((0.9, 0.3), 3.6, 0.6, (0.35, 0.1)), ((-0.8, 0.5), 3.1, 0.55, (-0.3, 0.2)),
+			  ((0.2, -0.9), 2.7, 0.5, (0.05, -0.35)), ((-0.6, -0.6), 2.2, 0.42, (-0.25, -0.25)), ((1.1, -0.5), 1.8, 0.36, (0.4, -0.2))]
+	for (x, y), h, w, (lx, ly) in shards:
+		p.seg((x, y, 0.4), (x + lx * h * 0.25, y + ly * h * 0.25, h * 0.82), w, w * 0.8, STONE_LIGHT if cocooned else RUNE, sides=6,
+			  grad=(0.0, 0.8) if cocooned else (0.0, 0.4), glow=0.0 if cocooned else 1.4)
+		p.seg((x + lx * h * 0.25, y + ly * h * 0.25, h * 0.82), (x + lx * h * 0.3, y + ly * h * 0.3, h), w * 0.8, 0.0,
+			  STONE_LIGHT if cocooned else CLOTH_WHITE, sides=6, grad=(0.0, 0.6), glow=0.0 if cocooned else 2.0)
+	if cocooned:
+		for k in range(34):                                    # strands of web wound round and round
+			z0, z1 = p.rng.uniform(0.4, 5.4), p.rng.uniform(0.4, 5.4)
+			a0, a1 = p.rng.uniform(0, math.tau), p.rng.uniform(0, math.tau)
+			r0, r1 = 1.1 - z0 * 0.1, 1.1 - z1 * 0.1
+			p.seg((math.cos(a0) * r0, math.sin(a0) * r0, z0), (math.cos(a1) * r1, math.sin(a1) * r1, z1), 0.04, 0.04, CLOTH_WHITE, sides=3, grad=(0.0, 0.3))
+		p.seg((0, 0, 0.5), (0, 0, 4.8), 1.25, 0.7, CLOTH_WHITE, sides=9, grad=(0.1, 0.6), jitter=0.12)   # the wrapping
+		for k in range(9):                                     # her eggs, stuck all over it
+			a = p.rng.uniform(0, math.tau)
+			z = p.rng.uniform(0.6, 3.8)
+			r = 1.25 - z * 0.1
+			p.blob((0.55, 0.5, 0.6), (math.cos(a) * r, math.sin(a) * r, z), SLIME, segs=(8, 6), grad=(0.3, 0.9), glow=0.5)
+	return p.build()
+
+
+PROPS.update({
+	"stalactite_a": lambda: stalactite("stalactite_a", 983, 5, 2.6),
+	"stalactite_b": lambda: stalactite("stalactite_b", 985, 3, 1.5),
+	"stalagmite_a": lambda: stalagmite("stalagmite_a", 987, 4, 2.2),
+	"stalagmite_b": lambda: stalagmite("stalagmite_b", 989, 3, 1.2),
+	"sour_fungus": sour_fungus,
+	"spring_crystal": lambda: spring_crystal("spring_crystal", 995, False),
+	"spring_crystal_cocooned": lambda: spring_crystal("spring_crystal_cocooned", 997, True),
+})
+
+
 # ---------------------------------------------------------------- export + preview
 
 def export(path):

@@ -246,6 +246,8 @@ func _build_marks(z: Zone) -> void:
 		var d: Dictionary = GameData.npcs.get(id, {})
 		if d.has("grove_deity"):
 			continue  # the Grove's gods come and go with who you're with: no fixed mark
+		if World.local_player != null and not World.quest_shows(World.local_player, d):
+			continue  # not here for you at this point in their quest (Merrick)
 		var name := str(n.get("name", d.get("name", id)))
 		var kind := ""
 		var detail := str(d.get("title", ""))

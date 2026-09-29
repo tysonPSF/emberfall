@@ -531,6 +531,21 @@ TRACKS = {
 		"drone": 0.4, "drum": [0], "drum_sections": ["A", "C"], "drum_low": 0.6, "drum_gain": 0.55,
 		"reverb": 5.0, "sparse": 0.2, "bells": 0.5, "bell_octave": 1, "chimes": 0.1,
 	},
+	"wellspring": {  # the cave under Greenmoor (Merrick's line): slow and uneasy, a low drone, sparse harp, bells high up like water dripping in the dark
+		"key": (50, "aeolian"), "bpm": 52, "beats": 4, "seed": 311,
+		"sections": {"A": [0, 5, 0, 6], "B": [3, 5, 6, 4], "C": [0, 1, 0, 0]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, -1, 2, -1, 4, -1, 2, -1], "pad": True, "bass": False,
+		"drone": 0.5, "drum": [], "drum_sections": [], "reverb": 5.6, "sparse": 0.55, "bells": 0.5, "bell_octave": 2,
+	},
+	"blightmother": {  # the Blightmother's fight in the spring cavern: the combat theme's pace, darker, horns doubled over pounding drums
+		"key": (52, "phrygian_dominant"), "bpm": 140, "beats": 4, "seed": 313,
+		"sections": {"A": [0, 1, 0, 6], "B": [5, 1, 6, 0], "C": [3, 1, 4, 0]},
+		"form": ["A", "A", "B", "A", "C"],
+		"melody": "horn", "melody_double": "horn", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 1, 2, 3], "pad": True, "bass": True, "bass_eighths": True,
+		"drone": 0.4, "drum": [0, 0.5, 1.5, 2, 2.5, 3.5], "drum_sections": ["A", "B", "C"], "drum_low": 0.7,
+		"snare": [1, 3, 3.5], "snare_sections": ["B", "C"], "snare_gain": 0.7, "reverb": 2.2, "sparse": 0.0,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},

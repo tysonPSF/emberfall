@@ -71,6 +71,78 @@ def rat_whiskers():
 	return p.build()
 
 
+def rat_sinew():
+	"""Four amber, wavy lengths of sinew bound at one end with a leather wrap,
+	blotched where the sour water got into them (Merrick's line)."""
+	p = Prop("rat_sinew", 1983)
+	for k in range(4):
+		fan = (k - 1.5) * 0.16                                                     # bound together at the left, fanning out
+		pts = []
+		for i in range(11):
+			t = i / 10
+			pts.append((-0.75 + t * 1.5, fan * t + math.sin(t * math.pi * 2 + k * 1.3) * 0.07 * t, 0.08 + k * 0.02))
+		for i in range(10):
+			stained = i in ((3 + 2 * k) % 9, (4 + 2 * k) % 9)                     # a long blotch on each, where the water soaked in
+			p.seg(pts[i], pts[i + 1], 0.065, 0.06 if i < 9 else 0.03, props.MOSS if stained else HIDE, sides=6,
+				  grad=(0.55, 1.0) if stained else (0.0, 0.55), twist=25)
+	p.seg((-0.72, 0, 0.11), (-0.56, 0, 0.11), 0.13, 0.13, WOOD, sides=8, grad=(0.1, 0.7))   # the binding
+	p.seg((-0.6, 0.12, 0.14), (-0.5, 0.34, 0.05), 0.035, 0.025, WOOD, sides=4)     # its loose end
+	return p.build()
+
+
+def blight_heart():
+	"""The Blightmother's heart: a dark, lumpy knot of olive flesh with sickly veins."""
+	p = Prop("blight_heart", 1985)
+	p.blob((0.62, 0.52, 0.72), (0, 0, 0.36), STONE_DARK, segs=(12, 9), grad=(0.3, 0.9), jitter=0.04)
+	p.blob((0.4, 0.36, 0.42), (0.18, 0.06, 0.58), props.MOSS, segs=(10, 7), grad=(0.5, 1.0), jitter=0.03)
+	for k in range(5):
+		a = k * 1.25
+		p.seg((math.cos(a) * 0.18, math.sin(a) * 0.14, 0.2), (math.cos(a) * 0.3, math.sin(a) * 0.24, 0.58), 0.025, 0.012, props.SLIME, sides=4, glow=0.8)
+	p.seg((0.05, 0, 0.66), (0.12, 0.02, 0.86), 0.09, 0.07, STONE_DARK, sides=7)           # the torn vessel on top
+	return p.build()
+
+
+def blightmothers_venom_sac():
+	"""A swollen, glowing green-yellow venom sac, torn off at the neck."""
+	p = Prop("blightmothers_venom_sac", 1987)
+	p.blob((0.66, 0.6, 0.62), (0, 0, 0.32), props.SLIME, segs=(12, 9), grad=(0.0, 0.7), glow=0.6)
+	p.blob((0.3, 0.26, 0.2), (0.14, -0.1, 0.52), props.SLIME, segs=(8, 6), grad=(0.0, 0.3), glow=1.0)   # a bright bulge
+	p.seg((0, 0, 0.6), (-0.05, 0.02, 0.82), 0.1, 0.06, STONE_DARK, sides=6)               # torn stalk
+	return p.build()
+
+
+def vial_of_spring_water():
+	"""A glass vial of clear, faintly shining spring water, corked."""
+	p = Prop("vial_of_spring_water", 1989)
+	p.seg((0, 0, 0.0), (0, 0, 0.06), 0.21, 0.21, CLOTH_WHITE, sides=12, grad=(0.0, 0.3))   # the glass: its foot
+	p.seg((0, 0, 0.06), (0, 0, 0.5), 0.2, 0.2, RUNE, sides=12, grad=(0.0, 0.5), glow=0.9)   # the water, seen through it
+	p.seg((0, 0, 0.5), (0, 0, 0.62), 0.2, 0.2, CLOTH_WHITE, sides=12, grad=(0.0, 0.3))     # the empty glass above it
+	p.seg((0, 0, 0.62), (0, 0, 0.78), 0.1, 0.1, CLOTH_WHITE, sides=10, grad=(0.0, 0.3))    # neck
+	p.seg((0, 0, 0.76), (0, 0, 0.92), 0.11, 0.1, WOOD, sides=8)                            # cork
+	return p.build()
+
+
+def leatherwing_charm():
+	"""A hooked bat's claw on a leather thong."""
+	p = Prop("leatherwing_charm", 1991)
+	for k in range(12):
+		a0, a1 = k * math.tau / 12, (k + 1) * math.tau / 12
+		p.seg((math.cos(a0) * 0.3, math.sin(a0) * 0.3 + 0.2, 0.05), (math.cos(a1) * 0.3, math.sin(a1) * 0.3 + 0.2, 0.05), 0.03, 0.03, HIDE, sides=4)
+	p.seg((0, -0.1, 0.05), (0.06, -0.4, 0.1), 0.12, 0.1, STONE_DARK, sides=6)
+	p.seg((0.06, -0.4, 0.1), (-0.1, -0.85, 0.16), 0.1, 0.0, BONE, sides=6)                # the claw, hooked
+	return p.build()
+
+
+def coilback_scale_band():
+	"""A ring of overlapping dark green snake scales."""
+	p = Prop("coilback_scale_band", 1993)
+	for k in range(14):
+		a = k * math.tau / 14
+		p.blob((0.3, 0.16, 0.2), (math.cos(a) * 0.42, math.sin(a) * 0.42, 0.1), props.MOSS if k % 2 else STONE_DARK,
+			   rot=(0, 0, math.degrees(a) + 90), segs=(6, 4), grad=(0.3, 0.9))
+	return p.build()
+
+
 def fishing_bait():
 	p = Prop("fishing_bait", 209)
 	p.seg((0, 0, 0), (0, 0, 0.55), 0.36, 0.36, IRON, sides=12, grad=(0.1, 0.6))
@@ -9473,7 +9545,8 @@ TRADESKILLS = [bag_of_flour, jar_of_spices, vial_of_water, tanning_salts, spool_
 			   homeward_stone, draught_of_homecoming, grove_seed]
 
 
-SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
+SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
+								 vial_of_spring_water, leatherwing_charm, coilback_scale_band, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
 									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,

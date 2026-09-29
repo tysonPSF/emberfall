@@ -9,6 +9,7 @@ var respawn_time := 60.0
 var wander_radius := 8.0
 var when := ""  # "night" or "day": only up then (zone data "when"); at the turn a calm mob leaves
 var mob: Mob = null
+var yaw := NAN  # which way what spawns here faces (zone data "face": a web across a passage); else any way
 var _timer := 0.0
 
 
@@ -40,13 +41,13 @@ func spawn() -> void:
 	mob = Mob.new()
 	mob.setup(mob_id, GameData.mobs[mob_id], self)
 	mob.position = position + Vector3.UP * 0.3
-	mob.rotation.y = randf() * TAU
+	mob.rotation.y = randf() * TAU if is_nan(yaw) else yaw
 	zone.add_child(mob)
 
 
 func on_mob_died() -> void:
 	mob = null
-	_timer = respawn_time * randf_range(0.85, 1.15)
+	_timer = INF if respawn_time < 0.0 else respawn_time * randf_range(0.85, 1.15)  # < 0: never, until the zone is built again
 
 
 func _pick() -> String:

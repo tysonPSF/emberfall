@@ -338,6 +338,7 @@ func _physics_process(delta: float) -> void:
 			_check_hidden(obj as Player)
 			_check_feign(obj as Player)
 			_check_pet(obj as Player)
+			_check_companion(obj as Player)
 			_check_burden(obj as Player, delta)
 			_check_lava(obj as Player, delta)
 			_check_swim(obj as Player, delta)
@@ -770,6 +771,60 @@ func _check_pet(p: Player) -> void:
 	summon_pet(p, p.pet_spell, p.pet_hp)
 
 
+## A companion for a zone's quest (zone data "companion": {npc, while}: in the
+## Wellspring, Watchman Corran, while Merrick's step 2 is under way): kept at
+## p's side there, made again when p comes back (zoning, logging in, a minute
+## after he falls), gone with a farewell once the step is done. He's only for
+## p (Npc.only_for), levelled to p's class ("companion_levels" in npcs.json:
+## a cleric gets a stronger one than a warrior) and on p's side (their faction,
+## so heals and buffs land on him; his kills are p's: damage).
+func _check_companion(p: Player) -> void:
+	var z := zone_of(p)
+	var c := get_object(p.companion_id) as Npc
+	var spec: Dictionary = z.data.get("companion", {}) if z != null else {}
+	var wanted := not spec.is_empty() and quest_started(p, str(spec["while"])) and not quest_done(p, str(spec["while"]))
+	if not wanted:
+		if c != null:
+			if not c.dead and zone_of(c) == z and quest_done(p, str(spec.get("while", ""))):
+				_npc_say(p, c, str(c.data.get("farewell", "Farewell, {name}.")))
+			c.queue_free()
+			p.companion_id = -1
+		return
+	if c != null and c.dead:
+		p.companion_back_at = Time.get_ticks_msec() + 60000
+		p.companion_id = -1
+		say(p, "%s is down! He'll be back on his feet in a minute." % c.display_name, C_WARN)
+		return
+	if c != null and zone_of(c) == z:
+		return
+	if c != null:
+		c.queue_free()
+		p.companion_id = -1
+	if p.dead or Time.get_ticks_msec() < p.companion_back_at:
+		return
+	var id := str(spec["npc"])
+	var d: Dictionary = GameData.npcs[id]
+	var lvl := int(d.get("companion_levels", {}).get(p.char_class, d.get("level", 6)))
+	var n := Npc.new()
+	n.setup(id)
+	n.only_for = p.display_name
+	n.follow_id = p.entity_id
+	n.level = lvl
+	n.max_hp = 30 + 24 * lvl
+	n.hp = n.max_hp
+	n.dmg_min = 2 + lvl / 2  # a level 8 hits 6-14: he needs your heals and a few Rebukes to beat the Blightmother (autotest corran_boss)
+	n.dmg_max = 6 + lvl
+	n.attack_delay = 2.4
+	n.ac = 4 * lvl
+	n.hp_regen = 1 + lvl / 2
+	n.faction = p.faction
+	n.position = p.global_position + p.global_transform.basis.z * 2.5  # a step behind
+	z.add_child(n)
+	p.companion_id = n.entity_id
+	_npc_say(p, n, str(d.get("companion_join", "I'm with you, {name}.")))
+	say(p, "(Press F2 to target %s, even in a crowd.)" % n.display_name, C_SYSTEM)
+
+
 ## A pet's taunt: puts it on top of its target's hate list.
 func pet_taunt(pet: Pet, m: Mob) -> void:
 	var top := 0.0
@@ -1178,6 +1233,8 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 	if d is Player and not d.cast.is_empty() and amount > 0 and src != d:
 		_channel(d as Player)
 	var credit := (src as Pet).owner_player() if src is Pet else src  # a pet's damage is its owner's
+	if src is Npc and (src as Npc).follow_id >= 0:  # so is a companion's: a cleric healing Corran still earns the kill
+		credit = get_object((src as Npc).follow_id) as Entity
 	if d is Mob and credit is Player:  # kill credit goes to whoever did the most
 		var by: Dictionary = d.get_meta("damage_by", {})
 		by[credit.entity_id] = int(by.get(credit.entity_id, 0)) + amount
@@ -1250,7 +1307,9 @@ func kill(d: Entity, killer: Entity) -> void:
 
 func _kill_mob(mob: Mob, killer: Entity) -> void:
 	for p in get_players():
-		if p == killer:
+		if p == killer and mob.data.get("inert", false):
+			say(p, "You tear through %s." % mob.display_name, C_XP)
+		elif p == killer:
 			say(p, "You have slain %s!" % mob.display_name, C_XP)
 		elif p.distance_to(mob) < 40.0:
 			var by := killer.display_name if killer != null else "unknown forces"
@@ -1273,14 +1332,16 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	var empty := entries.is_empty() and coin == 0
 	var decay := float(cfg("empty_corpse_decay_seconds" if empty else "mob_corpse_decay_seconds", 60))
 
-	var corpse := Corpse.new()
-	corpse.setup(mob.display_name, mob.look, entries, coin, decay)
-	corpse.position = mob.global_position
-	corpse.rotation.y = mob.rotation.y
-	if credited != null:
-		corpse.rights = group_members(credited).map(func(m: Player) -> String: return m.display_name)
-		corpse.rights_until = Time.get_ticks_msec() + int(LOOT_RIGHTS_SECONDS * 1000)
-	zone_of(mob).add_child(corpse)
+	var corpse: Corpse = null  # an inert thing (a web) leaves nothing behind
+	if not mob.data.get("inert", false):
+		corpse = Corpse.new()
+		corpse.setup(mob.display_name, mob.look, entries, coin, decay)
+		corpse.position = mob.global_position
+		corpse.rotation.y = mob.rotation.y
+		if credited != null:
+			corpse.rights = group_members(credited).map(func(m: Player) -> String: return m.display_name)
+			corpse.rights_until = Time.get_ticks_msec() + int(LOOT_RIGHTS_SECONDS * 1000)
+		zone_of(mob).add_child(corpse)
 
 	for p in get_players():
 		if p.target == mob:
@@ -1349,7 +1410,7 @@ func _kill_credit(mob: Mob, killer: Entity) -> Player:
 ## extra member; nothing if the mob is gray to the highest. They also take the
 ## faction hits.
 func _award_group(credited: Player, mob: Mob) -> void:
-	if credited == null:
+	if credited == null or mob.data.get("inert", false):  # a web torn down teaches nothing
 		return
 	var here := zone_of(mob)
 	var members := group_members(credited).filter(func(m: Player) -> bool: return zone_of(m) == here and not m.dead)
@@ -2164,13 +2225,46 @@ func grove_sees(p: Player, deity: String) -> bool:
 
 ## Whether p may see obj at all. Everything is seen except the Grove's gods and
 ## their attendants ("grove_deity" in npcs.json), who show only to those whose
-## circle has earned them. The server sends nothing else (Net._replicate), and
-## nobody can talk to or target what they can't see.
+## circle has earned them, and npcs a quest moves (quest_shows). The server
+## sends nothing else (Net._replicate), and nobody can talk to or target what
+## they can't see.
 func sees(p: Player, obj: Object) -> bool:
 	if p == null or not (obj is Npc):
 		return true
-	var deity := (obj as Npc).grove_deity
-	return deity == "" or grove_sees(p, deity)
+	var npc := obj as Npc
+	if npc.only_for != "" and npc.only_for != p.display_name:
+		return false  # a scene played for one player (Merrick walking out of the tavern)
+	if not quest_shows(p, npc.data):
+		return false
+	return npc.grove_deity == "" or grove_sees(p, npc.grove_deity)
+
+
+## An npc a quest moves, per player: "until_quest" shows it only until p has
+## finished that quest (Merrick grumbling in the tavern), "after_quest" only
+## once they have (Merrick back at his pond).
+## "until_started" / "after_started" do the same from when that quest is
+## taken: Merrick leaves the tavern (and waits at the pond) as the last step
+## begins, once he's said his piece.
+func quest_shows(p: Player, npc_data: Dictionary) -> bool:
+	var until := str(npc_data.get("until_quest", ""))
+	if until != "" and quest_done(p, until):
+		return false
+	var until_started := str(npc_data.get("until_started", ""))
+	if until_started != "" and quest_started(p, until_started):
+		return false
+	var after_started := str(npc_data.get("after_started", ""))
+	if after_started != "" and not quest_started(p, after_started):
+		return false
+	var after := str(npc_data.get("after_quest", ""))
+	return after == "" or quest_done(p, after)
+
+
+func quest_done(p: Player, quest_id: String) -> bool:
+	return int(p.quests.get(quest_id, {}).get("completions", 0)) > 0
+
+
+func quest_started(p: Player, quest_id: String) -> bool:
+	return p.quests.has(quest_id)
 
 
 ## A god comes to the Grove for p (the questline's reward: a quest's
@@ -2872,7 +2966,7 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if p == null or c == null or p.dead:
 		return
 	if p.distance_to(c) > LOOT_RANGE:
-		say(p, "You are too far away to loot that corpse.", C_WARN)
+		say(p, "You are too far away to loot %s." % (c.display_name if is_chest(c) else "that corpse"), C_WARN)
 		return
 	request_trade_cancel(player_id)
 	if c.owner_name != "" and c.owner_name != p.display_name:
@@ -2881,19 +2975,48 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if not c.rights.is_empty() and Time.get_ticks_msec() < c.rights_until and not p.display_name in c.rights:
 		say(p, "You may not loot this corpse yet.", C_WARN)
 		return
+	var chest := is_chest(c)
+	if chest:
+		c = _open_chest(c)  # the lid goes up and stays up
 	if c.coin > 0:
-		_split_coin(p, c.coin)
+		_split_coin(p, c.coin, c.display_name if chest else "the corpse")
 		c.coin = 0
 	if c.entries.is_empty():
-		say(p, "The corpse is empty.")
-		remove_corpse(c)
+		say(p, "%s is empty." % cap(c.display_name) if chest else "The corpse is empty.")
+		if not chest:  # a chest stays where it stands, open and empty
+			remove_corpse(c)
 		return
 	_ui(p, &"loot_opened", [c])
 
 
+## A chest (a lootable Corpse drawn as a prop, Zone._build_chests), not a body.
+static func is_chest(c: Corpse) -> bool:
+	return str(c.look.get("shape", "")).begins_with("prop:")
+
+
+## The chest with its lid open: a new Corpse in its place with the same
+## contents and "open" in its look, so every machine draws it open (a look is
+## sent when a corpse is spawned). Returns the open one.
+func _open_chest(c: Corpse) -> Corpse:
+	if c.look.get("open", false):
+		return c
+	var look := c.look.duplicate()
+	look["open"] = true
+	var open := Corpse.new()
+	open.setup(c.display_name, look, c.entries, c.coin, c.decay_left)
+	open.position = c.global_position
+	open.rotation.y = c.rotation.y
+	zone_of(c).add_child(open)
+	for pl in get_players():
+		if pl.target == c:
+			pl.target = open
+	remove_corpse(c)
+	return open
+
+
 ## Coin from a corpse is shared with the looter's group in the same zone; the
 ## looter keeps whatever doesn't divide evenly.
-func _split_coin(p: Player, coin: int) -> void:
+func _split_coin(p: Player, coin: int, from := "the corpse") -> void:
 	var here := zone_of(p)
 	var members := group_members(p).filter(func(m: Player) -> bool: return zone_of(m) == here)
 	var share := coin / members.size()
@@ -2903,7 +3026,7 @@ func _split_coin(p: Player, coin: int) -> void:
 			continue
 		m.coin += amount
 		if m == p:
-			say(m, "You receive %s from the corpse%s." % [format_coin(amount), " (your split)" if members.size() > 1 else ""], C_LOOT)
+			say(m, "You receive %s from %s%s." % [format_coin(amount), from, " (your split)" if members.size() > 1 else ""], C_LOOT)
 		else:
 			say(m, "You receive %s as your split." % format_coin(amount), C_LOOT)
 		m.inventory_changed.emit()
@@ -2917,7 +3040,7 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	if p == null or c == null or index < 0 or index >= c.entries.size():
 		return false
 	if p.distance_to(c) > LOOT_RANGE:
-		say(p, "You are too far away to loot that corpse.", C_WARN)
+		say(p, "You are too far away to loot %s." % (c.display_name if is_chest(c) else "that corpse"), C_WARN)
 		return false
 	var entry: Dictionary = c.entries[index]
 	if c.owner_name == "" and not can_receive(p, entry["item"]):
@@ -2940,10 +3063,10 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	var n := int(entry.get("count", 1))
 	say(p, "--You have looted %s.--" % ("a " + GameData.item_name(entry["item"]) if n <= 1 else "%d %s" % [n, plural(GameData.item_name(entry["item"]))]), C_LOOT)
 	p.inventory_changed.emit()
-	if c.entries.is_empty():
+	if c.entries.is_empty() and not is_chest(c):
 		remove_corpse(c)
 	else:
-		_ui(p, &"loot_changed", [c])
+		_ui(p, &"loot_changed", [c])  # an emptied chest stays, open
 	return true
 
 
@@ -3811,7 +3934,11 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if refuses(p, npc):
 		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
 		return
-	var lines: Dictionary = npc.data.get("dialogue", {})
+	var lines: Dictionary = npc.data.get("dialogue", {}).duplicate()
+	var later: Dictionary = npc.data.get("dialogue_after", {})  # {quest: {keyword: line}}: what they say once you've done that quest
+	for quest_id: String in later:
+		if quest_done(p, quest_id):
+			lines.merge(later[quest_id], true)
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
@@ -3827,7 +3954,9 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
-		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
+		if (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and key == str(q.get("start_keyword", "")):  # "starter": someone else hands it out (Merrick sends you to the crystal)
+			if q.has("requires_quest") and not quest_done(p, str(q["requires_quest"])):
+				continue  # a later step's keyword only works once the step before it is done
 			_accept_quest(p, quest_id)
 	if key == "hail":
 		_offer_dropped_steps(p, npc)
@@ -3877,6 +4006,9 @@ func _outfit(p: Player, npc: Npc) -> void:
 
 
 func _npc_say(p: Player, npc: Npc, text: String) -> void:
+	if npc.data.get("narrates", false):  # a thing that can't talk (the spring crystal): what happens, told
+		say(p, text.format({"name": p.display_name}), C_NPC)
+		return
 	say(p, "%s says, '%s'" % [npc.display_name, text.format({"name": p.display_name})], C_NPC)
 
 
@@ -4320,7 +4452,13 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	state["completions"] = int(state.get("completions", 0)) + 1
 	state["active"] = bool(q.get("repeatable", false))
 	p.quests[quest_id] = state
-	_npc_say(p, npc, str(q["complete_text"]))
+	if q.has("complete_anim"):  # the giver reacts (Merrick jolting up in his chair), for everyone watching
+		npc.animate(str(q["complete_anim"]))
+	var story: Array = q["complete_text"] if q["complete_text"] is Array else []
+	if story.is_empty():
+		_npc_say(p, npc, str(q["complete_text"]))
+	else:
+		_npc_say(p, npc, str(story[0]))
 	var reward: Dictionary = q.get("reward", {})
 	if int(reward.get("coin", 0)) > 0:
 		p.coin += int(reward["coin"])
@@ -4344,9 +4482,47 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	apply_faction(p, q.get("faction", {}))
 	if reward.has("grove_deity"):  # the endgame questlines bring each god to the Grove
 		unlock_grove_deity(p, str(reward["grove_deity"]))
-	if q.has("next"):  # a quest line: the next step starts as this one ends
-		_accept_quest(p, str(q["next"]))
+	var then := func() -> void:
+		if q.has("exit_scene"):  # the giver gets up and leaves (Merrick heading for the pond), for this player's eyes
+			_walk_out(p, npc, q["exit_scene"])
+		if q.has("next"):  # a quest line: the next step starts as this one ends
+			_accept_quest(p, str(q["next"]))
+	if story.size() > 1:  # a story told a line at a time; the next step starts when it's told
+		_tell(p, npc, story.slice(1), then)
+	else:
+		then.call()
 	p.quests_changed.emit()
+
+
+## A copy of `npc` ("npc": its npcs.json id) that only p sees gets up where it
+## stands and walks to "to" [x, z], then is gone; the next step's
+## until_started hides the real one for p at the same moment.
+func _walk_out(p: Player, npc: Npc, scene: Dictionary) -> void:
+	var z := zone_of(npc)
+	if z == null or not is_instance_valid(p):
+		return
+	var walker := Npc.new()
+	walker.setup(str(scene["npc"]))
+	walker.only_for = p.display_name
+	walker.position = npc.global_position
+	walker.rotation.y = npc.rotation.y
+	walker.walk_to = z.ground(float(scene["to"][0]), float(scene["to"][1]))
+	z.add_child(walker)
+
+
+## Says lines one after another, paced to how long each takes to read, then
+## calls done. Stops if the player leaves (the next step's start_keyword can
+## still start it).
+func _tell(p: Player, npc: Npc, lines: Array, done: Callable) -> void:
+	if lines.is_empty():
+		done.call()
+		return
+	var wait := clampf(str(lines[0]).length() * 0.045, 2.2, 7.0)
+	get_tree().create_timer(wait).timeout.connect(func() -> void:
+		if not is_instance_valid(p) or not is_instance_valid(npc) or not p.is_inside_tree():
+			return
+		_npc_say(p, npc, str(lines[0]))
+		_tell(p, npc, lines.slice(1), done))
 
 
 ## How many of each wanted item the player carries (bags plus an open trade),
@@ -4385,6 +4561,9 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 	if p == null or p.dead or z == null or z.zone_line_at(p.global_position) != line_index:
 		return
 	var zl: Dictionary = z.data["zone_lines"][line_index]
+	if zl.has("requires_started") and not quest_started(p, str(zl["requires_started"])):
+		_turn_back(p, z, zl)  # Watchman Corran won't let you into the Wellspring alone
+		return
 	request_trade_cancel(player_id)
 	request_service_close(player_id)
 	request_loot_close(player_id)
@@ -4396,6 +4575,21 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 		request_interrupt(player_id)
 	var face: Array = zl.get("arrive_face", zl["arrive"])
 	zone_change.emit(p, str(zl["to"]), Vector2(zl["arrive"][0], zl["arrive"][1]), Vector2(face[0], face[1]))
+
+
+## A zone line that isn't open to you yet ("requires_started": a quest):
+## whoever keeps it ("refused_by", an npc in this zone) tells you why, and
+## you're put back at "refused_to" [x, z].
+func _turn_back(p: Player, z: Zone, zl: Dictionary) -> void:
+	for obj: Node3D in objects.values():
+		if obj is Npc and (obj as Npc).npc_id == str(zl.get("refused_by", "")) and zone_of(obj) == z and float(p.cooldowns.get("turned_back", 0.0)) <= 0.0:
+			var npc := obj as Npc
+			npc.greet(p)
+			_npc_say(p, npc, str(npc.data.get("refuse_entry", "You can't go that way.")))
+			p.cooldowns["turned_back"] = 6.0
+	var back: Array = zl.get("refused_to", [p.global_position.x, p.global_position.z])
+	p.global_position = z.ground(float(back[0]), float(back[1])) + Vector3.UP * 0.3
+	Net.teleport(p, p.global_position)
 
 
 # --- camping (logging out) --------------------------------------------------
