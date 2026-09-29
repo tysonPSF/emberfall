@@ -374,6 +374,22 @@
       "path": "res://assets/creatures/spider.glb",
       "rig": "own"
     },
+    "cave_spider": {
+      "path": "res://assets/creatures/cave_spider.glb",
+      "rig": "own"
+    },
+    "blightmother": {
+      "path": "res://assets/creatures/blightmother.glb",
+      "rig": "own"
+    },
+    "cave_bat": {
+      "path": "res://assets/creatures/cave_bat.glb",
+      "rig": "own"
+    },
+    "water_snake": {
+      "path": "res://assets/creatures/water_snake.glb",
+      "rig": "own"
+    },
     "orc": {
       "path": "res://assets/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb",
       "hide": [
@@ -2922,6 +2938,7 @@
   },
   "weapons": {
     "orla_tuning_staff": "res://assets/creatures/orla_tuning_staff.glb",
+    "miners_pick": "res://assets/creatures/miners_pick.glb",
     "mirewhistle_ladle": "res://assets/creatures/mirewhistle_ladle.glb",
     "titan_thunder_hammer": "res://assets/creatures/titan_thunder_hammer.glb",
     "vorlaug_maul": "res://assets/creatures/vorlaug_maul.glb",

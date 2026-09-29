@@ -260,7 +260,7 @@
       "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. One of these days, {name}. One of these days.",
       "unknown": "Hm? Sorry, I was watching my line."
     },
-    "after_quest": "merricks_line_spring",
+    "after_started": "merricks_line_pond",
     "faction": "emberhold"
   },
   "merrick_tavern": {
@@ -281,12 +281,53 @@
         "spring": "Whole zone drinks from it. Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat.",
         "sinew": "Already twisting it. Won't matter a lick while the water's sour, though. The [spring], {name}.",
         "unknown": "Later. The [spring] first."
+      },
+      "merricks_line_spring": {
+        "hail": "You're back! And? What was down there, {name}? Tell me about the [blightmother].",
+        "blightmother": "The what? A spider? Show me. Put it in my hand. I'll not believe it till I've seen it.",
+        "spring": "Clean, you say? At the source? Show me what was fouling it first."
       }
     },
     "seated_after": {
       "merricks_line_sinew": "sit_chair_eager"
     },
-    "until_quest": "merricks_line_spring",
+    "until_started": "merricks_line_pond",
+    "faction": "emberhold"
+  },
+  "merrick_walker": {
+    "name": "Merrick",
+    "title": "a fisherman",
+    "level": 12,
+    "model": "ranger",
+    "weapon": "fishing_pole",
+    "fixed": true,
+    "dialogue": {
+      "hail": "The pond, {name}! Bring the vial!",
+      "unknown": "Not now. The pond!"
+    },
+    "faction": "emberhold"
+  },
+  "spring_crystal": {
+    "name": "the Spring Crystal",
+    "level": 1,
+    "prop": "spring_crystal_cocooned",
+    "prop_after": {
+      "merricks_line_spring": "spring_crystal"
+    },
+    "light_after": "#9fd8ff",
+    "size": [2.4, 6.0],
+    "sacred": true,
+    "fixed": true,
+    "narrates": true,
+    "dialogue": {
+      "hail": "The crystal is wound in webs so thick you can barely see it. Under them, a weak blue light flickers, like something trying to breathe. Whatever holds it down, its heart beats close by.",
+      "unknown": "The crystal gives no answer."
+    },
+    "dialogue_after": {
+      "merricks_line_spring": {
+        "hail": "The crystal shines clear and cold. The spring runs bright around it, all the way toward Greenmoor."
+      }
+    },
     "faction": "emberhold"
   },
   "gm_brask": {

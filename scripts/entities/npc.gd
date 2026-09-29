@@ -39,6 +39,8 @@ var _anchor := Vector3.ZERO  # where the current fight began; the leash is measu
 var grove_deity := ""  # a god of the Grove, or one of its attendants: shown only to those who've earned it (World.sees)
 var quest_gated := false  # "until_quest" / "after_quest": shown only to those at that point in a quest (World.quest_shows)
 var seated := ""  # "chair": sits at its post (npcs.json "seated"), standing only to fight
+var only_for := ""  # a player's name: shown to them alone (a scene for one player: World.sees)
+var walk_to := Vector3.INF  # walks here, then leaves (Merrick heading out of the tavern)
 var _sight_check := 0.0
 
 
@@ -49,7 +51,7 @@ func setup(id: String, name_override := "") -> void:
 	level = int(data.get("level", 10))
 	faction = str(data.get("faction", "town"))
 	grove_deity = str(data.get("grove_deity", ""))
-	quest_gated = data.has("until_quest") or data.has("after_quest")
+	quest_gated = data.has("until_quest") or data.has("after_quest") or data.has("until_started") or data.has("after_started")
 	seated = str(data.get("seated", ""))
 	sitting = seated != ""
 	guard = data.get("guard", {})
@@ -68,7 +70,8 @@ func setup(id: String, name_override := "") -> void:
 
 
 func _ready() -> void:
-	build_body("humanoid", Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
+	var body := "prop:" + str(data["prop"]) if data.has("prop") else "humanoid"  # a thing, not a person: the spring crystal
+	build_body(body, Color.WHITE, 1.0, str(data.get("model", "")), str(data.get("weapon", "")))
 	if Net.dedicated:
 		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name
@@ -146,6 +149,38 @@ func seated_clip() -> String:
 	return "sit_chair"
 
 
+## A thing that changes with the watcher's quest ("prop_after" {quest: prop}):
+## the spring crystal is cocooned in webs until you've freed it, then clean
+## and shining ("light_after", a color), for you alone. Only a picture.
+func _update_prop() -> void:
+	var want := str(data.get("prop", ""))
+	var lit := false
+	var after: Dictionary = data["prop_after"]
+	for quest_id: String in after:
+		if World.quest_done(World.local_player, quest_id):
+			want = str(after[quest_id])
+			lit = true
+	if str(look.get("shape", "")) == "prop:" + want:
+		return
+	look["shape"] = "prop:" + want
+	var was_visible := visual.visible
+	visual.queue_free()
+	visual = make_visual(look)
+	visual.visible = was_visible
+	add_child(visual)
+	var glow := get_node_or_null("Glow") as OmniLight3D
+	if lit and data.has("light_after") and glow == null:
+		glow = OmniLight3D.new()
+		glow.name = "Glow"
+		glow.light_color = Color.html(str(data["light_after"]))
+		glow.light_energy = 2.5
+		glow.omni_range = 26.0
+		glow.position = Vector3(0, 4.0, 0)
+		add_child(glow)
+	elif not lit and glow != null:
+		glow.queue_free()
+
+
 ## Turns to face whoever is talking to it for a while, then back to its post.
 func greet(who: Entity) -> void:
 	if data.get("fixed", false):
@@ -157,11 +192,14 @@ func greet(who: Entity) -> void:
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
 func _process(delta: float) -> void:
-	if (grove_deity != "" or quest_gated) and Net.is_authority() and World.local_player != null:
+	if (grove_deity != "" or quest_gated or data.has("prop_after")) and World.local_player != null:
 		_sight_check -= delta
 		if _sight_check <= 0.0:
 			_sight_check = 0.5
-			_update_sight()
+			if Net.is_authority() and (grove_deity != "" or quest_gated):
+				_update_sight()
+			if data.has("prop_after"):
+				_update_prop()
 	_torch_check -= delta
 	if _torch_check > 0.0 or guard.is_empty() or not (visual is CharacterModel):
 		return
@@ -194,6 +232,12 @@ func _physics_process(delta: float) -> void:
 	var speed := float(guard.get("speed", 5.5))
 	if not patrol.is_empty() and not auto_attack:
 		speed = float(guard.get("walk_speed", 2.0))
+	if walk_to != Vector3.INF and not dead:  # on its way out: walks to the door and is gone
+		if _flat(global_position, walk_to) < 0.9:
+			queue_free()
+			return
+		move = nav_dir(walk_to, delta)
+		speed = 2.6
 	velocity.x = move.x * speed
 	velocity.z = move.z * speed
 	if move != Vector3.ZERO or not is_on_floor():  # standing still on the ground needs no collision sweep

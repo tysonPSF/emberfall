@@ -8,6 +8,7 @@
   "trees": 0,
   "rocks": 0,
   "tainted": true,
+  "tainted_until": "merricks_line_spring",
   "background_color": "#050604",
   "ambient_color": "#8f9a86",
   "ambient_energy": 0.75,
@@ -34,21 +35,79 @@
     ]
   },
   "rivers": [
-    {"points": [[58, -120], [68, -116], [74, -104], [70, -88], [58, -70], [40, -56], [22, -50], [2, -52], [-18, -42], [-40, -34],
+    {"points": [[53, -125], [60, -121], [68, -116], [74, -104], [70, -88], [58, -70], [40, -56], [22, -50], [2, -52], [-18, -42], [-40, -34],
                 [-62, -40], [-84, -36], [-98, -20], [-104, 0], [-96, 20], [-80, 40], [-62, 54], [-40, 62], [-18, 58], [2, 62],
                 [16, 74], [30, 92], [48, 104], [66, 116], [84, 124], [100, 120], [120, 126], [136, 128]],
      "width": 3.2, "depth": 0.3, "bank": 1.2, "flow": 0.6, "tainted": true, "glow": 0.35}
   ],
   "lakes": [
-    {"points": [[59, -130], [56, -121], [46, -117], [36, -121], [33, -130], [36, -139], [46, -143], [56, -139]],
-     "depth": 1.8, "shelf": 3, "bank": 3, "islands": [[46, -130, 4.5]], "tainted": true, "glow": 0.35}
+    {"points": [[54.5, -130], [52, -124], [46, -121.5], [40, -124], [37.5, -130], [40, -136], [46, -138.5], [52, -136]],
+     "depth": 1.8, "shelf": 3, "bank": 3, "islands": [[46, -130, 3.5]], "tainted": true, "glow": 0.35}
   ],
-  "landmarks": [
-    {"type": "prop", "id": "spring_crystal_cocooned", "pos": [46, -130], "collide": "mesh"}
+  "lights": [
+    {"pos": [30, -116], "color": "#a8d050", "energy": 1.8, "range": 16, "height": 4},
+    {"pos": [46, -110], "color": "#90b860", "energy": 1.2, "range": 14, "height": 5},
+    {"pos": [62, -130], "color": "#90b860", "energy": 1.2, "range": 14, "height": 5},
+    {"pos": [30, -140], "color": "#90b860", "energy": 1.2, "range": 14, "height": 5}
   ],
+  "landmarks": [],
   "zone_lines": [
     {"pos": [140, 128], "size": [3, 7], "to": "greenmoor", "arrive": [-143, -30], "arrive_face": [0, -30]}
   ],
-  "npcs": [],
-  "spawns": []
+  "npcs": [
+    {"id": "spring_crystal", "pos": [46, -130], "face": [62, -118]}
+  ],
+  "spawns": [
+    {"pos": [118, 125], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [110, 121], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [100, 117], "pool": {"cave_spider": 2, "cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [92, 121], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [86, 124], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [100, 120]},
+    {"pos": [70, 117], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [56, 110], "pool": {"lost_miner": 1, "lost_miner_torch": 1}, "respawn": 300, "wander": 3},
+    {"pos": [34, 95], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [28, 90], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [32, 86], "pool": {"lost_miner_torch": 1}, "respawn": 300, "wander": 2},
+    {"pos": [12, 70], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [6, 64], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [16, 74]},
+    {"pos": [-10, 59], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-36, 64], "pool": {"lost_miner": 2, "lost_miner_torch": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-42, 58], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-46, 86], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-60, 104], "pool": {"lost_miner": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-70, 114], "pool": {"lost_miner_torch": 1}, "respawn": 300, "wander": 1},
+    {"pos": [-76, 111], "pool": {"foreman_grisk": 1}, "respawn": 900, "wander": 1},
+    {"pos": [-60, 53], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-80, 40], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-92, 27], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [-80, 40]},
+    {"pos": [-100, 6], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 4},
+    {"pos": [-107, -3], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 4},
+    {"pos": [-99, -9], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-126, -6], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-138, -19], "pool": {"coilback": 1}, "respawn": 900, "wander": 1},
+    {"pos": [104, 138], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 2},
+    {"pos": [98, 146], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 1},
+    {"pos": [95, 150], "pool": {"old_leatherwing": 1}, "respawn": 900, "wander": 1},
+    {"pos": [-96, -20], "pool": {"lost_miner": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-84, -36], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [-64, -40], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-51, -36], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [-62, -40]},
+    {"pos": [-40, -35], "pool": {"lost_miner": 1, "lost_miner_torch": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-36, -30], "pool": {"cave_bat": 1}, "respawn": 300, "wander": 3},
+    {"pos": [-18, -42], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [2, -52], "pool": {"water_snake": 1}, "respawn": 300, "wander": 2},
+    {"pos": [22, -50], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [40, -58], "pool": {"blight_broodling": 1}, "respawn": 300, "wander": 3},
+    {"pos": [45, -52], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 3},
+    {"pos": [30, -80], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 2},
+    {"pos": [22, -90], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 1},
+    {"pos": [17, -93], "pool": {"brood_nurse": 1}, "respawn": 900, "wander": 1},
+    {"pos": [58, -70], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [40, -56]},
+    {"pos": [70, -88], "pool": {"blight_broodling": 1}, "respawn": 300, "wander": 2},
+    {"pos": [74, -103], "pool": {"blight_broodling": 1, "cave_spider": 1}, "respawn": 300, "wander": 2},
+    {"pos": [71, -111], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [74, -104]},
+    {"pos": [30, -116], "pool": {"blightmother": 1}, "respawn": 1200, "wander": 0},
+    {"pos": [25, -123], "pool": {"blight_broodling": 1}, "respawn": 600, "wander": 1},
+    {"pos": [37, -110], "pool": {"blight_broodling": 1}, "respawn": 600, "wander": 1}
+  ]
 }

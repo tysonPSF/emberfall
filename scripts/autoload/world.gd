@@ -1219,7 +1219,9 @@ func kill(d: Entity, killer: Entity) -> void:
 
 func _kill_mob(mob: Mob, killer: Entity) -> void:
 	for p in get_players():
-		if p == killer:
+		if p == killer and mob.data.get("inert", false):
+			say(p, "You tear through %s." % mob.display_name, C_XP)
+		elif p == killer:
 			say(p, "You have slain %s!" % mob.display_name, C_XP)
 		elif p.distance_to(mob) < 40.0:
 			var by := killer.display_name if killer != null else "unknown forces"
@@ -1242,14 +1244,16 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	var empty := entries.is_empty() and coin == 0
 	var decay := float(cfg("empty_corpse_decay_seconds" if empty else "mob_corpse_decay_seconds", 60))
 
-	var corpse := Corpse.new()
-	corpse.setup(mob.display_name, mob.look, entries, coin, decay)
-	corpse.position = mob.global_position
-	corpse.rotation.y = mob.rotation.y
-	if credited != null:
-		corpse.rights = group_members(credited).map(func(m: Player) -> String: return m.display_name)
-		corpse.rights_until = Time.get_ticks_msec() + int(LOOT_RIGHTS_SECONDS * 1000)
-	zone_of(mob).add_child(corpse)
+	var corpse: Corpse = null  # an inert thing (a web) leaves nothing behind
+	if not mob.data.get("inert", false):
+		corpse = Corpse.new()
+		corpse.setup(mob.display_name, mob.look, entries, coin, decay)
+		corpse.position = mob.global_position
+		corpse.rotation.y = mob.rotation.y
+		if credited != null:
+			corpse.rights = group_members(credited).map(func(m: Player) -> String: return m.display_name)
+			corpse.rights_until = Time.get_ticks_msec() + int(LOOT_RIGHTS_SECONDS * 1000)
+		zone_of(mob).add_child(corpse)
 
 	for p in get_players():
 		if p.target == mob:
@@ -1318,7 +1322,7 @@ func _kill_credit(mob: Mob, killer: Entity) -> Player:
 ## extra member; nothing if the mob is gray to the highest. They also take the
 ## faction hits.
 func _award_group(credited: Player, mob: Mob) -> void:
-	if credited == null:
+	if credited == null or mob.data.get("inert", false):  # a web torn down teaches nothing
 		return
 	var here := zone_of(mob)
 	var members := group_members(credited).filter(func(m: Player) -> bool: return zone_of(m) == here and not m.dead)
@@ -2137,6 +2141,8 @@ func sees(p: Player, obj: Object) -> bool:
 	if p == null or not (obj is Npc):
 		return true
 	var npc := obj as Npc
+	if npc.only_for != "" and npc.only_for != p.display_name:
+		return false  # a scene played for one player (Merrick walking out of the tavern)
 	if not quest_shows(p, npc.data):
 		return false
 	return npc.grove_deity == "" or grove_sees(p, npc.grove_deity)
@@ -2145,9 +2151,18 @@ func sees(p: Player, obj: Object) -> bool:
 ## An npc a quest moves, per player: "until_quest" shows it only until p has
 ## finished that quest (Merrick grumbling in the tavern), "after_quest" only
 ## once they have (Merrick back at his pond).
+## "until_started" / "after_started" do the same from when that quest is
+## taken: Merrick leaves the tavern (and waits at the pond) as the last step
+## begins, once he's said his piece.
 func quest_shows(p: Player, npc_data: Dictionary) -> bool:
 	var until := str(npc_data.get("until_quest", ""))
 	if until != "" and quest_done(p, until):
+		return false
+	var until_started := str(npc_data.get("until_started", ""))
+	if until_started != "" and quest_started(p, until_started):
+		return false
+	var after_started := str(npc_data.get("after_started", ""))
+	if after_started != "" and not quest_started(p, after_started):
 		return false
 	var after := str(npc_data.get("after_quest", ""))
 	return after == "" or quest_done(p, after)
@@ -2155,6 +2170,10 @@ func quest_shows(p: Player, npc_data: Dictionary) -> bool:
 
 func quest_done(p: Player, quest_id: String) -> bool:
 	return int(p.quests.get(quest_id, {}).get("completions", 0)) > 0
+
+
+func quest_started(p: Player, quest_id: String) -> bool:
+	return p.quests.has(quest_id)
 
 
 ## A god comes to the Grove for p (the questline's reward: a quest's
@@ -3807,7 +3826,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
-		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
+		if (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and key == str(q.get("start_keyword", "")):  # "starter": someone else hands it out (Merrick sends you to the crystal)
 			if q.has("requires_quest") and not quest_done(p, str(q["requires_quest"])):
 				continue  # a later step's keyword only works once the step before it is done
 			_accept_quest(p, quest_id)
@@ -3857,6 +3876,9 @@ func _outfit(p: Player, npc: Npc) -> void:
 
 
 func _npc_say(p: Player, npc: Npc, text: String) -> void:
+	if npc.data.get("narrates", false):  # a thing that can't talk (the spring crystal): what happens, told
+		say(p, text.format({"name": p.display_name}), C_NPC)
+		return
 	say(p, "%s says, '%s'" % [npc.display_name, text.format({"name": p.display_name})], C_NPC)
 
 
@@ -4297,13 +4319,32 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	apply_faction(p, q.get("faction", {}))
 	if reward.has("grove_deity"):  # the endgame questlines bring each god to the Grove
 		unlock_grove_deity(p, str(reward["grove_deity"]))
+	var then := func() -> void:
+		if q.has("exit_scene"):  # the giver gets up and leaves (Merrick heading for the pond), for this player's eyes
+			_walk_out(p, npc, q["exit_scene"])
+		if q.has("next"):  # a quest line: the next step starts as this one ends
+			_accept_quest(p, str(q["next"]))
 	if story.size() > 1:  # a story told a line at a time; the next step starts when it's told
-		_tell(p, npc, story.slice(1), func() -> void:
-			if q.has("next"):
-				_accept_quest(p, str(q["next"])))
-	elif q.has("next"):  # a quest line: the next step starts as this one ends
-		_accept_quest(p, str(q["next"]))
+		_tell(p, npc, story.slice(1), then)
+	else:
+		then.call()
 	p.quests_changed.emit()
+
+
+## A copy of `npc` ("npc": its npcs.json id) that only p sees gets up where it
+## stands and walks to "to" [x, z], then is gone; the next step's
+## until_started hides the real one for p at the same moment.
+func _walk_out(p: Player, npc: Npc, scene: Dictionary) -> void:
+	var z := zone_of(npc)
+	if z == null or not is_instance_valid(p):
+		return
+	var walker := Npc.new()
+	walker.setup(str(scene["npc"]))
+	walker.only_for = p.display_name
+	walker.position = npc.global_position
+	walker.rotation.y = npc.rotation.y
+	walker.walk_to = z.ground(float(scene["to"][0]), float(scene["to"][1]))
+	z.add_child(walker)
 
 
 ## Says lines one after another, paced to how long each takes to read, then

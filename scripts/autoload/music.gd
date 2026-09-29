@@ -24,6 +24,8 @@ var _calm := 0.0
 var _duck: Tween
 var _mix := 0.0  # 0 = zone theme, 1 = combat theme
 var _combat_stream: AudioStreamOggVorbis
+var _combat_track := "combat"  # or a boss's own theme (_boss_track)
+var _boss_check := 0.0
 
 
 func _ready() -> void:
@@ -114,12 +116,31 @@ func _process(delta: float) -> void:
 	var threat := p != null and is_instance_valid(p) and p.threatened and not p.dead
 	if threat:
 		_calm = 0.0
+		_boss_check -= delta
+		if _boss_check <= 0.0:
+			_boss_check = 0.5
+			var track := _boss_track(p)
+			if track != _combat_track:  # a boss joins the fight (or falls): its own theme takes over
+				_combat_track = track
+				_combat_stream = _load(track)
+				if _in_combat:
+					_combat.stream = _combat_stream
+					_combat.play()
 		if not _in_combat:
 			_set_combat(true)
 	elif _in_combat:
 		_calm += delta
 		if _calm >= CALM_SECONDS:
 			_set_combat(false)
+
+
+## The fight's theme: a living boss close by ("boss_music" in mobs.json, the
+## Blightmother) has its own; otherwise the usual combat theme.
+func _boss_track(p: Player) -> String:
+	for m in World.get_mobs():
+		if not m.dead and m.data.has("boss_music") and m.global_position.distance_to(p.global_position) < 45.0:
+			return str(m.data["boss_music"])
+	return "combat"
 
 
 ## Trades the zone theme for the combat theme (or back) by fading their buses.

@@ -6,11 +6,89 @@
     "weight": 0.1,
     "desc": "A pale length of sinew from a Greenmoor rat, stained faintly green and smelling of bad water. Tough, though."
   },
-  "proof_of_the_rot": {
-    "name": "Proof of the Rot",
+  "blightmothers_venom_sac": {
+    "name": "The Blightmother's Venom Sac",
     "value": 0,
     "lore": true,
     "no_drop": true,
-    "desc": "Whatever is fouling Greenmoor's spring, this is proof of it. (Placeholder until the cave is built.)"
+    "weight": 0.5,
+    "desc": "Swollen, warm, and still dripping. The same sourness Merrick tastes in the water, straight from its source."
+  },
+  "blight_heart": {
+    "name": "Blight Heart",
+    "value": 0,
+    "lore": true,
+    "no_drop": true,
+    "weight": 0.5,
+    "desc": "The Blightmother's rotten heart, still twitching. Whatever smothered the spring crystal, it beat in here."
+  },
+  "vial_of_spring_water": {
+    "name": "Vial of Spring Water",
+    "value": 0,
+    "lore": true,
+    "no_drop": true,
+    "weight": 0.2,
+    "desc": "Drawn from the Wellspring after the crystal was freed: clear, cold and clean. Proof the spring runs pure again."
+  },
+  "leatherwing_charm": {
+    "name": "Leatherwing Charm",
+    "slot": "neck",
+    "agi": 2,
+    "hp": 5,
+    "value": 220,
+    "lore": true,
+    "desc": "A bat's claw on a thong, taken from the oldest thing that hangs in the Wellspring's dark."
+  },
+  "coilback_scale_band": {
+    "name": "Coilback's Scale Band",
+    "slot": "ring",
+    "sta": 2,
+    "hp": 4,
+    "value": 200,
+    "lore": true
+  },
+  "foremans_pick": {
+    "name": "Foreman Grisk's Pick",
+    "slot": "primary",
+    "dmg": 7,
+    "delay": 3.0,
+    "str": 2,
+    "verb": ["crush", "crushes"],
+    "model": "miners_pick",
+    "value": 420,
+    "lore": true,
+    "rec_level": 6,
+    "skill": "1h_blunt",
+    "classes": ["warrior", "cleric", "shaman", "ranger"]
+  },
+  "nurses_fang": {
+    "name": "Brood Nurse's Fang",
+    "slot": "primary",
+    "dmg": 5,
+    "delay": 2.2,
+    "agi": 1,
+    "verb": ["pierce", "pierces"],
+    "model": "dagger",
+    "value": 380,
+    "lore": true,
+    "rec_level": 6,
+    "skill": "piercing",
+    "classes": ["warrior", "wizard", "rogue", "magician", "necromancer", "shaman", "ranger"]
+  },
+  "blightfang": {
+    "name": "Blightfang",
+    "slot": "primary",
+    "dmg": 6,
+    "delay": 2.2,
+    "agi": 2,
+    "hp": 5,
+    "verb": ["pierce", "pierces"],
+    "model": "dagger",
+    "value": 900,
+    "lore": true,
+    "rec_level": 8,
+    "skill": "piercing",
+    "proc": {"spell": "blight_venom", "chance": 0.08},
+    "classes": ["warrior", "wizard", "rogue", "magician", "necromancer", "shaman", "ranger"]
   }
 }

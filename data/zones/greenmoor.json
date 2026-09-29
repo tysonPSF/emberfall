@@ -141,7 +141,7 @@
     {"type": "camp", "pos": [115, -100]},
     {"type": "ruins", "pos": [-100, -80]},
     {"type": "outpost", "pos": [40, -138]},
-    {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true},
+    {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true, "tainted_until": "merricks_line_pond"},
     {"type": "cave", "pos": [-150, -30], "face": [0, -30]},
     {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
     {"type": "signpost", "pos": [12.5, -168], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]},

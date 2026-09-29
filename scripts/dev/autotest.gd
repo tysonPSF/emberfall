@@ -198,6 +198,7 @@ const SECTIONS := [
 	["zone_unload", "greenmoor"],
 	["merricks_line", "emberhold_tavern"],
 	["wellspring", "wellspring"],
+	["wellspring_quest", "wellspring"],
 ]
 
 var shots_dir := ""
@@ -276,7 +277,7 @@ func _t_merrick() -> void:
 	var p := World.local_player
 	# Merrick at the pond: hail, ask about the trout, then open his shop. He's
 	# only back at the pond once his line is done (merricks_line tests the rest).
-	for q in ["merricks_line_sinew", "merricks_line_spring"]:
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
 		p.quests[q] = {"active": false, "completions": 1}
 	await _wait(0.7)  # Npc._update_sight shows him
 	for obj: Node3D in World.objects.values():
@@ -3462,7 +3463,7 @@ func _t_rogue_guild() -> void:
 ## step 2 is done; the pond is fouled.
 func _t_merricks_line() -> void:
 	var p := World.local_player
-	for q in ["merricks_line_sinew", "merricks_line_spring"]:
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
 		p.quests.erase(q)
 	await _wait(0.7)
 	var merrick: Npc = _npcs().get("merrick_tavern")
@@ -3555,6 +3556,141 @@ func _t_wellspring() -> void:
 	for i in route.size() - 1:
 		walked += route[i].distance_to(route[i + 1])
 	print("wellspring: path entrance -> cavern: %d points, %.0f m, ends %.1f m from the cavern" % [route.size(), walked, got.distance_to(z.ground(62, -118))])
+	World.time_override = -1.0
+
+
+## Merrick's line, steps 2 to 4, played through: the Wellspring's monsters are
+## all there; a web stops you until it's torn down (no corpse, no XP); the
+## Blightmother brings her own music and drops her heart and venom sac; the
+## heart frees the crystal (a vial for you, the cave's water clean for you);
+## the venom sac sends Merrick walking out of the tavern; the vial poured into
+## Greenmoor's pond clears it.
+func _t_wellspring_quest() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 50  # the cave's monsters leave a gray-con player be, so the test isn't a fight
+	p.recalc_stats()
+	p.hp = p.max_hp
+	for q in ["merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests.erase(q)
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	World.time_override = 12.0
+	await _wait(1.0)
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("wellspring_quest: monsters %s" % counts)
+	# a web across the passage
+	var web := _nearest_mob(p, "thick_web")
+	if web != null:
+		var ahead := -web.global_transform.basis.z  # it faces down the passage
+		p.global_position = web.global_position + ahead * 3.0 + Vector3.UP * 0.5
+		p.face_toward(web.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		await _wait(0.5)
+		await _shot("9zx_web")
+		var start := p.global_position
+		for k in 90:
+			p.velocity = -ahead * 4.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("wellspring_quest: walked at the web: %.1f m of 6 (blocked if under 3)" % start.distance_to(p.global_position))
+		var xp := p.xp
+		World.damage(web, 9999, p)
+		await _wait(0.3)
+		var corpses: int = main.zone.get_children().filter(func(c: Node) -> bool: return c is Corpse and (c as Corpse).global_position.distance_to(start) < 6.0).size()
+		start = p.global_position
+		for k in 90:
+			p.velocity = -ahead * 4.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("wellspring_quest: web torn: xp +%d, corpses %d, then walked %.1f m" % [p.xp - xp, corpses, start.distance_to(p.global_position)])
+	# the Blightmother
+	var boss := _nearest_mob(p, "blightmother")
+	if boss == null:
+		print("wellspring_quest: FAIL no Blightmother")
+		World.time_override = -1.0
+		return
+	p.global_position = boss.global_position + Vector3(14, 0.5, -4)
+	p.face_toward(boss.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.2
+	await _wait(0.6)
+	print("wellspring_quest: Blightmother level %d, %d hp, scale %.1f; fight music would be '%s'" % [boss.level, boss.max_hp, boss.body_scale, Music._boss_track(p)])
+	await _shot("9zx_blightmother")
+	var fell := boss.global_position
+	World.damage(boss, 9999, p)
+	await _wait(0.5)
+	for c: Node in main.zone.get_children():
+		if c is Corpse and (c as Corpse).global_position.distance_to(fell) < 2.0:
+			p.global_position = fell + Vector3(1.5, 0.5, 0)
+			World.request_loot_all(p.entity_id, (c as Corpse).object_id)
+	await _wait(0.3)
+	print("wellspring_quest: looted heart %d, venom sac %d" % [p.pack.count("blight_heart"), p.pack.count("blightmothers_venom_sac")])
+	# the crystal
+	var crystal: Npc = _npcs().get("spring_crystal")
+	_stand_by(p, crystal)
+	p.global_position = crystal.global_position + Vector3(7.2, 0.5, 5.4)  # on the bank, in reach
+	p.global_position.y = main.zone.ground(p.global_position.x, p.global_position.z).y + 0.5
+	p.face_toward(crystal.global_position)
+	p.zoom = 7.0
+	await _wait(0.6)
+	print("wellspring_quest: crystal before: %s" % crystal.look.get("shape"))
+	await _shot("9zx_crystal_cocooned")
+	await _hand_in(p, crystal, ["blight_heart"])
+	await _wait(1.6)
+	var clean: bool = main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"])
+	print("wellspring_quest: crystal after: %s; vial %d; cave water clean %s; step 2 %s" % [crystal.look.get("shape"), p.pack.count("vial_of_spring_water"), clean, p.quests.get("merricks_line_spring")])
+	await _shot("9zx_crystal_freed")
+	for k in 30:
+		if p.quests.has("merricks_line_word"):
+			break
+		await _wait(1.0)
+	print("wellspring_quest: step 3 %s" % p.quests.get("merricks_line_word"))
+	# Merrick, in the tavern
+	await _ensure_zone("emberhold_tavern")
+	await _wait(1.0)
+	var merrick: Npc = _npcs().get("merrick_tavern")
+	p.global_position = merrick.global_position + Vector3(2.4, 0.5, -3.4)
+	p.face_toward(merrick.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 0.0
+	World.request_set_target(p.entity_id, merrick.entity_id)
+	await _hand_in(p, merrick, ["blightmothers_venom_sac"])
+	for k in 40:
+		if p.quests.has("merricks_line_pond"):
+			break
+		await _wait(1.0)
+	await _wait(1.2)
+	var walker: Npc = _npcs().get("merrick_walker")
+	print("wellspring_quest: step 4 %s; seated Merrick seen %s; walker %s" % [p.quests.get("merricks_line_pond"), World.sees(p, merrick), walker != null])
+	p.zoom = 6.0
+	await _shot("9zx_merrick_leaves")
+	for k in 20:
+		if not is_instance_valid(walker) or walker == null:
+			break
+		await _wait(0.5)
+	print("wellspring_quest: walker gone %s" % (walker == null or not is_instance_valid(walker)))
+	# the pond
+	await _ensure_zone("greenmoor")
+	await _wait(1.0)
+	var pond_merrick: Npc = _npcs().get("merrick")
+	print("wellspring_quest: pond Merrick seen %s" % World.sees(p, pond_merrick))
+	_stand_by(p, pond_merrick)
+	await _hand_in(p, pond_merrick, ["vial_of_spring_water"])
+	await _wait(1.6)
+	var pond_clean: bool = main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"])
+	print("wellspring_quest: step 4 %s; pond clean %s" % [p.quests.get("merricks_line_pond"), pond_clean])
+	p.global_position = main.zone.ground(-114, 157) + Vector3.UP
+	p.face_toward(main.zone.ground(-125, 145))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 7.0
+	p.pitch = -0.35
+	await _wait(1.0)
+	await _shot("9zx_pond_clean")
 	World.time_override = -1.0
 
 

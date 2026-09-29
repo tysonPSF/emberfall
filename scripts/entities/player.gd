@@ -683,6 +683,7 @@ func respawn() -> void:
 func _ready() -> void:
 	var mirrored := look.duplicate()
 	var weapon: String = GameData.item(equipment.get("primary", "")).get("model", "")
+	collision_mask |= Layers.BARRIER  # webs across a passage stop you until you tear them down
 	if not mirrored.is_empty():
 		weapon = str(mirrored.get("weapon", ""))
 	var looks_race := str(mirrored.get("race", race)) if not mirrored.is_empty() else race

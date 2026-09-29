@@ -34,6 +34,8 @@ var _decks: Array = []  # [Transform3D (center, deck top), half size Vector2]: b
 var _lakes: Array = []  # [{shore: PackedVector2Array, level, depth, shelf, bank, islands: [[Vector2, radius]]}]
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
 var tunnel: Tunnel = null  # a cave zone's passages ("tunnel" in its data); null outdoors
+var _foul: Array = []  # fouled waters that clear per player: [{mat, until, glow, extras, clean}] (_add_foul)
+var _foul_timer: Timer = null
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
 var _prop_tris: Dictionary = {}  # prop id -> unscaled collision faces
@@ -670,6 +672,15 @@ func _dress_cave() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(data.get("seed", 1)) + 4271
 	var draws := DisplayServer.get_name() != "headless"
+	if draws:
+		for l: Dictionary in data.get("lights", []):  # placed by hand: the Blightmother's nest, the spring cavern
+			var at := ground(float(l["pos"][0]), float(l["pos"][1]))
+			var light := OmniLight3D.new()
+			light.light_color = Color.html(str(l.get("color", "#a0d060")))
+			light.light_energy = float(l.get("energy", 1.5))
+			light.omni_range = float(l.get("range", 14.0))
+			light.position = at + Vector3.UP * float(l.get("height", 3.0))
+			add_child(light)
 	var since_light := 0.0
 	for spot: Array in tunnel.walk(3.0):
 		var c: Vector2 = spot[0]
@@ -1706,7 +1717,7 @@ func _build_pond(lm: Dictionary) -> void:
 	water.position = Vector3(center.x, level, center.y)
 	add_child(water)
 	if tainted and DisplayServer.get_name() != "headless":
-		_foul_pond(Vector3(center.x, level, center.y), r)
+		_foul_pond(Vector3(center.x, level, center.y), r, _add_foul(mat, str(lm.get("tainted_until", "")), 0.0))
 
 	var dock_a := deg_to_rad(float(lm.get("dock", 0.0)))
 	var dir := Vector2(cos(dock_a), sin(dock_a))
@@ -1739,9 +1750,38 @@ func _build_pond(lm: Dictionary) -> void:
 			_wither(pads)
 
 
+## Fouled water that runs clean again for whoever has finished `until` (a
+## quest id: Greenmoor's pond once Merrick pours the spring water in, the
+## Wellspring once its crystal is freed). Each machine draws it for its own
+## player, checked every second (_check_foul). "" stays foul for everyone.
+func _add_foul(mat: ShaderMaterial, until: String, glow: float) -> Dictionary:
+	var foul := {"mat": mat, "until": until, "glow": glow, "extras": [], "clean": false}
+	_foul.append(foul)
+	if until != "" and _foul_timer == null and DisplayServer.get_name() != "headless":
+		_foul_timer = Timer.new()
+		_foul_timer.wait_time = 1.0
+		_foul_timer.autostart = true
+		_foul_timer.timeout.connect(_check_foul)
+		add_child(_foul_timer)
+	return foul
+
+
+func _check_foul() -> void:
+	var p := World.local_player
+	for foul: Dictionary in _foul:
+		var clean: bool = p != null and foul["until"] != "" and World.quest_done(p, foul["until"])
+		if clean == foul["clean"]:
+			continue
+		foul["clean"] = clean
+		(foul["mat"] as ShaderMaterial).set_shader_parameter("taint", 0.0 if clean else 1.0)
+		(foul["mat"] as ShaderMaterial).set_shader_parameter("glow", 0.0 if clean else float(foul["glow"]))
+		for n: Node3D in foul["extras"]:
+			n.visible = not clean
+
+
 ## A fouled pond (Merrick's line): bubbles of gas rising and popping, and a
 ## low green haze drifting over the water. Only a picture.
-func _foul_pond(at: Vector3, r: float) -> void:
+func _foul_pond(at: Vector3, r: float, foul: Dictionary) -> void:
 	var bubbles := CPUParticles3D.new()
 	var bead := SphereMesh.new()
 	bead.radius = 0.07
@@ -1800,6 +1840,7 @@ func _foul_pond(at: Vector3, r: float) -> void:
 	haze.scale_amount_curve = fade
 	haze.position = at + Vector3.UP * 0.7
 	add_child(haze)
+	foul["extras"] = [bubbles, haze]  # gone with the taint
 
 
 ## Browns a prop's meshes (dying lily pads on a fouled pond).
@@ -1948,6 +1989,7 @@ func _build_river(river: Dictionary) -> void:
 	if river.get("tainted", false):  # the Wellspring's creek, fouled like Greenmoor's pond
 		mat.set_shader_parameter("taint", 1.0)
 		mat.set_shader_parameter("glow", float(river.get("glow", 0.0)))
+		_add_foul(mat, str(data.get("tainted_until", "")), float(river.get("glow", 0.0)))
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
@@ -2006,6 +2048,7 @@ func _build_lake(lake: Dictionary) -> void:
 	if lake.get("tainted", false):  # the Wellspring's spring, fouled at its source
 		mat.set_shader_parameter("taint", 1.0)
 		mat.set_shader_parameter("glow", float(lake.get("glow", 0.0)))
+		_add_foul(mat, str(data.get("tainted_until", "")), float(lake.get("glow", 0.0)))
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
@@ -2322,6 +2365,8 @@ func _build_spawns() -> void:
 		var x := float(entry["pos"][0])
 		var z := float(entry["pos"][1])
 		sp.position = Vector3(x, surface_at(x, z), z)  # on a deck (a causeway, a boardwalk) when there's one over the ground
+		if entry.has("face"):  # facing a point, as npcs do (a web hung across a passage)
+			sp.yaw = atan2(-(float(entry["face"][0]) - x), -(float(entry["face"][1]) - z))
 		add_child(sp)
 
 

@@ -601,21 +601,30 @@ for _i, _y in enumerate((-0.42, -0.24, -0.06, 0.12)):
 SPIDER_SET_A = ("leg_l1", "leg_r2", "leg_l3", "leg_r4")
 
 
-def build_spider():
-	shell = material("spider_shell", "2e2724", 0.55)
-	mark = material("spider_mark", "9a3424", 0.5)
-	thorn = material("spider_thorn", "c9b58e", 0.5)
-	leg_m = material("spider_leg", "231d1b", 0.6)
-	glow = material("spider_eye", "ff3a22", 0.3, emit=3.0)
-	b = Builder("spider")
+def build_spider(name="spider", shell_hex="2e2724", mark_hex="9a3424", thorn_hex="c9b58e", leg_hex="231d1b", eye_hex="ff3a22",
+				 bloat=1.0, mark_glow=0.0, sacs=0):
+	"""The thornback spider. The Wellspring's spiders are the same animal in
+	other colors; `bloat` swells the abdomen (the Blightmother), `mark_glow`
+	lights its mark and `sacs` hangs that many glowing venom sacs under it."""
+	shell = material(f"{name}_shell", shell_hex, 0.55)
+	mark = material(f"{name}_mark", mark_hex, 0.5, emit=mark_glow)
+	thorn = material(f"{name}_thorn", thorn_hex, 0.5)
+	leg_m = material(f"{name}_leg", leg_hex, 0.6)
+	glow = material(f"{name}_eye", eye_hex, 0.3, emit=3.0)
+	b = Builder(name)
 	b.bone("root", (0, 0, 0.55))
 	b.bone("body", (0, -0.15, 0.55), "root")
 	b.bone("abdomen", (0, 0.25, 0.62), "body")
 	b.bone("fang_l", (0.08, -0.62, 0.48), "body")
 	b.bone("fang_r", (-0.08, -0.62, 0.48), "body")
 	b.blob((0.7, 0.78, 0.46), (0, -0.2, 0.55), shell, "body", segs=(12, 8))              # cephalothorax
-	b.blob((1.1, 1.25, 0.95), (0, 0.72, 0.78), shell, "abdomen", segs=(14, 10))          # abdomen
-	b.blob((0.5, 0.7, 0.2), (0, 0.72, 1.2), mark, "abdomen", rot=(-10, 0, 0), segs=(10, 6))  # the red mark
+	b.blob((1.1 * bloat, 1.25 * bloat, 0.95 * bloat), (0, 0.72 * bloat, 0.78 + 0.25 * (bloat - 1)), shell, "abdomen", segs=(14, 10))  # abdomen
+	b.blob((0.5 * bloat, 0.7 * bloat, 0.2), (0, 0.72 * bloat, 1.2 + 0.7 * (bloat - 1)), mark, "abdomen", rot=(-10, 0, 0), segs=(10, 6))  # the red mark
+	if sacs:
+		sac = material(f"{name}_sac", mark_hex, 0.35, emit=mark_glow * 1.5)
+		for k in range(sacs):                                                          # venom sacs bulging round the abdomen's sides
+			a = math.pi * 0.35 + k * math.pi * 1.3 / max(1, sacs - 1)
+			b.blob((0.34, 0.34, 0.4), (math.sin(a) * 0.6 * bloat, 0.72 * bloat + math.cos(a) * 0.66 * bloat, 0.62), sac, "abdomen", segs=(8, 6))
 	for k, (x, y, z) in enumerate(((0.28, 0.45, 1.12), (-0.28, 0.45, 1.12), (0.4, 0.8, 1.05), (-0.4, 0.8, 1.05), (0.0, 1.0, 1.2), (0.0, 0.55, 1.26))):
 		b.seg((x, y, z - 0.05), (x * 1.3, y + 0.05, z + 0.28), 0.07, 0.0, thorn, "abdomen", sides=4)   # thorns
 	for s in (1, -1):
@@ -30566,6 +30575,194 @@ def preview(arm, name, out_dir):
 			bpy.ops.render.render(write_still=True)
 	bpy.data.objects.remove(cam)
 	bpy.data.objects.remove(g)
+
+
+# ---------------------------------------------------------------- the Wellspring (Merrick's cave under Greenmoor)
+# The Blightmother's brood (the thornback spider in pale cave colors), the
+# Blightmother herself (bloated, her venom sacs glowing), cave bats that hang
+# in the air flapping, water snakes in the fouled creek, and a miner's pick
+# for the lost miners (KayKit skeletons).
+
+def build_cave_spider():
+	return build_spider("cave_spider", shell_hex="8d887c", mark_hex="6d8a2a", thorn_hex="d9d4c0", leg_hex="5a554c", eye_hex="a8ff4a")
+
+
+def build_blightmother():
+	return build_spider("blightmother", shell_hex="33381f", mark_hex="9fc23a", thorn_hex="d8d2a8", leg_hex="1f2214", eye_hex="d8ff5a",
+						bloat=1.7, mark_glow=1.2, sacs=5)
+
+
+def build_cave_bat(name="cave_bat"):
+	"""A bat the size of a cat, hanging in the air at head height (its body is
+	1.45 m up) flapping; it dives to bite and drops to the ground dead."""
+	fur = material(f"{name}_fur", "4a3f3c")
+	belly = material(f"{name}_belly", "6e5d55")
+	skin = material(f"{name}_membrane", "2e2626", 0.7)
+	pink = material(f"{name}_pink", "8a5a55", 0.6)
+	eye = material(f"{name}_eye", "e84a2a", 0.3, emit=2.0)
+	b = Builder(name)
+	b.bone("root", (0, 0, 1.45))
+	b.bone("body", (0, 0, 1.45), "root")
+	b.bone("head", (0, -0.2, 1.5), "body")
+	b.blob((0.3, 0.38, 0.3), (0, 0.02, 1.45), fur, "body")
+	b.blob((0.22, 0.28, 0.2), (0, 0.0, 1.38), belly, "body")
+	b.blob((0.25, 0.23, 0.22), (0, -0.22, 1.53), fur, "head")
+	b.blob((0.11, 0.1, 0.08), (0, -0.33, 1.5), pink, "head")                        # snout
+	for s in (1, -1):
+		side = "l" if s > 0 else "r"
+		b.seg((0.07 * s, -0.21, 1.6), (0.11 * s, -0.18, 1.8), 0.055, 0.0, pink, "head", sides=4)   # ears
+		b.blob((0.05, 0.04, 0.05), (0.06 * s, -0.32, 1.56), eye, "head", segs=(6, 4))
+		b.seg((0.03 * s, -0.33, 1.47), (0.03 * s, -0.33, 1.42), 0.012, 0.0, material(f"{name}_fang", "efe6d0"), "head", sides=4)
+		b.bone(f"wing_{side}", (0.12 * s, 0, 1.5), "body")
+		b.bone(f"tip_{side}", (0.55 * s, 0.02, 1.52), f"wing_{side}")
+		b.seg((0.12 * s, 0, 1.52), (0.55 * s, 0.0, 1.55), 0.025, 0.02, fur, f"wing_{side}", sides=5)
+		b.blob((0.46, 0.3, 0.025), (0.34 * s, 0.06, 1.5), skin, f"wing_{side}")
+		for fx, fy in ((1.02, -0.05), (0.98, 0.18), (0.78, 0.3)):                   # the fingers the membrane stretches between
+			b.seg((0.55 * s, 0.0, 1.55), (fx * s, fy, 1.5), 0.016, 0.008, fur, f"tip_{side}", sides=4)
+		b.blob((0.48, 0.34, 0.02), (0.8 * s, 0.1, 1.51), skin, f"tip_{side}")
+		b.seg((0.05 * s, 0.14, 1.36), (0.06 * s, 0.2, 1.26), 0.02, 0.012, pink, "body", sides=4)   # feet
+	arm = b.build()
+
+	def flap(t, amp, cycles=1.0):
+		out = {}
+		for s, side in ((1, "l"), (-1, "r")):
+			out[f"wing_{side}"] = {"rot": (0, amp * wave(t, cycles) * s, 0)}
+			out[f"tip_{side}"] = {"rot": (0, amp * 0.6 * wave(t, cycles, -0.12) * s, 0)}
+		return out
+
+	def idle(t):
+		return merge(flap(t, 45, 3), {"root": {"loc": (0, 0, 0.06 * wave(t, 3, 0.25))}, "head": {"rot": (0, 0, 12 * wave(t, 1))}})
+
+	def walk(t):
+		return merge(flap(t, 50, 1), {"root": {"loc": (0, 0, 0.07 * wave(t, 1, 0.25)), "rot": (-10, 0, 0)}})
+
+	def run(t):
+		return merge(flap(t, 55, 1), {"root": {"loc": (0, 0, 0.05 * wave(t, 1, 0.25)), "rot": (-16, 0, 0)}})
+
+	def attack(t):  # a swoop at the face: dip, lunge in with the teeth, pull back up
+		lunge = seq(t, [(0, 0), (0.35, -0.05), (0.55, 0.35), (1, 0)])
+		dip = seq(t, [(0, 0), (0.35, 0.12), (0.55, -0.2), (1, 0)])
+		sweep = seq(t, [(0, 0), (0.35, -40), (0.55, 55), (1, 0)])
+		out = {"root": {"loc": (0, lunge, dip), "rot": (seq(t, [(0, 0), (0.55, -25), (1, 0)]), 0, 0)},
+			   "head": {"rot": (seq(t, [(0, 0), (0.5, -15), (0.6, 10), (1, 0)]), 0, 0)}}
+		for s, side in ((1, "l"), (-1, "r")):
+			out[f"wing_{side}"] = {"rot": (0, sweep * s, 0)}
+			out[f"tip_{side}"] = {"rot": (0, sweep * 0.5 * s, 0)}
+		return out
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge(flap(t, 30 + 30 * k, 2), {"root": {"loc": (0, -0.15 * k, 0.08 * k), "rot": (18 * k, 10 * k, 0)}})
+
+	def death(t):  # the wings fold and it drops to the floor, belly up
+		fall = seq(t, [(0.1, 0), (0.7, -1.32), (0.8, -1.26), (0.9, -1.32)])
+		fold = seq(t, [(0.0, 0), (0.5, 1)])
+		out = {"root": {"loc": (0, 0, fall), "rot": (seq(t, [(0.1, 0), (0.7, 20)]), seq(t, [(0.2, 0), (0.75, 170)]), 0)}}
+		for s, side in ((1, "l"), (-1, "r")):
+			out[f"wing_{side}"] = {"rot": (0, (-60 * fold + 15 * wave(t, 4) * (1 - fold)) * s, 20 * fold * s)}
+			out[f"tip_{side}"] = {"rot": (0, -70 * fold * s, 0)}
+		return out
+
+	clip(arm, "idle", 1.0, idle, True)
+	clip(arm, "walk", 0.5, walk, True)
+	clip(arm, "run", 0.32, run, True)
+	clip(arm, "attack", 0.6, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.2, death, False)
+	return arm
+
+
+SNAKE_SEGS = 6
+
+
+def build_water_snake(name="water_snake"):
+	"""A 2.4 m water snake from the fouled creek: dark olive, banded, a pale
+	belly and sickly yellow eyes. Slithers side to side; rears and strikes."""
+	back = material(f"{name}_back", "3f4a2a")
+	band = material(f"{name}_band", "1e2416")
+	belly = material(f"{name}_belly", "b8b48a")
+	eye = material(f"{name}_eye", "d8e040", 0.3, emit=1.6)
+	tongue = material(f"{name}_tongue", "9a2a2a", 0.5)
+	b = Builder(name)
+	b.bone("root", (0, -0.2, 0.12))
+	b.bone("head", (0, -0.55, 0.14), "root")
+	prev = "root"
+	for i in range(SNAKE_SEGS):
+		y = 0.1 + i * 0.32
+		b.bone(f"seg{i}", (0, y - 0.3, 0.1), prev)
+		prev = f"seg{i}"
+	for i in range(SNAKE_SEGS + 1):
+		y0 = -0.45 + i * 0.32
+		y1 = y0 + 0.34
+		r0 = 0.1 - i * 0.012
+		r1 = max(0.012, r0 - 0.012)
+		bone = "root" if i == 0 else f"seg{min(i - 1, SNAKE_SEGS - 1)}"
+		b.seg((0, y0, 0.11), (0, y1, 0.1), r0, r1, back if i % 2 == 0 else band, bone, sides=8)
+		b.seg((0, y0, 0.07), (0, y1, 0.07), r0 * 0.75, r1 * 0.75, belly, bone, sides=6)
+	b.blob((0.22, 0.32, 0.15), (0, -0.62, 0.14), back, "head")
+	b.blob((0.16, 0.22, 0.07), (0, -0.66, 0.08), belly, "head")
+	for s in (1, -1):
+		b.blob((0.05, 0.05, 0.05), (0.08 * s, -0.7, 0.18), eye, "head", segs=(6, 4))
+	b.seg((0, -0.78, 0.1), (0, -0.92, 0.1), 0.012, 0.004, tongue, "head", sides=3)
+	arm = b.build()
+
+	def slither(t, amp, cycles=1.0):
+		out = {}
+		for i in range(SNAKE_SEGS):
+			out[f"seg{i}"] = {"rot": (0, 0, amp * wave(t, cycles, -0.16 * (i + 1)))}
+		return out
+
+	def idle(t):  # coiled loosely, head up, tasting the air
+		return merge(slither(t, 10, 1), {"head": {"rot": (18 + 4 * wave(t, 2), 0, 14 * wave(t, 1, 0.3))},
+										 "root": {"rot": (0, 0, 6 * wave(t))}})
+
+	def walk(t):
+		return merge(slither(t, 24, 1), {"root": {"rot": (0, 0, 10 * wave(t, 1, 0.1))}, "head": {"rot": (8, 0, -8 * wave(t))}})
+
+	def run(t):
+		return merge(slither(t, 30, 1), {"root": {"rot": (0, 0, 12 * wave(t, 1, 0.1))}, "head": {"rot": (6, 0, -10 * wave(t))}})
+
+	def attack(t):  # rear back, strike forward with the jaws, recoil
+		rear = seq(t, [(0, 0), (0.35, 1), (0.5, -0.3), (1, 0)])
+		return merge(slither(t, 8, 1), {"head": {"rot": (35 * rear, 0, 0), "loc": (0, seq(t, [(0, 0), (0.35, -0.12), (0.5, 0.35), (1, 0)]), 0.12 * max(0, rear))},
+										  "root": {"rot": (8 * rear, 0, 0)}})
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge(slither(t, 30 * k, 2), {"head": {"rot": (-15 * k, 0, 20 * k)}})
+
+	def death(t):  # writhes, then rolls belly up and goes still
+		k = seq(t, [(0.1, 0), (0.8, 1)])
+		writhe = 1 - k
+		return merge(slither(t, 35 * writhe, 3), {"root": {"rot": (0, 170 * k, 0), "loc": (0, 0, 0.1 * k)}, "head": {"rot": (-10 * k, 0, 25 * k)}})
+
+	clip(arm, "idle", 2.0, idle, True)
+	clip(arm, "walk", 0.9, walk, True)
+	clip(arm, "run", 0.55, run, True)
+	clip(arm, "attack", 0.55, attack, False)
+	clip(arm, "hit", 0.4, hit, False)
+	clip(arm, "death", 1.2, death, False)
+	return arm
+
+
+def build_miners_pick():
+	"""A lost miner's pick (weapons' frame: grip at the origin, up +Z): a
+	worn wooden haft, an iron head gone to rust."""
+	wood = material("miners_pick_wood", "6b4a2e")
+	iron = material("miners_pick_iron", "5c524a", 0.6)
+	rust = material("miners_pick_rust", "7a4a2a", 0.85)
+	b = Builder("miners_pick")
+	b.seg((0, 0, -0.15), (0, 0, 0.78), 0.025, 0.03, wood, "x", sides=7)
+	b.seg((0, 0, 0.66), (0, 0, 0.8), 0.05, 0.05, iron, "x", sides=6)
+	for s in (1, -1):
+		b.seg((0, 0, 0.73), (0.18 * s, 0, 0.7), 0.045, 0.03, rust if s > 0 else iron, "x", sides=6)
+		b.seg((0.18 * s, 0, 0.7), (0.32 * s, 0, 0.6), 0.03, 0.004, iron, "x", sides=6)
+	return b.build_static()
+
+
+CREATURES.update({"cave_spider": build_cave_spider, "blightmother": build_blightmother, "cave_bat": build_cave_bat,
+				  "water_snake": build_water_snake})
+ATTACHMENTS.update({"miners_pick": build_miners_pick})
 
 
 def main():

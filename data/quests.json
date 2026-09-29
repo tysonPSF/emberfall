@@ -4392,24 +4392,84 @@
   },
   "merricks_line_spring": {
     "name": "The Sour Spring (2)",
-    "giver": "merrick_tavern",
+    "giver": "spring_crystal",
+    "starter": "merrick_tavern",
     "start_keyword": "spring",
     "requires_quest": "merricks_line_sinew",
     "wants": {
-      "proof_of_the_rot": 1
+      "blight_heart": 1
     },
     "reward": {
-      "xp": 150,
-      "coin": 40
+      "xp": 150
     },
-    "accept_text": "You have taken on a task: The Sour Spring. Find what is fouling Greenmoor's spring in the cave under the first hills, and bring Merrick word of it.",
-    "ready_text": "You went down there. I can see it on you. Tell me, {name}.",
-    "complete_text": "So that's what's been in our water. Good work, {name}.",
+    "first_reward_item": "vial_of_spring_water",
+    "accept_text": "You have taken on a task: The Sour Spring. Find what is fouling Greenmoor's spring in the cave under the first hills, and put it right.",
+    "ready_text": "The crystal's light flickers under its webs as you come near. The Blight Heart in your pack twitches, as if it knows.",
+    "complete_text": [
+      "You press the Blight Heart to the crystal. It hisses, blackens and crumbles to ash.",
+      "Light floods up through the crystal. The webs shrivel and fall away; the eggs stuck to it split and go still.",
+      "The spring stirs. Where the water touches the crystal the green sourness thins, and then it's gone: clear, cold water, running fast toward Greenmoor."
+    ],
+    "first_complete_text": "You fill a vial from the clean spring. Merrick will want to see this.",
+    "next": "merricks_line_word",
     "hints": {
-      "proof_of_the_rot": "in the cave under Greenmoor's western hills, where the spring rises."
+      "blight_heart": "the Blightmother carries it, in the spring cavern at the very end of the Wellspring (the cave in Greenmoor's western hills)."
     },
     "faction": {
       "emberhold": 10
+    }
+  },
+  "merricks_line_word": {
+    "name": "Word for Merrick (3)",
+    "giver": "merrick_tavern",
+    "start_keyword": "blightmother",
+    "requires_quest": "merricks_line_spring",
+    "wants": {
+      "blightmothers_venom_sac": 1
+    },
+    "reward": {
+      "xp": 100,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: Word for Merrick. Bring Merrick the Blightmother's venom sac, proof of what was in his water.",
+    "ready_text": "You're back. You found it, didn't you? I can see it on you. Show me, {name}.",
+    "complete_anim": "Sit_Chair_Shock",
+    "complete_text": [
+      "That's... that came out of something living? In our spring?",
+      "A spider the size of a cart, sitting on the source, and all of Greenmoor drinking what she dripped. No wonder the fish went off their food.",
+      "And the water runs clean down there now, you say. Clean at the source.",
+      "Thirty years I've heard stories told at this bar, {name}. I'll believe this one when I see it with my own eyes.",
+      "Meet me at the pond. Bring that vial."
+    ],
+    "exit_scene": {"npc": "merrick_walker", "to": [0, 6.8]},
+    "next": "merricks_line_pond",
+    "faction": {
+      "emberhold": 5
+    }
+  },
+  "merricks_line_pond": {
+    "name": "The Proof in the Water (4)",
+    "giver": "merrick",
+    "wants": {
+      "vial_of_spring_water": 1
+    },
+    "reward": {
+      "xp": 250,
+      "coin": 100
+    },
+    "accept_text": "You have taken on a task: The Proof in the Water. Meet Merrick at his pond in Greenmoor and give him the vial of spring water.",
+    "ready_text": "There you are. Well? Let's have that vial, {name}.",
+    "complete_anim": "Emote_Cheer",
+    "complete_text": [
+      "Watch. Right there, where it goes in. See the scum pull back from it?",
+      "It's spreading. Clear to the bottom. I haven't seen the bottom of this pond in a year.",
+      "Now then. Line in the water. Let's see.",
+      "There! You feel that? A bite! A real bite!",
+      "Thirty years I've fished this pond, {name}, and I've never been so glad to feel a fish pull.",
+      "Come by any time. Poles and bait, same as ever. And if Old Gulper ever shows his face again, you'll be the first to know."
+    ],
+    "faction": {
+      "emberhold": 15
     }
   }
 }
