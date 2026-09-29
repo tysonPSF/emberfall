@@ -781,8 +781,9 @@ func _check_companion(p: Player) -> void:
 	n.level = lvl
 	n.max_hp = 30 + 24 * lvl
 	n.hp = n.max_hp
-	n.dmg_min = 2 + lvl / 2
-	n.dmg_max = 5 + lvl
+	n.dmg_min = 2 + lvl / 2  # a level 8 hits 6-14: he needs your heals and a few Rebukes to beat the Blightmother (autotest corran_boss)
+	n.dmg_max = 6 + lvl
+	n.attack_delay = 2.4
 	n.ac = 4 * lvl
 	n.hp_regen = 1 + lvl / 2
 	n.faction = p.faction
@@ -790,6 +791,7 @@ func _check_companion(p: Player) -> void:
 	z.add_child(n)
 	p.companion_id = n.entity_id
 	_npc_say(p, n, str(d.get("companion_join", "I'm with you, {name}.")))
+	say(p, "(Press F2 to target %s, even in a crowd.)" % n.display_name, C_SYSTEM)
 
 
 ## A pet's taunt: puts it on top of its target's hate list.

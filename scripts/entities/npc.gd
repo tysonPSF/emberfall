@@ -43,6 +43,7 @@ var only_for := ""  # a player's name: shown to them alone (a scene for one play
 var walk_to := Vector3.INF  # walks here, then leaves (Merrick heading out of the tavern)
 var follow_id := -1  # a companion: the player it follows and fights beside (World._check_companion)
 var _companion_speed := 5.5
+var _taunt_left := 0.0
 var _sight_check := 0.0
 
 
@@ -307,18 +308,34 @@ func _think_companion(delta: float) -> Vector3:
 			auto_attack = false
 			target = null
 		else:
-			# Flank it: stand on the far side of the monster from you, so he takes its
-			# attention and you're never standing inside each other.
+			# Once he can reach it he holds his ground, so walking round the fight
+			# (to see him past a big boss and heal him) doesn't drag him round with
+			# you. Getting in, he takes the monster's flank, off to one side of
+			# the line between it and you, and never stands inside you.
 			sitting = false
 			_companion_speed = 6.2
-			var away := Vector3(t.global_position.x - lead.global_position.x, 0, t.global_position.z - lead.global_position.z)
-			if away.length() < 0.3:
-				away = -t.global_transform.basis.z
-			var spot := nav_snap(t.global_position + away.normalized() * 1.8)
-			if _flat(global_position, spot) > 1.0 and distance_to(t) > 1.2:
-				return nav_dir(spot, delta)
+			# A tank for a healer: every few seconds he takes back whatever is on
+			# you, and makes sure what he's fighting is fighting him.
+			_taunt_left -= delta
+			if _taunt_left <= 0.0:
+				_taunt_left = 3.0
+				var on_you := _mob_on(lead)
+				if on_you != null and on_you != t:
+					_engage(on_you)
+					t = on_you
+				if t is Mob:
+					_taunt(t as Mob)
 			face_toward(t.global_position)
-			return Vector3.ZERO
+			if distance_to(t) <= World.melee_range() * 0.85 and _flat(global_position, lead.global_position) > 1.6:
+				return Vector3.ZERO
+			var line := Vector3(t.global_position.x - lead.global_position.x, 0, t.global_position.z - lead.global_position.z)
+			if line.length() < 0.3:
+				line = -t.global_transform.basis.z
+			var side := line.normalized().cross(Vector3.UP)
+			if side.dot(global_position - t.global_position) < 0.0:
+				side = -side  # the flank on his side of it: no walking round
+			var spot := nav_snap(t.global_position + (side * 0.85 + line.normalized() * 0.5).normalized() * 1.8)
+			return nav_dir(spot, delta)
 	_scan_timer -= delta
 	if _scan_timer <= 0.0:
 		_scan_timer = 0.3
@@ -342,6 +359,23 @@ func _think_companion(delta: float) -> Vector3:
 	elif not lead.sitting and sitting:
 		sitting = false
 	return Vector3.ZERO
+
+
+## A monster near p that is going for p (p on top of its hate).
+func _mob_on(lead: Player) -> Mob:
+	for m in World.get_mobs():
+		if not m.dead and World.zone_of(m) == World.zone_of(self) and _flat(m.global_position, lead.global_position) < 20.0 and m.top_hated() == lead:
+			return m
+	return null
+
+
+## Puts this companion on top of m's hate, as a pet's taunt does.
+func _taunt(m: Mob) -> void:
+	var top := 0.0
+	for v: float in m.hate.values():
+		top = maxf(top, v)
+	if float(m.hate.get(entity_id, 0.0)) < top + 5.0:
+		m.hate[entity_id] = top + 15.0
 
 
 ## What a companion should fight: what its player is attacking, else whatever

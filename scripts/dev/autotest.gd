@@ -201,6 +201,7 @@ const SECTIONS := [
 	["wellspring_quest", "wellspring"],
 	["corran", "greenmoor"],
 	["corran_support", "greenmoor"],
+	["corran_boss", "wellspring"],
 ]
 
 var shots_dir := ""
@@ -3803,6 +3804,99 @@ func _t_corran() -> void:
 	p.quests["merricks_line_spring"] = {"active": false, "completions": 1}
 	await _wait(1.0)
 	print("corran: step 2 done -> companion %s" % (World.get_object(p.companion_id) != null))
+
+
+## The Blightmother with a cleric's Corran (level 8), fought twice. Alone (no
+## heals, no help) he must lose; with the player behind him (Warm Hands every
+## 4 s while the mana lasts, three Rebukes on her) they must win. The player
+## circles the fight: Corran must hold his ground, not orbit with them, and
+## F2 must find him.
+func _t_corran_boss() -> void:
+	var p := World.local_player
+	var cls := p.char_class
+	p.char_class = "cleric"  # Corran's level goes by class
+	if World.get_object(p.companion_id) != null:  # made for the class it was: send him off to come back as a cleric's
+		World.get_object(p.companion_id).queue_free()
+		p.companion_id = -1
+	p.level = 7
+	p.recalc_stats()
+	var boss := _nearest_mob(p, "blightmother")
+	if boss == null:
+		print("corran_boss: FAIL no Blightmother")
+		p.char_class = cls
+		return
+	var sp := boss.spawn_point
+	for m in World.get_mobs():  # just her: clear the way in
+		if m != boss:
+			m.queue_free()
+	await _boss_round(p, sp, false)
+	await _boss_round(p, sp, true)
+	p.char_class = cls
+
+
+func _boss_round(p: Player, sp: SpawnPoint, supported: bool) -> void:
+	var label := "with you" if supported else "alone"
+	if sp.mob != null and is_instance_valid(sp.mob):  # a fresh one each round
+		sp.mob.queue_free()
+		await get_tree().process_frame
+	sp.spawn()
+	var boss := sp.mob
+	var boss_at := boss.global_position
+	p.hp = p.max_hp
+	p.companion_back_at = 0
+	var old := World.get_object(p.companion_id)
+	if old != null:
+		old.queue_free()
+		p.companion_id = -1
+	p.global_position = boss_at + Vector3(9, 0.5, 4)
+	await _wait(1.5)
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran_boss: FAIL no companion (%s)" % label)
+		return
+	c.global_position = p.global_position + Vector3(1.5, 0, 1.5)
+	await _wait(0.3)
+	World.damage(boss, 1, p)  # the pull
+	var t := 0.0
+	var heals := 0
+	var rebukes := 0
+	var held_at := Vector3.INF
+	var moved := 0.0
+	var angle := 0.0
+	var shot := false
+	while t < 240.0 and is_instance_valid(boss) and not boss.dead and not c.dead and not p.dead:
+		await get_tree().physics_frame
+		var dt := get_physics_process_delta_time()
+		t += dt
+		angle += dt * TAU / 40.0  # circle the fight 8 m out, a quarter turn every 10 s
+		var goal := boss_at + Vector3(cos(angle), 0, sin(angle)) * 8.0
+		var to := goal - p.global_position
+		to.y = 0.0
+		p.velocity = to.normalized() * minf(4.0, to.length() * 4.0)
+		p.move_and_slide()
+		if is_instance_valid(boss) and c.auto_attack and c.distance_to(boss) <= World.melee_range():
+			if held_at == Vector3.INF:
+				held_at = c.global_position
+			moved = maxf(moved, Vector2(c.global_position.x - held_at.x, c.global_position.z - held_at.z).length())
+		if supported:
+			if fmod(t, 4.0) < dt and heals < 11:  # Warm Hands at level 7: 24-28, about ten casts on a mana bar
+				c.hp = mini(c.max_hp, c.hp + randi_range(24, 28))
+				heals += 1
+			if rebukes < 3 and t > 10.0 + rebukes * 15.0:  # Rebuke at level 7: 13-16
+				World.damage(boss, randi_range(13, 16), p)
+				rebukes += 1
+		if supported and not shot and t > 20.0:
+			shot = true
+			p.target_group_member(0)
+			print("corran_boss: F2 -> target %s" % (p.target.display_name if p.target != null else "nothing"))
+			p.face_toward(boss_at)
+			p.camera_pivot.rotation.y = 0.0
+			p.zoom = 9.0
+			p.pitch = -0.35
+			await _shot("9zy_corran_boss")
+	var won := not is_instance_valid(boss) or boss.dead
+	print("corran_boss: %s, after %.0f s: she's %s, Corran %s (%d/%d hp), you %s; %d heals, %d rebukes; while you circled he moved at most %.1f m" % [label, t,
+			"dead" if won else "standing (%d/%d)" % [boss.hp, boss.max_hp], "down" if c.dead else "up", c.hp, c.max_hp, "down" if p.dead else "up", heals, rebukes, moved])
 
 
 ## Corran as a support player sees him: the player walks the cave and never

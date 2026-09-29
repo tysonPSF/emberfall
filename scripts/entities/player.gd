@@ -218,6 +218,11 @@ func _group_key(event: InputEvent) -> int:
 
 func target_group_member(index: int) -> void:
 	var others := group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != entity_id)
+	if index == others.size():  # the next key after your group: your companion (F2 alone), to heal him without clicking past a boss
+		var buddy := _companion()
+		if buddy != null:
+			World.request_set_target(entity_id, buddy.entity_id)
+		return
 	if index >= others.size():
 		return
 	var m: Dictionary = others[index]
@@ -225,6 +230,16 @@ func target_group_member(index: int) -> void:
 		World.say(self, "%s is not in this zone." % m["name"], World.C_WARN)
 		return
 	World.request_set_target(entity_id, int(m["id"]))
+
+
+## The companion fighting beside you (Watchman Corran), if one is here: the
+## server only ever sends a player their own, so the one in view is yours.
+func _companion() -> Npc:
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and not (obj as Npc).dead and (obj as Npc).data.has("companion_levels") and World.sees(self, obj) \
+				and World.zone_of(obj) == World.zone_of(self):
+			return obj as Npc
+	return null
 
 
 ## /follow: walk after your target (a groupmate, usually) until you move
