@@ -1361,6 +1361,8 @@ func can_attack(a: Entity, t: Entity) -> bool:
 		return false
 	if a is Npc and t is Npc:
 		return false
+	if t is Npc and (t as Npc).data.get("sacred", false):
+		return false  # the gods and their attendants: nothing may raise a hand against them
 	if t is Npc:
 		return a is Mob or (a is Player and (a as Player).hostile_npcs.has(t.entity_id))
 	if a is Npc:
@@ -1373,7 +1375,8 @@ func request_set_target(entity_id: int, target_id: int) -> void:
 		return
 	var e := get_object(entity_id) as Entity
 	if e != null:
-		e.target = get_object(target_id) if target_id >= 0 else null
+		var t := get_object(target_id) if target_id >= 0 else null
+		e.target = t if not (e is Player) or sees(e as Player, t) else null
 
 
 func request_toggle_attack(entity_id: int) -> void:
@@ -1389,6 +1392,9 @@ func request_toggle_attack(entity_id: int) -> void:
 	unhide(e)
 	e.feigning = false
 	var t := e.valid_target_entity()
+	if e is Player and t is Npc and (t as Npc).data.get("sacred", false):
+		say(e, "You cannot raise a hand against %s." % t.display_name, C_WARN)
+		return
 	if e is Player and t is Npc and not can_attack(e, t):
 		var p := e as Player
 		if p.attack_confirm_id == t.entity_id and Time.get_ticks_msec() - p.attack_confirm_at < ATTACK_CONFIRM_MS:
@@ -1701,6 +1707,90 @@ func _go_home(p: Player) -> void:
 		p.velocity = Vector3.ZERO
 		Net.teleport(p, p.global_position)
 		return
+	_leave_for_elsewhere(p)
+	zone_change.emit(p, home, Vector2.INF, Vector2.INF)  # INF: arrive at that zone's bindstone
+
+
+# --- the grove ---------------------------------------------------------------
+
+const GROVE_ZONE := "the_grove"
+const DEITY_IDS := ["light", "water", "fire", "wind", "dark"]
+
+
+## The players whose standing with the gods counts for p in the Grove: p and
+## their group. Guildmates will join this circle once there are guilds.
+func grove_circle(p: Player) -> Array:
+	return group_members(p)
+
+
+## Whether a god (and the attendants who came with it) has come to the Grove
+## for p: p, or anyone in p's circle, has earned it.
+func grove_sees(p: Player, deity: String) -> bool:
+	for m: Player in grove_circle(p):
+		if deity in m.grove_deities:
+			return true
+	return false
+
+
+## Whether p may see obj at all. Everything is seen except the Grove's gods and
+## their attendants ("grove_deity" in npcs.json), who show only to those whose
+## circle has earned them. The server sends nothing else (Net._replicate), and
+## nobody can talk to or target what they can't see.
+func sees(p: Player, obj: Object) -> bool:
+	if p == null or not (obj is Npc):
+		return true
+	var deity := (obj as Npc).grove_deity
+	return deity == "" or grove_sees(p, deity)
+
+
+## A god comes to the Grove for p (the questline's reward: a quest's
+## reward.grove_deity, or /grove unlock).
+func unlock_grove_deity(p: Player, deity: String) -> void:
+	if not deity in DEITY_IDS or deity in p.grove_deities:
+		return
+	p.grove_deities.append(deity)
+	var god: Dictionary = GameData.deities.get(deity, {})
+	say(p, "%s %s has come to the Grove. Seek them beside the still water." % [god.get("name", deity), god.get("title", "")], C_SPELL)
+
+
+func lock_grove_deity(p: Player, deity: String) -> void:
+	p.grove_deities.erase(deity)
+
+
+## The Seed of the Grove: to the tusk arch, remembering where you left from so
+## the Grove's keeper can walk you back.
+func _go_grove(p: Player) -> void:
+	var gd := GameData.load_zone(GROVE_ZONE)
+	var bp: Array = gd.get("bind_point", [0, 0])
+	var arrive := Vector2(float(bp[0]), float(bp[1]))
+	var z := zone_of(p)
+	if z != null and z.zone_id == GROVE_ZONE:
+		p.global_position = Vector3(arrive.x, z.surface_at(arrive.x, arrive.y), arrive.y) + Vector3.UP
+		p.velocity = Vector3.ZERO
+		Net.teleport(p, p.global_position)
+		return
+	if z != null:
+		var at := p.global_position
+		p.grove_return = {"zone": z.zone_id, "pos": [at.x, at.z]}
+	_leave_for_elsewhere(p)
+	zone_change.emit(p, GROVE_ZONE, arrive, Vector2.ZERO)  # facing the pond
+
+
+## The Grove's keeper walks you back to where the seed found you (or home).
+func _grove_return(p: Player) -> void:
+	var back := p.grove_return
+	p.grove_return = {}
+	var zone_id := str(back.get("zone", ""))
+	if zone_id == "" or zone_id == GROVE_ZONE or not FileAccess.file_exists("res://data/zones/%s.json" % zone_id):
+		_go_home(p)
+		return
+	var pos: Array = back.get("pos", [0, 0])
+	_leave_for_elsewhere(p)
+	zone_change.emit(p, zone_id, Vector2(float(pos[0]), float(pos[1])), Vector2.INF)
+
+
+## What every trip out of a zone drops: trades, windows, fights, a target.
+func _leave_for_elsewhere(p: Player) -> void:
 	request_trade_cancel(p.entity_id)
 	request_service_close(p.entity_id)
 	request_loot_close(p.entity_id)
@@ -1708,7 +1798,37 @@ func _go_home(p: Player) -> void:
 	p.target = null
 	p.sitting = false
 	p.hostile_npcs.clear()
-	zone_change.emit(p, home, Vector2.INF, Vector2.INF)  # INF: arrive at that zone's bindstone
+
+
+## /grove: testing and admin only (Net.is_admin). status, seed, unlock <god|all>, lock <god|all>, go.
+func _grove_command(p: Player, rest: String) -> void:
+	if not Net.is_admin(p):
+		say(p, "That command is not available.", C_WARN)
+		return
+	var words := rest.to_lower().split(" ", false)
+	var verb := words[0] if words.size() > 0 else "status"
+	var which: Array = DEITY_IDS.duplicate() if words.size() < 2 or words[1] == "all" else DEITY_IDS.filter(func(d: String) -> bool: return d == words[1] or str(GameData.deities.get(d, {}).get("name", "")).to_lower() == words[1])
+	match verb:
+		"seed":
+			if "grove_seed" in p.owned_item_ids():
+				say(p, "You already carry a Seed of the Grove.", C_SYSTEM)
+			elif p.pack.add_entry(Pack.entry("grove_seed")):
+				say(p, "--You have received a %s.--" % GameData.item_name("grove_seed"), C_LOOT)
+			else:
+				say(p, "No room for the seed.", C_WARN)
+		"unlock":
+			for d: String in which:
+				unlock_grove_deity(p, d)
+		"lock":
+			for d: String in which:
+				lock_grove_deity(p, d)
+			say(p, "Locked: %s." % ", ".join(which), C_SYSTEM)
+		"go":
+			_go_grove(p)
+		_:
+			var seen: Array = DEITY_IDS.filter(func(d: String) -> bool: return grove_sees(p, d))
+			say(p, "Yours: %s. Seen with your group: %s. /grove seed | unlock <god|all> | lock <god|all> | go" % [
+				", ".join(p.grove_deities) if not p.grove_deities.is_empty() else "none", ", ".join(seen) if not seen.is_empty() else "none"], C_SYSTEM)
 
 
 ## Binds your soul to the city you stand in: near its bindstone (/bind), or by
@@ -2110,6 +2230,12 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			for m in get_mobs():
 				if m.hate.has(t.entity_id):
 					m.add_hate(c, power * 0.5)
+		"grove":
+			for m in get_mobs():
+				m.hate.erase(c.entity_id)
+			if c is Player:
+				say(c, "The seed opens in your hand, and the world folds away like a leaf.", C_SPELL)
+				_go_grove(c as Player)
 		"gate":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
@@ -3072,6 +3198,8 @@ func request_chat(player_id: int, text: String) -> void:
 			request_stuck(player_id)
 		"/bind":
 			request_bind(player_id)
+		"/grove":
+			_grove_command(p, rest)
 		"/g", "/gsay", "/group":
 			if p.group_id == 0:
 				say(p, "You are not in a group.", C_WARN)
@@ -3146,6 +3274,8 @@ func _chat_who(p: Player, everywhere: bool) -> void:
 
 
 func _talk(p: Player, npc: Npc, keyword: String) -> void:
+	if not sees(p, npc):
+		return  # a god who hasn't come for you isn't there to talk to
 	if p.distance_to(npc) > TALK_RANGE:
 		say(p, "You are too far away to talk to %s." % npc.display_name, C_WARN)
 		return
@@ -3175,6 +3305,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 			_accept_quest(p, quest_id)
 	if key == "bind" and npc.data.get("binds", false):
 		request_bind(p.entity_id)
+	if key == "return" and npc.data.get("grove_return", false):
+		_grove_return(p)
 	var bless: Dictionary = npc.data.get("blesses", {})
 	if not bless.is_empty() and key == str(bless.get("keyword", "blessing")):
 		_shrine_blessing(p, npc, bless)
@@ -3649,6 +3781,8 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 				say(p, "You've done this task before; it teaches you less now.", C_XP)
 		p.add_xp(int(xp))
 	apply_faction(p, q.get("faction", {}))
+	if reward.has("grove_deity"):  # the endgame questlines bring each god to the Grove
+		unlock_grove_deity(p, str(reward["grove_deity"]))
 	if q.has("next"):  # a quest line: the next step starts as this one ends
 		_accept_quest(p, str(q["next"]))
 	p.quests_changed.emit()

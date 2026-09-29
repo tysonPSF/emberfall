@@ -3343,5 +3343,20 @@
       "kind": "dot",
       "color": "#6a3a8a"
     }
+  },
+  "grove_walk": {
+    "name": "Walk the Grove",
+    "type": "grove",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 10.0,
+    "recast": 0,
+    "range": 0,
+    "classes": {},
+    "desc": "The seed opens a way to the Grove of the gods, after ten seconds of stillness.",
+    "fx": {
+      "kind": "gate",
+      "color": "#f2d27a"
+    }
   }
 }

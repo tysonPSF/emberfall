@@ -101,6 +101,7 @@ const SECTIONS := [
 	["face_path", "harrowfield"],
 	["shaman", "greenmoor"],
 	["homeward", "greenmoor"],
+	["grove", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7278,3 +7279,92 @@ func _t_zone_unload() -> void:
 			slowest = maxf(slowest, (child as SpawnPoint).respawn_time)
 	print("zone_unload: slowest respawn %.0f s -> waits %.0f s empty (want max(900, %.0f))" % [slowest, z.idle_seconds_to_unload(900.0), slowest * 1.15 + 60.0])
 	print("zone_unload: player back -> '%s' (want 'occupied')" % z.keep_reason())
+
+
+## The Grove: the seed takes you there, the gods show only once earned, they
+## can't be fought or reached when unseen, and the keeper walks you back.
+func _t_grove() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var zone_now := func() -> String: return (main.zone as Zone).zone_id
+	var wait_zone := func(zone_id: String) -> void:
+		for k in 80:
+			if zone_now.call() == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.8)
+	p.grove_deities.clear()
+	p.global_position = Vector3(20, main.zone.height_at(20, 30) + 1.0, 30)
+	await _wait(0.3)
+	var from := p.global_position
+	World.request_chat(p.entity_id, "/grove seed")
+	await _wait(0.2)
+	print("grove: /grove seed -> carry a seed %s" % ("grove_seed" in p.owned_item_ids()))
+	World.request_use_item(p.entity_id, _where(p, "grove_seed"))
+	await _wait(10.6)
+	await wait_zone.call("the_grove")
+	var z := main.zone as Zone
+	print("grove: seed -> now in %s, %.1f m from the arch's arrival; remembers %s" % [zone_now.call(),
+			Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(z.bind_point.x, z.bind_point.z)), p.grove_return])
+	await _wait(0.8)
+	var npcs := _npcs()
+	var shown := func() -> Array:
+		var out: Array = []
+		for id: String in npcs:
+			var n := npcs[id] as Npc
+			if n.grove_deity != "" and n.visual.visible:
+				out.append(id)
+		out.sort()
+		return out
+	print("grove: nothing earned -> shown %s" % [shown.call()])
+	var god: Npc = npcs["grove_light"]
+	var hidden_god: Npc = npcs["grove_water"]
+	_stand_by(p, hidden_god)
+	World.request_set_target(p.entity_id, hidden_god.entity_id)
+	print("grove: target the unseen Jalendra -> target %s" % (p.target.display_name if p.target != null else "none"))
+	World.request_chat(p.entity_id, "/grove unlock light")
+	await _wait(0.8)
+	print("grove: unlocked light -> shown %s" % [shown.call()])
+	_stand_by(p, god)
+	World.request_set_target(p.entity_id, god.entity_id)
+	World.request_hail(p.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	print("grove: hail Prabhagaj -> target %s; attack twice -> auto attack %s, hostile %s" % [p.target.display_name if p.target != null else "none", p.auto_attack, p.hostile_npcs.has(god.entity_id)])
+	print("grove: save keeps %s" % [p.to_save().get("grove")])
+	# every god, for the pictures
+	World.request_chat(p.entity_id, "/grove unlock all")
+	await _wait(1.0)
+	print("grove: unlocked all -> shown %s" % [shown.call()])
+	p.global_position = Vector3(z.bind_point.x, z.bind_point.y + 1.0, z.bind_point.z)
+	p.face_toward(Vector3(0, 0, 0))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 9.0
+	p.pitch = -0.12
+	await _wait(1.5)
+	await _shot("9grove_arrival")
+	p.global_position = Vector3(0, z.surface_at(0, 30) + 1.0, 30)
+	p.face_toward(Vector3(0, 0, -37))
+	p.zoom = 12.0
+	p.pitch = -0.18
+	await _wait(1.2)
+	await _shot("9grove_pond")
+	for d: String in ["water", "fire", "wind", "dark", "light"]:
+		var g: Npc = npcs["grove_" + d]
+		var toward := Vector3(g.global_position.x, 0, g.global_position.z)
+		var stand := toward * (22.0 / maxf(toward.length(), 1.0))
+		p.global_position = Vector3(stand.x, z.surface_at(stand.x, stand.z) + 1.0, stand.z)
+		p.face_toward(g.global_position)
+		p.zoom = 7.0
+		p.pitch = 0.05
+		await _wait(0.8)
+		await _shot("9grove_god_" + d)
+	World.request_chat(p.entity_id, "/grove lock all")
+	await _wait(0.8)
+	print("grove: locked all -> shown %s" % [shown.call()])
+	var keeper: Npc = npcs["grove_keeper"]
+	_stand_by(p, keeper)
+	World.request_set_target(p.entity_id, keeper.entity_id)
+	World.request_say(p.entity_id, "return")
+	await wait_zone.call("greenmoor")
+	print("grove: keeper, return -> now in %s, %.1f m from where the seed was used" % [zone_now.call(), Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(from.x, from.z))])

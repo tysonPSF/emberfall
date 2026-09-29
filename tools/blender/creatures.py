@@ -26199,35 +26199,12 @@ def _iv_garland(b, pts, r, mats, bone, rng, every=0.7):
 	_on_bone(b, start, bone)
 
 
-def _iv_elephant(name, grand=False):
-	"""The restless ghost of a great elephant, 3.2 m at the shoulder: pale blue-white and half seen through,
-	a high domed head, great ears, a long swinging trunk and long curved tusks glowing like moonlight; mist
-	curls round its feet. The Grandmother of Herds (grand) is built 1.4x: an ancient matriarch with enormous
-	sweeping tusks, a faint golden glow in her, prayer cloths and garlands of marigolds from old offerings
-	draped over her, a gold bell at her throat."""
-	import random
-	rng = random.Random(4531 if grand else 4533)
-	glow = 1.0
-	m = {"hide": glass_material(f"{name}_hide", "c4daf4", 0.74, 0.5, emit=0.55 * glow),
-		 "hide_l": glass_material(f"{name}_hide_light", "e2eeff", 0.72, 0.5, emit=0.75 * glow),
-		 "hide_d": glass_material(f"{name}_hide_dark", "a4c0e2", 0.76, 0.5, emit=0.45 * glow),
-		 "ear": glass_material(f"{name}_ear", "c8dcf6", 0.58, 0.5, emit=0.42 * glow),
-		 "ear_rim": glass_material(f"{name}_ear_rim", "fff2cc" if grand else "f0f8ff", 0.7, 0.4, emit=1.3 * glow),
-		 "mist": glass_material(f"{name}_mist", "dcecff", 0.2, 0.5, emit=0.9),
-		 "mist_b": glass_material(f"{name}_mist_faint", "eef6ff", 0.12, 0.5, emit=0.8),
-		 "tusk": glass_material(f"{name}_tusk", "fff8ea" if grand else "f6faff", 0.9, 0.25, emit=1.4 * glow),
-		 "tusk_d": glass_material(f"{name}_tusk_band", "c8dcf4", 0.85, 0.3, emit=1.0),
-		 "nail": glass_material(f"{name}_nail", "eef4ff", 0.7, 0.4, emit=0.9),
-		 "eye": material(f"{name}_eye", "fff8e0" if grand else "f4fbff", 0.1, emit=5.0)}
-	if grand:
-		m.update({"gold_glow": glass_material(f"{name}_gold_glow", "ffe2a0", 0.16, 0.4, emit=0.8),
-				  "gold": metal_material(f"{name}_gold", "f0c460", 0.35, 0.5, emit=0.35),
-				  "gold_d": metal_material(f"{name}_gold_dark", "b08434", 0.4, 0.5, emit=0.15)})
-		m.update(_rmats(name, {"saffron": ("e0a040", 0.9, 0.15), "crimson": ("b0443a", 0.9, 0.12), "blue": ("5a7cb0", 0.9, 0.12),
-							   "white": ("f2ece0", 0.9, 0.15), "green": ("6e9a5c", 0.9, 0.12), "trim": ("e8c060", 0.6, 0.3),
-							   "marigold": ("f49a1c", 0.8, 0.35), "marigold_y": ("f8c830", 0.8, 0.35), "jasmine": ("fbf6ea", 0.8, 0.4),
-							   "rose": ("d8443a", 0.8, 0.3), "leaf": ("5a8a44", 0.8, 0.15)}))
-	b = Builder(name)
+def _iv_elephant_body(b, m, rng, tusk, mist=True, ear_sweep=(-115, 55)):
+	"""The elephant shared by the herd-spirits and the gods, 3.2 m at the shoulder before scaling: bones, barrel
+	body, column legs, tail, domed head, tusks (`tusk`: length, r, sheath, spread, inward, lift, dip), fan ears and a
+	ringed trunk, in the materials `m` (hide, hide_l, hide_d, ear, ear_rim, tusk, tusk_d, nail, eye; mist, mist_b
+	when `mist`); `ear_sweep` is the fans' sweep in degrees, from down the neck to the top. Returns the body's ellipsoids and the two tusks' points (left first)."""
+	tk = tusk
 	b.bone("root", (0, 0, 0))
 	b.bone("body", (0, 1.0, 2.2), "root")
 	b.bone("head", (0, -1.7, 2.9), "body")
@@ -26268,7 +26245,7 @@ def _iv_elephant(name, grand=False):
 		for j in range(4):
 			a = math.radians(-60 + 40 * j)
 			b.blob((0.16, 0.1, 0.12), (x + 0.36 * math.sin(a), ky - 0.04 - 0.36 * math.cos(a), 0.09), m["nail"], knee, segs=(6, 4))
-		for j in range(3):   # mist curling round the foot
+		for j in range(3 if mist else 0):   # mist curling round the foot
 			a = math.radians(rng.uniform(0, 360))
 			sz = rng.uniform(0.4, 0.6)
 			b.blob((sz, sz, sz * 0.5), (x + 0.32 * math.cos(a), ky + 0.32 * math.sin(a), 0.18 + 0.1 * j), m["mist"] if j % 2 else m["mist_b"], knee, segs=(8, 5))
@@ -26285,12 +26262,11 @@ def _iv_elephant(name, grand=False):
 	b.blob((0.7, 0.8, 0.5), (0, -2.2, 2.42), m["hide"], "head", segs=(10, 7))                      # the cheeks and lip
 	b.blob((0.4, 0.4, 0.22), (0, -2.3, 2.2), m["hide_d"], "head", segs=(8, 5))
 	for s in (1, -1):   # the tusks' sheaths at the lip
-		b.seg((0.26 * s, -2.28, 2.6), (0.3 * s, -2.48, 2.34), 0.22 if grand else 0.19, 0.2 if grand else 0.17, m["hide_l"], "head", sides=10)
-	tl = 2.6 if grand else 1.8
+		b.seg((0.26 * s, -2.28, 2.6), (0.3 * s, -2.48, 2.34), tk["sheath"], tk["sheath"] - 0.02, m["hide_l"], "head", sides=10)
 	tusks = []
 	for s in (1, -1):
-		tusks.append(_iv_tusk(b, (0.3 * s, -2.46, 2.36), s, tl, 0.21 if grand else 0.18, (m["tusk"], m["tusk_d"]), "head",
-							  spread=0.34 if grand else 0.14, inward=0.22 if grand else 0.04, lift=0.26 if grand else 0.24, dip=0.3 if grand else 0.3))
+		tusks.append(_iv_tusk(b, (0.3 * s, -2.46, 2.36), s, tk["length"], tk["r"], (m["tusk"], m["tusk_d"]), "head",
+							  spread=tk["spread"], inward=tk["inward"], lift=tk["lift"], dip=tk["dip"]))
 	# the ears: great fans hanging beside the head, a bright rim, veins faint in them
 	for s in (1, -1):
 		sd = "l" if s > 0 else "r"
@@ -26301,7 +26277,7 @@ def _iv_elephant(name, grand=False):
 			f = 0.12 + 0.88 * i / 5
 			row = []
 			for j in range(9):
-				a = math.radians(-115 + 170 * j / 8)   # from down the neck, round the back, to the top
+				a = math.radians(ear_sweep[0] + (ear_sweep[1] - ear_sweep[0]) * j / 8)   # from down the neck, round the back, to the top
 				r = 1.3 * (0.8 + 0.3 * math.sin(math.pi * (j / 8) * 0.9)) * f
 				x = root.x + s * (0.38 * f + 0.1 * math.sin(math.pi * f) * math.cos(a))
 				y = root.y + r * math.cos(a) * 0.9 + 0.22 * f
@@ -26326,6 +26302,127 @@ def _iv_elephant(name, grand=False):
 			r = radii[j] + (radii[j + 1] - radii[j]) * u
 			b.blob((r * 2.08, r * 2.08, 0.035), tuple(p), m["hide_l"], bones[j], segs=(10, 3))
 	b.blob((0.13, 0.13, 0.1), tuple(tpts[-1] + Vector((0, -0.02, 0.02))), m["hide_l"], "trunk4", segs=(8, 5))
+
+	return body_ells, tusks
+
+
+def _iv_elephant_clips(arm, k, slow, fade=True, extra=None, idle_seconds=4.0):
+	"""The elephant's clips for a body built `k` times the herd-spirit's size, every clip `slow` times longer.
+	`fade` sinks it into the ground at the end of its death (a ghost); `extra(clip, t)` adds more bones' poses
+	(a god's halo and ribbons) to every clip."""
+	def more(clip_name, t, *poses):
+		if extra is not None:
+			poses = poses + (extra(clip_name, t),)
+		return merge_scaled(*poses)
+
+	PH = {"bl": 0.0, "fl": 0.25, "br": 0.5, "fr": 0.75}   # an elephant's walk: each foot in turn, hind then fore
+
+	def legs(t, amp, knee, cycles=1):
+		out = {}
+		for k_, ph in PH.items():
+			w = wave(t, cycles, -ph)
+			lift = max(0.0, wave(t, cycles, 0.25 - ph))
+			out[f"leg_{k_}"] = {"rot": (amp * w + knee * 0.3 * lift, 0, 0)}
+			out[f"knee_{k_}"] = {"rot": (-knee * lift, 0, 0)}
+		return out
+
+	def trunk(t, lift, sway, cycles=1, curl=0.0):
+		return {"trunk1": {"rot": (lift * 0.5 + 3 * wave(t, cycles, 0.1), 0, sway * wave(t, cycles))},
+				"trunk2": {"rot": (lift * 0.3 + 5 * wave(t, cycles, 0.2), 0, sway * 1.2 * wave(t, cycles, 0.1))},
+				"trunk3": {"rot": (lift * 0.25 + curl * 0.4 + 6 * wave(t, cycles, 0.3), 0, sway * 1.4 * wave(t, cycles, 0.2))},
+				"trunk4": {"rot": (lift * 0.2 + curl + 8 * wave(t, cycles, 0.4), 0, sway * 1.6 * wave(t, cycles, 0.3))}}
+
+	def ears(t, flap, spread=0.0, cycles=1):
+		f = spread + flap * max(0.0, wave(t, cycles))
+		return {"ear_l": {"rot": (0, 0, -f)}, "ear_r": {"rot": (0, 0, f)}}
+
+	def idle(t):   # stands swaying from foot to foot, trunk curling, ears fanning slowly
+		return more("idle", t, {"body": {"rot": (0, 1.5 * wave(t), 1.5 * wave(t, 1, 0.25)), "loc": (0, 0, 0.02 * k * wave(t, 2))},
+							 "head": {"rot": (2 * wave(t, 1, 0.3), 0, 3 * wave(t, 1, 0.1))},
+							 "tail": {"rot": (0, 0, 14 * wave(t, 2))}},
+							trunk(t, 0, 5, 1, 14 + 10 * wave(t, 1, 0.5)), ears(t, 16, 4, 2))
+
+	def walk(t):   # a slow, rolling, stately walk, the trunk swinging with it
+		return more("walk", t, {"body": {"rot": (0, 2 * wave(t, 2), 2 * wave(t)), "loc": (0, 0, -0.04 * k * abs(wave(t, 2)))},
+							 "head": {"rot": (-2 + 2 * wave(t, 2, 0.2), 0, 3 * wave(t))}, "tail": {"rot": (0, 0, 10 * wave(t))}},
+							legs(t, 13, 28), trunk(t, 0, 8, 1, 10), ears(t, 8, 6, 1))
+
+	def run(t):   # a heavy amble, head up, ears out
+		return more("run", t, {"body": {"rot": (-2, 3 * wave(t, 2), 2 * wave(t)), "loc": (0, 0, 0.06 * k * max(0.0, wave(t, 2, 0.25)))},
+							 "head": {"rot": (6 + 3 * wave(t, 2), 0, 0)}, "tail": {"rot": (20, 0, 14 * wave(t, 2))}},
+							legs(t, 20, 44), trunk(t, 10, 10, 1, 20), ears(t, 6, 22, 2))
+
+	def attack(t):   # rears up, trunk raised high, trumpeting, then stamps down
+		rear = seq(t, [(0, 0), (0.38, 24), (0.56, 26), (0.7, -5), (0.82, -3), (1, 0)])
+		fold = seq(t, [(0, 0), (0.38, 1), (0.58, 1), (0.7, 0)])
+		lift = seq(t, [(0, 0), (0.34, 150), (0.56, 160), (0.72, 20), (1, 0)])
+		spread = seq(t, [(0, 4), (0.34, 50), (0.58, 50), (0.72, 20), (1, 4)])
+		surge = seq(t, [(0, 0), (0.56, 0), (0.7, 0.35), (0.85, 0.3), (1, 0)]) * k
+		out = {"root": {"loc": (0, surge, 0)}, "body": {"rot": (rear, 0, 0)}, "head": {"rot": (8 * fold - rear * 0.2, 0, 0)},
+			   "tail": {"rot": (30 * fold, 0, 0)}}
+		for s in ("l", "r"):
+			out[f"leg_b{s}"] = {"rot": (-rear, 0, 0)}
+			out[f"leg_f{s}"] = {"rot": (-rear * 0.3 + 26 * fold, 0, 0)}
+			out[f"knee_f{s}"] = {"rot": (-70 * fold, 0, 0)}
+		return more("attack", t, out, trunk(t, lift, 4, 2, -30 * fold), ears(t, 10, spread, 3))
+
+	def hit(t):
+		j = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return more("hit", t, {"root": {"loc": (0, -0.15 * k * j, 0)}, "body": {"rot": (4 * j, 3 * j, 0)}, "head": {"rot": (10 * j, 0, 8 * j)}},
+							trunk(t, 30 * j, 8, 1, 30 * j), ears(t, 0, 30 * j))
+
+	def death(t):   # sinks to its knees, lays its head down, and fades down into the ground
+		kneel = seq(t, [(0.05, 0), (0.4, 1)])
+		sink = seq(t, [(0.45, 0), (1.0, 1)]) if fade else 0.0
+		shrink = 1 - 0.55 * sink
+		out = {"root": {"loc": (0, 0, -1.05 * k * kneel - 3.1 * k * sink), "scale": (shrink, shrink, shrink)},
+			   "body": {"rot": (-6 * kneel, 4 * kneel, 0)}, "head": {"rot": (-14 * kneel, 0, 6 * kneel)}}
+		for s in ("l", "r"):
+			out[f"leg_f{s}"] = {"rot": (-60 * kneel, 0, 0)}
+			out[f"knee_f{s}"] = {"rot": (100 * kneel, 0, 0)}
+			out[f"leg_b{s}"] = {"rot": (40 * kneel, 0, 0)}
+			out[f"knee_b{s}"] = {"rot": (-95 * kneel, 0, 0)}
+		return more("death", t, out, trunk(t, 0, 2, 1, 40 * kneel), ears(t, 0, -6 * kneel))
+
+	clip_scaled(arm, "idle", idle_seconds * slow, idle, True)
+	clip_scaled(arm, "walk", 2.2 * slow, walk, True)
+	clip_scaled(arm, "run", 1.3 * slow, run, True)
+	clip_scaled(arm, "attack", 1.9 * slow, attack, False)
+	clip_scaled(arm, "hit", 0.6, hit, False)
+	clip_scaled(arm, "death", 3.2 * slow, death, False)
+
+
+def _iv_elephant(name, grand=False):
+	"""The restless ghost of a great elephant, 3.2 m at the shoulder: pale blue-white and half seen through,
+	a high domed head, great ears, a long swinging trunk and long curved tusks glowing like moonlight; mist
+	curls round its feet. The Grandmother of Herds (grand) is built 1.4x: an ancient matriarch with enormous
+	sweeping tusks, a faint golden glow in her, prayer cloths and garlands of marigolds from old offerings
+	draped over her, a gold bell at her throat."""
+	import random
+	rng = random.Random(4531 if grand else 4533)
+	glow = 1.0
+	m = {"hide": glass_material(f"{name}_hide", "c4daf4", 0.74, 0.5, emit=0.55 * glow),
+		 "hide_l": glass_material(f"{name}_hide_light", "e2eeff", 0.72, 0.5, emit=0.75 * glow),
+		 "hide_d": glass_material(f"{name}_hide_dark", "a4c0e2", 0.76, 0.5, emit=0.45 * glow),
+		 "ear": glass_material(f"{name}_ear", "c8dcf6", 0.58, 0.5, emit=0.42 * glow),
+		 "ear_rim": glass_material(f"{name}_ear_rim", "fff2cc" if grand else "f0f8ff", 0.7, 0.4, emit=1.3 * glow),
+		 "mist": glass_material(f"{name}_mist", "dcecff", 0.2, 0.5, emit=0.9),
+		 "mist_b": glass_material(f"{name}_mist_faint", "eef6ff", 0.12, 0.5, emit=0.8),
+		 "tusk": glass_material(f"{name}_tusk", "fff8ea" if grand else "f6faff", 0.9, 0.25, emit=1.4 * glow),
+		 "tusk_d": glass_material(f"{name}_tusk_band", "c8dcf4", 0.85, 0.3, emit=1.0),
+		 "nail": glass_material(f"{name}_nail", "eef4ff", 0.7, 0.4, emit=0.9),
+		 "eye": material(f"{name}_eye", "fff8e0" if grand else "f4fbff", 0.1, emit=5.0)}
+	if grand:
+		m.update({"gold_glow": glass_material(f"{name}_gold_glow", "ffe2a0", 0.16, 0.4, emit=0.8),
+				  "gold": metal_material(f"{name}_gold", "f0c460", 0.35, 0.5, emit=0.35),
+				  "gold_d": metal_material(f"{name}_gold_dark", "b08434", 0.4, 0.5, emit=0.15)})
+		m.update(_rmats(name, {"saffron": ("e0a040", 0.9, 0.15), "crimson": ("b0443a", 0.9, 0.12), "blue": ("5a7cb0", 0.9, 0.12),
+							   "white": ("f2ece0", 0.9, 0.15), "green": ("6e9a5c", 0.9, 0.12), "trim": ("e8c060", 0.6, 0.3),
+							   "marigold": ("f49a1c", 0.8, 0.35), "marigold_y": ("f8c830", 0.8, 0.35), "jasmine": ("fbf6ea", 0.8, 0.4),
+							   "rose": ("d8443a", 0.8, 0.3), "leaf": ("5a8a44", 0.8, 0.15)}))
+	b = Builder(name)
+	body_ells, tusks = _iv_elephant_body(b, m, rng, {"length": 2.6 if grand else 1.8, "r": 0.21 if grand else 0.18, "sheath": 0.22 if grand else 0.19,
+												  "spread": 0.34 if grand else 0.14, "inward": 0.22 if grand else 0.04, "lift": 0.26 if grand else 0.24, "dip": 0.3})
 
 	if grand:
 		# a golden glow in her heart, faint through the pale hide, and a gold sign on her brow
@@ -26389,82 +26486,7 @@ def _iv_elephant(name, grand=False):
 	k = 1.4 if grand else 1.0
 	arm = b.build()
 
-	PH = {"bl": 0.0, "fl": 0.25, "br": 0.5, "fr": 0.75}   # an elephant's walk: each foot in turn, hind then fore
-
-	def legs(t, amp, knee, cycles=1):
-		out = {}
-		for k_, ph in PH.items():
-			w = wave(t, cycles, -ph)
-			lift = max(0.0, wave(t, cycles, 0.25 - ph))
-			out[f"leg_{k_}"] = {"rot": (amp * w + knee * 0.3 * lift, 0, 0)}
-			out[f"knee_{k_}"] = {"rot": (-knee * lift, 0, 0)}
-		return out
-
-	def trunk(t, lift, sway, cycles=1, curl=0.0):
-		return {"trunk1": {"rot": (lift * 0.5 + 3 * wave(t, cycles, 0.1), 0, sway * wave(t, cycles))},
-				"trunk2": {"rot": (lift * 0.3 + 5 * wave(t, cycles, 0.2), 0, sway * 1.2 * wave(t, cycles, 0.1))},
-				"trunk3": {"rot": (lift * 0.25 + curl * 0.4 + 6 * wave(t, cycles, 0.3), 0, sway * 1.4 * wave(t, cycles, 0.2))},
-				"trunk4": {"rot": (lift * 0.2 + curl + 8 * wave(t, cycles, 0.4), 0, sway * 1.6 * wave(t, cycles, 0.3))}}
-
-	def ears(t, flap, spread=0.0, cycles=1):
-		f = spread + flap * max(0.0, wave(t, cycles))
-		return {"ear_l": {"rot": (0, 0, -f)}, "ear_r": {"rot": (0, 0, f)}}
-
-	def idle(t):   # stands swaying from foot to foot, trunk curling, ears fanning slowly
-		return merge_scaled({"body": {"rot": (0, 1.5 * wave(t), 1.5 * wave(t, 1, 0.25)), "loc": (0, 0, 0.02 * k * wave(t, 2))},
-							 "head": {"rot": (2 * wave(t, 1, 0.3), 0, 3 * wave(t, 1, 0.1))},
-							 "tail": {"rot": (0, 0, 14 * wave(t, 2))}},
-							trunk(t, 0, 5, 1, 14 + 10 * wave(t, 1, 0.5)), ears(t, 16, 4, 2))
-
-	def walk(t):   # a slow, rolling, stately walk, the trunk swinging with it
-		return merge_scaled({"body": {"rot": (0, 2 * wave(t, 2), 2 * wave(t)), "loc": (0, 0, -0.04 * k * abs(wave(t, 2)))},
-							 "head": {"rot": (-2 + 2 * wave(t, 2, 0.2), 0, 3 * wave(t))}, "tail": {"rot": (0, 0, 10 * wave(t))}},
-							legs(t, 13, 28), trunk(t, 0, 8, 1, 10), ears(t, 8, 6, 1))
-
-	def run(t):   # a heavy amble, head up, ears out
-		return merge_scaled({"body": {"rot": (-2, 3 * wave(t, 2), 2 * wave(t)), "loc": (0, 0, 0.06 * k * max(0.0, wave(t, 2, 0.25)))},
-							 "head": {"rot": (6 + 3 * wave(t, 2), 0, 0)}, "tail": {"rot": (20, 0, 14 * wave(t, 2))}},
-							legs(t, 20, 44), trunk(t, 10, 10, 1, 20), ears(t, 6, 22, 2))
-
-	def attack(t):   # rears up, trunk raised high, trumpeting, then stamps down
-		rear = seq(t, [(0, 0), (0.38, 24), (0.56, 26), (0.7, -5), (0.82, -3), (1, 0)])
-		fold = seq(t, [(0, 0), (0.38, 1), (0.58, 1), (0.7, 0)])
-		lift = seq(t, [(0, 0), (0.34, 150), (0.56, 160), (0.72, 20), (1, 0)])
-		spread = seq(t, [(0, 4), (0.34, 50), (0.58, 50), (0.72, 20), (1, 4)])
-		surge = seq(t, [(0, 0), (0.56, 0), (0.7, 0.35), (0.85, 0.3), (1, 0)]) * k
-		out = {"root": {"loc": (0, surge, 0)}, "body": {"rot": (rear, 0, 0)}, "head": {"rot": (8 * fold - rear * 0.2, 0, 0)},
-			   "tail": {"rot": (30 * fold, 0, 0)}}
-		for s in ("l", "r"):
-			out[f"leg_b{s}"] = {"rot": (-rear, 0, 0)}
-			out[f"leg_f{s}"] = {"rot": (-rear * 0.3 + 26 * fold, 0, 0)}
-			out[f"knee_f{s}"] = {"rot": (-70 * fold, 0, 0)}
-		return merge_scaled(out, trunk(t, lift, 4, 2, -30 * fold), ears(t, 10, spread, 3))
-
-	def hit(t):
-		j = seq(t, [(0, 0), (0.25, 1), (1, 0)])
-		return merge_scaled({"root": {"loc": (0, -0.15 * k * j, 0)}, "body": {"rot": (4 * j, 3 * j, 0)}, "head": {"rot": (10 * j, 0, 8 * j)}},
-							trunk(t, 30 * j, 8, 1, 30 * j), ears(t, 0, 30 * j))
-
-	def death(t):   # sinks to its knees, lays its head down, and fades down into the ground
-		kneel = seq(t, [(0.05, 0), (0.4, 1)])
-		sink = seq(t, [(0.45, 0), (1.0, 1)])
-		shrink = 1 - 0.55 * sink
-		out = {"root": {"loc": (0, 0, -1.05 * k * kneel - 3.1 * k * sink), "scale": (shrink, shrink, shrink)},
-			   "body": {"rot": (-6 * kneel, 4 * kneel, 0)}, "head": {"rot": (-14 * kneel, 0, 6 * kneel)}}
-		for s in ("l", "r"):
-			out[f"leg_f{s}"] = {"rot": (-60 * kneel, 0, 0)}
-			out[f"knee_f{s}"] = {"rot": (100 * kneel, 0, 0)}
-			out[f"leg_b{s}"] = {"rot": (40 * kneel, 0, 0)}
-			out[f"knee_b{s}"] = {"rot": (-95 * kneel, 0, 0)}
-		return merge_scaled(out, trunk(t, 0, 2, 1, 40 * kneel), ears(t, 0, -6 * kneel))
-
-	slow = 1.15 if grand else 1.0
-	clip_scaled(arm, "idle", 4.0 * slow, idle, True)
-	clip_scaled(arm, "walk", 2.2 * slow, walk, True)
-	clip_scaled(arm, "run", 1.3 * slow, run, True)
-	clip_scaled(arm, "attack", 1.9 * slow, attack, False)
-	clip_scaled(arm, "hit", 0.6, hit, False)
-	clip_scaled(arm, "death", 3.2 * slow, death, False)
+	_iv_elephant_clips(arm, k, 1.15 if grand else 1.0)
 	return arm
 
 
@@ -30003,6 +30025,494 @@ for _s, _side in ((1, "l"), (-1, "r")):
 		ATTACHMENTS[f"{_pre}_arm_{_side}"] = (lambda n, s, g: lambda: _tt_giant_arm(n, s, g))(f"{_pre}_arm_{_side}", _s, _big)
 		ATTACHMENTS[f"{_pre}_bracer_{_side}"] = (lambda n, s, g: lambda: _tt_giant_bracer(n, s, g))(f"{_pre}_bracer_{_side}", _s, _big)
 # ================================================================ end of Timiraj's Table
+
+
+# ================================================================ the five elephant gods (The Grove)
+# Prabhagaj, Jalendra, Agnavar, Vayuketh and Timiraj stand round the sacred pond: the herd-spirits' elephant
+# (`_iv_elephant_body`) made solid and living and built GOD_SCALE times over, 6 m at the shoulder, each dressed
+# in their own regalia after their portraits (assets/deities): the Dawn-Tusk's sun disc and gold, the
+# Tide-Trunked's flowing water, pearls and lotus, the Ember-Tusked's molten cracks and flame crown, the wind's
+# ribbons and feathered crown, the Unlit's stars and eclipse. They share anklets, capped tusks and softly lit
+# eyes. Extra bones: "halo" (on the head: the disc or crown), "motes" (floating sparks), "drape_l/r" (water),
+# "gust_a/b" and "st_<side><n>" (wind's rings and streamers). Idle is slow: breath, ears, trunk, drifting regalia.
+
+GOD_SCALE = 1.8   # the herd-spirit is 3.35 m at the shoulder; the gods about 6
+
+
+def _gd_surface(ells, o, d, off=0.0):
+	"""The point where a ray from `o` (inside) along `d` leaves the farthest of `ells`, pushed out by `off`."""
+	o, d = Vector(o), Vector(d).normalized()
+	return o + d * (_iv_ray_ellipsoids(o, d, ells) + off)
+
+
+def _gd_ribbon(b, pts, width, mat, bones, side=(0, 0, 1), twist=0.0):
+	"""A ribbon through `pts` (`width` wide, its face across `side`, turning `twist` degrees along its length), cut
+	into chunks: chunk i runs from pts[i] to pts[i + 1] on bones[i] (the last bone takes whatever is left), so a
+	bone's head should sit on the point where its first chunk starts."""
+	pts = [Vector(p) for p in pts]
+	rows = []
+	n = len(pts)
+	for i, p in enumerate(pts):
+		d = (pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]).normalized()
+		sv = Vector(side) - d * d.dot(Vector(side))
+		if sv.length < 1e-4:
+			sv = d.orthogonal()
+		sv.normalize()
+		a = math.radians(twist * i / max(1, n - 1))
+		sv = (sv * math.cos(a) + d.cross(sv) * math.sin(a)).normalized()
+		w = width * (1 - 0.55 * (i / (n - 1)) ** 2) / 2
+		rows.append((tuple(p - sv * w), tuple(p + sv * w)))
+	for i in range(n - 1):
+		bone = bones[min(i, len(bones) - 1)]
+		_iv_sheet(b, [list(rows[i]), list(rows[i + 1])], mat, bone)
+
+
+def _gd_arc(b, center, rx, ry, tilt, spin, a0, a1, r, mat, bone, n=22):
+	"""A tapering arc of an ellipse round `center` (radii rx, ry in its own plane, tipped `tilt` degrees about X,
+	then turned `spin` about Z), from angle a0 to a1: a gust of wind wrapped round the god."""
+	m = Matrix.Rotation(math.radians(spin), 4, "Z") @ Matrix.Rotation(math.radians(tilt), 4, "X")
+	pts = []
+	for k in range(n + 1):
+		a = math.radians(a0 + (a1 - a0) * k / n)
+		pts.append(Vector(center) + (m @ Vector((rx * math.cos(a), ry * math.sin(a), 0))))
+	for k in range(n):
+		u = k / n
+		f = abs(math.sin(math.pi * u)) ** 0.6   # thin at both ends, full in the middle
+		g = abs(math.sin(math.pi * (k + 1) / n)) ** 0.6
+		b.seg(tuple(pts[k]), tuple(pts[k + 1]), max(0.004, r * f), max(0.004, r * g), mat, bone, sides=5)
+
+
+def _gd_crest(b, ells, mat, tip, bone, n=9, h=0.5, y0=-1.35, y1=1.3):
+	"""A ridge of crystal spikes down the spine, tallest over the middle of the back (the portraits' crest)."""
+	for i in range(n):
+		u = i / (n - 1)
+		y = y0 + (y1 - y0) * u
+		top = _gd_surface(ells, (0, y, 2.2), (0, 0, 1), -0.06)
+		ln = h * (0.55 + 0.45 * math.sin(math.pi * u))
+		r = 0.1 + 0.05 * math.sin(math.pi * u)
+		d = Vector((0, 0.3, 1)).normalized()
+		b.seg(tuple(top), tuple(top + d * ln * 0.7), r, r * 0.4, mat, bone, sides=6)
+		b.seg(tuple(top + d * ln * 0.7), tuple(top + d * ln), r * 0.4, 0.0, tip, bone, sides=6)
+
+
+def _gd_cloth(b, ells, y0, y1, amax, bands, trim, bone, ny=14, na=16, hang=0.35, hem=None):
+	"""A cloth laid over the back between y0 and y1, round to `amax` degrees each side, its edges hanging `hang`
+	further straight down (hem(y) varies it); `bands` color it in stripes front to back, `trim` edges it.
+	Returns the grid (rows front to back)."""
+	grid = []
+	for i in range(ny + 1):
+		y = y0 + (y1 - y0) * i / ny
+		row = []
+		for j in range(na + 1):
+			a = math.radians(-amax + 2 * amax * j / na)
+			row.append(_gd_surface(ells, (0, y, 2.2), (math.sin(a), 0, math.cos(a)), 0.05))
+		h = hem(y) if hem else hang
+		row.insert(0, row[0] + Vector((-0.04, 0, -h)))
+		row.append(row[-1] + Vector((0.04, 0, -h)))
+		grid.append(row)
+	per = max(1, ny // len(bands))
+	for k in range(0, ny, per):
+		rows = grid[k:min(ny, k + per) + 1]
+		_iv_sheet(b, [[tuple(p) for p in r] for r in rows], bands[(k // per) % len(bands)], bone)
+	if trim is not None:
+		for i in (0, ny):
+			for p, q in zip(grid[i], grid[i][1:]):
+				b.seg(tuple(p + Vector((0, 0, 0.02))), tuple(q + Vector((0, 0, 0.02))), 0.04, 0.04, trim, bone, sides=4)
+		for j in (0, -1):
+			col = [grid[i][j] for i in range(ny + 1)]
+			for p, q in zip(col, col[1:]):
+				b.seg(tuple(p), tuple(q), 0.04, 0.04, trim, bone, sides=4)
+	return grid
+
+
+HEAD_ELLS = [((0, -1.95, 2.95), (0.65, 0.625, 0.7)), ((0, -2.22, 3.35), (0.55, 0.35, 0.4)), ((0, -2.2, 2.42), (0.35, 0.4, 0.25)),
+			 ((0, -2.42, 2.55), (0.36, 0.36, 0.3))]
+
+
+def _gd_brow_plate(b, mat, trim, bone, z0=3.5, z1=2.5, w0=0.7, bells=None):
+	"""A shield-shaped plate laid down the forehead (a temple elephant's caparison), `w0` wide at the top, pointed
+	at z1; `bells` hangs little bells from its edge."""
+	rows = []
+	for i in range(9):
+		u = i / 8
+		z = z0 + (z1 - z0) * u
+		w = w0 * (1 - u ** 1.6) / 2 + 0.02
+		row = []
+		for j in range(7):
+			x = -w + 2 * w * j / 6
+			p = _gd_surface(HEAD_ELLS, (x, -1.95, z), (0, -1, 0), 0.035)
+			row.append(tuple(p))
+		rows.append(row)
+	_iv_sheet(b, rows, mat, bone)
+	for side in (0, -1):
+		col = [Vector(r[side]) for r in rows]
+		_chain(b, col, 0.035, 0.03, trim, bone, sides=4)
+		if bells is not None:
+			for p in col[1:-1:2]:
+				b.blob((0.09, 0.09, 0.11), tuple(p + Vector((0, -0.03, -0.08))), bells, bone, segs=(6, 4))
+	return rows
+
+
+def _gd_anklets(b, legs, mat, zs=(0.42, 0.62), r=0.38, width=0.04):
+	for k_, (x, y, z) in legs.items():
+		ky = y + (0.05 if k_[0] == "f" else -0.06)
+		for zz in zs:
+			_iv_ring(b, (x, ky - 0.01, zz), (0, 0, 1), r, width, mat, f"knee_{k_}", sides=16)
+
+
+def _gd_tusk_caps(b, tusks, r, cap, band, bone="head", tip=None):
+	"""Sheathes the tusks' tips (gilded, silvered or glowing) in a pointed cap, a band where the cap begins."""
+	for pts in tusks:
+		p, q, e = pts[7], pts[8], pts[9]
+		b.seg(tuple(p), tuple(q), r * 0.47, r * 0.39, cap, bone, sides=8)
+		b.seg(tuple(q), tuple(e + (e - q) * 0.35), r * 0.39, 0.0, tip or cap, bone, sides=8)
+		_iv_ring(b, tuple(p), tuple(q - p), r * 0.5, 0.03, band, bone, sides=12)
+
+
+def _gd_flecks(b, ells, mat, rng, n, size, bone, center=(0, 0.1, 2.4), below=-0.35):
+	"""Little lit flecks scattered over the surface of `ells` (stars on the Unlit, embers on the Ember-Tusked)."""
+	for _ in range(n):
+		while True:
+			d = Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-1, 1)))
+			if 0.2 < d.length <= 1 and d.normalized().z > below:
+				break
+		p = _gd_surface(ells, center, d, 0.0)
+		s = size * rng.uniform(0.6, 1.3)
+		b.blob((s, s, s), tuple(p), mat, bone, segs=(6, 4))
+
+
+def _gd_motes(b, mat, rng, n, size, bone, box=((-2.2, 2.2), (-2.8, 2.6), (1.2, 4.9)), avoid=None):
+	"""Motes hanging in the air round the god (sparks, stars), kept off the body."""
+	placed = 0
+	while placed < n:
+		p = Vector((rng.uniform(*box[0]), rng.uniform(*box[1]), rng.uniform(*box[2])))
+		if avoid and _iv_ray_ellipsoids(p, Vector((0, 0, 1)), avoid) > 0:
+			continue   # inside the body
+		if abs(p.x) < 1.25 and -2.7 < p.y < 2.2 and p.z < 3.9:   # beside the head, legs and flanks
+			continue
+		s = size * rng.uniform(0.5, 1.2)
+		b.blob((s, s, s), tuple(p), mat, bone, segs=(6, 4))
+		placed += 1
+
+
+def _gd_crack(b, ells, rng, center, a0, y0, steps, mat, bone, r=0.03):
+	"""A jagged molten crack wandering over a surface of `ells` from angle a0 (round the Y axis) at y0."""
+	pts = []
+	a, y = a0, y0
+	for _ in range(steps):
+		d = Vector((math.sin(math.radians(a)), 0, math.cos(math.radians(a))))
+		pts.append(_gd_surface(ells, (center[0], y, center[2]), d, 0.012))
+		a += rng.uniform(8, 20) * (1 if a0 > 0 else -1)
+		y += rng.uniform(-0.18, 0.18)
+	for p, q in zip(pts, pts[1:]):
+		b.seg(tuple(p), tuple(q), r, r * 0.8, mat, bone, sides=4)
+	return pts
+
+
+def _gd_leg_cracks(b, legs, rng, mat):
+	for k_, (x, y, z) in legs.items():
+		ky = y + (0.05 if k_[0] == "f" else -0.06)
+		a = math.radians(rng.uniform(0, 360))
+		zz, pts = 1.0, []
+		while zz > 0.3:
+			r = 0.345 + 0.03 * (1.05 - zz) / 0.85
+			pts.append(Vector((x + r * math.cos(a), ky + r * math.sin(a), zz)))
+			a += math.radians(rng.uniform(-30, 30))
+			zz -= rng.uniform(0.12, 0.2)
+		for p, q in zip(pts, pts[1:]):
+			b.seg(tuple(p), tuple(q), 0.028, 0.022, mat, f"knee_{k_}", sides=4)
+
+
+GOD_TUSKS = {"light": {"length": 1.95, "r": 0.2, "sheath": 0.21, "spread": 0.16, "inward": 0.06, "lift": 0.34, "dip": 0.3},
+			 "water": {"length": 1.5, "r": 0.15, "sheath": 0.17, "spread": 0.12, "inward": 0.06, "lift": 0.28, "dip": 0.26},
+			 "fire": {"length": 1.8, "r": 0.23, "sheath": 0.24, "spread": 0.22, "inward": 0.02, "lift": 0.22, "dip": 0.26},
+			 "wind": {"length": 2.0, "r": 0.19, "sheath": 0.2, "spread": 0.3, "inward": 0.08, "lift": 0.3, "dip": 0.3},
+			 "dark": {"length": 2.1, "r": 0.2, "sheath": 0.21, "spread": 0.18, "inward": 0.26, "lift": 0.3, "dip": 0.32}}
+
+# hide, light hide, dark hide, ear, ear rim, tusk, tusk band, nail, eye (hex, glow)
+GOD_HIDES = {"light": ("efe0bc", "f8efd8", "cfb88e", "ead8b2", "d8a83c", "fff4dc", "d8a83c", "f2e6c8", ("ffd66a", 2.5)),
+			 "water": ("3a7a88", "5896a2", "285a66", "44848e", "9adce6", "eef6f2", "b8ccd2", "a8ccd0", ("9af0ff", 2.5)),
+			 "fire": ("38201c", "4c2a22", "1e1210", "40241e", "ff7a2a", "b8683a", "d8a040", "2e1c18", ("ffae2a", 3.0)),
+			 "wind": ("97a67a", "b0bd92", "72825c", "9dac82", "e2d28a", "f4f0dc", "c8a850", "d6d2b6", ("e0ffd0", 2.0)),
+			 "dark": ("1d1a3e", "2c2858", "12102a", "242050", "b4b4d8", "dcdcea", "c8cce0", "383250", ("eeeaff", 3.0))}
+
+
+def _god_elephant(name, god):
+	import random
+	rng = random.Random({"light": 701, "water": 703, "fire": 709, "wind": 719, "dark": 727}[god])
+	h = GOD_HIDES[god]
+	emit_rim = {"fire": 1.6, "water": 0.3}.get(god, 0.0)
+	m = {"hide": material(f"{name}_hide", h[0], 0.82), "hide_l": material(f"{name}_hide_light", h[1], 0.8),
+		 "hide_d": material(f"{name}_hide_dark", h[2], 0.85), "ear": material(f"{name}_ear", h[3], 0.8),
+		 "ear_rim": material(f"{name}_ear_rim", h[4], 0.5, emit=emit_rim), "tusk": material(f"{name}_tusk", h[5], 0.35, emit=0.12 if god == "fire" else 0.0),
+		 "tusk_d": metal_material(f"{name}_tusk_band", h[6], 0.35, 0.45), "nail": material(f"{name}_nail", h[7], 0.6),
+		 "eye": material(f"{name}_eye", h[8][0], 0.1, emit=h[8][1])}
+	if god == "light":
+		m["ear_rim"] = metal_material(f"{name}_ear_rim", h[4], 0.3, 0.75)
+	b = Builder(name)
+	ells, tusks = _iv_elephant_body(b, m, rng, GOD_TUSKS[god], mist=False, ear_sweep=(-138, 28))
+	LEGS = {"fl": (0.62, -1.05, 2.1), "fr": (-0.62, -1.05, 2.1), "bl": (0.6, 1.2, 2.05), "br": (-0.6, 1.2, 2.05)}
+	b.bone("halo", (0, -1.3, 3.6), "head")
+	b.bone("motes", (0, 0, 3.0), "body")
+	tr = GOD_TUSKS[god]["r"]
+	extra_bones = []
+
+	if god == "light":
+		gold = metal_material(f"{name}_gold", "ecc058", 0.32, 0.55, emit=0.2)
+		gold_d = metal_material(f"{name}_gold_dark", "b88a34", 0.38, 0.5)
+		sun = glass_material(f"{name}_sun", "ffe6a0", 0.32, 0.4, emit=1.6)
+		ray = metal_material(f"{name}_ray", "ffd878", 0.3, 0.6, emit=1.1)
+		white = material(f"{name}_cloth", "f6f0e2", 0.85)
+		saffron = material(f"{name}_saffron", "e89a3a", 0.85)
+		ruby = material(f"{name}_ruby", "d83a2a", 0.2, emit=0.5)
+		# the sun disc behind his head: a pale gold glow in a gold ring, sixteen rays long and short
+		c = Vector((0, -1.3, 3.5))
+		tilt = Matrix.Rotation(math.radians(-12), 3, "X")
+		b.blob((1.7, 0.04, 1.7), tuple(c), sun, "halo", rot=(-12, 0, 0), segs=(24, 6))
+		_iv_ring(b, tuple(c), tuple(tilt @ Vector((0, 1, 0))), 0.86, 0.06, gold, "halo", sides=28)
+		_iv_ring(b, tuple(c), tuple(tilt @ Vector((0, 1, 0))), 0.64, 0.03, gold, "halo", sides=24)
+		for j in range(16):
+			a = 2 * math.pi * j / 16
+			d = tilt @ Vector((math.cos(a), 0, math.sin(a)))
+			ln = 1.24 if j % 2 == 0 else 1.08
+			b.seg(tuple(c + d * 0.88), tuple(c + d * ln), 0.07 if j % 2 == 0 else 0.05, 0.0, ray, "halo", sides=4)
+		# a gold plate down the brow with a ruby in it and bells on its edge; gold tusk caps; anklets
+		_gd_brow_plate(b, gold, gold_d, "head", bells=gold)
+		b.blob((0.2, 0.08, 0.24), tuple(_gd_surface(HEAD_ELLS, (0, -1.95, 3.25), (0, -1, 0), 0.07)), ruby, "head", segs=(8, 6))
+		_gd_tusk_caps(b, tusks, tr, gold, gold_d)
+		_gd_anklets(b, LEGS, gold)
+		# a white caparison with a saffron band and gold border over his back, and a gold chain of bells round the neck
+		_gd_cloth(b, ells, -0.9, 1.1, 96, [white, white, saffron, white, white], gold, "body", ny=10, hang=0.5)
+		pts = []
+		for j in range(13):
+			a = math.radians(-15 - 150 * j / 12)
+			pts.append(Vector((1.0 * math.cos(a), -1.52 - 0.2 * math.sin(a) ** 2, 2.6 + 0.95 * math.sin(a))))
+		_chain(b, pts, 0.04, 0.04, gold, "head", sides=4)
+		for p in pts[2:-2:2]:
+			b.seg(tuple(p), tuple(p + Vector((0, 0, -0.14))), 0.1, 0.14, gold, "head", sides=8)
+
+	elif god == "water":
+		pearl = material(f"{name}_pearl", "f6f2ee", 0.2)
+		gem = material(f"{name}_gem", "3ab8e8", 0.1, emit=0.8)
+		silver = metal_material(f"{name}_silver", "e2ecf0", 0.32, 0.45)
+		flow = glass_material(f"{name}_water", "58c4d8", 0.62, 0.15, emit=0.25)
+		foam = glass_material(f"{name}_foam", "d4f6fc", 0.85, 0.2, emit=0.5)
+		ice = glass_material(f"{name}_crest", "b4ecf6", 0.85, 0.15, emit=0.35)
+		petal = material(f"{name}_petal", "f6c8d8", 0.6)
+		petal_l = material(f"{name}_petal_light", "fdeef2", 0.6)
+		heart = material(f"{name}_lotus_heart", "f4c850", 0.5, emit=0.6)
+		leaf = material(f"{name}_lotus_leaf", "4a9a6a", 0.7)
+		_gd_crest(b, ells, ice, foam, "body", n=7, h=0.45, y0=-1.1, y1=1.2)
+		# water flowing over her back and down her sides in waves; the hanging folds sway on their own bones
+		b.bone("drape_l", (0.97, 0.1, 2.56), "body")
+		b.bone("drape_r", (-0.97, 0.1, 2.56), "body")
+		extra_bones += ["drape_l", "drape_r"]
+		grid = _gd_cloth(b, ells, -0.95, 1.35, 70, [flow], None, "body", ny=12, na=12, hang=0.0)
+		for side, j in ((1, -2), (-1, 1)):
+			col = [grid[i][j] for i in range(len(grid))]
+			rows = []
+			for i, p in enumerate(col):
+				ln = 0.85 + 0.25 * math.sin(i * 1.3)
+				rows.append([tuple(p + Vector((side * 0.06 * k, 0, -ln * k / 3))) for k in range(4)])
+			hang = [[r[k] for r in rows] for k in range(4)]
+			_iv_sheet(b, hang, flow, f"drape_{'l' if side > 0 else 'r'}")
+			for p, q in zip(hang[-1], hang[-1][1:]):   # a line of foam along the wave hem
+				b.seg(p, q, 0.05, 0.05, foam, f"drape_{'l' if side > 0 else 'r'}", sides=4)
+		# pearls: two strands round her neck and one across her brow with a blue drop; a lotus on her crown
+		for loop, (sag, zc) in enumerate(((0.9, 2.6), (1.15, 2.5))):
+			pts = []
+			for j in range(25):
+				a = math.radians(-15 - 150 * j / 24)
+				pts.append(Vector((0.98 * math.cos(a), -1.52 - 0.2 * loop - 0.25 * math.sin(a) ** 2, zc + sag * math.sin(a))))
+			for p in pts:
+				b.blob((0.1, 0.1, 0.1), tuple(p), pearl, "head", segs=(6, 4))
+		brow = [_gd_surface(HEAD_ELLS, (x, -1.95, 3.42 - 0.35 * (1 - (x / 0.5) ** 2)), (0, -1, 0), 0.04) for x in [-0.5 + j / 10 for j in range(11)]]
+		for p in brow:
+			b.blob((0.08, 0.08, 0.08), tuple(p), pearl, "head", segs=(6, 4))
+		b.blob((0.16, 0.1, 0.24), tuple(brow[5] + Vector((0, -0.04, -0.2))), gem, "head", segs=(8, 6))
+		top = Vector((0, -2.1, 3.74))
+		b.blob((0.9, 0.9, 0.08), tuple(top + Vector((0, 0.05, -0.02))), leaf, "halo", segs=(12, 4))
+		for ring_, (n_, ln, rise, mat) in enumerate(((8, 0.42, 30, petal), (6, 0.32, 55, petal_l))):
+			for j in range(n_):
+				a = 2 * math.pi * (j + 0.5 * ring_) / n_
+				d = Vector((math.cos(a), math.sin(a), 0))
+				p = top + d * ln * 0.45 + Vector((0, 0, ln * 0.35 * math.sin(math.radians(rise))))
+				b.blob((ln * 0.42, ln, 0.05), tuple(p), mat, "halo", rot=(rise, 0, math.degrees(a) - 90), segs=(8, 5))
+		b.blob((0.18, 0.18, 0.12), tuple(top + Vector((0, 0, 0.12))), heart, "halo", segs=(8, 5))
+		# water spilling from the tip of her trunk, and silver anklets, silver tusk caps
+		for j in range(4):
+			b.blob((0.09 - 0.012 * j, 0.09 - 0.012 * j, 0.12 - 0.015 * j), (0, -2.3 - 0.08 * j, 0.34 - 0.07 * j), foam if j % 2 else flow, "trunk4", segs=(6, 4))
+		_gd_tusk_caps(b, tusks, tr, silver, silver)
+		_gd_anklets(b, LEGS, silver)
+		# pearls drifting round her like spray
+		_gd_motes(b, foam, rng, 16, 0.1, "motes", box=((-2.2, 2.2), (-2.8, 2.6), (1.0, 4.3)), avoid=ells)
+
+	elif god == "fire":
+		molten = material(f"{name}_molten", "ff8a2a", 0.4, emit=3.0)
+		molten_y = material(f"{name}_molten_hot", "ffc850", 0.3, emit=4.0)
+		flame = glass_material(f"{name}_flame", "ff9a30", 0.85, 0.3, emit=3.0)
+		flame_y = glass_material(f"{name}_flame_hot", "ffe070", 0.9, 0.3, emit=4.0)
+		ember = material(f"{name}_ember_spike", "e8702a", 0.4, emit=1.4)
+		gold = metal_material(f"{name}_gold", "e0aa48", 0.34, 0.55)
+		ember_cap = material(f"{name}_ember_cap", "ff7428", 0.4, emit=1.6)
+		soot = material(f"{name}_soot", "1c1210", 0.9)
+		# molten cracks across the charcoal hide: flanks, shoulders, haunches, the brow; and down the legs
+		for s in (1, -1):
+			for y0, a0, steps in ((-0.9, 50, 7), (0.1, 35, 8), (1.1, 55, 6), (-0.3, 80, 5)):
+				_gd_crack(b, ells, rng, (0, 0, 2.3), s * a0, y0, steps, molten, "body")
+			_gd_crack(b, HEAD_ELLS[:2], rng, (0, -1.95, 3.0), s * 25, -2.2, 5, molten, "head", r=0.025)
+		_gd_leg_cracks(b, LEGS, rng, molten)
+		_gd_crest(b, ells, ember, molten_y, "body", n=8, h=0.65)
+		# a crown of flame on his head, a burning mark on his brow, ember tusks with white-hot tips
+		top = Vector((0, -2.05, 3.66))
+		for j, (dx, dy, ln, mat) in enumerate(((0, 0, 1.0, flame), (0.28, 0.12, 0.7, flame), (-0.28, 0.12, 0.7, flame),
+											   (0.16, -0.18, 0.55, flame_y), (-0.16, -0.18, 0.55, flame_y), (0, 0.3, 0.6, flame_y))):
+			base = top + Vector((dx, dy, 0))
+			b.seg(tuple(base), tuple(base + Vector((dx * 0.4, 0.12, ln))), 0.2 if j == 0 else 0.15, 0.0, mat, "halo", sides=6)
+		b.blob((0.6, 0.5, 0.2), tuple(top + Vector((0, 0.05, 0.02))), soot, "halo", segs=(10, 5))
+		b.blob((0.16, 0.06, 0.22), tuple(_gd_surface(HEAD_ELLS, (0, -1.95, 3.3), (0, -1, 0), 0.03)), molten_y, "head", segs=(6, 5))
+		_gd_tusk_caps(b, tusks, tr, ember_cap, gold, tip=molten_y)
+		_gd_anklets(b, LEGS, gold)
+		_gd_motes(b, molten, rng, 22, 0.07, "motes", box=((-1.8, 1.8), (-2.4, 2.2), (2.6, 4.5)), avoid=ells)
+
+	elif god == "wind":
+		gust = glass_material(f"{name}_gust", "eaf6ec", 0.7, 0.3, emit=0.6)
+		ribbon = glass_material(f"{name}_ribbon", "f4fff4", 0.85, 0.4, emit=0.3)
+		ribbon_g = material(f"{name}_ribbon_green", "86b46c", 0.7)
+		straw = material(f"{name}_straw", "d8c070", 0.9)
+		straw_d = material(f"{name}_straw_dark", "a8904a", 0.9)
+		grass = material(f"{name}_grass", "8aa45a", 0.9)
+		feather = material(f"{name}_feather", "f4f2e4", 0.8)
+		feather_g = material(f"{name}_feather_green", "6e9a58", 0.8)
+		gold = metal_material(f"{name}_gold", "d4b458", 0.36, 0.5)
+		# a caparison of woven grass over his back, green and gold, a fringe of grass along its edges
+		grid = _gd_cloth(b, ells, -0.8, 1.2, 94, [straw, grass, straw, straw_d, straw, grass], straw_d, "body", ny=12, hang=0.45)
+		for j in (0, -1):
+			for i in range(len(grid)):
+				p = grid[i][j]
+				for k in (-1, 1):
+					b.seg(tuple(p), tuple(p + Vector((0.03 * k * (1 if j == 0 else -1), 0.04 * k, -0.34))), 0.03, 0.004, grass if i % 2 else straw, "body", sides=3)
+		# a crown of feathers fanned up from his brow
+		top = Vector((0, -2.12, 3.62))
+		for j in range(9):
+			a = math.radians(-60 + 15 * j)
+			d = Vector((math.sin(a), 0.35, math.cos(a))).normalized()
+			ln = 1.05 - 0.35 * abs(j - 4) / 4
+			c = top + d * (ln * 0.55)
+			e = Vector((0, 0, 1)).rotation_difference(d).to_euler()
+			b.blob((0.2, 0.05, ln), tuple(c), feather if j % 2 == 0 else feather_g, "halo", rot=tuple(math.degrees(v) for v in e), segs=(6, 5))
+		b.blob((0.7, 0.3, 0.22), tuple(top + Vector((0, 0.02, -0.02))), gold, "halo", segs=(10, 5))
+		# wind wrapped round him: two great gusts circling (their own bones) and a streamer from behind each ear
+		b.bone("gust_a", (0, 0.1, 2.7), "body")
+		b.bone("gust_b", (0, 0.1, 2.7), "body")
+		extra_bones += ["gust_a", "gust_b"]
+		_gd_arc(b, (0, 0.1, 2.7), 1.95, 2.75, -18, 0, -40, 220, 0.07, gust, "gust_a", n=28)
+		_gd_arc(b, (0, 0.1, 2.8), 1.7, 1.95, 72, 28, 10, 280, 0.06, gust, "gust_b", n=26)
+		for s, sd in ((1, "l"), (-1, "r")):
+			pts = []
+			for i in range(10):   # back over his shoulders and away on the wind, rippling
+				u = i / 9
+				pts.append((s * (0.3 + 0.75 * math.sin(math.pi * u * 0.7)), -1.75 + 5.2 * u, 3.7 + 0.5 * u + 0.16 * math.sin(u * 3 * math.pi)))
+			for i in range(3):
+				b.bone(f"st_{sd}{i + 1}", pts[3 * i], "head" if i == 0 else f"st_{sd}{i}")
+			extra_bones += [f"st_{sd}{i + 1}" for i in range(3)]
+			_gd_ribbon(b, pts, 0.28, ribbon if s > 0 else ribbon_g, [f"st_{sd}{1 + min(2, i // 3)}" for i in range(9)], side=(s * 0.4, 0, 1), twist=120 * s)
+		_gd_tusk_caps(b, tusks, tr, gold, gold)
+		_gd_anklets(b, LEGS, gold)
+
+	elif god == "dark":
+		void = material(f"{name}_void", "07060c", 0.95)
+		rim = material(f"{name}_rim", "fff2d8", 0.2, emit=4.0)
+		corona = glass_material(f"{name}_corona", "c8bcff", 0.3, 0.3, emit=1.2)
+		star = material(f"{name}_star", "eef0ff", 0.2, emit=2.4)
+		star_b = material(f"{name}_star_faint", "a8a0e0", 0.3, emit=1.2)
+		crystal = glass_material(f"{name}_crest", "b8a4e8", 0.9, 0.15, emit=0.5)
+		silver = metal_material(f"{name}_silver", "d4d8ea", 0.3, 0.5)
+		# the eclipse behind his head: a black disc, a thin burning rim, a faint violet corona round it
+		c = Vector((0, -1.3, 3.5))
+		tilt = Matrix.Rotation(math.radians(-12), 3, "X")
+		ax = tuple(tilt @ Vector((0, 1, 0)))
+		b.blob((1.72, 0.08, 1.72), tuple(c), void, "halo", rot=(-12, 0, 0), segs=(28, 6))
+		_iv_ring(b, tuple(c), ax, 0.87, 0.035, rim, "halo", sides=32)
+		_iv_ring(b, tuple(c + Vector((0, 0.02, 0))), ax, 0.97, 0.07, corona, "halo", sides=28)
+		for j in range(12):
+			a = 2 * math.pi * (j + 0.5) / 12
+			d = tilt @ Vector((math.cos(a), 0, math.sin(a)))
+			ln = 1.2 if j % 3 == 0 else 1.07
+			b.seg(tuple(c + d * 0.9), tuple(c + d * ln), 0.035, 0.0, corona, "halo", sides=4)
+		# stars flecked faintly over the black hide; lilac crystal crest; silver on tusks, legs and brow
+		_gd_flecks(b, ells, star, rng, 34, 0.05, "body")
+		_gd_flecks(b, ells, star_b, rng, 30, 0.04, "body")
+		_gd_flecks(b, HEAD_ELLS[:2], star, rng, 10, 0.04, "head", center=(0, -1.95, 3.0), below=0.0)
+		_gd_crest(b, ells, crystal, star, "body", n=8, h=0.55)
+		_gd_tusk_caps(b, tusks, tr, silver, silver)
+		_gd_anklets(b, LEGS, silver)
+		b.blob((0.34, 0.06, 0.1), tuple(_gd_surface(HEAD_ELLS, (0, -1.95, 3.42), (0, -1, 0), 0.03)), silver, "head", segs=(8, 4))
+		b.blob((0.13, 0.06, 0.13), tuple(_gd_surface(HEAD_ELLS, (0, -1.95, 3.3), (0, -1, 0), 0.05)), star, "head", segs=(6, 5))
+		_gd_motes(b, star, rng, 18, 0.07, "motes", box=((-2.4, 2.4), (-2.8, 2.6), (1.0, 4.5)), avoid=ells)
+		_gd_motes(b, star_b, rng, 16, 0.06, "motes", box=((-2.4, 2.4), (-2.8, 2.6), (1.0, 4.5)), avoid=ells)
+
+	_scaled(b, GOD_SCALE)
+	arm = b.build()
+	K = GOD_SCALE
+
+	def extra(clip_name, t):
+		moving = clip_name in ("walk", "run")
+		amp = 2.0 if clip_name == "run" else (1.4 if moving else 1.0)
+		out = {"halo": {"rot": (2 * wave(t, 1, 0.15), 3 * wave(t, 1, 0.4), 0), "loc": (0, 0, 0.03 * K * wave(t, 1, 0.3))},
+			   "motes": {"rot": (0, 0, 6 * wave(t)), "loc": (0, 0, 0.06 * K * wave(t, 1, 0.2))}}
+		if god == "fire":   # the flame crown flickers
+			f = 1 + 0.06 * wave(t, 6 if clip_name == "idle" else 3) + 0.04 * wave(t, 11 if clip_name == "idle" else 5, 0.3)
+			out["halo"]["scale"] = (1, 1, f)
+		if "drape_l" in extra_bones:
+			out["drape_l"] = {"rot": (0, -3 * amp * wave(t, 1, 0.1) - (4 if moving else 0), 0)}
+			out["drape_r"] = {"rot": (0, 3 * amp * wave(t, 1, 0.35) + (4 if moving else 0), 0)}
+		if "gust_a" in extra_bones:
+			out["gust_a"] = {"rot": (4 * wave(t, 1, 0.2), 3 * wave(t, 1, 0.6), 18 * wave(t))}
+			out["gust_b"] = {"rot": (5 * wave(t, 1, 0.7), 0, -14 * wave(t, 1, 0.3))}
+			for sd, s in (("l", 1), ("r", -1)):
+				for i in range(3):
+					out[f"st_{sd}{i + 1}"] = {"rot": (6 * amp * wave(t, 2 if moving else 1, 0.12 * i + (0.25 if s < 0 else 0)), 0,
+													  s * 5 * amp * wave(t, 1, 0.15 * i))}
+		return out
+
+	_iv_elephant_clips(arm, K, 1.25, fade=False, extra=extra, idle_seconds=6.0)
+	return arm
+
+
+def build_deity_light():
+	"""Prabhagaj the Dawn-Tusk: white-gold hide, a sun disc of sixteen rays behind his head, a gold brow plate
+	hung with bells, a white and saffron caparison, gilded tusk caps and anklets."""
+	return _god_elephant("deity_light", "light")
+
+
+def build_deity_water():
+	"""Jalendra the Tide-Trunked: tide-teal hide, a mantle of flowing water over her back with a foaming hem,
+	pearls round her neck and brow, a lotus on her crown, a crest of pale crystal, water spilling from her trunk."""
+	return _god_elephant("deity_water", "water")
+
+
+def build_deity_fire():
+	"""Agnavar the Ember-Tusked: charcoal hide split with glowing molten cracks, a crest of ember spikes,
+	a crown of flame, tusks like cooling iron with white-hot tips, sparks drifting up round him."""
+	return _god_elephant("deity_fire", "fire")
+
+
+def build_deity_wind():
+	"""Vayuketh He Who Breathes the Plains: sage-green hide, a caparison of woven grass, a crown of feathers,
+	two great gusts of wind circling him and long streamers flying from behind his ears."""
+	return _god_elephant("deity_wind", "wind")
+
+
+def build_deity_dark():
+	"""Timiraj the Unlit: black hide flecked with faint stars, an eclipse behind his head (a black disc with a
+	thin burning rim and a violet corona), a lilac crystal crest, silver on his tusks, stars hanging round him."""
+	return _god_elephant("deity_dark", "dark")
+
+
+CREATURES.update({"deity_light": build_deity_light, "deity_water": build_deity_water, "deity_fire": build_deity_fire,
+				  "deity_wind": build_deity_wind, "deity_dark": build_deity_dark})
+# ================================================================ end of the elephant gods
 
 
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],

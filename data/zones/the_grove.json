@@ -1,0 +1,773 @@
+{
+  "name": "The Grove",
+  "music": "grove",
+  "seed": 5151,
+  "size": 256,
+  "fixed_hour": 7.1,
+  "height_amplitude": 1.4,
+  "bind_point": [
+    0.0,
+    92.0
+  ],
+  "flat_radius": 30,
+  "clear_radius": 60,
+  "trees": 70,
+  "tree_mix": [
+    "jungle_tree",
+    "tree_round",
+    "tree_round",
+    "jungle_tree"
+  ],
+  "groves": 0.35,
+  "rocks": 14,
+  "grass_colors": [
+    "#6f9a3c",
+    "#8fae4a"
+  ],
+  "fog_density": 0.0025,
+  "fog_color": "#f4e4c4",
+  "sun_energy": 1.5,
+  "clutter": {
+    "grass_a": {
+      "density": 0.36,
+      "patch": 0.5,
+      "sway": 0.2,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "grass_b": {
+      "density": 0.26,
+      "patch": 0.4,
+      "sway": 0.18,
+      "range": 50,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.25
+      ]
+    },
+    "flowers_white": {
+      "density": 0.02,
+      "patch": 0.7,
+      "sway": 0.12,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "flowers_yellow": {
+      "density": 0.018,
+      "patch": 0.7,
+      "sway": 0.12,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "fern": {
+      "density": 0.02,
+      "patch": 0.8,
+      "sway": 0.08,
+      "range": 50,
+      "scale": [
+        0.9,
+        1.5
+      ]
+    }
+  },
+  "lakes": [
+    {
+      "points": [
+        [
+          19.0,
+          -0.0
+        ],
+        [
+          18.88,
+          -6.13
+        ],
+        [
+          14.45,
+          -10.5
+        ],
+        [
+          11.56,
+          -15.9
+        ],
+        [
+          5.95,
+          -18.31
+        ],
+        [
+          0.0,
+          -18.0
+        ],
+        [
+          -6.2,
+          -19.09
+        ],
+        [
+          -10.91,
+          -15.02
+        ],
+        [
+          -14.97,
+          -10.88
+        ],
+        [
+          -19.11,
+          -6.21
+        ],
+        [
+          -18.04,
+          -0.0
+        ],
+        [
+          -18.25,
+          5.93
+        ],
+        [
+          -15.95,
+          11.59
+        ],
+        [
+          -10.5,
+          14.45
+        ],
+        [
+          -6.12,
+          18.84
+        ],
+        [
+          -0.0,
+          19.07
+        ],
+        [
+          5.6,
+          17.22
+        ],
+        [
+          11.83,
+          16.28
+        ],
+        [
+          14.88,
+          10.81
+        ],
+        [
+          17.77,
+          5.77
+        ]
+      ],
+      "depth": 2.2,
+      "shelf": 5,
+      "bank": 6
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "grove",
+      "pos": [
+        0,
+        0
+      ],
+      "radius": 19.0,
+      "lotus": 22
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.0,
+        -37.0
+      ],
+      "id": "grove_dais_light",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        35.19,
+        -11.43
+      ],
+      "id": "grove_dais_wind",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        21.75,
+        29.93
+      ],
+      "id": "grove_dais_dark",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -21.75,
+        29.93
+      ],
+      "id": "grove_dais_water",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -35.19,
+        -11.43
+      ],
+      "id": "grove_dais_fire",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        65.0,
+        -11.46
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 0,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        44.94,
+        -57.52
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 47,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        23.6,
+        -64.84
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 94,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -28.47,
+        -70.47
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 141,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -46.28,
+        -55.16
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 188,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -67.34,
+        -9.46
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 235,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -73.86,
+        13.02
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 282,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -43.71,
+        55.95
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 329,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -22.92,
+        62.96
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 16,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        27.72,
+        68.61
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 63,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        45.0,
+        53.62
+      ],
+      "id": "grove_tree_a",
+      "collide": "mesh",
+      "yaw": 110,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        65.36,
+        9.19
+      ],
+      "id": "grove_tree_b",
+      "collide": "mesh",
+      "yaw": 157,
+      "scale": 1.0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.0,
+        103.0
+      ],
+      "id": "tusk_arch",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.0,
+        87.0
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.89,
+        84.4
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 53
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.23,
+        81.8
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 106
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.83,
+        79.2
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 159
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.44,
+        76.6
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 212
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.72,
+        74.0
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 265
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.63,
+        71.4
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 318
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.56,
+        68.8
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 11
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.77,
+        66.2
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 64
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.36,
+        63.6
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 117
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.87,
+        61.0
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 170
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.13,
+        58.4
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 223
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.9,
+        55.8
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 276
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.1,
+        53.2
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 329
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.87,
+        50.6
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 22
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.32,
+        48.0
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 75
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.79,
+        45.4
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 128
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.53,
+        42.8
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 181
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.66,
+        40.2
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 234
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.7,
+        37.6
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 287
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.48,
+        35.0
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 340
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.82,
+        32.4
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 33
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -0.27,
+        29.8
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 86
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.89,
+        27.2
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 139
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0.04,
+        24.6
+      ],
+      "id": "grove_stepping_stone",
+      "collide": "none",
+      "yaw": 192
+    }
+  ],
+  "npcs": [
+    {
+      "id": "grove_light",
+      "pos": [
+        0.0,
+        -37.0
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "y": 0.9
+    },
+    {
+      "id": "grove_light_attendant",
+      "pos": [
+        -5.25,
+        -26.99
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "grove_wind",
+      "pos": [
+        35.19,
+        -11.43
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "y": 0.9
+    },
+    {
+      "id": "grove_wind_attendant",
+      "pos": [
+        24.05,
+        -13.33
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "grove_dark",
+      "pos": [
+        21.75,
+        29.93
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "y": 0.9
+    },
+    {
+      "id": "grove_dark_attendant",
+      "pos": [
+        20.11,
+        18.75
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "grove_water",
+      "pos": [
+        -21.75,
+        29.93
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "y": 0.9
+    },
+    {
+      "id": "grove_water_attendant",
+      "pos": [
+        -11.62,
+        24.92
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "grove_fire",
+      "pos": [
+        -35.19,
+        -11.43
+      ],
+      "face": [
+        0,
+        0
+      ],
+      "y": 0.9
+    },
+    {
+      "id": "grove_fire_attendant",
+      "pos": [
+        -27.3,
+        -3.35
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "grove_keeper",
+      "pos": [
+        5.5,
+        88.0
+      ],
+      "face": [
+        0,
+        92
+      ]
+    }
+  ],
+  "spawns": []
+}

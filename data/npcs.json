@@ -5252,5 +5252,192 @@
         "slashes"
       ]
     }
+  },
+  "grove_light": {
+    "name": "Prabhagaj",
+    "title": "The Dawn-Tusk",
+    "level": 99,
+    "model": "deity_light",
+    "faction": "grove",
+    "grove_deity": "light",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "dialogue": {
+      "hail": "You found the way here, {name}, and the light found you on the way. I am Prabhagaj, the Dawn-Tusk. I stood at the edge of the first morning and watched the world decide to be seen. Rest by the [water]. Everything here is looked at by me, and none of it minds.",
+      "water": "Jalendra's. She let me put the morning on it. She lets very few things touch it, so I am careful with the light.",
+      "grove": "This is where the five of us stand when the world does not need us standing somewhere else. It is a [circle] for a reason: none of us is first.",
+      "circle": "Five places around the water. Mine faces the way you came in, so the first thing anyone sees here is the light. The others would tell you that was my idea. It was.",
+      "unknown": "Say it again, slower. I see well; I listen less well than I should."
+    }
+  },
+  "grove_light_attendant": {
+    "name": "Dawn-Herald Mireya",
+    "title": "Herald of the Dawn-Tusk",
+    "level": 60,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "grove",
+    "grove_deity": "light",
+    "sacred": true,
+    "dialogue": {
+      "hail": "Morning, {name}. It is always morning here; you'll stop noticing. I carry Prabhagaj's word when he's busy looking at something, which is always.",
+      "unknown": "Ask the god, {name}. I only carry the words."
+    }
+  },
+  "grove_wind": {
+    "name": "Vayuketh",
+    "title": "He Who Breathes the Plains",
+    "level": 99,
+    "model": "deity_wind",
+    "faction": "grove",
+    "grove_deity": "wind",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "dialogue": {
+      "hail": "Breathe, {name}. No, deeper. There. That was me, going in and coming out again. I am Vayuketh, He Who Breathes the Plains. I never stay anywhere long, but I always come back to the [grass] by this water.",
+      "grass": "It bends when I exhale. That is not obedience; it is agreement. Remember the difference.",
+      "grove": "The one place I stop. Do not tell the others it is my favorite. They each think it is theirs.",
+      "unknown": "Gone past me on the wind, that one. Try again."
+    }
+  },
+  "grove_wind_attendant": {
+    "name": "Wind-Runner Saoirse",
+    "title": "Runner for He Who Breathes",
+    "level": 60,
+    "model": "ranger",
+    "weapon": "bow",
+    "faction": "grove",
+    "grove_deity": "wind",
+    "sacred": true,
+    "dialogue": {
+      "hail": "You made it, {name}! I carry his messages. He never gives them to me here, of course; he gives them to me halfway across the world and expects me to be quick.",
+      "unknown": "Ask the god, {name}. I only carry the words."
+    }
+  },
+  "grove_dark": {
+    "name": "Timiraj",
+    "title": "The Unlit",
+    "level": 99,
+    "model": "deity_dark",
+    "faction": "grove",
+    "grove_deity": "dark",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "dialogue": {
+      "hail": "{name}. I have your name already; I keep every one. I am Timiraj, the Unlit. The others stand in the morning here. I stand where it has not reached yet. Do not be afraid of the [dark]. It is only where you rest.",
+      "dark": "Every elephant comes to me at the end. I remember each of them. That is not the comfort it sounds like, but it is not nothing.",
+      "grove": "Even here the morning never quite arrives at my side of the water. That is how I like it, and the Dawn-Tusk has stopped trying.",
+      "unknown": "Silence answers most things better. It answers that one too."
+    }
+  },
+  "grove_dark_attendant": {
+    "name": "Night-Sister Oona",
+    "title": "Keeper of the Unlit's Names",
+    "level": 60,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "grove",
+    "grove_deity": "dark",
+    "sacred": true,
+    "dialogue": {
+      "hail": "Quietly, {name}. I write down the names he remembers, so he does not have to carry every one alone. Yours is in the book already. Everyone's is.",
+      "unknown": "Ask the god, {name}. I only carry the words."
+    }
+  },
+  "grove_water": {
+    "name": "Jalendra",
+    "title": "The Tide-Trunked",
+    "level": 99,
+    "model": "deity_water",
+    "faction": "grove",
+    "grove_deity": "water",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "dialogue": {
+      "hail": "The water made room for you before you arrived, {name}. That is my welcome; I do not give another. I am Jalendra, the Tide-Trunked. The [pond] is mine, and the rain that feeds it, and every river that leaves here for the world.",
+      "pond": "Look into it. Not at your face; past it. Every river in the world starts here as a thought. Most of them do not know it.",
+      "grove": "We come here to be still. It is harder for some of us than others. Vayuketh has never stood still in his life.",
+      "unknown": "The water does not answer that. Neither will I."
+    }
+  },
+  "grove_water_attendant": {
+    "name": "Tide-Singer Neelam",
+    "title": "Voice of the Tide-Trunked",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "grove",
+    "grove_deity": "water",
+    "sacred": true,
+    "dialogue": {
+      "hail": "Softly, {name}. She hears everything the water touches, and the water here touches everything. I sing to it so she knows who is coming.",
+      "unknown": "Ask the god, {name}. I only carry the words."
+    }
+  },
+  "grove_fire": {
+    "name": "Agnavar",
+    "title": "The Ember-Tusked",
+    "level": 99,
+    "model": "deity_fire",
+    "faction": "grove",
+    "grove_deity": "fire",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "dialogue": {
+      "hail": "Stand closer, {name}. Warmth is wasted on the cautious. I am Agnavar, the Ember-Tusked. Every [flame] that refused to go out has had my name in it, whether the one tending it knew or not.",
+      "flame": "The forge in Forgehold. The hearth in Emberhold. A campfire in the rain that a tired traveler would not let die. Mine, all of them. I keep count.",
+      "grove": "The others like the morning here. I like that it never becomes day. Nothing here ever finishes burning.",
+      "unknown": "Mm. Speak up. The fire is loud."
+    }
+  },
+  "grove_fire_attendant": {
+    "name": "Ember-Warden Brask",
+    "title": "Warden of the Ember-Tusked",
+    "level": 60,
+    "model": "barbarian",
+    "weapon": "axe_2handed",
+    "faction": "grove",
+    "grove_deity": "fire",
+    "sacred": true,
+    "dialogue": {
+      "hail": "Warm yourself, {name}. I keep the embers on his dais fed. He'd do it himself, but a god tending his own fire looks like vanity.",
+      "unknown": "Ask the god, {name}. I only carry the words."
+    }
+  },
+  "grove_keeper": {
+    "name": "Mahout Anandi",
+    "title": "Keeper of the Grove",
+    "level": 60,
+    "model": "ranger",
+    "weapon": "staff",
+    "faction": "grove",
+    "sacred": true,
+    "grove_return": true,
+    "dialogue": {
+      "hail": "Welcome to the Grove, {name}. Mind the water; it's older than the gods standing round it. I keep the path and the arch. The gods come to the [circle] when they're ready to meet you, and when you want to go, say [return] and I'll walk you back the way you came.",
+      "circle": "Five daises round the pond, one for each of them. Some stand empty for a traveler until they've earned the god who stands there. It is not a slight; it's an invitation.",
+      "return": "Hold my arm, {name}. Eyes shut. ...There.",
+      "unknown": "I'm only the keeper, {name}. The gods know more than I do, and say less."
+    }
   }
 }

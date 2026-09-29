@@ -48,6 +48,9 @@ func _run() -> void:
 		if "--wake" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "greenmoor", "position": [0, 2, 20]})
+		elif "--grove" in OS.get_cmdline_user_args():
+			Net.import_character({"name": who, "class": "warrior", "deity": "light", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "the_grove", "position": [4.0 if who == "Alpha" else -4.0, 2, 30]})
 		elif "--trade" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "coin": 800, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"inventory": ["gnoll_fang", "rusty_short_sword"] if who == "Alpha" else ["beetle_eye"], "equipment": {"primary": "rusty_short_sword"}})
@@ -105,6 +108,8 @@ func _run() -> void:
 					if q != p:
 						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif "--grove" in OS.get_cmdline_user_args():
+		await _grove_test(p)
 	elif "--trade" in OS.get_cmdline_user_args():
 		await _trade_test(p)
 	elif "--wake" in OS.get_cmdline_user_args():
@@ -425,6 +430,46 @@ func _group_test(p: Player) -> void:
 ## Two players trade: Alpha offers a gnoll fang and 250 copper, Bravo a beetle
 ## eye; both press Trade. Then a NO DROP item is refused, and a canceled trade
 ## gives everything back.
+## The Grove online (run with <data>/admins.json = ["alpha"]): Alpha earns the
+## Dawn-Tusk; Bravo sees nothing until grouped with Alpha, and loses him again
+## on leaving the group.
+func _grove_test(p: Player) -> void:
+	var other: Player = null
+	for k in 60:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	var gods := func() -> Array:
+		var out: Array = []
+		for obj: Variant in World.objects.values():
+			if obj is Npc and (obj as Npc).grove_deity != "":
+				out.append((obj as Npc).npc_id)
+		out.sort()
+		return out
+	print("[%s] grove: in %s, sees %s; gods here %s" % [who, World.zone.zone_id if World.zone else "-", other.display_name if other else "nobody", gods.call()])
+	if who == "Alpha":
+		World.request_chat(p.entity_id, "/grove unlock light")
+		await _wait(3.0)
+		print("[Alpha] grove: unlocked light -> gods here %s" % [gods.call()])
+		World.request_chat(p.entity_id, "/invite Bravo")
+		await _wait(12.0)
+		print("[Alpha] grove: end -> gods here %s" % [gods.call()])
+	else:
+		await _wait(3.0)
+		print("[Bravo] grove: Alpha unlocked light, not grouped -> gods here %s" % [gods.call()])
+		await _wait(1.5)
+		World.request_chat(p.entity_id, "/accept")
+		await _wait(3.0)
+		print("[Bravo] grove: grouped with Alpha -> gods here %s" % [gods.call()])
+		await _shot("grove_grouped")
+		World.request_chat(p.entity_id, "/disband")
+		await _wait(3.0)
+		print("[Bravo] grove: left the group -> gods here %s" % [gods.call()])
+
+
 func _trade_test(p: Player) -> void:
 	var other: Player = null
 	for k in 40:

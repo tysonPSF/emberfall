@@ -1488,6 +1488,14 @@ def homeward_stone():
 	return p.build()
 
 
+def grove_seed():
+	p = Prop("grove_seed", 509)
+	p.blob((0.62, 0.62, 0.78), (0, 0, 0.42), GOLD, segs=(16, 10), grad=(0.3, 0.9), glow=0.5)   # a plum-sized seed, warm gold
+	p.seg((0, 0, 0.78), (0.04, -0.02, 0.98), 0.04, 0.03, MOSS, sides=5)   # a sprout from its tip
+	p.blob((0.3, 0.14, 0.06), (0.14, -0.04, 1.02), MOSS, segs=(8, 4))   # and its first leaf
+	return p.build()
+
+
 def draught_of_homecoming():
 	p = Prop("draught_of_homecoming", 503)
 	p.blob((0.8, 0.8, 0.8), (0, 0, 0.4), GOLD, segs=(14, 8), grad=(0.0, 0.6), glow=1.2)
@@ -9462,7 +9470,7 @@ TRADESKILLS = [bag_of_flour, jar_of_spices, vial_of_water, tanning_salts, spool_
 			   silk_cloth, iron_bar, steel_bar, roast_meat, grilled_trout, fish_stew, hunters_pie, frog_legs_saute, lagoon_feast,
 			   koi_platter, minor_healing_potion, antidote, healing_potion, clarity_tonic, draught_of_toughness, troll_tonic,
 			   draught_of_swiftness, greater_healing_potion, stitched_hide_pouch, wool_satchel, crocskin_backpack, iron_tipped_arrow,
-			   homeward_stone, draught_of_homecoming]
+			   homeward_stone, draught_of_homecoming, grove_seed]
 
 
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,

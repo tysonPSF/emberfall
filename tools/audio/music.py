@@ -323,6 +323,13 @@ TRACKS = {
 		"melody": "flute", "avoid": [3, 6], "arp": "harp", "arp_pattern": [0, 2, 4, 3, 2, 1], "pad": True, "bass": False,
 		"drum": [0], "drum_sections": ["B"], "drum_gain": 0.4, "reverb": 3.0, "sparse": 0.2, "bells": 0.3,
 	},
+	"grove": {  # the gods' Grove at an eternal dawn: a still lydian flute over a slow harp and a warm pad, soft bells, no drum
+		"key": (62, "lydian"), "bpm": 56, "beats": 3, "seed": 511,
+		"sections": {"A": [0, 1, 0, 4, 0, 1, 5, 0], "B": [5, 1, 3, 0, 5, 4, 1, 0]},
+		"form": ["A", "B", "A", "B", "A"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, 2, 4, 2, 4, 1], "pad": True, "bass": False,
+		"drone": 0.25, "drum": [], "drum_sections": [], "reverb": 5.0, "sparse": 0.35, "bells": 0.4,
+	},
 	"cinderpass": {  # black rock, lava and ash: a low phrygian line over a drone and a heartbeat drum
 		"key": (52, "phrygian"), "bpm": 52, "beats": 4, "seed": 277,
 		"sections": {"A": [0, 1, 0, 5], "B": [5, 6, 1, 0], "C": [3, 1, 6, 0]},

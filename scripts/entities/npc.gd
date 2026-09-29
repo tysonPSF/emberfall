@@ -36,6 +36,8 @@ var _pause := 0.0
 var _torch_check := 0.0
 var _torch_light: OmniLight3D  # the guard's torch, lit at night
 var _anchor := Vector3.ZERO  # where the current fight began; the leash is measured from here
+var grove_deity := ""  # a god of the Grove, or one of its attendants: shown only to those who've earned it (World.sees)
+var _sight_check := 0.0
 
 
 func setup(id: String, name_override := "") -> void:
@@ -44,6 +46,7 @@ func setup(id: String, name_override := "") -> void:
 	display_name = name_override if name_override != "" else str(data["name"])
 	level = int(data.get("level", 10))
 	faction = str(data.get("faction", "town"))
+	grove_deity = str(data.get("grove_deity", ""))
 	guard = data.get("guard", {})
 	if not guard.is_empty():  # guards stay out of reach: always this far over the level cap
 		level = int(World.cfg("max_level", 10)) + int(World.cfg("guard_levels_over_cap", 15))
@@ -77,12 +80,57 @@ func _ready() -> void:
 		title.offset = Vector2(0, -30)  # screen pixels below the name, at any distance
 		title.visibility_range_end = nameplate.visibility_range_end
 		nameplate.add_child(title)
+	if data.has("size"):  # giants (the Grove's gods): a pick shape and nameplate to match the model
+		_resize(float(data["size"][0]), float(data["size"][1]))
 	_post = global_position
 	_post_yaw = rotation.y
 
 
+## A body as big as its model ("size": [radius, height] in npcs.json): the
+## capsule you click grows to fit, the nameplate rides above the head, and a
+## solid pillar on the WORLD layer stops players walking through it.
+func _resize(radius: float, height: float) -> void:
+	for c in get_children():
+		if c is CollisionShape3D and c.shape is CapsuleShape3D:
+			var cap := CapsuleShape3D.new()
+			cap.radius = radius
+			cap.height = maxf(height, radius * 2.0)
+			(c as CollisionShape3D).shape = cap
+			(c as CollisionShape3D).position.y = cap.height * 0.5
+	body_height = height
+	nameplate.position.y = height + 0.6
+	var solid := StaticBody3D.new()
+	solid.collision_layer = Layers.WORLD
+	solid.collision_mask = 0
+	var col := CollisionShape3D.new()
+	var cyl := CylinderShape3D.new()
+	cyl.radius = radius * 0.8
+	cyl.height = height
+	col.shape = cyl
+	col.position.y = height * 0.5
+	solid.add_child(col)
+	add_child(solid)
+	add_collision_exception_with(solid)
+
+
+## Offline, a god you haven't earned stands in the Grove unseen and unclickable
+## (online the server never sends it: Net._replicate).
+func _update_sight() -> void:
+	var shown := World.sees(World.local_player, self)
+	if visual.visible == shown and nameplate.visible == shown:
+		return
+	visual.visible = shown and not dead
+	nameplate.visible = shown and not dead
+	collision_layer = Layers.ENTITIES if shown else 0
+	for c in get_children():
+		if c is StaticBody3D:
+			(c as StaticBody3D).collision_layer = Layers.WORLD if shown else 0
+
+
 ## Turns to face whoever is talking to it for a while, then back to its post.
 func greet(who: Entity) -> void:
+	if data.get("fixed", false):
+		return  # a god on its dais doesn't swing round to look at you
 	face_toward(who.global_position)
 	_face_timer = 12.0
 
@@ -90,6 +138,11 @@ func greet(who: Entity) -> void:
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
 func _process(delta: float) -> void:
+	if grove_deity != "" and Net.is_authority() and World.local_player != null:
+		_sight_check -= delta
+		if _sight_check <= 0.0:
+			_sight_check = 0.5
+			_update_sight()
 	_torch_check -= delta
 	if _torch_check > 0.0 or guard.is_empty() or not (visual is CharacterModel):
 		return
