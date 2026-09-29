@@ -742,6 +742,64 @@ func _build_landmarks() -> void:
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
 			"vent":
 				_build_vent(p, float(lm.get("scale", 1.0)))
+			"grove":
+				_build_grove(p, lm)
+
+
+## The Grove's pond (a `lakes` entry around pos): lotus floating on it, and
+## golden motes drifting over the water in the dawn light.
+func _build_grove(p: Vector3, lm: Dictionary) -> void:
+	var r := float(lm.get("radius", 18.0))
+	var props: Dictionary = GameData.models["props"]
+	for k in int(lm.get("lotus", 16)):
+		var at := Vector2(p.x, p.z) + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(r * 0.25, r * 0.85)
+		var level := water_level(at.x, at.y)
+		var id := "lotus_bloom" if _rng.randf() < 0.35 else "lotus_pad"
+		if level > -INF and props.has(id):
+			_prop(id, Vector3(at.x, level + 0.01, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+	if DisplayServer.get_name() == "headless":
+		return
+	var motes := GPUParticles3D.new()
+	motes.amount = 90
+	motes.lifetime = 9.0
+	motes.preprocess = 9.0
+	motes.position = p + Vector3.UP * 1.5
+	motes.visibility_aabb = AABB(Vector3(-r * 2.0, -2, -r * 2.0), Vector3(r * 4.0, 12, r * 4.0))
+	var pm := ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	pm.emission_sphere_radius = r * 1.6
+	pm.direction = Vector3.UP
+	pm.spread = 180.0
+	pm.initial_velocity_min = 0.05
+	pm.initial_velocity_max = 0.25
+	pm.gravity = Vector3(0, 0.03, 0)
+	pm.turbulence_enabled = true
+	pm.turbulence_noise_strength = 0.4
+	pm.scale_min = 0.6
+	pm.scale_max = 1.2
+	var fade := Gradient.new()
+	fade.set_color(0, Color(1, 0.85, 0.5, 0.0))
+	fade.set_color(1, Color(1, 0.85, 0.5, 0.0))
+	fade.add_point(0.3, Color(1, 0.88, 0.55, 1.0))
+	fade.add_point(0.7, Color(1, 0.8, 0.45, 0.9))
+	var ramp := GradientTexture1D.new()
+	ramp.gradient = fade
+	pm.color_ramp = ramp
+	motes.process_material = pm
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.09, 0.09)
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.vertex_color_use_as_albedo = true
+	mat.albedo_color = Color(1.0, 0.9, 0.6)
+	mat.emission_enabled = true
+	mat.emission = Color(1.0, 0.8, 0.4)
+	mat.emission_energy_multiplier = 2.0
+	quad.material = mat
+	motes.draw_pass_1 = quad
+	add_child(motes)
 
 
 ## A volcanic vent (Cinderpass): the lava_vent cone, its mouth lighting the

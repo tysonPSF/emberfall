@@ -1,0 +1,15 @@
+{
+  "grove_seed": {
+    "name": "Seed of the Grove",
+    "value": 0,
+    "weight": 0.1,
+    "no_drop": true,
+    "lore": true,
+    "use": {
+      "spell": "grove_walk",
+      "recast": 1800,
+      "keep": true
+    },
+    "desc": "A seed the size of a plum, warm as a held hand. Open it and it walks you to the Grove where the gods gather. Recharges in 30 minutes; the Grove's keeper can walk you back."
+  }
+}

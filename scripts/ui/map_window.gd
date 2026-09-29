@@ -244,6 +244,8 @@ func _build_marks(z: Zone) -> void:
 	for n: Dictionary in z.data.get("npcs", []):
 		var id := str(n["id"])
 		var d: Dictionary = GameData.npcs.get(id, {})
+		if d.has("grove_deity"):
+			continue  # the Grove's gods come and go with who you're with: no fixed mark
 		var name := str(n.get("name", d.get("name", id)))
 		var kind := ""
 		var detail := str(d.get("title", ""))

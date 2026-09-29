@@ -174,4 +174,4 @@ opens onto a different area:
 - What is *in* each city: which classes train there, who binds, which merchants.
 - Whether any city is hostile to some players — faction is untouched here.
 - Which zones carry dungeons.
-- How the Grove is reached — spell, item, or a bind point of its own.
+- ~~How the Grove is reached~~: decided 2026-09-28 — the Seed of the Grove (an item a future questline awards) teleports you in, and the Grove's keeper walks you back.

@@ -30,6 +30,7 @@
   "sunward_steps",
   "the_bleach",
   "the_burn",
+  "the_grove",
   "the_long_grass",
   "the_unlit",
   "thornwood",
@@ -120,8 +121,8 @@
    "size": 256,
    "cell": null,
    "kind": "sanctuary",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "teleport"
   },
   {

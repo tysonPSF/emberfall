@@ -326,6 +326,25 @@ func _c_request(method: StringName, args: Array) -> void:
 	_send_self(peer)
 
 
+# --- admins --------------------------------------------------------------------
+
+## Who may use testing commands (/grove). Offline: a game launched with --admin
+## (or a test run). On a server: accounts listed in <data>/admins.json
+## (["tyson", "nick"]), read on each use, so adding one needs no restart.
+func is_admin(p: Player) -> bool:
+	if p == null:
+		return false
+	if not is_remote(p):
+		var args := OS.get_cmdline_user_args()
+		return "--admin" in args or "--autotest" in args or Array(args).any(func(a: String) -> bool: return a.begins_with("--nettest="))
+	var account := str(_sessions.get(peer_of(p), "")).to_lower()
+	var path := accounts.root.path_join("admins.json") if accounts != null else ""
+	if account == "" or path == "" or not FileAccess.file_exists(path):
+		return false
+	var list: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	return list is Array and (list as Array).any(func(a: Variant) -> bool: return str(a).to_lower() == account)
+
+
 # --- movement ------------------------------------------------------------------
 
 ## Client: our player's position, sent a few times a second.
@@ -574,7 +593,8 @@ func _serve(delta: float) -> void:
 ## position and health of whatever changed (everything, once a second).
 func _replicate(peer: int) -> void:
 	var own := int(_peer_player[peer])
-	var own_zone := World.zone_of(World.get_object(own))
+	var viewer := World.get_object(own) as Player
+	var own_zone := World.zone_of(viewer)
 	var known: Dictionary = _known[peer]
 	var sent: Dictionary = _sent.get_or_add(peer, {})
 	var seen := {}
@@ -584,6 +604,8 @@ func _replicate(peer: int) -> void:
 		var obj := World.get_object(id)
 		if obj == null or not obj.is_inside_tree() or not (obj is Entity or obj is Corpse or obj is GroundItem) or World.zone_of(obj) != own_zone:
 			continue  # only what's in this player's zone
+		if not World.sees(viewer, obj):
+			continue  # a god of the Grove this player's circle hasn't earned: never sent (and taken away again if the group changes)
 		seen[id] = true
 		if not known.has(id):
 			known[id] = true
@@ -731,6 +753,7 @@ func _send_self(peer: int) -> void:
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 		"gender": p.gender, "gender_changed": p.gender_changed,
 		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
+		"grove_deities": p.grove_deities,
 	}
 	_s_self.rpc_id(peer, d)
 

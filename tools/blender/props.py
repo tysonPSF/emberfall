@@ -14016,6 +14016,511 @@ def hound_kennel_stones():
 	return join_into(p.build(bevel=0.06), [g, d.build()])
 
 
+# ---------------------------------------------------------------- The Grove
+
+GROVE_STONE = BONE         # pale worn ivory stone, warming to beige down the sides
+GROVE_TRIM = HIDE          # warm sandstone trim: the carved rim, the step noses
+GROVE_FOOT = STONE_WARM    # the warm gray footing course
+LOTUS_PINK = CORAL_PINK    # pale pink into rose
+LILY_GREEN = LEAF          # lotus pads: lime into deep green
+DAWN_LEAF = LEAF           # the canopy's sunlit tops (the swatch's yellow-lime top)
+DAWN_GOLD = SLIME          # sunlit gold-lime highlights on the crown (the top of the swatch)
+GOD_COLORS = {             # (inlay swatch, its tone on the swatch's gradient, glow)
+	"light": (GOLD, 0.6, 0.5),
+	"water": (TEAL, 0.45, 0.5),
+	"fire": (CLOTH_RED, 0.55, 0.6),
+	"wind": (LEAF, 0.5, 0.45),
+	"dark": (IRON, 0.7, 0.0),
+}
+
+
+def _flat_fill(p, outline, z0, z1, swatch, tone=0.3, glow=0.0):
+	"""A flat inlay in the XY plane from z0 to z1: `outline` [(x, y)] must be
+	star-shaped round its centroid (it is fanned from there). Its top face
+	takes the swatch's color at `tone` along the gradient."""
+	cx = sum(x for x, _ in outline) / len(outline)
+	cy = sum(y for _, y in outline) / len(outline)
+	n = len(outline)
+	verts = [(cx, cy, z0)] + [(x, y, z0) for x, y in outline] + [(cx, cy, z1)] + [(x, y, z1) for x, y in outline]
+	faces = []
+	for i in range(n):
+		j = (i + 1) % n
+		faces.append((0, 1 + j, 1 + i))
+		faces.append((n + 1, n + 2 + i, n + 2 + j))
+		faces.append((1 + i, 1 + j, n + 2 + j, n + 2 + i))
+	obj = p.poly(verts, faces, swatch, grad=(tone, tone + 0.25))
+	if glow:
+		obj.data.materials[0] = atlas_material(glow)
+	return obj
+
+
+def _ribbon(p, pts, w0, w1, z0, z1, swatch, tone=0.3, glow=0.0, closed=False):
+	"""A flat strip along the 2D polyline `pts`, its width tapering w0 -> w1,
+	from z0 to z1: strokes of an inlaid symbol (spirals, waves, rings)."""
+	n = len(pts)
+	left, right = [], []
+	for i in range(n):
+		a = pts[(i - 1) % n] if (closed or i > 0) else pts[i]
+		b = pts[(i + 1) % n] if (closed or i < n - 1) else pts[i]
+		tx, ty = b[0] - a[0], b[1] - a[1]
+		ln = max(math.hypot(tx, ty), 1e-6)
+		nx, ny = -ty / ln, tx / ln
+		w = (w0 + (w1 - w0) * i / max(n - 1, 1)) / 2
+		left.append((pts[i][0] + nx * w, pts[i][1] + ny * w))
+		right.append((pts[i][0] - nx * w, pts[i][1] - ny * w))
+	verts = [(x, y, z1) for x, y in left] + [(x, y, z1) for x, y in right]
+	verts += [(x, y, z0) for x, y in left] + [(x, y, z0) for x, y in right]
+	L, R, LB, RB = 0, n, 2 * n, 3 * n
+	faces = []
+	for i in range(n if closed else n - 1):
+		j = (i + 1) % n
+		faces.append((L + i, R + i, R + j, L + j))
+		faces.append((LB + i, LB + j, RB + j, RB + i))
+		faces.append((L + i, L + j, LB + j, LB + i))
+		faces.append((R + i, RB + i, RB + j, R + j))
+	if not closed:
+		faces.append((L, LB, RB, R))
+		faces.append((L + n - 1, R + n - 1, RB + n - 1, LB + n - 1))
+	obj = p.poly(verts, faces, swatch, grad=(tone, tone + 0.25))
+	if glow:
+		obj.data.materials[0] = atlas_material(glow)
+	return obj
+
+
+def _circle(r, n=24, cx=0.0, cy=0.0, phase=0.0):
+	return [(cx + math.cos(phase + k * math.tau / n) * r, cy + math.sin(phase + k * math.tau / n) * r) for k in range(n)]
+
+
+def _petal(c, a, length, width, n=6):
+	"""A pointed petal outline from c along angle a (a vesica)."""
+	cx, cy = c
+	ca, sa = math.cos(a), math.sin(a)
+	pts = []
+	for k in range(n + 1):
+		t = k / n
+		w = math.sin(math.pi * t) ** 0.8 * width / 2
+		pts.append((t * length, w))
+	for k in range(n - 1, 0, -1):
+		t = k / n
+		w = math.sin(math.pi * t) ** 0.8 * width / 2
+		pts.append((t * length, -w))
+	return [(cx + x * ca - y * sa, cy + x * sa + y * ca) for x, y in pts]
+
+
+def _flame_outline(c, h, w, lean=0.0, n=16):
+	"""A candle-flame outline standing at c (its round bottom), `h` tall along
+	+Y, `w` wide, the tip leaning by `lean` meters."""
+	cx, cy = c
+	pts = []
+	for k in range(n):
+		t = k / n * math.tau
+		# a teardrop: round below, drawn up to a point, the point swept sideways
+		s = math.sin(t)
+		y = -math.cos(t)                     # -1 bottom .. 1 top
+		u = (y + 1) / 2
+		x = s * w / 2 * (1 - u ** 1.6) ** 0.9
+		yy = (u ** 1.15) * h
+		pts.append((cx + x + lean * u ** 2.5, cy + yy - h * 0.06))
+	return pts
+
+
+def _grove_symbol(d, g, god, z):
+	"""The god's symbol inlaid in a dais top at height z, about 5.8 m across,
+	its 'up' toward +Y (away from the steps, so it reads upright from them)."""
+	sw, tone, glow = GOD_COLORS[god]
+	z0, z1 = z - 0.03, z + 0.015
+	if god == "light":                                                   # the sun: a disc, a ring and twelve rays
+		_flat_fill(d, _circle(1.25, 28), z0, z1, sw, tone - 0.2, glow)
+		_ribbon(d, _circle(1.6, 32), 0.16, 0.16, z0, z1, sw, tone, glow, closed=True)
+		for k in range(12):
+			a = k * math.tau / 12 + math.tau / 24
+			ln = 2.9 if k % 2 == 0 else 2.35
+			ca, sa = math.cos(a), math.sin(a)
+			n_ = (-sa, ca)
+			wd = 0.34 if k % 2 == 0 else 0.26
+			_flat_fill(d, [(ca * 1.85 + n_[0] * wd, sa * 1.85 + n_[1] * wd), (ca * ln, sa * ln), (ca * 1.85 - n_[0] * wd, sa * 1.85 - n_[1] * wd)], z0, z1, sw, tone, glow)
+	elif god == "water":                                                 # a lotus of eight petals in a ring of waves
+		for k in range(8):
+			a = math.pi / 2 + k * math.tau / 8
+			_flat_fill(d, _petal((math.cos(a) * 0.35, math.sin(a) * 0.35), a, 1.55, 0.72), z0, z1, sw, tone - 0.15, glow)
+		for k in range(8):
+			a = math.pi / 2 + (k + 0.5) * math.tau / 8
+			_flat_fill(d, _petal((math.cos(a) * 0.3, math.sin(a) * 0.3), a, 1.05, 0.5), z0, z1, sw, tone + 0.15, glow)
+		_flat_fill(d, _circle(0.45, 16), z0, z1 + 0.004, sw, tone - 0.3, glow)
+		wave = [((2.35 + 0.2 * math.sin(k * math.tau / 96 * 9)) * math.cos(k * math.tau / 96), (2.35 + 0.2 * math.sin(k * math.tau / 96 * 9)) * math.sin(k * math.tau / 96)) for k in range(96)]
+		_ribbon(d, wave, 0.2, 0.2, z0, z1, sw, tone, glow, closed=True)
+		for k in range(9):                                               # wave crests curling outward
+			a = (k + 0.25) * math.tau / 9
+			pts = []
+			for j in range(7):
+				t = j / 6
+				r = 2.62 + 0.28 * t
+				b = a + 0.32 * t
+				pts.append((math.cos(b) * r, math.sin(b) * r))
+			_ribbon(d, pts, 0.16, 0.05, z0, z1, sw, tone, glow)
+	elif god == "fire":                                                  # a great flame with two tongues beside it
+		_flat_fill(d, _flame_outline((0, -2.0), 4.6, 2.3, lean=0.35), z0, z1, sw, tone, glow)
+		_flat_fill(d, _flame_outline((0.05, -1.7), 2.7, 1.2, lean=0.2), z0, z1 + 0.004, FLAME, 0.35, glow + 0.3)
+		for s in (-1, 1):
+			_flat_fill(d, _flame_outline((s * 1.55, -1.75), 2.2, 0.95, lean=-s * 0.45), z0, z1, sw, tone + 0.1, glow)
+		_ribbon(d, [(-2.0, -2.25), (-1.0, -2.45), (0, -2.5), (1.0, -2.45), (2.0, -2.25)], 0.18, 0.18, z0, z1, EMBER, 0.3, glow)
+	elif god == "wind":                                                  # a spiral with three gusts streaming from it
+		pts = []
+		for k in range(70):
+			t = k / 69
+			a = math.pi / 2 + t * math.tau * 2.4
+			r = 0.12 + 1.75 * t
+			pts.append((math.cos(a) * r, math.sin(a) * r))
+		_ribbon(d, pts, 0.1, 0.34, z0, z1, sw, tone, glow)
+		for k in range(3):
+			a0 = math.pi / 2 + math.tau * 2.4 + 0.5 + k * math.tau / 3
+			gust = []
+			for j in range(14):
+				t = j / 13
+				a = a0 + t * 1.25
+				r = 2.1 + t * 0.75 + 0.1 * math.sin(t * math.pi * 2)
+				gust.append((math.cos(a) * r, math.sin(a) * r))
+			_ribbon(d, gust, 0.3, 0.04, z0, z1, sw, tone + 0.1, glow)
+	elif god == "dark":                                                  # the eclipse: a black sun in a silver corona
+		g_ = _flat_fill(g, _circle(1.85, 32), z0, z1 + 0.004, OBSIDIAN, 0.75)
+		_ribbon(d, _circle(1.98, 36), 0.26, 0.26, z0, z1, SILVER, 0.0, 0.9, closed=True)
+		for k in range(16):
+			a = k * math.tau / 16
+			ln = 2.9 if k % 2 == 0 else 2.5
+			ca, sa = math.cos(a), math.sin(a)
+			wd = 0.16 if k % 2 == 0 else 0.11
+			_flat_fill(d, [(ca * 2.1 - sa * wd, sa * 2.1 + ca * wd), (ca * ln, sa * ln), (ca * 2.1 + sa * wd, sa * 2.1 - ca * wd)], z0, z1, SILVER, 0.05, 0.6)
+		_flat_fill(d, _circle(3.1, 40), z0 - 0.004, z1 - 0.006, STONE_DARK, 0.3)                       # a slate field so the silver shows
+
+
+def grove_dais(god):
+	"""A god's dais in the Grove: a broad round platform of pale worn stone,
+	12 m across, its flat walkable top 0.8 m up, three low steps on the -Y
+	side (toward the pond), a carved rim of warm sandstone with inlaid studs,
+	and the god's symbol inlaid in the top in the god's color, glowing softly;
+	a ring of the same color runs inside the rim and two lamps burn at the
+	foot of the steps, so the empty dais still reads as waiting for its god.
+	Base center at the origin. Collide it as a mesh (the steps are walkable)."""
+	seed = 950 + ("light", "water", "fire", "wind", "dark").index(god) * 3
+	p = Prop(f"grove_dais_{god}", seed)
+	g = Prop(f"grove_dais_{god}_glass", seed + 1)
+	d = Prop(f"grove_dais_{god}_inlay", seed + 2)
+	sw, tone, glow = GOD_COLORS[god]
+	accent_sw, accent_tone, accent_glow = (SILVER, 0.0, 0.8) if god == "dark" else (sw, tone, glow)
+	TOP = 0.8
+	p.seg((0, 0, -0.4), (0, 0, 0.14), 6.35, 6.25, GROVE_FOOT, sides=40, grad=(0.25, 1.0))              # the footing course
+	p.seg((0, 0, 0.1), (0, 0, TOP - 0.16), 5.9, 5.85, GROVE_STONE, sides=40, grad=(0.25, 0.95))         # the drum
+	_lathe(p, [(5.45, TOP - 0.2), (6.02, TOP - 0.2), (6.08, TOP - 0.1), (6.02, TOP), (5.45, TOP)], 40, GROVE_TRIM, grad=(0.05, 0.6))   # the carved rim
+	p.seg((0, 0, TOP - 0.18), (0, 0, TOP), 5.5, 5.5, GROVE_STONE, sides=40, grad=(0.05, 0.5))          # the top
+	for k in range(40):                                                   # carved dentils under the rim
+		a = (k + 0.5) * math.tau / 40
+		if abs(math.degrees(a) - 270) < 26:
+			continue
+		p.box((0.26, 0.14, 0.18), (math.cos(a) * 5.9, math.sin(a) * 5.9, TOP - 0.3), GROVE_TRIM, rot=(0, 0, math.degrees(a) + 90), grad=(0.1, 0.7))
+	for k in range(10):                                                   # relief panels round the drum: lotus petals in low relief
+		a = math.pi / 2 + k * math.tau / 10
+		if abs(math.degrees(a % math.tau) - 270) < 30:
+			continue
+		ca, sa = math.cos(a), math.sin(a)
+		for j in (-1, 0, 1):
+			b = a + j * 0.075
+			p.blob((0.34, 0.16, 0.34 if j else 0.4), (math.cos(b) * 5.9, math.sin(b) * 5.9, 0.38), GROVE_TRIM, rot=(0, j * 25, math.degrees(b) + 90), segs=(8, 5), grad=(0.1, 0.7))
+		d.box((0.12, 0.06, 0.12), (ca * 5.93, sa * 5.93, 0.62), accent_sw, rot=(45, 0, math.degrees(a) + 90), grad=(accent_tone, accent_tone + 0.2), glow=accent_glow)
+	for k in range(20):                                                   # studs of the god's color set into the rim
+		a = (k + 0.5) * math.tau / 20
+		_flat_fill(d, [(math.cos(a) * 5.62 + dx, math.sin(a) * 5.62 + dy) for dx, dy in
+					  ((math.cos(a) * 0.16, math.sin(a) * 0.16), (-math.sin(a) * 0.1, math.cos(a) * 0.1), (-math.cos(a) * 0.16, -math.sin(a) * 0.16), (math.sin(a) * 0.1, -math.cos(a) * 0.1))],
+				   TOP - 0.03, TOP + 0.012, accent_sw, accent_tone, accent_glow)
+	_ribbon(d, _circle(5.1, 64), 0.16, 0.16, TOP - 0.03, TOP + 0.012, accent_sw, accent_tone, accent_glow, closed=True)   # a ring inside the rim
+	_ribbon(d, _circle(3.35, 48), 0.07, 0.07, TOP - 0.03, TOP + 0.01, GROVE_TRIM, 0.3, closed=True)                         # a fine carved ring round the symbol
+	for k in range(18):                                                   # the paving: radial joints between the rings
+		a = (k + 0.5) * math.tau / 18
+		_ribbon(d, [(math.cos(a) * 3.45, math.sin(a) * 3.45), (math.cos(a) * 5.0, math.sin(a) * 5.0)], 0.05, 0.05, TOP - 0.03, TOP + 0.006, GROVE_TRIM, 0.35)
+	_ribbon(d, _circle(4.25, 48), 0.05, 0.05, TOP - 0.03, TOP + 0.006, GROVE_TRIM, 0.35, closed=True)
+	for k in range(7):                                                    # moss where the footing meets the ground
+		a = p.rng.uniform(0, math.tau)
+		if abs(math.degrees(a) - 270) < 35:
+			continue
+		p.blob((1.2, 0.4, 0.24), (math.cos(a) * 6.22, math.sin(a) * 6.22, 0.0), MOSS, rot=(0, 0, math.degrees(a) + 90), segs=(7, 4), grad=(0.45, 1.0))
+	_grove_symbol(d, g, god, TOP)
+	for k, (w, y1, z) in enumerate(((5.0, -6.55, 0.6), (5.6, -7.05, 0.4), (6.2, -7.55, 0.2))):        # three steps down toward the pond
+		p.box((w, -5.3 - y1, z + 0.4), (0, (y1 - 5.3) / 2, (z - 0.4) / 2), GROVE_STONE, grad=(0.1, 0.9))
+		p.box((w + 0.08, 0.2, 0.08), (0, y1 + 0.08, z - 0.035), GROVE_TRIM, grad=(0.05, 0.5))
+	for s in (-1, 1):                                                     # the step lamps: stone posts, a bowl of the god's light
+		x, y = s * 3.6, -7.3
+		p.box((0.7, 0.7, 0.3), (x, y, 0.05), GROVE_FOOT, grad=(0.1, 0.9))
+		p.seg((x, y, 0.2), (x, y, 1.0), 0.2, 0.16, GROVE_STONE, sides=8, grad=(0.1, 0.9))
+		_lathe(p, [(0.08, 0.95), (0.2, 1.0), (0.42, 1.18), (0.4, 1.24), (0.1, 1.14)], 12, GROVE_TRIM, grad=(0.05, 0.7)).data.transform(Matrix.Translation((x, y, 0)))
+		if god == "dark":
+			g.blob((0.34, 0.34, 0.3), (x, y, 1.28), OBSIDIAN, segs=(10, 6), grad=(0.3, 1.0))
+			_ribbon(d, _circle(0.2, 10, x, y), 0.05, 0.05, 1.2, 1.24, SILVER, 0.0, 1.4, closed=True)
+		elif god == "fire":
+			_flame_column_small(d, (x, y, 1.14), 0.2, 0.55, glow=2.0)
+		else:
+			d.blob((0.36, 0.36, 0.3), (x, y, 1.26), sw, segs=(10, 6), grad=(0.0, 0.4), glow=glow + 1.2)
+	if god == "dark":
+		gobj = _glossy(g.build(bevel=0.0), 0.12)
+		return join_into(p.build(bevel=0.05), [gobj, d.build()])
+	return join_into(p.build(bevel=0.05), [d.build()])
+
+
+def _flame_column_small(d, c, r, h, glow=2.0):
+	x, y, z = c
+	d.seg((x, y, z), (x, y, z + h), r, 0.0, FLAME, sides=6, grad=(0.0, 0.5), glow=glow)
+	for k in range(3):
+		a = k * math.tau / 3
+		d.seg((x + math.cos(a) * r * 0.5, y + math.sin(a) * r * 0.5, z), (x + math.cos(a + 0.4) * r * 0.4, y + math.sin(a + 0.4) * r * 0.4, z + h * 0.65), r * 0.55, 0.0, EMBER, sides=5, grad=(0.0, 0.5), glow=glow)
+
+
+def _banyan(name, seed, trunk_pts, trunk_r, limbs, crown, pillars, lean=(0.0, 0.0)):
+	"""A colossal banyan. `trunk_pts` the main stem's spine, `trunk_r` its
+	radius at the foot; fused stems wind round it and buttress roots flare at
+	the ground. `limbs` [(angle, z0, reach, rise)] are great near-level
+	branches, each with a few pillar roots dropping to the ground and thin
+	aerial roots hanging part way. `crown` [(x, y, z, sx, sy, sz)] adds leaf
+	masses over the middle; `pillars` how many pillar roots per limb."""
+	p = Prop(name, seed)
+	rng = p.rng
+	_chain(p, trunk_pts, trunk_r, trunk_r * 0.62, WOOD_GRAY, sides=12, grad=(0.15, 1.0))
+	top = trunk_pts[-1]
+	for k in range(9):                                                    # fused stems wound round the trunk
+		a0 = k * math.tau / 9 + rng.uniform(-0.15, 0.15)
+		pts = []
+		for j in range(8):
+			t = j / 7
+			sp = trunk_pts[min(int(t * (len(trunk_pts) - 1)), len(trunk_pts) - 2)]
+			sp2 = trunk_pts[min(int(t * (len(trunk_pts) - 1)) + 1, len(trunk_pts) - 1)]
+			f = t * (len(trunk_pts) - 1) - int(t * (len(trunk_pts) - 1))
+			cx = sp[0] + (sp2[0] - sp[0]) * f
+			cy = sp[1] + (sp2[1] - sp[1]) * f
+			a = a0 + t * 0.9
+			r = trunk_r * (0.95 - 0.35 * t) + (1.2 * (1 - t) ** 3)
+			pts.append((cx + math.cos(a) * r, cy + math.sin(a) * r, -0.4 + t * (top[2] + 0.4) * 0.95))
+		_chain(p, pts, trunk_r * 0.42, trunk_r * 0.22, WOOD, sides=7, grad=(0.25, 1.0))
+	for k in range(10):                                                   # the flare of buttress roots
+		a = k * math.tau / 10 + rng.uniform(-0.2, 0.2)
+		_fin(p, a, trunk_r * 0.9, rng.uniform(2.2, 3.6), trunk_r + rng.uniform(1.8, 3.2), 0.5, WOOD_GRAY, grad=(0.3, 1.0), z0=-0.4)
+	tips = []
+	for (ang, z0, reach, rise) in limbs:
+		a = math.radians(ang)
+		ca, sa = math.cos(a), math.sin(a)
+		ox, oy = top[0] * (z0 / top[2]), top[1] * (z0 / top[2])
+		pts = [(ox + ca * trunk_r * 0.5, oy + sa * trunk_r * 0.5, z0)]
+		for j in range(1, 5):
+			t = j / 4
+			pts.append((ox + ca * reach * t + rng.uniform(-0.4, 0.4), oy + sa * reach * t + rng.uniform(-0.4, 0.4), z0 + rise * math.sin(t * math.pi * 0.6) + rng.uniform(-0.3, 0.3)))
+		_chain(p, pts, trunk_r * 0.32, 0.3, WOOD_GRAY, sides=8, grad=(0.15, 1.0))
+		for j in (2, 3):                                                  # a side branch off the limb
+			b = a + rng.choice((-1, 1)) * rng.uniform(0.5, 0.9)
+			q = pts[j]
+			e = (q[0] + math.cos(b) * reach * 0.35, q[1] + math.sin(b) * reach * 0.35, q[2] + rng.uniform(1.0, 2.5))
+			_chain(p, [q, e], 0.45, 0.18, WOOD_GRAY, sides=6, grad=(0.15, 1.0))
+			tips.append(e)
+		tips.append(pts[-1])
+		tips.append(pts[2])
+		for j in range(pillars):                                          # pillar roots: thick, reaching the ground
+			t = 0.45 + 0.4 * j / max(pillars - 1, 1) + rng.uniform(-0.05, 0.05)
+			i = t * 4
+			q0, q1 = pts[int(i)], pts[min(int(i) + 1, 4)]
+			f = i - int(i)
+			x, y, z = (q0[0] + (q1[0] - q0[0]) * f, q0[1] + (q1[1] - q0[1]) * f, q0[2] + (q1[2] - q0[2]) * f - 0.3)
+			col = [(x, y, z)]
+			for m in range(1, 5):
+				col.append((x + rng.uniform(-0.3, 0.3), y + rng.uniform(-0.3, 0.3), z - (z + 0.4) * m / 4))
+			r = rng.uniform(0.4, 0.6)
+			_chain(p, col, r * 0.6, r, WOOD, sides=7, grad=(0.2, 1.0))
+			for m in range(3):                                            # where it has rooted: a small flare
+				b = rng.uniform(0, math.tau)
+				_fin(p, b, r * 0.8, rng.uniform(0.8, 1.4), r + rng.uniform(0.5, 0.9), 0.22, WOOD, grad=(0.3, 1.0), z0=-0.4)
+				p.parts[-1].data.transform(Matrix.Translation((col[-1][0], col[-1][1], 0)))
+		for j in range(rng.randint(4, 6)):                               # thin aerial roots hanging part way down
+			t = rng.uniform(0.25, 0.95)
+			i = t * 4
+			q0, q1 = pts[int(i)], pts[min(int(i) + 1, 4)]
+			f = i - int(i)
+			x, y, z = (q0[0] + (q1[0] - q0[0]) * f + rng.uniform(-0.5, 0.5), q0[1] + (q1[1] - q0[1]) * f + rng.uniform(-0.5, 0.5), q0[2] + (q1[2] - q0[2]) * f - 0.2)
+			ln = rng.uniform(0.3, 0.75) * z
+			strand = [(x, y, z)]
+			for m in range(1, 4):
+				strand.append((x + rng.uniform(-0.15, 0.15), y + rng.uniform(-0.15, 0.15), z - ln * m / 3))
+			_chain(p, strand, 0.09, 0.04, WOOD, sides=4, grad=(0.2, 0.9))
+	for i, (x, y, z) in enumerate(tips):                                  # the canopy: broad flat masses, dark beneath, sunlit gold-green on top
+		s = rng.uniform(8.5, 11.0)
+		p.rock((s, s, s * 0.32), (x, y, z + 1.0), PINE, rot=(0, 0, rng.uniform(0, 360)), grad=(0.35, 1.0), jitter=0.06)
+		p.rock((s * 0.78, s * 0.78, s * 0.3), (x + rng.uniform(-1, 1), y + rng.uniform(-1, 1), z + 2.1), DAWN_LEAF, rot=(0, 0, rng.uniform(0, 360)), grad=(0.0, 0.7), jitter=0.06)
+		if i % 3 == 0:
+			p.rock((s * 0.42, s * 0.42, s * 0.16), (x + rng.uniform(-1.5, 1.5), y + rng.uniform(-1.5, 1.5), z + 2.9), DAWN_GOLD, rot=(0, 0, rng.uniform(0, 360)), grad=(0.0, 0.3), jitter=0.06)
+	for (x, y, z, sx, sy, sz) in crown:
+		p.rock((sx, sy, sz), (x, y, z), PINE, rot=(0, 0, rng.uniform(0, 360)), grad=(0.3, 1.0), jitter=0.05)
+		p.rock((sx * 0.75, sy * 0.75, sz * 0.75), (x + rng.uniform(-1, 1), y + rng.uniform(-1, 1), z + sz * 0.36), DAWN_LEAF, rot=(0, 0, rng.uniform(0, 360)), grad=(0.0, 0.7), jitter=0.05)
+		p.rock((sx * 0.38, sy * 0.38, sz * 0.36), (x + rng.uniform(-2, 2), y + rng.uniform(-2, 2), z + sz * 0.62), DAWN_GOLD, rot=(0, 0, rng.uniform(0, 360)), grad=(0.0, 0.3), jitter=0.05)
+	for k in range(8):                                                    # moss in the folds of the trunk
+		a = rng.uniform(0, math.tau)
+		zz = rng.uniform(1.0, top[2] * 0.6)
+		p.blob((1.4, 1.4, 0.5), (top[0] * zz / top[2] + math.cos(a) * trunk_r * 0.95, top[1] * zz / top[2] + math.sin(a) * trunk_r * 0.95, zz), MOSS, rot=(0, 0, math.degrees(a)), segs=(6, 4), grad=(0.2, 0.9))
+	return p.build()
+
+
+def grove_tree_a():
+	"""A colossal banyan for the Grove's rim, about 31 m: a trunk of fused
+	stems 5 m across above a flare of buttress roots, six great near-level
+	limbs reaching 12-14 m out, each propped on pillar roots with thin aerial
+	roots hanging between, and a broad canopy about 34 m across, dark green
+	below and sunlit gold-green on top. Collide it as a mesh (the trunk and
+	the pillar roots stop players; the "trunk" collider is far too thin)."""
+	limbs = [(10, 13.0, 13.5, 3.0), (72, 14.5, 12.0, 2.5), (135, 12.5, 14.0, 3.5), (195, 14.0, 12.5, 2.5), (255, 13.0, 13.0, 3.0), (315, 15.0, 11.5, 2.0)]
+	crown = [(0, 0, 22.0, 22.0, 20.0, 6.5), (2.5, -1.5, 25.5, 13.0, 12.0, 5.0), (-4.5, 3.5, 23.5, 12.0, 11.0, 4.5)]
+	return _banyan("grove_tree_a", 961, [(0, 0, -0.4), (0.2, 0.1, 7.0), (0.1, 0.4, 13.0), (0.4, 0.2, 20.0)], 2.5, limbs, crown, 2)
+
+
+def grove_tree_b():
+	"""The Grove's second banyan, about 28 m: a leaning, older tree whose
+	trunk swells to 6 m across, its limbs all to one side (+X), low and long,
+	so a wall of pillar roots stands under that side like columns, and a
+	lopsided canopy. Collide it as a mesh."""
+	limbs = [(-20, 11.0, 15.0, 2.0), (25, 12.0, 16.0, 2.5), (70, 10.0, 11.0, 3.0), (-70, 12.5, 11.0, 3.0), (160, 14.0, 8.5, 3.5), (215, 13.5, 8.0, 3.0)]
+	crown = [(4.0, 0, 19.5, 22.0, 17.0, 6.0), (7.0, 2.0, 23.0, 12.0, 10.0, 4.8), (-1.0, -2.5, 21.5, 10.0, 9.0, 4.2)]
+	return _banyan("grove_tree_b", 962, [(0, 0, -0.4), (0.4, 0.0, 6.0), (1.3, 0.3, 11.0), (2.0, 0.2, 17.0)], 3.0, limbs, crown, 3)
+
+
+def _lotus_pad(p, c, r, yaw, z=0.0):
+	"""A floating lotus pad at c: a disc with a notch cut to its middle, its
+	top just clear of the water at z."""
+	cx, cy = c
+	notch = 0.5
+	outline = [(cx, cy)]
+	for k in range(15):
+		a = math.radians(yaw) + notch / 2 + (math.tau - notch) * k / 14
+		rr = r * (1 + 0.03 * math.sin(k * 2.3))
+		outline.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr))
+	n = len(outline)
+	verts = [(x, y, z - 0.015) for x, y in outline] + [(x, y, z + 0.02 + (0.0 if i == 0 else 0.012)) for i, (x, y) in enumerate(outline)]
+	faces = [(0, i + 1, i) for i in range(1, n - 1)] + [(n, n + i, n + i + 1) for i in range(1, n - 1)]
+	for i in range(n):
+		j = (i + 1) % n
+		faces.append((i, j, n + j, n + i))
+	obj = p.poly(verts, faces, LILY_GREEN, grad=(0.35, 0.7))
+	for k in range(5):                                                    # veins from the middle
+		a = math.radians(yaw) + 0.6 + k * (math.tau - 1.2) / 4
+		_ribbon(p, [(cx, cy), (cx + math.cos(a) * r * 0.8, cy + math.sin(a) * r * 0.8)], 0.018, 0.006, z + 0.02, z + 0.034, LILY_GREEN, 0.25)
+	return obj
+
+
+def lotus_pad():
+	"""A cluster of four lotus pads, about 1.5 m across overall, floating on
+	the water at y = 0 (their undersides dip 1.5 cm in). No collision."""
+	p = Prop("lotus_pad", 971)
+	for (x, y, r, yaw) in ((0.0, 0.0, 0.42, 20), (0.5, 0.35, 0.3, 160), (-0.45, 0.3, 0.26, 250), (0.2, -0.5, 0.22, 80)):
+		_lotus_pad(p, (x, y), r, yaw)
+	return p.build()
+
+
+def lotus_bloom():
+	"""One lotus pad (0.9 m) with an open pink-white lotus flower on it, about
+	0.35 m tall, a gold seed pod in its heart, and a closed bud beside it. Floats
+	at y = 0. No collision."""
+	p = Prop("lotus_bloom", 972)
+	_lotus_pad(p, (0, 0), 0.45, 200)
+	_lotus_pad(p, (0.55, -0.25), 0.2, 30)
+	cz = 0.05
+	for ring, (n, ln, wd, tilt, z, tone) in enumerate(((8, 0.3, 0.17, 14, 0.0, (0.25, 0.7)), (8, 0.27, 0.16, 42, 0.02, (0.05, 0.5)), (6, 0.21, 0.14, 68, 0.04, (0.0, 0.35)))):
+		for k in range(n):
+			a = k * math.tau / n + ring * math.pi / n
+			# a petal: a thin cupped ellipsoid leaning out from the middle
+			ca, sa = math.cos(a), math.sin(a)
+			t = math.radians(tilt)
+			dist = ln * 0.5 * math.cos(t)
+			p.blob((ln, wd, 0.04), (ca * (0.04 + dist), sa * (0.04 + dist), cz + z + ln * 0.5 * math.sin(t)), LOTUS_PINK if ring < 2 else PETAL_WHITE,
+				   rot=(0, -tilt, math.degrees(a)), segs=(8, 4), grad=tone)
+	p.seg((0, 0, cz + 0.05), (0, 0, cz + 0.13), 0.055, 0.07, GOLD, sides=10, grad=(0.3, 0.7))            # the seed pod
+	for k in range(8):
+		a = k * math.tau / 8
+		p.seg((math.cos(a) * 0.07, math.sin(a) * 0.07, cz + 0.09), (math.cos(a) * 0.1, math.sin(a) * 0.1, cz + 0.15), 0.008, 0.008, PETAL_YELLOW, sides=3)
+	p.seg((0.62, -0.28, 0.0), (0.66, -0.3, 0.22), 0.018, 0.016, LILY_GREEN, sides=5, grad=(0.3, 0.7))    # a bud on its stem
+	p.blob((0.1, 0.1, 0.17), (0.66, -0.3, 0.29), LOTUS_PINK, segs=(8, 5), grad=(0.1, 0.6))
+	p.seg((0.66, -0.3, 0.33), (0.665, -0.3, 0.4), 0.03, 0.0, LOTUS_PINK, sides=5, grad=(0.5, 0.7))
+	return p.build(bevel=0.0)
+
+
+def tusk_arch():
+	"""The Grove's arrival gate: two colossal pale carved tusks rising from
+	stone footings 5 m apart (inside), curving in to cross overhead at about
+	6.2 m, bound there by a gold clasp set with five glowing gems (the five
+	gods' colors), gold bands and carved rings along each tusk. They stand on
+	a low stone threshold 8 x 3 m (0.2 m high, walkable) where players arrive.
+	The opening faces -Y and +Y. Collide it as a mesh."""
+	p = Prop("tusk_arch", 981)
+	d = Prop("tusk_arch_gems", 982)
+	p.box((8.4, 3.0, 0.5), (0, 0, -0.05), GROVE_FOOT, grad=(0.1, 0.9))                              # the threshold
+	p.box((4.6, 2.8, 0.06), (0, 0, 0.2), GROVE_STONE, grad=(0.05, 0.4))
+	_ribbon(p, _circle(0.95, 32), 0.1, 0.1, 0.2, 0.245, GROVE_TRIM, 0.2, closed=True)                   # where arrivals stand
+	for k, god in enumerate(("light", "water", "fire", "wind", "dark")):
+		sw, tone, glow = GOD_COLORS[god]
+		a = math.pi / 2 + k * math.tau / 5
+		_flat_fill(d, _circle(0.12, 10, math.cos(a) * 0.95, math.sin(a) * 0.95), 0.2, 0.25, SILVER if god == "dark" else sw, 0.0 if god == "dark" else tone, 0.8 if god == "dark" else glow)
+	for s in (-1, 1):
+		x = s * 3.2
+		p.box((1.9, 2.2, 1.0), (x, 0, 0.5), GROVE_STONE, grad=(0.1, 0.9))                           # the footing
+		p.box((2.1, 2.4, 0.18), (x, 0, 1.05), GROVE_TRIM, grad=(0.05, 0.6))
+		p.seg((x, 0, 1.1), (x, 0, 1.45), 0.85, 0.72, GROVE_TRIM, sides=12, grad=(0.05, 0.7))       # the socket collar
+		for k in range(6):                                                                         # carved petals round the collar
+			a = k * math.tau / 6
+			p.blob((0.4, 0.2, 0.5), (x + math.cos(a) * 0.82, math.sin(a) * 0.82, 1.3), GROVE_STONE, rot=(0, 20, math.degrees(a) + 90), segs=(6, 4), grad=(0.05, 0.6))
+		for y in (-1, 1):                                                                          # carved panels on the footing's faces
+			p.box((1.3, 0.06, 0.6), (x, y * 1.12, 0.5), GROVE_TRIM, grad=(0.1, 0.7))
+			p.seg((x, y * 1.14, 0.5), (x, y * 1.19, 0.5), 0.2, 0.17, GOLD, sides=12, grad=(0.1, 0.5))
+			for k in range(8):
+				a = k * math.tau / 8
+				p.seg((x + math.cos(a) * 0.19, y * 1.16, 0.5 + math.sin(a) * 0.19), (x + math.cos(a) * 0.3, y * 1.16, 0.5 + math.sin(a) * 0.3), 0.05, 0.0, GOLD, sides=4, grad=(0.1, 0.5))
+		# the tusk: a curve from the socket up and in, crossing the middle
+		pts = []                                                          # an elliptic sweep: straight up from the socket, bending in to cross past the middle
+		for k in range(13):
+			th = math.radians(66 * k / 12)
+			pts.append(Vector((s * (-3.8 + 7.0 * math.cos(th)), -s * 0.3 * math.sin(th) ** 3, 1.25 + 5.66 * math.sin(th))))
+		_chain(p, [tuple(q) for q in pts], 0.64, 0.1, IVORY, sides=10, grad=(0.0, 0.7))
+		for k in (2, 5, 8):                                               # gold bands with carved rings between
+			a, b = pts[k], pts[k + 1]
+			dv = (b - a).normalized()
+			r = 0.64 - 0.54 * k / 12
+			p.seg(tuple(a - dv * 0.13), tuple(a + dv * 0.13), r + 0.06, r + 0.05, GOLD, sides=10, grad=(0.1, 0.6))
+			m = a.lerp(b, 0.5)
+			p.seg(tuple(m - dv * 0.04), tuple(m + dv * 0.04), r + 0.02, r + 0.015, BONE, sides=10, grad=(0.4, 0.8))
+	# the clasp where the tusks cross: a gold band round both, five gems of the gods' colors on its underside
+	cz = 6.0
+	p.seg((-0.26, 0, cz), (0.26, 0, cz), 0.56, 0.56, GOLD, sides=14, grad=(0.15, 0.7))
+	for x in (-0.27, 0.27):
+		p.seg((x - 0.05, 0, cz), (x + 0.05, 0, cz), 0.62, 0.62, GOLD, sides=14, grad=(0.0, 0.5))
+	for k, god in enumerate(("light", "water", "fire", "wind", "dark")):
+		sw, tone, glow = GOD_COLORS[god]
+		phi = math.radians(-90 + (k - 2) * 32)
+		at = (0, math.cos(phi) * 0.6, cz + math.sin(phi) * 0.6)
+		if god == "dark":
+			d.blob((0.26, 0.26, 0.26), at, SILVER, segs=(8, 5), grad=(0.0, 0.3), glow=1.2)
+			d.blob((0.2, 0.2, 0.2), (0, math.cos(phi) * 0.66, cz + math.sin(phi) * 0.66), OBSIDIAN, segs=(8, 5), grad=(0.6, 0.9))
+		else:
+			d.blob((0.24, 0.24, 0.24), at, sw, segs=(8, 5), grad=(max(tone - 0.25, 0.0), tone), glow=glow + 1.0)
+	p.seg((0, 0, cz - 0.6), (0, 0, cz - 1.2), 0.05, 0.05, GOLD, sides=6)                        # a sun medallion hanging under it
+	d.seg((0, -0.05, cz - 1.55), (0, 0.05, cz - 1.55), 0.34, 0.34, GOLD, sides=16, grad=(0.0, 0.5), glow=0.7)
+	for k in range(8):
+		a = k * math.tau / 8
+		d.seg((math.cos(a) * 0.32, 0, cz - 1.55 + math.sin(a) * 0.32), (math.cos(a) * 0.52, 0, cz - 1.55 + math.sin(a) * 0.52), 0.07, 0.0, GOLD, sides=4, grad=(0.0, 0.5), glow=0.7)
+	return join_into(p.build(bevel=0.04), [d.build()])
+
+
+def grove_stepping_stone():
+	"""A flat pale stepping stone about 1.2 m across, a little irregular, its
+	walkable top 0.08 m above the ground and its foot sunk 0.14 m. No
+	collision needed (players walk over it)."""
+	p = Prop("grove_stepping_stone", 991)
+	rng = p.rng
+	n = 11
+	rad = [0.58 + rng.uniform(-0.09, 0.05) for _ in range(n)]
+	outline = [(math.cos(k * math.tau / n) * rad[k] * 1.05, math.sin(k * math.tau / n) * rad[k] * 0.9) for k in range(n)]
+	top = [(x, y) for x, y in outline]
+	_flat_fill(p, top, -0.14, 0.08, GROVE_STONE, 0.1)
+	return p.build(bevel=0.04)
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -14318,6 +14823,17 @@ PROPS = {
 	"star_pillar": star_pillar,
 	"fallen_star": fallen_star,
 	"hound_kennel_stones": hound_kennel_stones,
+	"grove_dais_light": lambda: grove_dais("light"),
+	"grove_dais_water": lambda: grove_dais("water"),
+	"grove_dais_fire": lambda: grove_dais("fire"),
+	"grove_dais_wind": lambda: grove_dais("wind"),
+	"grove_dais_dark": lambda: grove_dais("dark"),
+	"grove_tree_a": grove_tree_a,
+	"grove_tree_b": grove_tree_b,
+	"lotus_pad": lotus_pad,
+	"lotus_bloom": lotus_bloom,
+	"tusk_arch": tusk_arch,
+	"grove_stepping_stone": grove_stepping_stone,
 }
 
 

@@ -51,6 +51,8 @@ var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while i
 var pet_id := -1  # your pet's entity id, -1 with none
 var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
 var race_changed := false  # a character's one change of race has been used
+var grove_deities: Array = []  # the gods who have come to the Grove for this character (World.unlock_grove_deity)
+var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
 var gender := ""  # "male" / "female"; "" for a character from before genders (drawn as its class body was made)
 var gender_changed := false  # a character's one change of gender has been used
 var hair_style := ""  # models.json "hair_styles" id, "" = the head the body and gender give
@@ -164,6 +166,8 @@ func from_save(d: Dictionary) -> void:
 	hair_style = hair[0]
 	hair_color = hair[1]
 	hair_changed = bool(d.get("hair_changed", false))
+	grove_deities = (d.get("grove", []) as Array).filter(func(g: Variant) -> bool: return str(g) in World.DEITY_IDS).map(func(g: Variant) -> String: return str(g))
+	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -284,7 +288,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed"]:
+			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities"]:
 		set(key, d[key])
 	if bool(d.get("afk", false)) != afk:
 		afk = bool(d.get("afk", false))
@@ -349,6 +353,7 @@ func to_save() -> Dictionary:
 		"stats": stat_points if stats_chosen else null, "race": race, "race_changed": race_changed,
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
+		"grove": grove_deities, "grove_return": grove_return,
 	}
 
 
@@ -1027,7 +1032,7 @@ func _cycle_interact() -> void:
 	for obj: Variant in World.objects.values():
 		if not is_instance_valid(obj) or obj == self:
 			continue
-		var wanted := obj is Corpse or (obj is Npc and not (obj as Npc).dead)
+		var wanted := obj is Corpse or (obj is Npc and not (obj as Npc).dead and World.sees(self, obj))
 		if wanted and global_position.distance_to((obj as Node3D).global_position) < 45.0:
 			candidates.append(obj)
 	if candidates.is_empty():
