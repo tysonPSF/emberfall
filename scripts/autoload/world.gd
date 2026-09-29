@@ -3829,6 +3829,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
 			_accept_quest(p, quest_id)
+	if key == "hail":
+		_offer_dropped_steps(p, npc)
 	if key == "bind" and npc.data.get("binds", false):
 		request_bind(p.entity_id)
 	if key == "return" and npc.data.get("grove_return", false):
@@ -3876,6 +3878,39 @@ func _outfit(p: Player, npc: Npc) -> void:
 
 func _npc_say(p: Player, npc: Npc, text: String) -> void:
 	say(p, "%s says, '%s'" % [npc.display_name, text.format({"name": p.display_name})], C_NPC)
+
+
+## Drops a quest you're on (the journal's Abandon). What you've gathered
+## stays in your bags; a step of a quest line is taken up again by hailing its
+## giver, the rest by asking again as the first time.
+func request_quest_abandon(player_id: int, quest_id: String) -> void:
+	if _remote(&"request_quest_abandon", [player_id, quest_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or not GameData.quests.has(quest_id) or not p.quests.get(quest_id, {}).get("active", false):
+		return
+	var q: Dictionary = GameData.quests[quest_id]
+	p.quests[quest_id]["active"] = false
+	var again := "Hail %s to take it up again." % QuestHints._npc_name(str(q["giver"])) if str(q.get("start_keyword", "")) == "" \
+			else "Ask %s about it again to take it back up." % QuestHints._npc_name(str(q["giver"]))
+	say(p, "You abandon %s. %s" % [q["name"], again], C_SYSTEM)
+	p.quests_changed.emit()
+
+
+## A quest line's step you dropped: offered again when you hail its giver,
+## once the step before it is done (steps have no keyword of their own).
+func _offer_dropped_steps(p: Player, npc: Npc) -> void:
+	for quest_id: String in GameData.quests:
+		var q: Dictionary = GameData.quests[quest_id]
+		if q["giver"] != npc.npc_id or str(q.get("start_keyword", "")) != "" or not p.quests.has(quest_id):
+			continue
+		var state: Dictionary = p.quests[quest_id]
+		if state.get("active", false) or (int(state.get("completions", 0)) > 0 and not q.get("repeatable", false)):
+			continue
+		for prev_id: String in GameData.quests:
+			if str(GameData.quests[prev_id].get("next", "")) == quest_id and int(p.quests.get(prev_id, {}).get("completions", 0)) > 0:
+				_accept_quest(p, quest_id)
+				break
 
 
 func _accept_quest(p: Player, quest_id: String) -> void:

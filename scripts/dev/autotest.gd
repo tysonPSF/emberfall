@@ -108,6 +108,7 @@ const SECTIONS := [
 	["exit_levels", "greenmoor"],
 	["swing_bar", "greenmoor"],
 	["crits", "greenmoor"],
+	["journal", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7671,3 +7672,40 @@ func _t_crits() -> void:
 		GameData.classes[p.char_class]["crit"] = class_crit
 	World.log_message.disconnect(grab)
 	print("crits: lines %s" % [lines])
+
+
+## The quest journal: active and completed quests, a quest line's step
+## abandoned and offered back by hailing its giver, and a plain abandon.
+func _t_journal() -> void:
+	var p := World.local_player
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	p.quests.clear()
+	p.quests["trail_pack_cord"] = {"active": false, "completions": 1}  # step one done...
+	World._accept_quest(p, "trail_pack_hide")  # ...so Warden Holt's step is on
+	var own := "fang_bounty"
+	World._accept_quest(p, own)
+	p.quests["rain_pack_needles"] = {"active": false, "completions": 1}  # something for the Completed tab
+	hud._toggle_journal()
+	await _wait(0.6)
+	await _shot("9journal_active")
+	hud._journal_pick = own
+	hud._refresh_journal()
+	await _wait(0.3)
+	await _shot("9journal_keyword")
+	hud._journal_done_tab = true
+	hud._refresh_journal()
+	await _wait(0.3)
+	await _shot("9journal_done")
+	hud._toggle_journal()
+	World.request_quest_abandon(p.entity_id, own)
+	World.request_quest_abandon(p.entity_id, "trail_pack_hide")
+	print("journal: abandoned -> %s active %s, trail_pack_hide active %s" % [own, p.quests[own]["active"], p.quests["trail_pack_hide"]["active"]])
+	var holt: Npc = _npcs()["warden_holt"]
+	_stand_by(p, holt)
+	World.request_hail(p.entity_id)
+	print("journal: hailed Warden Holt -> trail_pack_hide active %s" % p.quests["trail_pack_hide"]["active"])
+	World.log_message.disconnect(grab)
+	print("journal: lines %s" % [lines.filter(func(t: String) -> bool: return "abandon" in t or "pack" in t.to_lower() or "hide" in t.to_lower())])
