@@ -4823,5 +4823,255 @@
     "faction": {
       "emberhold": 15
     }
+  },
+  "march_pelts": {
+    "name": "Wolves of the March",
+    "giver": "marchwarden_hale",
+    "wants": {
+      "march_wolf_pelt": 4
+    },
+    "reward": {
+      "xp": 900,
+      "coin": 150
+    },
+    "accept_text": "You have taken on a task: Wolves of the March. Bring Marchwarden Hale four march wolf pelts.",
+    "ready_text": "Pelts? Let's see them.",
+    "complete_text": "Four fewer wolves on the road.",
+    "faction": {
+      "rainhold": 10
+    },
+    "first_reward_item": "wardens_march_cloak",
+    "first_complete_text": "Take this cloak. Wardens wear them; you've earned one.",
+    "start_keyword": "wolves",
+    "repeatable": true
+  },
+  "march_tokens": {
+    "name": "The Marchreavers",
+    "giver": "marchwarden_hale",
+    "wants": {
+      "highwayman_token": 3
+    },
+    "reward": {
+      "xp": 1100,
+      "coin": 200
+    },
+    "accept_text": "You have taken on a task: The Marchreavers. Bring Marchwarden Hale three Marchreaver's tokens.",
+    "ready_text": "Tokens. Good.",
+    "complete_text": "Three reavers who won't rob anyone again.",
+    "faction": {
+      "rainhold": 15,
+      "marchreavers": -10
+    },
+    "first_reward_item": "reaverhide_boots",
+    "first_complete_text": "Their own boots. Fitting, I think.",
+    "start_keyword": "highwaymen",
+    "repeatable": true
+  },
+  "march_corvel": {
+    "name": "Redhand Corvel",
+    "giver": "marchwarden_hale",
+    "wants": {
+      "corvels_signet": 1
+    },
+    "reward": {
+      "xp": 2600,
+      "coin": 600
+    },
+    "accept_text": "You have taken on a task: Redhand Corvel. Bring Marchwarden Hale Corvel's signet.",
+    "ready_text": "The magistrate's signet!",
+    "complete_text": "Rainhold will want this back. The March is quieter already.",
+    "faction": {
+      "rainhold": 30,
+      "marchreavers": -30
+    },
+    "first_reward_item": "corvels_red_glove",
+    "first_complete_text": "His red glove. Wash it first.",
+    "start_keyword": "corvel"
+  },
+  "march_scythewing": {
+    "name": "Scythewing",
+    "giver": "marchwarden_hale",
+    "wants": {
+      "scythewings_talon": 1
+    },
+    "reward": {
+      "xp": 3000,
+      "coin": 700
+    },
+    "accept_text": "You have taken on a task: Scythewing. Bring Marchwarden Hale one of Scythewing's talons.",
+    "ready_text": "That talon's as long as my arm.",
+    "complete_text": "The crags are ours again, for a while.",
+    "faction": {
+      "rainhold": 25
+    },
+    "first_reward_item": "scythewing_charm",
+    "first_complete_text": "Wear it on a cord. Wyverns will know.",
+    "start_keyword": "scythewing"
+  },
+  "march_grave_iron": {
+    "name": "Grave-Iron",
+    "giver": "gravekeeper_ossa",
+    "wants": {
+      "grave_iron": 3
+    },
+    "reward": {
+      "xp": 1000,
+      "coin": 180
+    },
+    "accept_text": "You have taken on a task: Grave-Iron. Bring Gravekeeper Ossa three grave-iron shards.",
+    "ready_text": "Grave-iron. Careful, it's cold.",
+    "complete_text": "Three soldiers who can rest.",
+    "faction": {
+      "rainhold": 10
+    },
+    "first_reward_item": "gravewardens_band",
+    "first_complete_text": "I bent a band from the first of it. Wear it.",
+    "start_keyword": "restless",
+    "repeatable": true
+  },
+  "march_marshal": {
+    "name": "The Hollow Marshal",
+    "giver": "gravekeeper_ossa",
+    "wants": {
+      "hollow_marshals_seal": 1
+    },
+    "reward": {
+      "xp": 2800,
+      "coin": 650
+    },
+    "accept_text": "You have taken on a task: The Hollow Marshal. Bring Gravekeeper Ossa the Hollow Marshal's seal.",
+    "ready_text": "His seal. You fought him in the dark?",
+    "complete_text": "The keep will be quieter tonight.",
+    "faction": {
+      "rainhold": 25
+    },
+    "first_reward_item": "marshals_broken_blade",
+    "first_complete_text": "His blade broke on your armor, maybe. It still cuts.",
+    "start_keyword": "marshal"
+  },
+  "gorge_tusks": {
+    "name": "Stonefist Tusks",
+    "giver": "ropewarden_mbeki",
+    "wants": {
+      "stonefist_tusk": 3
+    },
+    "reward": {
+      "xp": 1400,
+      "coin": 250
+    },
+    "accept_text": "You have taken on a task: Stonefist Tusks. Bring Ropewarden Mbeki three Stonefist troll tusks.",
+    "ready_text": "Tusks. Heavy ones.",
+    "complete_text": "Three trolls who won't foul the river.",
+    "faction": {
+      "rainhold": 15,
+      "stonefist_trolls": -10
+    },
+    "first_reward_item": "ropewalkers_gloves",
+    "first_complete_text": "Ropewalker's gloves. You'll want them on the bridges.",
+    "start_keyword": "trolls",
+    "repeatable": true
+  },
+  "gorge_grukk": {
+    "name": "Chief Grukk Stonefist",
+    "giver": "ropewarden_mbeki",
+    "wants": {
+      "grukks_knuckle": 1
+    },
+    "reward": {
+      "xp": 3600,
+      "coin": 800
+    },
+    "accept_text": "You have taken on a task: Chief Grukk Stonefist. Bring Ropewarden Mbeki Chief Grukk's knuckle-bone.",
+    "ready_text": "Grukk's charm!",
+    "complete_text": "The camp will fight over his place for a season. Good.",
+    "faction": {
+      "rainhold": 30,
+      "stonefist_trolls": -30
+    },
+    "first_reward_item": "stonefist_girdle",
+    "first_complete_text": "His girdle. Trolls make good leather, it turns out.",
+    "start_keyword": "grukk"
+  },
+  "gorge_feathers": {
+    "name": "Griffon Feathers",
+    "giver": "ropewarden_mbeki",
+    "wants": {
+      "griffon_feather": 4
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 260
+    },
+    "accept_text": "You have taken on a task: Griffon Feathers. Bring Ropewarden Mbeki four griffon feathers.",
+    "ready_text": "Feathers. The fletchers will be pleased.",
+    "complete_text": "Four griffons fewer over our goats.",
+    "faction": {
+      "rainhold": 10
+    },
+    "first_reward_item": "griffon_feather_mantle",
+    "first_complete_text": "A mantle of their feathers. Light as rain.",
+    "start_keyword": "griffons",
+    "repeatable": true
+  },
+  "gorge_stormcrest": {
+    "name": "Stormcrest",
+    "giver": "ropewarden_mbeki",
+    "wants": {
+      "stormcrest_plume": 1
+    },
+    "reward": {
+      "xp": 4000,
+      "coin": 900
+    },
+    "accept_text": "You have taken on a task: Stormcrest. Bring Ropewarden Mbeki Stormcrest's crest plume.",
+    "ready_text": "The plume! It still crackles.",
+    "complete_text": "The north-east crags are quiet.",
+    "faction": {
+      "rainhold": 25
+    },
+    "first_reward_item": "stormcrest_plumed_cap",
+    "first_complete_text": "Wear it. Every griffon in the Monsoon will know what you did.",
+    "start_keyword": "stormcrest"
+  },
+  "gorge_essence": {
+    "name": "Spirits of the Falls",
+    "giver": "tidepriestess_lirien",
+    "wants": {
+      "falls_essence": 3
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 260
+    },
+    "accept_text": "You have taken on a task: Spirits of the Falls. Bring Tidepriestess Lirien three essences of the falls.",
+    "ready_text": "Essence. It's still cold.",
+    "complete_text": "Three spirits at rest.",
+    "faction": {
+      "rainhold": 10
+    },
+    "first_reward_item": "cataract_pendant",
+    "first_complete_text": "Jalendra's pendant. The water will know you.",
+    "start_keyword": "spirits",
+    "repeatable": true
+  },
+  "gorge_voice": {
+    "name": "The Voice of the Falls",
+    "giver": "tidepriestess_lirien",
+    "wants": {
+      "heart_of_the_cataract": 1
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 950
+    },
+    "accept_text": "You have taken on a task: The Voice of the Falls. Bring Tidepriestess Lirien the Heart of the Cataract.",
+    "ready_text": "The heart. Gently, {name}.",
+    "complete_text": "Listen: the falls have gone quiet.",
+    "faction": {
+      "rainhold": 30
+    },
+    "first_reward_item": "stormcut_staff",
+    "first_complete_text": "A staff cut from the gorge's own stone. It hums when it rains.",
+    "start_keyword": "voice"
   }
 }

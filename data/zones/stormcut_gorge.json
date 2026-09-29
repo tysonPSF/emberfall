@@ -1,0 +1,1145 @@
+{
+  "name": "Stormcut Gorge",
+  "levels": [
+    18,
+    22
+  ],
+  "music": "stormcut_gorge",
+  "seed": 7371,
+  "size": 448,
+  "bind_point": [
+    140,
+    44
+  ],
+  "height_amplitude": 4.5,
+  "flat_radius": 22,
+  "trees": 150,
+  "tree_mix": [
+    "jungle_tree",
+    "pine_a",
+    "jungle_tree",
+    "pine_b"
+  ],
+  "groves": 0.45,
+  "rocks": 80,
+  "grass_colors": [
+    "#3e5a3a",
+    "#4a6a40"
+  ],
+  "fog_density": 0.012,
+  "fog_color": "#7a8a8a",
+  "sun_energy": 0.65,
+  "rain": {
+    "amount": 2600
+  },
+  "passes": [
+    [
+      0,
+      -224.0,
+      9
+    ],
+    [
+      224.0,
+      0,
+      9
+    ],
+    [
+      -224.0,
+      0,
+      9
+    ]
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        -213.0
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "reedmere",
+      "arrive": [
+        0,
+        231.0
+      ],
+      "arrive_face": [
+        0,
+        191.0
+      ]
+    },
+    {
+      "pos": [
+        213.0,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "rainhold",
+      "arrive": [
+        -46.0,
+        0
+      ],
+      "arrive_face": [
+        -6.0,
+        0
+      ]
+    },
+    {
+      "pos": [
+        -213.0,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "broken_march",
+      "arrive": [
+        199.0,
+        0
+      ],
+      "arrive_face": [
+        159.0,
+        0
+      ]
+    }
+  ],
+  "rivers": [
+    {
+      "points": [
+        [
+          40,
+          196
+        ],
+        [
+          36.0,
+          177.0
+        ],
+        [
+          32.0,
+          158.0
+        ],
+        [
+          28.0,
+          139.0
+        ],
+        [
+          24.0,
+          120.0
+        ],
+        [
+          18.0,
+          104.0
+        ],
+        [
+          12.0,
+          88.0
+        ],
+        [
+          6.0,
+          72.0
+        ],
+        [
+          0.0,
+          56.0
+        ],
+        [
+          -6.0,
+          40.0
+        ],
+        [
+          -4.8,
+          24.0
+        ],
+        [
+          -3.6,
+          8.0
+        ],
+        [
+          -2.4,
+          -8.0
+        ],
+        [
+          -1.2,
+          -24.0
+        ],
+        [
+          0.0,
+          -40.0
+        ],
+        [
+          -8.0,
+          -56.0
+        ],
+        [
+          -16.0,
+          -72.0
+        ],
+        [
+          -24.0,
+          -88.0
+        ],
+        [
+          -32.0,
+          -104.0
+        ],
+        [
+          -40.0,
+          -120.0
+        ],
+        [
+          -45.0,
+          -136.5
+        ],
+        [
+          -50.0,
+          -153.0
+        ],
+        [
+          -55.0,
+          -169.5
+        ],
+        [
+          -60.0,
+          -186.0
+        ]
+      ],
+      "width": 10,
+      "depth": 1.4,
+      "bank": 12,
+      "flow": 1.2
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          -224,
+          0
+        ],
+        [
+          -120,
+          6
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          60,
+          10
+        ],
+        [
+          140,
+          24
+        ],
+        [
+          224,
+          0
+        ]
+      ],
+      "width": 3.2
+    },
+    {
+      "points": [
+        [
+          60,
+          10
+        ],
+        [
+          40,
+          -80
+        ],
+        [
+          20,
+          -160
+        ],
+        [
+          12,
+          -224
+        ]
+      ],
+      "width": 3.0
+    }
+  ],
+  "fish": {
+    "mud_carp": 4,
+    "monsoon_eel": 2,
+    "lagoon_snapper": 2
+  },
+  "clutter": {
+    "grass_b": {
+      "density": 0.3,
+      "patch": 0.5,
+      "sway": 0.2,
+      "range": 55,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "fern": {
+      "density": 0.05,
+      "patch": 0.8,
+      "sway": 0.1,
+      "range": 50,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    }
+  },
+  "landmarks": [
+    {
+      "type": "outpost",
+      "pos": [
+        140,
+        24
+      ]
+    },
+    {
+      "type": "camp",
+      "pos": [
+        126,
+        34
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        202,
+        8
+      ],
+      "face": [
+        224,
+        8
+      ],
+      "labels": [
+        "Rainhold"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -202,
+        -8
+      ],
+      "face": [
+        -224,
+        -8
+      ],
+      "labels": [
+        "The Broken March"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        12,
+        -202
+      ],
+      "face": [
+        12,
+        -224
+      ],
+      "labels": [
+        "Reedmere"
+      ]
+    },
+    {
+      "type": "bridge",
+      "pos": [
+        -5,
+        0
+      ],
+      "face": [
+        60,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        206
+      ],
+      "id": "waterfall",
+      "yaw": 180,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        206
+      ],
+      "id": "waterfall_water",
+      "yaw": 180,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -196,
+        -70
+      ],
+      "id": "waterfall",
+      "yaw": 90,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -196,
+        -70
+      ],
+      "id": "waterfall_water",
+      "yaw": 90,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        198,
+        110
+      ],
+      "id": "waterfall",
+      "yaw": -90,
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        198,
+        110
+      ],
+      "id": "waterfall_water",
+      "yaw": -90,
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -188,
+        -190
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 170
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        -156
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 348
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -187,
+        -122
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 166
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -189,
+        48
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 336
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -193,
+        82
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 154
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -188,
+        116
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 332
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        150
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 150
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -187,
+        184
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 328
+    },
+    {
+      "type": "prop",
+      "pos": [
+        188,
+        -190
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 170
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        -156
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 348
+    },
+    {
+      "type": "prop",
+      "pos": [
+        187,
+        -122
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 166
+    },
+    {
+      "type": "prop",
+      "pos": [
+        191,
+        -88
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 344
+    },
+    {
+      "type": "prop",
+      "pos": [
+        186,
+        -54
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 162
+    },
+    {
+      "type": "prop",
+      "pos": [
+        189,
+        48
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 336
+    },
+    {
+      "type": "prop",
+      "pos": [
+        193,
+        82
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 154
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        150
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 150
+    },
+    {
+      "type": "prop",
+      "pos": [
+        187,
+        184
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 328
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -150,
+        198
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 330
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -114,
+        202
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 78
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -78,
+        198
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 186
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -42,
+        202
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 294
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -6,
+        198
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 42
+    },
+    {
+      "type": "prop",
+      "pos": [
+        66,
+        198
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 258
+    },
+    {
+      "type": "prop",
+      "pos": [
+        102,
+        202
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 6
+    },
+    {
+      "type": "prop",
+      "pos": [
+        138,
+        198
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 114
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        -120
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        140,
+        -140
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        125,
+        -170
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        160,
+        -110
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -110,
+        90
+      ],
+      "id": "troll_hut",
+      "collide": "mesh",
+      "face": [
+        -115,
+        95
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -135,
+        70
+      ],
+      "id": "troll_hut",
+      "collide": "mesh",
+      "face": [
+        -115,
+        95
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -95,
+        115
+      ],
+      "id": "troll_hut",
+      "collide": "mesh",
+      "face": [
+        -115,
+        95
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -115,
+        95
+      ],
+      "id": "campfire",
+      "collide": "none"
+    }
+  ],
+  "npcs": [
+    {
+      "id": "ropewarden_mbeki",
+      "pos": [
+        132,
+        36
+      ],
+      "face": [
+        132,
+        56
+      ]
+    },
+    {
+      "id": "tidepriestess_lirien",
+      "pos": [
+        146,
+        40
+      ],
+      "face": [
+        146,
+        60
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        60,
+        60
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        -40
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        20
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        -90
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        70,
+        150
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -30,
+        -160
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        24,
+        110
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -2,
+        60
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -10,
+        -60
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -40,
+        -110
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -55,
+        -170
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        14,
+        150
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -110,
+        80
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -130,
+        100
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -100,
+        120
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -140,
+        60
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -90,
+        90
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        115,
+        -110
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        145,
+        -130
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        120,
+        -160
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        160,
+        -100
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        95,
+        -140
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        40,
+        180
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        20,
+        170
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        60,
+        170
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -180,
+        -70
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        180,
+        110
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        0,
+        130
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 12,
+      "when": "night"
+    },
+    {
+      "pos": [
+        30,
+        140
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 12,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -118,
+        96
+      ],
+      "pool": {
+        "chief_grukk": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    },
+    {
+      "pos": [
+        135,
+        -150
+      ],
+      "pool": {
+        "stormcrest": 1
+      },
+      "respawn": 1500,
+      "wander": 8
+    },
+    {
+      "pos": [
+        40,
+        188
+      ],
+      "pool": {
+        "voice_of_the_falls": 1
+      },
+      "respawn": 1500,
+      "wander": 4
+    }
+  ]
+}

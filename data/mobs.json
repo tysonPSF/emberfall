@@ -15156,5 +15156,753 @@
     "named": true,
     "boss_music": "blightmother",
     "proc": {"spell": "blight_venom", "chance": 0.15, "text": "%s's fangs pump %s into you!"}
+  },
+  "march_wolf": {
+    "name": "a march wolf",
+    "level": [
+      14,
+      16
+    ],
+    "hp_base": 88,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.6,
+    "ac": 23,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "march_wolf_pelt",
+        "chance": 0.55
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "moor_wolf"
+  },
+  "brambleback_boar": {
+    "name": "a brambleback boar",
+    "level": [
+      14,
+      16
+    ],
+    "hp_base": 88,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.6,
+    "ac": 23,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "boar_bristles",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.4
+      }
+    ],
+    "model": "boar"
+  },
+  "marchreaver_cutthroat": {
+    "name": "a Marchreaver cutthroat",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 96,
+    "hp_per_level": 18,
+    "dmg_min": 9,
+    "dmg_max": 18,
+    "attack_delay": 2.6,
+    "ac": 26,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "marchreavers",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      20,
+      80
+    ],
+    "loot": [
+      {
+        "item": "highwayman_token",
+        "chance": 0.5
+      }
+    ],
+    "model": "brigand",
+    "weapon": "dagger"
+  },
+  "marchreaver_bowman": {
+    "name": "a Marchreaver bowman",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 96,
+    "hp_per_level": 18,
+    "dmg_min": 9,
+    "dmg_max": 18,
+    "attack_delay": 2.6,
+    "ac": 26,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "marchreavers",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      20,
+      80
+    ],
+    "loot": [
+      {
+        "item": "highwayman_token",
+        "chance": 0.5
+      }
+    ],
+    "model": "brigand",
+    "weapon": "bow"
+  },
+  "restless_soldier": {
+    "name": "a restless march-soldier",
+    "level": [
+      16,
+      18
+    ],
+    "hp_base": 105,
+    "hp_per_level": 19,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "hack",
+      "hacks"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      10,
+      50
+    ],
+    "loot": [
+      {
+        "item": "grave_iron",
+        "chance": 0.5
+      },
+      {
+        "item": "bone_chips",
+        "chance": 0.4
+      }
+    ],
+    "model": "skeleton_warrior"
+  },
+  "restless_knight": {
+    "name": "a restless march-knight",
+    "level": [
+      17,
+      19
+    ],
+    "hp_base": 110,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 21,
+    "attack_delay": 2.6,
+    "ac": 29,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      15,
+      60
+    ],
+    "loot": [
+      {
+        "item": "grave_iron",
+        "chance": 0.6
+      },
+      {
+        "item": "bone_chips",
+        "chance": 0.3
+      }
+    ],
+    "model": "skeleton_knight"
+  },
+  "crag_wyvern": {
+    "name": "a crag wyvern",
+    "level": [
+      18,
+      20
+    ],
+    "hp_base": 115,
+    "hp_per_level": 20,
+    "dmg_min": 11,
+    "dmg_max": 22,
+    "attack_delay": 2.6,
+    "ac": 30,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wyvern_scale",
+        "chance": 0.5
+      }
+    ],
+    "model": "moor_wyvern"
+  },
+  "redhand_corvel": {
+    "name": "Redhand Corvel",
+    "level": [
+      18,
+      18
+    ],
+    "hp_base": 1350,
+    "hp_per_level": 0,
+    "dmg_min": 14,
+    "dmg_max": 30,
+    "attack_delay": 2.6,
+    "ac": 38,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "marchreavers",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      200,
+      500
+    ],
+    "loot": [
+      {
+        "item": "corvels_signet",
+        "chance": 1.0
+      }
+    ],
+    "model": "brigand_captain",
+    "named": true,
+    "weapon": "sword_1handed"
+  },
+  "hollow_marshal": {
+    "name": "the Hollow Marshal",
+    "level": [
+      19,
+      19
+    ],
+    "hp_base": 1425,
+    "hp_per_level": 0,
+    "dmg_min": 15,
+    "dmg_max": 32,
+    "attack_delay": 2.6,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "cleave",
+      "cleaves"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.3,
+    "coin": [
+      200,
+      550
+    ],
+    "loot": [
+      {
+        "item": "hollow_marshals_seal",
+        "chance": 1.0
+      },
+      {
+        "item": "grave_iron",
+        "chance": 1.0
+      }
+    ],
+    "model": "skeleton_knight",
+    "named": true
+  },
+  "scythewing": {
+    "name": "Scythewing",
+    "level": [
+      20,
+      20
+    ],
+    "hp_base": 1500,
+    "hp_per_level": 0,
+    "dmg_min": 17,
+    "dmg_max": 35,
+    "attack_delay": 2.6,
+    "ac": 42,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.45,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "scythewings_talon",
+        "chance": 1.0
+      }
+    ],
+    "model": "moor_wyvern",
+    "named": true
+  },
+  "canyon_adder": {
+    "name": "a canyon adder",
+    "level": [
+      18,
+      19
+    ],
+    "hp_base": 112,
+    "hp_per_level": 20,
+    "dmg_min": 11,
+    "dmg_max": 22,
+    "attack_delay": 2.6,
+    "ac": 30,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "adder_venom_sac",
+        "chance": 0.5
+      }
+    ],
+    "model": "cobra",
+    "proc": {
+      "spell": "cobra_venom",
+      "chance": 0.12,
+      "text": "%s's fangs sink %s into you!"
+    }
+  },
+  "gorge_croc": {
+    "name": "a gorge crocodile",
+    "level": [
+      19,
+      21
+    ],
+    "hp_base": 122,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.6,
+    "ac": 32,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gorge_croc_hide",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "river_croc"
+  },
+  "stonefist_troll": {
+    "name": "a Stonefist troll",
+    "level": [
+      19,
+      21
+    ],
+    "hp_base": 122,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.6,
+    "ac": 32,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "stonefist_trolls",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      25,
+      90
+    ],
+    "loot": [
+      {
+        "item": "stonefist_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "mountain_troll",
+    "hp_regen": 14
+  },
+  "stonefist_shaman": {
+    "name": "a Stonefist mudcaller",
+    "level": [
+      19,
+      21
+    ],
+    "hp_base": 122,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.6,
+    "ac": 32,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "stonefist_trolls",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      25,
+      95
+    ],
+    "loot": [
+      {
+        "item": "stonefist_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "river_troll",
+    "hp_regen": 14
+  },
+  "gorge_griffon": {
+    "name": "a gorge griffon",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 130,
+    "hp_per_level": 21,
+    "dmg_min": 13,
+    "dmg_max": 25,
+    "attack_delay": 2.6,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "griffon_feather",
+        "chance": 0.55
+      }
+    ],
+    "model": "griffon"
+  },
+  "falls_spirit": {
+    "name": "a spirit of the falls",
+    "level": [
+      20,
+      22
+    ],
+    "hp_base": 130,
+    "hp_per_level": 21,
+    "dmg_min": 13,
+    "dmg_max": 25,
+    "attack_delay": 2.6,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "crash",
+      "crashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "falls_essence",
+        "chance": 0.5
+      }
+    ],
+    "model": "water_elemental"
+  },
+  "chief_grukk": {
+    "name": "Chief Grukk Stonefist",
+    "level": [
+      22,
+      22
+    ],
+    "hp_base": 1650,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 38,
+    "attack_delay": 2.6,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "stonefist_trolls",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      250,
+      650
+    ],
+    "loot": [
+      {
+        "item": "grukks_knuckle",
+        "chance": 1.0
+      }
+    ],
+    "model": "troll_chieftain",
+    "named": true,
+    "hp_regen": 30
+  },
+  "stormcrest": {
+    "name": "Stormcrest",
+    "level": [
+      22,
+      22
+    ],
+    "hp_base": 1650,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 38,
+    "attack_delay": 2.6,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "stormcrest_plume",
+        "chance": 1.0
+      }
+    ],
+    "model": "griffon_matriarch",
+    "named": true
+  },
+  "voice_of_the_falls": {
+    "name": "the Voice of the Falls",
+    "level": [
+      22,
+      22
+    ],
+    "hp_base": 1650,
+    "hp_per_level": 0,
+    "dmg_min": 20,
+    "dmg_max": 38,
+    "attack_delay": 2.6,
+    "ac": 47,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "crash",
+      "crashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "heart_of_the_cataract",
+        "chance": 1.0
+      },
+      {
+        "item": "falls_essence",
+        "chance": 1.0
+      }
+    ],
+    "model": "water_elemental",
+    "named": true
   }
 }

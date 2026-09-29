@@ -5790,8 +5790,8 @@
     "title": "Provisioner",
     "merchant": {
       "sells": [
-        "bone_chips",
         "draught_of_homecoming",
+        "bone_chips",
         "bag_of_flour",
         "jar_of_spices",
         "vial_of_water",
@@ -6211,8 +6211,8 @@
     "gender": "female",
     "merchant": {
       "sells": [
-        "bone_chips",
         "draught_of_homecoming",
+        "bone_chips",
         "bag_of_flour",
         "jar_of_spices",
         "vial_of_water",
@@ -6487,5 +6487,113 @@
       "wait": "Within the hour, {name}. Even she must wait for the next flame.",
       "give": "Breathe in. ...The candle's light is in you now."
     }
+  },
+  "marchwarden_hale": {
+    "name": "Marchwarden Tomas Hale",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Welcome to the March, {name}, whoever sent you. Rainhold keeps this post for anyone who'll keep the peace: bog folk, cave folk, city folk. Our trouble is [wolves], [highwaymen] and the wyvern [Scythewing].",
+      "wolves": "The march wolves run the heath in packs. Four pelts and I'll pay you, every time you bring them.",
+      "highwaymen": "The Marchreavers. They camp in the south-west and rob everyone who crosses. Three of their tokens and I pay. Their leader, [Corvel], I want answered for.",
+      "corvel": "Redhand Corvel. He wears a signet he cut off a Rainhold magistrate's finger. Bring it back to me.",
+      "scythewing": "The great wyvern of the north-east crags. Bring me a talon and I'll see you're paid for the fright.",
+      "unknown": "Ask Ossa about the dead. I only deal with the living."
+    },
+    "title": "Warden of the March"
+  },
+  "gravekeeper_ossa": {
+    "name": "Gravekeeper Ossa",
+    "level": 35,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Both sides buried their dead in this ground, {name}, and neither buried them deep enough. The old keep in the north-west is full of the [restless].",
+      "restless": "Soldiers of a war nobody remembers the reason for. Their armor rots, but the grave-iron in it doesn't. Three shards and I'll pay. Their [Marshal] rises at night.",
+      "marshal": "The Hollow Marshal. He walks the keep after dark and still carries his seal of command. Bring it to me and the rest may finally lie down.",
+      "unknown": "Ask the Marchwarden. He loves to talk."
+    },
+    "title": "Keeper of the March Graves",
+    "gender": "female"
+  },
+  "march_sutler": {
+    "name": "Sutler Brannoc",
+    "level": 25,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "race": "dwarf",
+    "dialogue": {
+      "hail": "Food, thread, arrows and a draught to get you home, {name}. Press G.",
+      "unknown": "Buying or not?"
+    },
+    "title": "Sutler",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bone_chips",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "fishing_pole",
+        "fishing_bait",
+        "loaf_of_bread",
+        "crude_arrow",
+        "sling_stone"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ropewarden_mbeki": {
+    "name": "Ropewarden Kofi Mbeki",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Mind the edge, {name}. The Cutwatch keeps the gorge road open for Rainhold, and it isn't easy. The [trolls] want the river, the [griffons] want everything else.",
+      "trolls": "The Stonefist trolls on the west bank. Three of their tusks and I'll pay, as often as you bring them. Their chief, [Grukk], wears a knuckle-bone for a charm; bring me that.",
+      "grukk": "Chief Grukk Stonefist. The biggest troll in the camp across the river.",
+      "griffons": "They nest on the crags to the north-east and take our goats and our scouts. Four feathers and I pay. The great one is [Stormcrest].",
+      "stormcrest": "A griffon as big as a boat, crest like a storm cloud. Bring me that crest plume.",
+      "unknown": "Ask Lirien. She talks to the water."
+    },
+    "title": "Ropewarden of the Cutwatch"
+  },
+  "tidepriestess_lirien": {
+    "name": "Tidepriestess Lirien",
+    "level": 35,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "race": "high_elf",
+    "dialogue": {
+      "hail": "Jalendra's water falls three times into this gorge, {name}, and something has woken in it. The [spirits] of the falls are angry.",
+      "spirits": "Water spirits, risen from the falls. Their essence is holy to Jalendra; bring me three and I'll pay each time. What woke them is the [Voice].",
+      "voice": "The Voice of the Falls, at the great cascade in the south. Bring me its heart and the water will be still again.",
+      "unknown": "The water knows. I only listen."
+    },
+    "title": "Priestess of Jalendra",
+    "gender": "female"
   }
 }

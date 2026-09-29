@@ -1,0 +1,251 @@
+{
+  "march_wolf_pelt": {
+    "name": "March Wolf Pelt",
+    "value": 14,
+    "stack": 20
+  },
+  "boar_bristles": {
+    "name": "Brambleback Bristles",
+    "value": 10,
+    "stack": 20
+  },
+  "highwayman_token": {
+    "name": "Marchreaver's Token",
+    "value": 18,
+    "stack": 20
+  },
+  "grave_iron": {
+    "name": "Grave-Iron Shard",
+    "value": 16,
+    "stack": 20
+  },
+  "wyvern_scale": {
+    "name": "Crag Wyvern Scale",
+    "value": 20,
+    "stack": 20
+  },
+  "corvels_signet": {
+    "name": "Redhand Corvel's Signet",
+    "value": 80,
+    "lore": true
+  },
+  "hollow_marshals_seal": {
+    "name": "The Hollow Marshal's Seal",
+    "value": 80,
+    "lore": true
+  },
+  "scythewings_talon": {
+    "name": "Scythewing's Talon",
+    "value": 80,
+    "lore": true
+  },
+  "gorge_croc_hide": {
+    "name": "Gorge Crocodile Hide",
+    "value": 18,
+    "stack": 20
+  },
+  "adder_venom_sac": {
+    "name": "Canyon Adder Venom Sac",
+    "value": 16,
+    "stack": 20
+  },
+  "stonefist_tusk": {
+    "name": "Stonefist Troll Tusk",
+    "value": 20,
+    "stack": 20
+  },
+  "falls_essence": {
+    "name": "Essence of the Falls",
+    "value": 22,
+    "stack": 20
+  },
+  "grukks_knuckle": {
+    "name": "Chief Grukk's Knuckle-Bone",
+    "value": 100,
+    "lore": true
+  },
+  "stormcrest_plume": {
+    "name": "Stormcrest's Crest Plume",
+    "value": 100,
+    "lore": true
+  },
+  "heart_of_the_cataract": {
+    "name": "Heart of the Cataract",
+    "value": 100,
+    "lore": true
+  },
+  "wardens_march_cloak": {
+    "name": "Warden's March Cloak",
+    "slot": "arms",
+    "ac": 6,
+    "sta": 2,
+    "agi": 2,
+    "hp": 15,
+    "value": 1600,
+    "rec_level": 15,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "reaverhide_boots": {
+    "name": "Reaver-Hide Boots",
+    "slot": "feet",
+    "ac": 6,
+    "agi": 3,
+    "sta": 1,
+    "value": 1700,
+    "rec_level": 16,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots"
+  },
+  "corvels_red_glove": {
+    "name": "Corvel's Red Glove",
+    "slot": "hands",
+    "ac": 5,
+    "str": 3,
+    "agi": 2,
+    "value": 2400,
+    "rec_level": 17,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "gravewardens_band": {
+    "name": "Gravewarden's Band",
+    "slot": "ring",
+    "ac": 2,
+    "wis": 2,
+    "int": 2,
+    "mana": 15,
+    "value": 1800,
+    "rec_level": 16,
+    "no_drop": true,
+    "lore": true
+  },
+  "marshals_broken_blade": {
+    "name": "The Marshal's Broken Blade",
+    "slot": "primary",
+    "dmg": 13,
+    "delay": 2.8,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 2,
+    "sta": 2,
+    "value": 3600,
+    "rec_level": 18,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger",
+      "shaman"
+    ]
+  },
+  "scythewing_charm": {
+    "name": "Scythewing Talon Charm",
+    "slot": "neck",
+    "ac": 3,
+    "agi": 3,
+    "str": 2,
+    "hp": 20,
+    "value": 3200,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true
+  },
+  "ropewalkers_gloves": {
+    "name": "Ropewalker's Gloves",
+    "slot": "hands",
+    "ac": 7,
+    "agi": 3,
+    "str": 2,
+    "value": 2400,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "stonefist_girdle": {
+    "name": "Stonefist Girdle",
+    "slot": "waist",
+    "ac": 8,
+    "str": 4,
+    "sta": 3,
+    "hp": 25,
+    "value": 4200,
+    "rec_level": 21,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_belt"
+  },
+  "griffon_feather_mantle": {
+    "name": "Griffon-Feather Mantle",
+    "slot": "arms",
+    "ac": 8,
+    "agi": 3,
+    "sta": 2,
+    "hp": 20,
+    "value": 3000,
+    "rec_level": 20,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "stormcrest_plumed_cap": {
+    "name": "Stormcrest Plumed Cap",
+    "slot": "head",
+    "ac": 8,
+    "agi": 3,
+    "wis": 2,
+    "hp": 25,
+    "value": 4400,
+    "rec_level": 21,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_cap"
+  },
+  "cataract_pendant": {
+    "name": "Cataract Pendant",
+    "slot": "neck",
+    "ac": 2,
+    "wis": 3,
+    "int": 3,
+    "mana": 30,
+    "value": 3000,
+    "rec_level": 20,
+    "no_drop": true,
+    "lore": true
+  },
+  "stormcut_staff": {
+    "name": "Stormcut Staff",
+    "slot": "primary",
+    "dmg": 14,
+    "delay": 3.1,
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "model": "staff",
+    "skill": "2h_blunt",
+    "int": 5,
+    "wis": 5,
+    "mana": 50,
+    "value": 6000,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "cleric",
+      "wizard",
+      "magician",
+      "necromancer",
+      "shaman"
+    ]
+  }
+}
