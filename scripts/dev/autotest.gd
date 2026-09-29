@@ -115,6 +115,7 @@ const SECTIONS := [
 	["blackwater_views", "murkhold"],
 	["deity_picker", "greenmoor"],
 	["quest_share", "greenmoor"],
+	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -8459,3 +8460,34 @@ func _t_deity_picker() -> void:
 			not cc._deity_buttons["horn"].disabled, not cc._deity_buttons["light"].disabled, cc._deity])
 	await _shot("9deity_human")
 	cc.queue_free()
+
+
+## A guildmaster's window: what's left to learn (what you can buy now in
+## green) and what you already know, on two tabs.
+func _t_trainer_tabs() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	World.zone_change.emit(p, "emberhold", Vector2(0, 10), Vector2(0, 0))
+	for k in 80:
+		if (main.zone as Zone).zone_id == "emberhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.8)
+	var gm: Npc = null
+	for n: Npc in _npcs().values():
+		if str(n.data.get("guildmaster", {}).get("class", "")) == p.char_class:
+			gm = n
+	p.level = 12
+	p.coin = 20000
+	_stand_by(p, gm)
+	World.request_interact(p.entity_id)
+	await _wait(0.6)
+	print("trainer_tabs: %s -> %s | %s" % [gm.display_name, hud._train_tab_learn.text, hud._train_tab_known.text])
+	await _shot("9trainer_learn")
+	hud._train_known_tab = true
+	hud._refresh_service()
+	await _wait(0.3)
+	await _shot("9trainer_known")
+	World.request_service_close(p.entity_id)
+	p.level = 1
