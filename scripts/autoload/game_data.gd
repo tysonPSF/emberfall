@@ -63,9 +63,15 @@ func deity_bonus(deity_id: String, key: String) -> float:
 
 ## Whether a race may follow a god: every race, unless the god names its own
 ## ("races", e.g. the bog gods take only trolls and ogres).
+## Whether a god takes followers of this race: a deity's "races" lists the
+## only ones it takes, its "alignments" the sides it takes them from (the
+## elephant gods turn the evil races away; Timiraj takes anyone).
 func deity_allows(deity_id: String, race_id: String) -> bool:
-	var only: Array = deities.get(deity_id, {}).get("races", [])
-	return only.is_empty() or (race_id if race_id != "" else "human") in only
+	var god: Dictionary = deities.get(deity_id, {})
+	var race := race_id if race_id != "" else "human"
+	var only: Array = god.get("races", [])
+	var sides: Array = god.get("alignments", [])
+	return (only.is_empty() or race in only) and (sides.is_empty() or str(races.get(race, {}).get("alignment", "neutral")) in sides)
 
 
 ## A deity's portrait, cut from the shared atlas.

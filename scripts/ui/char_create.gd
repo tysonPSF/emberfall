@@ -21,7 +21,8 @@ var _selected := "warrior"
 var _deity := ""
 var _stats: StatPicker
 var _race := "human"
-var _deity_buttons := {}  # deity id -> its portrait button (some gods take only some races)
+var _deity_buttons := {}  # deity id -> its portrait button on the new-character page (some gods take only some races)
+var _pledge_buttons := {}  # the same on the pledge page, for an older character's own race
 var _gender := "male"
 var _hair: HairPicker
 var _race_desc: Label
@@ -212,7 +213,7 @@ func _build_pledge(center: CenterContainer) -> void:
 	var sub := UIKit.label("Choose the deity you follow. This cannot be changed.", 13, UIKit.DIM)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_pledge.add_child(sub)
-	_deity_picker(_pledge)
+	_deity_picker(_pledge, true)
 	var go := UIKit.button("Pledge and continue", Vector2(0, 44))
 	var err := UIKit.label("", 13, Color(1, 0.45, 0.35))
 	go.pressed.connect(func() -> void:
@@ -228,7 +229,7 @@ func _build_pledge(center: CenterContainer) -> void:
 
 ## A row of portrait buttons, one per deity, above a label describing the
 ## chosen one.
-func _deity_picker(parent: Container) -> void:
+func _deity_picker(parent: Container, pledge := false) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	var group := ButtonGroup.new()
@@ -247,7 +248,7 @@ func _deity_picker(parent: Container) -> void:
 		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		b.add_theme_font_size_override("font_size", 13)
 		b.tooltip_text = "%s, %s" % [d["name"], d["title"]]
-		_deity_buttons[deity_id] = b
+		(_pledge_buttons if pledge else _deity_buttons)[deity_id] = b
 		b.pressed.connect(func() -> void:
 			_deity = deity_id
 			desc.text = "%s, %s\n%s\n%s" % [d["name"], d["title"], d["description"], d["bonus_text"]]
@@ -258,17 +259,26 @@ func _deity_picker(parent: Container) -> void:
 	_fit_deities()
 
 
-## Gods who take only some races ("races" in deities.json: the bog gods) are
-## grayed out for the rest; a choice that no longer fits is cleared.
+## Gods who don't take a race ("races" and "alignments" in deities.json: the
+## bog gods take only trolls and ogres, the elephants no evil race) are grayed
+## out for it: the race being made, or on the pledge page the older
+## character's own; a choice that no longer fits is cleared.
 func _fit_deities() -> void:
-	for deity_id: String in _deity_buttons:
-		var b: Button = _deity_buttons[deity_id]
+	var pledging := _pledge != null and _pledge.visible
+	_fit_row(_deity_buttons, _race, not pledging)
+	_fit_row(_pledge_buttons, str(existing.get("race", "")), pledging)
+
+
+## One row of gods; only the row in use may clear the choice (they share it).
+func _fit_row(buttons: Dictionary, race: String, in_use: bool) -> void:
+	for deity_id: String in buttons:
+		var b: Button = buttons[deity_id]
 		if not is_instance_valid(b):
 			continue
-		var ok := GameData.deity_allows(deity_id, _race)
+		var ok := GameData.deity_allows(deity_id, race)
 		b.disabled = not ok
 		b.modulate.a = 1.0 if ok else 0.4
-		if not ok and _deity == deity_id:
+		if not ok and in_use and _deity == deity_id:
 			_deity = ""
 			b.button_pressed = false
 
@@ -315,8 +325,8 @@ func _create() -> void:
 	if regex.search(raw) == null:
 		_error.text = "Names must be 3-15 letters, no spaces or numbers."
 		return
-	if _deity == "":
-		_error.text = "Choose a deity."
+	if _deity == "" or not GameData.deity_allows(_deity, _race):
+		_error.text = "Choose a deity." if _deity == "" else "%s does not take a %s." % [GameData.deities[_deity]["name"], GameData.races[_race]["name"]]
 		return
 	if _stats.points_left() > 0:
 		_error.text = "Spend all your stat points (%d left)." % _stats.points_left()
