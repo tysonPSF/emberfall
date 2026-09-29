@@ -58,6 +58,10 @@ func _run() -> void:
 		elif "--guild" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
+		elif "--petgear" in OS.get_cmdline_user_args():  # a necromancer whose skeleton already carries a sword
+			Net.import_character({"name": who, "class": "necromancer", "deity": "dark", "level": 12, "race": "human", "stats": {"int": 10, "sta": 10, "agi": 5},
+					"spells": ["raise_bones"], "zone": "greenmoor", "position": [0, 2, 20], "inventory": ["iron_coif"],
+					"pet": {"spell": "raise_bones", "hp": -1, "gear": {"primary": "rusty_short_sword"}}})
 		elif "--homecoming" in OS.get_cmdline_user_args():  # a troll from before the Blackwater, logged out in Rainhold
 			Net.import_character({"name": who, "class": "warrior", "deity": "dark", "level": 5, "race": "troll", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "rainhold", "bind": "rainhold", "position": [0, 2, 40]})
@@ -135,6 +139,28 @@ func _run() -> void:
 		await _guild_test(p)
 	elif "--share" in OS.get_cmdline_user_args():
 		await _share_test(p)
+	elif "--petgear" in OS.get_cmdline_user_args():
+		var pet: Pet = null
+		for k in 40:
+			pet = World.get_object(p.pet_id) as Pet
+			if pet != null:
+				break
+			await _wait(0.25)
+		print("[%s] petgear: pet %s back with gear %s, holding %s" % [who, pet.display_name if pet else "none", p.pet_gear, pet.look.get("weapon") if pet else "-"])
+		if pet != null:
+			var at := ""
+			for place: String in p.pack.places():
+				if p.pack.get_at(place).get("item", "") == "iron_coif":
+					at = place
+			World.request_click(p.entity_id, at)
+			await _wait(1.0)
+			World.request_give_pet(p.entity_id, pet.entity_id)
+			await _wait(2.0)
+			pet = World.get_object(p.pet_id) as Pet
+			var worn: Array = (pet.visual as CharacterModel)._worn.keys() if pet != null and pet.visual is CharacterModel else []
+			print("[%s] petgear: gave the coif -> gear %s; its look worn %s; on the model %s" % [who, p.pet_gear, pet.look.get("worn") if pet else "-", worn])
+			await _shot("petgear")
+		get_tree().quit()
 	elif "--homecoming" in OS.get_cmdline_user_args():
 		var first := (get_parent().zone as Zone).zone_id
 		await _wait(6.0)

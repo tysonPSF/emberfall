@@ -254,27 +254,51 @@
       "type": "prop",
       "pos": [
         0.0,
-        -24.5
+        -25.5
       ],
       "id": "dusk_bridge",
       "collide": "mesh",
       "face": [
         60.0,
-        -24.5
-      ]
+        -25.5
+      ],
+      "scale": 1.2,
+      "y_at": [
+        [
+          0.0,
+          -13.5
+        ],
+        [
+          0.0,
+          -37.5
+        ]
+      ],
+      "slope": true
     },
     {
       "type": "prop",
       "pos": [
         -0.0,
-        24.5
+        25.5
       ],
       "id": "dusk_bridge",
       "collide": "mesh",
       "face": [
         60.0,
-        24.5
-      ]
+        25.5
+      ],
+      "scale": 1.2,
+      "y_at": [
+        [
+          -0.0,
+          13.5
+        ],
+        [
+          -0.0,
+          37.5
+        ]
+      ],
+      "slope": true
     },
     {
       "type": "prop",

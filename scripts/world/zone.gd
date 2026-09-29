@@ -1001,6 +1001,10 @@ func _build_landmarks() -> void:
 					if water_level(at.x, at.y) > -INF:
 						_prop("lily_pads", Vector3(at.x, water_level(at.x, at.y) + 0.02, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.4), "none")
 			"prop":
+				if lm.has("y_at"):  # stands at the lowest of these points: a bridge's two ends, over water carved out beneath it (the higher end sinks a little into its bank; a step up onto the lower one would block you)
+					p.y = INF
+					for q: Array in lm["y_at"]:
+						p.y = minf(p.y, height_at(float(q[0]), float(q[1])))
 				_prop(lm["id"], p, _landmark_yaw(lm), float(lm.get("scale", 1.0)), str(lm.get("collide", "box")))
 			"vent":
 				_build_vent(p, float(lm.get("scale", 1.0)))

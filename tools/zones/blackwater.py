@@ -225,7 +225,7 @@ item("mudjaw_tooth_club", "Mudjaw-Tooth Club", slot="primary", dmg=14, delay=3.0
 NPCS = {}
 GUARD = {"radius": 22, "leash": 34, "speed": 6.4, "assist_standing": 0, "hunt_radius": 18, "hunt_aggressive_only": True}
 GUARD_COMBAT = {"hp": 3200, "hp_regen": 50, "ac": 95, "dmg": [18, 34], "delay": 2.4, "verb": ["slash", "slashes"]}
-SUPPLIES = ["draught_of_homecoming", "bag_of_flour", "jar_of_spices", "vial_of_water", "tanning_salts", "spool_of_thread",
+SUPPLIES = ["draught_of_homecoming", "bone_chips", "bag_of_flour", "jar_of_spices", "vial_of_water", "tanning_salts", "spool_of_thread",
             "bundle_of_herbs", "small_brick_of_ore", "large_brick_of_ore", "water_flask", "bundle_of_shafts", "smithy_hammer",
             "sewing_kit", "mortar_and_pestle", "hearthside_cookbook", "tailors_pattern_book", "alchemists_notes", "smiths_handbook",
             "fishing_pole", "fishing_bait", "loaf_of_bread"]
@@ -602,8 +602,12 @@ def duskhold():
     L.append(prop("idol_tantuvi", [-10, 2], face=[-10, -30], collide="box", scale=1.8))
     L.append(prop("idol_dipanti", [10, 2], face=[10, -30], collide="box", scale=1.8))
     for b in (90, 270):  # the bridge spans along its own X: turned so it runs from the shore out to the island
-        spot = at(b, 24.5)
-        L.append(prop("dusk_bridge", spot, face=[spot[0] + 60, spot[1]], collide="mesh"))
+        spot = at(b, 25.5)  # 24 m at 1.2 scale: from the island's edge (15) onto the shore (36)
+        bridge = prop("dusk_bridge", spot, face=[spot[0] + 60, spot[1]], collide="mesh", scale=1.2)
+        if bridge:
+            bridge["y_at"] = [[round(c, 1) for c in at(b, 13.5)], [round(c, 1) for c in at(b, 37.5)]]  # level with its ends, not the lake bed
+            bridge["slope"] = True  # stay exactly on the line between them
+            L.append(bridge)
     for b in range(15, 360, 30):
         L.append(prop("glow_crystal", at(b, 40), collide="box"))
     for b in [20, 70, 110, 160, 200, 250, 290, 340]:

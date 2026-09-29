@@ -159,6 +159,8 @@ var _owned_known := false
 var _bag_windows: Dictionary = {}  # general slot -> open bag window
 var _station_panel: PanelContainer  # a crafting station's combine window
 var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
+var _pet_gear_row: HBoxContainer  # what you have given it (Player.pet_gear)
+var _pet_gear_key := ""
 var _stats_panel: PanelContainer  # characters from before starting stats spend their points here, once
 var _stats_picker: StatPicker
 var _stats_later := false
@@ -1604,6 +1606,13 @@ func _build_pet_window() -> void:
 		cmds.add_child(b)
 		if cmd == "taunt":
 			b.tooltip_text = "Turns your pet's taunting on or off (it tells you which)."
+		if cmd == "leave":
+			b.tooltip_text = "Dismisses your pet. Anything you gave it is left on its corpse."
+	_pet_gear_row = HBoxContainer.new()
+	_pet_gear_row.add_theme_constant_override("separation", 2)
+	_pet_gear_row.tooltip_text = "Give your pet gear: click it with an item on your cursor."
+	_pet_gear_row.mouse_filter = Control.MOUSE_FILTER_PASS
+	v.add_child(_pet_gear_row)
 	_pet_panel.visible = false
 
 
@@ -2337,6 +2346,23 @@ func _update_pet() -> void:
 	_pet_bar.max_value = maxi(pet.max_hp, 1)
 	_pet_bar.value = pet.hp
 	_pet_text.text = " %d%%" % roundi(100.0 * pet.hp / maxf(1.0, pet.max_hp))
+	var key := JSON.stringify(player.pet_gear)
+	if key != _pet_gear_key:  # its gear: a small icon for each piece, the item's tooltip on it
+		_pet_gear_key = key
+		for c in _pet_gear_row.get_children():
+			c.queue_free()
+		if player.pet_gear.is_empty():
+			_pet_gear_row.add_child(UIKit.label("Click your pet with an item to give it gear.", 10, UIKit.DIM))
+		for slot: String in World.PET_SLOTS:
+			if player.pet_gear.has(slot):
+				var icon := TextureRect.new()
+				icon.texture = GameData.item_icon(str(player.pet_gear[slot]))
+				icon.custom_minimum_size = Vector2(22, 22)
+				icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon.tooltip_text = _item_tooltip(str(player.pet_gear[slot]))
+				icon.mouse_filter = Control.MOUSE_FILTER_STOP
+				_pet_gear_row.add_child(icon)
 
 
 ## Merchant shop or bank, whichever the npc offers.
@@ -3428,6 +3454,8 @@ func _spell_usable(s: Dictionary, t: Entity) -> bool:
 		return false
 	if s.get("requires", "") == "shield" and not World.has_shield(player):
 		return false
+	if World._missing_reagent(player, s) != "":  # out of bone chips
+		return false
 	var reach := float(s.get("range", 0.0))
 	match str(s.get("target", "self")):
 		"enemy":
@@ -3657,6 +3685,8 @@ func spell_tooltip(spell_id: String) -> String:
 			lines.append("%d damage every 3s, %d times" % [int(s["tick"]), int(s["ticks"])])
 	var cost := "Mana %d" % int(s.get("mana", 0)) if int(s.get("mana", 0)) > 0 else "Ability"
 	lines.append("%s   Cast %.1fs   Recast %.0fs" % [cost, float(s.get("cast_time", 0)), float(s.get("recast", 0))])
+	for item_id: String in s.get("reagent", {}):
+		lines.append("Reagent: %s x%d (you have %d)" % [GameData.item_name(item_id), int(s["reagent"][item_id]), player.pack.count(item_id)])
 	return UIKit.wrap("\n".join(lines))
 
 

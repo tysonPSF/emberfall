@@ -57,6 +57,7 @@ var grove_deities: Array = []  # the gods who have come to the Grove for this ch
 var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
 var friends: Array = []  # characters' names (/friend), saved with the character
 var alignment_mods: Dictionary = {}  # faction -> the offset alignment has put on it (World.apply_alignment), saved
+var given: Array = []  # one-time gifts this character has had (World._gifts: the bone chips older necromancers got), saved
 var home_seen := ""  # the race's home city this character was last given (World._follow_home moves the bind when it changes), saved
 var guild_name := ""  # shown as <Guild Name> under the nameplate (World._set_guild_tag)
 var guild_rank := ""  # leader, officer or member (your own; for the guild window)
@@ -72,6 +73,7 @@ var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ..
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
+var pet_gear: Dictionary = {}  # what you have given your pet, slot -> item id; it outlives each pet you summon (zoning, logging in), saved
 var pet_hp := -1  # its health when you last left, to bring it back as it was
 var _zone_hold := 0.0  # online: seconds left standing still in a zone line, waiting for the server to move us
 var _held_line := false
@@ -146,8 +148,10 @@ func from_save(d: Dictionary) -> void:
 				pack.slots[g] = Pack.entry("small_sack")
 				break
 		var kit: Dictionary = GameData.classes.get(str(d.get("class", "warrior")), {}).get("starting_pack", {})
-		for item_id: String in kit:  # a ranger's first quiver
+		for item_id: String in kit:  # a ranger's first quiver, a necromancer's first bone chips
 			pack.add(item_id, int(kit[item_id]))
+		if not d.has("given"):
+			d["given"] = ["starting_pack_bone_chips"]  # a new character's pack already has what older ones are given once (World._gifts)
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
 	bank = []
 	for i in int(World.cfg("bank_slots", 16)):
@@ -178,6 +182,7 @@ func from_save(d: Dictionary) -> void:
 	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
 	alignment_mods = d.get("alignment_mods", {}) if d.get("alignment_mods") is Dictionary else {}
 	home_seen = str(d.get("home_seen", ""))
+	given = (d.get("given", []) as Array).duplicate()
 	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
@@ -192,6 +197,11 @@ func from_save(d: Dictionary) -> void:
 	var saved_pet: Dictionary = d.get("pet", {})
 	pet_spell = str(saved_pet.get("spell", ""))
 	pet_hp = int(saved_pet.get("hp", -1))
+	pet_gear = {}
+	var saved_gear: Dictionary = saved_pet.get("gear", {})
+	for slot: String in saved_gear:
+		if GameData.item(str(saved_gear[slot])).has("slot"):
+			pet_gear[slot] = str(saved_gear[slot])
 	factions = (d.get("factions", {}) as Dictionary).duplicate()
 	for k: String in factions:
 		factions[k] = int(factions[k])
@@ -315,7 +325,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity"]:
+			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity"]:
 		set(key, d[key])
 	if str(d.get("guild_name", "")) != guild_name:
 		guild_name = str(d.get("guild_name", ""))
@@ -385,15 +395,15 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
-		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen,
+		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given,
 	}
 
 
 func _pet_save() -> Dictionary:
-	if pet_spell == "":
+	if pet_spell == "" and pet_gear.is_empty():
 		return {}
 	var pet := World.get_object(pet_id) as Pet
-	return {"spell": pet_spell, "hp": pet.hp if pet != null and not pet.dead else pet_hp}
+	return {"spell": pet_spell, "hp": pet.hp if pet != null and not pet.dead else pet_hp, "gear": pet_gear}
 
 
 ## Whether one more of this item fits in the general slots and bags.
@@ -1023,6 +1033,8 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	if not cursor.is_empty():  # holding something: give it to the npc clicked, or drop it on the ground, as in EQ
 		if col is Npc:
 			World.request_give(entity_id, (col as Npc).entity_id)
+		elif col is Pet and (col as Pet).owner_id == entity_id:
+			World.request_give_pet(entity_id, (col as Pet).entity_id)  # your pet wears or wields it
 		elif col is Player and col != self:
 			World.request_give_player(entity_id, (col as Player).entity_id)  # a trade with them
 		else:

@@ -181,6 +181,9 @@
   },
   "necromancer": {
     "name": "Necromancer",
+    "starting_pack": {
+      "bone_chips": 3
+    },
     "description": "Raises the dead to fight for them, drains life to heal themselves, rots foes with disease and poison, sends them fleeing in terror, and feigns death when it all goes wrong.",
     "color": "#8a5aa8",
     "hp_base": 12,
