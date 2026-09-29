@@ -4458,12 +4458,12 @@
       "xp": 250,
       "coin": 100
     },
-    "accept_text": "You have taken on a task: The Proof in the Water. Meet Merrick at his pond in Greenmoor and give him the vial of spring water.",
-    "ready_text": "There you are. Well? Let's have that vial, {name}.",
+    "accept_text": "You have taken on a task: The Proof in the Water. Meet Merrick at his pond in Greenmoor, running clean again, and give him the vial of spring water.",
+    "ready_text": "Look at it, {name}. Just look at it. Clear to the bottom. Let's have that vial.",
     "complete_anim": "Emote_Cheer",
     "complete_text": [
-      "Watch. Right there, where it goes in. See the scum pull back from it?",
-      "It's spreading. Clear to the bottom. I haven't seen the bottom of this pond in a year.",
+      "Straight from the spring, is it? Same cold, same clean. That's the water I remember.",
+      "I haven't seen the bottom of this pond in a year. The scum's gone, the stink's gone. You did that, you and Corran.",
       "Now then. Line in the water. Let's see.",
       "There! You feel that? A bite! A real bite!",
       "Thirty years I've fished this pond, {name}, and I've never been so glad to feel a fish pull.",

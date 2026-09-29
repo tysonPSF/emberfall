@@ -3532,6 +3532,9 @@ func _t_merricks_line() -> void:
 func _t_wellspring() -> void:
 	var main := get_parent()
 	var p := World.local_player
+	p.level = 50  # a gray-con visitor: the cave leaves you be while it's looked over
+	p.recalc_stats()
+	p.hp = p.max_hp
 	var z: Zone = main.zone
 	if z.tunnel == null:
 		print("wellspring: FAIL no tunnel in %s" % z.zone_id)
@@ -3571,6 +3574,9 @@ func _t_wellspring() -> void:
 				ch.entries.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], int(e.get("count", 1))])])
 	if not chests.is_empty():
 		var ch: Corpse = chests[0]
+		p.level = 50  # a gray-con visitor: the monsters by the chest leave you be
+		p.recalc_stats()
+		p.hp = p.max_hp
 		p.global_position = ch.global_position + Vector3(2.5, 0.5, 2.5)
 		p.face_toward(ch.global_position)
 		p.camera_pivot.rotation.y = 0.0
@@ -3579,11 +3585,26 @@ func _t_wellspring() -> void:
 		await _shot("9zw_chest")
 		var coin := p.coin
 		print("wellspring: opening %s: %.1f m away, coin %d, dead %s" % [ch.display_name, p.distance_to(ch), ch.coin, p.dead])
+		var pos := ch.global_position
 		World.request_loot_open(p.entity_id, ch.object_id)
-		print("wellspring: opened: chest coin now %d, you %d" % [ch.coin, p.coin])
-		World.request_loot_all(p.entity_id, ch.object_id)
+		await _wait(0.2)
+		var opened: Corpse = null
+		for n: Node in z.get_children():
+			if n is Corpse and (n as Corpse).global_position.distance_to(pos) < 0.5 and not (n as Corpse).is_queued_for_deletion():
+				opened = n
+		p.global_position = opened.global_position + Vector3(1.5, 0.5, 0)  # right at it (a monster may have shoved you off)
+		World.request_loot_all(p.entity_id, opened.object_id)
 		await _wait(0.3)
-		print("wellspring: looted %s: +%d coin; chest still there %s" % [ch.display_name if is_instance_valid(ch) else "it", p.coin - coin, is_instance_valid(ch)])
+		print("wellspring: looted it: +%d coin; the chest still there %s, open %s, holding %d" % [p.coin - coin, is_instance_valid(opened), opened.look.get("open", false), opened.entries.size()])
+		World.request_loot_close(p.entity_id)
+		p.global_position = opened.global_position + opened.global_transform.basis.z * -2.6 + Vector3.UP * 0.5
+		p.face_toward(opened.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 0.0
+		p.pitch = -0.45
+		await _wait(0.4)
+		await _shot("9zw_chest_open")
+		p.zoom = 6.0
 	World.time_override = -1.0
 
 
@@ -3704,6 +3725,7 @@ func _t_wellspring_quest() -> void:
 	print("wellspring_quest: walker gone %s" % (walker == null or not is_instance_valid(walker)))
 	# the pond
 	await _ensure_zone("greenmoor")
+	print("wellspring_quest: the moment you're back in Greenmoor, the pond is clean: %s" % main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"]))
 	await _wait(1.0)
 	var pond_merrick: Npc = _npcs().get("merrick")
 	print("wellspring_quest: pond Merrick seen %s" % World.sees(p, pond_merrick))

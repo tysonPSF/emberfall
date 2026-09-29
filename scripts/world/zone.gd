@@ -125,6 +125,8 @@ func load_zone(id: String) -> void:
 		_build_chests()
 		_build_npcs()
 		_build_zone_lines()
+	if not _foul.is_empty():
+		_check_foul()  # clean from the first frame for whoever already cleaned it (the timer only catches changes)
 
 
 ## Treasure at the end of a side passage (zone data "chests": [{name, pos,

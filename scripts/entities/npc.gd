@@ -95,6 +95,8 @@ func _ready() -> void:
 		_resize(float(data["size"][0]), float(data["size"][1]))
 	_post = global_position
 	_post_yaw = rotation.y
+	if data.has("prop_after") and World.local_player != null:
+		_update_prop()  # the freed crystal is freed from the first frame, not half a second in
 
 
 ## A body as big as its model ("size": [radius, height] in npcs.json): the

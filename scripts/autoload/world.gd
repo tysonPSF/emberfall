@@ -2924,7 +2924,7 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if p == null or c == null or p.dead:
 		return
 	if p.distance_to(c) > LOOT_RANGE:
-		say(p, "You are too far away to loot that corpse.", C_WARN)
+		say(p, "You are too far away to loot %s." % (c.display_name if is_chest(c) else "that corpse"), C_WARN)
 		return
 	request_trade_cancel(player_id)
 	if c.owner_name != "" and c.owner_name != p.display_name:
@@ -2933,15 +2933,43 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if not c.rights.is_empty() and Time.get_ticks_msec() < c.rights_until and not p.display_name in c.rights:
 		say(p, "You may not loot this corpse yet.", C_WARN)
 		return
-	var chest := str(c.look.get("shape", "")).begins_with("prop:")  # a chest (the Wellspring's), not a body
+	var chest := is_chest(c)
+	if chest:
+		c = _open_chest(c)  # the lid goes up and stays up
 	if c.coin > 0:
 		_split_coin(p, c.coin, c.display_name if chest else "the corpse")
 		c.coin = 0
 	if c.entries.is_empty():
 		say(p, "%s is empty." % cap(c.display_name) if chest else "The corpse is empty.")
-		remove_corpse(c)
+		if not chest:  # a chest stays where it stands, open and empty
+			remove_corpse(c)
 		return
 	_ui(p, &"loot_opened", [c])
+
+
+## A chest (a lootable Corpse drawn as a prop, Zone._build_chests), not a body.
+static func is_chest(c: Corpse) -> bool:
+	return str(c.look.get("shape", "")).begins_with("prop:")
+
+
+## The chest with its lid open: a new Corpse in its place with the same
+## contents and "open" in its look, so every machine draws it open (a look is
+## sent when a corpse is spawned). Returns the open one.
+func _open_chest(c: Corpse) -> Corpse:
+	if c.look.get("open", false):
+		return c
+	var look := c.look.duplicate()
+	look["open"] = true
+	var open := Corpse.new()
+	open.setup(c.display_name, look, c.entries, c.coin, c.decay_left)
+	open.position = c.global_position
+	open.rotation.y = c.rotation.y
+	zone_of(c).add_child(open)
+	for pl in get_players():
+		if pl.target == c:
+			pl.target = open
+	remove_corpse(c)
+	return open
 
 
 ## Coin from a corpse is shared with the looter's group in the same zone; the
@@ -2970,7 +2998,7 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	if p == null or c == null or index < 0 or index >= c.entries.size():
 		return false
 	if p.distance_to(c) > LOOT_RANGE:
-		say(p, "You are too far away to loot that corpse.", C_WARN)
+		say(p, "You are too far away to loot %s." % (c.display_name if is_chest(c) else "that corpse"), C_WARN)
 		return false
 	var entry: Dictionary = c.entries[index]
 	if c.owner_name == "" and not can_receive(p, entry["item"]):
@@ -2993,10 +3021,10 @@ func request_loot_item(player_id: int, corpse_id: int, index: int) -> bool:
 	var n := int(entry.get("count", 1))
 	say(p, "--You have looted %s.--" % ("a " + GameData.item_name(entry["item"]) if n <= 1 else "%d %s" % [n, plural(GameData.item_name(entry["item"]))]), C_LOOT)
 	p.inventory_changed.emit()
-	if c.entries.is_empty():
+	if c.entries.is_empty() and not is_chest(c):
 		remove_corpse(c)
 	else:
-		_ui(p, &"loot_changed", [c])
+		_ui(p, &"loot_changed", [c])  # an emptied chest stays, open
 	return true
 
 

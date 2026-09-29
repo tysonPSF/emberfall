@@ -366,6 +366,9 @@ static func make_visual(look_: Dictionary) -> Node3D:
 		var prop: Node3D = (load(str(spec["path"])) as PackedScene).instantiate()
 		prop.scale = Vector3.ONE * float(spec.get("scale", 1.0))
 		root.add_child(prop)
+		var lid := prop.find_child("chest_lid", true, false) as Node3D
+		if lid != null and look_.get("open", false):  # an opened chest: the lid thrown back on its hinge
+			lid.rotation.x = -1.9
 		shape = "none"
 	match shape:
 		"none":
