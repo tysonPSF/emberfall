@@ -1,0 +1,721 @@
+{
+  "name": "Duskwood",
+  "levels": [
+    1,
+    10
+  ],
+  "music": "duskwood",
+  "seed": 7331,
+  "size": 384,
+  "bind_point": [
+    166,
+    150
+  ],
+  "height_amplitude": 5.0,
+  "flat_radius": 20,
+  "trees": 320,
+  "tree_mix": [
+    "dusk_tree",
+    "dusk_tree_b",
+    "dusk_tree",
+    "pine_a"
+  ],
+  "groves": 0.55,
+  "rocks": 50,
+  "grass_colors": [
+    "#2e3a2a",
+    "#3c4632"
+  ],
+  "fog_density": 0.02,
+  "fog_color": "#3a3448",
+  "sun_energy": 0.5,
+  "passes": [
+    [
+      0,
+      -192.0,
+      9
+    ],
+    [
+      -192.0,
+      0,
+      9
+    ]
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        0,
+        -181.0
+      ],
+      "size": [
+        18,
+        8
+      ],
+      "to": "rainhold",
+      "arrive": [
+        0,
+        58.0
+      ],
+      "arrive_face": [
+        0,
+        18.0
+      ]
+    },
+    {
+      "pos": [
+        -181.0,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_rotfen",
+      "arrive": [
+        199.0,
+        0
+      ],
+      "arrive_face": [
+        159.0,
+        0
+      ]
+    },
+    {
+      "pos": [
+        142.5,
+        120
+      ],
+      "size": [
+        3,
+        4
+      ],
+      "to": "duskhold",
+      "arrive": [
+        0,
+        -80
+      ],
+      "arrive_face": [
+        0,
+        -40
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          0,
+          -192
+        ],
+        [
+          -6,
+          -120
+        ],
+        [
+          10,
+          -40
+        ],
+        [
+          0,
+          40
+        ],
+        [
+          -60,
+          20
+        ],
+        [
+          -120,
+          0
+        ],
+        [
+          -192,
+          0
+        ]
+      ],
+      "width": 3.0
+    },
+    {
+      "points": [
+        [
+          0,
+          40
+        ],
+        [
+          60,
+          90
+        ],
+        [
+          120,
+          120
+        ],
+        [
+          150,
+          120
+        ]
+      ],
+      "width": 2.8
+    }
+  ],
+  "clutter": {
+    "grass_b": {
+      "density": 0.22,
+      "patch": 0.5,
+      "sway": 0.14,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.2
+      ]
+    },
+    "fern": {
+      "density": 0.04,
+      "patch": 0.8,
+      "sway": 0.08,
+      "range": 50,
+      "scale": [
+        0.9,
+        1.6
+      ]
+    },
+    "mushrooms": {
+      "density": 0.01,
+      "patch": 0.8,
+      "sway": 0.0,
+      "range": 40,
+      "scale": [
+        0.8,
+        1.4
+      ]
+    }
+  },
+  "landmarks": [
+    {
+      "type": "cave",
+      "pos": [
+        150,
+        120
+      ],
+      "face": [
+        300,
+        120
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        8,
+        -170
+      ],
+      "face": [
+        8,
+        -190
+      ],
+      "labels": [
+        "Rainhold"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        -170,
+        8
+      ],
+      "face": [
+        -190,
+        8
+      ],
+      "labels": [
+        "The Rotfen"
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        166,
+        108
+      ],
+      "face": [
+        150,
+        120
+      ],
+      "labels": [
+        "Duskhold"
+      ]
+    },
+    {
+      "type": "camp",
+      "pos": [
+        166,
+        138
+      ]
+    },
+    {
+      "type": "outpost",
+      "pos": [
+        120,
+        -110
+      ]
+    },
+    {
+      "type": "ruins",
+      "pos": [
+        -120,
+        -60
+      ]
+    },
+    {
+      "type": "ruins",
+      "pos": [
+        -60,
+        110
+      ]
+    },
+    {
+      "type": "ruins",
+      "pos": [
+        40,
+        60
+      ]
+    },
+    {
+      "type": "spider_nest",
+      "pos": [
+        -130,
+        120
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "dusk_sentinel_vaelith",
+      "pos": [
+        172,
+        130
+      ],
+      "face": [
+        150,
+        120
+      ]
+    },
+    {
+      "id": "dusk_huntress_ilvra",
+      "pos": [
+        160,
+        144
+      ],
+      "face": [
+        166,
+        138
+      ]
+    },
+    {
+      "id": "duskhold_guard",
+      "name": "Cave Sentinel Rhyzz",
+      "pos": [
+        158,
+        112
+      ],
+      "face": [
+        150,
+        120
+      ]
+    }
+  ],
+  "spawns": [
+    {
+      "pos": [
+        130,
+        80
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        110,
+        150
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        110
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        140,
+        60
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        70,
+        150
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        40
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        110
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        140
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        100
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        140
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        20,
+        60
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        80
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 45,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -50
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -110,
+        -70
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        100
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -70,
+        120
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        50
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        70
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        0
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -30
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -80,
+        -20
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        -40
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        40
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        10
+      ],
+      "pool": {
+        "gloomfang_wolf": 1
+      },
+      "respawn": 55,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -60
+      ],
+      "pool": {
+        "lesser_shade": 1
+      },
+      "respawn": 80,
+      "wander": 16,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -60,
+        110
+      ],
+      "pool": {
+        "lesser_shade": 1
+      },
+      "respawn": 80,
+      "wander": 16,
+      "when": "night"
+    },
+    {
+      "pos": [
+        40,
+        60
+      ],
+      "pool": {
+        "lesser_shade": 1
+      },
+      "respawn": 80,
+      "wander": 16,
+      "when": "night"
+    },
+    {
+      "pos": [
+        -20,
+        -80
+      ],
+      "pool": {
+        "lesser_shade": 1
+      },
+      "respawn": 80,
+      "wander": 16,
+      "when": "night"
+    },
+    {
+      "pos": [
+        100,
+        -100
+      ],
+      "pool": {
+        "hearth_scout": 2,
+        "hearth_archer": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        140,
+        -120
+      ],
+      "pool": {
+        "hearth_scout": 2,
+        "hearth_archer": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        120,
+        -140
+      ],
+      "pool": {
+        "hearth_scout": 2,
+        "hearth_archer": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        150,
+        -90
+      ],
+      "pool": {
+        "hearth_scout": 2,
+        "hearth_archer": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        90,
+        -130
+      ],
+      "pool": {
+        "hearth_scout": 2,
+        "hearth_archer": 1
+      },
+      "respawn": 70,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -136,
+        124
+      ],
+      "pool": {
+        "silkmother_vyss": 1
+      },
+      "respawn": 900,
+      "wander": 4
+    },
+    {
+      "pos": [
+        122,
+        -114
+      ],
+      "pool": {
+        "scout_captain_aldren": 1
+      },
+      "respawn": 900,
+      "wander": 3
+    }
+  ]
+}

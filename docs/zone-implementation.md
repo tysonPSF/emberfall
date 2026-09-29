@@ -126,6 +126,17 @@ those same offsets on the neighbour — and check they fall inside the
 neighbour's half-extent, since Hollowmere (448) and The Weeping Throat (448)
 are smaller than Thornwood (512).
 
+## Sealed neighbors and doors
+
+Neighboring cells normally share a border. `SEALED` in `tools/world_layout.py`
+lists pairs that do not (the Wallow and Reedmere; Duskwood and Emberhold):
+leave the mountain shut on both sides, no pass, no zone line. `DOORS` lists
+off-grid zones reached through a door inside another zone (Duskhold, through a
+cave in Duskwood): the door's zone line and its way back are authored with the
+zone (like the Emberhold crypt), and the layout counts it as walkable. An
+interior that is a whole zone needs a `passes` gap in its wall where its exit
+is, or its mountain ring blocks the way out.
+
 ## Cities
 
 Six of them, and **a city ends in `-hold`** — Emberhold, Lanternhold, Rainhold,

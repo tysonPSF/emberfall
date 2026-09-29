@@ -13961,5 +13961,1069 @@
       "chance": 0.3,
       "text": "%s points at you; %s takes hold!"
     }
+  },
+  "bog_rat": {
+    "name": "a bog rat",
+    "level": [
+      1,
+      2
+    ],
+    "hp_base": 8,
+    "hp_per_level": 6,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "attack_delay": 2.6,
+    "ac": 2,
+    "speed": 6.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bog_rat_tail",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.2
+      }
+    ],
+    "model": "rat"
+  },
+  "wallow_toad": {
+    "name": "a wallow toad",
+    "level": [
+      2,
+      4
+    ],
+    "hp_base": 14,
+    "hp_per_level": 8,
+    "dmg_min": 2,
+    "dmg_max": 5,
+    "attack_delay": 2.8,
+    "ac": 6,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 0.7,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wallow_toad_skin",
+        "chance": 0.55
+      },
+      {
+        "item": "frog_legs",
+        "chance": 0.25
+      }
+    ],
+    "model": "mire_toad"
+  },
+  "swamp_leech": {
+    "name": "a swamp leech",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 20,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 0.75,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "swamp_leech_teeth",
+        "chance": 0.5
+      }
+    ],
+    "model": "bog_leech"
+  },
+  "pondkin_forager": {
+    "name": "a pondkin forager",
+    "level": [
+      4,
+      6
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": true,
+    "faction": "wallow_pondkin",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      3,
+      20
+    ],
+    "loot": [
+      {
+        "item": "pondkin_bead",
+        "chance": 0.5
+      }
+    ],
+    "model": "pondkin"
+  },
+  "pondkin_mudslinger": {
+    "name": "a pondkin mudslinger",
+    "level": [
+      5,
+      7
+    ],
+    "hp_base": 26,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 7,
+    "attack_delay": 2.6,
+    "ac": 10,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wallow_pondkin",
+    "verb": [
+      "slap",
+      "slaps"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      5,
+      25
+    ],
+    "loot": [
+      {
+        "item": "pondkin_bead",
+        "chance": 0.5
+      }
+    ],
+    "model": "pondkin_mudcaller"
+  },
+  "mud_turtle": {
+    "name": "a mud turtle",
+    "level": [
+      6,
+      8
+    ],
+    "hp_base": 33,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 3.2,
+    "ac": 11,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mud_turtle_shell",
+        "chance": 0.45
+      }
+    ],
+    "model": "snapping_turtle"
+  },
+  "bog_wisp": {
+    "name": "a bog wisp",
+    "level": [
+      5,
+      8
+    ],
+    "hp_base": 29,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "attack_delay": 2.6,
+    "ac": 11,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bog_wisp_light",
+        "chance": 0.5
+      }
+    ],
+    "model": "lantern_wisp",
+    "xp_mult": 1.1
+  },
+  "chief_wetbelly": {
+    "name": "Chief Wetbelly",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 540,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.6,
+    "ac": 18,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wallow_pondkin",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "wetbellys_crown",
+        "chance": 1.0
+      }
+    ],
+    "model": "pondkin_bloatking",
+    "named": true
+  },
+  "gulpmaw": {
+    "name": "Gulpmaw",
+    "level": [
+      8,
+      8
+    ],
+    "hp_base": 480,
+    "hp_per_level": 0,
+    "dmg_min": 4,
+    "dmg_max": 13,
+    "attack_delay": 2.6,
+    "ac": 17,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "swallow",
+      "swallows"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.7,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gulpmaws_tongue",
+        "chance": 1.0
+      }
+    ],
+    "model": "mire_toad",
+    "named": true
+  },
+  "gloom_rat": {
+    "name": "a gloom rat",
+    "level": [
+      1,
+      2
+    ],
+    "hp_base": 8,
+    "hp_per_level": 6,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "attack_delay": 2.6,
+    "ac": 2,
+    "speed": 6.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gloom_rat_tail",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.2
+      }
+    ],
+    "model": "rat"
+  },
+  "dusk_spiderling": {
+    "name": "a duskwood spiderling",
+    "level": [
+      2,
+      4
+    ],
+    "hp_base": 14,
+    "hp_per_level": 8,
+    "dmg_min": 2,
+    "dmg_max": 5,
+    "attack_delay": 2.6,
+    "ac": 6,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 0.55,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "duskwood_silk",
+        "chance": 0.55
+      }
+    ],
+    "model": "spider"
+  },
+  "restless_bones": {
+    "name": "restless bones",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 20,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      8
+    ],
+    "loot": [
+      {
+        "item": "bone_chips",
+        "chance": 0.4
+      }
+    ],
+    "model": "skeleton_minion"
+  },
+  "gloomfang_wolf": {
+    "name": "a gloomfang wolf",
+    "level": [
+      4,
+      6
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "gloomfang_pelt",
+        "chance": 0.5
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "wolf"
+  },
+  "lesser_shade": {
+    "name": "a lesser shade",
+    "level": [
+      5,
+      7
+    ],
+    "hp_base": 26,
+    "hp_per_level": 11,
+    "dmg_min": 2,
+    "dmg_max": 7,
+    "attack_delay": 2.6,
+    "ac": 10,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "touch",
+      "touches"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "shade_dust",
+        "chance": 0.5
+      }
+    ],
+    "model": "shade"
+  },
+  "hearth_scout": {
+    "name": "a Hearth scout",
+    "level": [
+      6,
+      8
+    ],
+    "hp_base": 33,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "attack_delay": 2.6,
+    "ac": 11,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_scouts",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      8,
+      30
+    ],
+    "loot": [
+      {
+        "item": "hearth_scout_badge",
+        "chance": 0.5
+      }
+    ],
+    "model": "ranger_class",
+    "weapon": "sword_1handed"
+  },
+  "hearth_archer": {
+    "name": "a Hearth archer",
+    "level": [
+      7,
+      9
+    ],
+    "hp_base": 38,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "attack_delay": 2.6,
+    "ac": 13,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_scouts",
+    "verb": [
+      "shoot",
+      "shoots"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      8,
+      30
+    ],
+    "loot": [
+      {
+        "item": "hearth_scout_badge",
+        "chance": 0.5
+      }
+    ],
+    "model": "ranger_class",
+    "weapon": "bow"
+  },
+  "silkmother_vyss": {
+    "name": "the Silkmother Vyss",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 540,
+    "hp_per_level": 0,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.6,
+    "ac": 18,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.5,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "vyss_fang",
+        "chance": 1.0
+      }
+    ],
+    "model": "spider",
+    "named": true
+  },
+  "scout_captain_aldren": {
+    "name": "Scout-Captain Aldren",
+    "level": [
+      10,
+      10
+    ],
+    "hp_base": 600,
+    "hp_per_level": 0,
+    "dmg_min": 7,
+    "dmg_max": 16,
+    "attack_delay": 2.6,
+    "ac": 20,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "hearth_scouts",
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      60,
+      200
+    ],
+    "loot": [
+      {
+        "item": "aldrens_orders",
+        "chance": 1.0
+      }
+    ],
+    "model": "knight",
+    "named": true,
+    "weapon": "sword_1handed"
+  },
+  "plague_rat": {
+    "name": "a plague rat",
+    "level": [
+      10,
+      11
+    ],
+    "hp_base": 46,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "attack_delay": 2.6,
+    "ac": 16,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.3,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "plague_rat_tail",
+        "chance": 0.5
+      }
+    ],
+    "model": "rat"
+  },
+  "fen_eel": {
+    "name": "a fen eel",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 46,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.6,
+    "ac": 16,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "fen_eel_skin",
+        "chance": 0.5
+      }
+    ],
+    "model": "marsh_eel"
+  },
+  "rotfen_lurker": {
+    "name": "a rotfen lurker",
+    "level": [
+      11,
+      13
+    ],
+    "hp_base": 48,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.6,
+    "ac": 17,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rotfen_lurker_hide",
+        "chance": 0.5
+      }
+    ],
+    "model": "bog_lurker"
+  },
+  "rotfen_mirescale": {
+    "name": "a mirescale fenhunter",
+    "level": [
+      12,
+      14
+    ],
+    "hp_base": 61,
+    "hp_per_level": 15,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.6,
+    "ac": 19,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "mirescale",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      12,
+      45
+    ],
+    "loot": [
+      {
+        "item": "mirescale_scale",
+        "chance": 0.55
+      }
+    ],
+    "model": "lizardfolk"
+  },
+  "rotfen_mirescale_shaman": {
+    "name": "a mirescale fen-shaman",
+    "level": [
+      12,
+      14
+    ],
+    "hp_base": 61,
+    "hp_per_level": 15,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "attack_delay": 2.6,
+    "ac": 19,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "mirescale",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      15,
+      55
+    ],
+    "loot": [
+      {
+        "item": "mirescale_scale",
+        "chance": 0.55
+      }
+    ],
+    "model": "lizardfolk_shaman"
+  },
+  "gristle_hag": {
+    "name": "a gristle hag",
+    "level": [
+      14,
+      16
+    ],
+    "hp_base": 88,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.6,
+    "ac": 23,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "gristle_coven",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      20,
+      70
+    ],
+    "loot": [
+      {
+        "item": "hag_charm",
+        "chance": 0.5
+      }
+    ],
+    "model": "bog_hag"
+  },
+  "feral_fen_troll": {
+    "name": "a feral fen troll",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 96,
+    "hp_per_level": 18,
+    "dmg_min": 9,
+    "dmg_max": 18,
+    "attack_delay": 2.6,
+    "ac": 26,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      20,
+      80
+    ],
+    "loot": [
+      {
+        "item": "troll_tusk",
+        "chance": 0.5
+      }
+    ],
+    "model": "river_troll",
+    "hp_regen": 12
+  },
+  "chief_sisska": {
+    "name": "Chief Sisska",
+    "level": [
+      16,
+      16
+    ],
+    "hp_base": 1200,
+    "hp_per_level": 0,
+    "dmg_min": 13,
+    "dmg_max": 26,
+    "attack_delay": 2.6,
+    "ac": 34,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "mirescale",
+    "verb": [
+      "stab",
+      "stabs"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      150,
+      400
+    ],
+    "loot": [
+      {
+        "item": "chief_sisskas_totem",
+        "chance": 1.0
+      }
+    ],
+    "model": "lizardfolk_chief",
+    "named": true
+  },
+  "mother_gristlewort": {
+    "name": "Mother Gristlewort",
+    "level": [
+      17,
+      17
+    ],
+    "hp_base": 1275,
+    "hp_per_level": 0,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.6,
+    "ac": 36,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "gristle_coven",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.25,
+    "coin": [
+      150,
+      420
+    ],
+    "loot": [
+      {
+        "item": "gristleworts_heart",
+        "chance": 1.0
+      }
+    ],
+    "model": "bog_hag",
+    "named": true
+  },
+  "old_mudjaw": {
+    "name": "Old Mudjaw",
+    "level": [
+      17,
+      17
+    ],
+    "hp_base": 1275,
+    "hp_per_level": 0,
+    "dmg_min": 14,
+    "dmg_max": 29,
+    "attack_delay": 2.6,
+    "ac": 36,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mudjaws_tooth",
+        "chance": 1.0
+      }
+    ],
+    "model": "ancient_croc",
+    "named": true
   }
 }

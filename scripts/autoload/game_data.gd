@@ -16,6 +16,7 @@ var pets: Dictionary = {}  # data/pets.json: tiers, base stats, kinds
 var factions: Dictionary = {}
 var deities: Dictionary = {}
 var races: Dictionary = {}  # data/races.json: base stats, classes, home city, looks, trait
+var alignment: Dictionary = {}  # data/alignment.json: which factions are the good and evil sides, and what alignment does to them
 var emotes: Dictionary = {}  # data/emotes.json: /wave, /bow...: the lines everyone sees, and the clip played
 var _emote_names: Dictionary = {}  # every command word (an emote's id or an alias) -> its emote id
 var loot: Dictionary = {}
@@ -37,6 +38,7 @@ func _ready() -> void:
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
 	races = _load("res://data/races.json")
+	alignment = _load("res://data/alignment.json")
 	emotes = _load("res://data/emotes.json")
 	for id: String in emotes:
 		_emote_names[id] = id
@@ -57,6 +59,13 @@ func race_bonus(race_id: String, key: String) -> float:
 
 func deity_bonus(deity_id: String, key: String) -> float:
 	return float(deities.get(deity_id, {}).get("bonus", {}).get(key, 0))
+
+
+## Whether a race may follow a god: every race, unless the god names its own
+## ("races", e.g. the bog gods take only trolls and ogres).
+func deity_allows(deity_id: String, race_id: String) -> bool:
+	var only: Array = deities.get(deity_id, {}).get("races", [])
+	return only.is_empty() or (race_id if race_id != "" else "human") in only
 
 
 ## A deity's portrait, cut from the shared atlas.

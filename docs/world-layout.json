@@ -7,6 +7,8 @@
   "dawnwatch",
   "dewstep",
   "drownfast",
+  "duskhold",
+  "duskwood",
   "emberhold",
   "emberhold_crypt",
   "emberhold_tavern",
@@ -22,6 +24,7 @@
   "lanternhold",
   "lastwalk",
   "mirror_flats",
+  "murkhold",
   "rainhold",
   "reedmere",
   "silted_reach",
@@ -32,7 +35,9 @@
   "the_burn",
   "the_grove",
   "the_long_grass",
+  "the_rotfen",
   "the_unlit",
+  "the_wallow",
   "thornwood",
   "tidemouth",
   "timirajs_table",
@@ -71,6 +76,11 @@
    "name": "The Boneyard",
    "deity": "dark",
    "accent": "#6b5a9e"
+  },
+  "blackwater": {
+   "name": "The Blackwater",
+   "deity": null,
+   "accent": "#4d5a3c"
   }
  },
  "zones": [
@@ -720,6 +730,94 @@
    "reached": "foot"
   },
   {
+   "id": "murkhold",
+   "name": "Murkhold",
+   "area": "blackwater",
+   "levels": [
+    1,
+    1
+   ],
+   "size": 224,
+   "cell": [
+    -3,
+    1
+   ],
+   "kind": "city",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "the_wallow",
+   "name": "The Wallow",
+   "area": "blackwater",
+   "levels": [
+    1,
+    10
+   ],
+   "size": 384,
+   "cell": [
+    -2,
+    1
+   ],
+   "kind": "water",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "duskwood",
+   "name": "Duskwood",
+   "area": "blackwater",
+   "levels": [
+    1,
+    10
+   ],
+   "size": 384,
+   "cell": [
+    -1,
+    0
+   ],
+   "kind": "wood",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "the_rotfen",
+   "name": "The Rotfen",
+   "area": "blackwater",
+   "levels": [
+    10,
+    18
+   ],
+   "size": 448,
+   "cell": [
+    -2,
+    0
+   ],
+   "kind": "water",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "duskhold",
+   "name": "Duskhold",
+   "area": "blackwater",
+   "levels": [
+    1,
+    1
+   ],
+   "size": 224,
+   "cell": null,
+   "kind": "city",
+   "built": true,
+   "existing": true,
+   "reached": "door",
+   "door_in": "duskwood"
+  },
+  {
    "id": "barrowhold",
    "name": "Barrowhold",
    "area": "boneyard",
@@ -922,6 +1020,13 @@
    "cross_area": false
   },
   {
+   "a": "rainhold",
+   "a_edge": "west",
+   "b": "the_wallow",
+   "b_edge": "east",
+   "cross_area": true
+  },
+  {
    "a": "cinderpass",
    "a_edge": "north",
    "b": "the_burn",
@@ -1108,6 +1213,34 @@
    "a_edge": "east",
    "b": "timirajs_table",
    "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "murkhold",
+   "a_edge": "east",
+   "b": "the_wallow",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
+   "a": "duskwood",
+   "a_edge": "north",
+   "b": "rainhold",
+   "b_edge": "south",
+   "cross_area": true
+  },
+  {
+   "a": "duskwood",
+   "a_edge": "west",
+   "b": "the_rotfen",
+   "b_edge": "east",
+   "cross_area": false
+  },
+  {
+   "a": "the_rotfen",
+   "a_edge": "north",
+   "b": "the_wallow",
+   "b_edge": "south",
    "cross_area": false
   },
   {

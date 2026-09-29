@@ -1,0 +1,950 @@
+{
+  "name": "Murkhold",
+  "music": "murkhold",
+  "seed": 7311,
+  "size": 224,
+  "bindstone": true,
+  "bind_point": [
+    0,
+    4
+  ],
+  "height_amplitude": 1.2,
+  "flat_radius": 80,
+  "clear_radius": 96,
+  "trees": 0,
+  "rocks": 6,
+  "grass_colors": [
+    "#3e4a2c",
+    "#4a5632"
+  ],
+  "fog_density": 0.02,
+  "fog_color": "#4c5840",
+  "sun_energy": 0.55,
+  "rain": {
+    "amount": 900
+  },
+  "passes": [
+    [
+      112.0,
+      0,
+      9
+    ]
+  ],
+  "zone_lines": [
+    {
+      "pos": [
+        97.0,
+        0
+      ],
+      "size": [
+        8,
+        18
+      ],
+      "to": "the_wallow",
+      "arrive": [
+        -167.0,
+        0
+      ],
+      "arrive_face": [
+        -127.0,
+        0
+      ]
+    }
+  ],
+  "water": {
+    "shallow": "#1e2416",
+    "deep": "#0a0d07",
+    "sky": "#2a3024",
+    "murk": 0.2,
+    "foam": 0.04,
+    "shine": 0.12
+  },
+  "lakes": [
+    {
+      "points": [
+        [
+          102.0,
+          0.0
+        ],
+        [
+          98.75512433079652,
+          -35.943925737667946
+        ],
+        [
+          74.07594001956367,
+          -62.15709394952619
+        ],
+        [
+          53.99563003612383,
+          -93.52317460925858
+        ],
+        [
+          16.849610775339865,
+          -95.55889125781958
+        ],
+        [
+          -18.149881563590853,
+          -102.93309333980747
+        ],
+        [
+          -51.32326095689831,
+          -88.89449558746398
+        ],
+        [
+          -75.35656026241394,
+          -63.23166192298003
+        ],
+        [
+          -101.08533948626366,
+          -36.792054693694
+        ],
+        [
+          -96.0785066512761,
+          -1.1766223563734295e-14
+        ],
+        [
+          -100.14807061316438,
+          36.450916722381606
+        ],
+        [
+          -76.66600381853723,
+          64.33041552797053
+        ],
+        [
+          -50.35724237911239,
+          87.22130232968321
+        ],
+        [
+          -18.428018131276087,
+          104.51048419949159
+        ],
+        [
+          16.70844131308946,
+          94.7582794530739
+        ],
+        [
+          53.89138615885228,
+          93.34261891744627
+        ],
+        [
+          74.97241437362788,
+          62.90932524938142
+        ],
+        [
+          97.06641716148744,
+          35.329286593647495
+        ]
+      ],
+      "depth": 0.25,
+      "shelf": 20,
+      "bank": 8,
+      "islands": [
+        [
+          0,
+          0,
+          26
+        ],
+        [
+          -52,
+          -6,
+          16
+        ],
+        [
+          34,
+          -36,
+          14
+        ],
+        [
+          34,
+          34,
+          14
+        ],
+        [
+          -34,
+          42,
+          13
+        ],
+        [
+          -34,
+          -46,
+          12
+        ],
+        [
+          70,
+          0,
+          14
+        ]
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "points": [
+        [
+          112,
+          0
+        ],
+        [
+          80,
+          0
+        ],
+        [
+          30,
+          0
+        ]
+      ],
+      "width": 3.4
+    }
+  ],
+  "clutter": {
+    "reeds_tall": {
+      "density": 0.02,
+      "patch": 0.7,
+      "sway": 0.2,
+      "range": 50,
+      "scale": [
+        0.8,
+        1.3
+      ]
+    },
+    "grass_b": {
+      "density": 0.12,
+      "patch": 0.5,
+      "sway": 0.14,
+      "range": 45,
+      "tint": "ground",
+      "scale": [
+        0.8,
+        1.2
+      ]
+    }
+  },
+  "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        96,
+        0
+      ],
+      "id": "bone_gate",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        99,
+        -12
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        -12
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        97,
+        -20
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        -20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        95,
+        -28
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        -28
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        93,
+        -36
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        -36
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        99,
+        12
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        12
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        97,
+        20
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        20
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        95,
+        28
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        28
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        93,
+        36
+      ],
+      "id": "bone_palisade",
+      "collide": "box",
+      "face": [
+        0,
+        36
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -10,
+        -8
+      ],
+      "id": "idol_makarosh",
+      "collide": "box",
+      "face": [
+        0,
+        4
+      ],
+      "scale": 1.6
+    },
+    {
+      "type": "prop",
+      "pos": [
+        10,
+        -8
+      ],
+      "id": "idol_mahishra",
+      "collide": "box",
+      "face": [
+        0,
+        4
+      ],
+      "scale": 1.6
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        14
+      ],
+      "id": "murk_cauldron",
+      "collide": "box"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20.4,
+        -8.2
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        8.6,
+        -20.3
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8.2,
+        -20.4
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20.3,
+        -8.6
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20.4,
+        8.2
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -8.6,
+        20.3
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        8.2,
+        20.4
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20.3,
+        8.6
+      ],
+      "id": "bog_lantern",
+      "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -52,
+        -6
+      ],
+      "id": "murk_longhouse",
+      "collide": "mesh",
+      "face": [
+        0,
+        -6
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        34,
+        -36
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        34,
+        34
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -34,
+        42
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -34,
+        -46
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        -14
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        70,
+        14
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        30
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -70,
+        -34
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        -60
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        0,
+        62
+      ],
+      "id": "murk_hut",
+      "collide": "mesh",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        46,
+        -20
+      ],
+      "id": "troll_totem",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -20,
+        60
+      ],
+      "id": "troll_totem",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -60,
+        60
+      ],
+      "id": "troll_totem",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        60,
+        56
+      ],
+      "id": "troll_totem",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -12,
+        -70
+      ],
+      "id": "troll_totem",
+      "collide": "box",
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -82,
+        70
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        82,
+        -70
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -88,
+        -60
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        80,
+        70
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -84
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        84
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -90,
+        10
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        20,
+        -88
+      ],
+      "id": "mangrove_tree",
+      "collide": "trunk",
+      "scale": 1.3
+    },
+    {
+      "type": "prop",
+      "pos": [
+        42,
+        24
+      ],
+      "id": "forge",
+      "collide": "box",
+      "face": [
+        34,
+        34
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        48,
+        32
+      ],
+      "id": "oven",
+      "collide": "box",
+      "face": [
+        34,
+        34
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        42
+      ],
+      "id": "loom",
+      "collide": "box",
+      "face": [
+        34,
+        34
+      ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        28,
+        44
+      ],
+      "id": "brew_barrel",
+      "collide": "box",
+      "face": [
+        34,
+        34
+      ]
+    },
+    {
+      "type": "signpost",
+      "pos": [
+        84,
+        6
+      ],
+      "face": [
+        100,
+        6
+      ],
+      "labels": [
+        "The Wallow"
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "murk_priest_makarosh",
+      "pos": [
+        -6,
+        -2
+      ],
+      "face": [
+        0,
+        6
+      ]
+    },
+    {
+      "id": "murk_priest_mahishra",
+      "pos": [
+        6,
+        -2
+      ],
+      "face": [
+        0,
+        6
+      ]
+    },
+    {
+      "id": "murk_gm_warrior",
+      "pos": [
+        -40,
+        -24
+      ],
+      "face": [
+        -52,
+        -6
+      ]
+    },
+    {
+      "id": "murk_gm_shaman",
+      "pos": [
+        -40,
+        14
+      ],
+      "face": [
+        -52,
+        -6
+      ]
+    },
+    {
+      "id": "murk_banker",
+      "pos": [
+        -30,
+        -6
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "murk_registrar",
+      "pos": [
+        -30,
+        6
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "murk_provisioner",
+      "pos": [
+        36,
+        26
+      ],
+      "face": [
+        42,
+        34
+      ]
+    },
+    {
+      "id": "murk_outfitter",
+      "pos": [
+        44,
+        -30
+      ],
+      "face": [
+        34,
+        -36
+      ]
+    },
+    {
+      "id": "murk_smith",
+      "pos": [
+        26,
+        -44
+      ],
+      "face": [
+        34,
+        -36
+      ]
+    },
+    {
+      "id": "murkhold_guard",
+      "pos": [
+        88,
+        -8
+      ],
+      "face": [
+        0,
+        -8
+      ]
+    },
+    {
+      "id": "murkhold_guard_ogre",
+      "pos": [
+        88,
+        8
+      ],
+      "face": [
+        0,
+        8
+      ]
+    },
+    {
+      "id": "murkhold_guard",
+      "pos": [
+        20,
+        -18
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "murkhold_guard_ogre",
+      "pos": [
+        -20,
+        20
+      ],
+      "face": [
+        0,
+        0
+      ]
+    }
+  ],
+  "spawns": []
+}

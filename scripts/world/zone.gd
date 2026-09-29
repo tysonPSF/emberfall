@@ -549,8 +549,8 @@ func _build_environment() -> void:
 		ienv.ambient_light_energy = float(data.get("ambient_energy", 0.34))
 		ienv.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 		ienv.fog_enabled = true
-		ienv.fog_light_color = Color(0.1, 0.07, 0.05)
-		ienv.fog_density = 0.022
+		ienv.fog_light_color = Color.html(str(data.get("fog_color", "#1a1209")))
+		ienv.fog_density = float(data.get("fog_density", 0.022))
 		var iwe := WorldEnvironment.new()
 		iwe.environment = ienv
 		add_child(iwe)
@@ -759,6 +759,20 @@ func _build_landmarks() -> void:
 				_build_vent(p, float(lm.get("scale", 1.0)))
 			"grove":
 				_build_grove(p, lm)
+
+
+## A zone's own water ("water": {shallow, deep, sky} hex colors, and murk,
+## foam and shine): a black bog,
+## an inky cavern lake. Zones without it keep the shader's clear blue-green.
+func _tint_water(mat: ShaderMaterial) -> void:
+	var w: Dictionary = data.get("water", {})
+	for key: String in ["shallow", "deep", "sky"]:
+		if w.has(key):
+			var c := Color.html(str(w[key]))
+			mat.set_shader_parameter(key, Vector3(c.r, c.g, c.b))
+	for key: String in ["murk", "foam", "shine"]:
+		if w.has(key):
+			mat.set_shader_parameter(key, float(w[key]))
 
 
 ## The Grove's pond (a `lakes` entry around pos): lotus floating on it, and
@@ -1035,6 +1049,7 @@ func _build_field(f: Array) -> void:
 		sheet.mesh = plane
 		var mat := ShaderMaterial.new()
 		mat.shader = WATER_SHADER
+		_tint_water(mat)
 		mat.set_shader_parameter("murk", 0.35)
 		sheet.material_override = mat
 		sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -1563,6 +1578,7 @@ func _build_pond(lm: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	water.position = Vector3(center.x, level, center.y)
@@ -1726,6 +1742,7 @@ func _build_river(river: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	mat.set_shader_parameter("flow_speed", float(river.get("flow", 1.0)))
 	var lava := bool(river.get("lava", false))
 	mat.set_shader_parameter("lava", 1.0 if lava else 0.0)
@@ -1781,6 +1798,7 @@ func _build_lake(lake: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	_tint_water(mat)
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)

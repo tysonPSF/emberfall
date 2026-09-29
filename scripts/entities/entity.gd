@@ -301,8 +301,9 @@ func animate(event: String) -> void:
 			m.play_once(event)
 
 
-func build_body(shape: String, color: Color, body_scale: float, model_id := "", weapon_id := "") -> void:
+func build_body(shape: String, color: Color, body_scale: float, model_id := "", weapon_id := "", extra: Dictionary = {}) -> void:
 	look = {"shape": shape, "color": color.to_html(), "scale": body_scale, "model": model_id, "weapon": weapon_id}
+	look.merge(extra, true)  # race, gender, hair: an NPC of a race looks it (npcs.json "race")
 	if worn_gear != null:
 		look["gear"] = worn_gear
 	var is_beetle := shape == "beetle"

@@ -109,6 +109,11 @@ const SECTIONS := [
 	["swing_bar", "greenmoor"],
 	["crits", "greenmoor"],
 	["journal", "greenmoor"],
+	["alignment", "greenmoor"],
+	["blackwater_borders", "rainhold"],
+	["blackwater_life", "the_wallow"],
+	["blackwater_views", "murkhold"],
+	["deity_picker", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7709,3 +7714,168 @@ func _t_journal() -> void:
 	print("journal: hailed Warden Holt -> trail_pack_hide active %s" % p.quests["trail_pack_hide"]["active"])
 	World.log_message.disconnect(grab)
 	print("journal: lines %s" % [lines.filter(func(t: String) -> bool: return "abandon" in t or "pack" in t.to_lower() or "hide" in t.to_lower())])
+
+
+## Alignment: an evil race starts hostile with the good cities (guards attack,
+## townsfolk refuse), a necromancer is distrusted, logging in again changes
+## nothing, and a change of race moves you to the new side.
+func _t_alignment() -> void:
+	var p := World.local_player
+	var keep := [p.race, p.char_class, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	var show := func(label: String) -> void:
+		print("alignment: %s (%s %s, %s): Emberhold %d, Watch %d, Lanternhold %d, Rainhold %d; Watch guards attack %s, Emberhold refuses %s" % [label,
+				p.race, p.char_class, World.alignment_of(p), World.standing(p, "emberhold"), World.standing(p, "watch"), World.standing(p, "lanternhold"),
+				World.standing(p, "rainhold"), World.npc_kos(p, "watch"), World.standing(p, "emberhold") < World.REFUSE_BELOW])
+	p.factions = {}
+	p.alignment_mods = {}
+	p.race = "dark_elf"
+	World.apply_alignment(p)
+	show.call("a new dark elf")
+	World.apply_alignment(p)
+	show.call("logged in again")
+	p.factions = {}
+	p.alignment_mods = {}
+	p.race = "human"
+	p.char_class = "necromancer"
+	World.apply_alignment(p)
+	show.call("a new human necromancer")
+	p.race = "troll"
+	World.apply_alignment(p)
+	show.call("changed race to troll")
+	p.race = "high_elf"
+	World.apply_alignment(p)
+	show.call("changed race to high elf")
+	p.race = keep[0]
+	p.char_class = keep[1]
+	p.factions = keep[2]
+	p.alignment_mods = keep[3]
+
+
+## The Blackwater's twelve crossings, chained: Rainhold's new west and south
+## gates, the Wallow, Murkhold, the Rotfen, Duskwood and the cave down to
+## Duskhold, every one both ways.
+func _t_blackwater_borders() -> void:
+	var p := World.local_player
+	var keep := [p.race, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	p.race = "troll"  # a human walking into Murkhold is cut down by its guards (which is the point of it)
+	World.apply_alignment(p)
+	for leg: Array in [["rainhold", Vector2(-60, 0), Vector2(-1, 0), "the_wallow"], ["the_wallow", Vector2(-165, 0), Vector2(-1, 0), "murkhold"],
+			["murkhold", Vector2(80, 0), Vector2(1, 0), "the_wallow"], ["the_wallow", Vector2(0, 165), Vector2(0, 1), "the_rotfen"],
+			["the_rotfen", Vector2(200, 0), Vector2(1, 0), "duskwood"], ["duskwood", Vector2(0, -165), Vector2(0, -1), "rainhold"],
+			["rainhold", Vector2(0, 72), Vector2(0, 1), "duskwood"], ["duskwood", Vector2(162, 120), Vector2(-1, 0), "duskhold"],
+			["duskhold", Vector2(0, -86), Vector2(0, -1), "duskwood"], ["duskwood", Vector2(-165, 0), Vector2(-1, 0), "the_rotfen"],
+			["the_rotfen", Vector2(0, -200), Vector2(0, -1), "the_wallow"], ["the_wallow", Vector2(165, 0), Vector2(1, 0), "rainhold"]]:
+		if not await _walk_border("blackwater_borders", leg[0], leg[1], leg[2], leg[3]):
+			break
+	p.race = keep[0]
+	p.factions = keep[1]
+	p.alignment_mods = keep[2]
+
+
+## The Blackwater's life: each zone's monsters and quests, the cities' guards
+## against a human and a troll, the bog gods' races, and an existing troll's
+## bind following its people to Murkhold.
+func _t_blackwater_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep_race := [p.race, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	p.race = "troll"
+	World.apply_alignment(p)
+	var go := func(zone_id: String, arrive: Vector2) -> void:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, zone_id, arrive, Vector2.ZERO)
+		for k in 80:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.8)
+	await _zone_life("blackwater_life_wallow", {"wallow_hunter_snikk": ["wallow_pondkin_beads", "wallow_wetbelly", "wallow_gulpmaw"]}, ["bog_wisp"],
+			["bog_rat", "wallow_toad", "swamp_leech", "pondkin_forager", "pondkin_mudslinger", "mud_turtle", "bog_wisp", "chief_wetbelly", "gulpmaw"])
+	await _zone_views("wallow", [[Vector2(-130, -40), Vector2(-150, -30), "camp"], [Vector2(90, -90), Vector2(126, -122), "pondkin"], [Vector2(20, 20), Vector2(60, 40), "pools"]])
+	await go.call("duskwood", Vector2(160, 140))
+	await _zone_life("blackwater_life_duskwood", {"dusk_sentinel_vaelith": ["dusk_scout_badges", "dusk_aldren", "dusk_silkmother"]}, ["lesser_shade"],
+			["gloom_rat", "dusk_spiderling", "restless_bones", "gloomfang_wolf", "lesser_shade", "hearth_scout", "hearth_archer", "silkmother_vyss", "scout_captain_aldren"])
+	await _zone_views("duskwood", [[Vector2(175, 150), Vector2(150, 120), "cave"], [Vector2(20, 0), Vector2(-40, 0), "wood"], [Vector2(90, -80), Vector2(120, -110), "scouts"]])
+	await go.call("the_rotfen", Vector2(40, -20))
+	await _zone_life("blackwater_life_rotfen", {"fen_warden_grisk": ["rotfen_scales", "rotfen_sisska", "rotfen_mudjaw"],
+			"blade_sister_nyssa": ["rotfen_hag_charms", "rotfen_gristlewort"]}, [],
+			["plague_rat", "fen_eel", "rotfen_lurker", "rotfen_mirescale", "rotfen_mirescale_shaman", "gristle_hag", "feral_fen_troll", "chief_sisska", "mother_gristlewort", "old_mudjaw"])
+	await _zone_views("rotfen", [[Vector2(60, -20), Vector2(40, -40), "camp"], [Vector2(-110, -40), Vector2(-140, -60), "lizards"], [Vector2(120, 120), Vector2(140, 140), "coven"]])
+	for city: Array in [["murkhold", Vector2(46, 0), "murkhold_guard", ["murk_outfitter", "bogtanner_skins"]], ["duskhold", Vector2(0, -80), "duskhold_guard", ["dusk_outfitter", "silkweave_silk"]]]:
+		await go.call(city[0], city[1])
+		var npcs := _npcs()
+		var kinds := {}
+		for n: Npc in npcs.values():
+			var k := "guildmaster:" + str(n.data["guildmaster"]["class"]) if n.data.has("guildmaster") else ("banker" if n.data.get("banker", false) else
+					("merchant" if n.data.has("merchant") else ("guard" if n.data.has("guard") else ("binds" if n.data.get("binds", false) else "other"))))
+			kinds[k] = int(kinds.get(k, 0)) + 1
+		print("blackwater_life: %s: %d npcs %s; bindstone %s" % [city[0], npcs.size(), kinds, main.zone.data.get("bindstone", false)])
+		var race0 := p.race
+		for race: String in ["human", "troll", "dark_elf"]:
+			p.race = race
+			p.factions = {}
+			p.alignment_mods = {}
+			World.apply_alignment(p)
+			print("blackwater_life: %s: a %s -> %s %d, guards attack %s" % [city[0], race, city[0], World.standing(p, city[0]), World.npc_kos(p, city[0])])
+		p.race = race0
+		p.factions = {}
+		p.alignment_mods = {}
+		World.apply_alignment(p)
+		await _zone_views(city[0], [[city[1], Vector2(0, 0), "gate"], [Vector2(20, 22) if city[0] == "murkhold" else Vector2(0, 40), Vector2(0, 0), "heart"]])
+	# the bog gods take trolls and ogres; an old troll bound in Rainhold is moved home
+	print("blackwater_life: Makarosh takes a troll %s, a human %s; Mahishra takes an ogre %s, a dark elf %s" % [GameData.deity_allows("mire", "troll"),
+			GameData.deity_allows("mire", "human"), GameData.deity_allows("horn", "ogre"), GameData.deity_allows("horn", "dark_elf")])
+	var keep := [p.race, p.bind_zone, p.home_seen]
+	p.race = "troll"
+	p.bind_zone = "rainhold"
+	p.home_seen = ""
+	World._follow_home(p)
+	print("blackwater_life: an old troll bound in Rainhold -> bound in %s (home seen %s); again -> %s" % [p.bind_zone, p.home_seen, (func() -> String:
+		World._follow_home(p)
+		return p.bind_zone).call()])
+	p.race = keep[0]
+	p.bind_zone = keep[1]
+	p.home_seen = keep[2]
+	p.race = keep_race[0]
+	p.factions = keep_race[1]
+	p.alignment_mods = keep_race[2]
+
+
+## A look round the two cities (for art checks).
+func _t_blackwater_views() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.race = "troll"
+	World.apply_alignment(p)
+	World.time_override = 12.0
+	await _zone_views("murkhold", [[Vector2(46, 0), Vector2(0, 0), "gate"], [Vector2(24, 24), Vector2(-10, -8), "idols"], [Vector2(-20, 20), Vector2(-52, -6), "longhouse"]])
+	while main._changing_zone:
+		await _wait(0.25)
+	World.zone_change.emit(p, "duskhold", Vector2(0, -80), Vector2.ZERO)
+	for k in 80:
+		if (main.zone as Zone).zone_id == "duskhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.8)
+	await _zone_views("duskhold", [[Vector2(0, -80), Vector2(0, 0), "gate"], [Vector2(0, -44), Vector2(0, 0), "bridge"], [Vector2(-40, 40), Vector2(40, -40), "across"], [Vector2(0, 0), Vector2(0, -96), "back"]])
+
+
+## Character creation with seven gods: the bog gods offered to a troll,
+## grayed out for a human (and a choice of one cleared on changing race).
+func _t_deity_picker() -> void:
+	var cc := CharCreate.new()
+	cc.setup({})
+	get_parent().add_child(cc)
+	await _wait(0.5)
+	cc._select_race("troll")
+	cc._deity_buttons["mire"].pressed.emit()
+	await _wait(0.3)
+	print("deity_picker: a troll: mire open %s, chose %s" % [not cc._deity_buttons["mire"].disabled, cc._deity])
+	await _shot("9deity_troll")
+	cc._select_race("human")
+	await _wait(0.3)
+	print("deity_picker: a human: mire open %s, horn open %s, light open %s, choice now '%s'" % [not cc._deity_buttons["mire"].disabled,
+			not cc._deity_buttons["horn"].disabled, not cc._deity_buttons["light"].disabled, cc._deity])
+	await _shot("9deity_human")
+	cc.queue_free()

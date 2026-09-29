@@ -14521,6 +14521,1154 @@ def grove_stepping_stone():
 	return p.build(bevel=0.04)
 
 
+# ---------------------------------------------------------------- Murkhold (trolls and ogres)
+
+MURK_MUD = WOOD_GRAY      # wet brown-gray bog mud
+MURK_BLACK = IRON         # soot and black bog muck
+REED = BAMBOO             # dry reed thatch, gold-brown
+FUNGUS = SLIME            # bog-fungus glow: yellow-green at the top of the swatch
+FUNGUS_TONE = (0.0, 0.3)
+
+
+def _raw_mesh(p, verts, faces, swatch, grad=(0.1, 0.8), glow=0.0):
+	"""Like Prop.poly, but keeps the faces wound as given (for open shells,
+	where recalculating normals could turn them the wrong way)."""
+	bm = bmesh.new()
+	vs = [bm.verts.new(v) for v in verts]
+	for f in faces:
+		bm.faces.new([vs[i] for i in f])
+	return p._add(bm, swatch, grad, glow, 0.0)
+
+
+def _bezier(a, b, c, n):
+	"""n + 1 points along a quadratic Bezier from a through control b to c."""
+	a, b, c = Vector(a), Vector(b), Vector(c)
+	return [tuple(a * (1 - t) ** 2 + b * 2 * t * (1 - t) + c * t * t) for t in (i / n for i in range(n + 1))]
+
+
+def _tube(p, pts, radii, swatch, sides=10, flat=1.0, grad=(0.1, 0.8), up=(0, 1, 0)):
+	"""One seamless tube swept along a polyline, radius per point, capped at
+	both ends (rounded to a point where the radius is 0). `flat` squashes the
+	section across `up` (ribs are flatter than they are wide)."""
+	pts = [Vector(q) for q in pts]
+	up = Vector(up)
+	verts, faces = [], []
+	n = len(pts)
+	for i, c in enumerate(pts):
+		t = (pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]).normalized()
+		side = t.cross(up)
+		if side.length < 1e-4:
+			side = t.cross(Vector((1, 0, 0)))
+		side.normalize()
+		nrm = side.cross(t).normalized()
+		for k in range(sides):
+			a = k * math.tau / sides
+			verts.append(tuple(c + (side * math.cos(a) + nrm * math.sin(a) * flat) * radii[i]))
+	for i in range(n - 1):
+		for k in range(sides):
+			k2 = (k + 1) % sides
+			faces.append((i * sides + k, i * sides + k2, (i + 1) * sides + k2, (i + 1) * sides + k))
+	faces.append(tuple(range(sides))[::-1])
+	faces.append(tuple((n - 1) * sides + k for k in range(sides)))
+	return p.poly(verts, faces, swatch, grad)
+
+
+def _fungus_clump(p, c, s=1.0, glow=1.6, n=5):
+	"""A clump of glowing bog-fungus: little pale stalks with yellow-green caps."""
+	x, y, z = c
+	for k in range(n):
+		a = k * math.tau / n + p.rng.uniform(-0.4, 0.4)
+		d = (0.0 if k == 0 else p.rng.uniform(0.08, 0.2)) * s
+		h = p.rng.uniform(0.08, 0.2) * s * (1.4 if k == 0 else 1.0)
+		px, py = x + math.cos(a) * d, y + math.sin(a) * d
+		p.seg((px, py, z), (px, py, z + h), 0.025 * s, 0.02 * s, BONE, sides=4)
+		r = p.rng.uniform(0.06, 0.1) * s * (1.4 if k == 0 else 1.0)
+		p.blob((r * 2, r * 2, r * 0.9), (px, py, z + h), FUNGUS, segs=(6, 4), grad=FUNGUS_TONE, glow=glow)
+
+
+def _beast_skull(p, c, s=1.0, yaw=0.0, horns=True, tusks=True):
+	"""A great horned beast skull facing -Y (turned by yaw degrees)."""
+	start = len(p.parts)
+	p.blob((1.0 * s, 0.95 * s, 0.8 * s), (0, 0, 0), BONE, segs=(10, 7), grad=(0.0, 0.7))                 # cranium
+	p.blob((0.62 * s, 0.9 * s, 0.5 * s), (0, -0.55 * s, -0.12 * s), BONE, segs=(8, 5), grad=(0.0, 0.7))   # snout
+	p.blob((0.5 * s, 0.35 * s, 0.22 * s), (0, -0.62 * s, -0.4 * s), BONE, segs=(8, 4), grad=(0.1, 0.8))   # jaw
+	for sx in (-1, 1):
+		p.blob((0.24 * s, 0.14 * s, 0.22 * s), (sx * 0.24 * s, -0.4 * s, 0.1 * s), MURK_BLACK, segs=(6, 4))   # eye sockets
+		p.blob((0.08 * s, 0.1 * s, 0.1 * s), (sx * 0.07 * s, -0.98 * s, -0.08 * s), MURK_BLACK, segs=(5, 3))  # nostrils
+		if horns:
+			_chain(p, [(sx * 0.4 * s, 0.05 * s, 0.25 * s), (sx * 0.85 * s, 0.1 * s, 0.4 * s), (sx * 1.1 * s, -0.05 * s, 0.75 * s), (sx * 1.05 * s, -0.25 * s, 1.0 * s)],
+				   0.14 * s, 0.03 * s, BONE, sides=6, grad=(0.0, 0.6))
+		if tusks:
+			_chain(p, [(sx * 0.2 * s, -0.8 * s, -0.35 * s), (sx * 0.3 * s, -1.0 * s, -0.6 * s), (sx * 0.25 * s, -1.15 * s, -0.45 * s)], 0.07 * s, 0.015 * s, BONE, sides=5, grad=(0.0, 0.5))
+	_move_parts(p, start, Matrix.Translation(c) @ Matrix.Rotation(math.radians(yaw), 4, "Z"))
+
+
+def murk_longhouse():
+	"""Murkhold's great hall of the chieftains, 10 m across and 18 m long (Y),
+	door at the -Y gable: battered mud-plastered walls with timber posts on a
+	low mud platform (walkable top 0.6 m, 13 x 21 m, a mud ramp at the door),
+	a steep reed roof (ridge 9.8 m) patched with hides, a great bone along the
+	ridge and crossed ribs at both gables, rib rafters over the thatch. The
+	doorway is 3.4 m wide and 4.8 m tall, framed in tusks under a beast skull,
+	with glowing bog-fungus sconces either side. Collide it as a mesh."""
+	p = Prop("murk_longhouse", 960)
+	d = Prop("murk_longhouse_detail", 961)
+	rng = p.rng
+	P = 0.6
+	hx, hy = 6.5, 10.5
+	# the platform: a flat-topped mud block with battered sides, lumps round its foot
+	b, t = 0.9, 0.0
+	verts = [(-hx - b, -hy - b, -0.6), (hx + b, -hy - b, -0.6), (hx + b, hy + b, -0.6), (-hx - b, hy + b, -0.6),
+			 (-hx, -hy, P), (hx, -hy, P), (hx, hy, P), (-hx, hy, P)]
+	p.poly(verts, [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)], MURK_MUD, grad=(0.3, 1.0))
+	for k in range(26):
+		f = k / 26
+		per = 2 * (2 * hx + 2 * hy)
+		s = f * per
+		if s < 2 * hx:
+			x, y = -hx + s, -hy - 0.55
+		elif s < 2 * hx + 2 * hy:
+			x, y = hx + 0.55, -hy + (s - 2 * hx)
+		elif s < 4 * hx + 2 * hy:
+			x, y = hx - (s - 2 * hx - 2 * hy), hy + 0.55
+		else:
+			x, y = -hx - 0.55, hy - (s - 4 * hx - 2 * hy)
+		if y < 0 and abs(x) < 3.0:
+			continue                                                      # the ramp
+		p.blob((rng.uniform(1.4, 2.2), rng.uniform(1.2, 1.8), 0.8), (x, y, -0.05), MURK_MUD, rot=(0, 0, rng.uniform(0, 180)), segs=(8, 5), grad=(0.4, 1.0), jitter=0.05)
+	# the ramp up to the door, with half-sunk logs for footing
+	rw, ry = 2.4, -hy - 3.2
+	verts = [(-rw, -hy + 0.3, P), (rw, -hy + 0.3, P), (rw, ry, -0.15), (-rw, ry, -0.15),
+			 (-rw, -hy + 0.3, -0.6), (rw, -hy + 0.3, -0.6), (rw, ry, -0.6), (-rw, ry, -0.6)]
+	p.poly(verts, [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)], MURK_MUD, grad=(0.5, 1.0))
+	for k in range(4):
+		f = (k + 0.5) / 4
+		y = -hy + 0.3 + (ry - (-hy + 0.3)) * f
+		z = P + (-0.15 - P) * f
+		p.seg((-rw + 0.2, y, z - 0.04), (rw - 0.2, y, z - 0.04), 0.13, 0.12, WOOD_GRAY, sides=6, grad=(0.3, 1.0))
+	# the walls: battered mud, 10 x 18 at the foot
+	wx, wy, WT = 5.0, 9.0, 4.4
+	inset = 0.35
+	verts = [(-wx, -wy, P - 0.1), (wx, -wy, P - 0.1), (wx, wy, P - 0.1), (-wx, wy, P - 0.1),
+			 (-wx + inset, -wy + inset, WT), (wx - inset, -wy + inset, WT), (wx - inset, wy - inset, WT), (-wx + inset, wy - inset, WT)]
+	p.poly(verts, [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)], MURK_MUD, grad=(0.15, 0.85))
+	for k in range(14):                                                   # plaster patches, a shade lighter or darker
+		side = rng.choice((-1, 1))
+		y = rng.uniform(-wy + 1.0, wy - 1.0)
+		z = rng.uniform(P + 0.6, WT - 0.8)
+		x = side * (wx - inset * (z - P) / (WT - P) + 0.02)
+		d.box((0.06, rng.uniform(0.8, 1.6), rng.uniform(0.5, 1.0)), (x, y, z), CLAY if k % 3 else MURK_BLACK, rot=(0, -side * 4.5, rng.uniform(-6, 6)), grad=(0.5, 0.9))
+	for side in (-1, 1):                                                  # timber posts along the long walls
+		for k in range(8):
+			y = -wy + 0.9 + k * (2 * wy - 1.8) / 7
+			p.seg((side * (wx + 0.1), y, P - 0.2), (side * (wx - inset + 0.12), y, WT + 0.2), 0.22, 0.19, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+			if k % 3 == 1:
+				_beast_skull(d, (side * (wx + 0.2), y, WT - 0.9), s=0.45, yaw=90 * side, horns=True, tusks=False)
+	for x in (-wx, wx):                                                   # corner posts
+		for y in (-wy, wy):
+			p.seg((x * 1.02, y * 1.01, P - 0.2), (x * 0.95, y * 0.97, WT + 0.5), 0.3, 0.26, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+	# gables: solid triangles of woven reed over the end walls
+	RZ = WT + 5.4
+	for y in (-wy + inset, wy - inset):
+		gt = 0.5
+		tri = [(-wx + inset, WT), (wx - inset, WT), (0, RZ)]
+		vs = [(x, y - gt / 2, z) for x, z in tri] + [(x, y + gt / 2, z) for x, z in tri]
+		p.poly(vs, [(0, 1, 2), (3, 5, 4), (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0)], HIDE, grad=(0.2, 1.0))
+		for k in range(5):                                                 # wattle battens across the gable
+			z = WT + 0.6 + k * 0.95
+			w = (wx - inset) * (1 - (z - WT) / (RZ - WT)) - 0.25
+			if w > 0.3:
+				sy = -1 if y < 0 else 1
+				d.seg((-w, y + sy * 0.3, z), (w, y + sy * 0.3, z), 0.07, 0.07, WOOD_GRAY, sides=5)
+	# the roof: reed courses on each side, patched with hides
+	ov, ovz = 1.3, 1.3
+	span = wx - inset + ov
+	ang = math.atan2(RZ - WT, wx - inset)
+	slope = (span) / math.cos(ang)
+	L = 2 * wy + 2.2
+	rows = 6
+	for s in (1, -1):
+		down = Vector((math.cos(ang) * s, 0, -math.sin(ang)))
+		out = Vector((math.sin(ang) * s, 0, math.cos(ang)))
+		top = Vector((0, 0, RZ + 0.15))
+		p.box((slope, L, 0.3), top + down * slope / 2, MURK_BLACK, rot=(0, math.degrees(ang) * s, 0), grad=(0.3, 1.0))
+		for i in range(rows):
+			c = top + down * slope * (i + 0.55) / rows + out * (0.2 + 0.03 * i)
+			for j in range(4):                                             # each course in four uneven bundles
+				y = -L / 2 - 0.1 + (j + 0.5) * (L + 0.2) / 4 + rng.uniform(-0.2, 0.2)
+				sw, gr = rng.choice(((HIDE, (0.5, 1.0)), (HIDE, (0.6, 1.0)), (HIDE, (0.45, 0.95)), (WOOD_GRAY, (0.1, 0.7)), (WOOD_GRAY, (0.0, 0.6))))
+				p.box((slope / rows * 1.22, (L + 0.2) / 4 + 0.35, 0.24), (c.x, y, c.z), sw, rot=(0, math.degrees(ang) * s + rng.uniform(-2.5, 2.5), rng.uniform(-1.5, 1.5)),
+					  grad=gr, jitter=0.07)
+		eave = top + down * slope * 0.99 + out * 0.15
+		for k in range(34):                                                # a shaggy fringe of reed at the eave
+			y = -L / 2 + (k + 0.5) * L / 34
+			tip = eave + down * rng.uniform(0.35, 0.7) + Vector((0, rng.uniform(-0.1, 0.1), -0.25))
+			d.seg((eave.x, y, eave.z), (tip.x, y + rng.uniform(-0.15, 0.15), tip.z), 0.2, 0.02, HIDE if k % 3 else WOOD_GRAY, sides=4, grad=(0.5, 1.0))
+		for k in range(5):                                                 # hides laid over the thatch
+			f = rng.uniform(0.2, 0.75)
+			y = -wy + 1.5 + k * (2 * wy - 3.0) / 4 + rng.uniform(-0.8, 0.8)
+			c = top + down * slope * f + out * 0.48
+			d.box((rng.uniform(2.2, 3.2), rng.uniform(2.0, 2.8), 0.08), (c.x, y, c.z), HIDE, rot=(0, math.degrees(ang) * s, rng.uniform(-14, 14)), grad=(0.05, 0.55), jitter=0.06)
+		for k in range(5):                                                 # rib-bone rafters over the thatch
+			y = -wy + 1.6 + k * (2 * wy - 3.2) / 4
+			a0 = top + out * 0.5
+			a2 = top + down * slope * 0.92 + out * 0.45
+			mid = (a0 + a2) / 2 + out * 0.6
+			_chain(d, _bezier((a0.x, y, a0.z), (mid.x, y, mid.z), (a2.x, y, a2.z), 4), 0.16, 0.09, BONE, sides=6, grad=(0.0, 0.6))
+	# the great bone along the ridge, knuckled at both ends, and crossed ribs over each gable
+	d.seg((0, -wy - 1.6, RZ + 0.55), (0, wy + 1.6, RZ + 0.55), 0.38, 0.38, BONE, sides=8, grad=(0.0, 0.6))
+	for y in (-wy - 1.7, wy + 1.7):
+		for sx in (-1, 1):
+			d.blob((0.7, 0.8, 0.7), (sx * 0.25, y, RZ + 0.55), BONE, segs=(8, 5), grad=(0.0, 0.6))
+	for y in (-wy - 0.6, wy + 0.6):
+		for sx in (-1, 1):
+			_chain(d, _bezier((sx * 2.6, y, RZ - 2.3), (sx * 0.9, y, RZ + 0.2), (-sx * 1.3, y, RZ + 2.2), 5), 0.26, 0.08, BONE, sides=7, grad=(0.0, 0.6))
+	_beast_skull(d, (0, -wy - 1.1, RZ + 0.6), s=0.9)
+	# the doorway, tusk frame and lintel
+	dw, dh = 1.7, P + 4.8
+	d.box((2 * dw, 1.2, dh - P), (0, -wy + 0.5, (dh + P) / 2), SHADE, grad=(0.97, 1.0))
+	for sx in (-1, 1):
+		_chain(d, _bezier((sx * (dw + 0.35), -wy - 0.5, P - 0.2), (sx * (dw + 0.6), -wy - 0.9, dh - 0.5), (sx * 0.35, -wy - 0.9, dh + 1.1), 6), 0.36, 0.1, BONE, sides=8, grad=(0.0, 0.6))
+		p.seg((sx * (dw + 0.1), -wy - 0.2, P - 0.2), (sx * (dw + 0.1), -wy - 0.2, dh + 0.2), 0.24, 0.22, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+	p.seg((-dw - 0.7, -wy - 0.3, dh + 0.1), (dw + 0.7, -wy - 0.3, dh + 0.1), 0.3, 0.3, WOOD_GRAY, sides=7, grad=(0.2, 1.0))
+	_beast_skull(d, (0, -wy - 0.9, dh + 0.75), s=0.75)
+	for k in range(7):                                                    # hide lashings round the tusk frame
+		x = -dw - 0.6 + k * (2 * dw + 1.2) / 6
+		d.seg((x - 0.1, -wy - 0.3, dh + 0.1), (x + 0.1, -wy - 0.3, dh + 0.1), 0.34, 0.34, HIDE, sides=7)
+	# glowing fungus sconces either side of the door
+	for sx in (-1, 1):
+		x, y = sx * 3.2, -wy - 0.7
+		p.seg((x, y, P - 0.2), (x, y, P + 2.1), 0.1, 0.08, WOOD_GRAY, sides=5, grad=(0.2, 1.0))
+		p.seg((x, y, P + 2.0), (x, y, P + 2.15), 0.3, 0.34, WOOD, sides=7)
+		_fungus_clump(d, (x, y, P + 2.15), s=2.2, n=6)
+	# hides stretched on frames against the long walls
+	for side, y in ((-1, -3.0), (1, 2.5), (1, -4.5)):
+		x = side * (wx + 0.5)
+		c = Vector((x, y, P + 1.6))
+		for dz in (-1.0, 1.0):
+			d.seg((x, y - 1.1, P + 1.6 + dz), (x, y + 1.1, P + 1.6 + dz), 0.06, 0.06, WOOD, sides=4)
+		for dy in (-1.0, 1.0):
+			d.seg((x, y + dy, P - 0.1), (x, y + dy, P + 2.8), 0.06, 0.06, WOOD, sides=4)
+		d.box((0.06, 1.8, 1.8), tuple(c), HIDE, rot=(0, side * 8, 0), grad=(0.2, 0.9))
+	# trophy stakes on the platform's front corners
+	for sx in (-1, 1):
+		x, y = sx * (hx - 0.8), -hy + 0.8
+		p.seg((x, y, P - 0.2), (x, y, P + 3.2), 0.12, 0.08, WOOD_GRAY, sides=5, grad=(0.2, 1.0))
+		_beast_skull(d, (x, y - 0.1, P + 3.3), s=0.55)
+	obj = p.build(bevel=0.06)
+	return join_into(obj, [d.build()])
+
+
+def murk_hut():
+	"""A Murkhold dwelling on stilts: a 7 x 7 m plank deck 1.4 m over the bog on
+	nine crooked stilts in mud mounds, a low rail round it, a mud-and-wattle
+	hut (5 x 4.6 m, walls 2.8 m) at the back with a hide-hung door, a lumpy
+	hide roof on poles to about 7.5 m, a drying rack and a pot on the porch,
+	and a log ramp from the front edge down to the ground 4 m out (-Y). Deck
+	and ramp are walkable. Collide it as a mesh."""
+	p = Prop("murk_hut", 962)
+	d = Prop("murk_hut_detail", 963)
+	rng = p.rng
+	F, H = 1.4, 3.5
+	for x in (-3.1, 0.0, 3.1):                                             # stilts, mud round their feet
+		for y in (-3.1, 0.0, 3.1):
+			fx, fy = x + rng.uniform(-0.25, 0.25), y + rng.uniform(-0.25, 0.25)
+			p.seg((fx, fy, -0.8), (x, y, F - 0.1), 0.2, 0.17, WOOD_GRAY, sides=6, grad=(0.3, 1.0))
+			p.blob((rng.uniform(1.0, 1.5), rng.uniform(1.0, 1.4), 0.7), (fx, fy, -0.05), MURK_MUD, rot=(0, 0, rng.uniform(0, 180)), segs=(7, 4), grad=(0.4, 1.0), jitter=0.04)
+	for s in (-1, 1):                                                      # cross bracing on the sides
+		p.seg((s * 3.1, -3.1, 0.1), (s * 3.1, 3.1, F - 0.3), 0.07, 0.07, WOOD_GRAY, sides=4)
+		p.seg((-3.1, s * 3.1, F - 0.3), (3.1, s * 3.1, 0.1), 0.07, 0.07, WOOD_GRAY, sides=4)
+	for y in (-3.1, 0.0, 3.1):                                             # beams under the deck
+		p.seg((-H - 0.2, y, F - 0.3), (H + 0.2, y, F - 0.3), 0.16, 0.16, WOOD_GRAY, sides=6)
+	for k in range(14):                                                    # the deck planks, top at F
+		x = -H + 0.25 + k * 0.5
+		p.box((0.48, 2 * H + rng.uniform(-0.05, 0.25), 0.16), (x, rng.uniform(-0.1, 0.1), F - 0.08), WOOD_GRAY, grad=(0.0, 0.5) if k % 3 else (0.3, 0.9))
+	# the rail, open at the ramp
+	posts = []
+	for k in range(7):
+		v = -H + 0.2 + k * (2 * H - 0.4) / 6
+		posts += [(v, -H + 0.15), (H - 0.15, v), (-v, H - 0.15), (-H + 0.15, -v)]
+	for x, y in posts:
+		if y < -H + 0.5 and abs(x) < 1.2:
+			continue
+		p.seg((x, y, F - 0.1), (x + rng.uniform(-0.05, 0.05), y, F + 1.0 + rng.uniform(-0.1, 0.1)), 0.06, 0.05, WOOD_GRAY, sides=5)
+	RT = F + 0.9
+	for a, b in (((-H + 0.2, -H + 0.15), (-1.15, -H + 0.15)), ((1.15, -H + 0.15), (H - 0.15, -H + 0.15)), ((H - 0.15, -H + 0.2), (H - 0.15, H - 0.15)),
+				 ((H - 0.15, H - 0.15), (-H + 0.15, H - 0.15)), ((-H + 0.15, H - 0.15), (-H + 0.15, -H + 0.2))):
+		p.seg((a[0], a[1], RT), (b[0], b[1], RT + rng.uniform(-0.06, 0.06)), 0.05, 0.05, WOOD_GRAY, sides=4, grad=(0.1, 0.6))
+	for x in (-1.25, 1.25):
+		p.seg((x, -H + 0.15, F - 0.1), (x, -H + 0.15, F + 1.4), 0.09, 0.08, WOOD_GRAY, sides=5)
+		_beast_skull(d, (x, -H + 0.1, F + 1.5), s=0.22, horns=True, tusks=False)
+	# the hut: mud core, wattle stakes, lighter wattle where the mud has fallen off
+	x0, x1, y0, y1, WH = -2.5, 2.5, -1.3, 3.3, 2.8
+	p.box((x1 - x0, y1 - y0, WH), ((x0 + x1) / 2, (y0 + y1) / 2, F + WH / 2), MURK_MUD, grad=(0.15, 0.9), jitter=0.04)
+	for x in (x0, x1):
+		for y in (y0, y1):
+			p.seg((x, y, F), (x, y, F + WH + 0.3), 0.14, 0.12, WOOD_GRAY, sides=5)
+	for k in range(9):
+		x = x0 + 0.5 + k * (x1 - x0 - 1.0) / 8
+		if abs(x) < 0.9:
+			continue
+		p.seg((x, y0 - 0.02, F), (x, y0 - 0.02, F + WH), 0.05, 0.05, WOOD_GRAY, sides=4, grad=(0.0, 0.5))
+	for (cx, cy, cz, rz) in ((-1.6, y0 - 0.03, F + 1.8, 0), (x1 + 0.03, 0.9, F + 1.2, 90), (x0 - 0.03, 2.1, F + 1.9, 90)):
+		for j in range(4):
+			d.seg((cx - 0.5 * (rz == 0), cy - 0.5 * (rz != 0), cz - 0.3 + j * 0.2), (cx + 0.5 * (rz == 0), cy + 0.5 * (rz != 0), cz - 0.3 + j * 0.2), 0.05, 0.05, WOOD, sides=4)
+	d.box((1.4, 0.12, 2.3), (0, y0 - 0.02, F + 1.15), SHADE, grad=(0.95, 1.0))                              # doorway
+	d.box((0.9, 0.08, 2.1), (-0.3, y0 - 0.1, F + 1.2), HIDE, rot=(0, 0, 4), grad=(0.2, 0.95))                # hide curtain, half drawn
+	p.seg((-0.9, y0 - 0.12, F + 2.4), (0.9, y0 - 0.12, F + 2.4), 0.09, 0.09, WOOD_GRAY, sides=5)
+	# the hide roof: a lumpy cone on poles
+	cy, RZ0, RZ1 = (y0 + y1) / 2, F + WH - 0.15, F + 6.0
+	p.seg((0, cy, RZ0), (0, cy, RZ1), 4.0, 0.25, HIDE, sides=9, grad=(0.65, 1.0), jitter=0.12)
+	for k in range(7):                                                     # hides of other colors patched over it
+		a = k * math.tau / 7 + rng.uniform(-0.2, 0.2)
+		f0 = rng.uniform(0.1, 0.45)
+		f1 = f0 + rng.uniform(0.18, 0.3)
+		da = rng.uniform(0.18, 0.3)
+		quad = []
+		for f, aa in ((f0, a - da), (f0, a + da), (f1, a + da * 0.8), (f1, a - da * 0.8)):
+			rr = 4.0 * (1 - f) + 0.25 * f + 0.08
+			quad.append((math.cos(aa) * rr, cy + math.sin(aa) * rr, RZ0 + (RZ1 - RZ0) * f + 0.03))
+		d.poly(quad, [(0, 1, 2, 3)], HIDE if k % 2 else WOOD_GRAY, grad=(0.0, 0.5) if k % 2 else (0.3, 0.9))
+	p.seg((0, cy, RZ0 - 0.25), (0, cy, RZ0), 3.9, 3.95, WOOD_GRAY, sides=9, grad=(0.5, 1.0))
+	for k in range(9):                                                     # seams and poles through the peak
+		a = k * math.tau / 9 + 0.35
+		d.seg((math.cos(a) * 3.95, cy + math.sin(a) * 3.95, RZ0 + 0.08), (math.cos(a) * 0.3, cy + math.sin(a) * 0.3, RZ1 + 0.05), 0.05, 0.04, WOOD_GRAY, sides=4)
+	for k in range(5):
+		a = k * math.tau / 5
+		p.seg((math.cos(a) * 0.9, cy + math.sin(a) * 0.9, RZ1 - 0.9), (-math.cos(a) * 0.45, cy - math.sin(a) * 0.45, RZ1 + 1.2), 0.08, 0.05, WOOD_GRAY, sides=5)
+	for k in range(6):                                                     # stones and bones weighting the hides
+		a = k * math.tau / 6 + 0.2
+		d.blob((0.35, 0.3, 0.22), (math.cos(a) * 3.1, cy + math.sin(a) * 3.1, RZ0 + 0.75), BONE if k % 2 else STONE_DARK, segs=(6, 4))
+	# the porch: a drying rack of fish and a clay pot
+	for x in (1.6, 3.0):
+		p.seg((x, -2.9, F), (x, -2.9, F + 1.9), 0.05, 0.05, WOOD, sides=4)
+	p.seg((1.5, -2.9, F + 1.85), (3.1, -2.9, F + 1.85), 0.04, 0.04, WOOD, sides=4)
+	for k in range(4):
+		x = 1.8 + k * 0.35
+		d.seg((x, -2.9, F + 1.8), (x, -2.9, F + 1.45), 0.012, 0.012, HIDE, sides=3)
+		d.blob((0.14, 0.05, 0.45), (x, -2.9, F + 1.2), SEA_STONE, segs=(6, 4))
+	d.seg((-2.4, -2.5, F), (-2.4, -2.5, F + 0.7), 0.35, 0.28, CLAY, sides=8, grad=(0.2, 0.9))
+	d.seg((-2.4, -2.5, F + 0.62), (-2.4, -2.5, F + 0.78), 0.3, 0.32, CLAY, sides=8)
+	# the ramp: two stringers, a plank bed and cross logs, from the deck to the ground
+	RY = -H - 4.0
+	for x in (-0.85, 0.85):
+		p.seg((x, -H + 0.1, F - 0.2), (x, RY, -0.3), 0.14, 0.14, WOOD_GRAY, sides=6)
+	L = math.hypot(RY + H, F + 0.1)
+	ang = math.degrees(math.atan2(F + 0.1, -(RY + H)))
+	p.box((1.7, L + 0.3, 0.12), (0, (-H + RY) / 2, (F - 0.1) / 2 - 0.04), WOOD_GRAY, rot=(ang, 0, 0))
+	for k in range(9):
+		f = (k + 0.5) / 9
+		y = -H + (RY + H) * f
+		z = F - (F + 0.1) * f
+		p.seg((-0.85, y, z), (0.85, y, z), 0.08, 0.08, WOOD_GRAY, sides=5, grad=(0.0, 0.6))
+	return join_into(p.build(bevel=0.04), [d.build(bevel=0.02)])
+
+
+def bone_palisade():
+	"""An 8 m run (along X) of Murkhold's wall, about 4.2 m tall: sharpened
+	logs with a giant rib or thigh bone every few, lashed with two bands of
+	hide rope on a mud bank, a skull spiked on one stake. Ends at x = +-4 so
+	runs tile. About 1.6 m thick. Collide it as a box."""
+	p = Prop("bone_palisade", 964)
+	d = Prop("bone_palisade_detail", 965)
+	rng = p.rng
+	n = 16
+	for i in range(n):
+		x = -4.0 + (i + 0.5) * 8.0 / n
+		lean = rng.uniform(-0.06, 0.06)
+		if i % 4 == 1:                                                     # a rib, curving out to -Y
+			top = 4.2 + rng.uniform(-0.2, 0.3)
+			_chain(p, _bezier((x, 0.05, -0.4), (x + lean, -0.1, top * 0.6), (x + lean * 2, -0.75, top), 5), 0.26, 0.09, BONE, sides=7, grad=(0.0, 0.7))
+		elif i % 4 == 3:                                                   # a thigh bone, knuckle up
+			top = 3.7 + rng.uniform(-0.2, 0.2)
+			p.seg((x, 0, -0.4), (x + lean, 0, top), 0.2, 0.17, BONE, sides=7, grad=(0.0, 0.7))
+			for sx in (-1, 1):
+				p.blob((0.34, 0.36, 0.38), (x + lean + sx * 0.14, 0, top + 0.05), BONE, segs=(8, 5), grad=(0.0, 0.6))
+		else:                                                              # a sharpened log
+			top = 3.1 + rng.uniform(-0.3, 0.3)
+			r = 0.21 + rng.uniform(-0.03, 0.03)
+			p.seg((x, 0, -0.4), (x + lean, 0, top), r, r * 0.92, WOOD_GRAY, sides=6, grad=(0.25, 1.0))
+			p.seg((x + lean, 0, top), (x + lean * 1.1, 0, top + 0.6), r * 0.92, 0.0, WOOD_GRAY, sides=6, grad=(0.0, 0.5))
+	for z in (1.1, 2.5):                                                   # hide rope bands, both faces
+		for y in (-0.24, 0.24):
+			d.seg((-4.0, y, z + rng.uniform(-0.05, 0.05)), (4.0, y, z + rng.uniform(-0.05, 0.05)), 0.07, 0.07, HIDE, sides=5, grad=(0.5, 1.0))
+		for k in range(n):
+			x = -4.0 + (k + 0.5) * 8.0 / n
+			d.seg((x, 0, z - 0.1), (x, 0, z + 0.12), 0.27, 0.27, HIDE, sides=6, grad=(0.5, 1.0))
+	for k in range(7):                                                     # the mud bank
+		x = -3.5 + k * (7.0 / 6)
+		p.blob((1.9, 1.6, 0.9), (x, rng.uniform(-0.1, 0.1), -0.05), MURK_MUD, rot=(0, 0, rng.uniform(-20, 20)), segs=(8, 5), grad=(0.4, 1.0), jitter=0.05)
+	_beast_skull(d, (-1.75, -0.35, 3.55), s=0.42, tusks=True)
+	for k in range(3):                                                     # a string of small bones hung on the front
+		x = 1.2 + k * 0.3
+		d.seg((x, -0.3, 2.45), (x, -0.32, 2.0), 0.015, 0.015, HIDE, sides=3)
+		d.seg((x, -0.33, 2.0), (x, -0.35, 1.7), 0.05, 0.035, BONE, sides=5)
+	return join_into(p.build(bevel=0.03), [d.build()])
+
+
+def bone_gate():
+	"""Murkhold's gate: two colossal rib bones rising from mud mounds either
+	side of an 8.3 m opening (along X, walked through along Y) and crossing
+	at about 12 m, lashed with hide where they meet under a great horned
+	skull (top about 14.5 m), smaller tusks and fetish strings at their feet
+	and glowing bog-fungus on the mounds. About 13 m wide. Collide it as a
+	mesh (a box would close the opening)."""
+	p = Prop("bone_gate", 966)
+	d = Prop("bone_gate_detail", 967)
+	b = Prop("bone_gate_ribs", 968)
+	rng = p.rng
+	for sx in (-1, 1):
+		yo = 0.3 * sx
+		pts = _bezier((sx * 5.0, 0, -0.8), (sx * 6.4, 0, 7.4), (-sx * 0.9, yo, 12.6), 12)
+		n = len(pts) - 1
+		fine = _bezier((sx * 5.0, 0, -0.8), (sx * 6.4, 0, 7.4), (-sx * 0.9, yo, 12.6), 24)
+		radii = [0.95 - 0.5 * (i / 24) + 0.12 * math.sin(i / 24 * math.pi) for i in range(25)]
+		radii[-1] *= 0.6
+		_tube(b, fine, radii, BONE, sides=12, flat=0.7, grad=(0.15, 0.9))
+		p.blob((1.3, 1.3, 1.3), (sx * 5.0, 0, 0.1), BONE, segs=(10, 6), grad=(0.1, 0.7))   # the knuckle at its foot
+		for k in range(8):                                                 # the mud mound, with stones
+			a = k * math.tau / 8 + rng.uniform(-0.2, 0.2)
+			rr = rng.uniform(1.0, 1.7)
+			p.blob((rng.uniform(1.4, 2.0), rng.uniform(1.2, 1.7), rng.uniform(0.7, 1.1)), (sx * 5.0 + math.cos(a) * rr, math.sin(a) * rr, 0.0), MURK_MUD,
+				   rot=(0, 0, math.degrees(a)), segs=(8, 5), grad=(0.4, 1.0), jitter=0.05)
+		for k in range(3):
+			a = rng.uniform(0, math.tau)
+			p.rock((0.8, 0.7, 0.6), (sx * 5.0 + math.cos(a) * 2.0, math.sin(a) * 1.6, 0.15), STONE_DARK)
+		for z in (1.6, 2.2):                                               # hide bindings round the foot
+			q = Vector(pts[2]).lerp(Vector(pts[3]), (z - pts[2][2]) / max(pts[3][2] - pts[2][2], 0.1))
+			d.seg((q.x, q.y, z - 0.18), (q.x, q.y, z + 0.18), 1.02, 1.02, HIDE, sides=9, grad=(0.3, 0.9))
+		for sy in (-1, 1):                                                 # tusks leaning at its foot
+			base = (sx * (5.0 + 1.3), sy * 1.4, -0.3)
+			_chain(p, _bezier(base, (sx * 6.0, sy * 1.8, 2.2), (sx * 5.2, sy * 1.2, 3.4), 4), 0.28, 0.05, BONE, sides=7, grad=(0.0, 0.6))
+		_fungus_clump(d, (sx * 3.9, -1.2, 0.35), s=2.4, n=6)
+		_fungus_clump(d, (sx * 6.2, 1.0, 0.5), s=1.8, n=5)
+		for k in range(3):                                                 # fetish strings hung from the rib
+			q = pts[5 + k]
+			top = Vector(q) + Vector((0, -0.75, -0.3))
+			d.seg(tuple(top), tuple(top + Vector((0, 0, -1.4 - k * 0.3))), 0.02, 0.02, HIDE, sides=3)
+			d.seg(tuple(top + Vector((0, 0, -1.4 - k * 0.3))), tuple(top + Vector((0, 0, -1.9 - k * 0.3))), 0.07, 0.04, BONE, sides=5)
+			d.blob((0.16, 0.1, 0.18), tuple(top + Vector((0, 0, -0.8))), CLOTH_RED if k == 1 else BONE, segs=(5, 3))
+	for k in range(4):                                                     # lashing where the ribs cross
+		d.seg((-1.0, -0.1, 11.3 + k * 0.28), (1.0, 0.1, 11.3 + k * 0.28 + 0.1), 0.3, 0.3, HIDE, sides=7, grad=(0.2, 0.9))
+	_beast_skull(d, (0, -0.6, 13.3), s=1.9, horns=True, tusks=True)
+	ribs = b.build()
+	bpy.ops.object.shade_smooth()
+	return join_into(p.build(bevel=0.05), [ribs, d.build(bevel=0.02)])
+
+
+def bog_lantern():
+	"""A Murkhold street lamp, about 3.5 m: a crooked gray pole in a mud
+	foot, bracket fungus on its side, a crooked arm holding a hanging cage of
+	bone slats round a clump of glowing yellow-green bog-fungus (its center at
+	0.9, 0, 2.55 in Blender, i.e. [0.9, 2.55, 0] in Godot). Collide it as a trunk."""
+	p = Prop("bog_lantern", 968)
+	d = Prop("bog_lantern_glow", 969)
+	_chain(p, [(0, 0, -0.4), (0.1, 0.05, 1.1), (-0.08, 0.1, 2.3), (0.05, 0.0, 3.5)], 0.13, 0.07, WOOD_GRAY, sides=6, grad=(0.2, 1.0))
+	p.blob((0.9, 0.9, 0.45), (0, 0, 0.0), MURK_MUD, segs=(8, 5), grad=(0.4, 1.0), jitter=0.04)
+	_chain(p, [(0.0, 0.0, 3.15), (0.45, 0.0, 3.5), (0.95, 0.02, 3.35)], 0.07, 0.05, WOOD_GRAY, sides=5)
+	p.seg((0.02, 0.0, 3.4), (-0.25, 0.0, 3.8), 0.05, 0.02, WOOD_GRAY, sides=4)          # a crooked twig on top
+	p.seg((0.93, 0.0, 3.35), (0.9, 0.0, 3.0), 0.02, 0.02, HIDE, sides=3)               # the cord
+	cx, cy, top, bot = 0.9, 0.0, 3.0, 1.95
+	p.seg((cx, cy, top - 0.08), (cx, cy, top + 0.04), 0.28, 0.14, WOOD_GRAY, sides=8)      # cap
+	p.seg((cx, cy, bot - 0.08), (cx, cy, bot + 0.04), 0.16, 0.3, WOOD_GRAY, sides=8)       # floor
+	for k in range(7):                                                  # bone slats, bulging
+		a = k * math.tau / 7
+		pts = [(cx + math.cos(a) * r, cy + math.sin(a) * r, z) for r, z in ((0.25, top), (0.42, (top + bot) / 2), (0.28, bot))]
+		_chain(p, pts, 0.04, 0.04, BONE if k % 2 else WOOD_GRAY, sides=4, grad=(0.1, 0.7))
+	for k in range(9):                                                  # the fungus inside
+		a = k * 2.4
+		rr = 0.0 if k == 0 else 0.15
+		z = bot + 0.12 + (k % 3) * 0.26
+		s = 0.3 if k == 0 else 0.2
+		d.blob((s, s, s * 0.8), (cx + math.cos(a) * rr, cy + math.sin(a) * rr, z + (0.25 if k == 0 else 0.0)), FUNGUS, segs=(7, 5), grad=FUNGUS_TONE, glow=2.2)
+	for z, a in ((1.3, 0.5), (1.55, 2.2), (0.9, 4.0)):                  # shelf fungus up the pole, faintly lit
+		d.blob((0.3, 0.3, 0.07), (math.cos(a) * 0.12, math.sin(a) * 0.12, z), FUNGUS, segs=(7, 3), grad=(0.1, 0.5), glow=0.8)
+	return join_into(p.build(bevel=0.01), [d.build()])
+
+
+def murk_cauldron():
+	"""Murkhold's cooking pot: a huge soot-black cauldron (2.5 m across, rim at
+	about 1.95 m) on three stones over a fire pit ringed with rocks (3.4 m
+	across), logs and embers glowing under it, a brown stew with a bone and a
+	great bone paddle sticking out. Collide it as a box."""
+	p = Prop("murk_cauldron", 970)
+	d = Prop("murk_cauldron_fire", 971)
+	rng = p.rng
+	for k in range(12):                                                 # the ring of stones
+		a = k * math.tau / 12
+		p.rock((0.6, 0.5, 0.42), (math.cos(a) * 1.45, math.sin(a) * 1.45, 0.12), STONE_DARK if k % 3 else MURK_BLACK, rot=(0, 0, math.degrees(a)), jitter=0.06)
+	for k in range(3):                                                  # the stones it sits on
+		a = k * math.tau / 3 + 0.5
+		p.rock((0.55, 0.5, 0.6), (math.cos(a) * 0.72, math.sin(a) * 0.72, 0.2), STONE_DARK, jitter=0.05)
+	for k in range(6):                                                  # logs under it
+		a = k * math.tau / 6 + 0.25
+		p.seg((math.cos(a) * 1.3, math.sin(a) * 1.3, 0.12), (math.cos(a) * 0.25, math.sin(a) * 0.25, 0.3), 0.12, 0.1, WOOD, sides=5, grad=(0.4, 1.0))
+	d.blob((2.2, 2.2, 0.16), (0, 0, 0.06), EMBER, segs=(10, 4), grad=(0.5, 0.9), glow=1.0)
+	for k in range(7):                                                  # flames licking round the pot
+		a = k * math.tau / 7 + 0.3
+		r = 1.02
+		d.seg((math.cos(a) * r, math.sin(a) * r, 0.1), (math.cos(a) * (r + 0.1), math.sin(a) * (r + 0.1), 0.1 + rng.uniform(0.5, 0.85)),
+			  0.17, 0.0, FLAME, sides=5, grad=(0.1, 0.95), glow=1.4, twist=rng.uniform(0, 60))
+	pot = _lathe(p, [(0.02, 0.35), (0.6, 0.38), (1.05, 0.7), (1.26, 1.15), (1.18, 1.6), (1.05, 1.78), (1.22, 1.86), (1.2, 1.97), (1.04, 1.95), (1.0, 1.65), (0.02, 1.65)],
+				 16, MURK_BLACK, grad=(0.2, 1.0))
+	for sx in (-1, 1):                                                  # handles
+		pts = [(sx * (1.18 + 0.28 * math.sin(t * math.pi)), 0.0, 1.72 - 0.4 * math.sin(t * math.pi) ) for t in (i / 6 for i in range(7))]
+		pts = [(sx * 1.16, math.cos(t * math.pi) * 0.35, 1.72 - 0.35 * math.sin(t * math.pi)) for t in (i / 6 for i in range(7))]
+		pts = [(x + sx * 0.12 * math.sin(i / 6 * math.pi), y, z) for i, (x, y, z) in enumerate(pts)]
+		_chain(p, pts, 0.055, 0.055, IRON, sides=5)
+	p.blob((2.02, 2.02, 0.16), (0, 0, 1.7), MURK_MUD, segs=(14, 4), grad=(0.3, 0.6))  # the stew
+	for k in range(5):                                                  # bubbles and lumps
+		a = rng.uniform(0, math.tau)
+		rr = rng.uniform(0.1, 0.75)
+		s = rng.uniform(0.12, 0.26)
+		p.blob((s, s, s * 0.7), (math.cos(a) * rr, math.sin(a) * rr, 1.76), MURK_MUD if k % 2 else HIDE, segs=(6, 4), grad=(0.1, 0.5))
+	p.seg((-0.35, 0.2, 1.6), (-0.6, 0.45, 2.4), 0.07, 0.07, BONE, sides=5)            # a bone in the stew
+	p.blob((0.22, 0.24, 0.2), (-0.6, 0.45, 2.45), BONE, segs=(6, 4))
+	_chain(p, [(0.4, -0.3, 1.5), (0.75, -0.55, 2.4), (1.1, -0.8, 3.1)], 0.07, 0.06, BONE, sides=6)   # the paddle, a shoulder blade on a bone
+	p.blob((0.55, 0.12, 0.7), (0.32, -0.25, 1.55), BONE, rot=(0, -20, -35), segs=(8, 4))
+	return join_into(p.build(bevel=0.02), [d.build()])
+
+
+# ---------------------------------------------------------------- Duskhold (dark elves) and Duskwood
+
+DUSK_STONE = IRON         # the dark elves' black stone
+DUSK_TRIM = STONE_DARK    # its dressed gray trim
+CAVE_STONE = STONE_WARM   # the cavern's warm gray rock (its darker half matches the mountain ring)
+CAVE_TONE = (0.5, 1.0)
+DUSK_LEAF = PETAL_PURPLE  # Duskwood's foliage: lilac into deep purple (use the dark half)
+
+
+def cavern_dome():
+	"""Duskhold's sky: the cavern's rock ceiling for a 224 m zone, a rough shell
+	about 268 m across, 45 m over the zone's center, 14 m over its edge (112 m
+	out) and sinking to -10 m at 134 m out, so the ring's mountains rise into
+	it all round. Its faces point down (it is seen from below). Hung with
+	stalactites (2-11 m) and specks of glowing violet crystal. Origin at the
+	zone's center on the ground. No collision (collide none)."""
+	p = Prop("cavern_dome", 972)
+	d = Prop("cavern_dome_glow", 973)
+	rng = p.rng
+	RIM, TOP, R0 = 14.0, 45.0, 112.0
+
+	def height(r, a):
+		base = TOP - (TOP - RIM) * (min(r, R0) / R0) ** 1.8
+		if r > R0:
+			base -= (r - R0) * 0.5 + ((r - R0) / 22.0) ** 2 * 12.0
+		wob = 2.6 * math.sin(3 * a + r * 0.05) + 1.8 * math.sin(5 * a - r * 0.08 + 1.3) + 1.4 * math.cos(r * 0.11 + 2 * a)
+		return base + wob * min(1.0, r / 30.0 + 0.6)
+
+	rings = [(0, 1), (6, 7), (13, 13), (21, 20), (30, 28), (39, 36), (48, 44), (57, 52), (66, 60), (75, 64), (84, 64), (92, 64), (100, 64),
+			 (107, 64), (113, 64), (119, 64), (125, 64), (130, 64), (134, 64)]
+	verts, starts = [], []
+	for i, (r, n) in enumerate(rings):
+		starts.append(len(verts))
+		off = rng.uniform(0, math.tau / n)
+		for k in range(n):
+			a = k * math.tau / n + off
+			rr = r + rng.uniform(-1.5, 1.5) * (0 < r < 130)
+			z = height(rr, a) + rng.uniform(-0.8, 0.8) * (r < 130) + rng.uniform(-1.5, 1.5) * (r < 25)
+			verts.append((math.cos(a) * rr, math.sin(a) * rr, z))
+	faces = []
+	for i in range(len(rings) - 1):                                   # zip each ring to the next; wound clockwise from above so normals point down
+		ni, no = rings[i][1], rings[i + 1][1]
+		si, so = starts[i], starts[i + 1]
+		ang = lambda idx: math.atan2(verts[idx][1], verts[idx][0]) % math.tau
+		inner = sorted(range(si, si + ni), key=ang)
+		outer = sorted(range(so, so + no), key=ang)
+		if ni == 1:
+			for j in range(no):
+				faces.append((inner[0], outer[(j + 1) % no], outer[j]))
+			continue
+		a, b = 0, 0
+		# start the outer walk at the outer vertex nearest the first inner one
+		first = ang(inner[0])
+		b0 = min(range(no), key=lambda j: (ang(outer[j]) - first) % math.tau)
+		outer = outer[b0:] + outer[:b0]
+		base_i, base_o = ang(inner[0]), ang(outer[0])
+		ui = [(ang(v) - base_i) % math.tau for v in inner] + [math.tau]
+		uo = [(ang(v) - base_i) % math.tau for v in outer] + [math.tau + (ang(outer[0]) - base_i) % math.tau]
+		while a < ni or b < no:
+			if b >= no or (a < ni and ui[a + 1] <= uo[b + 1]):
+				faces.append((inner[a % ni], inner[(a + 1) % ni], outer[b % no]))
+				a += 1
+			else:
+				faces.append((inner[a % ni], outer[(b + 1) % no], outer[b % no]))
+				b += 1
+	_raw_mesh(p, verts, faces, CAVE_STONE, grad=(0.35, 1.0))
+	for k in range(9):                                                # hanging rock bulges round the crown
+		a = k * math.tau / 9 + rng.uniform(-0.3, 0.3)
+		r = rng.uniform(0.0, 22.0) if k else 0.0
+		s = rng.uniform(9.0, 15.0)
+		p.rock((s, s * 0.9, s * 0.45), (math.cos(a) * r, math.sin(a) * r, height(r, a) - 0.5), CAVE_STONE, rot=(0, 0, rng.uniform(0, 180)), grad=(0.35, 1.0), jitter=0.1)
+	# stalactites, thicker and longer toward the middle
+	for k in range(220):
+		r = math.sqrt(rng.random()) * 104.0
+		a = rng.uniform(0, math.tau)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		z = height(r, a) + 1.2
+		L = rng.uniform(2.0, 7.0) * (1.0 + 0.6 * (1 - r / 104.0))
+		rad = L * rng.uniform(0.14, 0.2)
+		tip = (x + rng.uniform(-0.3, 0.3), y + rng.uniform(-0.3, 0.3), z - L)
+		p.seg((x, y, z), tip, rad, 0.0, CAVE_STONE if k % 4 else STONE_DARK, sides=5, grad=(0.1, 0.9), twist=rng.uniform(0, 70))
+		if k % 3 == 0:                                                 # a smaller one beside it
+			ox, oy = x + rng.uniform(-1.0, 1.0) * rad * 2, y + rng.uniform(-1.0, 1.0) * rad * 2
+			l2 = L * rng.uniform(0.35, 0.6)
+			p.seg((ox, oy, z), (ox, oy, z - l2), rad * 0.55, 0.0, CAVE_STONE, sides=4, grad=(0.1, 0.9))
+	# glowing violet crystal specks in the rock, the cavern's stars
+	for k in range(70):
+		r = math.sqrt(rng.random()) * 108.0
+		a = rng.uniform(0, math.tau)
+		x, y = math.cos(a) * r, math.sin(a) * r
+		z = height(r, a) + 0.4
+		for j in range(3):
+			l = rng.uniform(1.4, 3.4)
+			d.seg((x + j * 0.6, y + (j % 2) * 0.6, z), (x + j * 0.6 + rng.uniform(-0.8, 0.8), y + rng.uniform(-0.8, 0.8), z - l), 0.5, 0.0, VIOLET, sides=4, grad=(0.0, 0.4), glow=2.2)
+	return join_into(p.build(), [d.build()])
+
+
+def dusk_spire():
+	"""A slender dark elf tower, about 24.3 m: a stepped octagonal plinth 6 m
+	across, a black octagonal shaft tapering from 4.2 to 2.6 m with four thin
+	buttress fins, gray bands, violet-lit lancet windows up its faces, a
+	balcony with a spiked parapet and four pinnacles at 15.5 m, a narrow upper
+	stage with tall violet windows and a black needle roof tipped with a violet orb.
+	Door on the front (-Y) between two violet lamps. Collide it as a mesh."""
+	p = Prop("dusk_spire", 974)
+	o = Prop("dusk_spire_glass", 975)
+	d = Prop("dusk_spire_detail", 976)
+	c8 = math.cos(math.pi / 8)
+	p.seg((0, 0, -0.3), (0, 0, 0.55), 3.0 / c8, 2.9 / c8, DUSK_TRIM, sides=8, grad=(0.2, 1.0), twist=22.5)
+	p.seg((0, 0, 0.55), (0, 0, 1.0), 2.55 / c8, 2.45 / c8, DUSK_STONE, sides=8, grad=(0.1, 0.8), twist=22.5)
+
+	def rad(z):
+		return 2.1 + (1.3 - 2.1) * (z - 1.0) / 14.5
+
+	o.seg((0, 0, 1.0), (0, 0, 15.5), 2.1 / c8, 1.3 / c8, DUSK_STONE, sides=8, grad=(0.0, 0.9), twist=22.5)
+	for z in (1.0, 5.6, 10.6):
+		r = rad(z)
+		d.seg((0, 0, z), (0, 0, z + 0.22), r / c8 + 0.07, r / c8 + 0.06, DUSK_TRIM, sides=8, grad=(0.0, 0.6), twist=22.5)
+	for k in range(4):                                                  # buttress fins on the diagonals
+		a = math.radians(45 + k * 90)
+		u = Vector((math.cos(a), math.sin(a), 0))
+		t = Vector((-u.y, u.x, 0)) * 0.12
+		prof = [(2.1 + 1.1, 0.0), (2.1 + 0.9, 3.0), (rad(9.0) + 0.45, 9.0), (rad(13.5) + 0.05, 13.5), (rad(1.0) - 0.2, 1.0), (rad(13.5) - 0.2, 13.5)]
+		out = [prof[0], prof[1], prof[2], prof[3]]
+		inn = [(rad(1.0) - 0.2, 0.0), (rad(3.0) - 0.2, 3.0), (rad(9.0) - 0.2, 9.0), (rad(13.5) - 0.2, 13.5)]
+		vs = []
+		for (ro, z) in out + inn:
+			for s in (-1, 1):
+				c = u * ro + t * s
+				vs.append((c.x, c.y, z))
+		# out i -> verts 2i, 2i+1; inner j -> 8 + 2j, 9 + 2j
+		faces = []
+		for i in range(3):
+			faces.append((2 * i, 2 * i + 2, 2 * i + 3, 2 * i + 1))           # outer edge
+			faces.append((8 + 2 * i, 9 + 2 * i, 11 + 2 * i, 10 + 2 * i))     # inner edge
+			faces.append((2 * i, 8 + 2 * i, 10 + 2 * i, 2 * i + 2))          # one face
+			faces.append((2 * i + 1, 2 * i + 3, 11 + 2 * i, 9 + 2 * i))      # the other
+		faces.append((0, 1, 9, 8))
+		faces.append((6, 14, 15, 7))
+		p.poly(vs, faces, DUSK_STONE, grad=(0.0, 0.9))
+		d.seg(tuple(u * (rad(13.5) + 0.05) + Vector((0, 0, 13.4))), tuple(u * (rad(13.5) - 0.1) + Vector((0, 0, 14.6))), 0.12, 0.0, DUSK_TRIM, sides=4)
+	# lancet windows up the faces
+	for deg, z, h in ((-90, 4.4, 1.7), (-90, 8.2, 1.8), (-90, 12.0, 1.6), (0, 3.0, 1.6), (0, 7.0, 1.8), (0, 11.2, 1.6), (90, 2.4, 1.4),
+					  (90, 6.4, 1.8), (90, 10.4, 1.6), (180, 4.6, 1.7), (180, 8.8, 1.8), (180, 12.6, 1.5)):
+		r = rad(z + h / 2) * 1.0
+		a = math.radians(deg)
+		_lancet(d, (math.cos(a) * (r + 0.02), math.sin(a) * (r + 0.02), z), 0.46, h, yaw=deg + 90, pane=VIOLET, glow=1.6, frame=DUSK_TRIM, bars=False)
+	_lancet(d, (0, -rad(1.0) - 0.04, 1.0), 1.5, 2.9, pane=MURK_BLACK, glow=0.0, frame=DUSK_TRIM, bars=False)   # the door
+	for sx in (-1, 1):                                                  # violet lamps by the door
+		d.seg((sx * 1.25, -2.2, 2.7), (sx * 1.25, -2.65, 2.7), 0.035, 0.035, DUSK_TRIM, sides=4)
+		d.seg((sx * 1.25, -2.65, 2.45), (sx * 1.25, -2.65, 2.55), 0.1, 0.12, DUSK_TRIM, sides=6)
+		d.blob((0.26, 0.26, 0.34), (sx * 1.25, -2.65, 2.72), VIOLET, segs=(8, 5), grad=(0.0, 0.4), glow=2.4)
+		d.seg((sx * 1.25, -2.65, 2.88), (sx * 1.25, -2.65, 3.15), 0.1, 0.0, DUSK_TRIM, sides=5)
+	# the balcony
+	p.seg((0, 0, 14.9), (0, 0, 15.6), 1.35 / c8, 2.0 / c8, DUSK_TRIM, sides=8, grad=(0.0, 0.8), twist=22.5)
+	p.seg((0, 0, 15.6), (0, 0, 15.85), 2.05 / c8, 2.05 / c8, DUSK_STONE, sides=8, twist=22.5)
+	for k in range(16):                                                 # spiked parapet
+		a = k * math.tau / 16
+		d.seg((math.cos(a) * 1.95, math.sin(a) * 1.95, 15.8), (math.cos(a) * 1.95, math.sin(a) * 1.95, 16.7 + 0.25 * (k % 2)), 0.06, 0.0, DUSK_TRIM, sides=4)
+	d.seg((0, 0, 16.45), (0, 0, 16.52), 1.97 / c8, 1.97 / c8, DUSK_TRIM, sides=8, twist=22.5)
+	for k in range(4):                                                  # pinnacles
+		a = math.radians(45 + k * 90)
+		x, y = math.cos(a) * 1.9, math.sin(a) * 1.9
+		p.seg((x, y, 15.8), (x, y, 17.0), 0.16, 0.14, DUSK_STONE, sides=6)
+		p.seg((x, y, 17.0), (x, y, 18.6), 0.16, 0.0, DUSK_STONE, sides=6)
+	# the upper stage and the needle roof
+	o.seg((0, 0, 15.85), (0, 0, 19.6), 1.1 / c8, 0.95 / c8, DUSK_STONE, sides=8, grad=(0.0, 0.8), twist=22.5)
+	for k in range(4):
+		deg = k * 90
+		a = math.radians(deg)
+		_lancet(d, (math.cos(a) * 1.0, math.sin(a) * 1.0, 16.4), 0.44, 2.4, yaw=deg + 90, pane=VIOLET, glow=1.8, frame=DUSK_TRIM, bars=False)
+	d.seg((0, 0, 19.5), (0, 0, 19.75), 1.2 / c8, 1.2 / c8, DUSK_TRIM, sides=8, twist=22.5)
+	p.seg((0, 0, 19.75), (0, 0, 23.5), 1.15 / c8, 0.05, DUSK_STONE, sides=8, grad=(0.0, 0.8), twist=22.5)
+	d.seg((0, 0, 23.35), (0, 0, 23.55), 0.1, 0.16, DUSK_TRIM, sides=8)
+	d.blob((0.34, 0.34, 0.4), (0, 0, 23.75), VIOLET, segs=(8, 6), grad=(0.0, 0.4), glow=2.4)
+	d.seg((0, 0, 23.9), (0, 0, 24.5), 0.05, 0.0, DUSK_TRIM, sides=4)
+	o = _glossy(o.build(bevel=0.02), 0.3)
+	return join_into(p.build(bevel=0.04), [o, d.build()])
+
+
+def dusk_house():
+	"""A Duskhold house, 9 x 7 m: two storeys of KayKit stone repainted dark
+	(walls 6 m), violet-lit windows on every face, the door on the front (-Y)
+	under a steep cross gable with a round violet window, a steep black main
+	roof ridged along X (to about 11.2 m), a slim round turret on the back
+	right corner with a needle roof (to 14 m), and a violet lamp by the door.
+	About 10 x 8.5 m. Collide it as a mesh."""
+	p = Prop("dusk_house", 977)
+	hx, hy, RH = 4.5, 3.5, 3.0
+	pieces = []
+
+	def kinds(s, r, k):
+		if s == 0:
+			if r == 0:
+				return "wall_doorway" if k == 1 else "wall_window_open"
+			return "wall_window_open" if k != 1 else "wall"
+		if s == 2:
+			return "wall_window_open" if (r == 1 and k == 1) else "wall"
+		return "wall_window_open" if (r == 0 and k == 0) else "wall"
+
+	_kaykit_box(pieces, -hx, -hy, hx, hy, 0.0, 2, RH, kinds=kinds)
+	for x in (-3.0, 0.0, 3.0):
+		for y in (-1.75, 1.75):
+			pieces += kaykit("floor_tile_large", (x, y, -0.07))
+	p.box((2 * hx - 0.6, 2 * hy - 0.6, 6.0), (0, 0, 3.0), DUSK_STONE, grad=(0.3, 1.0))              # the solid core
+	for x in (-3.0, 3.0):                                                                            # panes in the open windows
+		p.box((1.7, 0.1, 1.7), (x, -hy + 0.2, 1.6), VIOLET, grad=(0.2, 0.6), glow=1.5)
+		p.box((1.7, 0.1, 1.7), (x, -hy + 0.2, 4.6), VIOLET, grad=(0.2, 0.6), glow=1.5)
+	p.box((1.7, 0.1, 1.7), (0.0, hy - 0.2, 4.6), VIOLET, grad=(0.2, 0.6), glow=1.5)
+	p.box((0.1, 1.7, 1.7), (hx - 0.2, -1.75, 1.6), VIOLET, grad=(0.2, 0.6), glow=1.5)
+	p.box((0.1, 1.7, 1.7), (-hx + 0.2, 1.75, 1.6), VIOLET, grad=(0.2, 0.6), glow=1.5)
+	p.box((2 * hx + 0.9, 2 * hy + 0.9, 0.22), (0, 0, 3.0), DUSK_TRIM, grad=(0.0, 0.5))                 # band between floors
+	p.box((2 * hx + 1.0, 2 * hy + 1.0, 0.25), (0, 0, 6.05), DUSK_TRIM, grad=(0.0, 0.6))
+	p.box((1.9, 0.5, 0.22), (0, -hy - 0.35, 2.85), DUSK_TRIM, grad=(0.0, 0.5))                        # lintel over the door
+	_steep_roof(p, (0, 0), 2 * hy + 0.6, 2 * hx + 0.6, 6.15, 5.0, slate=DUSK_STONE, wall=DUSK_STONE, ridge_x=True)
+	# the cross gable over the door, ridge running into the main roof
+	_steep_roof(p, (0, -hy + 1.6), 3.8, 3.6, 6.15, 4.4, slate=DUSK_STONE, wall=DUSK_STONE, over=0.35)
+	GY = -hy - 0.25
+	p.seg((0, GY + 0.05, 8.0), (0, GY - 0.08, 8.0), 0.62, 0.62, DUSK_TRIM, sides=14, grad=(0.0, 0.5))
+	p.seg((0, GY - 0.08, 8.0), (0, GY - 0.13, 8.0), 0.48, 0.48, VIOLET, sides=14, grad=(0.1, 0.5), glow=1.6)
+	for k in range(4):                                                                                 # the window's tracery
+		a = k * math.pi / 4
+		p.seg((math.cos(a) * 0.48, GY - 0.15, 8.0 + math.sin(a) * 0.48), (-math.cos(a) * 0.48, GY - 0.15, 8.0 - math.sin(a) * 0.48), 0.03, 0.03, DUSK_TRIM, sides=4)
+	# the turret on the back right corner
+	tx, ty = hx - 0.1, hy - 0.1
+	p.seg((tx, ty, -0.2), (tx, ty, 8.6), 1.25, 1.15, DUSK_STONE, sides=10, grad=(0.1, 0.9))
+	for z in (3.0, 6.0, 8.5):
+		p.seg((tx, ty, z), (tx, ty, z + 0.2), 1.32, 1.3, DUSK_TRIM, sides=10, grad=(0.0, 0.6))
+	for deg, z in ((0, 3.7), (90, 6.7), (45, 1.2)):
+		a = math.radians(deg)
+		_lancet(p, (tx + math.cos(a) * 1.18, ty + math.sin(a) * 1.18, z), 0.36, 1.4, yaw=deg + 90, pane=VIOLET, glow=1.6, frame=DUSK_TRIM, bars=False)
+	p.seg((tx, ty, 8.7), (tx, ty, 14.0), 1.55, 0.02, DUSK_STONE, sides=10, grad=(0.0, 0.8))
+	p.seg((tx, ty, 13.6), (tx, ty, 14.6), 0.04, 0.0, DUSK_TRIM, sides=4)
+	# a violet lamp by the door
+	p.seg((1.3, -hy - 0.42, 2.45), (1.3, -hy - 0.85, 2.45), 0.035, 0.035, DUSK_TRIM, sides=4)
+	p.seg((1.3, -hy - 0.85, 2.05), (1.3, -hy - 0.85, 2.15), 0.09, 0.11, DUSK_TRIM, sides=6)
+	p.blob((0.24, 0.24, 0.32), (1.3, -hy - 0.85, 2.3), VIOLET, segs=(8, 5), grad=(0.0, 0.4), glow=2.2)
+	p.seg((1.3, -hy - 0.85, 2.45), (1.3, -hy - 0.85, 2.7), 0.09, 0.0, DUSK_TRIM, sides=5)
+	obj = p.build(bevel=0.04)
+	return _merge_materials(join_into(obj, _restone(pieces, NIGHT_STONE)))
+
+
+def dusk_bridge():
+	"""An arched stone footbridge, 20 m long (along X) and 3 m wide: a smooth
+	walkable deck rising from ground level at x = +-10 to 2.5 m at the middle,
+	a slender arch under it springing from footings at +-7.5, thin iron
+	railings with pointed finials and four slim lamp posts with violet globes
+	at the ends. Collide it as a mesh."""
+	p = Prop("dusk_bridge", 978)
+	d = Prop("dusk_bridge_detail", 979)
+	S, W, H, T = 10.0, 1.5, 2.5, 0.35
+
+	def top(x):
+		return H * (1 - (x / S) ** 2)
+
+	N = 28
+	xs = [-S + 2 * S * i / N for i in range(N + 1)]
+	vs, faces = [], []
+	for x in xs:                                                     # the deck: 4 verts per station
+		zt = top(x)
+		vs += [(x, -W, zt), (x, W, zt), (x, W, zt - T), (x, -W, zt - T)]
+	for i in range(N):
+		a, b = 4 * i, 4 * (i + 1)
+		faces += [(a, b, b + 1, a + 1), (a + 3, a + 2, b + 2, b + 3), (a, a + 3, b + 3, b), (a + 1, b + 1, b + 2, a + 2)]
+	faces += [(0, 1, 2, 3), (4 * N, 4 * N + 3, 4 * N + 2, 4 * N + 1)]
+	p.poly(vs, faces, DUSK_TRIM, grad=(0.0, 0.6))
+	# the arch body: between the deck's underside and the intrados
+	SP, CR = 7.5, 1.35
+
+	def intr(x):
+		return -0.8 + (CR + 0.8) * (1 - (x / SP) ** 2)
+
+	M = 24
+	xs = [-S + 0.6 + (2 * S - 1.2) * i / M for i in range(M + 1)]
+	vs, faces = [], []
+	BW = W - 0.2
+	for x in xs:
+		up = top(x) - T + 0.02
+		lo = min(intr(x), up - 0.25) if abs(x) < SP else -0.8
+		vs += [(x, -BW, up), (x, BW, up), (x, BW, lo), (x, -BW, lo)]
+	for i in range(M):
+		a, b = 4 * i, 4 * (i + 1)
+		faces += [(a, b, b + 1, a + 1), (a + 3, a + 2, b + 2, b + 3), (a, a + 3, b + 3, b), (a + 1, b + 1, b + 2, a + 2)]
+	faces += [(0, 1, 2, 3), (4 * M, 4 * M + 3, 4 * M + 2, 4 * M + 1)]
+	p.poly(vs, faces, DUSK_STONE, grad=(0.0, 0.9))
+	for sy in (-1, 1):                                               # a molded rib along the arch's edge
+		pts = [(x, sy * (BW + 0.02), intr(x) + 0.05) for x in (-SP + 2 * SP * i / 12 for i in range(13))]
+		_chain(p, pts, 0.14, 0.14, DUSK_TRIM, sides=6)
+		pts = [(x, sy * (W + 0.02), top(x) - T - 0.02) for x in (-S + 2 * S * i / 14 for i in range(15))]
+		_chain(p, pts, 0.1, 0.1, DUSK_TRIM, sides=5)
+	for sx in (-1, 1):                                               # footings where the arch springs
+		p.box((1.6, 2 * W + 0.3, 1.4), (sx * (SP + 0.3), 0, -0.6), DUSK_TRIM, grad=(0.2, 1.0))
+	# railings: thin posts with pointed finials and a rail following the deck
+	RH = 1.0
+	for sy in (-1, 1):
+		y = sy * (W - 0.12)
+		for i in range(11):
+			x = -S + 1.0 + i * (2 * S - 2.0) / 10
+			z = top(x)
+			d.seg((x, y, z - 0.05), (x, y, z + RH), 0.04, 0.035, IRON, sides=4)
+			d.seg((x, y, z + RH), (x, y, z + RH + 0.22), 0.05, 0.0, IRON, sides=4)
+		pts = [(x, y, top(x) + RH - 0.05) for x in (-S + 1.0 + (2 * S - 2.0) * i / 16 for i in range(17))]
+		_chain(d, pts, 0.03, 0.03, IRON, sides=4)
+		pts = [(x, y, top(x) + 0.35) for x in (-S + 1.0 + (2 * S - 2.0) * i / 16 for i in range(17))]
+		_chain(d, pts, 0.02, 0.02, IRON, sides=4)
+		for sx in (-1, 1):                                            # lamp posts at the ends
+			x = sx * (S - 0.45)
+			z = top(x)
+			d.seg((x, y, z - 0.2), (x, y, z + 0.25), 0.16, 0.1, DUSK_TRIM, sides=6)
+			d.seg((x, y, z + 0.25), (x, y, z + 2.0), 0.05, 0.045, IRON, sides=6)
+			d.seg((x, y, z + 1.95), (x, y, z + 2.05), 0.09, 0.11, IRON, sides=6)
+			d.blob((0.24, 0.24, 0.3), (x, y, z + 2.2), VIOLET, segs=(8, 5), grad=(0.0, 0.4), glow=2.2)
+			d.seg((x, y, z + 2.33), (x, y, z + 2.6), 0.08, 0.0, IRON, sides=5)
+	return join_into(p.build(bevel=0.03), [d.build()])
+
+
+def stalagmite_cluster():
+	"""Four cave stalagmites 4.3 to 8 m tall in warm gray rock ringed with drip
+	bands, leaning a little apart, with stubs and fallen rock at their feet.
+	About 5.5 x 5 m. Collide it as a box (or mesh)."""
+	p = Prop("stalagmite_cluster", 980)
+	rng = p.rng
+	spikes = [((0.0, 0.0), 8.0, 1.6, (0.1, 0.05)), ((1.9, 0.7), 5.6, 1.15, (0.35, 0.1)), ((-1.7, 0.9), 6.3, 1.25, (-0.3, 0.12)),
+			  ((0.5, -1.8), 4.3, 1.0, (0.1, -0.3)), ((-1.4, -1.3), 2.0, 0.65, (-0.2, -0.2)), ((2.4, -1.0), 1.4, 0.5, (0.2, -0.1))]
+	for k, ((x, y), h, r, (lx, ly)) in enumerate(spikes):
+		prof = [(0.02, -0.4), (r * 1.15, -0.4)]
+		n = 9
+		for i in range(1, n):
+			t = i / n
+			rr = r * (1 - t ** 1.3) ** 0.9 * (1.0 + 0.13 * math.sin(i * 2.3 + k) + 0.08 * (i % 2))
+			prof.append((max(rr, r * 0.16), h * t))
+		prof += [(r * 0.1, h * 0.99), (0.02, h)]
+		obj = _lathe(p, prof, 9, CAVE_STONE, grad=CAVE_TONE if k % 2 else (0.2, 0.95), jitter=r * 0.07)
+		obj.data.transform(Matrix.Translation((x, y, 0)) @ Matrix.Shear("XY", 4, (lx / max(h, 1.0), ly / max(h, 1.0))))
+	for k in range(9):
+		a = rng.uniform(0, math.tau)
+		rr = rng.uniform(1.8, 2.8)
+		s = rng.uniform(0.4, 0.9)
+		p.rock((s * 1.3, s, s * 0.6), (math.cos(a) * rr, math.sin(a) * rr, 0.05), CAVE_STONE, rot=(0, 0, rng.uniform(0, 180)), grad=CAVE_TONE)
+	return p.build(bevel=0.03)
+
+
+def glow_crystal():
+	"""A cluster of seven glowing violet crystals, six-sided and pointed, 0.6 to
+	2.4 m, leaning out of a dark rock bed about 2.4 m across, with loose shards
+	round it. Glossy. Collide it as a box."""
+	p = Prop("glow_crystal", 981)
+	c = Prop("glow_crystal_glass", 982)
+	rng = p.rng
+	for k in range(6):
+		a = k * math.tau / 6 + rng.uniform(-0.3, 0.3)
+		p.rock((1.0, 0.9, 0.55), (math.cos(a) * 0.7, math.sin(a) * 0.7, 0.05), STONE_DARK, jitter=0.08)
+	p.rock((1.3, 1.2, 0.6), (0, 0, 0.05), MURK_BLACK, jitter=0.08)
+	xs = [((0.0, 0.0), 2.4, 0.3, (0.05, 0.02)), ((0.45, 0.25), 1.8, 0.22, (0.45, 0.15)), ((-0.4, 0.3), 2.0, 0.24, (-0.4, 0.2)),
+		  ((0.1, -0.45), 1.5, 0.2, (0.1, -0.5)), ((-0.35, -0.3), 1.1, 0.16, (-0.45, -0.3)), ((0.55, -0.3), 0.9, 0.14, (0.55, -0.35)), ((-0.1, 0.55), 0.6, 0.12, (0.0, 0.6))]
+	for k, ((x, y), h, r, (lx, ly)) in enumerate(xs):
+		base = Vector((x, y, 0.0))
+		dirv = Vector((lx, ly, 1.0)).normalized()
+		shaft = base + dirv * h * 0.8
+		tip = base + dirv * h
+		tw = rng.uniform(0, 60)
+		c.seg(tuple(base), tuple(shaft), r, r * 0.95, VIOLET, sides=6, grad=(0.0, 0.7), glow=1.6, twist=tw)
+		c.seg(tuple(shaft), tuple(tip), r * 0.95, 0.0, VIOLET, sides=6, grad=(0.0, 0.35), glow=2.0, twist=tw)
+	for k in range(6):
+		a = rng.uniform(0, math.tau)
+		rr = rng.uniform(1.0, 1.4)
+		b = Vector((math.cos(a) * rr, math.sin(a) * rr, 0.0))
+		c.seg(tuple(b), tuple(b + Vector((math.cos(a) * 0.15, math.sin(a) * 0.15, rng.uniform(0.2, 0.4)))), 0.07, 0.0, VIOLET, sides=5, grad=(0.0, 0.5), glow=1.6)
+	return join_into(p.build(bevel=0.02), [_glossy(c.build(), 0.15)])
+
+
+def candle_stand():
+	"""A tall wrought-iron candelabrum, about 2.45 m: three curled feet, a
+	twisted stem with knops, six scrolled arms holding a crown of drip cups
+	and candles (flames at about 2.25 m) round a taller center candle. Collide
+	it as a trunk (or none)."""
+	p = Prop("candle_stand", 983)
+	f = Prop("candle_stand_flames", 984)
+	rng = p.rng
+	for k in range(3):                                               # curled feet
+		a = k * math.tau / 3
+		u = Vector((math.cos(a), math.sin(a), 0))
+		pts = [tuple(u * r + Vector((0, 0, z))) for r, z in ((0.03, 0.42), (0.2, 0.22), (0.38, 0.04), (0.48, 0.05), (0.5, 0.14), (0.45, 0.2))]
+		_chain(p, pts, 0.045, 0.03, IRON, sides=5)
+	p.blob((0.2, 0.2, 0.16), (0, 0, 0.45), IRON, segs=(8, 5))
+	for i in range(8):                                               # a twisted stem: two strands winding round a core
+		z0, z1 = 0.5 + i * 0.17, 0.5 + (i + 1) * 0.17
+		for s in (0, math.pi):
+			a0, a1 = s + i * 0.9, s + (i + 1) * 0.9
+			p.seg((math.cos(a0) * 0.035, math.sin(a0) * 0.035, z0), (math.cos(a1) * 0.035, math.sin(a1) * 0.035, z1), 0.022, 0.022, IRON, sides=4)
+	p.seg((0, 0, 0.45), (0, 0, 1.9), 0.03, 0.028, IRON, sides=6)
+	for z in (1.2, 1.9):
+		p.blob((0.13, 0.13, 0.1), (0, 0, z), IRON, segs=(8, 4))
+	tops = []
+	for k in range(6):                                               # scrolled arms to the crown
+		a = k * math.tau / 6
+		u = Vector((math.cos(a), math.sin(a), 0))
+		pts = [tuple(u * r + Vector((0, 0, z))) for r, z in ((0.04, 1.92), (0.22, 1.86), (0.38, 1.9), (0.45, 2.0))]
+		_chain(p, pts, 0.028, 0.024, IRON, sides=5)
+		p.seg(tuple(u * 0.3 + Vector((0, 0, 1.87))), tuple(u * 0.25 + Vector((0, 0, 1.75))), 0.02, 0.01, IRON, sides=4)   # the scroll's curl
+		tops.append(tuple(u * 0.45 + Vector((0, 0, 2.0))))
+	for k in range(6):                                               # the crown ring
+		a0, a1 = k * math.tau / 6, (k + 1) * math.tau / 6
+		p.seg((math.cos(a0) * 0.45, math.sin(a0) * 0.45, 1.98), (math.cos(a1) * 0.45, math.sin(a1) * 0.45, 1.98), 0.02, 0.02, IRON, sides=4)
+	p.seg((0, 0, 1.9), (0, 0, 2.05), 0.03, 0.03, IRON, sides=5)
+	tops.append((0.0, 0.0, 2.05))
+	for i, (x, y, z) in enumerate(tops):
+		h = 0.34 if i == 6 else rng.uniform(0.18, 0.3)
+		p.seg((x, y, z - 0.02), (x, y, z + 0.04), 0.07, 0.085, IRON, sides=7)      # drip cup
+		p.seg((x, y, z + 0.03), (x, y, z + h), 0.04, 0.038, CLOTH_WHITE, sides=6, grad=(0.0, 0.5))
+		p.seg((x + 0.03, y, z + h - 0.02), (x + 0.042, y, z + h - 0.12), 0.012, 0.008, CLOTH_WHITE, sides=3)   # a wax drip
+		f.seg((x, y, z + h + 0.005), (x, y, z + h + 0.14), 0.028, 0.0, FLAME, sides=5, grad=(0.0, 0.45), glow=2.6)
+		f.blob((0.07, 0.07, 0.1), (x, y, z + h + 0.05), FLAME, segs=(5, 4), grad=(0.3, 0.6), glow=1.8)
+	return join_into(p.build(), [f.build()])
+
+
+def _arch_outline(half=5.0, spring=7.0, apex=12.5, n_arc=10, n_side=4):
+	"""A pointed arch opening in the X-Z plane, from the bottom-left corner up
+	over the apex and down to the bottom-right: [(x, z)]."""
+	cx = ((apex - spring) ** 2 - half * half) / (2 * half)          # the left arc's center (cx, spring); the right is mirrored
+	R = half + cx
+	top = math.atan2(apex - spring, 0 - cx)
+	left = [(-half, spring * i / n_side) for i in range(n_side)]
+	arc = []
+	for i in range(n_arc + 1):
+		a = math.pi + (top - math.pi) * i / n_arc
+		arc.append((cx + math.cos(a) * R, spring + math.sin(a) * R))
+	right_arc = [(-x, z) for x, z in reversed(arc[:-1])]
+	right = [(half, spring * (n_side - i) / n_side) for i in range(1, n_side + 1)]
+	return left + arc + right_arc + right
+
+
+def dusk_gate():
+	"""The cavern entrance of Duskhold: a rough rock face 34 m wide and about
+	24 m tall with a pointed arch 10 m wide and 12.5 m tall carved through it
+	(its front faces -Y), a tunnel with a flat floor at ground level running
+	12 m back into black darkness (walkable to about 11 m in; put the zone
+	line there), a frame of dark dressed voussoirs with glowing violet runes, a
+	keystone rune, and two slender pillars carrying violet lamps. Collide it
+	as a mesh."""
+	p = Prop("dusk_gate", 985)
+	d = Prop("dusk_gate_detail", 986)
+	rng = p.rng
+	HW, SPR, APX, DEPTH = 5.0, 7.0, 12.5, 12.0
+	outline = _arch_outline(HW, SPR, APX)
+	# resample the outline by arc length
+	segl = [math.dist(a, b) for a, b in zip(outline, outline[1:])]
+	total = sum(segl)
+	M = 40
+	res = []
+	for i in range(M + 1):
+		s = total * i / M
+		for j, L in enumerate(segl):
+			if s <= L or j == len(segl) - 1:
+				t = min(s / L, 1.0)
+				a, b = outline[j], outline[j + 1]
+				res.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+				break
+			s -= L
+	outline = res
+	# the outer border (left side, top, right side) sampled at the same fractions
+	OX, OZ = 17.0, 24.0
+	per = [(-OX, 0.0), (-OX, OZ), (OX, OZ), (OX, 0.0)]
+	pl = [math.dist(a, b) for a, b in zip(per, per[1:])]
+	ptot = sum(pl)
+
+	def outer(f):
+		s = ptot * f
+		for j, L in enumerate(pl):
+			if s <= L or j == len(pl) - 1:
+				t = min(s / L, 1.0)
+				a, b = per[j], per[j + 1]
+				return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+			s -= L
+
+	K = 6
+	rings = []
+	for k in range(K + 1):
+		t = (k / K) ** 1.5
+		ring = []
+		for i, (x, z) in enumerate(outline):
+			ox, oz = outer(i / M)
+			px, pz = x + (ox - x) * t, z + (oz - z) * t
+			edge = i == 0 or i == M
+			if k == 0:
+				y = 0.0
+			elif k == K:
+				y = 0.0
+			else:
+				y = -1.6 * math.sin(math.pi * t) + rng.uniform(-0.7, 0.7)
+				px += rng.uniform(-0.5, 0.5)
+				if not edge:
+					pz += rng.uniform(-0.5, 0.5)
+			ring.append((px, y, pz if not edge else -0.6))
+		rings.append(ring)
+	vs, faces = [], []
+	for ring in rings:
+		vs += ring
+	W = M + 1
+	for k in range(K):                                                 # the front face, facing -Y
+		for i in range(M):
+			a, b = k * W + i, (k + 1) * W + i
+			faces.append((a, b, b + 1, a + 1))
+	back = len(vs)                                                     # the same outer border 12 m back, and the tunnel's mouth there
+	vs += [(x, DEPTH, z) for x, _, z in rings[K]]
+	vs += [(x, DEPTH, z) for x, _, z in rings[0]]
+	for i in range(M):
+		a, b = K * W + i, back + i
+		faces.append((a, a + 1, b + 1, b))                             # top and sides of the block
+		c = back + W + i
+		faces.append((b, b + 1, c + 1, c))                             # the back face
+	vs = [(x + rng.uniform(-0.8, 0.8), y + rng.uniform(-0.6, 0.6) * (0 < y < DEPTH), z + rng.uniform(-0.8, 0.8) * (z > 0)) if i >= back else (x, y, z) for i, (x, y, z) in enumerate(vs)]
+	p.poly(vs, faces, CAVE_STONE, grad=CAVE_TONE)
+	for k in range(26):                                                # boulders bedded in the face, clear of the arch
+		for _ in range(20):
+			x, z = rng.uniform(-OX + 1.5, OX - 1.5), rng.uniform(1.0, OZ - 1.5)
+			if min(math.hypot(x - ox, z - oz) for ox, oz in outline) > 3.2 and not (abs(x) < HW + 2.5 and z < APX + 2.5):
+				break
+		s = rng.uniform(1.8, 4.0)
+		p.rock((s * 1.4, s * 0.8, s), (x, rng.uniform(-1.4, -0.4), z), CAVE_STONE, rot=(rng.uniform(-20, 20), 0, rng.uniform(-30, 30)), grad=CAVE_TONE, jitter=0.12)
+	for k in range(9):                                                 # boulders along the top edge
+		x = -OX + 2 + k * (2 * OX - 4) / 8 + rng.uniform(-1, 1)
+		s = rng.uniform(2.5, 4.0)
+		p.rock((s * 1.4, s, s * 0.8), (x, rng.uniform(1.5, 6.0), OZ - 0.5), CAVE_STONE, rot=(0, 0, rng.uniform(0, 180)), grad=CAVE_TONE)
+	for sx in (-1, 1):
+		for k in range(3):
+			s = rng.uniform(2.5, 3.5)
+			p.rock((s, s * 1.2, s * 1.3), (sx * OX, rng.uniform(1.0, 9.0), 4 + k * 7), CAVE_STONE, rot=(0, 0, rng.uniform(0, 180)), grad=CAVE_TONE)
+	# the tunnel: walls round the outline, flat floor, darkness at the back
+	vs, faces = [], []
+	STEPS = 4
+	for sidx in range(STEPS + 1):
+		y = DEPTH * sidx / STEPS
+		for i, (x, z) in enumerate(outline):
+			j = 0.0 if sidx in (0, STEPS) else 0.25
+			vs.append((x * (1 + rng.uniform(-0.02, 0.03) * (sidx > 0)), y, z + (rng.uniform(-j, j) if 0 < i < M else -0.6)))
+	for sidx in range(STEPS):
+		for i in range(M):
+			a, b = sidx * W + i, (sidx + 1) * W + i
+			faces.append((a, a + 1, b + 1, b))
+	_raw_mesh(p, vs, faces, MURK_BLACK, grad=(0.0, 0.9))
+	p.box((2 * HW + 0.4, DEPTH, 0.3), (0, DEPTH / 2, -0.13), DUSK_TRIM, grad=(0.3, 0.9))     # the floor, top at ground level
+	_plate(d, [(x * 0.99, z) for x, z in outline], DEPTH - 0.5, 0.2, SHADE, grad=(0.97, 1.0))
+	# the carved frame: voussoirs round the arch, some with glowing runes
+	frame = outline[3:-3]
+	for i in range(0, len(frame) - 1):
+		(x0, z0), (x1, z1) = frame[i], frame[i + 1]
+		mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
+		tx, tz = x1 - x0, z1 - z0
+		L = math.hypot(tx, tz)
+		nx, nz = -tz / L, tx / L                                       # outward normal (away from the opening)
+		if nx * mx + nz * (mz - 6.0) < 0:
+			nx, nz = -nx, -nz
+		ang = math.degrees(math.atan2(tz, tx))
+		c = (mx + nx * 0.45, -0.35, mz + nz * 0.45)
+		p.box((L * 0.96, 0.9, 0.95), c, DUSK_TRIM if i % 2 else DUSK_STONE, rot=(0, -ang, 0), grad=(0.0, 0.8))
+		if i % 3 == 1:
+			d.box((L * 0.4, 0.06, 0.4), (c[0], -0.83, c[2]), VIOLET, rot=(0, -ang, 0), grad=(0.1, 0.4), glow=1.8)
+	ax, az = 0.0, APX + 0.55
+	p.box((1.4, 1.2, 1.7), (ax, -0.45, az), DUSK_TRIM, grad=(0.0, 0.7))                    # keystone
+	_plate(d, [(-0.3, az - 0.5), (0.0, az - 0.62), (0.3, az - 0.5), (0.4, az), (0.0, az + 0.6), (-0.4, az)], -1.08, 0.06, VIOLET, glow=2.2)
+	for sx in (-1, 1):                                                 # pillars with violet lamps
+		x = sx * (HW + 1.6)
+		p.box((1.3, 1.3, 0.6), (x, -1.1, 0.1), DUSK_TRIM, grad=(0.1, 0.9))
+		p.seg((x, -1.1, 0.4), (x, -1.1, 8.2), 0.42, 0.34, DUSK_STONE, sides=8, grad=(0.0, 0.9))
+		p.seg((x, -1.1, 8.2), (x, -1.1, 8.55), 0.55, 0.6, DUSK_TRIM, sides=8)
+		p.seg((x, -1.1, 8.55), (x, -1.1, 8.7), 0.3, 0.3, DUSK_TRIM, sides=8)
+		d.blob((0.62, 0.62, 0.75), (x, -1.1, 9.1), VIOLET, segs=(10, 6), grad=(0.0, 0.4), glow=2.4)
+		for k in range(4):
+			a = k * math.pi / 2 + math.pi / 4
+			d.seg((x + math.cos(a) * 0.3, -1.1 + math.sin(a) * 0.3, 8.65), (x + math.cos(a) * 0.12, -1.1 + math.sin(a) * 0.12, 9.75), 0.03, 0.03, IRON, sides=4)
+		d.seg((x, -1.1, 9.7), (x, -1.1, 10.4), 0.1, 0.0, IRON, sides=5)
+	for k in range(10):                                                # fallen rock along the foot of the face
+		x = rng.choice((-1, 1)) * rng.uniform(HW + 3.0, OX - 1.0)
+		s = rng.uniform(0.8, 1.8)
+		p.rock((s * 1.3, s, s * 0.8), (x, rng.uniform(-2.0, -0.8), 0.1), CAVE_STONE, rot=(0, 0, rng.uniform(0, 180)), grad=CAVE_TONE)
+	return join_into(p.build(bevel=0.04), [d.build()])
+
+
+def _dusk_crown(p, c, r, n, rng, flat=0.65):
+	"""A crown of deep violet leaf clusters round c (the swatch's darker half,
+	a few lighter lilac tops)."""
+	x, y, z = c
+	for k in range(n):
+		a = k * math.tau / n + rng.uniform(-0.3, 0.3)
+		rr = r * rng.uniform(0.35, 0.7) if k else 0.0
+		s = r * rng.uniform(0.7, 1.0)
+		p.rock((s * 1.25, s * 1.25, s * flat), (x + math.cos(a) * rr, y + math.sin(a) * rr, z + rng.uniform(-0.2, 0.3) * r), DUSK_LEAF,
+			   rot=(0, 0, rng.uniform(0, 360)), grad=(0.5, 1.0) if k % 3 else (0.3, 0.95), jitter=0.07)
+
+
+def dusk_tree():
+	"""A broad Duskwood tree, about 16 m: a straight black trunk with flared
+	roots, crooked black boughs spreading from 6 m, and heavy crowns of deep
+	violet leaves. Use it in a zone's tree_mix (trunk collider)."""
+	p = Prop("dusk_tree", 987)
+	rng = p.rng
+	trunk = [(0, 0, -0.3), (0.08, 0.05, 3.0), (-0.12, 0.0, 6.0), (0.06, -0.08, 9.0), (0.15, 0.0, 11.8)]
+	_chain(p, trunk, 0.55, 0.22, NIGHT_BARK, sides=8, grad=(0.2, 1.0))
+	for k in range(6):
+		a = k * math.tau / 6 + 0.3
+		p.seg((0, 0, 0.9), (math.cos(a) * 1.4, math.sin(a) * 1.4, -0.25), 0.3, 0.07, NIGHT_BARK, sides=5, grad=(0.4, 1.0))
+	crowns = [((0.15, 0.0, 13.4), 3.4)]
+	for k, (z, a, L) in enumerate(((5.8, 0.2, 4.2), (6.8, 2.3, 4.0), (7.8, 4.2, 3.8), (9.0, 1.2, 3.4), (10.0, 3.3, 3.0), (10.8, 5.3, 2.6))):
+		b = Vector((0, 0, z))
+		m = b + Vector((math.cos(a) * L * 0.55, math.sin(a) * L * 0.55, L * 0.25))
+		e = b + Vector((math.cos(a + 0.25) * L, math.sin(a + 0.25) * L, L * 0.7))
+		_chain(p, [tuple(b), tuple(m), tuple(e)], 0.2, 0.06, NIGHT_BARK, sides=5, grad=(0.2, 1.0))
+		crowns.append((tuple(e + Vector((0, 0, 0.4))), 2.8))
+	for c, r in crowns:
+		_dusk_crown(p, c, r, 6, rng)
+	return p.build()
+
+
+def dusk_tree_b():
+	"""A tall, narrow Duskwood tree, about 19 m: a slim black trunk climbing
+	through drooping tiers of deep violet foliage that narrow to a spire,
+	a few bare black twigs poking out. Use it in a zone's tree_mix (trunk collider)."""
+	p = Prop("dusk_tree_b", 988)
+	rng = p.rng
+	_chain(p, [(0, 0, -0.3), (0.05, 0.0, 5.0), (-0.05, 0.05, 10.0), (0.05, 0.0, 15.0), (0.0, 0.0, 18.0)], 0.45, 0.12, NIGHT_BARK, sides=7, grad=(0.2, 1.0))
+	for k in range(5):
+		a = k * math.tau / 5 + 0.6
+		p.seg((0, 0, 0.8), (math.cos(a) * 1.1, math.sin(a) * 1.1, -0.25), 0.26, 0.06, NIGHT_BARK, sides=5, grad=(0.4, 1.0))
+	tiers = [(4.0, 3.4, 3.2), (6.6, 3.0, 3.0), (9.0, 2.6, 2.8), (11.3, 2.1, 2.6), (13.4, 1.6, 2.4), (15.3, 1.1, 2.2), (17.0, 0.6, 2.2)]
+	for i, (z, r, h) in enumerate(tiers):
+		# a drooping tier: a skirt that hangs down from the trunk, lumpy at its hem
+		n = 9
+		tw = rng.uniform(0, 40)
+		p.seg((0, 0, z - h * 0.35), (0, 0, z + h * 0.65), r, 0.0, DUSK_LEAF, sides=n, grad=(0.45, 1.0), jitter=0.12, twist=tw)
+		for k in range(n):
+			a = math.radians(tw) + k * math.tau / n
+			p.blob((r * 0.55, r * 0.55, h * 0.3), (math.cos(a) * r * 0.85, math.sin(a) * r * 0.85, z - h * 0.4), DUSK_LEAF, segs=(6, 4), grad=(0.65, 1.0), jitter=0.05)
+	for k in range(4):                                                  # bare twigs
+		a = rng.uniform(0, math.tau)
+		z = rng.uniform(3.0, 12.0)
+		p.seg((0, 0, z), (math.cos(a) * 2.6, math.sin(a) * 2.6, z + 1.0), 0.06, 0.01, NIGHT_BARK, sides=4)
+	return p.build()
+
+
 PROPS = {
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
@@ -14834,6 +15982,22 @@ PROPS = {
 	"lotus_bloom": lotus_bloom,
 	"tusk_arch": tusk_arch,
 	"grove_stepping_stone": grove_stepping_stone,
+	"murk_longhouse": murk_longhouse,
+	"murk_hut": murk_hut,
+	"bone_palisade": bone_palisade,
+	"bone_gate": bone_gate,
+	"bog_lantern": bog_lantern,
+	"murk_cauldron": murk_cauldron,
+	"cavern_dome": cavern_dome,
+	"dusk_spire": dusk_spire,
+	"dusk_house": dusk_house,
+	"dusk_bridge": dusk_bridge,
+	"stalagmite_cluster": stalagmite_cluster,
+	"glow_crystal": glow_crystal,
+	"candle_stand": candle_stand,
+	"dusk_gate": dusk_gate,
+	"dusk_tree": dusk_tree,
+	"dusk_tree_b": dusk_tree_b,
 }
 
 
