@@ -2931,11 +2931,12 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 	if not c.rights.is_empty() and Time.get_ticks_msec() < c.rights_until and not p.display_name in c.rights:
 		say(p, "You may not loot this corpse yet.", C_WARN)
 		return
+	var chest := str(c.look.get("shape", "")).begins_with("prop:")  # a chest (the Wellspring's), not a body
 	if c.coin > 0:
-		_split_coin(p, c.coin)
+		_split_coin(p, c.coin, c.display_name if chest else "the corpse")
 		c.coin = 0
 	if c.entries.is_empty():
-		say(p, "The corpse is empty.")
+		say(p, "%s is empty." % cap(c.display_name) if chest else "The corpse is empty.")
 		remove_corpse(c)
 		return
 	_ui(p, &"loot_opened", [c])
@@ -2943,7 +2944,7 @@ func request_loot_open(player_id: int, corpse_id: int) -> void:
 
 ## Coin from a corpse is shared with the looter's group in the same zone; the
 ## looter keeps whatever doesn't divide evenly.
-func _split_coin(p: Player, coin: int) -> void:
+func _split_coin(p: Player, coin: int, from := "the corpse") -> void:
 	var here := zone_of(p)
 	var members := group_members(p).filter(func(m: Player) -> bool: return zone_of(m) == here)
 	var share := coin / members.size()
@@ -2953,7 +2954,7 @@ func _split_coin(p: Player, coin: int) -> void:
 			continue
 		m.coin += amount
 		if m == p:
-			say(m, "You receive %s from the corpse%s." % [format_coin(amount), " (your split)" if members.size() > 1 else ""], C_LOOT)
+			say(m, "You receive %s from %s%s." % [format_coin(amount), from, " (your split)" if members.size() > 1 else ""], C_LOOT)
 		else:
 			say(m, "You receive %s as your split." % format_coin(amount), C_LOOT)
 		m.inventory_changed.emit()

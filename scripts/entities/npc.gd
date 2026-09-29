@@ -307,10 +307,18 @@ func _think_companion(delta: float) -> Vector3:
 			auto_attack = false
 			target = null
 		else:
+			# Flank it: stand on the far side of the monster from you, so he takes its
+			# attention and you're never standing inside each other.
 			sitting = false
-			face_toward(t.global_position)
 			_companion_speed = 6.2
-			return nav_dir(t.global_position, delta) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
+			var away := Vector3(t.global_position.x - lead.global_position.x, 0, t.global_position.z - lead.global_position.z)
+			if away.length() < 0.3:
+				away = -t.global_transform.basis.z
+			var spot := nav_snap(t.global_position + away.normalized() * 1.8)
+			if _flat(global_position, spot) > 1.0 and distance_to(t) > 1.2:
+				return nav_dir(spot, delta)
+			face_toward(t.global_position)
+			return Vector3.ZERO
 	_scan_timer -= delta
 	if _scan_timer <= 0.0:
 		_scan_timer = 0.3
@@ -322,6 +330,13 @@ func _think_companion(delta: float) -> Vector3:
 		sitting = false
 		_companion_speed = 7.0 if apart > 12.0 else 5.5
 		return nav_dir(lead.global_position, delta)
+	if apart < 1.6:  # never stands inside you: a step back out of your way
+		sitting = false
+		_companion_speed = 3.0
+		var off := Vector3(global_position.x - lead.global_position.x, 0, global_position.z - lead.global_position.z)
+		if off.length() < 0.2:
+			off = lead.global_transform.basis.z
+		return nav_dir(nav_snap(lead.global_position + off.normalized() * 2.6), delta)
 	if lead.sitting and not sitting:  # resting with you
 		sitting = true
 	elif not lead.sitting and sitting:

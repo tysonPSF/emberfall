@@ -200,6 +200,7 @@ const SECTIONS := [
 	["wellspring", "wellspring"],
 	["wellspring_quest", "wellspring"],
 	["corran", "greenmoor"],
+	["corran_support", "greenmoor"],
 ]
 
 var shots_dir := ""
@@ -2363,6 +2364,9 @@ func _ensure_zone(zone_id: String) -> void:
 	var p := World.local_player
 	if main.zone.zone_id == zone_id:
 		return
+	if zone_id == "wellspring" and not World.quest_started(p, "merricks_line_spring"):  # Watchman Corran lets nobody in before Merrick's step 2
+		p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+		p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
 	if p.dead:
 		await _wait(5.0)
 	# step into the zone line that starts the shortest way there
@@ -3559,6 +3563,26 @@ func _t_wellspring() -> void:
 	for i in route.size() - 1:
 		walked += route[i].distance_to(route[i + 1])
 	print("wellspring: path entrance -> cavern: %d points, %.0f m, ends %.1f m from the cavern" % [route.size(), walked, got.distance_to(z.ground(62, -118))])
+	# the chests at the ends of the side passages
+	var chests: Array = z.get_children().filter(func(n: Node) -> bool: return n is Corpse and (n as Corpse).owner_name == "")
+	for ch: Corpse in chests:
+		print("wellspring: %s at %s: %d coin, %s" % [ch.display_name, Vector2(ch.global_position.x, ch.global_position.z), ch.coin,
+				ch.entries.map(func(e: Dictionary) -> String: return "%s x%d" % [e["item"], int(e.get("count", 1))])])
+	if not chests.is_empty():
+		var ch: Corpse = chests[0]
+		p.global_position = ch.global_position + Vector3(2.5, 0.5, 2.5)
+		p.face_toward(ch.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 4.0
+		await _wait(0.6)
+		await _shot("9zw_chest")
+		var coin := p.coin
+		print("wellspring: opening %s: %.1f m away, coin %d, dead %s" % [ch.display_name, p.distance_to(ch), ch.coin, p.dead])
+		World.request_loot_open(p.entity_id, ch.object_id)
+		print("wellspring: opened: chest coin now %d, you %d" % [ch.coin, p.coin])
+		World.request_loot_all(p.entity_id, ch.object_id)
+		await _wait(0.3)
+		print("wellspring: looted %s: +%d coin; chest still there %s" % [ch.display_name if is_instance_valid(ch) else "it", p.coin - coin, is_instance_valid(ch)])
 	World.time_override = -1.0
 
 
@@ -3779,6 +3803,65 @@ func _t_corran() -> void:
 	p.quests["merricks_line_spring"] = {"active": false, "completions": 1}
 	await _wait(1.0)
 	print("corran: step 2 done -> companion %s" % (World.get_object(p.companion_id) != null))
+
+
+## Corran as a support player sees him: the player walks the cave and never
+## swings; whatever comes at them, Corran must kill. Logs where he stands and
+## what he does every second.
+func _t_corran_support() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 5
+	p.recalc_stats()
+	p.hp = p.max_hp
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	await _ensure_zone("wellspring")
+	await _wait(1.5)
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran_support: FAIL no companion")
+		return
+	var route := [Vector2(120, 126), Vector2(106, 121), Vector2(96, 121), Vector2(88, 123), Vector2(80, 122), Vector2(70, 117), Vector2(58, 111), Vector2(46, 103), Vector2(34, 94), Vector2(24, 84), Vector2(14, 72), Vector2(2, 62)]
+	var kills := 0
+	var mobs_before := World.get_mobs().size()
+	for goal: Vector2 in route:
+		for k in 400:
+			if p.dead:
+				break
+			var fighting := World.get_mobs().any(func(m: Mob) -> bool: return not m.dead and m.hate.has(p.entity_id))
+			if fighting:
+				p.velocity = Vector3.ZERO  # stand and let him work, as a healer does
+				if k % 60 == 0:
+					var t := c.valid_target_entity()
+					print("corran_support: fight: he's %.1f m from you, attacking %s, target %s %.1f m off, hp %d/%d; you %d/%d" % [c.distance_to(p), c.auto_attack,
+							t.display_name if t != null else "-", c.distance_to(t) if t != null else -1.0, c.hp, c.max_hp, p.hp, p.max_hp])
+				p.hp = mini(p.max_hp, p.hp + 1)  # a trickle of healing on yourself
+				await get_tree().physics_frame
+				continue
+			var web := _nearest_mob(p, "thick_web")
+			if web != null and not web.dead and web.distance_to(p) < 4.0:  # hack through it, then stop swinging
+				World.request_set_target(p.entity_id, web.entity_id)
+				if not p.auto_attack:
+					World.request_toggle_attack(p.entity_id)
+				await _wait(0.5)
+				if not is_instance_valid(web) or web.dead:
+					if p.auto_attack:
+						World.request_toggle_attack(p.entity_id)
+					print("corran_support: tore a web; he's %.1f m from you" % c.distance_to(p))
+				continue
+			var to := Vector3(goal.x, p.global_position.y, goal.y) - p.global_position
+			if Vector2(to.x, to.z).length() < 0.8:
+				break
+			p.velocity = to.normalized() * 5.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+		print("corran_support: reached %s: he's %.1f m behind (at %s, you at %s)" % [goal, c.distance_to(p), c.global_position, p.global_position])
+	kills = mobs_before - World.get_mobs().size()
+	print("corran_support: monsters gone %d; you dead %s; he dead %s" % [kills, p.dead, c.dead])
+	p.camera_pivot.rotation.y = PI
+	p.zoom = 5.0
+	await _shot("9zy_corran_support")
 
 
 ## Thornback spiders drop venom sacs (the Silk and Venom quest): kill a lot and count.

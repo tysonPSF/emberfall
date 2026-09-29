@@ -122,8 +122,40 @@ func load_zone(id: String) -> void:
 	if Net.is_authority():  # a client's mobs and npcs come from the server
 		_bake_navigation.call_deferred()
 		_build_spawns()
+		_build_chests()
 		_build_npcs()
 		_build_zone_lines()
+
+
+## Treasure at the end of a side passage (zone data "chests": [{name, pos,
+## face, prop, level, coin: [min, max], rolls: [{chance, pick: {item: weight},
+## count: [min, max]}]}]): a lootable Corpse drawn as a chest, filled once as
+## the zone is built. Opened and emptied, it's gone until the zone is built
+## again (a Wellspring run restocks them, like its monsters).
+func _build_chests() -> void:
+	for spec: Dictionary in data.get("chests", []):
+		var entries: Array = []
+		for roll: Dictionary in spec.get("rolls", []):
+			if randf() >= float(roll.get("chance", 1.0)):
+				continue
+			var item_id := World._pick_weighted(roll["pick"])
+			if item_id == "" or not GameData.items.has(item_id):
+				continue
+			var it := GameData.item(item_id)
+			if it.has("slot") and not it.get("lore", false):  # gear may come out Fine, like a named's
+				var q := World.roll_quality(int(spec.get("level", 6)), true)
+				item_id = item_id if q == "" else "%s@%s" % [item_id, q]
+			var n: Array = roll.get("count", [1, 1])
+			entries.append({"item": item_id, "slot": "", "count": randi_range(int(n[0]), int(n[1]))})
+		var coin_range: Array = spec.get("coin", [0, 0])
+		var chest := Corpse.new()
+		chest.setup(str(spec.get("name", "a chest")), {"shape": "prop:" + str(spec.get("prop", "chest")), "scale": 1.0},
+				entries, randi_range(int(coin_range[0]), int(coin_range[1])), 1e9)
+		var at := Vector2(spec["pos"][0], spec["pos"][1])
+		chest.position = ground(at.x, at.y)
+		if spec.has("face"):
+			chest.rotation.y = atan2(-(float(spec["face"][0]) - at.x), -(float(spec["face"][1]) - at.y))
+		add_child(chest)
 
 
 ## Where mobs and guards can walk: a navigation mesh baked from the terrain
