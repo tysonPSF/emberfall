@@ -199,6 +199,7 @@ const SECTIONS := [
 	["merricks_line", "emberhold_tavern"],
 	["wellspring", "wellspring"],
 	["wellspring_quest", "wellspring"],
+	["corran", "greenmoor"],
 ]
 
 var shots_dir := ""
@@ -3694,6 +3695,90 @@ func _t_wellspring_quest() -> void:
 	await _wait(1.0)
 	await _shot("9zx_pond_clean")
 	World.time_override = -1.0
+
+
+## Watchman Corran: turns you back from the Wellspring before Merrick's step
+## 2, goes in with you once it's under way (levelled to your class), follows
+## a few steps behind, sits when you sit, fights only what you fight, takes
+## your heals; and the cave's monsters stay dead.
+func _t_corran() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.level = 6
+	p.recalc_stats()
+	p.hp = p.max_hp
+	for q in ["merricks_line_sinew", "merricks_line_spring", "merricks_line_word", "merricks_line_pond"]:
+		p.quests.erase(q)
+	var line := -1
+	for i in (main.zone.data["zone_lines"] as Array).size():
+		if str(main.zone.data["zone_lines"][i]["to"]) == "wellspring":
+			line = i
+	var zl: Dictionary = main.zone.data["zone_lines"][line]
+	p.global_position = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1])) + Vector3.UP * 0.3
+	World.request_zone_line(p.entity_id, line)
+	await _wait(1.0)
+	print("corran: before the quest -> still in %s, put back at %s" % [main.zone.zone_id, Vector2(p.global_position.x, p.global_position.z)])
+	var corran: Npc = _npcs().get("watchman_corran")
+	p.face_toward(corran.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 6.0
+	await _wait(0.4)
+	await _shot("9zy_corran_refuses")
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	p.quests["merricks_line_spring"] = {"active": true, "completions": 0}
+	p.global_position = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1])) + Vector3.UP * 0.3
+	World.request_zone_line(p.entity_id, line)
+	for k in 30:
+		await _wait(0.5)
+		if main.zone != null and main.zone.zone_id == "wellspring" and World.get_object(p.companion_id) != null:
+			break
+	var c := World.get_object(p.companion_id) as Npc
+	if c == null:
+		print("corran: FAIL no companion in %s" % main.zone.zone_id)
+		return
+	World.request_set_target(p.entity_id, c.entity_id)
+	var heals_him := World._resolve_spell_target(p, {"target": "friendly"}) == c
+	World.request_set_target(p.entity_id, -1)
+	print("corran: in %s with %s, level %d (a %s), %d hp, only for %s, your heals land on him: %s" % [main.zone.zone_id, c.display_name, c.level, p.char_class,
+			c.max_hp, c.only_for, heals_him])
+	await _wait(1.5)
+	World.request_sit(p.entity_id, true)
+	await _wait(1.5)
+	print("corran: you sit (quiet entrance) -> he sits %s" % c.sitting)
+	p.camera_pivot.rotation.y = PI
+	await _shot("9zy_corran_rests")
+	World.request_sit(p.entity_id, false)
+	# follows, a few steps behind
+	var z: Zone = main.zone
+	for goal: Vector2 in [Vector2(112, 124), Vector2(100, 120)]:
+		for k in 120:
+			var to := Vector3(goal.x, p.global_position.y, goal.y) - p.global_position
+			if Vector2(to.x, to.z).length() < 0.8:
+				break
+			p.velocity = to.normalized() * 5.0
+			p.move_and_slide()
+			await get_tree().physics_frame
+	await _wait(2.5)
+	print("corran: walked 30 m -> he's %.1f m behind" % c.distance_to(p))
+	# a fight: nothing until you start it, then he's in
+	var spider := _nearest_mob(p, "cave_spider")
+	print("corran: a spider %.0f m off, minding its own business -> he's fighting: %s" % [spider.distance_to(p) if spider != null else -1.0, c.auto_attack])
+	if spider != null:
+		p.global_position = spider.global_position + Vector3(3, 0.5, 0)
+		World.request_set_target(p.entity_id, spider.entity_id)
+		if not p.auto_attack:
+			World.request_toggle_attack(p.entity_id)
+		await _wait(2.0)
+		print("corran: you attack it -> he's on it: %s (target %s)" % [c.auto_attack, c.target == spider])
+		await _shot("9zy_corran_fights")
+		var sp: SpawnPoint = spider.spawn_point
+		World.damage(spider, 9999, p)
+		await _wait(0.5)
+		print("corran: it died -> respawns in %s s" % sp._timer)
+	# gone with a farewell once the step is done
+	p.quests["merricks_line_spring"] = {"active": false, "completions": 1}
+	await _wait(1.0)
+	print("corran: step 2 done -> companion %s" % (World.get_object(p.companion_id) != null))
 
 
 ## Thornback spiders drop venom sacs (the Silk and Venom quest): kill a lot and count.

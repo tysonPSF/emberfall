@@ -47,7 +47,7 @@ func spawn() -> void:
 
 func on_mob_died() -> void:
 	mob = null
-	_timer = respawn_time * randf_range(0.85, 1.15)
+	_timer = INF if respawn_time < 0.0 else respawn_time * randf_range(0.85, 1.15)  # < 0: never, until the zone is built again
 
 
 func _pick() -> String:

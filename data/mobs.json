@@ -14030,7 +14030,7 @@
   "thick_web": {
     "name": "a thick web",
     "level": [1, 1],
-    "hp_base": 60, "hp_per_level": 0, "hp_regen": 0, "dmg_min": 0, "dmg_max": 0, "attack_delay": 99, "ac": 0, "speed": 0,
+    "hp_base": 12, "hp_per_level": 0, "hp_regen": 0, "dmg_min": 0, "dmg_max": 0, "attack_delay": 99, "ac": 0, "speed": 0,
     "aggressive": false, "aggro_radius": 0, "social": false, "flees": false, "faction": "webs",
     "verb": ["tangle", "tangles"], "shape": "prop:cobweb", "color": "#dddddd", "scale": 1.6, "coin": [0, 0],
     "loot": [],

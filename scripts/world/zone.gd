@@ -2426,7 +2426,7 @@ func _build_spawns() -> void:
 		var sp := SpawnPoint.new()
 		sp.zone = self
 		sp.pool = entry["pool"]
-		sp.respawn_time = float(entry.get("respawn", 60))
+		sp.respawn_time = -1.0 if data.get("no_respawn", false) else float(entry.get("respawn", 60))  # a cleared dungeon stays cleared until it's built again
 		sp.wander_radius = float(entry.get("wander", 8))
 		sp.when = str(entry.get("when", ""))
 		var x := float(entry["pos"][0])

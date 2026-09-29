@@ -337,6 +337,7 @@ func _physics_process(delta: float) -> void:
 			_check_hidden(obj as Player)
 			_check_feign(obj as Player)
 			_check_pet(obj as Player)
+			_check_companion(obj as Player)
 			_check_burden(obj as Player, delta)
 			_check_lava(obj as Player, delta)
 			_check_swim(obj as Player, delta)
@@ -737,6 +738,58 @@ func _check_pet(p: Player) -> void:
 	if zone_of(p) == null or not GameData.spells.has(p.pet_spell):
 		return
 	summon_pet(p, p.pet_spell, p.pet_hp)
+
+
+## A companion for a zone's quest (zone data "companion": {npc, while}: in the
+## Wellspring, Watchman Corran, while Merrick's step 2 is under way): kept at
+## p's side there, made again when p comes back (zoning, logging in, a minute
+## after he falls), gone with a farewell once the step is done. He's only for
+## p (Npc.only_for), levelled to p's class ("companion_levels" in npcs.json:
+## a cleric gets a stronger one than a warrior) and on p's side (their faction,
+## so heals and buffs land on him; his kills are p's: damage).
+func _check_companion(p: Player) -> void:
+	var z := zone_of(p)
+	var c := get_object(p.companion_id) as Npc
+	var spec: Dictionary = z.data.get("companion", {}) if z != null else {}
+	var wanted := not spec.is_empty() and quest_started(p, str(spec["while"])) and not quest_done(p, str(spec["while"]))
+	if not wanted:
+		if c != null:
+			if not c.dead and zone_of(c) == z and quest_done(p, str(spec.get("while", ""))):
+				_npc_say(p, c, str(c.data.get("farewell", "Farewell, {name}.")))
+			c.queue_free()
+			p.companion_id = -1
+		return
+	if c != null and c.dead:
+		p.companion_back_at = Time.get_ticks_msec() + 60000
+		p.companion_id = -1
+		say(p, "%s is down! He'll be back on his feet in a minute." % c.display_name, C_WARN)
+		return
+	if c != null and zone_of(c) == z:
+		return
+	if c != null:
+		c.queue_free()
+		p.companion_id = -1
+	if p.dead or Time.get_ticks_msec() < p.companion_back_at:
+		return
+	var id := str(spec["npc"])
+	var d: Dictionary = GameData.npcs[id]
+	var lvl := int(d.get("companion_levels", {}).get(p.char_class, d.get("level", 6)))
+	var n := Npc.new()
+	n.setup(id)
+	n.only_for = p.display_name
+	n.follow_id = p.entity_id
+	n.level = lvl
+	n.max_hp = 30 + 24 * lvl
+	n.hp = n.max_hp
+	n.dmg_min = 2 + lvl / 2
+	n.dmg_max = 5 + lvl
+	n.ac = 4 * lvl
+	n.hp_regen = 1 + lvl / 2
+	n.faction = p.faction
+	n.position = p.global_position + p.global_transform.basis.z * 2.5  # a step behind
+	z.add_child(n)
+	p.companion_id = n.entity_id
+	_npc_say(p, n, str(d.get("companion_join", "I'm with you, {name}.")))
 
 
 ## A pet's taunt: puts it on top of its target's hate list.
@@ -1147,6 +1200,8 @@ func damage(d: Entity, amount: int, src: Entity) -> void:
 	if d is Player and not d.cast.is_empty() and amount > 0 and src != d:
 		_channel(d as Player)
 	var credit := (src as Pet).owner_player() if src is Pet else src  # a pet's damage is its owner's
+	if src is Npc and (src as Npc).follow_id >= 0:  # so is a companion's: a cleric healing Corran still earns the kill
+		credit = get_object((src as Npc).follow_id) as Entity
 	if d is Mob and credit is Player:  # kill credit goes to whoever did the most
 		var by: Dictionary = d.get_meta("damage_by", {})
 		by[credit.entity_id] = int(by.get(credit.entity_id, 0)) + amount
@@ -4398,6 +4453,9 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 	if p == null or p.dead or z == null or z.zone_line_at(p.global_position) != line_index:
 		return
 	var zl: Dictionary = z.data["zone_lines"][line_index]
+	if zl.has("requires_started") and not quest_started(p, str(zl["requires_started"])):
+		_turn_back(p, z, zl)  # Watchman Corran won't let you into the Wellspring alone
+		return
 	request_trade_cancel(player_id)
 	request_service_close(player_id)
 	request_loot_close(player_id)
@@ -4409,6 +4467,21 @@ func request_zone_line(player_id: int, line_index: int) -> void:
 		request_interrupt(player_id)
 	var face: Array = zl.get("arrive_face", zl["arrive"])
 	zone_change.emit(p, str(zl["to"]), Vector2(zl["arrive"][0], zl["arrive"][1]), Vector2(face[0], face[1]))
+
+
+## A zone line that isn't open to you yet ("requires_started": a quest):
+## whoever keeps it ("refused_by", an npc in this zone) tells you why, and
+## you're put back at "refused_to" [x, z].
+func _turn_back(p: Player, z: Zone, zl: Dictionary) -> void:
+	for obj: Node3D in objects.values():
+		if obj is Npc and (obj as Npc).npc_id == str(zl.get("refused_by", "")) and zone_of(obj) == z and float(p.cooldowns.get("turned_back", 0.0)) <= 0.0:
+			var npc := obj as Npc
+			npc.greet(p)
+			_npc_say(p, npc, str(npc.data.get("refuse_entry", "You can't go that way.")))
+			p.cooldowns["turned_back"] = 6.0
+	var back: Array = zl.get("refused_to", [p.global_position.x, p.global_position.z])
+	p.global_position = z.ground(float(back[0]), float(back[1])) + Vector3.UP * 0.3
+	Net.teleport(p, p.global_position)
 
 
 # --- camping (logging out) --------------------------------------------------

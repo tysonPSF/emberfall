@@ -4382,7 +4382,8 @@
       "I was wrong about the why. Not about the where.",
       "Greenmoor's water starts in a cave under the first hills. Whole zone drinks from that spring. I followed the sour taste as far as the mouth. Something in the deep is fouling the source. That's why the fish won't take a hook.",
       "You walked Greenmoor and came back. That counts for something. Might be enough to put the spring right.",
-      "Safer with a party. Friends at your back, fewer graves. But if you're stubborn, you could manage it alone.",
+      "Safer with a party. Friends at your back, fewer graves. And nobody goes down there alone anymore; the Watch has a man posted at the cave mouth to see to that.",
+      "Corran. Watchman Corran. He owes me for thirty years of fish. I'll send word that you're coming, and he'll go down with you. Keep him alive and he'll keep you alive.",
       "Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat."
     ],
     "next": "merricks_line_spring",
@@ -4403,7 +4404,7 @@
       "xp": 150
     },
     "first_reward_item": "vial_of_spring_water",
-    "accept_text": "You have taken on a task: The Sour Spring. Find what is fouling Greenmoor's spring in the cave under the first hills, and put it right.",
+    "accept_text": "You have taken on a task: The Sour Spring. Meet Watchman Corran at the cave mouth in Greenmoor's western hills; go down with him, find what is fouling the spring, and put it right.",
     "ready_text": "The crystal's light flickers under its webs as you come near. The Blight Heart in your pack twitches, as if it knows.",
     "complete_text": [
       "You press the Blight Heart to the crystal. It hisses, blackens and crumbles to ash.",

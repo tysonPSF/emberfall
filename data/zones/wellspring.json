@@ -9,6 +9,8 @@
   "rocks": 0,
   "tainted": true,
   "tainted_until": "merricks_line_spring",
+  "no_respawn": true,
+  "companion": {"npc": "corran_escort", "while": "merricks_line_spring"},
   "background_color": "#050604",
   "ambient_color": "#8f9a86",
   "ambient_energy": 0.75,

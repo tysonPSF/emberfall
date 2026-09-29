@@ -277,8 +277,9 @@
     },
     "dialogue_after": {
       "merricks_line_sinew": {
-        "hail": "Well? What are you waiting for, {name}? The cave under the first hills, west of the pond. Something's fouling the [spring].",
-        "spring": "Whole zone drinks from it. Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat.",
+        "hail": "Well? What are you waiting for, {name}? The cave under the first hills, west of the pond. [Corran]'s waiting at the mouth. Something's fouling the [spring].",
+        "corran": "Watchman Corran. Good man, bad jokes. He'll go down with you. Keep him standing and he'll keep you standing.",
+        "spring": "Whole zone drinks from it. Go look, you and Corran. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat.",
         "sinew": "Already twisting it. Won't matter a lick while the water's sour, though. The [spring], {name}.",
         "unknown": "Later. The [spring] first."
       },
@@ -293,6 +294,54 @@
     },
     "until_started": "merricks_line_pond",
     "faction": "emberhold"
+  },
+  "watchman_corran": {
+    "name": "Watchman Corran",
+    "title": "Emberhold Watch",
+    "level": 20,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "dialogue": {
+      "hail": "Hold there, {name}. That's the Wellspring behind me, and nobody goes into it alone. Not anymore. Folk who went down there on their own never came back up. Ask around the Ember and Anvil in Emberhold if you don't believe me; the regulars there have [stories].",
+      "stories": "Miners, first. Then a pair of trappers, then a boy on a dare. None of them came out. Something down there's gone bad, and it's souring the water with it. There's an old fisherman drinks at the Ember and Anvil who's been grumbling about that water for weeks. Talk to him.",
+      "merrick": "Merrick sent word? Then you're the one. I'll go down with you, {name}. Lead on into the cave; I'll be right behind you.",
+      "unknown": "I'm keeping watch, {name}. The cave stays closed to anyone going in alone."
+    },
+    "dialogue_after": {
+      "merricks_line_sinew": {
+        "hail": "Merrick sent word about you, {name}. He says you're going down to the spring. Good. I'm going with you; lead on into the cave and I'll be right behind you."
+      },
+      "merricks_line_spring": {
+        "hail": "The water's running clean again, {name}. Never thought I'd see it. The cave's yours to walk now."
+      }
+    },
+    "refuse_entry": "Whoa, hold up, {name}! Nobody goes into that cave alone. Folk who go down there on their own don't come back. If you're set on it, go and listen to the regulars at the Ember and Anvil in Emberhold. Somebody there has more reason than most to want this cave put right.",
+    "faction": "watch"
+  },
+  "corran_escort": {
+    "name": "Watchman Corran",
+    "title": "Emberhold Watch",
+    "level": 6,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "companion_levels": {
+      "cleric": 8,
+      "shaman": 7,
+      "wizard": 7,
+      "magician": 7,
+      "necromancer": 7,
+      "ranger": 6,
+      "rogue": 6,
+      "warrior": 5
+    },
+    "fixed": true,
+    "companion_join": "Right behind you, {name}. You lead; I'll keep them off you. Sit when you need to, and I'll hold here till you're ready.",
+    "farewell": "The spring's clean. My job here's done, {name}. I'll go tell Holt. Good work down there.",
+    "dialogue": {
+      "hail": "I'm with you, {name}. Lead the way, and I'll keep them off you.",
+      "unknown": "Keep your eyes open, {name}. I'm right behind you."
+    },
+    "faction": "watch"
   },
   "merrick_walker": {
     "name": "Merrick",
@@ -402,7 +451,9 @@
     "level": 18,
     "model": "ranger",
     "dialogue": {
-      "hail": "Don't mind me, {name}. I've had this same seat for eleven years and I'll not be moved from it now.",
+      "hail": "Don't mind me, {name}. I've had this same seat for eleven years and I'll not be moved from it now. Unless you want to hear about the [cave].",
+      "cave": "The Wellspring, the old miners called it, up in Greenmoor's western hills. Men went in alone and never came out, and now the Watch keeps a guard on the mouth. Water's been sour ever since. Ask [Merrick] there; that one's been glaring into his ale over it for weeks.",
+      "merrick": "The grumpy one at the next table. Fished Greenmoor's pond for thirty years, and now nothing bites. Go on, say hello. Worst he'll do is growl at you.",
       "unknown": "Hah. Ask Hessa, she knows everything worth knowing."
     },
     "faction": "emberhold"

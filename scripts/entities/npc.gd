@@ -41,6 +41,8 @@ var quest_gated := false  # "until_quest" / "after_quest": shown only to those a
 var seated := ""  # "chair": sits at its post (npcs.json "seated"), standing only to fight
 var only_for := ""  # a player's name: shown to them alone (a scene for one player: World.sees)
 var walk_to := Vector3.INF  # walks here, then leaves (Merrick heading out of the tavern)
+var follow_id := -1  # a companion: the player it follows and fights beside (World._check_companion)
+var _companion_speed := 5.5
 var _sight_check := 0.0
 
 
@@ -227,9 +229,13 @@ func _physics_process(delta: float) -> void:
 		return
 	apply_gravity(delta)
 	var move := Vector3.ZERO
-	if not dead:
-		move = _think(delta)
 	var speed := float(guard.get("speed", 5.5))
+	if follow_id >= 0:  # a companion (Watchman Corran in the Wellspring): follows its player, fights beside them
+		if not dead:
+			move = _think_companion(delta)
+		speed = _companion_speed
+	elif not dead:
+		move = _think(delta)
 	if not patrol.is_empty() and not auto_attack:
 		speed = float(guard.get("walk_speed", 2.0))
 	if walk_to != Vector3.INF and not dead:  # on its way out: walks to the door and is gone
@@ -277,6 +283,64 @@ func _think(delta: float) -> Vector3:
 		_scan_timer = SCAN_SECONDS
 		_look_for_trouble()
 	return Vector3.ZERO
+
+
+## A companion's turn (World._check_companion makes them). It never leads:
+## it keeps a few steps behind its player and only fights what is fighting
+## either of them, or what the player is attacking; it stops when they stop,
+## sits when they sit, runs to catch up when left behind, and drops a fight
+## that pulls it far from them.
+func _think_companion(delta: float) -> Vector3:
+	var lead := World.get_object(follow_id) as Player
+	_companion_speed = 5.5
+	if lead == null or lead.dead or World.zone_of(lead) != World.zone_of(self):
+		auto_attack = false
+		target = null
+		return Vector3.ZERO
+	var apart := _flat(global_position, lead.global_position)
+	if apart > 45.0:  # lost (a long fall, a wrong turn): back to their side
+		global_position = lead.global_position + lead.global_transform.basis.z * 2.0  # a step behind them (clients follow npc positions as sent)
+		return Vector3.ZERO
+	if auto_attack:
+		var t := valid_target_entity()
+		if t == null or t.dead or _flat(t.global_position, lead.global_position) > 25.0:
+			auto_attack = false
+			target = null
+		else:
+			sitting = false
+			face_toward(t.global_position)
+			_companion_speed = 6.2
+			return nav_dir(t.global_position, delta) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
+	_scan_timer -= delta
+	if _scan_timer <= 0.0:
+		_scan_timer = 0.3
+		var foe := _companion_foe(lead)
+		if foe != null:
+			_engage(foe)
+			return Vector3.ZERO
+	if apart > 3.5:  # follow, a few steps behind
+		sitting = false
+		_companion_speed = 7.0 if apart > 12.0 else 5.5
+		return nav_dir(lead.global_position, delta)
+	if lead.sitting and not sitting:  # resting with you
+		sitting = true
+	elif not lead.sitting and sitting:
+		sitting = false
+	return Vector3.ZERO
+
+
+## What a companion should fight: what its player is attacking, else whatever
+## is fighting its player or itself nearby. Never a monster minding its own business.
+func _companion_foe(lead: Player) -> Mob:
+	var t := lead.valid_target_entity()
+	if t is Mob and not t.dead and (lead.auto_attack or (t as Mob).hate.has(lead.entity_id)) and _flat(t.global_position, lead.global_position) < 25.0:
+		return t as Mob
+	for m in World.get_mobs():
+		if m.dead or World.zone_of(m) != World.zone_of(self) or _flat(m.global_position, lead.global_position) > 20.0:
+			continue
+		if m.hate.has(lead.entity_id) or m.hate.has(entity_id):
+			return m
+	return null
 
 
 ## Next step along the patrol: on to the next waypoint, turning back at either
@@ -376,6 +440,9 @@ func on_killed() -> void:
 	target = null
 	if visual is CharacterModel:
 		(visual as CharacterModel).pose_dead()
+	if follow_id >= 0:  # a companion lies there a moment, then is gone (World._check_companion brings him back later)
+		get_tree().create_timer(6.0).timeout.connect(queue_free)
+		return
 	get_tree().create_timer(RESPAWN_SECONDS).timeout.connect(_return_to_post)
 
 
