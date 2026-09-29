@@ -109,6 +109,7 @@ const SECTIONS := [
 	["swing_bar", "greenmoor"],
 	["crits", "greenmoor"],
 	["journal", "greenmoor"],
+	["quest_share", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -8209,6 +8210,52 @@ func _t_crits() -> void:
 
 ## The quest journal: active and completed quests, a quest line's step
 ## abandoned and offered back by hailing its giver, and a plain abandon.
+## Who may take up a shared quest: what they're on, what they've done, a quest
+## line's earlier step, and whether its giver would talk to them. The share
+## button shows in the journal only in a group.
+func _t_quest_share() -> void:
+	var m := Player.new()
+	m.from_save({"name": "Probe", "class": "warrior", "level": 5, "stats": {}, "race": "human"})
+	var why := func(q: String) -> String: return World.quest_share_blocked(m, q)
+	print("quest_share: fresh -> fang_bounty '%s', trail_pack_cord '%s', trail_pack_hide '%s', merricks_line_spring '%s'" % [why.call("fang_bounty"), why.call("trail_pack_cord"), why.call("trail_pack_hide"), why.call("merricks_line_spring")])
+	m.quests["trail_pack_cord"] = {"active": false, "completions": 1}
+	m.quests["fang_bounty"] = {"active": true, "completions": 0}
+	print("quest_share: after the cord -> trail_pack_hide '%s', trail_pack_cord '%s', fang_bounty '%s' (you: '%s')" % [why.call("trail_pack_hide"), why.call("trail_pack_cord"), why.call("fang_bounty"), World.quest_share_blocked(m, "fang_bounty", true)])
+	m.quests["fang_bounty"] = {"active": false, "completions": 3}
+	print("quest_share: repeatable fang_bounty done 3 times -> '%s'" % why.call("fang_bounty"))
+	var faction := str(GameData.npcs["warden_holt"].get("faction", ""))
+	m.factions[faction] = -3000
+	print("quest_share: at -3000 with %s -> fang_bounty '%s'" % [faction, why.call("fang_bounty")])
+	m.free()
+	var p := World.local_player
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	p.quests["fang_bounty"] = {"active": true, "completions": 0}
+	p.group = []
+	hud._toggle_journal()
+	hud._journal_pick = "fang_bounty"
+	hud._refresh_journal()
+	print("quest_share: solo -> share button %s" % hud._journal_share.visible)
+	p.group = [{"id": p.entity_id, "name": p.display_name, "level": p.level, "class": p.char_class, "hp": p.hp, "max_hp": p.max_hp, "mana": p.mana, "max_mana": p.max_mana, "leader": true, "zone": "greenmoor", "dead": false},
+			{"id": -5, "name": "Nick", "level": 5, "class": "cleric", "hp": 60, "max_hp": 60, "mana": 40, "max_mana": 40, "leader": false, "zone": "greenmoor", "dead": false}]
+	hud._refresh_journal()
+	await _wait(0.3)
+	print("quest_share: grouped -> share button %s" % hud._journal_share.visible)
+	await _shot("9journal_share")
+	hud._toggle_journal()
+	hud._on_quest_offered("Nick", "fang_bounty")
+	await _wait(0.3)
+	await _shot("9quest_offer")
+	hud._on_quest_offered("", "")
+	p.group = []
+	# solo: a share is refused
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	World.request_quest_share(p.entity_id, "fang_bounty")
+	World.log_message.disconnect(grab)
+	print("quest_share: solo share -> %s" % [lines])
+
+
 func _t_journal() -> void:
 	var p := World.local_player
 	var hud: Node = get_tree().get_first_node_in_group("hud")

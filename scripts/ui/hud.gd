@@ -14,7 +14,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
-[b]Quests[/b]   J your quest journal: what you're on, what each giver said, what's left, what it pays, and Abandon
+[b]Quests[/b]   J your quest journal: what you're on, what each giver said, what's left, what it pays, Share with group (members who can take it up are offered it) and Abandon
 [b]Friends and guild[/b]   F your friends (who's online, and where; /friend name adds or removes) · U your guild · /gu talks to the guild · /wave, /bow, /dance... (/emotes lists them)
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
@@ -189,6 +189,9 @@ var _journal_text: RichTextLabel
 var _journal_tab_active: Button
 var _journal_tab_done: Button
 var _journal_abandon: Button
+var _journal_share: Button
+var _share_panel: PanelContainer
+var _share_label: Label
 var _journal_done_tab := false
 var _journal_pick := ""
 var _journal_confirm := ""  # the quest Abandon was pressed once for
@@ -240,6 +243,7 @@ func _ready() -> void:
 	_build_quest_tracker()
 	_build_group_window()
 	_build_invite()
+	_build_quest_share()
 	_build_item_window()
 	_build_skills_window()
 	_build_loot_window()
@@ -285,6 +289,7 @@ func _ready() -> void:
 		_service_npc = null
 		_refresh_inventory())
 	World.group_invited.connect(_on_group_invited)
+	World.quest_offered.connect(_on_quest_offered)
 	World.trade_opened.connect(_on_trade_opened)
 	World.trade_changed.connect(_refresh_trade)
 	World.trade_closed.connect(func() -> void:
@@ -1365,6 +1370,35 @@ func _on_group_invited(from_name: String) -> void:
 	_invite_label.text = "%s invites you to join a group." % from_name
 
 
+## A groupmate shared a quest: take it up or not.
+func _build_quest_share() -> void:
+	_share_panel = UIKit.panel()
+	UIKit.place(_share_panel, Vector2(0.5, 0.38), Vector2.ZERO)
+	root.add_child(_share_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	_share_panel.add_child(v)
+	_share_label = UIKit.label("", 15, UIKit.TEXT)
+	v.add_child(_share_label)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var yes := UIKit.button("Accept", Vector2(120, 34))
+	yes.pressed.connect(func() -> void: World.request_quest_share_answer(player.entity_id, true))
+	var no := UIKit.button("Decline", Vector2(120, 34))
+	no.pressed.connect(func() -> void: World.request_quest_share_answer(player.entity_id, false))
+	row.add_child(yes)
+	row.add_child(no)
+	v.add_child(row)
+	_share_panel.visible = false
+
+
+func _on_quest_offered(from_name: String, quest_id: String) -> void:
+	_share_panel.visible = from_name != ""
+	if from_name != "":
+		var q: Dictionary = GameData.quests.get(quest_id, {})
+		_share_label.text = "%s shares a quest with you:\n%s\n(given by %s)" % [from_name, q.get("name", quest_id), QuestHints._npc_name(str(q.get("giver", "")))]
+
+
 ## Active quests and what's still needed, under the player window.
 func _build_quest_tracker() -> void:
 	_quest_panel = UIKit.panel()
@@ -1938,7 +1972,17 @@ func _build_journal_window() -> void:
 		_journal_confirm = ""
 		_journal_pick = ""
 		_journal_refresh = 0.2)
-	right.add_child(_journal_abandon)
+	_journal_share = UIKit.button("Share with group", Vector2(0, 26))
+	_journal_share.pressed.connect(func() -> void:
+		if _journal_pick != "":
+			World.request_quest_share(player.entity_id, _journal_pick))
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 8)
+	_journal_share.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_journal_abandon.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buttons.add_child(_journal_share)
+	buttons.add_child(_journal_abandon)
+	right.add_child(buttons)
 	_journal_panel.visible = false
 
 
@@ -1989,6 +2033,7 @@ func _refresh_journal() -> void:
 	if shown.is_empty():
 		_journal_list.add_child(UIKit.label("Nothing here yet." if _journal_done_tab else "You're on no quests.\nHail the townsfolk: gold words\nin what they say lead to work.", 12, UIKit.DIM))
 	_journal_abandon.visible = not _journal_done_tab and _journal_pick != ""
+	_journal_share.visible = _journal_abandon.visible and player.group.size() > 1
 	_journal_abandon.text = "Click again to abandon" if _journal_confirm == _journal_pick and _journal_pick != "" else "Abandon quest"
 	_journal_text.text = _journal_page(_journal_pick) if _journal_pick != "" else ""
 
@@ -2998,7 +3043,7 @@ func _draw_crosshair() -> void:
 
 ## True while any window the player clicks in is open, which frees the cursor.
 func wants_cursor() -> bool:
-	return (_map.visible or _book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
+	return (_map.visible or _book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _share_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
 			or _settings_panel.visible or _friends_panel.visible or _guild_panel.visible or _journal_panel.visible)
 

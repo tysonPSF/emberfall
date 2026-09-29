@@ -54,6 +54,12 @@ func _run() -> void:
 		elif "--guild" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
+		elif "--share" in OS.get_cmdline_user_args():
+			var qs := {"fang_bounty": {"active": true, "completions": 0}, "trail_pack_cord": {"active": true, "completions": 0},
+					"trail_pack_hide": {"active": true, "completions": 0}, "rain_pack_needles": {"active": true, "completions": 0}} \
+					if who == "Alpha" else {"rain_pack_needles": {"active": false, "completions": 1}}
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "greenmoor", "position": [8.0 if who == "Alpha" else 4.0, 2, 20], "quests": qs})
 		elif "--grove" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "light", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "the_grove", "position": [4.0 if who == "Alpha" else -4.0, 2, 30]})
@@ -120,6 +126,8 @@ func _run() -> void:
 		await _emote_test(p)
 	elif "--guild" in OS.get_cmdline_user_args():
 		await _guild_test(p)
+	elif "--share" in OS.get_cmdline_user_args():
+		await _share_test(p)
 	elif "--swing" in OS.get_cmdline_user_args():
 		# the swing timer reaches the client: attack something and watch it run down and restart
 		var mob: Mob = null
@@ -469,6 +477,58 @@ func _group_test(p: Player) -> void:
 ## Guilds and friends online: Alpha founds a guild at Emberhold's registrar
 ## and invites Bravo, who sees Alpha's tag and hears guild chat; Alpha
 ## befriends Bravo and hears when Bravo logs off.
+## Sharing quests online: Alpha groups Bravo and shares four quests. Bravo
+## takes one, is found ineligible for two (a quest line's later step, one
+## already done), and declines the last.
+func _share_test(p: Player) -> void:
+	var other: Player = null
+	for k in 60:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	if other == null:
+		print("[%s] share: nobody else here" % who)
+		return
+	var heard: Array = []
+	World.log_message.connect(func(t: String, _c: Color) -> void: heard.append(t))
+	if who == "Alpha":
+		World.request_chat(p.entity_id, "/invite Bravo")
+		for k in 40:
+			if p.group.size() > 1:
+				break
+			await _wait(0.25)
+		for quest_id: String in ["fang_bounty", "trail_pack_hide", "rain_pack_needles", "trail_pack_cord"]:
+			World.request_quest_share(p.entity_id, quest_id)
+			await _wait(2.5)
+		await _wait(2.0)
+		print("[Alpha] share: heard %s" % [heard.filter(func(t: String) -> bool: return "Bravo" in t or "share" in t)])
+	else:
+		var offers: Array = []
+		World.quest_offered.connect(func(f: String, q: String) -> void:
+			if f != "":
+				offers.append(q))
+		await _wait(1.5)
+		World.request_chat(p.entity_id, "/accept")
+		for k in 60:
+			if offers.size() >= 1:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+		await _shot("quest_share_offer")
+		World.request_quest_share_answer(p.entity_id, true)
+		for k in 60:
+			if offers.size() >= 2:
+				break
+			await _wait(0.25)
+		World.request_quest_share_answer(p.entity_id, false)
+		await _wait(3.0)
+		print("[Bravo] share: offered %s; my quests now %s; heard %s" % [offers, p.quests, heard.filter(func(t: String) -> bool: return "share" in t or "decline" in t or "given by" in t)])
+		get_tree().quit()
+
+
 func _guild_test(p: Player) -> void:
 	var other: Player = null
 	for k in 60:

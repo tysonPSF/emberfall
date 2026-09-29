@@ -27,7 +27,7 @@ Everything below is conditional. Don't read it speculatively.
 
 | About to… | Read |
 |---|---|
-| Add an `@rpc`, change an RPC's arguments, or add a key to `_send_self` / `apply_self` | [net/protocol.md](net/protocol.md) — **bump `PROTOCOL`**; a newer client silently breaks on an older server; it hasn't been bumped since 16 |
+| Add an `@rpc`, change an RPC's arguments, or add a key to `_send_self` / `apply_self` | [net/protocol.md](net/protocol.md) — **bump `PROTOCOL`**; a newer client silently breaks on an older server; bumped to 18 on 2026-09-29 (alignment branch holds 17) |
 | Tell someone a feature works online, or plan a release | [workflow/team.md](workflow/team.md) — nothing is live until Nick updates the server |
 | Touch zone loading, `_server_zones`, or anything per-group in zones | [workflow/team.md](workflow/team.md) — instancing is Nick's |
 
