@@ -2291,6 +2291,60 @@ func quest_shows(p: Player, npc_data: Dictionary) -> bool:
 	return after == "" or quest_done(p, after)
 
 
+## What to show over an npc for p: "!" when they have a quest p could take
+## up now (asked by its keyword, or a quest line's step p dropped), "?" when p
+## carries everything for one of theirs, else "". Worked out on the client from
+## p's own quests and standings (World.quest_mark_for is the npc's side).
+func quest_mark(p: Player, npc_id: String) -> String:
+	if p == null:
+		return ""
+	var ready := false
+	for quest_id: String in _quests_of_npc(npc_id):
+		var q: Dictionary = GameData.quests[quest_id]
+		var state: Dictionary = p.quests.get(quest_id, {})
+		if state.get("active", false):
+			if q["giver"] == npc_id and quest_items_ready(p, quest_id):
+				ready = true
+			continue
+		if int(state.get("completions", 0)) > 0:
+			continue  # done (a repeatable one too: no mark for doing it again)
+		var keyword := str(q.get("start_keyword", ""))
+		if keyword == "" and not state.has("active"):
+			continue  # a quest line's later step comes by finishing the one before, not by asking
+		var before := str(q.get("requires_quest", ""))
+		if before == "" or quest_done(p, before):
+			before = _quest_before(quest_id)
+		if before != "" and not quest_done(p, before):
+			continue
+		var faction := str(GameData.npcs.get(npc_id, {}).get("faction", ""))
+		if GameData.factions.has(faction) and standing(p, faction) < REFUSE_BELOW:
+			return ""  # they won't talk to you at all
+		return "!"
+	return "?" if ready else ""
+
+
+var _npc_quests: Dictionary = {}  # npc id -> the quests they give or start (built once)
+
+
+## Every npc that gives or starts a quest (the ones that get a mark).
+func quest_mark_npcs() -> Dictionary:
+	_quests_of_npc("")
+	return _npc_quests
+
+
+func _quests_of_npc(npc_id: String) -> Array:
+	if _npc_quests.is_empty():
+		for quest_id: String in GameData.quests:
+			var q: Dictionary = GameData.quests[quest_id]
+			for who: String in [str(q.get("giver", "")), str(q.get("starter", ""))]:
+				if who != "":
+					if not _npc_quests.has(who):
+						_npc_quests[who] = []
+					if not quest_id in _npc_quests[who]:
+						(_npc_quests[who] as Array).append(quest_id)
+	return _npc_quests.get(npc_id, [])
+
+
 func quest_done(p: Player, quest_id: String) -> bool:
 	return int(p.quests.get(quest_id, {}).get("completions", 0)) > 0
 

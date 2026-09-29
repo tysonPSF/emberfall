@@ -45,6 +45,9 @@ var follow_id := -1  # a companion: the player it follows and fights beside (Wor
 var _companion_speed := 5.5
 var _taunt_left := 0.0
 var _sight_check := 0.0
+var _mark: Label3D  # a floating "!" (a quest for you) or "?" (one ready to hand in), over the name
+var _mark_check := 0.0
+var _mark_time := 0.0
 
 
 func setup(id: String, name_override := "") -> void:
@@ -100,6 +103,20 @@ func _ready() -> void:
 		nameplate.add_child(title)
 	if data.has("size"):  # giants (the Grove's gods): a pick shape and nameplate to match the model
 		_resize(float(data["size"][0]), float(data["size"][1]))
+	if not Net.dedicated and npc_id in World.quest_mark_npcs():
+		_mark = Label3D.new()
+		_mark.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_mark.fixed_size = true
+		_mark.pixel_size = nameplate.pixel_size
+		_mark.font_size = 104
+		_mark.outline_size = 26
+		_mark.outline_modulate = Color(1.0, 0.72, 0.1, 0.35)  # a soft golden halo round it
+		_mark.shaded = false
+		_mark.no_depth_test = false
+		_mark.visibility_range_end = nameplate.visibility_range_end
+		_mark.offset = Vector2(0, 70)  # screen pixels above the name
+		_mark.visible = false
+		nameplate.add_child(_mark)
 	_post = global_position
 	_post_yaw = rotation.y
 	if data.has("prop_after") and World.local_player != null:
@@ -146,6 +163,25 @@ func _update_sight() -> void:
 	for c in get_children():
 		if c is StaticBody3D:
 			(c as StaticBody3D).collision_layer = Layers.WORLD if shown else 0
+
+
+## The floating quest mark: checked twice a second against your quests, and
+## bobbing and glowing gently while it shows.
+func _update_mark(delta: float) -> void:
+	_mark_check -= delta
+	if _mark_check <= 0.0:
+		_mark_check = 0.5
+		var m := World.quest_mark(World.local_player, npc_id) if not dead else ""
+		_mark.text = m
+		_mark.visible = m != ""
+	if not _mark.visible:
+		return
+	_mark_time += delta
+	_mark.offset.y = 70.0 + sin(_mark_time * 2.4) * 8.0  # floating
+	var glow := 0.85 + 0.15 * sin(_mark_time * 3.1)
+	_mark.modulate = Color(1.0, 0.86, 0.22) * (1.25 * glow) if _mark.text == "!" else Color(1.0, 0.95, 0.6) * (1.1 * glow)
+	_mark.modulate.a = 1.0
+	_mark.outline_modulate.a = 0.22 + 0.2 * glow  # the halo breathes with it
 
 
 ## How a seated npc sits for whoever is watching: "seated_after" {quest: action}
@@ -204,6 +240,8 @@ func greet(who: Entity) -> void:
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
 func _process(delta: float) -> void:
+	if _mark != null:
+		_update_mark(delta)
 	if (grove_deity != "" or quest_gated or data.has("prop_after")) and World.local_player != null:
 		_sight_check -= delta
 		if _sight_check <= 0.0:
