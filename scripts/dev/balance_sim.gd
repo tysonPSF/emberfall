@@ -30,24 +30,30 @@ const VARIANTS := [["warrior", ""], ["cleric", ""], ["wizard", ""], ["rogue", ""
 		["magician", "water"], ["magician", "air"], ["necromancer", "skeleton"], ["shaman", "spirit_wolf"], ["ranger", "hawk"]]
 const FIGHTS := 2  # a fight per monster (BALANCE_FIGHTS overrides it, for steadier numbers)
 const TIME_LIMIT := 150.0
+const DECIDE_EVERY := 0.25  # seconds of game time between the player's decisions
 const TRAVEL := 15.0  # seconds to find and pull the next one
 const ARENA := Vector2(-110, 110)  # open ground in Greenmoor, far from the road and the guards
 
 var test: Node  # the autotest node (for _wait and its zone)
 var results: Array = []
+var _game_seconds := 0.0  # fight time simulated, and the real time it took: the speed actually reached
+var _real_seconds := 0.0
 
 
 func run(t: Node) -> void:
 	test = t
 	var p := World.local_player
 	var z: Zone = test.get_parent().zone
-	Engine.time_scale = 20.0
-	Engine.physics_ticks_per_second = 120
-	Engine.max_physics_steps_per_frame = 40
+	# game time runs `scale` times faster; physics steps stay 1/6 s of game
+	# time whatever the speed, so the rules see the same fight (BALANCE_SCALE)
+	var scale := float(OS.get_environment("BALANCE_SCALE")) if OS.get_environment("BALANCE_SCALE") != "" else 20.0
+	Engine.time_scale = scale
+	Engine.physics_ticks_per_second = roundi(scale * 6.0)
+	Engine.max_physics_steps_per_frame = maxi(40, roundi(scale * 2.0))
 	await _clear_arena(z)
-	var only := OS.get_environment("BALANCE_ONLY")  # e.g. "magician" while tuning one class
+	var only := OS.get_environment("BALANCE_ONLY")  # e.g. "magician" while tuning one class, or "magician:fire" for one pet
 	for v: Array in VARIANTS:
-		if only != "" and not str(v[0]) in only.split(","):
+		if only != "" and not str(v[0]) in only.split(",") and not "%s:%s" % [v[0], v[1]] in only.split(","):
 			continue
 		for lvl: int in LEVELS:
 			if OS.get_environment("BALANCE_LEVELS") != "" and not str(lvl) in OS.get_environment("BALANCE_LEVELS").split(","):  # e.g. "30,35"
@@ -61,12 +67,14 @@ func run(t: Node) -> void:
 			print("balance: %-11s %-8s L%-2d  kill %5.1fs  hp lost %3d%%  mana used %3d%%  rest %5.1fs  deaths %d/%d  pet deaths %d  kills/level %4.1f  levels/hour %4.2f  hours/level %4.2f" % [
 				v[0], v[1], lvl, row["kill_time"], roundi(row["hp_lost"] * 100), roundi(row["mana_used"] * 100), row["rest"], row["deaths"], row["fights"].size(),
 				row["pet_deaths"], row["kills_per_level"], row["levels_per_hour"], 1.0 / maxf(row["levels_per_hour"], 0.001)])
+	print("balance: fights ran at x%.0f (asked for x%.0f)" % [_game_seconds / maxf(_real_seconds, 0.001), Engine.time_scale])
 	Engine.time_scale = 1.0
 	Engine.physics_ticks_per_second = 60
-	var f := FileAccess.open("user://balance.json", FileAccess.WRITE)
+	var out_path := OS.get_environment("BALANCE_OUT") if OS.get_environment("BALANCE_OUT") != "" else "user://balance.json"  # tools/balance.py gives each process its own
+	var f := FileAccess.open(out_path, FileAccess.WRITE)
 	f.store_string(JSON.stringify({"rows": results, "config": {"levels": LEVELS, "mobs": MOBS, "fights": FIGHTS}}, " "))
 	f.close()
-	print("balance: wrote %s" % ProjectSettings.globalize_path("user://balance.json"))
+	print("balance: wrote %s" % ProjectSettings.globalize_path(out_path))
 
 
 func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id: String) -> Dictionary:
@@ -138,29 +146,42 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	var pet := World.get_object(p.pet_id) as Pet
 	if pet != null:
 		pet.global_position = home + Vector3(1.5, 0, -1.0)
-		await test._wait(0.3)
+		await _sim_wait(0.3)
 	World.request_set_target(p.entity_id, mob.entity_id)
 	if pet != null:
 		World.request_pet(p.entity_id, "attack")
-		await test._wait(1.5)  # the pet gets there first and takes the aggro
-	mob.add_hate(pet if pet != null else p, 1.0)
+		await _sim_wait(1.5)  # the pet gets there first and takes the aggro
+	if not is_instance_valid(pet):
+		pet = null  # it can be gone already (or have won) by now
+	if is_instance_valid(mob) and not mob.dead:
+		mob.add_hate(pet if pet != null else p, 1.0)
 	if cls in ["warrior", "rogue", "cleric", "ranger"]:
 		World.request_toggle_attack(p.entity_id)
+	# the fight runs on physics steps, counted in game time: a timer's wait
+	# ends on the next frame, so a loop of timers under-counts, and more the
+	# faster the sim runs (at 60x a 48 s fight read as 26 s)
+	var step := Engine.time_scale / Engine.physics_ticks_per_second
 	var t := 0.0
+	var next_decision := 0.0
 	var mana0 := p.mana
 	var died := false
+	var real0 := Time.get_ticks_msec()
 	while t < TIME_LIMIT and is_instance_valid(mob) and not mob.dead:
-		if p.hp < p.max_hp * 0.05:  # as good as dead: stop before the real thing sends you to your bind point
-			died = true
-			break
-		_decide(p, mob)
-		if OS.get_environment("BALANCE_DEBUG") != "" and int(t * 4) % 20 == 0:
-			var dbg_pet := World.get_object(p.pet_id) as Pet
-			print("  t %.1f  you %d/%d  %s %d/%d  dist %.1f  state %d  mob target %s  pet %s" % [t, p.hp, p.max_hp, mob.mob_id, mob.hp, mob.max_hp,
-					p.distance_to(mob), mob.state, mob.target.display_name if mob.target else "-",
-					("%d/%d dist %.1f auto %s tgt %s" % [dbg_pet.hp, dbg_pet.max_hp, dbg_pet.distance_to(mob), dbg_pet.auto_attack, dbg_pet.target.display_name if dbg_pet.target else "-"]) if dbg_pet else "none"])
-		await test._wait(0.25)
-		t += 0.25
+		if t >= next_decision:
+			next_decision += DECIDE_EVERY
+			if p.hp < p.max_hp * 0.05:  # as good as dead: stop before the real thing sends you to your bind point
+				died = true
+				break
+			_decide(p, mob)
+			if OS.get_environment("BALANCE_DEBUG") != "" and int(t * 4) % 20 == 0:
+				var dbg_pet := World.get_object(p.pet_id) as Pet
+				print("  t %.1f  you %d/%d  %s %d/%d  dist %.1f  state %d  mob target %s  pet %s" % [t, p.hp, p.max_hp, mob.mob_id, mob.hp, mob.max_hp,
+						p.distance_to(mob), mob.state, mob.target.display_name if mob.target else "-",
+						("%d/%d dist %.1f auto %s tgt %s" % [dbg_pet.hp, dbg_pet.max_hp, dbg_pet.distance_to(mob), dbg_pet.auto_attack, dbg_pet.target.display_name if dbg_pet.target else "-"]) if dbg_pet else "none"])
+		await test.get_tree().physics_frame
+		t += step
+	_game_seconds += t
+	_real_seconds += (Time.get_ticks_msec() - real0) / 1000.0
 	died = died or p.dead
 	if died and is_instance_valid(mob):
 		mob.hate.clear()
@@ -184,8 +205,18 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	p.target = null
 	p.auto_attack = false
 	p.stat_points = {}
-	await test._wait(0.2)
+	await _sim_wait(0.2)
 	return out
+
+
+## Waits `seconds` of game time, counted in physics steps (a timer ends on a
+## frame, so under load it overshoots: a pet's head start ran long).
+func _sim_wait(seconds: float) -> void:
+	var step := Engine.time_scale / Engine.physics_ticks_per_second
+	var t := 0.0
+	while t < seconds:
+		await test.get_tree().physics_frame
+		t += step
 
 
 ## An empty field: no spawners, no other monsters, and the guards stand still
