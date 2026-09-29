@@ -602,8 +602,12 @@ def duskhold():
     L.append(prop("idol_tantuvi", [-10, 2], face=[-10, -30], collide="box", scale=1.8))
     L.append(prop("idol_dipanti", [10, 2], face=[10, -30], collide="box", scale=1.8))
     for b in (90, 270):  # the bridge spans along its own X: turned so it runs from the shore out to the island
-        spot = at(b, 24.5)
-        L.append(prop("dusk_bridge", spot, face=[spot[0] + 60, spot[1]], collide="mesh"))
+        spot = at(b, 25.5)  # 24 m at 1.2 scale: from the island's edge (15) onto the shore (36)
+        bridge = prop("dusk_bridge", spot, face=[spot[0] + 60, spot[1]], collide="mesh", scale=1.2)
+        if bridge:
+            bridge["y_at"] = [[round(c, 1) for c in at(b, 13.5)], [round(c, 1) for c in at(b, 37.5)]]  # level with its ends, not the lake bed
+            bridge["slope"] = True  # stay exactly on the line between them
+            L.append(bridge)
     for b in range(15, 360, 30):
         L.append(prop("glow_crystal", at(b, 40), collide="box"))
     for b in [20, 70, 110, 160, 200, 250, 290, 340]:

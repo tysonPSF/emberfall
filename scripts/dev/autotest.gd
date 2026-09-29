@@ -120,6 +120,7 @@ const SECTIONS := [
 	["dusk_gods", "greenmoor"],
 	["login_home", "rainhold"],
 	["quest_marks", "greenmoor"],
+	["bridges", "greenmoor"],
 	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
@@ -8273,6 +8274,58 @@ func _t_char_preview() -> void:
 ## The floating quest marks: "!" over Warden Holt while he has work for you,
 ## gone once you've taken it all, "?" when you carry what he wants, and
 ## nothing for someone his people won't talk to.
+## Every bridge stands over its water, not in it: a walk across Duskhold's
+## north bridge from the shore to the island without swimming, and a look at
+## each of the world's bridges.
+func _t_bridges() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := [p.race, p.factions.duplicate(), p.alignment_mods.duplicate(), p.deity]
+	p.race = "dark_elf"  # Duskhold's guards would cut down anyone else
+	p.deity = "dark"
+	p.factions = {}
+	p.alignment_mods = {}
+	World.apply_alignment(p)
+	var go := func(zone_id: String, at: Vector2) -> void:
+		while main._changing_zone:
+			await _wait(0.25)
+		if (main.zone as Zone).zone_id != zone_id:
+			World.zone_change.emit(p, zone_id, at, Vector2.ZERO)
+			for k in 80:
+				if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+					break
+				await _wait(0.25)
+		await _wait(0.8)
+	await go.call("duskhold", Vector2(0, -44))
+	var z: Zone = main.zone
+	p.global_position = Vector3(0, z.surface_at(0, -44) + 0.5, -44)
+	p.velocity = Vector3.ZERO
+	await _wait(0.5)
+	var swam := false
+	var top := -INF
+	p.face_toward(Vector3(0, p.global_position.y, 0))
+	Input.action_press("move_forward")
+	for k in 360:
+		await get_tree().physics_frame
+		p.face_toward(Vector3(0, p.global_position.y, 0))
+		swam = swam or p.swimming
+		top = maxf(top, p.global_position.y)
+		if p.global_position.z > -12.0:
+			break
+	Input.action_release("move_forward")
+	print("duskhold bridge: ground at the island end %.2f, the shore end %.2f" % [z.height_at(0, -13.5), z.height_at(0, -37.5)])
+	print("duskhold bridge: water at %.2f; walked from z -44 to %.1f, highest %.2f, swam %s" % [z.water_level(0, -25), p.global_position.z, top, swam])
+	await _zone_views("bridges_duskhold", [[Vector2(14, -40), Vector2(0, -25), "north"], [Vector2(-14, 40), Vector2(0, 25), "south"]])
+	for spot: Array in [["cinderpass", Vector2(-119, 25), Vector2(-119, 5)], ["dewstep", Vector2(0, 30), Vector2(0, 10)],
+			["thornwood", Vector2(3.5, 126), Vector2(3.5, 106)]]:
+		await go.call(spot[0], spot[1])
+		await _zone_views("bridges_" + str(spot[0]), [[spot[1], spot[2], "bridge"]])
+	p.race = keep[0]
+	p.factions = keep[1]
+	p.alignment_mods = keep[2]
+	p.deity = keep[3]
+
+
 func _t_quest_marks() -> void:
 	var p := World.local_player
 	var holt: Npc = _npcs()["warden_holt"]
