@@ -260,6 +260,22 @@
       "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. One of these days, {name}. One of these days.",
       "unknown": "Hm? Sorry, I was watching my line."
     },
+    "after_quest": "merricks_line_sinew",
+    "faction": "emberhold"
+  },
+  "merrick_tavern": {
+    "name": "Merrick",
+    "title": "a fisherman",
+    "level": 12,
+    "model": "ranger",
+    "seated": "chair",
+    "fixed": true,
+    "dialogue": {
+      "hail": "Hmph. What. Fish ain't biting. Water's gone sour. I could try silk, but I fear it's way too far away, and it'll still rot in this sour water. What I need is the [sinew] from the rats.",
+      "sinew": "Yes, the sinew. The rats are drinking from the same streams. Their sinew's already steeped in whatever's wrong. Five lengths of sinew, {name}. That's enough to twist a line that'll hold.",
+      "unknown": "Did I ask? Rat sinew, {name}. Five lengths. Else leave me to my ale."
+    },
+    "until_quest": "merricks_line_sinew",
     "faction": "emberhold"
   },
   "gm_brask": {

@@ -2130,13 +2130,31 @@ func grove_sees(p: Player, deity: String) -> bool:
 
 ## Whether p may see obj at all. Everything is seen except the Grove's gods and
 ## their attendants ("grove_deity" in npcs.json), who show only to those whose
-## circle has earned them. The server sends nothing else (Net._replicate), and
-## nobody can talk to or target what they can't see.
+## circle has earned them, and npcs a quest moves (quest_shows). The server
+## sends nothing else (Net._replicate), and nobody can talk to or target what
+## they can't see.
 func sees(p: Player, obj: Object) -> bool:
 	if p == null or not (obj is Npc):
 		return true
-	var deity := (obj as Npc).grove_deity
-	return deity == "" or grove_sees(p, deity)
+	var npc := obj as Npc
+	if not quest_shows(p, npc.data):
+		return false
+	return npc.grove_deity == "" or grove_sees(p, npc.grove_deity)
+
+
+## An npc a quest moves, per player: "until_quest" shows it only until p has
+## finished that quest (Merrick grumbling in the tavern), "after_quest" only
+## once they have (Merrick back at his pond).
+func quest_shows(p: Player, npc_data: Dictionary) -> bool:
+	var until := str(npc_data.get("until_quest", ""))
+	if until != "" and quest_done(p, until):
+		return false
+	var after := str(npc_data.get("after_quest", ""))
+	return after == "" or quest_done(p, after)
+
+
+func quest_done(p: Player, quest_id: String) -> bool:
+	return int(p.quests.get(quest_id, {}).get("completions", 0)) > 0
 
 
 ## A god comes to the Grove for p (the questline's reward: a quest's

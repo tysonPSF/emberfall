@@ -9,6 +9,8 @@ Clips:
   Sit_Floor_Down  from standing to sitting on the ground, legs out in front
                   (EverQuest's /sit; knees drawn up vanish into these chibi bodies)
   Sit_Floor_Idle  sitting, breathing (loops)
+  Sit_Chair_Idle  slumped in a chair, arms folded, head down: a grumpy regular
+                  (seated npcs, npcs.json "seated": "chair"; loops, 3 s)
   Kick            a front kick with the right leg: chamber, snap, recover
   Shield_Bash     a lunge driving the left (shield) arm forward
   Bow_Shoot       bow arm up (the bow is in the left hand), draw to the cheek,
@@ -71,6 +73,19 @@ SIT = {
 	"foot.r": (-25, 0, 0),
 }
 HIP_DROP = 0.38
+
+# sitting in a chair, grumpy (Merrick in the tavern): thighs level, shins
+# straight down, hips dropped by the thigh's length (0.227) so the feet stay
+# on the floor; slumped over, arms folded, head down
+_CHAIR_LEGS = {
+	"upperleg.l": (-90, 0, -6),
+	"upperleg.r": (-90, 0, 6),
+	"lowerleg.l": (90, 0, 0),
+	"lowerleg.r": (90, 0, 0),
+}
+_CHAIR_HIPS = (0, -0.227, 0)
+_FOLDED = {"r": ("on", "chest", (-0.07, 0.15, 0.17), (1, -0.6, 0.3)),
+		   "l": ("on", "chest", (-0.07, 0.11, 0.19), (1, -0.6, 0.3))}
 
 
 def _args():
@@ -660,6 +675,12 @@ YAWN = [
 	(72, {}, (0, 0, 0)),
 ]
 
+SIT_CHAIR = [
+	(0, _with(_CHAIR_LEGS, {"spine": (8, 0, 0), "chest": (5, 0, 0), "head": (12, 0, 0)}), _CHAIR_HIPS, _FOLDED),
+	(45, _with(_CHAIR_LEGS, {"spine": (8, 0, 0), "chest": (7.5, 0, 0), "head": (14, -4, 0)}), _CHAIR_HIPS, _FOLDED),
+	(90, _with(_CHAIR_LEGS, {"spine": (8, 0, 0), "chest": (5, 0, 0), "head": (12, 0, 0)}), _CHAIR_HIPS, _FOLDED),
+]
+
 EMOTES = [("Emote_Wave", WAVE), ("Emote_Bow", BOW_EMOTE), ("Emote_Rude", RUDE), ("Emote_Cheer", CHEER),
 		  ("Emote_Dance", DANCE), ("Emote_Laugh", LAUGH), ("Emote_Cry", CRY), ("Emote_Point", POINT),
 		  ("Emote_Salute", SALUTE), ("Emote_Kneel", KNEEL), ("Emote_Shrug", SHRUG), ("Emote_Clap", CLAP),
@@ -689,6 +710,7 @@ def build(arm, base):
 	keep.append(_keys(arm, base, "Bow_Shoot", BOW))
 	keep.append(_keys(arm, base, "Swim_Forward", SWIM, smooth=True))
 	keep.append(_keys(arm, base, "Swim_Idle", TREAD, smooth=True))
+	keep.append(_keys(arm, base, "Sit_Chair_Idle", SIT_CHAIR, smooth=True))
 	for name, keys in EMOTES:
 		keep.append(_keys(arm, base, name, keys, smooth=True))
 	return keep

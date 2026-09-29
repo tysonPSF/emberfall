@@ -32,6 +32,10 @@
       {
         "item": "rat_whiskers",
         "chance": 0.5
+      },
+      {
+        "item": "rat_sinew",
+        "chance": 0.4
       }
     ],
     "model": "rat"

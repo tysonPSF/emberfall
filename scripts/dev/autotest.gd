@@ -196,6 +196,7 @@ const SECTIONS := [
 	["landmarks_tw", "thornwood"],
 	["camp", "greenmoor"],
 	["zone_unload", "greenmoor"],
+	["merricks_line", "emberhold_tavern"],
 ]
 
 var shots_dir := ""
@@ -272,7 +273,10 @@ func _t_landmarks() -> void:
 
 func _t_merrick() -> void:
 	var p := World.local_player
-	# Merrick at the pond: hail, ask about the trout, then open his shop
+	# Merrick at the pond: hail, ask about the trout, then open his shop. He's
+	# only back at the pond once his line is done (merricks_line tests the rest).
+	p.quests["merricks_line_sinew"] = {"active": false, "completions": 1}
+	await _wait(0.7)  # Npc._update_sight shows him
 	for obj: Node3D in World.objects.values():
 		if obj is Npc and (obj as Npc).npc_id == "merrick":
 			var merrick := obj as Npc
@@ -3447,6 +3451,50 @@ func _t_rogue_guild() -> void:
 	await _shot("9zp_char_create")
 	print("rogue_guild: Vessa at %s; character creation offers %s" % [vessa.global_position, GameData.classes.keys()])
 	cc.queue_free()
+
+
+## Merrick's line, step 1: grumbling at a tavern table (seated), hail and
+## "sinew" take the quest, five rat sinews finish it, and then he's gone from
+## the tavern and back at the Greenmoor pond, for this player only.
+func _t_merricks_line() -> void:
+	var p := World.local_player
+	p.quests.erase("merricks_line_sinew")
+	await _wait(0.7)
+	var merrick: Npc = _npcs().get("merrick_tavern")
+	if merrick == null:
+		print("merricks_line: FAIL no Merrick in %s" % get_parent().zone.zone_id)
+		return
+	var rat_drops: Array = GameData.mobs["large_rat"]["loot"].map(func(l: Dictionary) -> String: return "%s %s" % [l["item"], l["chance"]])
+	print("merricks_line: large rat drops %s; sinew icon %s" % [rat_drops, GameData.item_icon("rat_sinew") != null])
+	print("merricks_line: tavern Merrick seen=%s sitting=%s shown=%s; pond Merrick seen=%s" % [World.sees(p, merrick), merrick.sitting,
+			merrick.visual.visible, World.quest_shows(p, GameData.npcs["merrick"])])
+	p.global_position = merrick.global_position + Vector3(2.2, 0.5, 2.6)
+	p.face_toward(merrick.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 3.5
+	p.pitch = -0.2
+	World.request_set_target(p.entity_id, merrick.entity_id)
+	World.request_hail(p.entity_id)
+	World.request_say(p.entity_id, "sinew")
+	await _wait(1.0)
+	await _shot("9zz_merrick_tavern")
+	p.global_position = merrick.global_position + Vector3(2.4, 0.5, -3.4)  # across the table from him, a little to the side
+	p.face_toward(merrick.global_position)
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 0.0  # first person, so you aren't in the way
+	p.pitch = -0.25
+	await _wait(0.6)
+	var model := merrick.visual as CharacterModel
+	print("merricks_line: seated clip %s" % model.anim.current_animation)
+	await _shot("9zz_merrick_seated")
+	p.zoom = 6.0
+	print("merricks_line: after 'sinew' active=%s" % p.quests.get("merricks_line_sinew", {}).get("active", false))
+	p.pack.add("rat_sinew", 5)
+	await _hand_in(p, merrick, ["rat_sinew"])
+	await _wait(0.8)
+	print("merricks_line: after hand-in %s sinew left=%d; tavern Merrick seen=%s shown=%s; pond Merrick seen=%s" % [p.quests.get("merricks_line_sinew", {}),
+			p.pack.count("rat_sinew"), World.sees(p, merrick), merrick.visual.visible, World.quest_shows(p, GameData.npcs["merrick"])])
+	await _shot("9zz_merrick_gone")
 
 
 ## Thornback spiders drop venom sacs (the Silk and Venom quest): kill a lot and count.

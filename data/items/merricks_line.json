@@ -1,0 +1,9 @@
+{
+  "rat_sinew": {
+    "name": "Rat Sinew",
+    "value": 3,
+    "stack": 100,
+    "weight": 0.1,
+    "desc": "A pale length of sinew from a Greenmoor rat, stained faintly green and smelling of bad water. Tough, though."
+  }
+}

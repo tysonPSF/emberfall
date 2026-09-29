@@ -71,6 +71,25 @@ def rat_whiskers():
 	return p.build()
 
 
+def rat_sinew():
+	"""Four amber, wavy lengths of sinew bound at one end with a leather wrap,
+	blotched where the sour water got into them (Merrick's line)."""
+	p = Prop("rat_sinew", 1983)
+	for k in range(4):
+		fan = (k - 1.5) * 0.16                                                     # bound together at the left, fanning out
+		pts = []
+		for i in range(11):
+			t = i / 10
+			pts.append((-0.75 + t * 1.5, fan * t + math.sin(t * math.pi * 2 + k * 1.3) * 0.07 * t, 0.08 + k * 0.02))
+		for i in range(10):
+			stained = i in ((3 + 2 * k) % 9, (4 + 2 * k) % 9)                     # a long blotch on each, where the water soaked in
+			p.seg(pts[i], pts[i + 1], 0.065, 0.06 if i < 9 else 0.03, props.MOSS if stained else HIDE, sides=6,
+				  grad=(0.55, 1.0) if stained else (0.0, 0.55), twist=25)
+	p.seg((-0.72, 0, 0.11), (-0.56, 0, 0.11), 0.13, 0.13, WOOD, sides=8, grad=(0.1, 0.7))   # the binding
+	p.seg((-0.6, 0.12, 0.14), (-0.5, 0.34, 0.05), 0.035, 0.025, WOOD, sides=4)     # its loose end
+	return p.build()
+
+
 def fishing_bait():
 	p = Prop("fishing_bait", 209)
 	p.seg((0, 0, 0), (0, 0, 0.55), 0.36, 0.36, IRON, sides=12, grad=(0.1, 0.6))
@@ -9473,7 +9492,7 @@ TRADESKILLS = [bag_of_flour, jar_of_spices, vial_of_water, tanning_salts, spool_
 			   homeward_stone, draught_of_homecoming, grove_seed]
 
 
-SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, fishing_bait, bone_charm,
+SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,
 									 stitched_blackpaw_hide, tovins_trail_pack, crude_arrow, sling_stone, leather_sling,

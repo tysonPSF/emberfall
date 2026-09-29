@@ -4360,5 +4360,23 @@
     "faction": {
       "lanternhold": 10
     }
+  },
+  "merricks_line_sinew": {
+    "name": "A Line That'll Hold (1)",
+    "giver": "merrick_tavern",
+    "start_keyword": "sinew",
+    "wants": {
+      "rat_sinew": 5
+    },
+    "reward": {
+      "xp": 60,
+      "coin": 15
+    },
+    "accept_text": "You have taken on a task: A Line That'll Hold. Bring Merrick five lengths of rat sinew from the large rats of Greenmoor.",
+    "ready_text": "I can smell it from here. That's rat sinew you're carrying, {name}. Hand it over.",
+    "complete_text": "Five. Stinks like the streams, the lot of it. Good. That's the point. Now leave me be while I twist it.",
+    "faction": {
+      "emberhold": 5
+    }
   }
 }

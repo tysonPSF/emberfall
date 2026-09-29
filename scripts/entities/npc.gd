@@ -37,6 +37,8 @@ var _torch_check := 0.0
 var _torch_light: OmniLight3D  # the guard's torch, lit at night
 var _anchor := Vector3.ZERO  # where the current fight began; the leash is measured from here
 var grove_deity := ""  # a god of the Grove, or one of its attendants: shown only to those who've earned it (World.sees)
+var quest_gated := false  # "until_quest" / "after_quest": shown only to those at that point in a quest (World.quest_shows)
+var seated := ""  # "chair": sits at its post (npcs.json "seated"), standing only to fight
 var _sight_check := 0.0
 
 
@@ -47,6 +49,9 @@ func setup(id: String, name_override := "") -> void:
 	level = int(data.get("level", 10))
 	faction = str(data.get("faction", "town"))
 	grove_deity = str(data.get("grove_deity", ""))
+	quest_gated = data.has("until_quest") or data.has("after_quest")
+	seated = str(data.get("seated", ""))
+	sitting = seated != ""
 	guard = data.get("guard", {})
 	if not guard.is_empty():  # guards stay out of reach: always this far over the level cap
 		level = int(World.cfg("max_level", 10)) + int(World.cfg("guard_levels_over_cap", 15))
@@ -113,8 +118,9 @@ func _resize(radius: float, height: float) -> void:
 	add_collision_exception_with(solid)
 
 
-## Offline, a god you haven't earned stands in the Grove unseen and unclickable
-## (online the server never sends it: Net._replicate).
+## Offline, a god you haven't earned stands in the Grove unseen and unclickable,
+## as does an npc a quest has moved on (online the server never sends either:
+## Net._replicate).
 func _update_sight() -> void:
 	var shown := World.sees(World.local_player, self)
 	if visual.visible == shown and nameplate.visible == shown:
@@ -138,7 +144,7 @@ func greet(who: Entity) -> void:
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
 func _process(delta: float) -> void:
-	if grove_deity != "" and Net.is_authority() and World.local_player != null:
+	if (grove_deity != "" or quest_gated) and Net.is_authority() and World.local_player != null:
 		_sight_check -= delta
 		if _sight_check <= 0.0:
 			_sight_check = 0.5
@@ -181,6 +187,8 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 	if move != Vector3.ZERO:
 		face_toward(global_position + move)  # walks forward, even on a path around something; faces its target once in reach
+	if seated != "" and not auto_attack and not dead and move == Vector3.ZERO:
+		sitting = true  # back in the chair once the fight's over
 	if _face_timer > 0.0 and not auto_attack:
 		_face_timer -= delta
 		if _face_timer <= 0.0:
