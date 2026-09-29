@@ -117,6 +117,8 @@ const SECTIONS := [
 	["quest_share", "greenmoor"],
 	["delete_guild", "greenmoor"],
 	["evil_gods", "greenmoor"],
+	["dusk_gods", "greenmoor"],
+	["login_home", "rainhold"],
 	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
@@ -8259,6 +8261,133 @@ func _t_char_preview() -> void:
 	print("char_preview: dragged -> turned %.0f degrees" % rad_to_deg(cc._preview_stage.rotation.y))
 	await _shot("9preview_turned")
 	cc.queue_free()
+
+
+## The dark elves' own gods: who may follow them, Tantuvi's deeper poison,
+## and both priests on Duskhold's island binding and blessing their own.
+## Logging in where you don't belong: a troll still in Rainhold the first
+## time after its people moved goes to Murkhold; a dark elf who logged out in
+## Emberhold (bound there) is bound in Duskhold and taken there; a troll who
+## already moved may stay in Rainhold; a human in Emberhold stays.
+func _t_login_home() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := [p.race, p.deity, p.bind_zone, p.home_seen, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	var go := func(zone_id: String, at: Vector2) -> void:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, zone_id, at, Vector2.ZERO)
+		for k in 80:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+	var login := func(label: String, race: String, zone_id: String, at: Vector2, bind: String, seen: String) -> void:
+		await go.call(zone_id, at)
+		p.race = race
+		p.deity = "dark"
+		p.bind_zone = bind
+		p.home_seen = seen
+		p.factions = {}
+		p.alignment_mods = {}
+		World.player_entered(p)
+		await _wait(1.5)
+		for k in 40:
+			if not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+		print("login_home: %s -> in %s, bound in %s" % [label, (main.zone as Zone).zone_id, World.bind_zone_of(p)])
+	await login.call("a troll in Rainhold, first login since the move", "troll", "rainhold", Vector2(0, 40), "rainhold", "")
+	await login.call("a dark elf in Emberhold, bound there", "dark_elf", "emberhold", Vector2(0, 10), "emberhold", "duskhold")
+	await login.call("a troll visiting Rainhold, already moved", "troll", "rainhold", Vector2(0, 40), "murkhold", "murkhold")
+	await login.call("a human in Emberhold", "human", "emberhold", Vector2(0, 10), "emberhold", "emberhold")
+	p.race = keep[0]
+	p.deity = keep[1]
+	p.bind_zone = keep[2]
+	p.home_seen = keep[3]
+	p.factions = keep[4]
+	p.alignment_mods = keep[5]
+
+
+func _t_dusk_gods() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var table := {}
+	for race: String in ["dark_elf", "human", "troll"]:
+		table[race] = GameData.deities.keys().filter(func(d: String) -> bool: return GameData.deity_allows(d, race))
+	print("dusk_gods: who takes whom %s" % [table])
+	var keep := [p.race, p.deity, p.char_class, p.level, p.factions.duplicate(), p.alignment_mods.duplicate(), p.bind_zone]
+	p.race = "dark_elf"
+	p.char_class = "necromancer"
+	p.level = 20
+	p.factions = {}
+	p.alignment_mods = {}
+	World.apply_alignment(p)
+	# the poison: the same dot from a follower of Timiraj and of Tantuvi
+	var mob: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and (mob == null or p.distance_to(m) < p.distance_to(mob)):
+			mob = m
+	var ticks := {}
+	for god: String in ["dark", "web"]:
+		p.deity = god
+		p.recalc_stats()
+		World._land(p, "venom_bolt", mob, GameData.spells["venom_bolt"], 0)
+		for d: Dictionary in mob.dots:
+			if d["spell"] == "venom_bolt" and d["caster_id"] == p.entity_id:
+				ticks[god] = d["damage"]
+		mob.dots.clear()
+	print("dusk_gods: venom_bolt per tick -> Timiraj %s, Tantuvi %s" % [ticks.get("dark"), ticks.get("web")])
+	p.deity = "moth"
+	var m0 := p.max_mana
+	p.recalc_stats()
+	p.deity = "dark"
+	p.recalc_stats()
+	var m1 := p.max_mana
+	p.deity = "moth"
+	p.recalc_stats()
+	print("dusk_gods: max mana Timiraj %d, Dipanti %d" % [m1, p.max_mana])
+	# the priests
+	while main._changing_zone:
+		await _wait(0.25)
+	World.zone_change.emit(p, "duskhold", Vector2(0, -20), Vector2(0, 0))
+	for k in 80:
+		if (main.zone as Zone).zone_id == "duskhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(1.0)
+	var npcs := _npcs()
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	for pair: Array in [["dusk_priest_tantuvi", "web", "tantuvi_blessing"], ["dusk_priest_dipanti", "moth", "dipanti_blessing"]]:
+		var priest: Npc = npcs.get(pair[0])
+		if priest == null:
+			print("dusk_gods: %s missing" % pair[0])
+			continue
+		_stand_by(p, priest)
+		p.deity = "dark"
+		p.cooldowns.erase("blessed_" + str(pair[2]))
+		World._talk(p, priest, "blessing")
+		var refused := not p.buffs.has(pair[2])
+		p.deity = pair[1]
+		World._talk(p, priest, "blessing")
+		p.bind_zone = ""
+		World._talk(p, priest, "bind")
+		print("dusk_gods: %s -> refuses Timiraj's %s, blesses her own %s, binds -> %s" % [priest.display_name, refused, p.buffs.has(pair[2]), p.bind_zone])
+		p.buffs.erase(pair[2])
+	World.log_message.disconnect(grab)
+	await _zone_views("dusk_gods", [[Vector2(0, -34), Vector2(0, 0), "island"], [Vector2(-10, -12), Vector2(-10, 2), "tantuvi"],
+			[Vector2(10, -12), Vector2(10, 2), "dipanti"]])
+	p.race = keep[0]
+	p.deity = keep[1]
+	p.char_class = keep[2]
+	p.level = keep[3]
+	p.factions = keep[4]
+	p.alignment_mods = keep[5]
+	p.bind_zone = keep[6]
+	p.recalc_stats()
 
 
 func _t_evil_gods() -> void:

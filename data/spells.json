@@ -3405,5 +3405,52 @@
       "kind": "buff",
       "color": "#8a6a3a"
     }
+  },
+  "tantuvi_blessing": {
+    "name": "Tantuvi's Silk",
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 0,
+    "duration": 1800,
+    "stats": {
+      "agi": 12,
+      "ac": 10,
+      "hp": 30
+    },
+    "classes": {},
+    "land_text": "Fine threads settle over your skin, cool and strong: the Many-Eyed sees you.",
+    "fade_text": "Tantuvi's silk comes loose and drifts away.",
+    "desc": "For half an hour: +12 agility, +10 AC and +30 hit points. Tantuvi's gift to her followers, once an hour at her idol in Duskhold.",
+    "fx": {
+      "kind": "buff",
+      "color": "#b8b0d8"
+    }
+  },
+  "dipanti_blessing": {
+    "name": "Dipanti's Stolen Light",
+    "type": "buff",
+    "target": "self",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 0,
+    "duration": 1800,
+    "stats": {
+      "int": 10,
+      "wis": 10,
+      "mana": 60,
+      "mana_regen": 2
+    },
+    "classes": {},
+    "land_text": "A candle gutters out nearby, and its light is in you: the Lamp-Eater sees you.",
+    "fade_text": "The stolen light in you burns down.",
+    "desc": "For half an hour: +10 intelligence, +10 wisdom, +60 mana and +2 mana every tick. Dipanti's gift to her followers, once an hour at her idol in Duskhold.",
+    "fx": {
+      "kind": "buff",
+      "color": "#d8a860"
+    }
   }
 }

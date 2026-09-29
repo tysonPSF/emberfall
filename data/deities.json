@@ -60,5 +60,23 @@
     "bonus_text": "Hide like the herd's: +5% maximum health.",
     "portrait": [1, 261],
     "races": ["troll", "ogre"]
+  },
+  "web": {
+    "name": "Tantuvi",
+    "title": "the Many-Eyed",
+    "description": "She weaves the webs between the stars, and every strand she spins is a thread of someone's fate. Her faithful learn that anything can be caught, given time.",
+    "bonus": {"dot_pct": 10},
+    "bonus_text": "Slow poison: your damage over time hits 10% harder.",
+    "portrait": [131, 261],
+    "races": ["dark_elf"]
+  },
+  "moth": {
+    "name": "Dipanti",
+    "title": "the Lamp-Eater",
+    "description": "Drawn to every light, and she puts each one out. Duskhold's candles are prayers to her, and bait. What she takes from the flame, she gives to her faithful.",
+    "bonus": {"mana_pct": 8},
+    "bonus_text": "Stolen light: +8% maximum mana.",
+    "portrait": [261, 261],
+    "races": ["dark_elf"]
   }
 }

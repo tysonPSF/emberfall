@@ -348,6 +348,7 @@ func _deity_picker(parent: Container, pledge := false) -> void:
 		b.add_theme_font_size_override("font_size", 13)
 		b.tooltip_text = "%s, %s" % [d["name"], d["title"]]
 		(_pledge_buttons if pledge else _deity_buttons)[deity_id] = b
+		b.set_meta("desc", desc)
 		b.pressed.connect(func() -> void:
 			_deity = deity_id
 			desc.text = "%s, %s\n%s\n%s" % [d["name"], d["title"], d["description"], d["bonus_text"]]
@@ -359,8 +360,8 @@ func _deity_picker(parent: Container, pledge := false) -> void:
 
 
 ## Gods who don't take a race ("races" and "alignments" in deities.json: the
-## bog gods take only trolls and ogres, the elephants no evil race) are grayed
-## out for it: the race being made, or on the pledge page the older
+## bog gods take only trolls and ogres, the elephants no evil race) are hidden
+## for it: the race being made, or on the pledge page the older
 ## character's own; a choice that no longer fits is cleared.
 func _fit_deities() -> void:
 	var pledging := _pledge != null and _pledge.visible
@@ -376,10 +377,13 @@ func _fit_row(buttons: Dictionary, race: String, in_use: bool) -> void:
 			continue
 		var ok := GameData.deity_allows(deity_id, race)
 		b.disabled = not ok
-		b.modulate.a = 1.0 if ok else 0.4
+		b.visible = ok  # nine gods don't fit in a row, and no race may follow more than five
 		if not ok and in_use and _deity == deity_id:
 			_deity = ""
 			b.button_pressed = false
+			var desc: Label = b.get_meta("desc")
+			desc.text = "Choose one. Each grants a small blessing, and they will remember who followed them."
+			desc.add_theme_color_override("font_color", UIKit.DIM)
 
 
 ## Connecting..., or why it failed.

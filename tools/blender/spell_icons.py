@@ -5287,6 +5287,97 @@ def mahishra_blessing():
 BLACKWATER = [makarosh_blessing, mahishra_blessing]
 
 
+# ---------------------------------------------------------------- the dusk gods (Duskhold)
+
+def tantuvi_blessing():
+	"""The Many-Eyed's Sight: the spider goddess's face, crowned with pale eyes, before her web of stars."""
+	p = Prop("tantuvi_blessing", 2207)
+	c = (0.0, 0.3, 0.62)
+	for k in range(12):                                                                   # the web behind her: spokes...
+		a = k * math.tau / 12 + 0.13
+		p.seg(c, (math.cos(a) * 0.98, 0.3, 0.62 + math.sin(a) * 0.98), 0.014, 0.01, CLOTH_WHITE, sides=4, glow=1.4)
+		if k % 2 == 0:                                                                    # ...stars where they end...
+			_star(p, math.cos(a) * 1.0, 0.62 + math.sin(a) * 1.0, 0.09, CLOTH_WHITE, glow=2.6, y=0.28, points=4, inner=0.3)
+	for rr in (0.36, 0.56, 0.76, 0.94):                                                  # ...and the spiral strung across them
+		_ring_at(p, 0.0, 0.62, rr, 0.011, CLOTH_WHITE, glow=1.2, sides=12, y=0.3)
+	for sx in (-1, 1):                                                                    # four legs a side, arching out
+		for k in range(4):
+			hip = (sx * 0.3, 0.12, 0.5 - 0.06 * k)
+			knee = (sx * (0.62 + 0.06 * k), 0.12, 1.0 - 0.14 * k)
+			foot = (sx * (0.86 + 0.02 * k), 0.12, 0.34 - 0.12 * k)
+			p.seg(hip, knee, 0.06, 0.05, PURPLE, sides=6, grad=(0.7, 1.0))
+			p.seg(knee, foot, 0.05, 0.015, PURPLE, sides=6, grad=(0.7, 1.0))
+			p.blob((0.09, 0.09, 0.09), knee, PURPLE, segs=(6, 4), grad=(0.5, 0.9))
+			band = tuple(knee[i] + (foot[i] - knee[i]) * 0.35 for i in range(3))
+			p.seg(band, tuple(band[i] + (foot[i] - knee[i]) * 0.06 for i in range(3)), 0.058, 0.058, STONE_LIGHT, sides=6)
+	p.blob((0.86, 0.6, 0.78), (0, 0, 0.56), PURPLE, segs=(14, 10), grad=(0.65, 1.0))      # her head, violet-black
+	for (x, z, r) in ((0.15, 0.6, 0.22), (0.36, 0.64, 0.14), (0.12, 0.84, 0.12), (0.3, 0.84, 0.09), (0.44, 0.78, 0.07)):
+		for sx in (-1, 1):                                                                # many eyes, glowing moon-white
+			p.blob((r, r * 0.7, r), (sx * x, -0.26, z), CLOTH_WHITE, segs=(8, 6), glow=2.6)
+	for k in range(9):                                                                    # a silver circlet over the brow
+		a0, a1 = math.radians(20 + 140 * k / 9), math.radians(20 + 140 * (k + 1) / 9)
+		p.seg((math.cos(a0) * 0.42, -0.22, 0.62 + math.sin(a0) * 0.42), (math.cos(a1) * 0.42, -0.22, 0.62 + math.sin(a1) * 0.42),
+			  0.03, 0.03, STONE_LIGHT, sides=5)
+	p.blob((0.12, 0.08, 0.15), (0, -0.26, 1.06), PURPLE, segs=(8, 6), grad=(0.0, 0.3), glow=1.6)   # a moonstone at its crown
+	for sx in (-1, 1):                                                                    # the chelicerae and silver fangs
+		p.blob((0.22, 0.2, 0.3), (sx * 0.12, -0.2, 0.22), PURPLE, segs=(8, 6), grad=(0.6, 1.0))
+		p.seg((sx * 0.13, -0.24, 0.1), (sx * 0.1, -0.28, -0.08), 0.06, 0.03, STONE_LIGHT, sides=6)
+		p.seg((sx * 0.1, -0.28, -0.08), (sx * 0.03, -0.27, -0.16), 0.03, 0.0, STONE_LIGHT, sides=6)
+	return p.build()
+
+
+def dipanti_blessing():
+	"""The Lamp-Eater's Veil: the moth goddess, wings spread, a lamp burning in each of them."""
+	p = Prop("dipanti_blessing", 2209)
+	fore = [(0.1, 0.62), (0.4, 0.98), (0.78, 1.18), (1.0, 1.16), (1.04, 0.96), (0.9, 0.7), (0.6, 0.5), (0.3, 0.46)]
+	hind = [(0.1, 0.44), (0.42, 0.42), (0.72, 0.34), (0.84, 0.12), (0.72, -0.08), (0.46, -0.14), (0.22, 0.0), (0.08, 0.22)]
+	for sx in (-1, 1):
+		for pts, spot, rr in ((fore, (0.66, 0.86), 0.17), (hind, (0.48, 0.14), 0.14)):
+			out = [(sx * x, z) for x, z in pts]
+			if sx < 0:
+				out = out[::-1]
+			cx = sum(x for x, _ in out) / len(out)
+			cz = sum(z for _, z in out) / len(out)
+			inner = [(cx + (x - cx) * 0.86, cz + (z - cz) * 0.86) for x, z in out]
+			root = [(sx * 0.1 + (x - sx * 0.1) * 0.5, 0.45 + (z - 0.45) * 0.5) for x, z in out]
+			icons._slab(p, out, 0.06, 0.1, GOLD, grad=(0.3, 0.8))                         # a dusky gold margin
+			icons._slab(p, inner, 0.02, 0.06, MIST, grad=(0.2, 0.7))                      # the ash-gray wing
+			icons._slab(p, root, -0.01, 0.02, PURPLE, grad=(0.3, 0.8))                    # washed violet at the root
+			x, z = sx * spot[0], spot[1]                                                   # the lamp: a dark ring round gold...
+			p.seg((x, -0.03, z), (x, 0.0, z), rr, rr, IRON, sides=16)
+			p.seg((x, -0.05, z), (x, -0.02, z), rr * 0.78, rr * 0.78, GOLD, sides=16, glow=0.8)
+			p.seg((x, -0.07, z), (x, -0.04, z), rr * 0.6, rr * 0.6, IRON, sides=16)
+			p.blob((rr * 0.55, 0.04, rr * 0.7), (x, -0.08, z - rr * 0.08), FLAME, segs=(8, 5), glow=2.8)   # ...round a candle flame
+			p.seg((x, -0.08, z + rr * 0.1), (x, -0.08, z + rr * 0.6), rr * 0.26, 0.0, FLAME, sides=6, glow=2.8)
+	for k in range(6):                                                                    # a soft furred body
+		z = 0.72 - k * 0.13
+		r = 0.17 - 0.014 * k
+		p.blob((r * 2, r * 1.6, 0.16), (0, -0.1, z), MIST if k % 2 == 0 else PURPLE, segs=(10, 6), grad=(0.3, 0.9))
+	p.blob((0.46, 0.34, 0.2), (0, -0.14, 0.74), GOLD, segs=(10, 6), grad=(0.5, 0.9))       # the gold ruff at her collar
+	p.blob((0.34, 0.3, 0.28), (0, -0.16, 0.9), MIST, segs=(10, 6), grad=(0.4, 0.9))        # her head
+	for sx in (-1, 1):
+		p.blob((0.16, 0.12, 0.18), (sx * 0.12, -0.28, 0.9), IRON, segs=(8, 6))            # great dark eyes...
+		p.blob((0.04, 0.03, 0.05), (sx * 0.15, -0.34, 0.94), FLAME, segs=(5, 4), glow=2.6) # ...each holding a point of lamplight
+		base = Vector((sx * 0.08, -0.2, 1.02))                                            # feathery antennae
+		prev = base
+		for k in range(1, 7):
+			t = k / 6
+			q = Vector((sx * (0.08 + 0.3 * t), -0.2, 1.02 + 0.34 * t - 0.12 * t * t))
+			p.seg(tuple(prev), tuple(q), 0.022, 0.018, WOOD, sides=4)
+			d = (q - prev).normalized()
+			for sd in (-1, 1):
+				n = Vector((-d.z, 0, d.x)) * sd
+				p.seg(tuple(q), tuple(q + (n + d * 0.5).normalized() * 0.08 * math.sin(math.pi * (0.2 + 0.8 * t))), 0.016, 0.0, GOLD, sides=4)
+			prev = q
+	for k in range(7):                                                                    # a thread of smoke from a lamp put out
+		t0, t1 = k / 7, (k + 1) / 7
+		p.seg((0.06 * math.sin(t0 * 7), -0.1, 0.02 - 0.3 * t0), (0.06 * math.sin(t1 * 7), -0.1, 0.02 - 0.3 * t1), 0.03, 0.03, MIST, sides=4)
+	return p.build()
+
+
+DUSK = [tantuvi_blessing, dipanti_blessing]
+
+
 SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, minor_healing, light_healing,
 								  circle_of_mending, strike, smite, blast_of_frost, fire_bolt, burning_embers,
 								  gate, root, minor_shielding, courage, hearthward, hearthbond, blessing_of_the_elders,
@@ -5304,7 +5395,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  bond_of_death, dread, mass_dread, feign_death, clinging_darkness, elemental_flame, gust_of_wind,
 								  frost_rift, sicken, strengthen, inner_fire, drowsy, spirit_of_bear, spirit_mend, tainted_breath, feet_like_cat,
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
-								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT + BLACKWATER}
+								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT + BLACKWATER + DUSK}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
 								   action_friends, action_guild, action_journal]}
