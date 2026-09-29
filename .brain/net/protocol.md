@@ -19,12 +19,11 @@ There is no compatibility layer. Two ways a mismatch fails:
 turns the client away with a clear message instead of the silent
 breakage above. That is its whole job.
 
-**It has not been bumped since 16 (2026-09-26, cap 30 + Ranger),**
-although messages changed after that: player trading, emotes, the Grove,
-guilds (`_s_guild_tag`), and the swing timer and friends list in the
-self state. As of 2026-09-29 a client older than those features gets no
-warning against a newer server. Bump it in the next change that touches
-the wire (or now, on its own).
+It went from 16 to 18 on 2026-09-29 (quest sharing's `quest_offered`
+signal); 17 is taken by the `alignment` branch, so whichever of them is
+merged second must bump again. Before that it sat at 16 through player
+trading, emotes, the Grove, guilds and the swing timer, so clients older
+than those got no warning against a newer server.
 
 Checklist when you touch the wire: new `@rpc` func, new/changed RPC
 arguments, a new key in `_send_self` / `apply_self`, a new `_s_ui`

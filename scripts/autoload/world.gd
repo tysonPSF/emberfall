@@ -26,6 +26,7 @@ signal station_closed
 signal pet_changed  # your pet came, went, or was told something
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
+signal quest_offered(from_name: String, quest_id: String)  # a groupmate shared a quest; "" closes the window
 signal friends_view(list: Array)  # your friends: [{name, online, level, class, zone}]
 signal guild_view(view: Dictionary)  # your guild's roster and message of the day ({} for none)
 signal shot_fired(from: Entity, to: Entity, projectile: String)
@@ -4043,6 +4044,97 @@ func _offer_dropped_steps(p: Player, npc: Npc) -> void:
 			if str(GameData.quests[prev_id].get("next", "")) == quest_id and int(p.quests.get(prev_id, {}).get("completions", 0)) > 0:
 				_accept_quest(p, quest_id)
 				break
+
+
+## Sharing a quest with your group: every member in your zone who could take
+## it up themselves is offered it (Accept / Decline); the rest are named with
+## why not. The quest must be one you're on.
+func request_quest_share(player_id: int, quest_id: String) -> void:
+	if _remote(&"request_quest_share", [player_id, quest_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or not GameData.quests.has(quest_id) or not p.quests.get(quest_id, {}).get("active", false):
+		return
+	var q: Dictionary = GameData.quests[quest_id]
+	var others: Array = group_members(p).filter(func(m: Player) -> bool: return m != p)
+	if others.is_empty():
+		say(p, "You need to be in a group to share a quest.", C_WARN)
+		return
+	var offered: Array = []
+	for m: Player in others:
+		var why := quest_share_blocked(m, quest_id)
+		if why == "" and zone_of(m) != zone_of(p):
+			why = "is not in %s" % zone_of(p).zone_name
+		if why != "":
+			say(p, "%s %s." % [m.display_name, why], C_WARN)
+			continue
+		m.set_meta("quest_offer", {"quest": quest_id, "from": p.entity_id, "at": Time.get_ticks_msec()})
+		say(m, "%s shares a quest with you: %s." % [p.display_name, q["name"]], C_CHAT_GROUP)
+		_ui(m, &"quest_offered", [p.display_name, quest_id])
+		offered.append(m.display_name)
+	if not offered.is_empty():
+		say(p, "You share %s with %s." % [q["name"], ", ".join(offered)], C_CHAT_GROUP)
+
+
+## Why m can't take up a quest a groupmate shares ("" when they can): the same
+## things that would stop them asking its giver themselves.
+func quest_share_blocked(m: Player, quest_id: String, you := false) -> String:
+	var q: Dictionary = GameData.quests[quest_id]
+	var state: Dictionary = m.quests.get(quest_id, {})
+	if state.get("active", false):
+		return ("are" if you else "is") + " already on that quest"
+	if int(state.get("completions", 0)) > 0 and not q.get("repeatable", false):
+		return ("have" if you else "has") + " already done that quest"
+	var before := str(q.get("requires_quest", ""))
+	if before == "" or quest_done(m, before):
+		before = _quest_before(quest_id)
+	if before != "" and not quest_done(m, before):
+		return "must first finish %s" % GameData.quests.get(before, {}).get("name", "an earlier quest")
+	var faction := str(GameData.npcs.get(str(q["giver"]), {}).get("faction", ""))
+	if GameData.factions.has(faction) and standing(m, faction) < REFUSE_BELOW:
+		return "would be turned away by %s" % QuestHints._npc_name(str(q["giver"]))
+	return ""
+
+
+## The step before this one in a quest line ("next"), or "".
+func _quest_before(quest_id: String) -> String:
+	for prev_id: String in GameData.quests:
+		if str(GameData.quests[prev_id].get("next", "")) == quest_id:
+			return prev_id
+	return ""
+
+
+## Answering a shared quest: accept takes it up (if you still can), decline
+## tells whoever shared it.
+func request_quest_share_answer(player_id: int, accept: bool) -> void:
+	if _remote(&"request_quest_share_answer", [player_id, accept]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var offer: Dictionary = p.get_meta("quest_offer", {})
+	if p.has_meta("quest_offer"):
+		p.remove_meta("quest_offer")
+	_ui(p, &"quest_offered", ["", ""])
+	var quest_id := str(offer.get("quest", ""))
+	if not GameData.quests.has(quest_id) or Time.get_ticks_msec() - int(offer.get("at", 0)) > INVITE_SECONDS * 1000:
+		say(p, "You have no shared quest to answer.", C_WARN)
+		return
+	var from := get_object(int(offer.get("from", -1))) as Player
+	var q: Dictionary = GameData.quests[quest_id]
+	if not accept:
+		say(p, "You decline %s." % q["name"], C_CHAT_GROUP)
+		if from != null:
+			say(from, "%s declines %s." % [p.display_name, q["name"]], C_CHAT_GROUP)
+		return
+	var why := quest_share_blocked(p, quest_id, true)
+	if why != "":
+		say(p, "You can't take up %s: you %s." % [q["name"], why], C_WARN)
+		return
+	_accept_quest(p, quest_id)
+	say(p, "(%s is given by %s.)" % [q["name"], QuestHints._npc_name(str(q["giver"]))], C_SYSTEM)
+	if from != null:
+		say(from, "%s takes up %s." % [p.display_name, q["name"]], C_CHAT_GROUP)
 
 
 func _accept_quest(p: Player, quest_id: String) -> void:
