@@ -197,6 +197,7 @@ const SECTIONS := [
 	["camp", "greenmoor"],
 	["zone_unload", "greenmoor"],
 	["merricks_line", "emberhold_tavern"],
+	["wellspring", "wellspring"],
 ]
 
 var shots_dir := ""
@@ -3515,6 +3516,45 @@ func _t_merricks_line() -> void:
 	World.time_override = 13.0
 	await _wait(1.5)
 	await _shot("9zz_pond_fouled")
+	World.time_override = -1.0
+
+
+## The Wellspring, the cave under Greenmoor (Merrick's line): its passages,
+## the fouled creek, and the spring cavern with the cocooned crystal, seen at
+## points along the way; and that you can walk the main way from end to end.
+func _t_wellspring() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	if z.tunnel == null:
+		print("wellspring: FAIL no tunnel in %s" % z.zone_id)
+		return
+	World.time_override = 12.0
+	var views := [["entrance", Vector2(126, 127), Vector2(100, 121)], ["narrows", Vector2(20, 80), Vector2(2, 62)],
+			["chamber", Vector2(-96, 14), Vector2(-104, -4)], ["creek", Vector2(-40, -30), Vector2(-62, -40)],
+			["deadend", Vector2(-60, 104), Vector2(-74, 112)], ["cavern", Vector2(68, -114), Vector2(46, -130)]]
+	for v: Array in views:
+		p.global_position = z.ground(v[1].x, v[1].y) + Vector3.UP
+		p.face_toward(z.ground(v[2].x, v[2].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 5.0
+		p.pitch = -0.15
+		await _wait(0.8)
+		var s := z.tunnel.sample(v[1].x, v[1].y)
+		print("wellspring: %s floor %.1f clear %.1f roof %.1f above" % [v[0], s.y, s.x, z.tunnel.ceiling_at(v[1].x, v[1].y, 0.0) - z.height_at(v[1].x, v[1].y)])
+		await _shot("9zw_%s" % v[0])
+	# is the main way through one piece? ask the navigation mesh for a path end to end
+	var map := z.get_world_3d().navigation_map
+	for k in 40:
+		if NavigationServer3D.map_get_iteration_id(map) > 0:
+			break
+		await _wait(0.5)
+	var route := NavigationServer3D.map_get_path(map, z.ground(128, 127), z.ground(62, -118), true)
+	var got := route[route.size() - 1] if route.size() > 0 else Vector3.INF
+	var walked := 0.0
+	for i in route.size() - 1:
+		walked += route[i].distance_to(route[i + 1])
+	print("wellspring: path entrance -> cavern: %d points, %.0f m, ends %.1f m from the cavern" % [route.size(), walked, got.distance_to(z.ground(62, -118))])
 	World.time_override = -1.0
 
 

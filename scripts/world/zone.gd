@@ -33,6 +33,7 @@ var nav_ready := false  # the navigation mesh is baked (Zone._bake_navigation)
 var _decks: Array = []  # [Transform3D (center, deck top), half size Vector2]: boardwalks you stand on over the water
 var _lakes: Array = []  # [{shore: PackedVector2Array, level, depth, shelf, bank, islands: [[Vector2, radius]]}]
 var _clear_radius := 0.0  # no scattered trees or rocks inside this (city walls)
+var tunnel: Tunnel = null  # a cave zone's passages ("tunnel" in its data); null outdoors
 var _prop_scenes: Dictionary = {}  # prop id -> PackedScene
 var _prop_aabbs: Dictionary = {}  # prop id -> unscaled AABB
 var _prop_tris: Dictionary = {}  # prop id -> unscaled collision faces
@@ -57,6 +58,8 @@ func load_zone(id: String) -> void:
 	_rng.seed = zone_seed
 	var bp: Array = data.get("bind_point", [0, 0])
 	_bind_xz = Vector2(bp[0], bp[1])
+	if data.has("tunnel"):  # a cave (the Wellspring): passages through rock instead of open ground
+		tunnel = Tunnel.new(data["tunnel"], size)
 	if data.has("terraces"):  # nothing built stands on a terrace's slope: fields and landmarks move onto the nearest flat step
 		for f: Dictionary in data.get("fields", []):
 			f["pos"] = _settle(Vector2(f["pos"][0], f["pos"][1]), maxf(float(f["size"][0]), float(f["size"][1])) * 0.55)
@@ -102,6 +105,8 @@ func load_zone(id: String) -> void:
 	for f: Array in _fields:
 		_build_field(f)
 	_build_props()
+	if tunnel != null:
+		_dress_cave()
 	if DisplayServer.get_name() != "headless":  # a dedicated server draws nothing
 		_build_clutter()
 		if data.has("rain"):
@@ -126,7 +131,7 @@ func _bake_navigation() -> void:
 	nav.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_ROOT_NODE_CHILDREN
 	nav.cell_size = NAV_CELL
 	nav.cell_height = 0.2
-	nav.agent_radius = 1.0  # a meter of clearance so bodies clear fence posts and gateposts (keep it a multiple of NAV_CELL, and climb of 0.2)
+	nav.agent_radius = float(data.get("nav_radius", 1.0))  # a meter of clearance so bodies clear fence posts and gateposts (keep it a multiple of NAV_CELL, and climb of 0.2); less in a cave's narrows
 	nav.agent_height = 1.6
 	nav.agent_max_climb = 0.4
 	nav.agent_max_slope = 40.0
@@ -223,12 +228,16 @@ func terrace_face(x: float, z: float) -> float:
 
 
 func height_at(x: float, z: float) -> float:
-	var h := _noise.get_noise_2d(x, z) * amp + _detail.get_noise_2d(x, z) * 0.35
-	h = lerpf(h * 0.1, h, smoothstep(flat_radius, flat_radius + 25.0, Vector2(x, z).distance_to(_bind_xz)))
-	for spot in _flat_spots:
-		var d := Vector2(x, z).distance_to(spot)
-		if d < 30.0:
-			h = lerpf(_noise.get_noise_2d(spot.x, spot.y) * amp * 0.5, h, smoothstep(14.0, 30.0, d))
+	var h: float
+	if tunnel != null:  # rock all round, the passages carved through it (no hills, no mountain ring)
+		h = tunnel.height(x, z, _noise.get_noise_2d(x * 3.0, z * 3.0), _detail.get_noise_2d(x * 1.5, z * 1.5))
+	else:
+		h = _noise.get_noise_2d(x, z) * amp + _detail.get_noise_2d(x, z) * 0.35
+		h = lerpf(h * 0.1, h, smoothstep(flat_radius, flat_radius + 25.0, Vector2(x, z).distance_to(_bind_xz)))
+		for spot in _flat_spots:
+			var d := Vector2(x, z).distance_to(spot)
+			if d < 30.0:
+				h = lerpf(_noise.get_noise_2d(spot.x, spot.y) * amp * 0.5, h, smoothstep(14.0, 30.0, d))
 	for pond: Dictionary in _ponds:
 		var d := Vector2(x, z).distance_to(pond["center"])
 		var r: float = pond["radius"]
@@ -264,7 +273,7 @@ func height_at(x: float, z: float) -> float:
 		h = _lake_height(lake, x, z, h)
 	# Mountains ring the zone so you can't walk off the edge.
 	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
-	if edge > 0.0:
+	if edge > 0.0 and tunnel == null:
 		h += (edge * 1.3 + edge * edge * 0.08) * _pass_factor(x, z)
 	return h
 
@@ -298,7 +307,8 @@ func _add_river(river: Dictionary) -> void:
 		levels.append(minf(h, levels[i - 1]) if i > 0 else h)
 	_rivers.append({"points": pts, "levels": levels, "width": float(river.get("width", 10.0)),
 			"depth": float(river.get("depth", 1.2)), "bank": float(river.get("bank", 10.0)), "dry": bool(river.get("dry", false)),
-			"lava": bool(river.get("lava", false))})
+			"lava": bool(river.get("lava", false)),
+			"tainted": bool(river.get("tainted", false)), "glow": float(river.get("glow", 0.0))})
 
 
 ## [distance from the river's centerline, its water level at the nearest point].
@@ -346,7 +356,8 @@ func _add_lake(lake: Dictionary) -> void:
 	for isl: Array in lake.get("islands", []):
 		islands.append([Vector2(isl[0], isl[1]), float(isl[2])])
 	_lakes.append({"shore": shore, "level": level - 0.4 + float(lake.get("raise", 0.0)), "depth": float(lake.get("depth", 1.5)),
-			"shelf": float(lake.get("shelf", 14.0)), "bank": float(lake.get("bank", 12.0)), "islands": islands})
+			"shelf": float(lake.get("shelf", 14.0)), "bank": float(lake.get("bank", 12.0)), "islands": islands,
+			"tainted": bool(lake.get("tainted", false)), "glow": float(lake.get("glow", 0.0))})
 
 
 ## Signed distance to a lake's shoreline: negative on the water.
@@ -540,17 +551,17 @@ func idle_seconds_to_unload(at_least: float) -> float:
 func _build_environment() -> void:
 	# Interiors get no sky and no sun: lit warm and close, so the only light in
 	# the room is the light the room itself carries.
-	if bool(data.get("interior", false)):
+	if bool(data.get("interior", false)) or tunnel != null:  # a cave too: underground, lit only by what grows and burns there
 		var ienv := Environment.new()
 		ienv.background_mode = Environment.BG_COLOR
-		ienv.background_color = Color(0.03, 0.025, 0.02)
+		ienv.background_color = Color.html(str(data.get("background_color", "#080604")))
 		ienv.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		ienv.ambient_light_color = Color.html(str(data.get("ambient_color", "#9e948a")))
 		ienv.ambient_light_energy = float(data.get("ambient_energy", 0.34))
 		ienv.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 		ienv.fog_enabled = true
-		ienv.fog_light_color = Color(0.1, 0.07, 0.05)
-		ienv.fog_density = 0.022
+		ienv.fog_light_color = Color.html(str(data.get("fog_color", "#1a120d")))
+		ienv.fog_density = float(data.get("fog_density", 0.022))
 		var iwe := WorldEnvironment.new()
 		iwe.environment = ienv
 		add_child(iwe)
@@ -593,25 +604,30 @@ func _build_environment() -> void:
 
 
 func _build_terrain() -> void:
-	var n := GRID + 1
-	var cell := size / GRID
+	var grid := int(data.get("grid", GRID))  # a cave needs finer ground than a meadow (its passages are a few meters wide)
+	var n := grid + 1
+	var cell := size / grid
 	var heights := PackedFloat32Array()
 	heights.resize(n * n)
+	var colors := PackedColorArray()  # once per point, not once per triangle corner
+	colors.resize(n * n)
 	for j in n:
 		for i in n:
-			heights[j * n + i] = height_at(-half + i * cell, -half + j * cell)
+			var h := height_at(-half + i * cell, -half + j * cell)
+			heights[j * n + i] = h
+			colors[j * n + i] = _ground_color(-half + i * cell, -half + j * cell, h)
 
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for j in GRID:
-		for i in GRID:
+	for j in grid:
+		for i in grid:
 			for c: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 1)]:
 				var ii := i + c.x
 				var jj := j + c.y
 				var x := -half + ii * cell
 				var z := -half + jj * cell
 				var h := heights[jj * n + ii]
-				st.set_color(_ground_color(x, z, h))
+				st.set_color(colors[jj * n + ii])
 				st.add_vertex(Vector3(x, h, z))
 	st.index()
 	st.generate_normals()
@@ -641,10 +657,129 @@ func _build_terrain() -> void:
 	cs.scale = Vector3.ONE * cell
 	body.add_child(cs)
 	add_child(body)
+	if tunnel != null:
+		_build_ceiling(grid, cell)
+
+
+## Dresses a cave's passages: stalactites hanging from the roof, stalagmites
+## and fallen rock along the walls (these block, like boulders), and clumps of
+## glowing sour fungus with a faint green light every dozen meters or so, the
+## only light down here besides the creek. Its own random numbers, so every
+## machine puts the same rock in the same place.
+func _dress_cave() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(data.get("seed", 1)) + 4271
+	var draws := DisplayServer.get_name() != "headless"
+	var since_light := 0.0
+	for spot: Array in tunnel.walk(3.0):
+		var c: Vector2 = spot[0]
+		var across: Vector2 = (spot[1] as Vector2).orthogonal()
+		var hw: float = spot[2]
+		# stalactites, anywhere over the passage
+		if rng.randf() < 0.45:
+			var at := c + across * rng.randf_range(-hw * 0.85, hw * 0.85)
+			var roof := tunnel.ceiling_at(at.x, at.y, _detail.get_noise_2d(at.x * 0.9, at.y * 0.9))
+			if roof - height_at(at.x, at.y) > 4.0:
+				_prop("stalactite_a" if rng.randf() < 0.5 else "stalactite_b", Vector3(at.x, roof + 0.25, at.y), rng.randf() * TAU, rng.randf_range(0.8, 1.5), "none")
+		# stalagmites and fallen rock against the walls, clear of the water
+		if rng.randf() < 0.3:
+			var side := 1.0 if rng.randf() < 0.5 else -1.0
+			var at := c + across * side * (hw - rng.randf_range(0.3, 1.1))
+			if tunnel.inside(at.x, at.y, 0.2) and river_distance(at.x, at.y) > 1.2:
+				var id: String = ["stalagmite_a", "stalagmite_b", "rubble_half", "boulder_b"][rng.randi() % 4]
+				var s := rng.randf_range(0.7, 1.2) if id.begins_with("stalag") else rng.randf_range(0.35, 0.6)
+				_prop(id, ground(at.x, at.y) - Vector3.UP * 0.1, rng.randf() * TAU, s, "trunk" if id.begins_with("stalag") else "box")
+		# sour fungus and its glow
+		since_light += 3.0
+		if since_light >= rng.randf_range(10.0, 16.0):
+			since_light = 0.0
+			var side := 1.0 if rng.randf() < 0.5 else -1.0
+			var at := c + across * side * (hw - 0.4)
+			for k in rng.randi_range(2, 4):
+				var bit := at + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.0, 1.2)
+				if tunnel.inside(bit.x, bit.y, -0.8):
+					_prop("sour_fungus", ground(bit.x, bit.y), rng.randf() * TAU, rng.randf_range(0.8, 1.6), "none")
+			if draws:
+				var glow := OmniLight3D.new()
+				glow.light_color = Color(0.62, 0.85, 0.4)
+				glow.light_energy = 1.1
+				glow.omni_range = 9.0
+				glow.distance_fade_enabled = true
+				glow.distance_fade_begin = 45.0
+				glow.distance_fade_length = 15.0
+				glow.position = ground(at.x, at.y) + Vector3.UP * 1.0
+				add_child(glow)
+
+
+## A cave's roof over every passage, on the same grid as the ground: seen from
+## below, and solid, so the camera stays under it (as in the tavern). Only
+## drawn where there's passage below; past the walls it's buried in rock.
+func _build_ceiling(grid: int, cell: float) -> void:
+	var n := grid + 1
+	var roof := PackedFloat32Array()
+	roof.resize(n * n)
+	var near := PackedByteArray()
+	near.resize(n * n)
+	for j in n:
+		for i in n:
+			var x := -half + i * cell
+			var z := -half + j * cell
+			roof[j * n + i] = tunnel.ceiling_at(x, z, _detail.get_noise_2d(x * 0.9, z * 0.9))
+			near[j * n + i] = 1 if tunnel.sample(x, z).x < 5.0 else 0
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var faces := PackedVector3Array()
+	for j in grid:
+		for i in grid:
+			var k := j * n + i
+			if near[k] + near[k + 1] + near[k + n] + near[k + n + 1] == 0:
+				continue
+			# wound to face down
+			for c: Vector2i in [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+				var ii := i + c.x
+				var jj := j + c.y
+				var x := -half + ii * cell
+				var z := -half + jj * cell
+				var v := Vector3(x, roof[jj * n + ii], z)
+				var shade := _detail.get_noise_2d(x * 0.5, z * 0.5) * 0.5 + 0.5
+				st.set_color(Color(0.17, 0.155, 0.14).lerp(Color(0.26, 0.24, 0.22), shade))
+				st.add_vertex(v)
+				faces.append(v)
+	if faces.is_empty():
+		return
+	st.index()
+	st.generate_normals()
+	var mat := StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.vertex_color_is_srgb = true
+	mat.roughness = 1.0
+	st.set_material(mat)
+	var mesh := MeshInstance3D.new()
+	mesh.mesh = st.commit()
+	add_child(mesh)
+	var shape := ConcavePolygonShape3D.new()
+	shape.backface_collision = true
+	shape.set_faces(faces)
+	var body := StaticBody3D.new()
+	body.collision_layer = Layers.WORLD
+	body.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	cs.shape = shape
+	body.add_child(cs)
+	add_child(body)
 
 
 func _ground_color(x: float, z: float, h: float) -> Color:
 	var n := _detail.get_noise_2d(x * 0.6, z * 0.6) * 0.5 + 0.5
+	if tunnel != null:  # wet dark floor, lighter rock up the walls, a sour green stain along the water
+		var s := tunnel.sample(x, z)
+		var floor_c := Color(0.2, 0.18, 0.15).lerp(Color(0.27, 0.24, 0.2), n)
+		var rock := Color(0.3, 0.29, 0.28).lerp(Color(0.4, 0.37, 0.34), n)
+		var c := floor_c.lerp(rock, smoothstep(-0.5, 2.5, s.x))
+		c = c.lerp(Color(0.16, 0.14, 0.12), smoothstep(6.0, 16.0, h - s.y) * 0.5)  # darker toward the roof
+		if bool(data.get("tainted", false)) and s.x < 1.0:  # (only the floor can be near the water)
+			c = c.lerp(Color(0.22, 0.27, 0.12), (1.0 - smoothstep(0.0, 1.6, river_distance(x, z))) * 0.7)
+		return c
 	var greens: Array = data.get("grass_colors", ["#45662b", "#668538"])  # low and high patches
 	var c := Color.html(greens[0]).lerp(Color.html(greens[1]), n)
 	var d := Vector2(x, z).distance_to(_bind_xz)
@@ -1770,7 +1905,7 @@ func _build_bridge(at: Vector2, yaw: float) -> void:
 func _build_river(river: Dictionary) -> void:
 	var pts: Array[Vector2] = river["points"]
 	var levels: Array[float] = river["levels"]
-	var half_w: float = float(river["width"]) * 0.5 + 0.6
+	var half_w: float = float(river["width"]) * 0.5 + (0.6 if tunnel == null else -0.7)  # underground the water stops short of its fine-grained banks, so its edge is clean
 	var samples: Array = []  # [point, level, distance along]
 	var along := 0.0
 	for i in pts.size() - 1:
@@ -1810,6 +1945,9 @@ func _build_river(river: Dictionary) -> void:
 	mat.set_shader_parameter("flow_speed", float(river.get("flow", 1.0)))
 	var lava := bool(river.get("lava", false))
 	mat.set_shader_parameter("lava", 1.0 if lava else 0.0)
+	if river.get("tainted", false):  # the Wellspring's creek, fouled like Greenmoor's pond
+		mat.set_shader_parameter("taint", 1.0)
+		mat.set_shader_parameter("glow", float(river.get("glow", 0.0)))
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
@@ -1827,6 +1965,9 @@ func _build_river(river: Dictionary) -> void:
 			glow.position = Vector3(c.x, float(sample[1]) + 1.5, c.y)
 			add_child(glow)
 		return
+	river["water"] = water
+	if tunnel != null:
+		return  # no reeds underground; the cave dresses its own banks
 	for k in int(float(along) / 7.0):
 		var s_: Array = samples[_rng.randi() % samples.size()]
 		var c: Vector2 = s_[0]
@@ -1862,9 +2003,15 @@ func _build_lake(lake: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	if lake.get("tainted", false):  # the Wellspring's spring, fouled at its source
+		mat.set_shader_parameter("taint", 1.0)
+		mat.set_shader_parameter("glow", float(lake.get("glow", 0.0)))
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(water)
+	lake["water"] = water
+	if tunnel != null:
+		return  # no reeds underground; the cave dresses its own shores
 	var shore: PackedVector2Array = lake["shore"]
 	var perimeter := 0.0
 	for i in shore.size():

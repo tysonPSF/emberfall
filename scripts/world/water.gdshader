@@ -13,6 +13,7 @@ uniform float murk = 0.9;  // meters of water until it looks fully deep
 uniform float flow_speed = 0.0;  // meters per second downstream
 uniform float lava = 0.0;  // 1: molten rock instead of water (Cinderpass): a glowing flow under a drifting dark crust
 uniform float taint = 0.0;  // 1: fouled water (Greenmoor's pond, Merrick's line): bile-green, drifting scum, an oily sheen
+uniform float glow = 0.0;  // fouled water that glows faintly (the Wellspring's creek, in the dark)
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
 
 void fragment() {
@@ -56,6 +57,7 @@ void fragment() {
 		ALPHA = mix(ALPHA, max(ALPHA, mix(0.95, 1.0, scum)), taint);
 		ROUGHNESS = mix(ROUGHNESS, mix(0.6, 0.95, scum), taint);  // stagnant: no bright sky in it
 		SPECULAR = mix(SPECULAR, 0.12, taint);
+		EMISSION = vec3(0.35, 0.55, 0.12) * glow * taint * (0.75 + 0.25 * sin(TIME * 0.8 + world.x * 0.2 + world.z * 0.15)) * (1.0 - scum * 0.6);
 	}
 	if (lava > 0.5) {
 		float run = UV.y - TIME * max(flow_speed, 0.15);
