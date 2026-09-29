@@ -117,6 +117,7 @@ const SECTIONS := [
 	["quest_share", "greenmoor"],
 	["delete_guild", "greenmoor"],
 	["evil_gods", "greenmoor"],
+	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
@@ -8229,6 +8230,37 @@ func _t_crits() -> void:
 ## The elephant gods turn the evil races away (Timiraj takes anyone): who
 ## may follow whom, and a troll who followed Agnavar choosing again in the
 ## HUD's window, refused an elephant, taking a bog god.
+## Character creation shows the character as it's chosen: race, class,
+## gender and hair change the figure; a drag turns it.
+func _t_char_preview() -> void:
+	var cc := CharCreate.new()
+	cc.setup({})
+	get_parent().add_child(cc)
+	await _wait(0.6)
+	await _shot("9preview_default")
+	for pick: Array in [["troll", "shaman", "male", "rugged", "white"], ["gnome", "wizard", "female", "long", "copper"],
+			["ogre", "warrior", "male", "", ""], ["dark_elf", "necromancer", "female", "flowing", "white"]]:
+		cc._select_race(pick[0])
+		cc._select(pick[1])
+		cc._gender = pick[2]
+		cc._hair.set_hair(pick[3], pick[4])
+		cc._refresh_preview()
+		await _wait(0.5)
+		print("char_preview: %s -> %s" % [pick, cc.preview_look()])
+		await _shot("9preview_%s" % pick[0])
+	var drag := InputEventMouseButton.new()
+	drag.button_index = MOUSE_BUTTON_LEFT
+	drag.pressed = true
+	cc._on_preview_input(drag)
+	var move := InputEventMouseMotion.new()
+	move.relative = Vector2(180, 0)
+	cc._on_preview_input(move)
+	await _wait(0.3)
+	print("char_preview: dragged -> turned %.0f degrees" % rad_to_deg(cc._preview_stage.rotation.y))
+	await _shot("9preview_turned")
+	cc.queue_free()
+
+
 func _t_evil_gods() -> void:
 	var table := {}
 	for race: String in ["human", "high_elf", "dark_elf", "troll"]:
