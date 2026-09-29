@@ -2163,6 +2163,33 @@ func _guild_news(key: String, text: String) -> void:
 			_push_guild_view(q)
 
 
+## A character deleted from the server leaves its guild; a leader's guild
+## passes to an officer, else to whoever else is in it.
+func character_deleted(char_name: String) -> void:
+	var gs := guilds()
+	var key := gs.key_of(char_name)
+	if key == "":
+		return
+	var g: Dictionary = gs.guilds[key]
+	var heir := ""
+	if gs.rank_of(char_name) == "leader":
+		for want: String in ["officer", "member"]:
+			for member: String in g["members"]:
+				if heir == "" and member != char_name.to_lower() and str(g["members"][member]["rank"]) == want:
+					heir = member
+	var guild_name := str(g["name"])
+	var shown := char_name.to_lower().capitalize()
+	gs.leave(char_name)
+	_guild_news(key, "%s is gone from %s." % [shown, guild_name])
+	if heir != "":
+		var heir_name := str(gs.guilds[key]["members"][heir]["name"])
+		gs.set_rank(heir_name, "leader")
+		_guild_news(key, "%s now leads %s." % [heir_name, guild_name])
+		var q := _online(heir_name)
+		if q != null:
+			_set_guild_tag(q)
+
+
 ## /gu: to every online member of your guild, wherever they are.
 func _chat_guild(p: Player, text: String) -> void:
 	var key := guilds().key_of(p.display_name)

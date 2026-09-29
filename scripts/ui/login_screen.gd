@@ -27,6 +27,11 @@ var _status: Label
 var _import_button: Button
 var _names_here: Array = []
 var _creator: CharCreate
+var _delete_box: VBoxContainer  # "type the name to delete it"
+var _delete_label: Label
+var _delete_edit: LineEdit
+var _delete_button: Button
+var _deleting := ""  # the character the delete box is for
 
 
 func _ready() -> void:
@@ -100,6 +105,7 @@ func _ready() -> void:
 	var create := UIKit.button("Create a new character", Vector2(0, 38))
 	create.pressed.connect(_open_creator)
 	_chars_box.add_child(create)
+	_build_delete_box()
 	_import_button = UIKit.button("", Vector2(0, 38))
 	_import_button.pressed.connect(func() -> void: Net.import_character(offline_save))
 	_chars_box.add_child(_import_button)
@@ -171,17 +177,82 @@ func _on_characters(list: Array) -> void:
 		_names_here.append(str(c["name"]))
 		var cls: Dictionary = GameData.classes.get(str(c["class"]), {})
 		var zone_name := str(GameData.load_zone(str(c["zone"])).get("name", c["zone"])) if str(c["zone"]) != "" else ""
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
 		var b := UIKit.button("%s   level %d %s   %s" % [c["name"], int(c["level"]), cls.get("name", "?"), zone_name], Vector2(0, 42))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.pressed.connect(func() -> void:
 			_say("Entering the world as %s..." % c["name"])
 			Net.enter_world(str(c["name"])))
-		_list.add_child(b)
+		row.add_child(b)
+		var del := UIKit.button("Delete", Vector2(80, 42))
+		del.add_theme_color_override("font_color", Color(1, 0.55, 0.45))
+		del.tooltip_text = "Delete %s from this server" % c["name"]
+		del.pressed.connect(_ask_delete.bind(str(c["name"])))
+		row.add_child(del)
+		_list.add_child(row)
 	if list.is_empty():
 		_list.add_child(UIKit.label("No characters yet on this server.", 13, UIKit.DIM))
+	_delete_box.visible = false
 	var offline_name := str(offline_save.get("name", ""))
 	_import_button.visible = offline_name != "" and not offline_name in _names_here
 	_import_button.text = "Bring over %s, your offline character" % offline_name
 	_say("Choose a character." if not list.is_empty() else "Create a character, or bring your offline one over.")
+
+
+## Deleting a character: the name must be typed out before the button works,
+## and the server checks it again.
+func _build_delete_box() -> void:
+	_delete_box = VBoxContainer.new()
+	_delete_box.add_theme_constant_override("separation", 8)
+	_delete_box.visible = false
+	_chars_box.add_child(_delete_box)
+	_delete_label = UIKit.label("", 14, Color(1, 0.6, 0.5))
+	_delete_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_delete_box.add_child(_delete_label)
+	_delete_edit = LineEdit.new()
+	_delete_edit.custom_minimum_size.y = 36
+	_delete_edit.text_changed.connect(func(t: String) -> void: _delete_button.disabled = not _delete_matches(t))
+	_delete_edit.text_submitted.connect(func(_t: String) -> void: _confirm_delete())
+	_delete_box.add_child(_delete_edit)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	_delete_button = UIKit.button("Delete forever", Vector2(0, 38))
+	_delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_delete_button.add_theme_color_override("font_color", Color(1, 0.55, 0.45))
+	_delete_button.pressed.connect(_confirm_delete)
+	row.add_child(_delete_button)
+	var cancel := UIKit.button("Cancel", Vector2(0, 38))
+	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cancel.pressed.connect(func() -> void:
+		_delete_box.visible = false
+		_deleting = ""
+		_say("Choose a character."))
+	row.add_child(cancel)
+	_delete_box.add_child(row)
+
+
+func _ask_delete(char_name: String) -> void:
+	_deleting = char_name
+	_delete_label.text = "Delete %s? This can't be undone. Type %s below to confirm." % [char_name, char_name]
+	_delete_edit.text = ""
+	_delete_edit.placeholder_text = char_name
+	_delete_button.disabled = true
+	_delete_box.visible = true
+	_delete_edit.grab_focus()
+	_say("")
+
+
+func _delete_matches(t: String) -> bool:
+	return _deleting != "" and t.strip_edges().to_lower() == _deleting.to_lower()
+
+
+func _confirm_delete() -> void:
+	if not _delete_matches(_delete_edit.text):
+		return
+	_say("Deleting %s..." % _deleting)
+	Net.delete_character(_deleting, _delete_edit.text)
+	_delete_button.disabled = true
 
 
 func _open_creator() -> void:

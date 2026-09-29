@@ -44,6 +44,10 @@ func _run() -> void:
 		await _wait(1.0)
 	var names := _list.map(func(c: Dictionary) -> String: return str(c["name"]))
 	print("[%s] logged in; characters: %s" % [who, names])
+	if "--delete" in OS.get_cmdline_user_args():
+		await _delete_test()
+		get_tree().quit()
+		return
 	if not who in names:
 		if "--wake" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
@@ -527,6 +531,47 @@ func _share_test(p: Player) -> void:
 		await _wait(3.0)
 		print("[Bravo] share: offered %s; my quests now %s; heard %s" % [offers, p.quests, heard.filter(func(t: String) -> bool: return "share" in t or "decline" in t or "given by" in t)])
 		get_tree().quit()
+
+
+## Deleting a character from the character screen (no world): two made, a
+## wrong name typed is refused, someone else's is refused, the right one goes,
+## and its name is free again.
+func _delete_test() -> void:
+	var heard: Array = []
+	Net.server_message.connect(func(t: String, _e: bool) -> void: heard.append(t))
+	var names := func() -> Array: return _list.map(func(c: Dictionary) -> String: return str(c["name"]))
+	for n: String in ["Keeper", "Goner"]:
+		if not n in names.call():
+			Net.create_character(n, "warrior", "fire", {}, "human")
+			await _wait(1.0)
+	print("[%s] delete: made %s" % [who, names.call()])
+	var screen := LoginScreen.new()
+	screen.address = "127.0.0.1:%d" % port
+	screen.account = who.to_lower()
+	screen.logged_in = true
+	get_parent().add_child(screen)
+	await _wait(0.3)
+	screen._on_characters(_list)
+	screen._ask_delete("Goner")
+	screen._delete_edit.text = "Gone"
+	screen._delete_edit.text_changed.emit("Gone")
+	print("[%s] delete: typed 'Gone' -> button enabled %s" % [who, not screen._delete_button.disabled])
+	screen._delete_edit.text = "goner"
+	screen._delete_edit.text_changed.emit("goner")
+	print("[%s] delete: typed 'goner' -> button enabled %s" % [who, not screen._delete_button.disabled])
+	await _wait(0.3)
+	await _shot("delete_confirm")
+	Net.delete_character("Goner", "Gone")  # the server checks the typing too
+	await _wait(1.0)
+	Net.delete_character("Stranger", "Stranger")  # not ours
+	await _wait(1.0)
+	screen._confirm_delete()
+	await _wait(1.5)
+	print("[%s] delete: after -> %s; heard %s" % [who, names.call(), heard])
+	await _shot("delete_after")
+	Net.create_character("Goner", "cleric", "light", {}, "human")  # the name is free again
+	await _wait(1.0)
+	print("[%s] delete: made Goner again -> %s" % [who, names.call()])
 
 
 func _guild_test(p: Player) -> void:
