@@ -60,10 +60,11 @@ const C_CHAT_SAY := Color(0.93, 0.93, 0.9)
 const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
 const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
 const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
+const C_EMOTE := Color(0.98, 0.84, 0.62)  # /wave, /em: its own shade, like the group's
 const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
-const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp  /stuck (back to open ground)\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp  /stuck (back to open ground)\nEmotes: /wave /bow /cheer /dance /rude and more (/emotes for all; they're aimed at your target)  /em <text> (your own)\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
 const GROUP_MAX := 6
 const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
 const LOOT_RIGHTS_SECONDS := 180.0
@@ -71,6 +72,7 @@ const INVITE_SECONDS := 60.0
 
 const LOOT_RANGE := 6.0
 const TALK_RANGE := 10.0
+const EMOTE_GAP_MS := 700  # the least time between two emotes
 const BIND_RANGE := 16.0  # how near a city's bindstone you must stand to bind
 const TRADE_SLOTS := 4
 const PLAYER_TRADE_SLOTS := 8
@@ -3225,8 +3227,17 @@ func request_chat(player_id: int, text: String) -> void:
 			request_assist(player_id, rest)
 		"/help", "/h":
 			say(p, CHAT_HELP, C_SYSTEM)
+		"/emote", "/em", "/me":
+			_chat_emote(p, rest)
+		"/emotes":
+			var moving: Array = GameData.emotes.keys().filter(func(id: String) -> bool: return GameData.emotes[id].has("anim"))
+			var words: Array = GameData.emotes.keys().filter(func(id: String) -> bool: return not GameData.emotes[id].has("anim"))
+			say(p, "Emotes (at your target, if you have one): /%s\nWords only: /%s\n/em <text> for your own." % [" /".join(moving), " /".join(words)], C_SYSTEM)
 		_:
-			say(p, "That is not a valid command. Type /help for the list.", C_WARN)
+			if GameData.emote_of(cmd.substr(1)) != "":
+				request_emote(player_id, GameData.emote_of(cmd.substr(1)))
+			else:
+				say(p, "That is not a valid command. Type /help for the list.", C_WARN)
 
 
 ## /say: everyone nearby hears it; a targeted NPC in range treats it as talk.
@@ -3241,6 +3252,45 @@ func _chat_say(p: Player, text: String) -> void:
 	for q in get_players():
 		if q != p and q.distance_to(p) <= SAY_RANGE:
 			say(q, "%s says, '%s'" % [p.display_name, text], C_CHAT_SAY)
+
+
+## /em <text>: "Tester juggles three apples." to everyone nearby.
+func _chat_emote(p: Player, text: String) -> void:
+	if text == "":
+		say(p, "Emote what? /em <text>, e.g. /em juggles three apples.", C_WARN)
+		return
+	for q in get_players():
+		if q == p or q.distance_to(p) <= SAY_RANGE:
+			say(q, "%s %s" % [p.display_name, text], C_EMOTE)
+
+
+## A social emote (/wave, /bow, /rude...: data/emotes.json): the lines go to
+## you, your target and everyone within earshot, and your character acts it
+## out when the emote has a clip (not while sitting, casting or swimming).
+## Aimed at your target, whoever or whatever it is; alone without one.
+func request_emote(player_id: int, emote_id: String) -> void:
+	if _remote(&"request_emote", [player_id, emote_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead or not GameData.emotes.has(emote_id):
+		return
+	var now := Time.get_ticks_msec()
+	if now - int(p.get_meta("emote_at", -10000)) < EMOTE_GAP_MS:
+		return  # a key held down doesn't flood the chat
+	p.set_meta("emote_at", now)
+	var e: Dictionary = GameData.emotes[emote_id]
+	var t: Node3D = p.target if is_instance_valid(p.target) and p.target != p and (p.target is Entity or p.target is Corpse) and sees(p, p.target) else null
+	var t_name := ""
+	if t != null:
+		t_name = (t as Entity).display_name if t is Entity else (t as Corpse).display_name
+	var fill := func(line: String) -> String: return line.replace("{name}", p.display_name).replace("{target}", t_name)
+	say(p, fill.call(str(e["you_at"] if t != null else e["you"])), C_EMOTE)
+	for q in get_players():
+		if q == p or q.distance_to(p) > SAY_RANGE:
+			continue
+		say(q, fill.call(str(e["them_you"] if q == t else (e["them_at"] if t != null else e["them"]))), C_EMOTE)
+	if e.has("anim") and not p.sitting and p.cast.is_empty() and not p.swimming:
+		p.animate("emote:" + str(e["anim"]))
 
 
 func _chat_tell(p: Player, to_name: String, text: String) -> void:

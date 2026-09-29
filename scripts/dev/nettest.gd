@@ -110,6 +110,8 @@ func _run() -> void:
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
 	elif "--grove" in OS.get_cmdline_user_args():
 		await _grove_test(p)
+	elif "--emotes" in OS.get_cmdline_user_args():
+		await _emote_test(p)
 	elif "--trade" in OS.get_cmdline_user_args():
 		await _trade_test(p)
 	elif "--wake" in OS.get_cmdline_user_args():
@@ -430,6 +432,41 @@ func _group_test(p: Player) -> void:
 ## Two players trade: Alpha offers a gnoll fang and 250 copper, Bravo a beetle
 ## eye; both press Trade. Then a NO DROP item is refused, and a canceled trade
 ## gives everything back.
+## Emotes online: Alpha waves at Bravo; Bravo reads the line and sees
+## Alpha's character play the wave.
+func _emote_test(p: Player) -> void:
+	var other: Player = null
+	for k in 60:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	if other == null:
+		print("[%s] emotes: nobody else here" % who)
+		return
+	if who == "Alpha":
+		p.global_position = other.global_position + Vector3(3, 0, 0)
+		await _wait(1.5)
+		World.request_set_target(p.entity_id, other.entity_id)
+		await _wait(0.5)
+		World.request_chat(p.entity_id, "/wave")
+		await _wait(6.0)
+	else:
+		var heard: Array = []
+		World.log_message.connect(func(t: String, _c: Color) -> void: heard.append(t))
+		var played := ""
+		for k in 60:
+			var m := other.visual as CharacterModel
+			if m != null and m.anim.current_animation.begins_with("Emote_"):
+				played = m.anim.current_animation
+				break
+			await _wait(0.1)
+		await _shot("emote_seen")
+		print("[Bravo] emotes: heard %s; Alpha played %s" % [heard.filter(func(t: String) -> bool: return "Alpha" in t), played if played != "" else "nothing"])
+
+
 ## The Grove online (run with <data>/admins.json = ["alpha"]): Alpha earns the
 ## Dawn-Tusk; Bravo sees nothing until grouped with Alpha, and loses him again
 ## on leaving the group.

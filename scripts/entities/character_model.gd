@@ -21,6 +21,7 @@ static var _library: AnimationLibrary
 static var _part_sources: Dictionary = {}  # model path -> an instance to copy body parts from
 
 var anim: AnimationPlayer
+var _emoting := false  # an emote is playing (play_emote): moving ends it
 var skeleton: Skeleton3D
 var _clips: Dictionary = {}  # action -> clip name in `anim`
 var _held: Dictionary = {}  # hand bone -> [model id, holder node]
@@ -635,6 +636,16 @@ func play_once(action: String, speed := 1.0, interrupt := true) -> void:
 	_one_shot_left = anim.get_animation(c).length / speed
 
 
+## An emote's clip (/wave: "Emote_Wave"), once. Unlike a swing it stops as
+## soon as the character walks off; a rig without the clip just stands.
+func play_emote(clip: String) -> void:
+	if _posed_dead or not anim.has_animation(clip):
+		return
+	anim.play(clip, BLEND)
+	_one_shot_left = anim.get_animation(clip).length
+	_emoting = true
+
+
 ## Falls over and stays down (corpses).
 func pose_dead(instant := false) -> void:
 	_posed_dead = true
@@ -660,6 +671,9 @@ func _process(delta: float) -> void:
 		if _ranged_left <= 0.0:
 			_end_ranged()
 	var moving := Vector2(e.velocity.x, e.velocity.z).length()
+	if _emoting and (moving > 0.3 or _one_shot_left <= 0.0 or not e.cast.is_empty() or e.sitting):
+		_emoting = false
+		_one_shot_left = 0.0  # walked (or sat, or started casting) out of the emote
 	if e.swimming:  # a stroke or treading water (a rig without them walks or stands)
 		if _one_shot_left > 0.0:
 			return

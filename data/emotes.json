@@ -1,0 +1,264 @@
+{
+  "wave": {
+    "anim": "Emote_Wave",
+    "you": "You wave.",
+    "you_at": "You wave at {target}.",
+    "them": "{name} waves.",
+    "them_at": "{name} waves at {target}.",
+    "them_you": "{name} waves at you.",
+    "aliases": [
+      "hello",
+      "hi",
+      "greet",
+      "bye",
+      "goodbye"
+    ]
+  },
+  "bow": {
+    "anim": "Emote_Bow",
+    "you": "You bow.",
+    "you_at": "You bow before {target}.",
+    "them": "{name} bows.",
+    "them_at": "{name} bows before {target}.",
+    "them_you": "{name} bows before you.",
+    "aliases": [
+      "thank",
+      "thanks"
+    ]
+  },
+  "rude": {
+    "anim": "Emote_Rude",
+    "you": "You make a rude gesture.",
+    "you_at": "You are rude to {target}.",
+    "them": "{name} makes a rude gesture.",
+    "them_at": "{name} is rude to {target}.",
+    "them_you": "{name} is rude to you."
+  },
+  "cheer": {
+    "anim": "Emote_Cheer",
+    "you": "You cheer loudly.",
+    "you_at": "You cheer for {target}.",
+    "them": "{name} cheers loudly.",
+    "them_at": "{name} cheers for {target}.",
+    "them_you": "{name} cheers for you.",
+    "aliases": [
+      "victory",
+      "hooray"
+    ]
+  },
+  "dance": {
+    "anim": "Emote_Dance",
+    "you": "You dance a lively jig.",
+    "you_at": "You dance with {target}.",
+    "them": "{name} dances a lively jig.",
+    "them_at": "{name} dances with {target}.",
+    "them_you": "{name} dances with you.",
+    "aliases": [
+      "jig"
+    ]
+  },
+  "laugh": {
+    "anim": "Emote_Laugh",
+    "you": "You laugh.",
+    "you_at": "You laugh at {target}.",
+    "them": "{name} laughs.",
+    "them_at": "{name} laughs at {target}.",
+    "them_you": "{name} laughs at you.",
+    "aliases": [
+      "lol",
+      "giggle",
+      "chuckle"
+    ]
+  },
+  "cry": {
+    "anim": "Emote_Cry",
+    "you": "You burst into tears.",
+    "you_at": "You cry on {target}'s shoulder.",
+    "them": "{name} bursts into tears.",
+    "them_at": "{name} cries on {target}'s shoulder.",
+    "them_you": "{name} cries on your shoulder.",
+    "aliases": [
+      "sob",
+      "weep"
+    ]
+  },
+  "point": {
+    "anim": "Emote_Point",
+    "you": "You point into the distance.",
+    "you_at": "You point at {target}.",
+    "them": "{name} points into the distance.",
+    "them_at": "{name} points at {target}.",
+    "them_you": "{name} points at you."
+  },
+  "salute": {
+    "anim": "Emote_Salute",
+    "you": "You salute smartly.",
+    "you_at": "You salute {target}.",
+    "them": "{name} salutes smartly.",
+    "them_at": "{name} salutes {target}.",
+    "them_you": "{name} salutes you."
+  },
+  "kneel": {
+    "anim": "Emote_Kneel",
+    "you": "You kneel.",
+    "you_at": "You kneel before {target}.",
+    "them": "{name} kneels.",
+    "them_at": "{name} kneels before {target}.",
+    "them_you": "{name} kneels before you.",
+    "aliases": [
+      "pray"
+    ]
+  },
+  "shrug": {
+    "anim": "Emote_Shrug",
+    "you": "You shrug.",
+    "you_at": "You shrug at {target}.",
+    "them": "{name} shrugs.",
+    "them_at": "{name} shrugs at {target}.",
+    "them_you": "{name} shrugs at you.",
+    "aliases": [
+      "idk"
+    ]
+  },
+  "clap": {
+    "anim": "Emote_Clap",
+    "you": "You clap your hands.",
+    "you_at": "You applaud {target}.",
+    "them": "{name} claps.",
+    "them_at": "{name} applauds {target}.",
+    "them_you": "{name} applauds you.",
+    "aliases": [
+      "applaud"
+    ]
+  },
+  "nod": {
+    "anim": "Emote_Nod",
+    "you": "You nod.",
+    "you_at": "You nod at {target}.",
+    "them": "{name} nods.",
+    "them_at": "{name} nods at {target}.",
+    "them_you": "{name} nods at you.",
+    "aliases": [
+      "agree",
+      "yes"
+    ]
+  },
+  "disagree": {
+    "anim": "Emote_Shake",
+    "you": "You shake your head.",
+    "you_at": "You shake your head at {target}.",
+    "them": "{name} shakes their head.",
+    "them_at": "{name} shakes their head at {target}.",
+    "them_you": "{name} shakes their head at you.",
+    "aliases": [
+      "no",
+      "shake"
+    ]
+  },
+  "flex": {
+    "anim": "Emote_Flex",
+    "you": "You flex your muscles.",
+    "you_at": "You flex your muscles at {target}.",
+    "them": "{name} flexes.",
+    "them_at": "{name} flexes at {target}.",
+    "them_you": "{name} flexes at you.",
+    "aliases": [
+      "strong"
+    ]
+  },
+  "yawn": {
+    "anim": "Emote_Yawn",
+    "you": "You yawn.",
+    "you_at": "You yawn at {target}.",
+    "them": "{name} yawns.",
+    "them_at": "{name} yawns at {target}.",
+    "them_you": "{name} yawns at you.",
+    "aliases": [
+      "tired",
+      "bored"
+    ]
+  },
+  "smile": {
+    "you": "You smile.",
+    "you_at": "You smile at {target}.",
+    "them": "{name} smiles.",
+    "them_at": "{name} smiles at {target}.",
+    "them_you": "{name} smiles at you."
+  },
+  "grin": {
+    "you": "You grin.",
+    "you_at": "You grin at {target}.",
+    "them": "{name} grins.",
+    "them_at": "{name} grins at {target}.",
+    "them_you": "{name} grins at you."
+  },
+  "sigh": {
+    "you": "You sigh.",
+    "you_at": "You sigh at {target}.",
+    "them": "{name} sighs.",
+    "them_at": "{name} sighs at {target}.",
+    "them_you": "{name} sighs at you."
+  },
+  "hug": {
+    "you": "You hug yourself.",
+    "you_at": "You hug {target}.",
+    "them": "{name} hugs themselves.",
+    "them_at": "{name} hugs {target}.",
+    "them_you": "{name} hugs you."
+  },
+  "blush": {
+    "you": "You blush.",
+    "you_at": "You blush at {target}.",
+    "them": "{name} blushes.",
+    "them_at": "{name} blushes at {target}.",
+    "them_you": "{name} blushes at you."
+  },
+  "frown": {
+    "you": "You frown.",
+    "you_at": "You frown at {target}.",
+    "them": "{name} frowns.",
+    "them_at": "{name} frowns at {target}.",
+    "them_you": "{name} frowns at you."
+  },
+  "glare": {
+    "you": "You glare at nothing in particular.",
+    "you_at": "You glare at {target}.",
+    "them": "{name} glares at nothing in particular.",
+    "them_at": "{name} glares at {target}.",
+    "them_you": "{name} glares at you."
+  },
+  "poke": {
+    "you": "You poke the air.",
+    "you_at": "You poke {target}.",
+    "them": "{name} pokes the air.",
+    "them_at": "{name} pokes {target}.",
+    "them_you": "{name} pokes you."
+  },
+  "thumbsup": {
+    "you": "You give a thumbs up.",
+    "you_at": "You give {target} a thumbs up.",
+    "them": "{name} gives a thumbs up.",
+    "them_at": "{name} gives {target} a thumbs up.",
+    "them_you": "{name} gives you a thumbs up.",
+    "aliases": [
+      "thumbs"
+    ]
+  },
+  "cower": {
+    "you": "You cower in fear.",
+    "you_at": "You cower before {target}.",
+    "them": "{name} cowers in fear.",
+    "them_at": "{name} cowers before {target}.",
+    "them_you": "{name} cowers before you."
+  },
+  "chuckle_evil": {
+    "you": "You laugh an evil laugh.",
+    "you_at": "You laugh evilly at {target}.",
+    "them": "{name} laughs an evil laugh.",
+    "them_at": "{name} laughs evilly at {target}.",
+    "them_you": "{name} laughs evilly at you.",
+    "aliases": [
+      "cackle"
+    ]
+  }
+}
