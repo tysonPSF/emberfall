@@ -36,6 +36,7 @@ STAND_IN = {
     "dusk_bridge": "bridge_wood", "stalagmite_cluster": "boulder_c", "glow_crystal": "salt_crystals",
     "candle_stand": "candle_lit", "dusk_gate": "temple_arch_ruin",
     "dusk_tree": "black_tree", "dusk_tree_b": "black_tree_b",
+    "idol_tantuvi": None, "idol_dipanti": None,
 }
 
 
@@ -597,6 +598,9 @@ def duskhold():
     # the lake, an island in it, and bridges to the island
     lake = [at(b, 36) for b in range(0, 360, 15)]
     L.append(prop("timiraj_shrine", [0, 0], face=[0, -20], collide="box"))
+    # the dark elves' own gods beside the Unlit on the island: the spider west, the moth east
+    L.append(prop("idol_tantuvi", [-10, 2], face=[-10, -30], collide="box", scale=1.8))
+    L.append(prop("idol_dipanti", [10, 2], face=[10, -30], collide="box", scale=1.8))
     for b in (90, 270):  # the bridge spans along its own X: turned so it runs from the shore out to the island
         spot = at(b, 24.5)
         L.append(prop("dusk_bridge", spot, face=[spot[0] + 60, spot[1]], collide="mesh"))
@@ -626,6 +630,20 @@ def duskhold():
         blesses={"deity": "dark", "spell": "veil_of_the_unlit", "keyword": "blessing", "every": 3600,
                  "refuse": "His veil is for his own, {name}.", "wait": "Within the hour, {name}. Even the dark keeps time.",
                  "give": "Hold still. ...The veil settles."}), [0, 8], [0, 30])
+    put(npc("dusk_priest_tantuvi", "Weaver-Priestess Ysvaine", F, "dark_elf", "necromancer", {
+        "hail": "Every thread ends somewhere, {name}. Tantuvi knows where yours does, and she isn't telling. I keep her idol; I can [bind] you to Duskhold, and her followers may ask for her [blessing].",
+        "bind": "Hold still, as the fly does. ...There. Your thread is tied here now.",
+        "unknown": "The web knows. Ask it."}, title="Priestess of the Many-Eyed", weapon="staff", gender="female", level=40, binds=True,
+        blesses={"deity": "web", "spell": "tantuvi_blessing", "keyword": "blessing", "every": 3600,
+                 "refuse": "Her silk is for her own, {name}.", "wait": "Within the hour, {name}. A web takes time to spin.",
+                 "give": "Be still. ...Feel the threads? They're yours for a while."}), [-7, -4], [-7, -30])
+    put(npc("dusk_priest_dipanti", "Lamp-Keeper Aelyss", F, "dark_elf", "mage", {
+        "hail": "Mind the candles, {name}. Every one is a prayer, and every one is bait. I tend the Lamp-Eater's idol; I can [bind] you here, and her followers may ask for her [blessing].",
+        "bind": "Close your eyes. The light goes out, and... there. You'll wake by these candles.",
+        "unknown": "Ask the flame. It won't last long enough to answer."}, title="Keeper of the Lamp-Eater", weapon="staff", gender="female", level=40,
+        binds=True, blesses={"deity": "moth", "spell": "dipanti_blessing", "keyword": "blessing", "every": 3600,
+                             "refuse": "The light she gives is for her own, {name}.", "wait": "Within the hour, {name}. Even she must wait for the next flame.",
+                             "give": "Breathe in. ...The candle's light is in you now."}), [7, -4], [7, -30])
     gms = [("warrior", "Blademaster Zhaelith", "knight", "sword_1handed", "male", "Steel is honest, {name}. Everything else down here lies."),
            ("cleric", "High Priestess Ysmae", "knight", "wand", "female", "The Unlit gives mercy only to his own, {name}, and so do I. If you're mine, kneel."),
            ("rogue", "Shade-Master Vessk", "rogue", "dagger", "male", "You didn't hear me coming. Good. Neither will they, once I've finished with you."),
@@ -798,10 +816,28 @@ def rainhold():
 # ================================================================ write
 
 def merge(path, new, owned_prefix=None):
-    d = json.load(open(path))
-    d.update(new)
+    """Adds or replaces this generator's entries in a shared data file by
+    text, touching nothing else: the files mix formats (other people's
+    entries are hand-written), and re-dumping them would reformat everything."""
+    t = open(path).read()
+    d = json.loads(t)
+    for k, v in new.items():
+        block = json.dumps(v, indent=2).replace("\n", "\n  ")
+        if k not in d:
+            end = t.rstrip()
+            i = end.rfind("\n}")
+            t = end[:i] + ",\n  %s: %s" % (json.dumps(k), block) + end[i:] + "\n"
+        elif d[k] != v:
+            start = t.index("\n  %s: " % json.dumps(k))
+            nxt = t.find("\n  \"", start + 1)  # the next top-level key, or the file's end
+            stop = nxt if nxt >= 0 else t.rstrip().rfind("\n}")
+            body = t[start:stop]
+            comma = "," if body.rstrip().endswith(",") else ""
+            t = t[:start] + "\n  %s: %s%s" % (json.dumps(k), block, comma) + t[stop:]
+        d = json.loads(t)
+    assert all(d[k] == v for k, v in new.items()), path
     with open(path, "w") as f:
-        f.write(json.dumps(d, indent=2) + "\n")
+        f.write(t)
 
 
 def factions():
@@ -827,8 +863,6 @@ def factions():
 def spells():
     path = f"{ROOT}/data/spells.json"
     t = open(path).read()
-    if '"makarosh_blessing"' in t:
-        return
     add = {
         "makarosh_blessing": {"name": "Deep-Jaw's Patience", "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0,
                               "duration": 1800, "stats": {"ac": 10, "hp": 50, "hp_regen": 2}, "classes": {},
@@ -842,7 +876,22 @@ def spells():
                               "fade_text": "The Mud-Horned's strength drains back into the earth.",
                               "desc": "For half an hour: +12 strength, +12 stamina and +40 hit points. Mahishra's gift to his followers, once an hour at his idol in Murkhold.",
                               "fx": {"kind": "buff", "color": "#8a6a3a"}},
+        "tantuvi_blessing": {"name": "Tantuvi's Silk", "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0,
+                             "duration": 1800, "stats": {"agi": 12, "ac": 10, "hp": 30}, "classes": {},
+                             "land_text": "Fine threads settle over your skin, cool and strong: the Many-Eyed sees you.",
+                             "fade_text": "Tantuvi's silk comes loose and drifts away.",
+                             "desc": "For half an hour: +12 agility, +10 AC and +30 hit points. Tantuvi's gift to her followers, once an hour at her idol in Duskhold.",
+                             "fx": {"kind": "buff", "color": "#b8b0d8"}},
+        "dipanti_blessing": {"name": "Dipanti's Stolen Light", "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0,
+                             "duration": 1800, "stats": {"int": 10, "wis": 10, "mana": 60, "mana_regen": 2}, "classes": {},
+                             "land_text": "A candle gutters out nearby, and its light is in you: the Lamp-Eater sees you.",
+                             "fade_text": "The stolen light in you burns down.",
+                             "desc": "For half an hour: +10 intelligence, +10 wisdom, +60 mana and +2 mana every tick. Dipanti's gift to her followers, once an hour at her idol in Duskhold.",
+                             "fx": {"kind": "buff", "color": "#d8a860"}},
     }
+    add = {k: v for k, v in add.items() if '"%s"' % k not in t}
+    if not add:
+        return
     end = t.rstrip()
     i = end.rfind("\n}")
     body = "".join(",\n  %s: %s" % (json.dumps(k), json.dumps(v, indent=2).replace("\n", "\n  ")) for k, v in add.items())

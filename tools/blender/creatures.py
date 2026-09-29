@@ -31367,6 +31367,750 @@ IDOLS = {"idol_makarosh": build_idol_makarosh, "idol_mahishra": build_idol_mahis
 # ================================================================ end of the bog gods
 
 
+# ================================================================ the dusk gods (the dark elves' cavern city, Duskhold)
+# Tantuvi the Many-Eyed (`web`), a spider, and Dipanti the Lamp-Eater (`moth`), built the way the bog gods are:
+# smooth ellipsoid bodies, softly lit eyes, a little emissive light used sparingly, and Indian-flavored divine
+# regalia, here in silver and moonstone (Tantuvi) and old gold (Dipanti). Built in meters, no scaling: Tantuvi
+# stands 4.6 m at her abdomen with legs 10 m across, an orb web of starlight hung over her like the elephant gods'
+# discs; Dipanti hovers with her body 4.2 m up, wings 12 m across. The same builders make the shrine idols
+# (`stone=True`): every material turned to weathered dark stone, the floating things left off, the eyes inlaid
+# with pale silver light. Extra bones: "head", "fang_l/r", "palp_l/r", "abdomen", "spin" (the trailing threads),
+# "halo" (the web) and "motes" on Tantuvi; "head", "ant_l/r", "abdomen", "wing_fl/fr/bl/br", "lamp" and "motes"
+# on Dipanti.
+
+def _dusk_stone(name, key, color, rough=0.95):
+	return material(f"{name}_{key}", color, rough)
+
+
+def _web_mats(name, stone):
+	if stone:
+		st = lambda k, c: _dusk_stone(name, k, c)
+		ink = material(f"{name}_inlay", "c8c0ff", 0.3, emit=0.7)
+		return {"hide": st("hide", "3c3a40"), "hide_l": st("hide_light", "48454c"), "hide_d": st("hide_dark", "2a282e"),
+				"mark": st("mark", "5e5b62"), "silver": st("silver", "6a6770"), "eye": ink, "star": ink,
+				"fang": st("fang", "5a5760"), "moon": st("moonstone", "6e6a74"), "hair": st("hair", "333138"),
+				"lichen": st("lichen", "5e6a44")}
+	return {"hide": material(f"{name}_hide", "2a1f3d", 0.42), "hide_l": material(f"{name}_hide_light", "3f2f5c", 0.45),
+			"hide_d": material(f"{name}_hide_dark", "140e20", 0.5), "mark": material(f"{name}_mark", "e4e2f4", 0.45, emit=0.35),
+			"silver": metal_material(f"{name}_silver", "c9cbd8", 0.28, 0.8), "eye": material(f"{name}_eye", "dcd8ff", 0.1, emit=3.0),
+			"star": material(f"{name}_star", "ffffff", 0.2, emit=3.2), "fang": metal_material(f"{name}_fang", "d8dae6", 0.25, 0.85),
+			"moon": material(f"{name}_moonstone", "bcc6ff", 0.15, emit=0.9), "hair": material(f"{name}_hair", "5a4a7a", 0.7),
+			"silk": glass_material(f"{name}_silk", "eef0ff", 0.75, 0.3, emit=1.6),
+			"silk_b": glass_material(f"{name}_silk_faint", "c8ccff", 0.5, 0.3, emit=0.9),
+			"mote": material(f"{name}_mote", "f4f2ff", 0.2, emit=2.6)}
+
+
+WEB_THORAX = [((0, -0.95, 2.55), (1.05, 1.45, 0.72))]
+WEB_HEAD = [((0, -2.05, 2.8), (0.78, 0.66, 0.6))]
+WEB_ABD = [((0, 2.35, 3.2), (1.75, 2.2, 1.45))]
+# hip (x, y) and the angle each leg points (degrees in the ground plane, from +X toward -Y); z of the hips 2.45
+WEB_LEGS = {"l1": (0.72, -1.55, 52), "l2": (0.86, -1.0, 20), "l3": (0.86, -0.45, -14), "l4": (0.72, 0.1, -44)}
+WEB_LEGS.update({"r" + k[1]: (-x, y, 180 - a) for k, (x, y, a) in list(WEB_LEGS.items())})
+WEB_REACH = {"1": 4.9, "2": 4.5, "3": 4.3, "4": 4.9}
+
+
+def _web_leg_pts(k_):
+	"""Hip, knee (high over the body), ankle and foot of a leg."""
+	x, y, a = WEB_LEGS[k_]
+	d = Vector((math.cos(math.radians(a)), -math.sin(math.radians(a)), 0))
+	reach = WEB_REACH[k_[1]]
+	hip = Vector((x, y, 2.45))
+	knee = hip + d * reach * 0.34 + Vector((0, 0, 1.75))
+	ankle = hip + d * reach * 0.76 + Vector((0, 0, -0.45))
+	foot = hip + d * reach + Vector((0, 0, -2.42))
+	return hip, knee, ankle, foot, d
+
+
+def _tantuvi(name, stone=False):
+	"""Builds Tantuvi's body and regalia; returns (builder, materials). The clips are added by the caller."""
+	import random
+	rng = random.Random(751)
+	m = _web_mats(name, stone)
+	b = Builder(name)
+	b.bone("root", (0, 0, 0))
+	b.bone("body", (0, -0.6, 2.55), "root")
+	b.bone("head", (0, -1.75, 2.75), "body")
+	b.bone("abdomen", (0, 0.45, 2.75), "body")
+	b.bone("spin", (0, 4.4, 2.7), "abdomen")
+	b.bone("halo", (0, -0.9, 5.5), "body")
+	b.bone("motes", (0, 0.5, 3.5), "body")
+	for s, side in ((1, "l"), (-1, "r")):
+		b.bone(f"fang_{side}", (0.3 * s, -2.55, 2.35), "head")
+		b.bone(f"palp_{side}", (0.5 * s, -2.35, 2.45), "head")
+
+	# the cephalothorax: low and smooth, a darker saddle, a silver fovea set with a moonstone
+	b.blob(tuple(2 * v for v in WEB_THORAX[0][1]), WEB_THORAX[0][0], m["hide"], "body", segs=(20, 12))
+	b.blob((1.5, 2.2, 0.6), (0, -0.9, 3.02), m["hide_d"], "body", segs=(16, 8))
+	for j in range(8):   # grooves radiating from the fovea
+		a = 2 * math.pi * j / 8
+		n = Vector((0.55 * math.cos(a), 0.8 * math.sin(a), 0.6))
+		p = _gd_surface(WEB_THORAX, (0, -0.8, 2.6), n, -0.01)
+		q = _gd_surface(WEB_THORAX, (0, -0.8, 2.6), (0.1 * math.cos(a), 0.12 * math.sin(a), 1), 0.0)
+		b.seg(tuple(q), tuple(p), 0.05, 0.03, m["hide_l"], "body", sides=4)
+	fov = _gd_surface(WEB_THORAX, (0, -0.8, 2.6), (0, 0, 1), 0.03)
+	b.blob((0.36, 0.46, 0.12), tuple(fov), m["silver"], "body", segs=(12, 5))
+	b.blob((0.22, 0.3, 0.12), tuple(fov + Vector((0, 0, 0.05))), m["moon"], "body", segs=(10, 6))
+
+	# the head: raised at the front, crowned with eyes. Two great eyes forward, a pair beside them, a pair above, and
+	# a crown of small ones round the top: many-eyed.
+	b.blob(tuple(2 * v for v in WEB_HEAD[0][1]), WEB_HEAD[0][0], m["hide"], "head", segs=(16, 10))
+	b.blob((1.3, 0.9, 0.5), (0, -2.1, 3.2), m["hide_l"], "head", segs=(14, 8))
+	eyes = [((0.23, -2.62, 3.0), 0.36), ((0.55, -2.44, 3.06), 0.24), ((0.2, -2.42, 3.38), 0.22), ((0.44, -2.18, 3.4), 0.17)]
+	for s in (1, -1):
+		for (x, y, z), r in eyes:
+			c = (x * s, y, z)
+			b.blob((r, r, r), c, m["eye"], "head", segs=(10, 7))
+			_iv_ring(b, (x * s + 0.02 * s, y - 0.02, z), (x * s * 0.6, -1, 0.2), r * 0.55, 0.022, m["silver"], "head", sides=12)
+		for j in range(6):   # the small eyes, in an arc over the crown
+			a = math.radians(20 + 26 * j)
+			p = _gd_surface([((0, -2.1, 3.2), (0.66, 0.46, 0.26))], (0, -2.1, 3.2), (s * math.cos(a) * 0.9, -0.5 - 0.3 * math.sin(a), 0.7), 0.0)
+			r = 0.1 if j % 2 else 0.08
+			b.blob((r, r, r), tuple(p), m["eye"], "head", segs=(6, 5))
+	# a silver circlet over the brow with moonstone drops, and a moonstone at its center
+	band = [_gd_surface(WEB_HEAD, (0, -2.05, 2.9), (math.cos(math.radians(a)), -math.sin(math.radians(a)) * 0.9, 0.55), 0.03) for a in range(-10, 191, 10)]
+	_chain(b, band, 0.05, 0.05, m["silver"], "head", sides=6)
+	for j, p in enumerate(band[2:-2:3]):
+		b.seg(tuple(p), tuple(p + Vector((0, -0.02, -0.14))), 0.015, 0.015, m["silver"], "head", sides=4)
+		b.blob((0.09, 0.07, 0.13), tuple(p + Vector((0, -0.03, -0.2))), m["moon"], "head", segs=(8, 5))
+	top = band[len(band) // 2]
+	b.blob((0.2, 0.14, 0.26), tuple(top + Vector((0, -0.06, 0.1))), m["moon"], "head", segs=(10, 6))
+	_iv_ring(b, tuple(top + Vector((0, -0.08, 0.1))), (0, -1, 0), 0.15, 0.03, m["silver"], "head", sides=12)
+	for k in range(5):   # a small crest of silver points behind the circlet
+		a = math.radians(-40 + 20 * k)
+		base = _gd_surface(WEB_HEAD, (0, -1.9, 2.9), (math.sin(a), 0.2, 1), 0.0)
+		b.seg(tuple(base), tuple(base + Vector((math.sin(a) * 0.2, 0.2, 0.5 - 0.1 * abs(k - 2)))), 0.07, 0.0, m["silver"], "head", sides=5)
+
+	# the chelicerae hanging under the face, each ending in a curved silver fang; the pedipalps beside them
+	for s, side in ((1, "l"), (-1, "r")):
+		fb = f"fang_{side}"
+		b.blob((0.5, 0.52, 0.9), (0.26 * s, -2.55, 2.3), m["hide"], fb, segs=(10, 8))
+		b.blob((0.3, 0.3, 0.5), (0.3 * s, -2.72, 2.4), m["hide_l"], fb, segs=(8, 6))
+		pts = [Vector((0.3 * s, -2.7, 1.95)), Vector((0.26 * s, -2.86, 1.72)), Vector((0.16 * s, -2.9, 1.5)), Vector((0.04 * s, -2.8, 1.38))]
+		_chain(b, pts, 0.12, 0.01, m["fang"], fb, sides=6)
+		_iv_ring(b, (0.3 * s, -2.66, 1.98), (0, 0, 1), 0.2, 0.035, m["silver"], fb, sides=12)
+		pb = f"palp_{side}"
+		p0, p1, p2, p3 = Vector((0.5 * s, -2.35, 2.45)), Vector((0.85 * s, -3.0, 2.35)), Vector((0.8 * s, -3.45, 1.7)), Vector((0.62 * s, -3.6, 1.2))
+		_chain(b, [p0, p1, p2, p3], 0.13, 0.08, m["hide"], pb, sides=8)
+		for p in (p1, p2):
+			b.blob((0.2, 0.2, 0.2), tuple(p), m["hide_l"], pb, segs=(8, 6))
+		b.blob((0.2, 0.24, 0.26), tuple(p3), m["hide_d"], pb, segs=(8, 6))
+		_iv_ring(b, tuple(p2 + (p3 - p2) * 0.3), tuple(p3 - p2), 0.1, 0.028, m["silver"], pb, sides=10)
+
+	# the pedicel and a silver girdle at the waist hung with moonstones
+	b.seg((0, 0.2, 2.6), (0, 0.7, 2.75), 0.34, 0.4, m["hide_d"], "abdomen", sides=10)
+	_iv_ring(b, (0, 0.45, 2.68), (0, 1, 0.3), 0.4, 0.05, m["silver"], "abdomen", sides=14)
+	for j in range(5):
+		a = math.radians(-60 - 15 * j)
+		p = Vector((0.4 * math.cos(a) * 1.05, 0.45, 2.68 + 0.4 * math.sin(a)))
+		b.blob((0.08, 0.08, 0.12), tuple(p + Vector((0, -0.03, -0.1))), m["moon"], "abdomen", segs=(6, 5))
+
+	# the abdomen: great and smooth, violet-black, marked in moon-white: a crescent at its crown, a chain of chevrons
+	# down its back, and between them the stars of a constellation strung together on silver thread
+	b.blob(tuple(2 * v for v in WEB_ABD[0][1]), WEB_ABD[0][0], m["hide"], "abdomen", segs=(24, 16))
+	cen = Vector(WEB_ABD[0][0])
+
+	def on_abd(u, v, off=0.0):
+		"""A point on the abdomen: u across (-1..1), v front to back (-1..1), over the top."""
+		d = Vector((u * 0.9, v * 1.1, 1.0 - 0.35 * (u * u + v * v)))
+		return _gd_surface(WEB_ABD, tuple(cen), d, off)
+
+	def mark(pts, r, mat, off=0.012):
+		for p, q in zip(pts, pts[1:]):
+			b.seg(tuple(p), tuple(q), r, r, mat, "abdomen", sides=5)
+
+	crescent = [on_abd(0.5 * math.cos(a), -0.72 + 0.28 * math.sin(a), 0.02) for a in [math.radians(x) for x in range(200, 341, 14)]]
+	inner = [on_abd(0.4 * math.cos(a), -0.64 + 0.18 * math.sin(a), 0.025) for a in [math.radians(x) for x in range(206, 335, 16)]]
+	for p, q in zip(crescent, inner[:len(crescent)]):
+		b.seg(tuple(p), tuple(q), 0.08, 0.08, m["mark"], "abdomen", sides=5)
+	mark(crescent, 0.1, m["mark"])
+	for j in range(4):   # chevrons down the back, shrinking toward the spinnerets
+		v = 0.05 + 0.2 * j
+		w = 0.5 - 0.08 * j
+		mark([on_abd(-w, v + 0.14, 0.01), on_abd(-w * 0.5, v + 0.05, 0.01), on_abd(0, v - 0.02, 0.01),
+			  on_abd(w * 0.5, v + 0.05, 0.01), on_abd(w, v + 0.14, 0.01)], 0.07 - 0.008 * j, m["mark"])
+	stars = [(-0.62, -0.32), (-0.35, -0.12), (0.0, -0.3), (0.38, -0.08), (0.66, -0.3), (0.7, 0.3), (-0.72, 0.28), (0.0, 0.88)]
+	sp = [on_abd(u, v, 0.03) for u, v in stars]
+	for i, j in ((0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (0, 6)):
+		p, q = sp[i], sp[j]
+		line = [on_abd(stars[i][0] + (stars[j][0] - stars[i][0]) * t, stars[i][1] + (stars[j][1] - stars[i][1]) * t, 0.03) for t in (0, 0.25, 0.5, 0.75, 1)]
+		mark(line, 0.022, m["silver"])
+	for k, p in enumerate(sp):
+		r = 0.2 if k in (2, 5, 7) else 0.14
+		b.blob((r, r, r * 0.6), tuple(p), m["star"], "abdomen", segs=(8, 5))
+	for s in (1, -1):   # pale bands along the flanks
+		for j in range(5):
+			v = -0.5 + 0.3 * j
+			p = _gd_surface(WEB_ABD, tuple(cen), (s, v * 1.2, 0.1), 0.0)
+			_oblob(b, (0.5, 0.18, 0.06), tuple(p), (0, 0.3, 1), (s, 0, 0), m["mark"] if j % 2 == 0 else m["hide_l"], "abdomen", segs=(8, 4))
+	# the spinnerets at the tail end, silver-tipped
+	for s in (1, 0, -1):
+		p = Vector((0.18 * s, 4.38, 2.55 + 0.08 * (s == 0)))
+		b.seg(tuple(p - Vector((0, 0.2, 0))), tuple(p + Vector((0, 0.22, -0.08))), 0.13, 0.06, m["hide_d"], "abdomen", sides=6)
+		b.seg(tuple(p + Vector((0, 0.22, -0.08))), tuple(p + Vector((0, 0.32, -0.12))), 0.06, 0.02, m["silver"], "abdomen", sides=6)
+	# a fine pale down on the abdomen's underside
+	for _ in range(26):
+		d = Vector((rng.uniform(-1, 1), rng.uniform(-0.8, 0.9), rng.uniform(-1, -0.2)))
+		p = _gd_surface(WEB_ABD, tuple(cen), d, 0.0)
+		n = (p - cen).normalized()
+		b.seg(tuple(p), tuple(p + n * 0.18), 0.03, 0.0, m["hair"], "abdomen", sides=3)
+
+	# the legs: eight, arching high, each with a silver band at the knee and a silver anklet over the foot
+	for k_ in WEB_LEGS:
+		hip, knee, ankle, foot, d = _web_leg_pts(k_)
+		leg, shin = f"leg_{k_}", f"shin_{k_}"
+		b.bone(leg, tuple(hip), "body")
+		b.bone(shin, tuple(knee), leg)
+		b.blob((0.44, 0.44, 0.4), tuple(hip), m["hide_d"], leg, segs=(8, 6))
+		mid = hip + (knee - hip) * 0.5 + Vector((0, 0, 0.12))
+		_chain(b, [hip, mid, knee], 0.2, 0.16, m["hide"], leg, sides=8)
+		b.blob((0.36, 0.36, 0.36), tuple(knee), m["hide_l"], shin, segs=(8, 6))
+		_iv_ring(b, tuple(knee + (hip - knee).normalized() * 0.28), tuple(hip - knee), 0.19, 0.035, m["silver"], leg, sides=12)
+		_chain(b, [knee, knee + (ankle - knee) * 0.5 + Vector((0, 0, 0.08)), ankle], 0.15, 0.11, m["hide"], shin, sides=8)
+		b.blob((0.24, 0.24, 0.24), tuple(ankle), m["hide_l"], shin, segs=(8, 6))
+		_chain(b, [ankle, ankle + (foot - ankle) * 0.55 + d * 0.05, foot], 0.1, 0.03, m["hide_d"], shin, sides=6)
+		for u in (0.18, 0.26):
+			_iv_ring(b, tuple(ankle + (foot - ankle) * u), tuple(foot - ankle), 0.11 - 0.02 * u, 0.028, m["silver"], shin, sides=10)
+		for u in (0.35, 0.55, 0.7):   # fine pale bristles along the leg
+			p = knee + (ankle - knee) * u
+			for sd in (1, -1):
+				side_v = d.cross(Vector((0, 0, 1))) * sd
+				b.seg(tuple(p), tuple(p + side_v * 0.2 + Vector((0, 0, 0.1))), 0.025, 0.0, m["hair"], shin, sides=3)
+	_gd_flecks(b, WEB_ABD, m["hide_l"], rng, 18, 0.1, "abdomen", center=tuple(cen), below=-0.2)
+	if stone:
+		_gd_flecks(b, WEB_ABD, m["lichen"], rng, 16, 0.2, "abdomen", center=tuple(cen), below=0.2)
+		_gd_flecks(b, WEB_THORAX, m["lichen"], rng, 6, 0.16, "body", center=(0, -0.95, 2.55), below=0.3)
+		return b, m
+
+	# silk: three glowing threads drawn from the spinnerets, trailing down behind her to the ground
+	for s, (dx, ln) in ((1, (0.35, 1.1)), (0, (0.0, 1.5)), (-1, (-0.4, 0.9))):
+		p0 = Vector((0.1 * s, 4.7, 2.42))
+		pts = []
+		for j in range(9):
+			u = j / 8
+			pts.append(p0 + Vector((dx * u + 0.06 * math.sin(u * 5 + s), ln * math.sin(u * math.pi / 2), -2.38 * u)))
+		_chain(b, pts, 0.03, 0.018, m["silk"], "spin", sides=4)
+	# the halo: an orb web hung behind her head in a silver ring, strung with starlight
+	c = Vector((0, -0.9, 5.5))
+	tilt = Matrix.Rotation(math.radians(-14), 3, "X")
+	u_ax, v_ax = tilt @ Vector((1, 0, 0)), tilt @ Vector((0, 0, 1))
+	R = 1.75
+	ring = lambda r, a: c + (u_ax * math.cos(a) + v_ax * math.sin(a)) * r
+	_iv_ring(b, tuple(c), tuple(tilt @ Vector((0, 1, 0))), R, 0.05, m["silver"], "halo", sides=36)
+	spokes = 14
+	for j in range(spokes):
+		a = 2 * math.pi * j / spokes
+		b.seg(tuple(ring(0.12, a)), tuple(ring(R, a)), 0.018, 0.012, m["silk"], "halo", sides=4)
+		sz = 0.14 if j % 2 == 0 else 0.1
+		b.blob((sz, sz, sz), tuple(ring(R + 0.02, a)), m["star"], "halo", segs=(6, 4))
+	turns = 7
+	pts = []
+	for k in range(spokes * turns + 1):   # the capture spiral, a thread strung spoke to spoke
+		a = 2 * math.pi * k / spokes
+		r = 0.28 + (R - 0.42) * k / (spokes * turns)
+		pts.append(ring(r, a))
+	for p, q in zip(pts, pts[1:]):
+		b.seg(tuple(p), tuple(q), 0.012, 0.012, m["silk_b"], "halo", sides=3)
+	for k in range(0, len(pts), 5):   # dew on the threads catching the light
+		b.blob((0.06, 0.06, 0.06), tuple(pts[k]), m["mote"], "halo", segs=(5, 3))
+	b.blob((0.24, 0.1, 0.24), tuple(c), m["moon"], "halo", segs=(10, 5))
+	# and stars drifting round her
+	placed = 0
+	while placed < 24:
+		p = Vector((rng.uniform(-3.4, 3.4), rng.uniform(-3.6, 4.4), rng.uniform(2.2, 5.8)))
+		if _iv_ray_ellipsoids(p, Vector((0, 0, 1)), WEB_THORAX + WEB_HEAD + WEB_ABD) > 0 or (p - c).length < R + 0.3:
+			continue
+		sz = rng.uniform(0.05, 0.1)
+		b.blob((sz, sz, sz), tuple(p), m["mote"], "motes", segs=(6, 4))
+		placed += 1
+	return b, m
+
+
+def _web_clips(arm):
+	SET_A = ("l1", "r2", "l3", "r4")
+
+	def leg(k_, swing, lift, bend=0.0):
+		x, y, a = WEB_LEGS[k_]
+		ar = math.radians(-a)   # the leg's angle in _lift's frame (toward +Y positive)
+		s = 1 if x > 0 else -1
+		p, r, _ = _lift(ar, lift)
+		bp, br, _ = _lift(ar, bend)
+		return {f"leg_{k_}": {"rot": (p, r, -swing * s)}, f"shin_{k_}": {"rot": (bp, br, 0)}}
+
+	def gait(t, amp, lift, cycles=1):
+		out = {}
+		for k_ in WEB_LEGS:
+			ph = 0.0 if k_ in SET_A else 0.5
+			up = lift * max(0.0, wave(t, cycles, ph + 0.25))
+			out = merge(out, leg(k_, amp * wave(t, cycles, ph), up, -up * 0.6))
+		return out
+
+	def threads(t, amp, cycles=1):
+		return {"spin": {"rot": (2 * amp * wave(t, cycles, 0.2), 0, 4 * amp * wave(t, cycles))}}
+
+	def web(t, cycles=1):
+		return {"halo": {"rot": (2 * wave(t, cycles, 0.3), 8 * wave(t, cycles), 1.5 * wave(t, cycles, 0.6)), "loc": (0, 0, 0.08 * wave(t, cycles, 0.2))},
+				"motes": {"rot": (0, 0, 5 * wave(t, cycles)), "loc": (0, 0, 0.12 * wave(t, cycles, 0.4))}}
+
+	def idle(t):   # breathes; shifts her weight from side to side, tests a thread with one foreleg, then the other
+		shift = wave(t, 1)
+		tap_l = seq(t, [(0.15, 0), (0.22, 1), (0.28, 0.4), (0.33, 1), (0.42, 0)])
+		tap_r = seq(t, [(0.6, 0), (0.67, 1), (0.74, 0.3), (0.79, 1), (0.88, 0)])
+		out = merge_scaled({"root": {"loc": (0.1 * shift, 0, 0.04 * wave(t, 2))}, "body": {"rot": (0.8 * wave(t, 2, 0.1), 2.5 * shift, 1.5 * wave(t, 1, 0.3))},
+							"abdomen": {"rot": (2 * wave(t, 2, 0.2), -1.5 * shift, 2 * wave(t, 1, 0.1)), "scale": (1 + 0.015 * wave(t, 2),) * 3},
+							"head": {"rot": (1.5 * wave(t, 1, 0.5), 0, 4 * wave(t, 1, 0.15))},
+							"palp_l": {"rot": (8 * tap_l, 0, 6 * wave(t, 3))}, "palp_r": {"rot": (8 * tap_r, 0, -6 * wave(t, 3, 0.3))},
+							"fang_l": {"rot": (0, 0, 4 * max(0.0, wave(t, 2)))}, "fang_r": {"rot": (0, 0, -4 * max(0.0, wave(t, 2)))}},
+						   threads(t, 1), web(t))
+		for k_ in WEB_LEGS:   # each leg eases as the weight comes off it
+			s = 1 if WEB_LEGS[k_][0] > 0 else -1
+			out = merge(out, leg(k_, 1.5 * wave(t, 1, 0.1 * int(k_[1])), 3 * max(0.0, -shift * s)))
+		out = merge(out, leg("l1", -6 * tap_l, 22 * tap_l, -14 * tap_l), leg("r1", -6 * tap_r, 22 * tap_r, -14 * tap_r))
+		return out
+
+	def walk(t):   # a stately, rippling eight-legged walk
+		return merge_scaled(gait(t, 14, 18), {"root": {"loc": (0, 0, 0.05 * abs(wave(t, 2)))}, "body": {"rot": (0, 1.2 * wave(t, 2), 0)},
+											  "abdomen": {"rot": (1.5 * wave(t, 2, 0.1), 0, 3 * wave(t))}, "head": {"rot": (0, 0, -1.5 * wave(t))}},
+							threads(t, 3), web(t))
+
+	def run(t):   # the quick scuttle, body low
+		return merge_scaled(gait(t, 20, 26), {"root": {"loc": (0, 0, -0.15 + 0.06 * abs(wave(t, 2)))}, "body": {"rot": (-2, 2 * wave(t, 2), 0)},
+											  "abdomen": {"rot": (3, 0, 4 * wave(t))}}, threads(t, 5), web(t, 2))
+
+	def attack(t):   # rears up on her hind legs, forelegs high and fangs spread, then strikes down
+		rear = seq(t, [(0, 0), (0.38, 1), (0.52, 1), (0.62, -0.4), (0.8, -0.2), (1, 0)])
+		fang = seq(t, [(0, 0), (0.35, 26), (0.52, 30), (0.6, -8), (0.8, 0)])
+		lunge = seq(t, [(0, 0), (0.38, -0.3), (0.62, 1.1), (0.8, 0.9), (1, 0)])
+		up = max(0.0, rear)
+		out = merge_scaled({"root": {"loc": (0, lunge, 0.45 * up), "rot": (16 * rear, 0, 0)}, "abdomen": {"rot": (-10 * up, 0, 0)},
+							"head": {"rot": (6 * rear, 0, 0)}, "fang_l": {"rot": (0, 0, fang)}, "fang_r": {"rot": (0, 0, -fang)},
+							"palp_l": {"rot": (20 * up, 0, 10 * up)}, "palp_r": {"rot": (20 * up, 0, -10 * up)}}, threads(t, 3), web(t))
+		out = merge(out, leg("l1", -10 * rear, 55 * up, -30 * up), leg("r1", -10 * rear, 55 * up, -30 * up),
+					leg("l2", -4 * rear, 25 * up, -10 * up), leg("r2", -4 * rear, 25 * up, -10 * up),
+					leg("l4", 0, -14 * up), leg("r4", 0, -14 * up), leg("l3", 0, -8 * up), leg("r3", 0, -8 * up))
+		return out
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"root": {"loc": (0, -0.3 * k, 0.06 * k), "rot": (6 * k, 4 * k, 0)}, "abdomen": {"rot": (4 * k, 0, 6 * k)},
+							 "fang_l": {"rot": (0, 0, 16 * k)}, "fang_r": {"rot": (0, 0, -16 * k)}}, gait(t, 6 * k, 10 * k, 2), threads(t, 4 * k, 2), web(t))
+
+	def death(t):   # shudders, the legs give and she sprawls on her belly, the legs drawing in a little at the last
+		shake = seq(t, [(0, 1), (0.35, 0)])
+		sink = seq(t, [(0.1, 0), (0.55, 1)])
+		curl = seq(t, [(0.4, 0), (0.9, 1)])
+		fade = seq(t, [(0.35, 0), (1.0, 1)])
+		out = merge_scaled({"root": {"loc": (0, 0, -1.55 * sink), "rot": (-4 * sink, 6 * curl, 0)},
+							"body": {"rot": (0, 3 * shake * wave(t, 5), 2 * shake * wave(t, 4))}, "abdomen": {"rot": (-6 * sink, 0, 4 * curl)},
+							"fang_l": {"rot": (0, 0, 14 * curl)}, "fang_r": {"rot": (0, 0, -14 * curl)},
+							"halo": {"loc": (0, 0, -2.6 * fade), "scale": (1 - 0.85 * fade,) * 3},
+							"motes": {"loc": (0, 0, -1.8 * fade), "scale": (1 - 0.85 * fade,) * 3}}, threads(t, 3 * (1 - curl)))
+		for i, k_ in enumerate(WEB_LEGS):
+			out = merge(out, leg(k_, 4 * shake * wave(t, 5, i * 0.13) + 8 * curl * (1 if int(k_[1]) <= 2 else -1), -34 * sink + 5 * curl, 62 * sink - 8 * curl))
+		return out
+
+	clip_scaled(arm, "idle", 6.0, idle, True)
+	clip_scaled(arm, "walk", 2.0, walk, True)
+	clip_scaled(arm, "run", 1.1, run, True)
+	clip_scaled(arm, "attack", 1.6, attack, False)
+	clip_scaled(arm, "hit", 0.6, hit, False)
+	clip_scaled(arm, "death", 3.0, death, False)
+
+
+def build_deity_web():
+	"""Tantuvi the Many-Eyed, the spider goddess who weaves the webs between the stars: violet-black, 10 m across
+	the legs, her abdomen marked in moon-white with a crescent, chevrons and a constellation strung on silver
+	thread; a crown of pale glowing eyes, a silver circlet hung with moonstones, silver-sheathed fangs, silver
+	bands on every leg, glowing threads trailing from her spinnerets and an orb web of starlight behind her head."""
+	b, _ = _tantuvi("deity_web")
+	arm = b.build()
+	_web_clips(arm)
+	return arm
+
+
+# ---------------------------------------------------------------- Dipanti the Lamp-Eater
+
+def _moth_mats(name, stone):
+	if stone:
+		st = lambda k, c: _dusk_stone(name, k, c)
+		ink = material(f"{name}_inlay", "c8c0ff", 0.3, emit=0.7)
+		return {"fur": st("fur", "4a474c"), "fur_d": st("fur_dark", "38363b"), "fur_l": st("fur_light", "56535a"),
+				"ruff": st("ruff", "5a565c"), "wing": st("wing", "4e4b52"), "wing_v": st("wing_violet", "444048"),
+				"margin": st("margin", "5c5850"), "vein": st("vein", "3a383d"), "ring": st("ring", "2e2c31"),
+				"gold": st("gold", "66625a"), "flame": ink, "core": st("core", "343236"), "eye": st("eye", "2a282d"),
+				"glint": ink, "plume": st("plume", "58544c"), "apex": st("apex", "68656c"), "lichen": st("lichen", "5e6a44")}
+	return {"fur": material(f"{name}_fur", "6e6672", 0.97), "fur_d": material(f"{name}_fur_dark", "443c4c", 0.97),
+			"fur_l": material(f"{name}_fur_light", "9a8f98", 0.97), "ruff": material(f"{name}_ruff", "9c7e4c", 0.97),
+			"wing": material(f"{name}_wing", "8a8290", 0.97), "wing_v": material(f"{name}_wing_violet", "5c4478", 0.97),
+			"margin": material(f"{name}_margin", "a8844a", 0.95), "vein": material(f"{name}_vein", "3c3246", 0.95),
+			"ring": material(f"{name}_ring", "1e1628", 0.9), "gold": material(f"{name}_ring_gold", "d8a848", 0.6, emit=0.5),
+			"flame": material(f"{name}_flame", "ffc860", 0.3, emit=3.2), "core": material(f"{name}_flame_core", "fff4d8", 0.2, emit=4.0),
+			"eye": material(f"{name}_eye", "1a1024", 0.12), "glint": material(f"{name}_eye_glint", "ffd27a", 0.2, emit=3.0),
+			"plume": material(f"{name}_plume", "c8a868", 0.9), "apex": material(f"{name}_apex", "d8d0d8", 0.95),
+			"brass": metal_material(f"{name}_gold", "d8a848", 0.3, 0.75), "smoke": glass_material(f"{name}_smoke", "8a8494", 0.35, 0.8),
+			"mote": material(f"{name}_ember", "ffcc70", 0.3, emit=2.4), "mote_b": material(f"{name}_ash", "c8b8d8", 0.8, emit=0.6)}
+
+
+MOTH_Z = 4.2
+MOTH_THORAX = [((0, -0.3, MOTH_Z), (0.85, 1.05, 0.85))]
+MOTH_HEAD = [((0, -1.55, MOTH_Z - 0.05), (0.6, 0.5, 0.56))]
+# wing outlines in the wing's own plane: (out along the span, back along the chord), from the root
+FOREWING = [(0.0, -0.25), (0.8, -0.55), (2.0, -0.85), (3.4, -1.1), (4.6, -1.25), (5.5, -1.2), (5.95, -0.9), (6.0, -0.45),
+			(5.7, 0.25), (5.1, 0.95), (4.2, 1.5), (3.1, 1.85), (2.0, 1.9), (1.0, 1.5), (0.3, 0.9), (0.0, 0.4)]
+HINDWING = [(0.0, 0.0), (0.9, -0.2), (2.0, -0.1), (3.0, 0.35), (3.7, 1.0), (4.0, 1.8), (3.8, 2.6), (3.2, 3.2), (2.3, 3.5),
+			(1.4, 3.35), (0.7, 2.7), (0.25, 1.7), (0.0, 0.8)]
+MOTH_WINGS = {"f": ((0.55, -0.75, MOTH_Z + 0.42), -14, FOREWING, (3.2, 0.45), 0.72),
+			  "b": ((0.5, 0.15, MOTH_Z + 0.3), 30, HINDWING, (2.3, 1.75), 0.82)}
+
+
+def _moth_plate(b, outline, frame, lift, thick, mat, bone, anchor=None, k=1.0):
+	"""A flat plate cut to `outline` (wing-plane coordinates), shrunk by `k` toward `anchor`, lifted `lift` off
+	the wing plane (negative: under it), `thick` deep. Fanned from the anchor so a concave edge stays whole."""
+	org, ux, vx, nx = frame
+	ax = anchor if anchor is not None else (sum(p[0] for p in outline) / len(outline), sum(p[1] for p in outline) / len(outline))
+	pts = [(ax[0] + (u - ax[0]) * k, ax[1] + (v - ax[1]) * k) for u, v in outline]
+
+	def at(u, v, z):
+		bend = 0.035 * u - 0.006 * u * u   # a soft camber, the tips a little down
+		return org + ux * u + vx * v + nx * (bend + z)
+
+	bm = bmesh.new()
+	z0, z1 = lift, lift + (thick if lift >= 0 else -thick)
+	top = [bm.verts.new(at(u, v, z1)) for u, v in pts]
+	bot = [bm.verts.new(at(u, v, z0)) for u, v in pts]
+	ct, cb = bm.verts.new(at(ax[0], ax[1], z1)), bm.verts.new(at(ax[0], ax[1], z0))
+	n = len(pts)
+	for i in range(n):
+		j = (i + 1) % n
+		bm.faces.new((ct, top[i], top[j]))
+		bm.faces.new((cb, bot[j], bot[i]))
+		bm.faces.new((top[i], bot[i], bot[j], top[j]))
+	bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+	b._add(bm, mat, bone)
+
+
+def _moth_disc(b, frame, c, r, lift, mat, bone, stretch=(1.0, 1.0), sides=16):
+	org, ux, vx, nx = frame
+	outline = [(c[0] + r * stretch[0] * math.cos(2 * math.pi * i / sides), c[1] + r * stretch[1] * math.sin(2 * math.pi * i / sides)) for i in range(sides)]
+	_moth_plate(b, outline, frame, lift, 0.012, mat, bone, anchor=c)
+
+
+def _flame_outline(c, r):
+	"""A candle flame in the wing plane, its tip toward the wing's leading edge."""
+	pts = []
+	for i in range(14):
+		a = 2 * math.pi * i / 14
+		x, y = math.cos(a), math.sin(a)
+		if y < 0:   # the tip: drawn out and pinched to a point
+			x *= (1 + y) ** 0.7
+			y *= 2.1
+		pts.append((c[0] + r * 0.62 * x, c[1] + r * y))
+	return pts
+
+
+def _dipanti(name, stone=False):
+	import random
+	rng = random.Random(757)
+	m = _moth_mats(name, stone)
+	b = Builder(name)
+	z0 = MOTH_Z
+	b.bone("root", (0, 0, 0))
+	b.bone("body", (0, -0.3, z0), "root")
+	b.bone("head", (0, -1.2, z0), "body")
+	b.bone("abdomen", (0, 0.6, z0 - 0.05), "body")
+	b.bone("lamp", (0, -0.6, z0 - 0.8), "body")
+	b.bone("motes", (0, 0, z0), "root")
+
+	# the thorax, deep soft fur, a thick collar ruff of dusky gold
+	b.blob(tuple(2 * v for v in MOTH_THORAX[0][1]), MOTH_THORAX[0][0], m["fur"], "body", segs=(18, 12))
+	b.blob((1.8, 0.75, 1.62), (0, -1.02, z0 + 0.02), m["ruff"], "body", segs=(16, 10))
+	for _ in range(70):   # the fur, in tufts
+		d = Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-0.6, 1)))
+		if d.length < 0.2:
+			continue
+		p = _gd_surface(MOTH_THORAX, (0, -0.3, z0), d, -0.03)
+		n = (p - Vector((0, -0.3, z0))).normalized()
+		sz = rng.uniform(0.2, 0.34)
+		back = Vector((0, 1, 0)) - n * n.y
+		if back.length < 0.2:
+			back = Vector((0, 0, -1)) - n * n.z
+		_oblob(b, (sz * 0.7, sz * 1.2, sz * 0.3), tuple(p + n * sz * 0.06), tuple(back.normalized() + n * 0.35), tuple(n),
+			   (m["fur"], m["fur_l"], m["fur_d"])[rng.randrange(3)], "body", segs=(6, 4))
+	for _ in range(34):   # the ruff's longer tufts, swept back
+		a = rng.uniform(0, 2 * math.pi)
+		p = Vector((0.86 * math.cos(a), -1.0, z0 + 0.78 * math.sin(a)))
+		n = Vector((math.cos(a), 0.6, math.sin(a))).normalized()
+		_oblob(b, (0.16, 0.5, 0.1), tuple(p + n * 0.15), tuple(n), (0, 0, 1), m["ruff"] if rng.random() < 0.7 else m["fur_l"], "body", segs=(6, 4))
+
+	# the head: round and furred, two great dark eyes each holding a point of lamplight, a coiled tongue beneath
+	b.blob(tuple(2 * v for v in MOTH_HEAD[0][1]), MOTH_HEAD[0][0], m["fur"], "head", segs=(14, 10))
+	b.blob((0.7, 0.45, 0.5), (0, -1.78, z0 + 0.22), m["fur_l"], "head", segs=(10, 6))
+	for s in (1, -1):
+		b.blob((0.62, 0.62, 0.7), (0.4 * s, -1.72, z0 + 0.02), m["eye"], "head", segs=(14, 10))
+		b.blob((0.1, 0.07, 0.12), (0.55 * s, -1.95, z0 + 0.18), m["glint"], "head", segs=(6, 4))
+		b.blob((0.05, 0.04, 0.05), (0.42 * s, -2.02, z0 + 0.0), m["glint"], "head", segs=(5, 3))
+	coil = []
+	for j in range(16):   # the proboscis, coiled like a watch spring under the head
+		a = 2 * math.pi * j / 9
+		r = 0.24 * (1 - j / 18)
+		coil.append(Vector((0, -2.0 - r * math.cos(a) + 0.05, z0 - 0.42 - r * math.sin(a))))
+	_chain(b, coil, 0.05, 0.025, m["fur_d"], "head", sides=5)
+	# a gold circlet across the brow, a lamp-shaped jewel at its center
+	band = [_gd_surface(MOTH_HEAD, (0, -1.5, z0), (math.cos(math.radians(a)), -0.35, math.sin(math.radians(a)) * 0.2 + 0.75), 0.02) for a in range(20, 161, 10)]
+	if "brass" in m:
+		_chain(b, band, 0.04, 0.04, m["brass"], "head", sides=6)
+		c = band[len(band) // 2]
+		b.blob((0.2, 0.12, 0.12), tuple(c + Vector((0, -0.04, 0.02))), m["brass"], "head", segs=(8, 5))
+		_oblob(b, (0.1, 0.1, 0.22), tuple(c + Vector((0, -0.06, 0.18))), (0, -1, 0), (0, 0, 1), m["flame"], "head", segs=(8, 5))
+	for s, side in ((1, "l"), (-1, "r")):   # the antennae: broad feathery plumes sweeping up, out and back
+		bone = f"ant_{side}"
+		base = Vector((0.24 * s, -1.85, z0 + 0.45))
+		b.bone(bone, tuple(base), "head")
+		mid = base + Vector((0.55 * s, -0.55, 0.95))
+		tip = base + Vector((1.3 * s, -0.2, 1.75))
+		shaft = [base, mid, tip]
+		_chain(b, shaft, 0.05, 0.02, m["fur_d"], bone, sides=5)
+		for j in range(1, 28):
+			u = j / 28
+			seg_i = 0 if u < 0.5 else 1
+			w_ = (u - 0.5 * seg_i) / 0.5
+			p = shaft[seg_i] + (shaft[seg_i + 1] - shaft[seg_i]) * w_
+			ax_ = (shaft[seg_i + 1] - shaft[seg_i]).normalized()
+			side_v = ax_.cross(Vector((0, 0.3, 1))).normalized()
+			w = 0.34 * math.sin(math.pi * (0.1 + 0.9 * u))
+			for sd in (1, -1):
+				bd = (side_v * sd + ax_ * 0.6).normalized()
+				_oblob(b, (0.09, w, 0.025), tuple(p + bd * w * 0.5), tuple(bd), (0, 0.3, 1), m["plume"] if (j + (sd > 0)) % 3 else m["fur_l"], bone, segs=(5, 3))
+		if "brass" in m:
+			_iv_ring(b, tuple(base + (mid - base) * 0.12), tuple(mid - base), 0.075, 0.025, m["brass"], bone, sides=8)
+
+	# the abdomen: soft and banded ash and violet, tapering back, fur tufts along the sides, a gold tip
+	for j in range(8):
+		y = 0.55 + 0.38 * j
+		r = 0.78 - 0.07 * j
+		zc = z0 - 0.1 - 0.012 * j * j
+		b.blob((r * 2 * 0.95, 0.56, r * 2 * 0.85), (0, y, zc), m["fur"] if j % 2 == 0 else m["fur_d"], "abdomen", segs=(14, 8))
+		for s in (1, -1):
+			_oblob(b, (0.16, 0.34, 0.08), (0.86 * r * s, y + 0.12, zc - 0.08), (s * 0.15, 1, -0.1), (s, 0, 0.3), m["fur_l"], "abdomen", segs=(5, 3))
+	b.blob((0.36, 0.5, 0.34), (0, 3.42, z0 - 0.78), m["ruff"], "abdomen", segs=(8, 6))
+
+	# six legs, furred at the top, held folded under her (standing on them, as the idol does)
+	for j, y in enumerate((-0.9, -0.45, 0.05)):
+		for s in (1, -1):
+			hip = Vector((0.4 * s, y, z0 - 0.5))
+			if stone:
+				knee = hip + Vector((0.7 * s, -0.3 + 0.25 * j, 0.1))
+				foot = Vector((1.4 * s, y - 0.8 + 0.7 * j, z0 - 2.1))
+			else:
+				knee = hip + Vector((0.55 * s, -0.4 + 0.2 * j, -0.35))
+				foot = knee + Vector((0.1 * s, -0.25 + 0.2 * j, -0.75))
+			b.seg(tuple(hip), tuple(knee), 0.1, 0.08, m["fur_d"], "body", sides=6)
+			b.blob((0.2, 0.2, 0.2), tuple(knee), m["fur"], "body", segs=(6, 4))
+			b.seg(tuple(knee), tuple(foot), 0.07, 0.03, m["fur_d"], "body", sides=6)
+			if "brass" in m:
+				_iv_ring(b, tuple(knee + (foot - knee) * 0.7), tuple(foot - knee), 0.055, 0.02, m["brass"], "body", sides=8)
+
+	# the wings: broad, soft and dusty. Ash gray, washed violet at the root, a dusky gold margin, a pale patch at the
+	# forewing's tip, a wavy dark line across; on each wing an eye spot like a lamp: a dark ring round a gold one
+	# round a dark heart with a candle flame burning in it
+	for s, side in ((1, "l"), (-1, "r")):
+		for fb, (root, sweep, outline, spot, spot_r) in MOTH_WINGS.items():
+			bone = f"wing_{fb}{side}"
+			org = Vector((root[0] * s, root[1], root[2]))
+			b.bone(bone, tuple(org), "body")
+			a = math.radians(sweep)
+			ux = Vector((s * math.cos(a), math.sin(a), 0.0))
+			vx = Vector((-s * math.sin(a), math.cos(a), 0.0))
+			# the plane's own normal is up, whichever side; plates stack by `lift`
+			frame = (org, ux, vx, Vector((0, 0, 1)))
+			cen = (sum(p[0] for p in outline) / len(outline), sum(p[1] for p in outline) / len(outline))
+			root_a = (0.4, 0.5 if fb == "f" else 1.2)
+			_moth_plate(b, outline, frame, 0.0, 0.03, m["margin"], bone, anchor=cen)
+			for lw, lv in ((0.03, 0.038), (-0.001, -0.01)):   # the upper side, then the under side
+				_moth_plate(b, outline, frame, lw, 0.008, m["wing"], bone, anchor=cen, k=0.88)
+				_moth_plate(b, outline, frame, lv, 0.008, m["wing_v"], bone, anchor=root_a, k=0.5 if fb == "f" else 0.62)
+			if fb == "f":   # the pale patch at the tip, and the wavy line across
+				tipc = (5.45, -0.55)
+				for lift in (0.041, -0.012):
+					_moth_disc(b, frame, tipc, 0.34, lift, m["apex"], bone, stretch=(0.9, 1.3), sides=12)
+				line = [(2.3 + 1.3 * math.sin(0.9 * v + 0.3) * 0.25 + 0.55 * v, v) for v in [x / 4 - 0.8 for x in range(12)]]
+			else:
+				line = [(1.5 + 0.9 * math.cos(t), 1.75 + 1.4 * math.sin(t)) for t in [math.radians(x) for x in range(-80, 91, 17)]]
+			for z, lift in ((1, 0.052), (-1, -0.021)):
+				for (u0, v0), (u1, v1) in zip(line, line[1:]):
+					p = frame[0] + frame[1] * u0 + frame[2] * v0 + frame[3] * (0.035 * u0 - 0.006 * u0 * u0 + lift)
+					q = frame[0] + frame[1] * u1 + frame[2] * v1 + frame[3] * (0.035 * u1 - 0.006 * u1 * u1 + lift)
+					b.seg(tuple(p), tuple(q), 0.03, 0.03, m["vein"], bone, sides=4)
+			for vv, (eu, ev) in enumerate(outline[3:-3:2]):   # dark veins fanning out from the root toward the edge
+				for lift in (0.05, -0.02):
+					pts = []
+					for j in range(5):
+						u, v = 0.1 + (eu - 0.1) * 0.84 * j / 4, 0.3 + (ev - 0.3) * 0.84 * j / 4
+						pts.append(frame[0] + frame[1] * u + frame[2] * v + frame[3] * (0.035 * u - 0.006 * u * u + lift))
+					_chain(b, pts, 0.024, 0.008, m["vein"], bone, sides=4)
+			# the lamp: dark ring, gold ring, dark heart, the flame and its white core
+			for z in (1, -1):
+				base = 0.055 if z > 0 else -0.024
+				for step, (rr, mt) in enumerate(((spot_r, m["ring"]), (spot_r * 0.8, m["gold"]), (spot_r * 0.62, m["ring"]))):
+					_moth_disc(b, frame, spot, rr, base + z * 0.006 * step, mt, bone, stretch=(1.0, 1.1), sides=18)
+				fl = (spot[0], spot[1] + spot_r * 0.12)
+				_moth_plate(b, _flame_outline(fl, spot_r * 0.46), frame, base + z * 0.02, 0.012, m["flame"], bone, anchor=fl)
+				core = (fl[0], fl[1] + spot_r * 0.1)
+				_moth_plate(b, _flame_outline(core, spot_r * 0.22), frame, base + z * 0.028, 0.01, m["core"], bone, anchor=core)
+	if stone:
+		_gd_flecks(b, MOTH_THORAX, m["lichen"], rng, 10, 0.16, "body", center=(0, -0.3, z0), below=0.3)
+		return b, m
+
+	# a gold lamp hung on a chain under her, its flame just put out, a thread of smoke rising off the wick
+	top = Vector((0, -0.55, z0 - 0.75))
+	low = Vector((0, -0.6, z0 - 1.55))
+	chain = [top + (low - top) * (j / 6) for j in range(7)]
+	for j, p in enumerate(chain[:-1]):
+		_iv_ring(b, tuple(p + (chain[j + 1] - p) * 0.5), (1, 0, 0) if j % 2 else (0, 1, 0), 0.05, 0.015, m["brass"], "lamp", sides=6)
+	b.blob((0.62, 0.42, 0.22), tuple(low + Vector((0, 0, -0.08))), m["brass"], "lamp", segs=(12, 6))
+	b.blob((0.44, 0.3, 0.1), tuple(low + Vector((0, 0, 0.02))), m["ring"], "lamp", segs=(10, 4))
+	b.seg(tuple(low + Vector((0, -0.24, 0.0))), tuple(low + Vector((0, -0.42, 0.06))), 0.06, 0.03, m["brass"], "lamp", sides=6)
+	b.seg(tuple(low + Vector((0, -0.42, 0.06))), tuple(low + Vector((0, -0.44, 0.14))), 0.02, 0.015, m["vein"], "lamp", sides=4)
+	smoke = []
+	for j in range(10):
+		u = j / 9
+		smoke.append(low + Vector((0.12 * math.sin(u * 7), -0.44 - 0.1 * u, 0.14 + 1.0 * u)))
+	_chain(b, smoke, 0.05, 0.1, m["smoke"], "lamp", sides=6)
+	# embers and ash drifting round her, the lights she has eaten
+	placed = 0
+	while placed < 30:
+		p = Vector((rng.uniform(-5.5, 5.5), rng.uniform(-3.5, 4.0), rng.uniform(1.2, 7.0)))
+		if abs(p.x) < 1.4 and -2.4 < p.y < 3.8 and z0 - 1.6 < p.z < z0 + 1.2:
+			continue
+		sz = rng.uniform(0.05, 0.11)
+		b.blob((sz, sz, sz), tuple(p), m["mote"] if placed % 3 else m["mote_b"], "motes", segs=(6, 4))
+		placed += 1
+	return b, m
+
+
+def _moth_clips(arm):
+	def wings(t, base, amp, cycles, lag=0.07):
+		out = {}
+		for fb, ph in (("f", 0.0), ("b", lag)):
+			r = base + amp * math.cos(2 * math.pi * (t * cycles - ph)) - (4 if fb == "b" else 0)
+			out[f"wing_{fb}l"] = {"rot": (0, r, 0)}
+			out[f"wing_{fb}r"] = {"rot": (0, -r, 0)}
+		return out
+
+	def feelers(t, amp, cycles=1):
+		return {"ant_l": {"rot": (amp * wave(t, cycles, 0.1), 0, amp * 0.6 * wave(t, cycles, 0.35))},
+				"ant_r": {"rot": (amp * wave(t, cycles, 0.2), 0, -amp * 0.6 * wave(t, cycles, 0.45))}}
+
+	def drift(t, cycles=1):
+		return {"motes": {"rot": (0, 0, 6 * wave(t, cycles)), "loc": (0, 0, 0.2 * wave(t, cycles, 0.3))},
+				"lamp": {"rot": (4 * wave(t, cycles, 0.2), 3 * wave(t, cycles, 0.45), 0)}}
+
+	def idle(t):   # hangs in the air, slowly fanning her great wings, rising a little on each downstroke
+		return merge_scaled(wings(t, 16, 24, 1), feelers(t, 6, 1), drift(t),
+							{"root": {"loc": (0.05 * wave(t, 1, 0.3), 0, 0.22 * math.cos(2 * math.pi * (t - 0.6)))},
+							 "body": {"rot": (2 * wave(t, 1, 0.1), 1.5 * wave(t, 1, 0.4), 0)},
+							 "abdomen": {"rot": (-3 * math.cos(2 * math.pi * (t - 0.1)), 0, 1.5 * wave(t, 1, 0.3))},
+							 "head": {"rot": (0, 0, 3 * wave(t, 1, 0.6))}})
+
+	def walk(t):   # beating steadily, drifting forward
+		return merge_scaled(wings(t, 12, 34, 2), feelers(t, 8, 2), drift(t, 2),
+							{"root": {"loc": (0, 0, 0.18 * math.cos(2 * math.pi * (2 * t - 0.5))), "rot": (-5, 0, 0)},
+							 "abdomen": {"rot": (-4 * math.cos(2 * math.pi * (2 * t - 0.1)), 0, 0)}})
+
+	def run(t):
+		return merge_scaled(wings(t, 8, 42, 3), feelers(t, 10, 3), drift(t, 3),
+							{"root": {"loc": (0, 0, 0.14 * math.cos(2 * math.pi * (3 * t - 0.5))), "rot": (-11, 0, 0)},
+							 "abdomen": {"rot": (5, 0, 0)}})
+
+	def attack(t):   # lifts her wings high, then brings them down hard and drives in, a storm of ash and embers round her
+		up = seq(t, [(0, 0), (0.35, 1), (0.48, 1), (0.6, -0.6), (0.8, -0.2), (1, 0)])
+		dart = seq(t, [(0, 0), (0.35, -0.4), (0.6, 1.4), (0.8, 1.0), (1, 0)])
+		dip = seq(t, [(0, 0), (0.35, 0.5), (0.6, -0.4), (1, 0)])
+		burst = seq(t, [(0.5, 0), (0.62, 1), (1, 0)])
+		out = merge_scaled(feelers(t, 12, 2), drift(t, 2),
+						   {"root": {"loc": (0, dart, dip), "rot": (seq(t, [(0, 0), (0.35, 12), (0.6, -16), (1, 0)]), 0, 0)},
+							"abdomen": {"rot": (seq(t, [(0, 0), (0.35, -10), (0.6, 14), (1, 0)]), 0, 0)},
+							"motes": {"scale": (1 + 0.5 * burst,) * 3}})
+		for fb in ("f", "b"):
+			r = 16 + 42 * up
+			out[f"wing_{fb}l"] = {"rot": (0, r, 0)}
+			out[f"wing_{fb}r"] = {"rot": (0, -r, 0)}
+		return out
+
+	def hit(t):
+		h = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled(wings(t, 16 + 20 * h, 20, 2), feelers(t, 14 * h, 2), drift(t),
+							{"root": {"loc": (0, -0.4 * h, 0.2 * h), "rot": (10 * h, 12 * h, 0)}})
+
+	def death(t):   # the wings falter and she sinks, turning, and comes down on the ground with her wings spread flat
+		f = seq(t, [(0.05, 0), (0.8, 1)])
+		beat = 1 - seq(t, [(0.15, 0), (0.65, 1)])
+		fade = seq(t, [(0.3, 0), (1.0, 1)])
+		out = merge_scaled(wings(t, 16 - 22 * f, 30 * beat, 2), feelers(t, 6 * beat, 2),
+						   {"root": {"loc": (0, 0, -(MOTH_Z - 1.25) * f + 0.3 * math.sin(math.pi * f)), "rot": (-6 * f, 8 * math.sin(math.pi * f), 50 * f)},
+							"abdomen": {"rot": (-10 * f, 0, 0)}, "head": {"rot": (-8 * f, 0, 0)},
+							"ant_l": {"rot": (-30 * f, 0, 10 * f)}, "ant_r": {"rot": (-30 * f, 0, -10 * f)},
+							"lamp": {"rot": (60 * f, 0, 0)},
+							"motes": {"loc": (0, 0, -2.4 * fade), "scale": (1 - 0.85 * fade,) * 3}})
+		return out
+
+	clip_scaled(arm, "idle", 5.0, idle, True)
+	clip_scaled(arm, "walk", 1.6, walk, True)
+	clip_scaled(arm, "run", 1.2, run, True)
+	clip_scaled(arm, "attack", 1.5, attack, False)
+	clip_scaled(arm, "hit", 0.6, hit, False)
+	clip_scaled(arm, "death", 3.2, death, False)
+
+
+def build_deity_moth():
+	"""Dipanti the Lamp-Eater, the moth goddess drawn to every light, who puts each one out: she hovers with her body
+	4 m up and her wings 12 m across, soft and dusty, ash gray washed violet with dusky gold margins, a lamp on every
+	wing (an eye spot with a candle flame burning in it); a thick gold ruff, plumed antennae ringed in gold, great
+	dark eyes holding a point of lamplight, a gold circlet with a flame jewel, a gold lamp hung under her with its
+	flame just put out, and embers and ash drifting round her."""
+	b, _ = _dipanti("deity_moth")
+	arm = b.build()
+	_moth_clips(arm)
+	return arm
+
+
+CREATURES.update({"deity_web": build_deity_web, "deity_moth": build_deity_moth})
+
+
+# ---------------------------------------------------------------- the dusk gods' shrine idols (static props)
+
+def build_idol_tantuvi():
+	"""Tantuvi in weathered dark stone, her forelegs raised over a plinth, pale silver light inlaid in her eyes and
+	in the stars on her back."""
+	import random
+	b, _ = _tantuvi("idol_tantuvi", stone=True)
+	arm = b.build()
+	pose = {"body": (8, 0, 0), "abdomen": (-6, 0, 0), "head": (4, 0, 0), "fang_l": (0, 0, 10), "fang_r": (0, 0, -10)}
+	for k_, (lift, bend) in (("l1", (58, -34)), ("r1", (58, -34)), ("l2", (12, -6)), ("r2", (12, -6))):
+		ar = math.radians(-WEB_LEGS[k_][2])
+		p, r, _ = _lift(ar, lift)
+		bp, br, _ = _lift(ar, bend)
+		pose[f"leg_{k_}"] = (p, r, 0)
+		pose[f"shin_{k_}"] = (bp, br, 0)
+	mesh = _bake_pose(arm, pose)
+	return _idol("idol_tantuvi", mesh, (3.5, 3.5, 0.55), ("length", 3.3), random.Random(761))
+
+
+def build_idol_dipanti():
+	"""Dipanti in weathered dark stone, alighted on a plinth, her wings raised high over her back, a lamp inlaid
+	with pale light on each."""
+	import random
+	b, _ = _dipanti("idol_dipanti", stone=True)
+	arm = b.build()
+	pose = {"wing_fl": (0, 62, 0), "wing_fr": (0, -62, 0), "wing_bl": (0, 48, 0), "wing_br": (0, -48, 0),
+			"ant_l": (6, 0, 0), "ant_r": (6, 0, 0)}
+	mesh = _bake_pose(arm, pose)
+	return _idol("idol_dipanti", mesh, (2.6, 2.4, 0.5), ("height", 2.4), random.Random(763))
+
+
+IDOLS.update({"idol_tantuvi": build_idol_tantuvi, "idol_dipanti": build_idol_dipanti})
+# ================================================================ end of the dusk gods
+
+
 PREVIEW_FRAMES = {"idle": [0.0], "walk": [0.0, 0.25, 0.5], "run": [0.25], "attack": [0.3, 0.5],
 				  "hit": [0.25], "death": [0.5, 1.0]}
 

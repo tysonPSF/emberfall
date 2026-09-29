@@ -6428,5 +6428,55 @@
     },
     "title": "Blade of Duskhold",
     "gender": "female"
+  },
+  "dusk_priest_tantuvi": {
+    "name": "Weaver-Priestess Ysvaine",
+    "level": 40,
+    "model": "necromancer",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Every thread ends somewhere, {name}. Tantuvi knows where yours does, and she isn't telling. I keep her idol; I can [bind] you to Duskhold, and her followers may ask for her [blessing].",
+      "bind": "Hold still, as the fly does. ...There. Your thread is tied here now.",
+      "unknown": "The web knows. Ask it."
+    },
+    "title": "Priestess of the Many-Eyed",
+    "gender": "female",
+    "binds": true,
+    "blesses": {
+      "deity": "web",
+      "spell": "tantuvi_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "Her silk is for her own, {name}.",
+      "wait": "Within the hour, {name}. A web takes time to spin.",
+      "give": "Be still. ...Feel the threads? They're yours for a while."
+    }
+  },
+  "dusk_priest_dipanti": {
+    "name": "Lamp-Keeper Aelyss",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Mind the candles, {name}. Every one is a prayer, and every one is bait. I tend the Lamp-Eater's idol; I can [bind] you here, and her followers may ask for her [blessing].",
+      "bind": "Close your eyes. The light goes out, and... there. You'll wake by these candles.",
+      "unknown": "Ask the flame. It won't last long enough to answer."
+    },
+    "title": "Keeper of the Lamp-Eater",
+    "gender": "female",
+    "binds": true,
+    "blesses": {
+      "deity": "moth",
+      "spell": "dipanti_blessing",
+      "keyword": "blessing",
+      "every": 3600,
+      "refuse": "The light she gives is for her own, {name}.",
+      "wait": "Within the hour, {name}. Even she must wait for the next flame.",
+      "give": "Breathe in. ...The candle's light is in you now."
+    }
   }
 }

@@ -1865,7 +1865,8 @@ func player_entered(p: Player) -> void:
 	if not Net.is_authority() or p == null:
 		return
 	apply_alignment(p)
-	_follow_home(p)
+	var came_from := _follow_home(p)
+	_keep_off_hostile_ground(p, came_from)
 	_check_deity(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
@@ -2449,6 +2450,12 @@ func request_bind(player_id: int) -> void:
 	if not z.data.get("bindstone", false) or Vector2(p.global_position.x, p.global_position.z).distance_to(stone) > BIND_RANGE:
 		say(p, "You can only bind your soul at a city's bindstone.", C_WARN)
 		return
+	_bind(p, z)
+
+
+func _bind(p: Player, z: Zone) -> void:
+	if z == null or not z.data.get("bindstone", false):
+		return
 	p.bind_zone = z.zone_id
 	say(p, "You feel your soul bind to %s." % z.zone_name, C_SPELL)
 
@@ -2848,6 +2855,8 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(c, "You cast %s on %s." % [s["name"], t.display_name], C_SPELL)
 		"dot":
 			var per_tick := int(s.get("tick", 1)) + int(float(s.get("per_level", 0)) * (c.level - 1))
+			if c is Player and (c as Player).bonus("dot_pct") != 0.0:  # Tantuvi's followers: their slow poisons bite deeper
+				per_tick = int(round(per_tick * (1.0 + (c as Player).bonus("dot_pct") / 100.0)))
 			t.dots = t.dots.filter(func(d: Dictionary) -> bool: return not (d["spell"] == spell_id and d["caster_id"] == c.entity_id))
 			t.dots.append({"spell": spell_id, "caster_id": c.entity_id, "damage": per_tick, "ticks": int(s.get("ticks", 3)), "next": 3.0})
 			say(c, str(s.get("dot_text", "%s begins to smolder.")) % cap(t.display_name), C_SPELL)
@@ -4023,7 +4032,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if key == "hail":
 		_offer_dropped_steps(p, npc)
 	if key == "bind" and npc.data.get("binds", false):
-		request_bind(p.entity_id)
+		_bind(p, zone_of(npc))  # the priest binds you where you stand talking; /bind needs the stone itself
 	if key == "return" and npc.data.get("grove_return", false):
 		_grove_return(p)
 	var bless: Dictionary = npc.data.get("blesses", {})
@@ -5105,16 +5114,57 @@ func alignment_offsets(p: Player) -> Dictionary:
 ## old one, as when the evil races got homelands of their own), a character
 ## still bound to the old home is bound to the new one, once, and told.
 ## Anyone who bound somewhere else on purpose keeps it.
-func _follow_home(p: Player) -> void:
+## Returns the old home this login moved them from ("" if nothing moved).
+func _follow_home(p: Player) -> String:
 	var r: Dictionary = GameData.races.get(p.race if p.race != "" else "human", {})
 	var home := str(r.get("home", ""))
 	if home == "" or not FileAccess.file_exists("res://data/zones/%s.json" % home):
-		return
+		return ""
 	var before := p.home_seen if p.home_seen != "" else str(r.get("moved_from", home))
+	var moved := ""
 	if before != home and p.bind_zone in [before, ""]:
 		p.bind_zone = home
+		moved = before
 		say(p, "Your people have a home of their own now: your soul is bound in %s. Your Homeward Stone will take you there." % GameData.load_zone(home).get("name", home), C_SYSTEM)
 	p.home_seen = home
+	return moved
+
+
+## On login, nobody wakes where they don't belong: someone whose people just
+## moved (see _follow_home) and who logged out in the old home, or anyone in
+## a city whose guards would cut them down (an evil character who logged out
+## in Emberhold before alignment), goes to their bind city, and a bind in a
+## hostile city moves to their race's home first.
+func _keep_off_hostile_ground(p: Player, came_from: String) -> void:
+	var z := zone_of(p)
+	if z == null:
+		return
+	var home := str(GameData.races.get(p.race if p.race != "" else "human", {}).get("home", ""))
+	if home != "" and bind_zone_of(p) != home and city_hostile(p, bind_zone_of(p)):
+		p.bind_zone = home
+		say(p, "Your soul is bound in %s now, among your own people." % GameData.load_zone(home).get("name", home), C_SYSTEM)
+	var hostile := city_hostile(p, z.zone_id)
+	if not hostile and (came_from == "" or z.zone_id != came_from):
+		return
+	var dest := str(GameData.load_zone(bind_zone_of(p)).get("name", bind_zone_of(p)))
+	say(p, ("The guards of %s would cut you down on sight. You make your way home to %s." % [z.zone_name, dest]) if hostile
+			else "You make your way home to %s." % dest, C_SYSTEM)
+	get_tree().create_timer(1.0).timeout.connect(func() -> void:  # once the world has finished taking them in
+		if is_instance_valid(p) and not p.dead and zone_of(p) == z:
+			_go_home(p))
+
+
+## Whether a city's guards attack this player on sight (from the zone's data,
+## so it works for a city nobody has built yet).
+func city_hostile(p: Player, zone_id: String) -> bool:
+	var zd := GameData.load_zone(zone_id)
+	if not zd.get("bindstone", false):
+		return false
+	for entry: Dictionary in zd.get("npcs", []):
+		var nd: Dictionary = GameData.npcs.get(str(entry.get("id", "")), {})
+		if nd.get("guard", false) and npc_kos(p, str(nd.get("faction", ""))):
+			return true
+	return false
 
 
 ## Puts a character's standings where their alignment says, as offsets on top

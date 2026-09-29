@@ -58,6 +58,9 @@ func _run() -> void:
 		elif "--guild" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
+		elif "--homecoming" in OS.get_cmdline_user_args():  # a troll from before the Blackwater, logged out in Rainhold
+			Net.import_character({"name": who, "class": "warrior", "deity": "dark", "level": 5, "race": "troll", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "rainhold", "bind": "rainhold", "position": [0, 2, 40]})
 		elif "--share" in OS.get_cmdline_user_args():
 			var qs := {"fang_bounty": {"active": true, "completions": 0}, "trail_pack_cord": {"active": true, "completions": 0},
 					"trail_pack_hide": {"active": true, "completions": 0}, "rain_pack_needles": {"active": true, "completions": 0}} \
@@ -132,6 +135,12 @@ func _run() -> void:
 		await _guild_test(p)
 	elif "--share" in OS.get_cmdline_user_args():
 		await _share_test(p)
+	elif "--homecoming" in OS.get_cmdline_user_args():
+		var first := (get_parent().zone as Zone).zone_id
+		await _wait(6.0)
+		print("[%s] homecoming: logged in to %s, now in %s at %s" % [who, first, (get_parent().zone as Zone).zone_id, p.global_position.snapped(Vector3.ONE)])
+		await _shot("homecoming")
+		get_tree().quit()
 	elif "--swing" in OS.get_cmdline_user_args():
 		# the swing timer reaches the client: attack something and watch it run down and restart
 		var mob: Mob = null
