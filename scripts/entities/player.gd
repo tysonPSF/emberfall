@@ -294,7 +294,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends"]:
+			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer"]:
 		set(key, d[key])
 	if str(d.get("guild_name", "")) != guild_name:
 		guild_name = str(d.get("guild_name", ""))
