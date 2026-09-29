@@ -5439,5 +5439,89 @@
       "return": "Hold my arm, {name}. Eyes shut. ...There.",
       "unknown": "I'm only the keeper, {name}. The gods know more than I do, and say less."
     }
+  },
+  "guild_registrar_emberhold": {
+    "name": "Registrar Wendeline",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "mage",
+    "faction": "emberhold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Emberhold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
+  },
+  "guild_registrar_rainhold": {
+    "name": "Registrar Tavita",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "mage",
+    "faction": "rainhold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Rainhold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
+  },
+  "guild_registrar_lanternhold": {
+    "name": "Registrar Hoshiko",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "mage",
+    "faction": "lanternhold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Lanternhold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
+  },
+  "guild_registrar_forgehold": {
+    "name": "Registrar Brannoc",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "knight",
+    "faction": "forgehold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Forgehold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
+  },
+  "guild_registrar_galehold": {
+    "name": "Registrar Linnea",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "mage",
+    "faction": "galehold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Galehold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
+  },
+  "guild_registrar_barrowhold": {
+    "name": "Registrar Mordecai",
+    "title": "Guild Registrar",
+    "level": 30,
+    "model": "necromancer",
+    "faction": "barrowhold",
+    "guild_registrar": true,
+    "dialogue": {
+      "hail": "Welcome, {name}. I keep the rolls of the guilds of Barrowhold. If you've a company worth naming, I can write you a [charter].",
+      "charter": "Ten platinum, and you'll need to have made level 10: a guild wants a founder who's seen something of the world. Stand here and say /guildcreate <name>, and it's yours.",
+      "guild": "A guild is a name, a roster and a voice: its members hear each other anywhere with /gu. Its leader and officers invite and remove, and set the message of the day. Ask me for a [charter].",
+      "unknown": "Charters and rolls, {name}. That's all I know."
+    }
   }
 }

@@ -152,6 +152,7 @@ func _start_game(save: Dictionary, title: CharCreate) -> void:
 	_enter_zone(zone_id, pos)
 	zone.restore_corpses(_corpses_by_zone.get(zone_id, []))
 	_start_hud()
+	World.player_entered(player)
 	if not World.zone_change.is_connected(_on_zone_change):
 		World.zone_change.connect(_on_zone_change)
 		World.camped.connect(_on_camped)
@@ -511,6 +512,7 @@ func _server_save_of(p: Player) -> Dictionary:
 
 
 func _on_remote_left(p: Player) -> void:
+	World.player_left(p)
 	World.leave_group(p, "%s has left the group." % p.display_name)
 	World.request_trade_cancel(p.entity_id)
 	World.dismiss_pet(p, false)  # saved already; it comes back with them next time

@@ -104,6 +104,7 @@ const SECTIONS := [
 	["grove", "greenmoor"],
 	["emotes", "greenmoor"],
 	["terrace_roads", "greenmoor"],
+	["social", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7505,3 +7506,69 @@ func _t_terrace_roads() -> void:
 			await _shot("9terrace_stuck_side")
 			p.camera_pivot.rotation.y = 0.0
 		print("terrace_roads: dewstep: walked the road uphill -> %s after %.0f s at %s" % ["reached the gate" if i < 0 else "STUCK", t, p.global_position.snapped(Vector3.ONE)])
+
+
+## Friends and guilds offline: the friends list, founding a guild at a
+## registrar (level, fee, name), its tag, message of the day and chat, the
+## windows, a guildmate's god showing in the Grove, and the last one out.
+func _t_social() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://guilds_autotest.json"))
+	World._guild_store = null
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	p.friends.clear()
+	World.request_chat(p.entity_id, "/friend Tester")
+	World.request_chat(p.entity_id, "/friend Gerald")
+	World.request_chat(p.entity_id, "/friend Mira")
+	World.request_chat(p.entity_id, "/friend gerald")
+	print("social: friends %s, saved %s" % [p.friends, p.to_save().get("friends")])
+	World.request_chat(p.entity_id, "/guildcreate Ember Wardens")
+	World.zone_change.emit(p, "emberhold", Vector2(6.2, 29.0), Vector2(6.2, 25.3))
+	for k in 80:
+		if (main.zone as Zone).zone_id == "emberhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.8)
+	var registrar: Npc = _npcs()["guild_registrar_emberhold"]
+	_stand_by(p, registrar)
+	World.request_hail(p.entity_id)
+	World.request_chat(p.entity_id, "/guildcreate Ember Wardens")  # level 1
+	p.level = 12
+	p.coin = 5000
+	World.request_chat(p.entity_id, "/guildcreate Ember Wardens")  # too poor
+	p.coin = 25000
+	World.request_chat(p.entity_id, "/guildcreate E!")  # a bad name
+	World.request_chat(p.entity_id, "/guildcreate Ember Wardens")
+	print("social: founded -> guild %s, rank %s, coin left %d, tag %s" % [p.guild_name, p.guild_rank, p.coin,
+			p._guild_label.text if p._guild_label != null else "none"])
+	World.request_chat(p.entity_id, "/guildmotd Muster at the fountain at dusk.")
+	World.request_chat(p.entity_id, "/gu Hello, wardens!")
+	World.request_chat(p.entity_id, "/guildinvite")  # no one targeted
+	# a guildmate (offline) who has earned the Ember-Tusked: the Grove shows him to us too
+	var key := World.guilds().key_of(p.display_name)
+	World.guilds().join(key, {"name": "Brannoc", "level": 40, "class": "warrior", "zone": "forgehold", "seen": 0, "grove": ["fire"]}, "member")
+	print("social: a guildmate earned fire -> we see fire %s, water %s" % [World.grove_sees(p, "fire"), World.grove_sees(p, "water")])
+	World.request_guild(p.entity_id, "promote", "Brannoc")
+	# the windows
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	hud._toggle_guild()
+	hud._toggle_friends()
+	await _wait(0.8)
+	await _shot("9social_windows")
+	hud._toggle_guild()
+	hud._toggle_friends()
+	p.camera_pivot.rotation.y = PI
+	p.zoom = 4.0
+	await _wait(0.4)
+	await _shot("9social_tag")
+	p.camera_pivot.rotation.y = 0.0
+	World.request_chat(p.entity_id, "/guildleave")  # the leader, with a member: refused
+	World.request_guild(p.entity_id, "remove", "Brannoc")
+	World.request_chat(p.entity_id, "/guildleave")
+	print("social: left -> guild %s, guild still exists %s" % [p.guild_name if p.guild_name != "" else "none", World.guilds().name_taken("Ember Wardens")])
+	World.log_message.disconnect(grab)
+	print("social: lines %s" % [lines])
+	p.level = 1

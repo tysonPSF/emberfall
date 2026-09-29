@@ -1086,6 +1086,17 @@
         15,
         0
       ]
+    },
+    {
+      "id": "guild_registrar_rainhold",
+      "pos": [
+        19.0,
+        5.5
+      ],
+      "face": [
+        19.0,
+        -4.5
+      ]
     }
   ],
   "spawns": []

@@ -48,6 +48,9 @@ func _run() -> void:
 		if "--wake" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "greenmoor", "position": [0, 2, 20]})
+		elif "--guild" in OS.get_cmdline_user_args():
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
 		elif "--grove" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "light", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "the_grove", "position": [4.0 if who == "Alpha" else -4.0, 2, 30]})
@@ -112,6 +115,8 @@ func _run() -> void:
 		await _grove_test(p)
 	elif "--emotes" in OS.get_cmdline_user_args():
 		await _emote_test(p)
+	elif "--guild" in OS.get_cmdline_user_args():
+		await _guild_test(p)
 	elif "--trade" in OS.get_cmdline_user_args():
 		await _trade_test(p)
 	elif "--wake" in OS.get_cmdline_user_args():
@@ -432,6 +437,45 @@ func _group_test(p: Player) -> void:
 ## Two players trade: Alpha offers a gnoll fang and 250 copper, Bravo a beetle
 ## eye; both press Trade. Then a NO DROP item is refused, and a canceled trade
 ## gives everything back.
+## Guilds and friends online: Alpha founds a guild at Emberhold's registrar
+## and invites Bravo, who sees Alpha's tag and hears guild chat; Alpha
+## befriends Bravo and hears when Bravo logs off.
+func _guild_test(p: Player) -> void:
+	var other: Player = null
+	for k in 60:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	if other == null:
+		print("[%s] guild: nobody else here" % who)
+		return
+	var heard: Array = []
+	World.log_message.connect(func(t: String, _c: Color) -> void: heard.append(t))
+	if who == "Alpha":
+		World.request_chat(p.entity_id, "/guildcreate Test Company")
+		await _wait(1.0)
+		World.request_chat(p.entity_id, "/friend Bravo")
+		World.request_chat(p.entity_id, "/guildinvite Bravo")
+		for k in 40:  # until Bravo has joined
+			if heard.any(func(t: String) -> bool: return "has joined the guild" in t):
+				break
+			await _wait(0.25)
+		World.request_chat(p.entity_id, "/gu Welcome aboard!")
+		await _wait(12.0)
+		print("[Alpha] guild: I am %s of <%s>; heard %s" % [p.guild_rank, p.guild_name, heard.filter(func(t: String) -> bool: return "Bravo" in t)])
+	else:
+		await _wait(3.0)
+		World.request_chat(p.entity_id, "/guildaccept")
+		await _wait(6.0)
+		print("[Bravo] guild: I am %s of <%s>; Alpha's tag here reads %s; heard %s" % [p.guild_rank, p.guild_name,
+				other._guild_label.text if other._guild_label != null else "nothing", heard.filter(func(t: String) -> bool: return "guild" in t or "Welcome" in t)])
+		await _shot("guild_tag")
+		get_tree().quit()  # logs off: Alpha's friend alert
+
+
 ## Emotes online: Alpha waves at Bravo; Bravo reads the line and sees
 ## Alpha's character play the wave.
 func _emote_test(p: Player) -> void:

@@ -239,6 +239,7 @@ func _c_enter(name: String) -> void:
 	_s_welcome.rpc_id(peer, p.entity_id, World.zone_of(p).zone_id, p.global_position, p.rotation.y, save_of.call(p))
 	_send_self(peer)
 	print("%s entered the world (peer %d)" % [p.display_name, peer])
+	World.player_entered(p)
 
 
 func _send_characters(peer: int) -> void:
@@ -483,6 +484,23 @@ func _s_zone(zone_id: String, pos: Vector3, seq: int) -> void:
 
 # --- animations and looks (server -> everyone who can see it) ------------------
 
+## A player's guild tag changed: everyone who can see them redraws it.
+func broadcast_guild_tag(p: Player) -> void:
+	if mode != "server":
+		return
+	for peer: int in _known:
+		if _known[peer].has(p.entity_id) or _peer_player[peer] == p.entity_id:
+			_s_guild_tag.rpc_id(peer, p.entity_id, p.guild_name)
+
+
+@rpc("authority", "reliable")
+func _s_guild_tag(id: int, guild_name: String) -> void:
+	var p := World.get_object(id) as Player
+	if p != null:
+		p.guild_name = guild_name
+		p.show_guild_tag()
+
+
 func broadcast_anim(e: Entity, action: String) -> void:
 	if mode != "server":
 		return
@@ -645,7 +663,7 @@ func _spawn_info(obj: Node3D) -> Dictionary:
 	var e := obj as Entity
 	info.merge({"id": e.entity_id, "name": e.display_name, "level": e.level, "look": e.look, "hp": e.hp, "max_hp": e.max_hp}, true)
 	if e is Player:
-		info.merge({"kind": "player", "class": (e as Player).char_class}, true)
+		info.merge({"kind": "player", "class": (e as Player).char_class, "guild": (e as Player).guild_name}, true)
 	elif e is Mob:
 		info.merge({"kind": "mob", "mob_id": (e as Mob).mob_id}, true)
 	elif e is Npc:
@@ -753,7 +771,7 @@ func _send_self(peer: int) -> void:
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 		"gender": p.gender, "gender_changed": p.gender_changed,
 		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
-		"grove_deities": p.grove_deities,
+		"grove_deities": p.grove_deities, "friends": p.friends, "guild_name": p.guild_name, "guild_rank": p.guild_rank,
 	}
 	_s_self.rpc_id(peer, d)
 

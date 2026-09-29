@@ -53,6 +53,10 @@ var race := ""  # data/races.json id; "" for a character from before races (it c
 var race_changed := false  # a character's one change of race has been used
 var grove_deities: Array = []  # the gods who have come to the Grove for this character (World.unlock_grove_deity)
 var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
+var friends: Array = []  # characters' names (/friend), saved with the character
+var guild_name := ""  # shown as <Guild Name> under the nameplate (World._set_guild_tag)
+var guild_rank := ""  # leader, officer or member (your own; for the guild window)
+var _guild_label: Label3D
 var gender := ""  # "male" / "female"; "" for a character from before genders (drawn as its class body was made)
 var gender_changed := false  # a character's one change of gender has been used
 var hair_style := ""  # models.json "hair_styles" id, "" = the head the body and gender give
@@ -168,6 +172,7 @@ func from_save(d: Dictionary) -> void:
 	hair_changed = bool(d.get("hair_changed", false))
 	grove_deities = (d.get("grove", []) as Array).filter(func(g: Variant) -> bool: return str(g) in World.DEITY_IDS).map(func(g: Variant) -> String: return str(g))
 	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
+	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
 	if not "homeward_stone" in owned_item_ids():  # every character carries one home; old saves get theirs now
@@ -276,6 +281,7 @@ func setup_remote(info: Dictionary) -> void:
 	hp = int(info["hp"])
 	look = info["look"]
 	body_color = Color.html(GameData.classes[char_class]["color"])
+	guild_name = str(info.get("guild", ""))
 
 
 ## Client: our own player's state as the server holds it.
@@ -288,8 +294,12 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities"]:
+			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends"]:
 		set(key, d[key])
+	if str(d.get("guild_name", "")) != guild_name:
+		guild_name = str(d.get("guild_name", ""))
+		show_guild_tag()
+	guild_rank = str(d.get("guild_rank", ""))
 	if bool(d.get("afk", false)) != afk:
 		afk = bool(d.get("afk", false))
 		show_name()
@@ -354,6 +364,7 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
+		"friends": friends,
 	}
 
 
@@ -698,6 +709,7 @@ func _ready() -> void:
 			(visual as CharacterModel).set_offhand(look["offhand"])
 		(visual as CharacterModel).set_worn(look.get("worn", {}))
 	show_name()
+	show_guild_tag()
 	nameplate.modulate = Color(0.7, 0.85, 1.0)
 	if not is_local:
 		return
@@ -1146,3 +1158,26 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector3.ZERO
 	_step_from = _step_to if _step_to != Vector3.INF else global_position
 	_step_to = global_position
+
+
+## <Guild Name> under the nameplate, like an NPC's title (none outside a guild).
+func show_guild_tag() -> void:
+	if nameplate == null:
+		return
+	if guild_name == "":
+		if _guild_label != null:
+			_guild_label.queue_free()
+			_guild_label = null
+		return
+	if _guild_label == null:
+		_guild_label = Label3D.new()
+		_guild_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_guild_label.fixed_size = true
+		_guild_label.pixel_size = nameplate.pixel_size
+		_guild_label.font_size = 24
+		_guild_label.outline_size = 6
+		_guild_label.offset = Vector2(0, -30)  # screen pixels below the name, at any distance
+		_guild_label.modulate = Color(0.6, 1.0, 0.75)
+		_guild_label.visibility_range_end = nameplate.visibility_range_end
+		nameplate.add_child(_guild_label)
+	_guild_label.text = "<%s>" % guild_name
