@@ -20,7 +20,7 @@ var tracked: Mob  # a ranger's tracked monster: a paw mark on the strip until it
 var _heading := 0.0
 var _zone_name := ""
 var _levels := ""  # "Levels 6 - 14"; empty for cities and interiors
-var _exits: Array = []  # [Vector2 position, "Thornwood Vale"]
+var _exits: Array = []  # [Vector2 position, "Thornwood Vale", its levels [6, 14] or []]
 var _exits_zone: Zone
 
 
@@ -45,12 +45,14 @@ func _process(_delta: float) -> void:
 			for zl: Dictionary in z.data.get("zone_lines", []):
 				var to := str(zl.get("to", ""))
 				var name := to.capitalize()
+				var levels: Array = []
 				var path := "res://data/zones/%s.json" % to
 				if FileAccess.file_exists(path):
 					var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 					if parsed is Dictionary:
 						name = str((parsed as Dictionary).get("name", name))
-				_exits.append([Vector2(float(zl["pos"][0]), float(zl["pos"][1])), name])
+						levels = (parsed as Dictionary).get("levels", [])
+				_exits.append([Vector2(float(zl["pos"][0]), float(zl["pos"][1])), name, levels])
 	if absf(wrapf(h - _heading, -180.0, 180.0)) > 0.05 or Engine.get_process_frames() % 10 == 0:
 		_heading = h
 		queue_redraw()
@@ -138,12 +140,19 @@ func _draw() -> void:
 			continue
 		var c := Vector2(at.x, BAND - 7)
 		draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(4, 0), c + Vector2(0, 5), c + Vector2(-4, 0)]), Color(GOLD, at.y))
-		if absf(at.x - mid) < 40.0:
+		if absf(at.x - mid) < 40.0:  # its name, and its levels after it (cities have none)
 			var n: String = ex[1]
+			var lv: Array = ex[2]
+			var range_ := "  %d\u2013%d" % [int(lv[0]), int(lv[1])] if lv.size() == 2 else ""
 			var w := font.get_string_size(n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			var rw := font.get_string_size(range_, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			var x0 := at.x - (w + rw) * 0.5
 			var fade := 1.0 - absf(at.x - mid) / 40.0
-			draw_string_outline(font, Vector2(at.x - w * 0.5, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9 * fade))
-			draw_string(font, Vector2(at.x - w * 0.5, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(GOLD, 0.95 * fade))
+			draw_string_outline(font, Vector2(x0, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9 * fade))
+			draw_string(font, Vector2(x0, BAND + 15), n, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(GOLD, 0.95 * fade))
+			if range_ != "":
+				draw_string_outline(font, Vector2(x0 + w, BAND + 15), range_, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, 3, Color(0, 0, 0, 0.9 * fade))
+				draw_string(font, Vector2(x0 + w, BAND + 15), range_, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(_levels_color(lv), 0.95 * fade))
 	# the monster a ranger is tracking: a paw print, in its con color, named when faced
 	if tracked != null and (not is_instance_valid(tracked) or tracked.dead or World.zone_of(tracked) != World.zone_of(player)):
 		tracked = null
@@ -200,7 +209,11 @@ func _draw() -> void:
 ## it, reddish when it's still above you.
 func _level_color() -> Color:
 	var z := World.zone_of(player)
-	var lv: Array = z.data.get("levels", []) if z != null else []
+	return _levels_color(z.data.get("levels", []) if z != null else [])
+
+
+## The same for any zone's levels [low, high] (the exits' too).
+func _levels_color(lv: Array) -> Color:
 	if lv.size() != 2 or player.level > int(lv[1]):
 		return Color(0.7, 0.68, 0.62)
 	if player.level < int(lv[0]):

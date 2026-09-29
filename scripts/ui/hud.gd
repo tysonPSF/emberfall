@@ -14,6 +14,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
+[b]Quests[/b]   J your quest journal: what you're on, what each giver said, what's left, what it pays, and Abandon
 [b]Friends and guild[/b]   F your friends (who's online, and where; /friend name adds or removes) · U your guild · /gu talks to the guild · /wave, /bow, /dance... (/emotes lists them)
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
@@ -46,6 +47,10 @@ var _stamina_row: Control
 var _stamina_bar: ProgressBar
 var _stamina_text: Label
 var _xp_bar: ProgressBar
+var _swing_bar: ProgressBar  # your next swing coming up, while you're attacking
+var _swing_row: Control
+var _swing_text: Label
+var _swing_total := 0.0  # how long the swing being waited for takes (the timer's value when it last started)
 var _xp_text: Label
 var _buff_label: Label
 
@@ -178,6 +183,16 @@ var _guild_list: VBoxContainer
 var _guild_tools: HBoxContainer
 var _guild_data: Dictionary = {}
 var _social_refresh := 0.0
+var _journal_panel: PanelContainer  # J: every quest you're on or have done, what was said, what it wants, what it pays
+var _journal_list: VBoxContainer
+var _journal_text: RichTextLabel
+var _journal_tab_active: Button
+var _journal_tab_done: Button
+var _journal_abandon: Button
+var _journal_done_tab := false
+var _journal_pick := ""
+var _journal_confirm := ""  # the quest Abandon was pressed once for
+var _journal_refresh := 0.0
 var _track_list: VBoxContainer
 var _track_title: Label
 var _track_radius := 0.0
@@ -234,6 +249,7 @@ func _ready() -> void:
 	_build_track_window()
 	_build_friends_window()
 	_build_guild_window()
+	_build_journal_window()
 	_build_stats_window()
 	_build_race_window()
 	_build_hair_window()
@@ -337,6 +353,13 @@ func _build_player_window() -> void:
 	_xp_bar = xp[0]
 	_xp_text = xp[1]
 	v.add_child(xp[2])
+	var swing := _bar_row(Color(0.86, 0.36, 0.28), 5.0)
+	_swing_bar = swing[0]
+	_swing_text = swing[1]
+	_swing_row = swing[2]
+	_swing_bar.max_value = 1.0
+	_swing_row.visible = false
+	v.add_child(_swing_row)
 	_buff_label = UIKit.label("", 11, Color(0.6, 0.85, 1.0))
 	_buff_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	_buff_label.custom_minimum_size.x = 290
@@ -582,6 +605,7 @@ func _build_menu_icons() -> void:
 	root.add_child(row)
 	for m: Array in [["F", "action_friends", "Friends (F)\nWho's online, and where", func() -> void: _toggle_friends()],
 			["U", "action_guild", "Guild (U)", func() -> void: _toggle_guild()],
+			["J", "action_journal", "Quest journal (J)\nWhat you're on, what was said, what's left", func() -> void: _toggle_journal()],
 			["C", "action_consider", "Consider (C)\nHow tough is your target, and how do they regard you?", func() -> void: World.request_consider(player.entity_id)],
 			["K", "action_skills", "Skills (K)", func() -> void: _toggle_skills()],
 			["I", "leather_backpack", "Inventory (I)", func() -> void: _toggle_inventory()]]:
@@ -1607,7 +1631,7 @@ func _build_stats_window() -> void:
 func _make_draggable() -> void:
 	for pair: Array in [[_player_panel, "player"], [_target_panel, "target"], [_pet_panel, "pet"], [_group_panel, "group"], [_buff_panel, "buffs"],
 			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"],
-			[_friends_panel, "friends"], [_guild_panel, "guild"]]:
+			[_friends_panel, "friends"], [_guild_panel, "guild"], [_journal_panel, "journal"]]:
 		UIKit.draggable(pair[0], pair[1])
 
 
@@ -1850,6 +1874,184 @@ func _on_friends_view(list: Array) -> void:
 		rm.pressed.connect(func() -> void: World.request_friend(player.entity_id, who))
 		row.add_child(rm)
 		_friends_list.add_child(row)
+
+
+func _build_journal_window() -> void:
+	_journal_panel = UIKit.panel()
+	UIKit.place(_journal_panel, Vector2(0.5, 0.5), Vector2(0, 0))
+	root.add_child(_journal_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	_journal_panel.add_child(v)
+	var head := HBoxContainer.new()
+	var title := UIKit.label("Quest Journal", 15, UIKit.GOLD)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	_journal_tab_active = UIKit.button("Active", Vector2(0, 24))
+	_journal_tab_active.pressed.connect(func() -> void:
+		_journal_done_tab = false
+		_journal_pick = ""
+		_refresh_journal())
+	head.add_child(_journal_tab_active)
+	_journal_tab_done = UIKit.button("Completed", Vector2(0, 24))
+	_journal_tab_done.pressed.connect(func() -> void:
+		_journal_done_tab = true
+		_journal_pick = ""
+		_refresh_journal())
+	head.add_child(_journal_tab_done)
+	var close := UIKit.button("Close", Vector2(0, 24))
+	close.pressed.connect(func() -> void: _journal_panel.visible = false)
+	head.add_child(close)
+	v.add_child(head)
+	var body := HBoxContainer.new()
+	body.add_theme_constant_override("separation", 10)
+	v.add_child(body)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(230, 414)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body.add_child(scroll)
+	_journal_list = VBoxContainer.new()
+	_journal_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_journal_list.add_theme_constant_override("separation", 2)
+	scroll.add_child(_journal_list)
+	var right := VBoxContainer.new()
+	right.add_theme_constant_override("separation", 6)
+	body.add_child(right)
+	_journal_text = RichTextLabel.new()
+	_journal_text.bbcode_enabled = true
+	_journal_text.custom_minimum_size = Vector2(420, 380)
+	_journal_text.add_theme_font_size_override("normal_font_size", 13)
+	_journal_text.add_theme_font_size_override("bold_font_size", 14)
+	_journal_text.add_theme_font_size_override("italics_font_size", 13)
+	_journal_text.meta_underlined = false
+	_journal_text.meta_clicked.connect(_on_quest_hint)
+	right.add_child(_journal_text)
+	_journal_abandon = UIKit.button("Abandon quest", Vector2(0, 26))
+	_journal_abandon.pressed.connect(func() -> void:
+		if _journal_pick == "":
+			return
+		if _journal_confirm != _journal_pick:
+			_journal_confirm = _journal_pick  # twice, so a slip of the mouse doesn't cost you a quest
+			_journal_abandon.text = "Click again to abandon"
+			return
+		World.request_quest_abandon(player.entity_id, _journal_pick)
+		_journal_confirm = ""
+		_journal_pick = ""
+		_journal_refresh = 0.2)
+	right.add_child(_journal_abandon)
+	_journal_panel.visible = false
+
+
+func _toggle_journal() -> void:
+	_journal_panel.visible = not _journal_panel.visible
+	if _journal_panel.visible:
+		_journal_confirm = ""
+		_refresh_journal()
+
+
+func _journal_quests(done: bool) -> Array:
+	var out: Array = []
+	for quest_id: String in player.quests:
+		if not GameData.quests.has(quest_id):
+			continue
+		var st: Dictionary = player.quests[quest_id]
+		if (done and int(st.get("completions", 0)) > 0) or (not done and st.get("active", false)):
+			out.append(quest_id)
+	out.sort_custom(func(a: String, b: String) -> bool: return str(GameData.quests[a]["name"]) < str(GameData.quests[b]["name"]))
+	return out
+
+
+func _refresh_journal() -> void:
+	var active := _journal_quests(false)
+	var done := _journal_quests(true)
+	_journal_tab_active.text = "Active (%d)" % active.size()
+	_journal_tab_done.text = "Completed (%d)" % done.size()
+	UIKit.frame(_journal_tab_active, not _journal_done_tab)
+	UIKit.frame(_journal_tab_done, _journal_done_tab)
+	var shown := done if _journal_done_tab else active
+	if not _journal_pick in shown:
+		_journal_pick = shown[0] if not shown.is_empty() else ""
+	for c in _journal_list.get_children():
+		c.queue_free()
+	for quest_id: String in shown:
+		var b := UIKit.button(str(GameData.quests[quest_id]["name"]), Vector2(0, 24))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 12)
+		if not _journal_done_tab and World.quest_items_ready(player, quest_id):
+			b.add_theme_color_override("font_color", Color(0.55, 1.0, 0.55))  # ready to hand in
+		UIKit.frame(b, quest_id == _journal_pick)
+		var qid := quest_id
+		b.pressed.connect(func() -> void:
+			_journal_pick = qid
+			_journal_confirm = ""
+			_refresh_journal())
+		_journal_list.add_child(b)
+	if shown.is_empty():
+		_journal_list.add_child(UIKit.label("Nothing here yet." if _journal_done_tab else "You're on no quests.\nHail the townsfolk: gold words\nin what they say lead to work.", 12, UIKit.DIM))
+	_journal_abandon.visible = not _journal_done_tab and _journal_pick != ""
+	_journal_abandon.text = "Click again to abandon" if _journal_confirm == _journal_pick and _journal_pick != "" else "Abandon quest"
+	_journal_text.text = _journal_page(_journal_pick) if _journal_pick != "" else ""
+
+
+## One quest's page: who and where, what they said, what's left, what it pays.
+func _journal_page(quest_id: String) -> String:
+	var q: Dictionary = GameData.quests[quest_id]
+	var st: Dictionary = player.quests.get(quest_id, {})
+	var times := int(st.get("completions", 0))
+	var here := World.zone.zone_id if World.zone != null else ""
+	var at := player.global_position
+	var lines := PackedStringArray()
+	lines.append("[b][color=#dcb86b]%s[/color][/b]" % q["name"])
+	var where := QuestHints.giver_hint(quest_id, here, at).trim_prefix(str(q["name"]) + ": ")
+	lines.append("[color=#9a968e]%s[/color]" % (where.left(1).to_upper() + where.substr(1)))
+	lines.append("")
+	# the giver's own words when you asked (the quest's keyword), then the task in brief
+	var giver: Dictionary = GameData.npcs.get(str(q["giver"]), {})
+	var said := str(giver.get("dialogue", {}).get(str(q.get("start_keyword", "")), ""))
+	if said != "":
+		said = said.replace("{name}", player.display_name).replace("[", "").replace("]", "")
+		lines.append("[i]%s: \"%s\"[/i]" % [giver.get("name", ""), said])
+		lines.append("")
+	var task := str(q.get("accept_text", ""))
+	if task.begins_with("You have taken on a task: ") and task.find(". ") > 0:  # the line said on accepting, minus its opening
+		task = task.substr(task.find(". ") + 2)
+	lines.append("[b]Task[/b]  %s" % task.replace("[", "(").replace("]", ")"))
+	lines.append("")
+	if st.get("active", false):
+		var have := World.quest_progress(player, quest_id)
+		lines.append("[b]Bring[/b]")
+		var wants: Dictionary = q["wants"]
+		for item_id: String in wants:
+			var got := int(have.get(item_id, 0))
+			var need := int(wants[item_id])
+			var col := "#8cff8c" if got >= need else "#e6e0d2"
+			lines.append("  [url=item:%s:%s][color=%s]%s  %d/%d[/color][/url]" % [quest_id, item_id, col, GameData.item_name(item_id), got, need])
+		lines.append("  [color=#9a968e](click an item for where it's found)[/color]")
+		lines.append("")
+	var reward: Dictionary = q.get("reward", {})
+	var pays := PackedStringArray()
+	var xp := int(reward.get("xp", 0)) * float(World.cfg("xp_rate", 1.0))
+	if xp > 0:
+		var again: bool = times > 0 and bool(q.get("repeatable", false))
+		if again:
+			xp *= float(q.get("repeat_xp", World.cfg("quest_repeat_xp", 0.5)))
+		pays.append("%d experience%s" % [roundi(xp), " (less now: you've done it before)" if again else ""])
+	if int(reward.get("coin", 0)) > 0:
+		pays.append(World.format_coin(int(reward["coin"])))
+	var item_id := str(q.get("first_reward_item", ""))
+	if item_id != "" and times == 0:
+		pays.append(GameData.item_name(item_id))
+	for fac: String in q.get("faction", {}):
+		if int(q["faction"][fac]) > 0:
+			pays.append("the goodwill of %s" % World.faction_name(fac))
+	lines.append("[b]Reward[/b]  %s" % ", ".join(pays) if not pays.is_empty() else "[b]Reward[/b]  none")
+	if q.get("repeatable", false):
+		lines.append("[color=#9a968e]Repeatable.%s[/color]" % (" Done %d time%s." % [times, "" if times == 1 else "s"] if times > 0 else ""))
+	elif times > 0:
+		lines.append("[color=#9a968e]Completed.[/color]")
+	if q.has("next"):
+		lines.append("[color=#9a968e]Leads on to another task.[/color]")
+	return "\n".join(lines)
 
 
 func _build_guild_window() -> void:
@@ -2788,8 +2990,7 @@ func _draw_crosshair() -> void:
 		return
 	var radius := CROSSHAIR_SIZE * 0.5 - 3.0
 	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, CROSSHAIR_SHADOW, 4.0)
-	var delay := maxf(player.attack_delay, 0.01)
-	var charge := clampf(1.0 - player.swing_timer / delay, 0.0, 1.0)
+	var charge := _swing_charge()
 	var ready := charge >= 1.0
 	_crosshair.draw_arc(c, radius, -PI * 0.5, -PI * 0.5 + TAU * charge, 32,
 			Color(1, 0.5, 0.4) if ready else CROSSHAIR_COLOR, 2.5)
@@ -2799,12 +3000,17 @@ func _draw_crosshair() -> void:
 func wants_cursor() -> bool:
 	return (_map.visible or _book_panel.visible or _inv_panel.visible or _service_panel.visible or _trade_panel.visible or _station_panel.visible or _invite_panel.visible or _item_panel.visible or _skills_panel.visible
 			or _loot_panel.visible or _help_panel.visible or _menu_panel.visible
-			or _settings_panel.visible)
+			or _settings_panel.visible or _friends_panel.visible or _guild_panel.visible or _journal_panel.visible)
 
 
 # --- updates ----------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	if _journal_panel.visible and player != null:
+		_journal_refresh -= delta
+		if _journal_refresh <= 0.0:
+			_journal_refresh = 1.0  # what you've gathered changes as you loot
+			_refresh_journal()
 	_social_refresh -= delta
 	if _social_refresh <= 0.0 and player != null and (_friends_panel.visible or _guild_panel.visible):
 		_social_refresh = 5.0  # who's online, levels and zones drift: ask again now and then
@@ -2850,6 +3056,10 @@ func _process(delta: float) -> void:
 	var pct := 100.0 * player.xp / player.xp_to_next()
 	_xp_bar.value = pct
 	_xp_text.text = " XP %.1f%%" % pct
+	var charge := _swing_charge()
+	_swing_row.visible = player.auto_attack and not player.dead
+	_swing_bar.value = charge
+	_swing_text.text = " Swing ready" if charge >= 1.0 else " Swing"
 	var buffs: PackedStringArray = []
 	for spell_id: String in player.buffs:
 		var left := int(player.buffs[spell_id]["left"])
@@ -3441,6 +3651,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("guild"):
 		_toggle_guild()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("journal"):
+		_toggle_journal()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("spellbook"):
 		_toggle_spellbook()
 		get_viewport().set_input_as_handled()
@@ -3470,6 +3683,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif _book_panel.visible:
 			_book_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _journal_panel.visible:
+			_journal_panel.visible = false
+			get_viewport().set_input_as_handled()
+		elif _guild_panel.visible or _friends_panel.visible:
+			_guild_panel.visible = false
+			_friends_panel.visible = false
 			get_viewport().set_input_as_handled()
 		elif _skills_panel.visible:
 			_skills_panel.visible = false
@@ -3504,3 +3724,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif player != null and player.cast.is_empty() and not is_instance_valid(player.target):
 			_menu_panel.visible = true  # nothing else to cancel: open the menu
 			get_viewport().set_input_as_handled()
+
+
+## How far along your next main-hand swing is (1 = ready): the swing timer
+## against the length it started at, so a slowed swing fills up evenly too.
+func _swing_charge() -> float:
+	if player.swing_timer > _swing_total or player.swing_timer <= 0.0:
+		_swing_total = maxf(player.swing_timer, player.attack_delay)
+	return clampf(1.0 - player.swing_timer / maxf(_swing_total, 0.01), 0.0, 1.0)

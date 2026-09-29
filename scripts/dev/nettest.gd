@@ -48,6 +48,9 @@ func _run() -> void:
 		if "--wake" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "greenmoor", "position": [0, 2, 20]})
+		elif "--swing" in OS.get_cmdline_user_args():
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 1, "race": "human", "stats": {"sta": 10},
+					"zone": "greenmoor", "position": [0, 2, 20]})
 		elif "--guild" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
@@ -117,6 +120,32 @@ func _run() -> void:
 		await _emote_test(p)
 	elif "--guild" in OS.get_cmdline_user_args():
 		await _guild_test(p)
+	elif "--swing" in OS.get_cmdline_user_args():
+		# the swing timer reaches the client: attack something and watch it run down and restart
+		var mob: Mob = null
+		for m in World.get_mobs():
+			if not m.dead and (mob == null or p.distance_to(m) < p.distance_to(mob)):
+				mob = m
+		if mob == null:
+			print("[%s] swing: no monster here" % who)
+		else:
+			Input.action_press("move_forward")  # walk up to it (the server won't let a client jump)
+			for k in 400:
+				if p.distance_to(mob) < 2.5:
+					break
+				p.face_toward(mob.global_position)
+				await get_tree().physics_frame
+			Input.action_release("move_forward")
+			await _wait(0.5)
+			World.request_set_target(p.entity_id, mob.entity_id)
+			World.request_toggle_attack(p.entity_id)
+			var samples: Array = []
+			for k in 40:
+				await _wait(0.1)
+				samples.append(snappedf(p.swing_timer, 0.1))
+				if k == 12:
+					await _shot("swing_bar")
+			print("[%s] swing: delay %.1f s; timer over 4 s: %s" % [who, p.attack_delay, samples])
 	elif "--trade" in OS.get_cmdline_user_args():
 		await _trade_test(p)
 	elif "--wake" in OS.get_cmdline_user_args():

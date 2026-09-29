@@ -105,6 +105,10 @@ const SECTIONS := [
 	["emotes", "greenmoor"],
 	["terrace_roads", "greenmoor"],
 	["social", "greenmoor"],
+	["exit_levels", "greenmoor"],
+	["swing_bar", "greenmoor"],
+	["crits", "greenmoor"],
+	["journal", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -8105,3 +8109,136 @@ func _t_social() -> void:
 	World.log_message.disconnect(grab)
 	print("social: lines %s" % [lines])
 	p.level = 1
+
+
+## The compass names the exit you face, with its levels after the name.
+func _t_exit_levels() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z := main.zone as Zone
+	p.level = 8
+	for zl: Dictionary in z.data.get("zone_lines", []):
+		var at := Vector3(float(zl["pos"][0]), 0, float(zl["pos"][1]))
+		var from := at * 0.6
+		p.global_position = Vector3(from.x, z.height_at(from.x, from.z) + 1.0, from.z)
+		p.face_toward(at)
+		p.camera_pivot.rotation.y = 0.0
+		await _wait(0.6)
+		print("exit_levels: facing the line to %s" % zl["to"])
+		await _shot("9exit_" + str(zl["to"]))
+	p.level = 1
+
+
+## The swing bar under the player window fills as the next swing comes up.
+func _t_swing_bar() -> void:
+	var p := World.local_player
+	var mob: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and (mob == null or p.distance_to(m) < p.distance_to(mob)):
+			mob = m
+	mob.max_hp = 100000
+	mob.hp = 100000
+	mob.set_physics_process(false)  # holds still for it
+	p.global_position = mob.global_position + Vector3(1.5, 0.3, 0)
+	p.face_toward(mob.global_position)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	var seen: Array = []
+	for k in 30:
+		await _wait(0.1)
+		seen.append(snappedf(get_tree().get_first_node_in_group("hud")._swing_bar.value, 0.05))
+		if k == 14:
+			await _shot("9swing_bar")
+	print("swing_bar: row shown %s; bar over 3 s: %s" % [get_tree().get_first_node_in_group("hud")._swing_row.visible, seen])
+	World.request_toggle_attack(p.entity_id)
+	mob.set_physics_process(true)
+
+
+## Critical hits: the chance each class gets (at 1 and 50), named monsters
+## and ordinary ones, and the lines a melee crit, a spell crit and a heal
+## crit give (the chance forced to 1 for the check).
+func _t_crits() -> void:
+	var p := World.local_player
+	var saved_class := p.char_class
+	var saved_level := p.level
+	var table: Array = []
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		var row := "%s" % cls
+		for lv in [1, 50]:
+			p.level = lv
+			row += " L%d m%.0f%% s%.0f%% h%.0f%%" % [lv, World.crit_chance(p, "melee") * 100, World.crit_chance(p, "spell") * 100, World.crit_chance(p, "heal") * 100]
+		table.append(row)
+	p.char_class = saved_class
+	p.level = saved_level
+	print("crits: %s" % [table])
+	var named: Mob = null
+	var plain: Mob = null
+	for m in World.get_mobs():
+		if m.data.get("named", false):
+			named = m
+		else:
+			plain = m
+	var was: Dictionary = plain.data
+	plain.data = was.duplicate()
+	plain.data["named"] = true
+	var named_chance := World.crit_chance(plain, "melee")
+	plain.data = was
+	print("crits: a named monster %.0f%%, an ordinary one %.0f%%" % [named_chance * 100, World.crit_chance(plain, "melee") * 100])
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	for k: String in ["crit_melee", "crit_spell", "crit_heal"]:
+		GameData.config[k] = [1.0, 0.0]
+	var class_crit: Variant = GameData.classes[p.char_class].get("crit")
+	GameData.classes[p.char_class].erase("crit")  # the config's forced chance, not the class's own
+	var mob := plain
+	mob.max_hp = 100000
+	mob.hp = 100000
+	World._swing(p, mob, "primary")
+	World._swing(p, mob, "primary")
+	World._land(p, "fire_bolt", mob, GameData.spells["fire_bolt"], 20)
+	World._land(p, "minor_healing", p, GameData.spells["minor_healing"], 10)
+	for k: String in ["crit_melee", "crit_spell", "crit_heal"]:
+		GameData.config[k] = [0.03, 0.0004]
+	if class_crit != null:
+		GameData.classes[p.char_class]["crit"] = class_crit
+	World.log_message.disconnect(grab)
+	print("crits: lines %s" % [lines])
+
+
+## The quest journal: active and completed quests, a quest line's step
+## abandoned and offered back by hailing its giver, and a plain abandon.
+func _t_journal() -> void:
+	var p := World.local_player
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	p.quests.clear()
+	p.quests["trail_pack_cord"] = {"active": false, "completions": 1}  # step one done...
+	World._accept_quest(p, "trail_pack_hide")  # ...so Warden Holt's step is on
+	var own := "fang_bounty"
+	World._accept_quest(p, own)
+	p.quests["rain_pack_needles"] = {"active": false, "completions": 1}  # something for the Completed tab
+	hud._toggle_journal()
+	await _wait(0.6)
+	await _shot("9journal_active")
+	hud._journal_pick = own
+	hud._refresh_journal()
+	await _wait(0.3)
+	await _shot("9journal_keyword")
+	hud._journal_done_tab = true
+	hud._refresh_journal()
+	await _wait(0.3)
+	await _shot("9journal_done")
+	hud._toggle_journal()
+	World.request_quest_abandon(p.entity_id, own)
+	World.request_quest_abandon(p.entity_id, "trail_pack_hide")
+	print("journal: abandoned -> %s active %s, trail_pack_hide active %s" % [own, p.quests[own]["active"], p.quests["trail_pack_hide"]["active"]])
+	var holt: Npc = _npcs()["warden_holt"]
+	_stand_by(p, holt)
+	World.request_hail(p.entity_id)
+	print("journal: hailed Warden Holt -> trail_pack_hide active %s" % p.quests["trail_pack_hide"]["active"])
+	World.log_message.disconnect(grab)
+	print("journal: lines %s" % [lines.filter(func(t: String) -> bool: return "abandon" in t or "pack" in t.to_lower() or "hide" in t.to_lower())])
