@@ -1866,6 +1866,7 @@ func player_entered(p: Player) -> void:
 		return
 	apply_alignment(p)
 	_follow_home(p)
+	_check_deity(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
 	if not g.is_empty():
@@ -2476,6 +2477,35 @@ func request_set_stats(player_id: int, points: Dictionary, race := "") -> void:
 	p.stats_changed.emit()
 
 
+## A god for someone whose god won't have them (an evil race following an
+## elephant god: they choose again, once): any god that takes their race.
+func request_change_deity(player_id: int, deity: String) -> void:
+	if _remote(&"request_change_deity", [player_id, deity]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or GameData.deity_allows(p.deity, p.race):
+		return  # only for someone their god has turned away
+	if not GameData.deities.has(deity) or not GameData.deity_allows(deity, p.race):
+		say(p, "That god will not take you.", C_WARN)
+		return
+	var old := str(GameData.deities.get(p.deity, {}).get("name", "your old god"))
+	p.deity = deity
+	p.recalc_stats()
+	p.stats_changed.emit()
+	var god: Dictionary = GameData.deities[deity]
+	say(p, "%s has turned from you. You now follow %s %s. %s" % [old, god["name"], god["title"], god.get("bonus_text", "")], C_SPELL)
+
+
+## Tells someone whose god no longer takes them (on login, or after changing
+## race) that they must choose again; the HUD's window lists who will.
+func _check_deity(p: Player) -> void:
+	if p.deity == "" or GameData.deity_allows(p.deity, p.race):
+		return
+	var r: Dictionary = GameData.races.get(p.race, {})
+	say(p, "%s %s does not take a %s. Choose another god." % [GameData.deities.get(p.deity, {}).get("name", p.deity),
+			GameData.deities.get(p.deity, {}).get("title", ""), r.get("name", p.race)], C_WARN)
+
+
 ## A character's one change of race: to any race its class allows. Stats
 ## follow the new race; the home and bind stay where they are.
 func request_change_race(player_id: int, race: String) -> void:
@@ -2493,6 +2523,7 @@ func request_change_race(player_id: int, race: String) -> void:
 	p.race = race
 	p.race_changed = true
 	apply_alignment(p)  # a new race can mean a new side
+	_check_deity(p)  # and a god who won't have you
 	p.look["race"] = race
 	p.recalc_stats()
 	p.stats_changed.emit()

@@ -162,6 +162,11 @@ var _pet_panel: PanelContainer  # your pet: its health and EQ's pet commands
 var _stats_panel: PanelContainer  # characters from before starting stats spend their points here, once
 var _stats_picker: StatPicker
 var _stats_later := false
+var _deity_panel: PanelContainer  # choosing again when your god won't take your race
+var _deity_hint: Label
+var _deity_row: HBoxContainer
+var _deity_info: Label
+var _deity_pick := ""
 var _race_button: Button  # on the character sheet: the one change of race
 var _gender_button: Button  # on the character sheet: the one change of gender (click twice)
 var _hair_button: Button  # on the character sheet: the one restyle
@@ -260,6 +265,7 @@ func _ready() -> void:
 	_build_journal_window()
 	_build_stats_window()
 	_build_race_window()
+	_build_deity_window()
 	_build_hair_window()
 	_make_draggable.call_deferred()  # once every window is built
 	_compass = Compass.new()
@@ -1704,7 +1710,9 @@ func _build_race_window() -> void:
 			var r: Dictionary = GameData.races[race_id]
 			var st: Dictionary = r["stats"]
 			_race_info.text = "%s  %s\nSTR %d  STA %d  AGI %d  WIS %d  INT %d, before your points." % [r["description"], r["trait_text"],
-					int(st["str"]), int(st["sta"]), int(st["agi"]), int(st["wis"]), int(st["int"])])
+					int(st["str"]), int(st["sta"]), int(st["agi"]), int(st["wis"]), int(st["int"])]
+			if player.deity != "" and not GameData.deity_allows(player.deity, race_id):
+				_race_info.text += "\n%s will not take a %s: you'll choose another god." % [GameData.deities[player.deity]["name"], r["name"]])
 		_race_row.add_child(rb)
 	v.add_child(_race_row)
 	_race_info = UIKit.label("", 12, UIKit.TEXT)
@@ -1728,6 +1736,74 @@ func _build_race_window() -> void:
 		row.add_child(b)
 	v.add_child(row)
 	_race_panel.visible = false
+
+
+## Choosing a god again, for someone whose god turned them away (an evil
+## race following an elephant god): the gods who take them, then Confirm. It
+## stays until they choose.
+func _build_deity_window() -> void:
+	_deity_panel = UIKit.panel()
+	UIKit.place(_deity_panel, Vector2(0.5, 0.5), Vector2(-270, -150))
+	root.add_child(_deity_panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size.x = 540
+	v.add_theme_constant_override("separation", 8)
+	_deity_panel.add_child(v)
+	v.add_child(UIKit.label("Choose a new god", 18, UIKit.GOLD))
+	_deity_hint = UIKit.label("", 13, UIKit.DIM)
+	_deity_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_deity_hint)
+	_deity_row = HBoxContainer.new()
+	_deity_row.add_theme_constant_override("separation", 6)
+	v.add_child(_deity_row)
+	_deity_info = UIKit.label("", 13, UIKit.TEXT)
+	_deity_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_deity_info.custom_minimum_size.y = 70
+	v.add_child(_deity_info)
+	var ok := UIKit.button("Confirm", Vector2(0, 34))
+	ok.pressed.connect(func() -> void:
+		if _deity_pick == "":
+			add_log("Choose a god first.", World.C_WARN)
+			return
+		World.request_change_deity(player.entity_id, _deity_pick))
+	UIKit.frame(ok)
+	v.add_child(ok)
+	_deity_panel.visible = false
+
+
+## Open while your god won't take your race; filled with those who will.
+func _update_deity_window() -> void:
+	var needed := player.deity != "" and not GameData.deity_allows(player.deity, player.race)
+	if not needed:
+		_deity_panel.visible = false
+		return
+	if _deity_panel.visible:
+		return
+	var old: Dictionary = GameData.deities.get(player.deity, {})
+	var race_name := str(GameData.races.get(player.race, {}).get("name", player.race))
+	_deity_hint.text = "%s %s does not take a %s. Choose a god who will; their blessing replaces the old one." % [old.get("name", player.deity), old.get("title", ""), race_name]
+	for c in _deity_row.get_children():
+		c.queue_free()
+	_deity_pick = ""
+	_deity_info.text = ""
+	var group := ButtonGroup.new()
+	for deity_id: String in GameData.deities:
+		if not GameData.deity_allows(deity_id, player.race):
+			continue
+		var d: Dictionary = GameData.deities[deity_id]
+		var b := UIKit.button(str(d["name"]), Vector2(120, 118))
+		b.toggle_mode = true
+		b.button_group = group
+		b.icon = GameData.deity_portrait(deity_id)
+		b.expand_icon = true
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		b.add_theme_font_size_override("font_size", 13)
+		b.pressed.connect(func() -> void:
+			_deity_pick = deity_id
+			_deity_info.text = "%s, %s\n%s\n%s" % [d["name"], d["title"], d["description"], d["bonus_text"]])
+		_deity_row.add_child(b)
+	_deity_panel.visible = true
 
 
 ## The one restyle: a hairstyle and a color, then Change (or Cancel).
@@ -3115,6 +3191,7 @@ func _process(delta: float) -> void:
 	_update_buffs()
 	_update_pet()
 	_update_stats_window()
+	_update_deity_window()
 	if _track_panel.visible:
 		_track_refresh -= delta
 		if _track_refresh <= 0.0:

@@ -21,13 +21,18 @@ var _selected := "warrior"
 var _deity := ""
 var _stats: StatPicker
 var _race := "human"
-var _deity_buttons := {}  # deity id -> its portrait button (some gods take only some races)
+var _deity_buttons := {}  # deity id -> its portrait button on the new-character page (some gods take only some races)
+var _pledge_buttons := {}  # the same on the pledge page, for an older character's own race
 var _gender := "male"
 var _hair: HairPicker
 var _race_desc: Label
 var _class_buttons := {}  # class id -> its button (greyed when the race can't be it)
 var _race_buttons := {}
 var _main: VBoxContainer
+var _preview_stage: Node3D  # the character as chosen so far, in its own little world
+var _preview_key := ""
+var _preview_turn := deg_to_rad(-20.0)  # a three-quarter view to start; drag to turn
+var _preview_drag := false
 var _pledge: VBoxContainer
 
 
@@ -44,7 +49,7 @@ func _ready() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var v := VBoxContainer.new()
-	v.custom_minimum_size.x = 1110  # the new-character form runs in two columns
+	v.custom_minimum_size.x = 1400  # the new-character form: choices, the character, stats and god
 	v.add_theme_constant_override("separation", 8)
 	center.add_child(v)
 	_main = v
@@ -116,6 +121,7 @@ func _build_new_character(page: VBoxContainer) -> void:
 	v.add_theme_constant_override("separation", 10)
 	v.custom_minimum_size.x = 530
 	cols.add_child(v)
+	_build_preview(cols)
 	var right := VBoxContainer.new()
 	right.add_theme_constant_override("separation", 8)
 	right.custom_minimum_size.x = 550
@@ -137,10 +143,13 @@ func _build_new_character(page: VBoxContainer) -> void:
 		gb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		gb.add_theme_font_size_override("font_size", 13)
 		gb.button_pressed = g[0] == _gender
-		gb.pressed.connect(func() -> void: _gender = g[0])
+		gb.pressed.connect(func() -> void:
+			_gender = g[0]
+			_refresh_preview())
 		genders.add_child(gb)
 	v.add_child(genders)
 	_hair = HairPicker.new()
+	_hair.changed.connect(_refresh_preview)
 	v.add_child(_hair)
 
 	var races := GridContainer.new()  # the race first: it decides which classes are open
@@ -199,6 +208,97 @@ func _build_new_character(page: VBoxContainer) -> void:
 	v.add_child(_error)
 
 
+## The character as chosen so far (race, class, gender, hair), standing in
+## its own lit world; drag to turn it. Rebuilt when a choice changes it.
+func _build_preview(cols: HBoxContainer) -> void:
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 4)
+	col.custom_minimum_size.x = 260
+	cols.add_child(col)
+	var box := SubViewportContainer.new()
+	box.stretch = true
+	box.custom_minimum_size = Vector2(260, 440)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP
+	box.gui_input.connect(_on_preview_input)
+	col.add_child(box)
+	var view := SubViewport.new()
+	view.own_world_3d = true
+	view.transparent_bg = true
+	view.msaa_3d = Viewport.MSAA_4X
+	box.add_child(view)
+	var env := WorldEnvironment.new()
+	env.environment = Environment.new()
+	env.environment.background_mode = Environment.BG_CLEAR_COLOR
+	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.environment.ambient_light_color = Color(0.72, 0.74, 0.82)
+	env.environment.ambient_light_energy = 0.8
+	view.add_child(env)
+	for spec: Array in [[Vector3(-30, 150, 0), 1.1], [Vector3(-15, -60, 0), 0.35]]:  # a key light and a soft fill from the other side
+		var light := DirectionalLight3D.new()
+		light.rotation_degrees = spec[0]
+		light.light_energy = spec[1]
+		view.add_child(light)
+	var floor_disc := MeshInstance3D.new()  # something to stand on
+	var disc := CylinderMesh.new()
+	disc.top_radius = 0.75
+	disc.bottom_radius = 0.75
+	disc.height = 0.04
+	floor_disc.mesh = disc
+	floor_disc.position.y = -0.02
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.16, 0.17, 0.2)
+	mat.roughness = 1.0
+	floor_disc.material_override = mat
+	view.add_child(floor_disc)
+	_preview_stage = Node3D.new()
+	view.add_child(_preview_stage)
+	var cam := Camera3D.new()
+	cam.fov = 30.0
+	view.add_child(cam)
+	cam.look_at_from_position(Vector3(0, 1.45, -7.6), Vector3(0, 1.1, 0))  # room for an ogre's head, a gnome's feet
+	var hint := UIKit.label("Drag to turn", 11, UIKit.DIM)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(hint)
+
+
+func _on_preview_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		_preview_drag = (event as InputEventMouseButton).pressed
+	elif event is InputEventMouseMotion and _preview_drag:
+		_preview_turn += (event as InputEventMouseMotion).relative.x * 0.012
+		if _preview_stage != null:
+			_preview_stage.rotation.y = _preview_turn
+
+
+## What the preview shows: the class's body and starting weapon, with the
+## race's height, skin and bolt-ons, the gender and the hair.
+func preview_look() -> Dictionary:
+	var cls: Dictionary = GameData.classes.get(_selected, {})
+	var weapon_item := str(cls.get("starting_items", {}).get("primary", ""))
+	return {"model": str(cls.get("model", "")), "weapon": str(GameData.item(weapon_item).get("model", "")) if weapon_item != "" else "",
+			"race": _race, "gender": _gender, "hair": [_hair.style if _hair != null else "", _hair.color if _hair != null else ""],
+			"scale": float(GameData.races.get(_race, {}).get("scale", 1.0))}
+
+
+func _refresh_preview() -> void:
+	if _preview_stage == null:
+		return
+	var look := preview_look()
+	var key := JSON.stringify(look)
+	if key == _preview_key:
+		return
+	_preview_key = key
+	for child in _preview_stage.get_children():
+		child.queue_free()
+	var model := Entity.make_visual(look)
+	_preview_stage.add_child(model)
+	_preview_stage.rotation.y = _preview_turn
+	if model is CharacterModel:
+		var idle := (model as CharacterModel)._clip("idle")
+		if idle != "":
+			(model as CharacterModel).anim.play(idle)
+
+
 ## Older characters choose a deity before they carry on.
 func _build_pledge(center: CenterContainer) -> void:
 	_pledge = VBoxContainer.new()
@@ -212,7 +312,7 @@ func _build_pledge(center: CenterContainer) -> void:
 	var sub := UIKit.label("Choose the deity you follow. This cannot be changed.", 13, UIKit.DIM)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_pledge.add_child(sub)
-	_deity_picker(_pledge)
+	_deity_picker(_pledge, true)
 	var go := UIKit.button("Pledge and continue", Vector2(0, 44))
 	var err := UIKit.label("", 13, Color(1, 0.45, 0.35))
 	go.pressed.connect(func() -> void:
@@ -228,7 +328,7 @@ func _build_pledge(center: CenterContainer) -> void:
 
 ## A row of portrait buttons, one per deity, above a label describing the
 ## chosen one.
-func _deity_picker(parent: Container) -> void:
+func _deity_picker(parent: Container, pledge := false) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	var group := ButtonGroup.new()
@@ -247,7 +347,7 @@ func _deity_picker(parent: Container) -> void:
 		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		b.add_theme_font_size_override("font_size", 13)
 		b.tooltip_text = "%s, %s" % [d["name"], d["title"]]
-		_deity_buttons[deity_id] = b
+		(_pledge_buttons if pledge else _deity_buttons)[deity_id] = b
 		b.pressed.connect(func() -> void:
 			_deity = deity_id
 			desc.text = "%s, %s\n%s\n%s" % [d["name"], d["title"], d["description"], d["bonus_text"]]
@@ -258,17 +358,26 @@ func _deity_picker(parent: Container) -> void:
 	_fit_deities()
 
 
-## Gods who take only some races ("races" in deities.json: the bog gods) are
-## grayed out for the rest; a choice that no longer fits is cleared.
+## Gods who don't take a race ("races" and "alignments" in deities.json: the
+## bog gods take only trolls and ogres, the elephants no evil race) are grayed
+## out for it: the race being made, or on the pledge page the older
+## character's own; a choice that no longer fits is cleared.
 func _fit_deities() -> void:
-	for deity_id: String in _deity_buttons:
-		var b: Button = _deity_buttons[deity_id]
+	var pledging := _pledge != null and _pledge.visible
+	_fit_row(_deity_buttons, _race, not pledging)
+	_fit_row(_pledge_buttons, str(existing.get("race", "")), pledging)
+
+
+## One row of gods; only the row in use may clear the choice (they share it).
+func _fit_row(buttons: Dictionary, race: String, in_use: bool) -> void:
+	for deity_id: String in buttons:
+		var b: Button = buttons[deity_id]
 		if not is_instance_valid(b):
 			continue
-		var ok := GameData.deity_allows(deity_id, _race)
+		var ok := GameData.deity_allows(deity_id, race)
 		b.disabled = not ok
 		b.modulate.a = 1.0 if ok else 0.4
-		if not ok and _deity == deity_id:
+		if not ok and in_use and _deity == deity_id:
 			_deity = ""
 			b.button_pressed = false
 
@@ -296,6 +405,7 @@ func _select_race(race_id: String) -> void:
 		_stats.set_race(race_id)
 	if not _selected in open:
 		_select(str(open[0]))
+	_refresh_preview()
 
 
 func _select(class_id: String) -> void:
@@ -307,6 +417,7 @@ func _select(class_id: String) -> void:
 	_desc.text = GameData.classes[class_id]["description"]
 	if _stats != null:
 		_stats.set_class(class_id, true)  # a new class starts from its own spread
+	_refresh_preview()
 
 
 func _create() -> void:
@@ -315,8 +426,8 @@ func _create() -> void:
 	if regex.search(raw) == null:
 		_error.text = "Names must be 3-15 letters, no spaces or numbers."
 		return
-	if _deity == "":
-		_error.text = "Choose a deity."
+	if _deity == "" or not GameData.deity_allows(_deity, _race):
+		_error.text = "Choose a deity." if _deity == "" else "%s does not take a %s." % [GameData.deities[_deity]["name"], GameData.races[_race]["name"]]
 		return
 	if _stats.points_left() > 0:
 		_error.text = "Spend all your stat points (%d left)." % _stats.points_left()

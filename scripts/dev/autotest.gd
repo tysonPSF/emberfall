@@ -116,6 +116,8 @@ const SECTIONS := [
 	["deity_picker", "greenmoor"],
 	["quest_share", "greenmoor"],
 	["delete_guild", "greenmoor"],
+	["evil_gods", "greenmoor"],
+	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
@@ -5301,7 +5303,10 @@ func _t_races() -> void:
 	cc._select("wizard")
 	print("races: a troll may be %s; picking wizard leaves %s; stats start %s" % [open_buttons, cc._selected, cc._stats._rows["str"][1].text])
 	cc._name_edit.text = "Grukk"
-	cc._deity = "fire"
+	cc._deity = "fire"  # Agnavar won't take a troll: refused
+	cc._create()
+	print("races: a troll following Agnavar -> '%s'" % cc._error.text)
+	cc._deity = "horn"
 	var got := []
 	cc.confirmed.connect(func(s: Dictionary) -> void: got.append(s))
 	cc._create()
@@ -8222,6 +8227,77 @@ func _t_crits() -> void:
 ## button shows in the journal only in a group.
 ## A deleted character leaves its guild: a leader's guild passes to an
 ## officer before a member, and a guild of one closes.
+## The elephant gods turn the evil races away (Timiraj takes anyone): who
+## may follow whom, and a troll who followed Agnavar choosing again in the
+## HUD's window, refused an elephant, taking a bog god.
+## Character creation shows the character as it's chosen: race, class,
+## gender and hair change the figure; a drag turns it.
+func _t_char_preview() -> void:
+	var cc := CharCreate.new()
+	cc.setup({})
+	get_parent().add_child(cc)
+	await _wait(0.6)
+	await _shot("9preview_default")
+	for pick: Array in [["troll", "shaman", "male", "rugged", "white"], ["gnome", "wizard", "female", "long", "copper"],
+			["ogre", "warrior", "male", "", ""], ["dark_elf", "necromancer", "female", "flowing", "white"]]:
+		cc._select_race(pick[0])
+		cc._select(pick[1])
+		cc._gender = pick[2]
+		cc._hair.set_hair(pick[3], pick[4])
+		cc._refresh_preview()
+		await _wait(0.5)
+		print("char_preview: %s -> %s" % [pick, cc.preview_look()])
+		await _shot("9preview_%s" % pick[0])
+	var drag := InputEventMouseButton.new()
+	drag.button_index = MOUSE_BUTTON_LEFT
+	drag.pressed = true
+	cc._on_preview_input(drag)
+	var move := InputEventMouseMotion.new()
+	move.relative = Vector2(180, 0)
+	cc._on_preview_input(move)
+	await _wait(0.3)
+	print("char_preview: dragged -> turned %.0f degrees" % rad_to_deg(cc._preview_stage.rotation.y))
+	await _shot("9preview_turned")
+	cc.queue_free()
+
+
+func _t_evil_gods() -> void:
+	var table := {}
+	for race: String in ["human", "high_elf", "dark_elf", "troll"]:
+		table[race] = GameData.deities.keys().filter(func(d: String) -> bool: return GameData.deity_allows(d, race))
+	print("evil_gods: who takes whom %s" % [table])
+	var p := World.local_player
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	var keep := [p.race, p.deity, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	p.race = "troll"
+	p.deity = "fire"
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	World._check_deity(p)
+	await _wait(0.5)
+	var offered: Array = hud._deity_row.get_children().filter(func(b: Node) -> bool: return not b.is_queued_for_deletion()).map(func(b: Button) -> String: return b.text)
+	print("evil_gods: a troll of Agnavar -> window %s, offered %s" % [hud._deity_panel.visible, offered])
+	(hud._deity_row.get_child(offered.find("Mahishra")) as Button).pressed.emit()
+	await _wait(0.2)
+	await _shot("9evil_gods_window")
+	World.request_change_deity(p.entity_id, "light")
+	print("evil_gods: asked for Prabhagaj -> deity %s" % p.deity)
+	var hp0 := p.max_hp
+	World.request_change_deity(p.entity_id, "horn")
+	await _wait(0.5)
+	print("evil_gods: asked for Mahishra -> deity %s, max hp %d -> %d, window %s" % [p.deity, hp0, p.max_hp, hud._deity_panel.visible])
+	World.request_change_deity(p.entity_id, "dark")
+	print("evil_gods: asked again with a god who takes them -> deity %s (no second change)" % p.deity)
+	World.log_message.disconnect(grab)
+	print("evil_gods: lines %s" % [lines])
+	p.race = keep[0]
+	p.deity = keep[1]
+	p.factions = keep[2]
+	p.alignment_mods = keep[3]
+	p.recalc_stats()
+
+
 func _t_delete_guild() -> void:
 	var gs := World.guilds()
 	for k: String in ["delete test"]:

@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 20  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 21  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -798,7 +798,7 @@ func _send_self(peer: int) -> void:
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 		"gender": p.gender, "gender_changed": p.gender_changed,
 		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
-		"swing_timer": p.swing_timer,
+		"swing_timer": p.swing_timer, "deity": p.deity,
 		"grove_deities": p.grove_deities, "friends": p.friends, "guild_name": p.guild_name, "guild_rank": p.guild_rank,
 	}
 	_s_self.rpc_id(peer, d)
