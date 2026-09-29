@@ -106,6 +106,8 @@ const SECTIONS := [
 	["terrace_roads", "greenmoor"],
 	["social", "greenmoor"],
 	["exit_levels", "greenmoor"],
+	["swing_bar", "greenmoor"],
+	["crits", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7591,3 +7593,81 @@ func _t_exit_levels() -> void:
 		print("exit_levels: facing the line to %s" % zl["to"])
 		await _shot("9exit_" + str(zl["to"]))
 	p.level = 1
+
+
+## The swing bar under the player window fills as the next swing comes up.
+func _t_swing_bar() -> void:
+	var p := World.local_player
+	var mob: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and (mob == null or p.distance_to(m) < p.distance_to(mob)):
+			mob = m
+	mob.max_hp = 100000
+	mob.hp = 100000
+	mob.set_physics_process(false)  # holds still for it
+	p.global_position = mob.global_position + Vector3(1.5, 0.3, 0)
+	p.face_toward(mob.global_position)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	var seen: Array = []
+	for k in 30:
+		await _wait(0.1)
+		seen.append(snappedf(get_tree().get_first_node_in_group("hud")._swing_bar.value, 0.05))
+		if k == 14:
+			await _shot("9swing_bar")
+	print("swing_bar: row shown %s; bar over 3 s: %s" % [get_tree().get_first_node_in_group("hud")._swing_row.visible, seen])
+	World.request_toggle_attack(p.entity_id)
+	mob.set_physics_process(true)
+
+
+## Critical hits: the chance each class gets (at 1 and 50), named monsters
+## and ordinary ones, and the lines a melee crit, a spell crit and a heal
+## crit give (the chance forced to 1 for the check).
+func _t_crits() -> void:
+	var p := World.local_player
+	var saved_class := p.char_class
+	var saved_level := p.level
+	var table: Array = []
+	for cls: String in GameData.classes:
+		p.char_class = cls
+		var row := "%s" % cls
+		for lv in [1, 50]:
+			p.level = lv
+			row += " L%d m%.0f%% s%.0f%% h%.0f%%" % [lv, World.crit_chance(p, "melee") * 100, World.crit_chance(p, "spell") * 100, World.crit_chance(p, "heal") * 100]
+		table.append(row)
+	p.char_class = saved_class
+	p.level = saved_level
+	print("crits: %s" % [table])
+	var named: Mob = null
+	var plain: Mob = null
+	for m in World.get_mobs():
+		if m.data.get("named", false):
+			named = m
+		else:
+			plain = m
+	var was: Dictionary = plain.data
+	plain.data = was.duplicate()
+	plain.data["named"] = true
+	var named_chance := World.crit_chance(plain, "melee")
+	plain.data = was
+	print("crits: a named monster %.0f%%, an ordinary one %.0f%%" % [named_chance * 100, World.crit_chance(plain, "melee") * 100])
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	for k: String in ["crit_melee", "crit_spell", "crit_heal"]:
+		GameData.config[k] = [1.0, 0.0]
+	var class_crit: Variant = GameData.classes[p.char_class].get("crit")
+	GameData.classes[p.char_class].erase("crit")  # the config's forced chance, not the class's own
+	var mob := plain
+	mob.max_hp = 100000
+	mob.hp = 100000
+	World._swing(p, mob, "primary")
+	World._swing(p, mob, "primary")
+	World._land(p, "fire_bolt", mob, GameData.spells["fire_bolt"], 20)
+	World._land(p, "minor_healing", p, GameData.spells["minor_healing"], 10)
+	for k: String in ["crit_melee", "crit_spell", "crit_heal"]:
+		GameData.config[k] = [0.03, 0.0004]
+	if class_crit != null:
+		GameData.classes[p.char_class]["crit"] = class_crit
+	World.log_message.disconnect(grab)
+	print("crits: lines %s" % [lines])

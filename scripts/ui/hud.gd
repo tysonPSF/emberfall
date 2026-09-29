@@ -46,6 +46,10 @@ var _stamina_row: Control
 var _stamina_bar: ProgressBar
 var _stamina_text: Label
 var _xp_bar: ProgressBar
+var _swing_bar: ProgressBar  # your next swing coming up, while you're attacking
+var _swing_row: Control
+var _swing_text: Label
+var _swing_total := 0.0  # how long the swing being waited for takes (the timer's value when it last started)
 var _xp_text: Label
 var _buff_label: Label
 
@@ -337,6 +341,13 @@ func _build_player_window() -> void:
 	_xp_bar = xp[0]
 	_xp_text = xp[1]
 	v.add_child(xp[2])
+	var swing := _bar_row(Color(0.86, 0.36, 0.28), 5.0)
+	_swing_bar = swing[0]
+	_swing_text = swing[1]
+	_swing_row = swing[2]
+	_swing_bar.max_value = 1.0
+	_swing_row.visible = false
+	v.add_child(_swing_row)
 	_buff_label = UIKit.label("", 11, Color(0.6, 0.85, 1.0))
 	_buff_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	_buff_label.custom_minimum_size.x = 290
@@ -2788,8 +2799,7 @@ func _draw_crosshair() -> void:
 		return
 	var radius := CROSSHAIR_SIZE * 0.5 - 3.0
 	_crosshair.draw_arc(c, radius, 0.0, TAU, 32, CROSSHAIR_SHADOW, 4.0)
-	var delay := maxf(player.attack_delay, 0.01)
-	var charge := clampf(1.0 - player.swing_timer / delay, 0.0, 1.0)
+	var charge := _swing_charge()
 	var ready := charge >= 1.0
 	_crosshair.draw_arc(c, radius, -PI * 0.5, -PI * 0.5 + TAU * charge, 32,
 			Color(1, 0.5, 0.4) if ready else CROSSHAIR_COLOR, 2.5)
@@ -2850,6 +2860,10 @@ func _process(delta: float) -> void:
 	var pct := 100.0 * player.xp / player.xp_to_next()
 	_xp_bar.value = pct
 	_xp_text.text = " XP %.1f%%" % pct
+	var charge := _swing_charge()
+	_swing_row.visible = player.auto_attack and not player.dead
+	_swing_bar.value = charge
+	_swing_text.text = " Swing ready" if charge >= 1.0 else " Swing"
 	var buffs: PackedStringArray = []
 	for spell_id: String in player.buffs:
 		var left := int(player.buffs[spell_id]["left"])
@@ -3504,3 +3518,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif player != null and player.cast.is_empty() and not is_instance_valid(player.target):
 			_menu_panel.visible = true  # nothing else to cancel: open the menu
 			get_viewport().set_input_as_handled()
+
+
+## How far along your next main-hand swing is (1 = ready): the swing timer
+## against the length it started at, so a slowed swing fills up evenly too.
+func _swing_charge() -> float:
+	if player.swing_timer > _swing_total or player.swing_timer <= 0.0:
+		_swing_total = maxf(player.swing_timer, player.attack_delay)
+	return clampf(1.0 - player.swing_timer / maxf(_swing_total, 0.01), 0.0, 1.0)

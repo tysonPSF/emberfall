@@ -63,6 +63,7 @@ const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
 const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
 const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
 const C_CHAT_GUILD := Color(0.55, 1.0, 0.72)  # /gu, and the guild's news
+const C_CRIT := Color(1.0, 0.93, 0.35)  # a critical hit, blast or heal
 const C_EMOTE := Color(0.98, 0.84, 0.62)  # /wave, /em: its own shade, like the group's
 const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
@@ -360,6 +361,7 @@ func _client_timers(delta: float) -> void:
 		dot["next"] = maxf(0.0, float(dot.get("next", 0.0)) - delta)
 	p.root_left = maxf(0.0, p.root_left - delta)
 	p.snare_left = maxf(0.0, p.snare_left - delta)
+	p.swing_timer = maxf(0.0, p.swing_timer - delta)  # the server's, counted down between its updates (the swing ring and bar)
 
 
 func _update_timers(e: Entity, delta: float) -> void:
@@ -467,6 +469,9 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 	var dmg := randi_range(lo, hi) if randf() < chance else 0
 	if dmg > 0 and p != null:
 		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
+	if dmg > 0 and randf() < crit_chance(e, "melee"):
+		dmg = roundi(dmg * float(cfg("crit_melee_mult", 2.0)))
+		_crit_msg(e, "melee", dmg)
 	_combat_msg(e, t, e.attack_verb if hand == "primary" else p.off_verb, dmg)
 	if dmg > 0:
 		damage(t, dmg, e)
@@ -474,6 +479,32 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 			_try_proc(e, t)
 		else:
 			_try_offhand_proc(p, t)
+
+
+## The chance of a critical ("melee": swings, shots and abilities; "spell":
+## damage spells; "heal"): a player's is [base, per level] from their class's
+## "crit" in classes.json, else config crit_<kind>; named monsters have
+## config crit_named; nothing else crits (ordinary monsters, pets, npcs).
+func crit_chance(e: Entity, kind: String) -> float:
+	if e is Player:
+		var p := e as Player
+		var c: Array = GameData.classes.get(p.char_class, {}).get("crit", {}).get(kind, cfg("crit_" + kind, [0.03, 0.0004]))
+		return float(c[0]) + float(c[1]) * p.level
+	if e is Mob and (e as Mob).data.get("named", false):
+		return float(cfg("crit_named", 0.05))
+	return 0.0
+
+
+## EverQuest's lines: "You score a critical hit! (48)", and the same with
+## the name to everyone near enough to see it.
+func _crit_msg(e: Entity, kind: String, amount: int) -> void:
+	var yours: String = {"melee": "You score a critical hit! (%d)", "spell": "You deliver a critical blast! (%d)", "heal": "You perform an exceptional heal! (%d)"}[kind]
+	var theirs: String = {"melee": "%s scores a critical hit! (%d)", "spell": "%s delivers a critical blast! (%d)", "heal": "%s performs an exceptional heal! (%d)"}[kind]
+	for q in get_players():
+		if q == e:
+			say(q, yours % amount, C_CRIT)
+		elif q.distance_to(e) <= SAY_RANGE:
+			say(q, theirs % [cap(e.display_name), amount], C_CRIT)
 
 
 ## A buff that coats the weapon (Envenom Blade): its "proc" rides every hit, either hand.
@@ -1499,6 +1530,9 @@ func _ranged_shot(p: Player, t: Entity, mult: float) -> bool:
 		if skill == "archery":
 			mult *= float(archer.get("dmg", 1.0))  # rangers: the best bows in the land
 		dmg = maxi(1, roundi(dmg * mult))
+	if dmg > 0 and randf() < crit_chance(p, "melee"):
+		dmg = roundi(dmg * float(cfg("crit_melee_mult", 2.0)))
+		_crit_msg(p, "melee", dmg)
 	_combat_msg(p, t, weapon.get("verb", ["shoot", "shoots"]), dmg)
 	if dmg > 0:
 		if ammo_id != "" and t is Mob and randf() < float(cfg("ammo_recover_chance", 0.15)):
@@ -2537,6 +2571,11 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 	Net.broadcast_fx(c, t, spell_id)
 	match str(s["type"]):
 		"damage":
+			var kind := "melee" if s.get("ability", false) or int(s.get("mana", 0)) == 0 else "spell"  # a kick or a stab crits as a blow does
+			var boost := 1.5 if str(s.get("skill", "")) == "backstab" else 1.0  # a backstab finds the gap more often
+			if power > 0 and randf() < crit_chance(c, kind) * boost:
+				power = roundi(power * float(cfg("crit_%s_mult" % kind, 2.0 if kind == "melee" else 1.5)))
+				_crit_msg(c, kind, power)
 			if s.get("ability", false):
 				c.animate(str(s.get("anim", "attack")))  # a kick, a bash, or a swing
 				_combat_msg(c, t, s.get("verb", ["hit", "hits"]), power)
@@ -2619,6 +2658,9 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				say(t, str(s.get("stun_you", "You are stunned and can't act!")), C_HIT_YOU)
 			t.add_hate(c, 8.0)
 		"heal":
+			if power > 0 and randf() < crit_chance(c, "heal"):
+				power = roundi(power * float(cfg("crit_heal_mult", 1.5)))
+				_crit_msg(c, "heal", power)
 			t.hp = mini(t.max_hp, t.hp + power)
 			t.stats_changed.emit()
 			say(t, "You feel better.", C_SPELL)
