@@ -26,6 +26,8 @@ signal station_closed
 signal pet_changed  # your pet came, went, or was told something
 signal zone_change(player: Player, zone_id: String, arrive: Vector2, face: Vector2)
 signal group_invited(from_name: String)  # "" closes the invite window
+signal friends_view(list: Array)  # your friends: [{name, online, level, class, zone}]
+signal guild_view(view: Dictionary)  # your guild's roster and message of the day ({} for none)
 signal shot_fired(from: Entity, to: Entity, projectile: String)
 signal spell_fx(caster: Entity, target: Entity, spell_id: String)  # a spell landed: for its look (SpellFx)  # a ranged attack, for the flight effect
 
@@ -60,11 +62,12 @@ const C_CHAT_SAY := Color(0.93, 0.93, 0.9)
 const C_CHAT_SHOUT := Color(1.0, 0.5, 0.42)
 const C_CHAT_OOC := Color(0.5, 0.95, 0.55)
 const C_CHAT_TELL := Color(0.95, 0.6, 0.95)
+const C_CHAT_GUILD := Color(0.55, 1.0, 0.72)  # /gu, and the guild's news
 const C_EMOTE := Color(0.98, 0.84, 0.62)  # /wave, /em: its own shade, like the group's
 const C_CHAT_GROUP := Color(0.4, 0.86, 1.0)  # its own shade: the group window picks lines out by color, so no other kind of line may share it
 const SAY_RANGE := 45.0
 const CHAT_MAX := 240
-const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp  /stuck (back to open ground)\nEmotes: /wave /bow /cheer /dance /rude and more (/emotes for all; they're aimed at your target)  /em <text> (your own)\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
+const CHAT_HELP := "Chat: just type to /say.  /shout (zone)  /ooc (everyone)  /tell <name> <msg>  /r <msg> (reply)  /who  /who all  /lfg  /afk [message]  /random [max]  /loc  /time  /camp  /stuck (back to open ground)\nEmotes: /wave /bow /cheer /dance /rude and more (/emotes for all; they're aimed at your target)  /em <text> (your own)\nFriends and guild: /friend <name>  /friends  /gu <msg>  /guild (all guild commands)  (F: friends, U: guild)\nGroups: /invite [name]  /accept  /decline  /g <msg>  /disband  /kick <name>  /makeleader <name>  /assist [name]  /follow  (F2-F6 target members)"
 const GROUP_MAX := 6
 const GROUP_XP_BONUS := 0.1  # per extra member who shares the kill
 const LOOT_RIGHTS_SECONDS := 180.0
@@ -305,6 +308,10 @@ func _physics_process(delta: float) -> void:
 		_client_timers(delta)
 		return
 	_watch_nightfall()  # the server says it, once per player
+	_social_timer += delta
+	if _social_timer >= SOCIAL_SECONDS:
+		_social_timer = 0.0
+		_touch_social()
 	_group_view_timer += delta
 	if _group_view_timer >= 0.2:
 		_group_view_timer = 0.0
@@ -1713,6 +1720,388 @@ func _go_home(p: Player) -> void:
 	zone_change.emit(p, home, Vector2.INF, Vector2.INF)  # INF: arrive at that zone's bindstone
 
 
+# --- friends and guilds --------------------------------------------------------
+
+const FRIENDS_MAX := 50
+const SOCIAL_SECONDS := 10.0  # online guild members' roster lines are brought up to date this often
+const GUILD_INVITE_SECONDS := 60.0
+const GUILD_NAME_MIN := 3
+const GUILD_NAME_MAX := 30
+const GUILD_DISBAND_CONFIRM_MS := 15000
+
+var _guild_store: GuildStore
+var _social_timer := 0.0
+
+
+## The guilds, where the rules run: beside the accounts on a server, in
+## user:// offline (a test run keeps its own file).
+func guilds() -> GuildStore:
+	if _guild_store == null:
+		var args := OS.get_cmdline_user_args()
+		var file := "guilds_autotest.json" if "--autotest" in args else "guilds.json"
+		var dir := Net.accounts.root if Net.accounts != null else "user://"
+		_guild_store = GuildStore.new(dir.path_join(file))
+	return _guild_store
+
+
+func _roster_line(p: Player) -> Dictionary:
+	var z := zone_of(p)
+	return {"name": p.display_name, "level": p.level, "class": p.char_class, "zone": z.zone_id if z != null else "",
+			"seen": int(Time.get_unix_time_from_system()), "grove": p.grove_deities.duplicate()}
+
+
+func _touch_social() -> void:
+	for p in get_players():
+		guilds().touch(p.display_name, _roster_line(p))
+	guilds().save_if_dirty()
+
+
+func _online(char_name: String) -> Player:
+	for q in get_players():
+		if q.display_name.to_lower() == char_name.to_lower():
+			return q
+	return null
+
+
+## Rules side, when a character comes into the world (online or offline):
+## their guild's tag and message of the day, and word to friends and guildmates.
+func player_entered(p: Player) -> void:
+	if not Net.is_authority() or p == null:
+		return
+	_set_guild_tag(p)
+	var g := guilds().guild_of(p.display_name)
+	if not g.is_empty():
+		guilds().touch(p.display_name, _roster_line(p))
+		if str(g.get("motd", "")) != "":
+			say(p, "Guild message of the day: %s" % g["motd"], C_CHAT_GUILD)
+	for q in get_players():
+		if q == p:
+			continue
+		if _is_friend(q, p.display_name):
+			say(q, "Your friend %s has come online." % p.display_name, C_SYSTEM)
+		elif not g.is_empty() and guilds().key_of(q.display_name) == guilds().key_of(p.display_name):
+			say(q, "%s of your guild has come online." % p.display_name, C_CHAT_GUILD)
+
+
+## Rules side, when a character leaves the world (camp, quit, disconnect).
+func player_left(p: Player) -> void:
+	if not Net.is_authority() or p == null:
+		return
+	guilds().touch(p.display_name, _roster_line(p))
+	guilds().save_if_dirty()
+	var key := guilds().key_of(p.display_name)
+	for q in get_players():
+		if q == p:
+			continue
+		if _is_friend(q, p.display_name):
+			say(q, "Your friend %s has gone offline." % p.display_name, C_SYSTEM)
+		elif key != "" and guilds().key_of(q.display_name) == key:
+			say(q, "%s of your guild has gone offline." % p.display_name, C_CHAT_GUILD)
+
+
+func _is_friend(p: Player, char_name: String) -> bool:
+	for f: String in p.friends:
+		if f.to_lower() == char_name.to_lower():
+			return true
+	return false
+
+
+## /friend <name>: adds a character to your friends, or takes them off.
+func request_friend(player_id: int, char_name: String) -> void:
+	if _remote(&"request_friend", [player_id, char_name]):
+		return
+	var p := get_object(player_id) as Player
+	char_name = char_name.strip_edges()
+	if p == null:
+		return
+	if char_name == "":
+		var t := p.target as Player if p.target is Player else null
+		if t == null:
+			say(p, "Befriend whom? /friend <name>, or target them.", C_WARN)
+			return
+		char_name = t.display_name
+	for f: String in p.friends:
+		if f.to_lower() == char_name.to_lower():
+			p.friends.erase(f)
+			say(p, "%s is no longer on your friends list." % f, C_SYSTEM)
+			request_friends_view(player_id)
+			return
+	if char_name.to_lower() == p.display_name.to_lower():
+		say(p, "You are already your own best friend.", C_WARN)
+		return
+	if p.friends.size() >= FRIENDS_MAX:
+		say(p, "Your friends list is full (%d)." % FRIENDS_MAX, C_WARN)
+		return
+	var proper := _character_name(char_name)
+	if proper == "":
+		say(p, "There is no one called %s." % char_name, C_WARN)
+		return
+	p.friends.append(proper)
+	say(p, "%s is now on your friends list." % proper, C_SYSTEM)
+	request_friends_view(player_id)
+
+
+## A character's name as it was made ("" if nobody is called that). Offline
+## there's no one else to check, so any sensible name will do.
+func _character_name(char_name: String) -> String:
+	var online := _online(char_name)
+	if online != null:
+		return online.display_name
+	if Net.accounts != null:
+		return str(Net.accounts.load_character(char_name).get("name", ""))
+	return char_name.capitalize() if char_name.is_valid_identifier() else ""
+
+
+## The friends window: who's online, and where.
+func request_friends_view(player_id: int) -> void:
+	if _remote(&"request_friends_view", [player_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	var list: Array = []
+	for f: String in p.friends:
+		var q := _online(f)
+		var z := zone_of(q) if q != null else null
+		list.append({"name": f, "online": q != null, "level": q.level if q != null else 0,
+				"class": q.char_class if q != null else "", "zone": z.zone_name if z != null else "", "afk": q != null and q.afk})
+	_ui(p, &"friends_view", [list])
+
+
+## Everything a guild does, from the chat (/guildinvite...) or the guild
+## window: create, invite, accept, decline, leave, remove, promote, demote,
+## leader, motd, disband, view.
+func request_guild(player_id: int, action: String, arg: String = "") -> void:
+	if _remote(&"request_guild", [player_id, action, arg]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null:
+		return
+	arg = arg.strip_edges()
+	var gs := guilds()
+	var key := gs.key_of(p.display_name)
+	var g := gs.guild_of(p.display_name)
+	var rank := gs.rank_of(p.display_name)
+	var needs := func(min_rank: String) -> bool:
+		if key == "":
+			say(p, "You are not in a guild.", C_WARN)
+			return false
+		if GuildStore.power(rank) < GuildStore.power(min_rank):
+			say(p, "Only a guild %s can do that." % min_rank, C_WARN)
+			return false
+		return true
+	match action:
+		"view":
+			pass
+		"create":
+			_found_guild(p, arg)
+		"invite":
+			if not needs.call("officer"):
+				return
+			var t := _online(arg) if arg != "" else (p.target as Player if p.target is Player else null)
+			if t == null or t == p:
+				say(p, "Invite whom? Target a player or name them: /guildinvite <name>.", C_WARN)
+				return
+			if gs.key_of(t.display_name) != "":
+				say(p, "%s is already in a guild." % t.display_name, C_WARN)
+				return
+			t.set_meta("guild_invite", {"key": key, "from": p.display_name, "until": Time.get_ticks_msec() + int(GUILD_INVITE_SECONDS * 1000)})
+			say(p, "You invite %s to join %s." % [t.display_name, g["name"]], C_CHAT_GUILD)
+			say(t, "%s invites you to join the guild %s. Type /guildaccept to join or /guilddecline." % [p.display_name, g["name"]], C_CHAT_GUILD)
+		"accept", "decline":
+			var inv: Dictionary = p.get_meta("guild_invite", {})
+			p.remove_meta("guild_invite")
+			if inv.is_empty() or Time.get_ticks_msec() > int(inv["until"]) or not gs.guilds.has(str(inv["key"])):
+				say(p, "You have no guild invitation waiting.", C_WARN)
+				return
+			var from := _online(str(inv["from"]))
+			var gname := str(gs.guilds[str(inv["key"])]["name"])
+			if action == "decline":
+				say(p, "You decline to join %s." % gname, C_SYSTEM)
+				if from != null:
+					say(from, "%s declines to join the guild." % p.display_name, C_CHAT_GUILD)
+				return
+			if key != "":
+				say(p, "Leave your guild first.", C_WARN)
+				return
+			gs.join(str(inv["key"]), _roster_line(p), "member")
+			_guild_news(str(inv["key"]), "%s has joined the guild." % p.display_name)
+			_set_guild_tag(p)
+			var motd := str(gs.guilds[str(inv["key"])].get("motd", ""))
+			if motd != "":
+				say(p, "Guild message of the day: %s" % motd, C_CHAT_GUILD)
+		"leave":
+			if not needs.call("member"):
+				return
+			if rank == "leader" and (g["members"] as Dictionary).size() > 1:
+				say(p, "Hand the guild to someone first (/guildleader <name>), or disband it.", C_WARN)
+				return
+			gs.leave(p.display_name)
+			say(p, "You leave %s." % g["name"], C_CHAT_GUILD)
+			_guild_news(key, "%s has left the guild." % p.display_name)
+			_set_guild_tag(p)
+		"remove", "promote", "demote", "leader":
+			var target := _member_named(g, arg)
+			if not needs.call("officer" if action == "remove" else "leader"):
+				return
+			if target == "":
+				say(p, "No one called %s is in your guild." % arg, C_WARN)
+				return
+			var line: Dictionary = g["members"][target]
+			var their := str(line["rank"])
+			var who := str(line["name"])
+			if target == p.display_name.to_lower():
+				say(p, "Not yourself. (/guildleave to leave.)", C_WARN)
+				return
+			match action:
+				"remove":
+					if GuildStore.power(their) >= GuildStore.power(rank):
+						say(p, "You can't remove %s: their rank is not below yours." % who, C_WARN)
+						return
+					gs.leave(who)
+					_guild_news(key, "%s has been removed from the guild by %s." % [who, p.display_name])
+					var gone := _online(who)
+					if gone != null:
+						say(gone, "You have been removed from %s." % g["name"], C_CHAT_GUILD)
+						_set_guild_tag(gone)
+				"promote":
+					if their != "member":
+						say(p, "%s is already an officer." % who, C_WARN)
+						return
+					gs.set_rank(who, "officer")
+					_guild_news(key, "%s is now an officer of the guild." % who)
+				"demote":
+					if their != "officer":
+						say(p, "%s is not an officer." % who, C_WARN)
+						return
+					gs.set_rank(who, "member")
+					_guild_news(key, "%s is no longer an officer." % who)
+				"leader":
+					gs.set_rank(who, "leader")
+					gs.set_rank(p.display_name, "officer")
+					_guild_news(key, "%s now leads the guild." % who)
+			for m: String in [who, p.display_name]:
+				if _online(m) != null:
+					_set_guild_tag(_online(m))
+		"motd":
+			if arg == "":
+				say(p, "Guild message of the day: %s" % (g.get("motd", "") if str(g.get("motd", "")) != "" else "(none)") if key != "" else "You are not in a guild.", C_CHAT_GUILD)
+				return
+			if not needs.call("officer"):
+				return
+			gs.set_motd(key, arg.left(CHAT_MAX))
+			_guild_news(key, "%s sets the message of the day: %s" % [p.display_name, arg.left(CHAT_MAX)])
+		"disband":
+			if not needs.call("leader"):
+				return
+			if Time.get_ticks_msec() - int(p.get_meta("disband_at", -100000)) > GUILD_DISBAND_CONFIRM_MS:
+				p.set_meta("disband_at", Time.get_ticks_msec())
+				say(p, "This will end %s for everyone. Say /guilddisband again within 15 seconds to do it." % g["name"], C_WARN)
+				return
+			p.remove_meta("disband_at")
+			var members: Array = (g["members"] as Dictionary).values().map(func(l: Dictionary) -> String: return str(l["name"]))
+			_guild_news(key, "%s has disbanded the guild." % p.display_name)
+			gs.disband(key)
+			for m: String in members:
+				if _online(m) != null:
+					_set_guild_tag(_online(m))
+		_:
+			return
+	_push_guild_view(p)
+
+
+func _member_named(g: Dictionary, char_name: String) -> String:
+	var k := char_name.to_lower()
+	return k if g.get("members", {}).has(k) else ""
+
+
+## Founding: at a guild registrar, level guild_min_level and the fee.
+func _found_guild(p: Player, guild_name: String) -> void:
+	var gs := guilds()
+	if gs.key_of(p.display_name) != "":
+		say(p, "You are already in a guild.", C_WARN)
+		return
+	var registrar: Npc = null
+	for obj: Variant in objects.values():
+		if obj is Npc and (obj as Npc).data.get("guild_registrar", false) and p.distance_to(obj) <= TALK_RANGE:
+			registrar = obj
+	if registrar == null:
+		say(p, "Guilds are founded before a guild registrar, in the great cities.", C_WARN)
+		return
+	var min_level := int(cfg("guild_min_level", 10))
+	var fee := int(cfg("guild_fee", 10000))
+	guild_name = " ".join(guild_name.split(" ", false))
+	if p.level < min_level:
+		_npc_say(p, registrar, "Come back when you've seen a little more of the world, {name}. Level %d, at least." % min_level)
+		return
+	if guild_name.length() < GUILD_NAME_MIN or guild_name.length() > GUILD_NAME_MAX or not _guild_name_ok(guild_name):
+		say(p, "A guild's name is %d to %d letters (spaces and ' allowed): /guildcreate <name>." % [GUILD_NAME_MIN, GUILD_NAME_MAX], C_WARN)
+		return
+	if gs.name_taken(guild_name):
+		_npc_say(p, registrar, "There's already a guild called %s on my rolls, {name}." % guild_name)
+		return
+	if p.coin < fee:
+		_npc_say(p, registrar, "The charter costs %s, {name}. Come back when you have it." % format_coin(fee))
+		return
+	p.coin -= fee
+	gs.found(guild_name, _roster_line(p))
+	_npc_say(p, registrar, "It's written: %s, founded this day, with you at its head. Guard the name well, {name}." % guild_name)
+	say(p, "You pay %s and found the guild %s. Invite others with /guildinvite; talk to them with /gu." % [format_coin(fee), guild_name], C_CHAT_GUILD)
+	_set_guild_tag(p)
+
+
+func _guild_name_ok(guild_name: String) -> bool:
+	for c in guild_name:
+		if not (c == " " or c == "'" or (c >= "a" and c <= "z") or (c >= "A" and c <= "Z")):
+			return false
+	return true
+
+
+## A line for every online member of a guild, and their windows refreshed.
+func _guild_news(key: String, text: String) -> void:
+	for q in get_players():
+		if guilds().key_of(q.display_name) == key:
+			say(q, text, C_CHAT_GUILD)
+			_push_guild_view(q)
+
+
+## /gu: to every online member of your guild, wherever they are.
+func _chat_guild(p: Player, text: String) -> void:
+	var key := guilds().key_of(p.display_name)
+	if key == "":
+		say(p, "You are not in a guild.", C_WARN)
+		return
+	if text == "":
+		return
+	for q in get_players():
+		if guilds().key_of(q.display_name) == key:
+			say(q, "You say to your guild, '%s'" % text if q == p else "%s tells the guild, '%s'" % [p.display_name, text], C_CHAT_GUILD)
+
+
+func _push_guild_view(p: Player) -> void:
+	var g := guilds().guild_of(p.display_name)
+	if g.is_empty():
+		_ui(p, &"guild_view", [{}])
+		return
+	var roster: Array = []
+	for line: Dictionary in (g["members"] as Dictionary).values():
+		var q := _online(str(line["name"]))
+		var z := zone_of(q) if q != null else null
+		roster.append({"name": line["name"], "rank": line["rank"], "online": q != null,
+				"level": q.level if q != null else int(line.get("level", 0)), "class": q.char_class if q != null else str(line.get("class", "")),
+				"zone": z.zone_name if z != null else "", "seen": int(line.get("seen", 0))})
+	_ui(p, &"guild_view", [{"name": g["name"], "motd": g.get("motd", ""), "rank": guilds().rank_of(p.display_name), "roster": roster}])
+
+
+## The tag under a character's name (<Guild Name>), wherever it's drawn.
+func _set_guild_tag(p: Player) -> void:
+	var g := guilds().guild_of(p.display_name)
+	p.guild_name = str(g.get("name", ""))
+	p.guild_rank = guilds().rank_of(p.display_name)
+	p.show_guild_tag()
+	Net.broadcast_guild_tag(p)
+
+
 # --- the grove ---------------------------------------------------------------
 
 const GROVE_ZONE := "the_grove"
@@ -1720,7 +2109,7 @@ const DEITY_IDS := ["light", "water", "fire", "wind", "dark"]
 
 
 ## The players whose standing with the gods counts for p in the Grove: p and
-## their group. Guildmates will join this circle once there are guilds.
+## their group (guildmates count too, through their roster lines: grove_sees).
 func grove_circle(p: Player) -> Array:
 	return group_members(p)
 
@@ -1730,6 +2119,11 @@ func grove_circle(p: Player) -> Array:
 func grove_sees(p: Player, deity: String) -> bool:
 	for m: Player in grove_circle(p):
 		if deity in m.grove_deities:
+			return true
+	# and guildmates, online or not: their roster lines carry the gods they've earned
+	var g := guilds().guild_of(p.display_name) if Net.is_authority() else {}
+	for line: Dictionary in g.get("members", {}).values():
+		if deity in (line.get("grove", []) as Array):
 			return true
 	return false
 
@@ -1751,12 +2145,14 @@ func unlock_grove_deity(p: Player, deity: String) -> void:
 	if not deity in DEITY_IDS or deity in p.grove_deities:
 		return
 	p.grove_deities.append(deity)
+	guilds().touch(p.display_name, {"grove": p.grove_deities.duplicate()})
 	var god: Dictionary = GameData.deities.get(deity, {})
 	say(p, "%s %s has come to the Grove. Seek them beside the still water." % [god.get("name", deity), god.get("title", "")], C_SPELL)
 
 
 func lock_grove_deity(p: Player, deity: String) -> void:
 	p.grove_deities.erase(deity)
+	guilds().touch(p.display_name, {"grove": p.grove_deities.duplicate()})
 
 
 ## The Seed of the Grove: to the tusk arch, remembering where you left from so
@@ -3202,6 +3598,44 @@ func request_chat(player_id: int, text: String) -> void:
 			request_bind(player_id)
 		"/grove":
 			_grove_command(p, rest)
+		"/friend", "/friends":
+			if cmd == "/friends" or rest == "":
+				request_friends_view(player_id)
+				if p.friends.is_empty():
+					say(p, "Your friends list is empty. /friend <name> adds someone (or takes them off).", C_SYSTEM)
+				else:
+					var shown: Array = p.friends.map(func(f: String) -> String: return f + (" (online)" if _online(f) != null else ""))
+					say(p, "Friends: %s" % ", ".join(shown), C_SYSTEM)
+			else:
+				request_friend(player_id, rest)
+		"/gu", "/guildsay":
+			_chat_guild(p, rest)
+		"/guildcreate":
+			request_guild(player_id, "create", rest)
+		"/guildinvite", "/ginvite":
+			request_guild(player_id, "invite", rest)
+		"/guildaccept":
+			request_guild(player_id, "accept")
+		"/guilddecline":
+			request_guild(player_id, "decline")
+		"/guildleave", "/gquit":
+			request_guild(player_id, "leave")
+		"/guildremove", "/gremove":
+			request_guild(player_id, "remove", rest)
+		"/guildpromote":
+			request_guild(player_id, "promote", rest)
+		"/guilddemote":
+			request_guild(player_id, "demote", rest)
+		"/guildleader":
+			request_guild(player_id, "leader", rest)
+		"/guildmotd", "/gmotd":
+			request_guild(player_id, "motd", rest)
+		"/guilddisband":
+			request_guild(player_id, "disband")
+		"/guild":
+			var g := guilds().guild_of(p.display_name) if Net.is_authority() else {}
+			say(p, ("You are %s %s of %s. " % ["the" if guilds().rank_of(p.display_name) == "leader" else "an" if guilds().rank_of(p.display_name) == "officer" else "a", guilds().rank_of(p.display_name), g["name"]] if not g.is_empty() else "You are not in a guild. Found one before a guild registrar: /guildcreate <name>. ")
+					+ "Guild: /gu <msg>  /guildinvite [name]  /guildaccept  /guilddecline  /guildleave  /guildremove <name>  /guildpromote <name>  /guilddemote <name>  /guildleader <name>  /guildmotd [text]  /guilddisband  (U: the guild window)", C_SYSTEM)
 		"/g", "/gsay", "/group":
 			if p.group_id == 0:
 				say(p, "You are not in a group.", C_WARN)

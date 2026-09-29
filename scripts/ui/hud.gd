@@ -14,6 +14,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
+[b]Friends and guild[/b]   F your friends (who's online, and where; /friend name adds or removes) · U your guild · /gu talks to the guild · /wave, /bow, /dance... (/emotes lists them)
 [b]Trade[/b]   G with an NPC targeted: merchants open their shop, bankers your bank, anyone else a give window (quest turn-ins)
 [b]Logging out[/b]   Esc with nothing open → Camp. Sit tight for 20 seconds and you're saved to the character screen.
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
@@ -166,6 +167,17 @@ var _stats_race := ""
 var _stats_race_label: Label
 var _stats_block: Control
 var _track_panel: PanelContainer  # a ranger's Track: what walks within reach, nearest first
+var _friends_panel: PanelContainer  # F: your friends, who's online and where
+var _friends_list: VBoxContainer
+var _friend_input: LineEdit
+var _guild_panel: PanelContainer  # U: your guild's roster, message of the day and officer tools
+var _guild_title: Label
+var _guild_motd: Label
+var _guild_motd_edit: LineEdit
+var _guild_list: VBoxContainer
+var _guild_tools: HBoxContainer
+var _guild_data: Dictionary = {}
+var _social_refresh := 0.0
 var _track_list: VBoxContainer
 var _track_title: Label
 var _track_radius := 0.0
@@ -220,6 +232,8 @@ func _ready() -> void:
 	_build_station_window()
 	_build_pet_window()
 	_build_track_window()
+	_build_friends_window()
+	_build_guild_window()
 	_build_stats_window()
 	_build_race_window()
 	_build_hair_window()
@@ -272,6 +286,8 @@ func _ready() -> void:
 		_refresh_trade())
 	World.station_opened.connect(_on_station_opened)
 	World.track_opened.connect(_on_track_opened)
+	World.friends_view.connect(_on_friends_view)
+	World.guild_view.connect(_on_guild_view)
 	World.station_closed.connect(func() -> void: _station_panel.visible = false; _refresh_inventory())
 
 
@@ -564,7 +580,9 @@ func _build_menu_icons() -> void:
 	row.add_theme_constant_override("separation", 5)
 	UIKit.place(row, Vector2(1, 0), Vector2(-54, 12))
 	root.add_child(row)
-	for m: Array in [["C", "action_consider", "Consider (C)\nHow tough is your target, and how do they regard you?", func() -> void: World.request_consider(player.entity_id)],
+	for m: Array in [["F", "action_friends", "Friends (F)\nWho's online, and where", func() -> void: _toggle_friends()],
+			["U", "action_guild", "Guild (U)", func() -> void: _toggle_guild()],
+			["C", "action_consider", "Consider (C)\nHow tough is your target, and how do they regard you?", func() -> void: World.request_consider(player.entity_id)],
 			["K", "action_skills", "Skills (K)", func() -> void: _toggle_skills()],
 			["I", "leather_backpack", "Inventory (I)", func() -> void: _toggle_inventory()]]:
 		var slot := HotSlot.new()
@@ -1042,7 +1060,7 @@ func _set_channel(channel: String) -> void:
 
 ## True while the chat line has the keyboard: the player stops moving.
 func is_typing() -> bool:
-	return _chat != null and _chat.has_focus()
+	return (_chat != null and _chat.has_focus()) or get_viewport().gui_get_focus_owner() is LineEdit
 
 
 func _open_chat(prefix: String) -> void:
@@ -1588,7 +1606,8 @@ func _build_stats_window() -> void:
 ## The windows you can drag where you like (UIKit.draggable; Settings resets them).
 func _make_draggable() -> void:
 	for pair: Array in [[_player_panel, "player"], [_target_panel, "target"], [_pet_panel, "pet"], [_group_panel, "group"], [_buff_panel, "buffs"],
-			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"]]:
+			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"],
+			[_friends_panel, "friends"], [_guild_panel, "guild"]]:
 		UIKit.draggable(pair[0], pair[1])
 
 
@@ -1739,6 +1758,212 @@ func _build_track_window() -> void:
 	_track_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_track_list)
 	_track_panel.visible = false
+
+
+## A window with a title row and a Close button; returns [panel, body].
+func _social_window(title: String, width: float, where: Vector2) -> Array:
+	var panel := UIKit.panel()
+	UIKit.place(panel, Vector2(1, 0.5), where)
+	root.add_child(panel)
+	var v := VBoxContainer.new()
+	v.custom_minimum_size = Vector2(width, 0)
+	v.add_theme_constant_override("separation", 5)
+	panel.add_child(v)
+	var head := HBoxContainer.new()
+	var t := UIKit.label(title, 15, UIKit.GOLD)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	var close := UIKit.button("Close", Vector2(0, 22))
+	close.add_theme_font_size_override("font_size", 11)
+	close.pressed.connect(func() -> void: panel.visible = false)
+	head.add_child(close)
+	v.add_child(head)
+	panel.visible = false
+	return [panel, v, t]
+
+
+func _build_friends_window() -> void:
+	var w := _social_window("Friends", 300, Vector2(-430, 0))  # beside the guild window, not over it
+	_friends_panel = w[0]
+	var v: VBoxContainer = w[1]
+	var add := HBoxContainer.new()
+	_friend_input = LineEdit.new()
+	_friend_input.placeholder_text = "A character's name"
+	_friend_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_friend_input.text_submitted.connect(func(_t: String) -> void: _add_friend())
+	add.add_child(_friend_input)
+	var b := UIKit.button("Add", Vector2(0, 26))
+	b.pressed.connect(_add_friend)
+	add.add_child(b)
+	v.add_child(add)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(300, 280)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(scroll)
+	_friends_list = VBoxContainer.new()
+	_friends_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_friends_list.add_theme_constant_override("separation", 3)
+	scroll.add_child(_friends_list)
+
+
+func _add_friend() -> void:
+	var name_ := _friend_input.text.strip_edges()
+	_friend_input.text = ""
+	_friend_input.release_focus()
+	if name_ != "":
+		World.request_friend(player.entity_id, name_)
+
+
+func _toggle_friends() -> void:
+	_friends_panel.visible = not _friends_panel.visible
+	if _friends_panel.visible:
+		World.request_friends_view(player.entity_id)
+		_social_refresh = 5.0
+
+
+func _on_friends_view(list: Array) -> void:
+	for c in _friends_list.get_children():
+		c.queue_free()
+	if list.is_empty():
+		_friends_list.add_child(UIKit.label("No friends yet. Add someone by name,\nor target them and type /friend.", 12, UIKit.DIM))
+		return
+	list.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["online"] and not b["online"] if a["online"] != b["online"] else str(a["name"]) < str(b["name"]))
+	for f: Dictionary in list:
+		var row := HBoxContainer.new()
+		var info := UIKit.label("", 12, UIKit.TEXT if f["online"] else UIKit.DIM)
+		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if f["online"]:
+			var cls: String = GameData.classes.get(str(f["class"]), {}).get("name", "")
+			info.text = "%s%s\n   %d %s, %s" % [f["name"], "  [AFK]" if f.get("afk", false) else "", int(f["level"]), cls, f["zone"]]
+			info.add_theme_color_override("font_color", Color(0.6, 1.0, 0.65))
+		else:
+			info.text = "%s\n   offline" % f["name"]
+		row.add_child(info)
+		var who := str(f["name"])
+		var tell := UIKit.button("Tell", Vector2(0, 22))
+		tell.add_theme_font_size_override("font_size", 11)
+		tell.disabled = not f["online"]
+		tell.pressed.connect(func() -> void: _open_chat("/tell %s " % who))
+		row.add_child(tell)
+		var rm := UIKit.button("Remove", Vector2(0, 22))
+		rm.add_theme_font_size_override("font_size", 11)
+		rm.pressed.connect(func() -> void: World.request_friend(player.entity_id, who))
+		row.add_child(rm)
+		_friends_list.add_child(row)
+
+
+func _build_guild_window() -> void:
+	var w := _social_window("Guild", 380, Vector2(-16, 0))  # the right edge, centered up and down
+	_guild_panel = w[0]
+	var v: VBoxContainer = w[1]
+	_guild_title = w[2]
+	_guild_motd = UIKit.label("", 12, UIKit.TEXT)
+	_guild_motd.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_guild_motd.custom_minimum_size.x = 380
+	v.add_child(_guild_motd)
+	var motd_row := HBoxContainer.new()
+	_guild_motd_edit = LineEdit.new()
+	_guild_motd_edit.placeholder_text = "A new message of the day"
+	_guild_motd_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_guild_motd_edit.text_submitted.connect(func(_t: String) -> void: _set_motd())
+	motd_row.add_child(_guild_motd_edit)
+	var set_b := UIKit.button("Set", Vector2(0, 26))
+	set_b.pressed.connect(_set_motd)
+	motd_row.add_child(set_b)
+	v.add_child(motd_row)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(380, 300)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(scroll)
+	_guild_list = VBoxContainer.new()
+	_guild_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_guild_list.add_theme_constant_override("separation", 3)
+	scroll.add_child(_guild_list)
+	_guild_tools = HBoxContainer.new()
+	_guild_tools.add_theme_constant_override("separation", 6)
+	v.add_child(_guild_tools)
+
+
+func _set_motd() -> void:
+	var text := _guild_motd_edit.text.strip_edges()
+	_guild_motd_edit.text = ""
+	_guild_motd_edit.release_focus()
+	if text != "":
+		World.request_guild(player.entity_id, "motd", text)
+
+
+func _toggle_guild() -> void:
+	_guild_panel.visible = not _guild_panel.visible
+	if _guild_panel.visible:
+		World.request_guild(player.entity_id, "view")
+		_social_refresh = 5.0
+
+
+func _on_guild_view(view: Dictionary) -> void:
+	_guild_data = view
+	for c in _guild_list.get_children():
+		c.queue_free()
+	for c in _guild_tools.get_children():
+		c.queue_free()
+	if view.is_empty():
+		_guild_title.text = "Guild"
+		_guild_motd.text = "You are not in a guild.\n\nFound one before a guild registrar in a great city (level %d, %s): /guildcreate <name>. Or ask a guild's officer for an invitation." % [
+				int(World.cfg("guild_min_level", 10)), World.format_coin(int(World.cfg("guild_fee", 10000)))]
+		_guild_motd_edit.get_parent().visible = false
+		return
+	var mine := str(view["rank"])
+	var power := GuildStore.power(mine)
+	_guild_title.text = "<%s>   %s" % [view["name"], mine.capitalize()]
+	_guild_motd.text = "Message of the day: %s" % (view["motd"] if str(view["motd"]) != "" else "(none)")
+	_guild_motd_edit.get_parent().visible = power >= GuildStore.power("officer")
+	var roster: Array = view["roster"]
+	roster.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if a["online"] != b["online"]:
+			return a["online"]
+		if a["rank"] != b["rank"]:
+			return GuildStore.power(str(a["rank"])) > GuildStore.power(str(b["rank"]))
+		return str(a["name"]) < str(b["name"]))
+	var online := roster.filter(func(m: Dictionary) -> bool: return m["online"]).size()
+	_guild_list.add_child(UIKit.label("%d members, %d online" % [roster.size(), online], 12, UIKit.DIM))
+	for m: Dictionary in roster:
+		var row := HBoxContainer.new()
+		var cls: String = GameData.classes.get(str(m["class"]), {}).get("name", "")
+		var info := UIKit.label("%s   %s\n   %d %s, %s" % [m["name"], str(m["rank"]).capitalize(), int(m["level"]), cls,
+				m["zone"] if m["online"] else "offline"], 12, UIKit.TEXT if m["online"] else UIKit.DIM)
+		if m["online"]:
+			info.add_theme_color_override("font_color", Color(0.6, 1.0, 0.72))
+		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(info)
+		var who := str(m["name"])
+		var theirs := GuildStore.power(str(m["rank"]))
+		var tools: Array = []
+		if who != player.display_name:
+			if mine == "leader" and str(m["rank"]) == "member":
+				tools.append(["Promote", "promote"])
+			if mine == "leader" and str(m["rank"]) == "officer":
+				tools.append(["Demote", "demote"])
+			if mine == "leader":
+				tools.append(["Make leader", "leader"])
+			if power >= GuildStore.power("officer") and theirs < power:
+				tools.append(["Remove", "remove"])
+		for t: Array in tools:
+			var b := UIKit.button(t[0], Vector2(0, 22))
+			b.add_theme_font_size_override("font_size", 11)
+			var act: String = t[1]
+			b.pressed.connect(func() -> void: World.request_guild(player.entity_id, act, who))
+			row.add_child(b)
+		_guild_list.add_child(row)
+	if power >= GuildStore.power("officer"):
+		var inv := UIKit.button("Invite target", Vector2(0, 26))
+		inv.pressed.connect(func() -> void: World.request_guild(player.entity_id, "invite", ""))
+		_guild_tools.add_child(inv)
+	var leave := UIKit.button("Leave guild", Vector2(0, 26))
+	leave.pressed.connect(func() -> void: World.request_guild(player.entity_id, "leave"))
+	_guild_tools.add_child(leave)
+	if mine == "leader":
+		var dis := UIKit.button("Disband", Vector2(0, 26))
+		dis.pressed.connect(func() -> void: World.request_guild(player.entity_id, "disband"))
+		_guild_tools.add_child(dis)
 
 
 func _on_track_opened(radius: float) -> void:
@@ -2580,6 +2805,13 @@ func wants_cursor() -> bool:
 # --- updates ----------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	_social_refresh -= delta
+	if _social_refresh <= 0.0 and player != null and (_friends_panel.visible or _guild_panel.visible):
+		_social_refresh = 5.0  # who's online, levels and zones drift: ask again now and then
+		if _friends_panel.visible:
+			World.request_friends_view(player.entity_id)
+		if _guild_panel.visible:
+			World.request_guild(player.entity_id, "view")
 	_banner_time -= delta
 	_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
 	if player == null:
@@ -3202,6 +3434,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("skills"):
 		_toggle_skills()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("friends"):
+		_toggle_friends()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("guild"):
+		_toggle_guild()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("spellbook"):
 		_toggle_spellbook()

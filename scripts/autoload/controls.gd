@@ -53,6 +53,8 @@ const BINDINGS := {
 	"hotbar_9": [KEY_9],
 	"hotbar_10": [KEY_0],
 	"spellbook": [KEY_P],
+	"friends": [KEY_F],
+	"guild": [KEY_U],
 }
 
 ## Ctrl+M: mouselook on or off, anywhere.

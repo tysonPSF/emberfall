@@ -1263,6 +1263,24 @@ def action_hail():
 	return p.build()
 
 
+def action_friends():
+	p = Prop("action_friends", 357)
+	for x, c in ((-0.28, HIDE), (0.28, CLOTH_WHITE)):                               # two figures, side by side
+		p.blob((0.3, 0.28, 0.3), (x, 0, 0.82), c, segs=(10, 8))
+		p.blob((0.4, 0.3, 0.5), (x, 0, 0.36), c, segs=(10, 8))
+	p.blob((0.22, 0.08, 0.2), (0, -0.32, 0.5), CLOTH_RED, segs=(8, 6), glow=0.8)  # a heart between them
+	return p.build()
+
+
+def action_guild():
+	p = Prop("action_guild", 359)
+	p.seg((-0.35, 0, 0.0), (-0.35, 0, 1.1), 0.05, 0.05, WOOD, sides=6)             # a banner on its pole
+	p.box((0.6, 0.04, 0.7), (0.0, 0, 0.7), CLOTH_RED)
+	p.blob((0.18, 0.05, 0.18), (0.0, -0.05, 0.72), GOLD, segs=(8, 6), glow=0.9)     # its device
+	p.seg((-0.35, 0, 1.1), (-0.35, 0, 1.18), 0.08, 0.0, GOLD, sides=6)
+	return p.build()
+
+
 def action_loot():
 	p = Prop("action_loot", 349)
 	p.blob((0.8, 0.6, 0.6), (0, 0, 0.3), HIDE, segs=(10, 8))                         # a sack...
@@ -5201,7 +5219,8 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  frost_strike, walking_sleep, spirit_healing, quickness, talisman_of_the_totem, envenomed_breath, spirit_regrowth,
 								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
-								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit]}
+								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
+								   action_friends, action_guild]}
 
 
 def main():

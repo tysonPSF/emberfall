@@ -44,5 +44,7 @@
   "inventory_slots": 24,
   "mob_leash": 130,
   "camp_seconds": 20,
-  "bank_slots": 16
+  "bank_slots": 16,
+  "guild_min_level": 10,
+  "guild_fee": 10000
 }
