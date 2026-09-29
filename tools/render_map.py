@@ -14,7 +14,7 @@ CELL = 1.0
 # Zones with no cell are not on the grid at all. They still have to be SEEN, so
 # each gets a display berth well clear of the map, drawn dashed and tied to
 # nothing - the picture should say "you cannot walk here" without a caption.
-BERTH = {'the_grove': (2.0, 0.0), 'duskhold': (-1.0, -0.95)}  # off-grid zones: where on the picture they're drawn
+BERTH = {'the_grove': (2.0, 0.0), 'duskhold': (-3.0, -0.95)}  # off-grid zones: where on the picture they're drawn
 BG, INK, DIM = '#14161a', '#e8e6e0', '#8b9199'
 fig, ax = plt.subplots(figsize=(18.5, 17.5), facecolor=BG)
 ax.set_facecolor(BG)

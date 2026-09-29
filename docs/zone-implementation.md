@@ -10,7 +10,7 @@ landmarks, roads and music are authored per zone as usual.
 
 ## What the layout gives you
 
-37 zones in 6 areas, levels 1–50. Per zone: `id`, `name`, `area`, `levels`,
+44 zones in 7 areas, levels 1–50. Per zone: `id`, `name`, `area`, `levels`,
 `size`, `cell`, `kind`, plus `existing` and `reached`. And a `links` array: one
 entry per border, already reciprocal.
 

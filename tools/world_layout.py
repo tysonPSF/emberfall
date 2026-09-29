@@ -73,6 +73,9 @@ ZONES = [
     # Throat, so a level 5 character can run to the water city and live - which
     # is the oldest rite of passage this genre has.
     ('rainhold',        'Rainhold',           'monsoon',    (20, 30), 224, (-1, 1), 'city'),
+    # West of Rainhold (2026-09-29): the rain country's edge, between the city,
+    # Reedmere and the Broken March.
+    ('stormcut_gorge',  'Stormcut Gorge',     'monsoon',    (18, 22), 448, (-2, 1), 'water'),
 
     # ---- THE ASHFALL - Agnavar, the Ember-Tusked. Due north of home.
     ('cinderpass',      'Cinderpass',         'ashfall',    (26, 30), 448, (0, 3), 'burn'),
@@ -114,10 +117,18 @@ ZONES = [
     # not in the good races' lands, since good cities' guards attack them on
     # sight. West and south of Rainhold, which is neutral and is how both
     # homelands reach the rest of the world (the Weeping Throat at 20-24).
-    ('murkhold',        'Murkhold',           'blackwater', (1, 1),   224, (-3, 1), 'city'),
-    ('the_wallow',      'The Wallow',         'blackwater', (1, 10),  384, (-2, 1), 'water'),
-    ('duskwood',        'Duskwood',           'blackwater', (1, 10),  384, (-1, 0), 'wood'),
-    ('the_rotfen',      'The Rotfen',         'blackwater', (10, 18), 448, (-2, 0), 'water'),
+    # MOVED two cells west the same day: packed against Rainhold and
+    # Emberhold, the evil lands were a short run from both and could only get
+    # out through Emberhold's backyard. Now two neutral zones lie between: the
+    # Broken March (their way out after the Rotfen) and Stormcut Gorge, which
+    # opens on Rainhold and Reedmere.
+    ('murkhold',        'Murkhold',           'blackwater', (1, 1),   224, (-5, 1), 'city'),
+    ('the_wallow',      'The Wallow',         'blackwater', (1, 10),  384, (-4, 1), 'water'),
+    ('duskwood',        'Duskwood',           'blackwater', (1, 10),  384, (-3, 0), 'wood'),
+    ('the_rotfen',      'The Rotfen',         'blackwater', (10, 18), 448, (-4, 0), 'water'),
+    # The borderland: neutral ground the Blackwater's peoples cross to reach the
+    # rest of the world, and the rest of the world crosses to fight them.
+    ('broken_march',    'The Broken March',   'blackwater', (14, 20), 448, (-3, 1), 'plain'),
     # Underground, below Duskwood: no cell. It's reached on foot through a cave
     # door in Duskwood (DOORS), like the Emberhold crypt, so it holds no cell
     # and has no passes, but it is walkable.
@@ -178,7 +189,7 @@ DOORS = {'duskhold': 'duskwood'}
 # Neighboring cells that do NOT open onto each other: the mountain stays shut.
 # The Wallow's newcomers would face Reedmere at 22-26, and Duskwood's dark
 # elves would walk into Emberhold, whose guards attack them on sight.
-SEALED = {frozenset(('the_wallow', 'reedmere')), frozenset(('duskwood', 'emberhold'))}
+SEALED = set()
 
 DIRS = {'north': (0, 1), 'south': (0, -1), 'east': (1, 0), 'west': (-1, 0)}
 OPPOSITE = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}

@@ -113,6 +113,7 @@ const SECTIONS := [
 	["blackwater_borders", "rainhold"],
 	["blackwater_life", "the_wallow"],
 	["blackwater_views", "murkhold"],
+	["west_march_life", "broken_march"],
 	["deity_picker", "greenmoor"],
 	["quest_share", "greenmoor"],
 	["delete_guild", "greenmoor"],
@@ -8769,20 +8770,24 @@ func _t_alignment() -> void:
 	p.alignment_mods = keep[3]
 
 
-## The Blackwater's twelve crossings, chained: Rainhold's new west and south
-## gates, the Wallow, Murkhold, the Rotfen, Duskwood and the cave down to
-## Duskhold, every one both ways.
+## The Blackwater and the ground between it and Rainhold, chained: eighteen
+## crossings, every border of Murkhold, the Wallow, the Rotfen, Duskwood (and
+## the cave down to Duskhold), the Broken March and Stormcut Gorge both ways,
+## ending back in Rainhold.
 func _t_blackwater_borders() -> void:
 	var p := World.local_player
 	var keep := [p.race, p.factions.duplicate(), p.alignment_mods.duplicate()]
 	p.race = "troll"  # a human walking into Murkhold is cut down by its guards (which is the point of it)
 	World.apply_alignment(p)
-	for leg: Array in [["rainhold", Vector2(-60, 0), Vector2(-1, 0), "the_wallow"], ["the_wallow", Vector2(-165, 0), Vector2(-1, 0), "murkhold"],
+	for leg: Array in [["rainhold", Vector2(-60, 0), Vector2(-1, 0), "stormcut_gorge"], ["stormcut_gorge", Vector2(-190, 0), Vector2(-1, 0), "broken_march"],
+			["broken_march", Vector2(-190, 0), Vector2(-1, 0), "the_wallow"], ["the_wallow", Vector2(-165, 0), Vector2(-1, 0), "murkhold"],
 			["murkhold", Vector2(80, 0), Vector2(1, 0), "the_wallow"], ["the_wallow", Vector2(0, 165), Vector2(0, 1), "the_rotfen"],
-			["the_rotfen", Vector2(200, 0), Vector2(1, 0), "duskwood"], ["duskwood", Vector2(0, -165), Vector2(0, -1), "rainhold"],
-			["rainhold", Vector2(0, 72), Vector2(0, 1), "duskwood"], ["duskwood", Vector2(162, 120), Vector2(-1, 0), "duskhold"],
-			["duskhold", Vector2(0, -86), Vector2(0, -1), "duskwood"], ["duskwood", Vector2(-165, 0), Vector2(-1, 0), "the_rotfen"],
-			["the_rotfen", Vector2(0, -200), Vector2(0, -1), "the_wallow"], ["the_wallow", Vector2(165, 0), Vector2(1, 0), "rainhold"]]:
+			["the_rotfen", Vector2(200, 0), Vector2(1, 0), "duskwood"], ["duskwood", Vector2(162, 120), Vector2(-1, 0), "duskhold"],
+			["duskhold", Vector2(0, -86), Vector2(0, -1), "duskwood"], ["duskwood", Vector2(0, -165), Vector2(0, -1), "broken_march"],
+			["broken_march", Vector2(0, 190), Vector2(0, 1), "duskwood"], ["duskwood", Vector2(-165, 0), Vector2(-1, 0), "the_rotfen"],
+			["the_rotfen", Vector2(0, -200), Vector2(0, -1), "the_wallow"], ["the_wallow", Vector2(165, 0), Vector2(1, 0), "broken_march"],
+			["broken_march", Vector2(190, 0), Vector2(1, 0), "stormcut_gorge"], ["stormcut_gorge", Vector2(0, -190), Vector2(0, -1), "reedmere"],
+			["reedmere", Vector2(0, 225), Vector2(0, 1), "stormcut_gorge"], ["stormcut_gorge", Vector2(190, 0), Vector2(1, 0), "rainhold"]]:
 		if not await _walk_border("blackwater_borders", leg[0], leg[1], leg[2], leg[3]):
 			break
 	p.race = keep[0]
@@ -8858,6 +8863,31 @@ func _t_blackwater_life() -> void:
 	p.race = keep_race[0]
 	p.factions = keep_race[1]
 	p.alignment_mods = keep_race[2]
+
+
+## The Broken March and Stormcut Gorge: every quest handed in (repeatables
+## twice), night spawns, and a look round each.
+func _t_west_march_life() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	await _zone_life("west_march_life_march", {"marchwarden_hale": ["march_pelts", "march_tokens", "march_corvel", "march_scythewing"],
+			"gravekeeper_ossa": ["march_grave_iron", "march_marshal"]}, ["restless_soldier", "hollow_marshal"],
+			["march_wolf", "brambleback_boar", "marchreaver_cutthroat", "restless_soldier", "crag_wyvern", "redhand_corvel", "hollow_marshal", "scythewing"])
+	await _zone_views("march", [[Vector2(40, 40), Vector2(20, 10), "post"], [Vector2(-90, -90), Vector2(-130, -120), "keep"],
+			[Vector2(90, -100), Vector2(135, -140), "crags"], [Vector2(-100, 90), Vector2(-135, 122), "reavers"]])
+	while main._changing_zone:
+		await _wait(0.25)
+	World.zone_change.emit(p, "stormcut_gorge", Vector2(170, 20), Vector2.ZERO)
+	for k in 80:
+		if (main.zone as Zone).zone_id == "stormcut_gorge" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.8)
+	await _zone_life("west_march_life_gorge", {"ropewarden_mbeki": ["gorge_tusks", "gorge_grukk", "gorge_feathers", "gorge_stormcrest"],
+			"tidepriestess_lirien": ["gorge_essence", "gorge_voice"]}, ["falls_spirit"],
+			["canyon_adder", "gorge_croc", "stonefist_troll", "gorge_griffon", "falls_spirit", "chief_grukk", "stormcrest", "voice_of_the_falls"])
+	await _zone_views("gorge", [[Vector2(160, 40), Vector2(140, 24), "watch"], [Vector2(18, 12), Vector2(-5, 0), "bridge"],
+			[Vector2(40, 150), Vector2(40, 206), "falls"], [Vector2(-70, 60), Vector2(-115, 95), "trolls"], [Vector2(90, -110), Vector2(135, -150), "griffons"]])
 
 
 ## A look round the two cities (for art checks).

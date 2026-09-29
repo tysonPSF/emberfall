@@ -5,7 +5,9 @@
 Murkhold (trolls and ogres' city in a black bog), The Wallow (their beginner
 swamp, 1-10), Duskwood (the dark elves' beginner forest, 1-10), Duskhold (the
 dark elves' city in a cavern under Duskwood, reached by a cave door), and The
-Rotfen (the shared 10-18 fen). Also opens Rainhold's west and south gates.
+Rotfen (the shared 10-18 fen). Also Rainhold's west gate (onto Stormcut Gorge
+since the Blackwater moved west; tools/zones/west_march.py writes the gorge
+and the Broken March between).
 
 Writes the five zone files, patches rainhold.json, and merges the area's
 npcs, mobs and quests into data/npcs.json, data/mobs.json and
@@ -71,7 +73,7 @@ def at(bearing, r, c=(0, 0)):
 
 # ---------------------------------------------------------------- borders
 
-CITY_DEPTH = {"rainhold": {"south": 54}}  # Rainhold's south arrival: 66 m in is the lagoon
+CITY_DEPTH = {"rainhold": {"south": 54}}  # Rainhold's south arrival, if it ever gets one again: 66 m in is the lagoon
 CITY_INSET = 15
 
 
@@ -390,7 +392,7 @@ def the_wallow():
     # the Murkhold hunters' camp, just inside the west gate
     L.append({"type": "camp", "pos": [-148, -30]})
     L.append({"type": "signpost", "pos": [-170, 8], "face": [-190, 8], "labels": ["Murkhold"]})
-    L.append({"type": "signpost", "pos": [172, 8], "face": [190, 8], "labels": ["Rainhold"]})
+    L.append({"type": "signpost", "pos": [172, 8], "face": [190, 8], "labels": ["The Broken March"]})
     L.append({"type": "signpost", "pos": [8, 172], "face": [8, 190], "labels": ["The Rotfen"]})
     # the pondkin raiders' camp, north-east
     for spot in [[120, -120], [138, -104], [104, -142], [150, -132]]:
@@ -491,7 +493,7 @@ def duskwood():
     lines.append({"pos": [CAVE[0] - 7.5, CAVE[1]], "size": [3, 4], "to": "duskhold", "arrive": list(DUSKHOLD_ARRIVE),
                   "arrive_face": list(DUSKHOLD_ARRIVE_FACE)})
     L = [{"type": "cave", "pos": CAVE, "face": [CAVE[0] + 150, CAVE[1]]},
-         {"type": "signpost", "pos": [8, -170], "face": [8, -190], "labels": ["Rainhold"]},
+         {"type": "signpost", "pos": [8, -170], "face": [8, -190], "labels": ["The Broken March"]},
          {"type": "signpost", "pos": [-170, 8], "face": [-190, 8], "labels": ["The Rotfen"]},
          {"type": "signpost", "pos": [166, 108], "face": [150, 120], "labels": ["Duskhold"]},
          {"type": "camp", "pos": [166, 138]}]
@@ -803,15 +805,14 @@ def rainhold():
     passes, lines = borders("rainhold")
     z["passes"], z["zone_lines"] = passes, lines
     sc = [l for l in z["landmarks"] if l["type"] == "stilt_city"][0]
-    new = [["stilt_walkway", -25.5, 0, 90], ["boardwalk_ramp", -30.0, 0, 270],
-           ["stilt_walkway", -7.5, 48, 0], ["boardwalk_ramp", -7.5, 52.5, 0]]
-    sc["pieces"] = [p for p in sc["pieces"] if p not in new] + new
+    new = [["stilt_walkway", -25.5, 0, 90], ["boardwalk_ramp", -30.0, 0, 270]]
+    gone = [["stilt_walkway", -7.5, 48, 0], ["boardwalk_ramp", -7.5, 52.5, 0]]  # the south gate's pier: nothing lies south since the Blackwater moved
+    sc["pieces"] = [p for p in sc["pieces"] if p not in new and p not in gone] + new
     roads = [r for r in z["roads"] if r["points"][0] not in ([-112, 0], [0, 112])]
-    roads += [{"points": [[-112, 0], [-70, 0], [-38, 0]], "width": 4}, {"points": [[0, 112], [0, 80], [-7.5, 60]], "width": 4}]
+    roads += [{"points": [[-112, 0], [-70, 0], [-38, 0]], "width": 4}]
     z["roads"] = roads
-    signs = [l for l in z["landmarks"] if not (l["type"] == "signpost" and l.get("labels") in (["The Wallow"], ["Duskwood"]))]
-    signs += [{"type": "signpost", "pos": [-54, 7], "face": [-112, 7], "labels": ["The Wallow"]},
-              {"type": "signpost", "pos": [7, 66], "face": [7, 112], "labels": ["Duskwood"]}]
+    signs = [l for l in z["landmarks"] if not (l["type"] == "signpost" and l.get("labels") in (["The Wallow"], ["Duskwood"], ["Stormcut Gorge"]))]
+    signs += [{"type": "signpost", "pos": [-54, 7], "face": [-112, 7], "labels": ["Stormcut Gorge"]}]
     z["landmarks"] = signs
     json.dump(z, open(path, "w"), indent=2)
     open(path, "a").write("\n")

@@ -10354,6 +10354,598 @@ BLACKWATER = [bog_rat_tail, wallow_toad_skin, swamp_leech_teeth, pondkin_bead, m
 			  mudjaw_tooth_club]
 
 
+# ---------------------------------------------------------------- The West March
+# Two zones west of Rainhold. The Broken March is a windswept heath of an old
+# border war: gray heath wolves, bramble boars, the Marchreavers' red rags and
+# copper, the grave-iron of the war dead, crag wyverns in lichened stone. Stormcut
+# Gorge is a rainy river canyon: croc green, sandstone, troll stone, and the
+# blue-white water of its falls, which swirls and glows.
+# (The Gorge Griffon Feather shares its id, and so its icon, with High Terrace's griffon_feather.)
+
+HEATH = PETAL_PURPLE   # heather in bloom
+FALLS = SKY            # the falls' blue
+CAM_DIR = Vector((0.55, -1.0, 0.6)).normalized()   # toward the icon camera
+
+
+def _foam_swirl(p, c, R, turns=1.5, sw=CLOTH_WHITE, r=0.022, glow=1.8, phase=0.0, n=22):
+	"""A spiral of foam laid over the camera side of a sphere of radius R round c."""
+	c = Vector(c)
+	u = Vector((0, 0, 1)).cross(CAM_DIR).normalized()
+	v = CAM_DIR.cross(u).normalized()
+	pts = []
+	for k in range(n + 1):
+		t = k / n
+		a = phase + t * turns * math.tau
+		rr = R * (0.12 + 0.78 * t)
+		pts.append(tuple(c + (u * math.cos(a) + v * math.sin(a)) * rr + CAM_DIR * (math.sqrt(max(R * R - rr * rr, 0.0)) + 0.012)))
+	_seam(p, pts, sw, r=r, glow=glow)
+
+
+def _water_orb(p, c, R, glow=1.4):
+	"""A ball of falls water: blue, lit from inside, a white swirl on it and foam flecks."""
+	p.blob((R * 2, R * 2, R * 2), c, FALLS, segs=(14, 10), grad=(0.0, 0.55), glow=glow)
+	_foam_swirl(p, c, R, turns=1.4, r=R * 0.07)
+	_foam_swirl(p, c, R, turns=0.9, r=R * 0.05, sw=AQUA, glow=2.2, phase=2.6)
+	hl = Vector(c) + (CAM_DIR + Vector((-0.5, 0, 0.55))).normalized() * R * 0.92
+	p.blob((R * 0.36, R * 0.2, R * 0.26), tuple(hl), CLOTH_WHITE, segs=(6, 4), glow=1.6)     # its shine
+
+
+# the Broken March's drops
+
+def march_wolf_pelt():
+	p = Prop("march_wolf_pelt", 2201)
+	p.blob((1.15, 0.84, 0.12), (0, 0, 0.06), WOOD_GRAY, segs=(12, 6), grad=(0.0, 0.6), jitter=0.05)   # a gray-brown heath wolf's pelt
+	for x in (-1, 1):
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, 0.33, 0.05), WOOD_GRAY, segs=(6, 4), grad=(0.0, 0.6))
+		p.blob((0.3, 0.22, 0.1), (x * 0.4, -0.33, 0.05), WOOD_GRAY, segs=(6, 4), grad=(0.0, 0.6))
+	p.blob((0.96, 0.36, 0.06), (-0.02, 0.0, 0.11), STONE_DARK, segs=(12, 5), grad=(0.3, 0.9), jitter=0.03)   # a dark saddle down the back
+	for k in range(8):                                                                    # fur blown back by the wind
+		y = -0.36 + k * 0.1
+		x = 0.3 + 0.1 * math.cos(y * 4)
+		p.seg((x, y, 0.1), (x + 0.2, y + 0.02, 0.08), 0.04, 0.0, STONE_LIGHT, sides=4)
+	p.blob((0.38, 0.26, 0.14), (-0.6, 0, 0.1), STONE_LIGHT, segs=(8, 5), grad=(0.0, 0.5))    # the head end
+	for sy in (-1, 1):
+		p.seg((-0.62, sy * 0.1, 0.13), (-0.8, sy * 0.2, 0.13), 0.07, 0.0, STONE_DARK, sides=4)   # ears, laid flat
+	p.seg((0.52, 0, 0.08), (0.98, 0.14, 0.1), 0.12, 0.05, STONE_DARK, sides=6)                # tail
+	p.blob((0.14, 0.1, 0.1), (0.98, 0.14, 0.1), STONE_LIGHT, segs=(6, 4))
+	for k, (x, y) in enumerate(((0.12, -0.28), (0.18, -0.24), (0.07, -0.22))):             # a sprig of heather caught in it
+		p.blob((0.07, 0.07, 0.07), (x, y, 0.16), HEATH, segs=(5, 3), glow=0.4)
+	p.seg((0.02, -0.3, 0.14), (0.22, -0.2, 0.15), 0.012, 0.012, PINE, sides=3)
+	return _tip_back(p.build(), 28)
+
+
+def boar_bristles():
+	p = Prop("boar_bristles", 2203)
+	for k in range(26):                                                                   # a stiff bundle, fanning up
+		a = k * 2.4
+		rr = 0.04 + (k % 5) * 0.025
+		bx, by = math.cos(a) * rr, math.sin(a) * rr
+		top = (bx * 4.2, by * 2.0, 0.95 + (k % 4) * 0.07)
+		mid = (bx + (top[0] - bx) * 0.78, by + (top[1] - by) * 0.78, 0.2 + (top[2] - 0.2) * 0.78)
+		p.seg((bx, by, 0.2), mid, 0.026, 0.018, STONE_DARK if k % 3 else WOOD, sides=3)
+		p.seg(mid, top, 0.018, 0.0, HIDE, sides=3)                                         # pale tips
+		p.seg((bx, by, 0.2), (bx * 2.2, by * 1.6, -0.12), 0.024, 0.01, STONE_DARK, sides=3)  # the cut ends below
+	p.seg((0, 0, 0.1), (0, 0, 0.32), 0.15, 0.15, HIDE, sides=10, grad=(0.2, 0.8))            # bound with twine
+	for z in (0.14, 0.21, 0.28):
+		p.seg((0, 0, z), (0, 0, z + 0.025), 0.16, 0.16, WOOD, sides=10)
+	vine = [(-0.55, -0.2, 0.05), (-0.3, -0.24, 0.18), (-0.05, -0.2, 0.26), (0.2, -0.22, 0.34), (0.45, -0.2, 0.5), (0.55, -0.16, 0.7)]
+	_line(p, vine, 0.03, 0.018, WOOD, sides=5)                                             # a bramble tangled in them
+	for a, b in zip(vine[:-1], vine[1:]):
+		m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - 0.01, (a[2] + b[2]) / 2)
+		p.seg(m, (m[0] - 0.04, m[1] - 0.08, m[2] + 0.06), 0.02, 0.0, CLOTH_RED, sides=4)   # thorns
+	for x, z in ((-0.4, 0.14), (0.35, 0.44)):
+		p.blob((0.2, 0.05, 0.1), (x, -0.26, z + 0.04), LEAF, rot=(0, 30, 0), segs=(6, 4), grad=(0.2, 0.8))
+	for k in range(5):                                                                    # and a blackberry
+		a = k * math.tau / 5
+		p.blob((0.07, 0.07, 0.07), (-0.08 + math.cos(a) * 0.05, -0.3, 0.15 + math.sin(a) * 0.05), HEATH, segs=(5, 3), grad=(0.6, 1.0))
+	return p.build()
+
+
+def highwayman_token():
+	p = Prop("highwayman_token", 2205)
+	p.seg((0, 0.04, 0.55), (0, -0.05, 0.55), 0.46, 0.46, CLAY, sides=20, grad=(0.1, 0.7))    # a crude copper token
+	_loop(p, (0, -0.06, 0.55), 0.43, False, 0.035, AMBER, n=20)
+	p.blob((0.56, 0.06, 0.2), (0, -0.07, 0.58), IRON, segs=(10, 5), grad=(0.0, 0.5))          # stamped with a highwayman's mask
+	for sx in (-1, 1):
+		p.blob((0.1, 0.03, 0.07), (sx * 0.1, -0.1, 0.59), CLAY, segs=(6, 4), grad=(0.0, 0.3))  # its eye holes
+		p.seg((sx * 0.27, -0.07, 0.6), (sx * 0.36, -0.07, 0.66), 0.03, 0.02, IRON, sides=4)
+	p.seg((-0.22, -0.07, 0.24), (0.2, -0.07, 0.42), 0.03, 0.02, STONE_LIGHT, sides=4)         # over a dagger
+	p.seg((-0.22, -0.07, 0.24), (-0.3, -0.07, 0.2), 0.035, 0.035, IRON, sides=4)
+	p.seg((-0.2, -0.07, 0.19), (-0.24, -0.07, 0.3), 0.022, 0.022, IRON, sides=4)
+	for k in range(4):                                                                    # tally scratches
+		x = 0.12 + k * 0.05
+		p.seg((x, -0.065, 0.78), (x + 0.02, -0.065, 0.66), 0.008, 0.008, STONE_DARK, sides=3)
+	p.seg((0, 0.06, 0.9), (0, -0.07, 0.9), 0.06, 0.06, STONE_DARK, sides=10)                  # punched through...
+	p.seg((0.0, -0.08, 0.9), (0.0, -0.08, 1.06), 0.03, 0.03, CLOTH_RED, sides=5)              # ...and tied with a red rag
+	for sx, ln in ((-1, 0.36), (1, 0.28)):
+		p.poly([(0, -0.09, 1.06), (sx * 0.08, -0.09, 1.1), (sx * ln, -0.09, 0.96), (sx * (ln - 0.08), -0.09, 0.9)], [(0, 1, 2, 3)], CLOTH_RED,
+			   grad=(0.1, 0.8))
+	p.blob((0.1, 0.08, 0.1), (0, -0.09, 1.06), CLOTH_RED, segs=(6, 4))
+	return p.build()
+
+
+def grave_iron():
+	p = Prop("grave_iron", 2207)
+	outline = [(-0.34, 0.0), (0.08, -0.04), (0.3, 0.12), (0.26, 0.4), (0.36, 0.62), (0.16, 1.02), (0.02, 1.2), (-0.12, 0.9), (-0.28, 0.78),
+			   (-0.2, 0.5), (-0.38, 0.28)]
+	_slab(p, outline, -0.1, 0.1, IRON, grad=(0.0, 0.55))                                    # a jagged shard of cold dark iron
+	face = [(-0.18, 0.12), (0.12, 0.1), (0.2, 0.52), (0.06, 0.96), (-0.1, 0.72)]
+	_slab(p, face, -0.13, -0.09, SEA_STONE, grad=(0.5, 1.0))                                 # a flat, gray-blue face
+	crack = [(-0.26, -0.12, 0.3), (-0.08, -0.14, 0.44), (0.02, -0.14, 0.4), (0.12, -0.14, 0.64), (0.06, -0.14, 0.86)]
+	_seam(p, crack, CLOTH_WHITE, r=0.016, glow=1.6)                                         # a faint pale light in its cracks
+	_seam(p, [(0.02, -0.14, 0.4), (0.2, -0.13, 0.3)], AQUA, r=0.012, glow=1.8)
+	for k in range(5):                                                                    # cold mist clinging to it
+		a = k * 1.3
+		p.blob((0.16, 0.08, 0.1), (math.cos(a) * 0.34, -0.12, 0.3 + k * 0.18), AQUA, segs=(6, 4), grad=(0.0, 0.3), glow=0.7)
+	for x, z in ((0.22, 0.2), (-0.26, 0.66), (0.24, 0.72)):                               # grave-dirt and rust
+		p.blob((0.1, 0.06, 0.08), (x, -0.1, z), EMBER, segs=(5, 3), grad=(0.7, 1.0))
+	return p.build()
+
+
+def wyvern_scale():
+	p = Prop("wyvern_scale", 2209)
+	for dx, dy, dz, s_ in ((-0.34, 0.16, 0.34, 0.72), (0.1, 0.0, 0.0, 1.0)):              # a crag-gray scale over a smaller one
+		outline = []
+		for k in range(15):
+			a = math.radians(200 + k * (140 / 14))
+			outline.append((dx + math.cos(a) * 0.46 * s_, dz + (0.46 + math.sin(a) * 0.46) * s_))
+		outline += [(dx + 0.32 * s_, dz + 0.82 * s_), (dx, dz + 1.18 * s_), (dx - 0.32 * s_, dz + 0.82 * s_)]
+		_slab(p, outline, dy - 0.06 * s_, dy + 0.06 * s_, STONE_WARM, grad=(0.1, 0.8))
+		for off in (-0.16, 0.0, 0.16):                                                   # three rough ridges
+			p.seg((dx + off * s_, dy - 0.07 * s_, dz + 0.12 * s_), (dx + off * 0.4 * s_, dy - 0.08 * s_, dz + 0.98 * s_),
+				  0.04 * s_, 0.012, STONE_LIGHT if off == 0 else WOOD_GRAY, sides=4)
+		for a, b in zip(outline[:14], outline[1:15]):                                     # a weathered brown edge
+			p.seg((a[0], dy - 0.07 * s_, a[1]), (b[0], dy - 0.07 * s_, b[1]), 0.04 * s_, 0.04 * s_, WOOD, sides=4)
+	for x, z, s_ in ((0.3, 0.3, 0.14), (-0.12, 0.62, 0.1), (0.24, 0.72, 0.08)):             # lichen on it
+		p.blob((s_, 0.03, s_ * 0.8), (x, -0.09, z), LEAF, segs=(6, 4), grad=(0.4, 0.9), jitter=0.02)
+	return p.build()
+
+
+def corvels_signet():
+	p = Prop("corvels_signet", 2211)
+	_ring(p, GOLD)                                                                        # a heavy gold band
+	p.seg((0, 0.08, 0.88), (0, -0.1, 0.88), 0.3, 0.3, GOLD, sides=14, grad=(0.1, 0.7))       # a gold signet face
+	p.seg((0, -0.1, 0.88), (0, -0.12, 0.88), 0.23, 0.23, STONE_DARK, sides=14)
+	p.blob((0.17, 0.05, 0.15), (0, -0.14, 0.82), CLOTH_RED, segs=(8, 5), glow=0.4)           # set with a red hand
+	for x, ln in ((-0.06, 0.1), (-0.02, 0.13), (0.02, 0.13), (0.06, 0.11)):
+		p.seg((x, -0.14, 0.87), (x * 1.25, -0.14, 0.87 + ln), 0.022, 0.018, CLOTH_RED, sides=5, glow=0.4)
+	p.seg((0.07, -0.14, 0.8), (0.14, -0.14, 0.88), 0.022, 0.018, CLOTH_RED, sides=5, glow=0.4)
+	for k in range(4):                                                                    # a ring of gold beads round it
+		a = math.radians(45 + k * 90)
+		p.blob((0.05, 0.05, 0.05), (math.cos(a) * 0.3, -0.1, 0.88 + math.sin(a) * 0.3), GOLD, segs=(5, 3), grad=(0.0, 0.3))
+	return p.build()
+
+
+def hollow_marshals_seal():
+	p = Prop("hollow_marshals_seal", 2213)
+	for sx in (-1, 1):                                                                    # a faded, tattered ribbon
+		p.poly([(sx * 0.04, 0.05, 0.4), (sx * 0.2, 0.05, 0.4), (sx * 0.3, 0.05, -0.12), (sx * 0.2, 0.05, -0.04), (sx * 0.14, 0.05, -0.14)],
+			   [(0, 1, 2, 3, 4)], CLOTH_RED, grad=(0.6, 1.0))
+	p.seg((0, 0.04, 0.55), (0, -0.07, 0.55), 0.46, 0.44, AMBER, sides=20, grad=(0.4, 1.0))   # a heavy seal of tarnished bronze
+	_loop(p, (0, -0.08, 0.55), 0.42, False, 0.035, AMBER, n=20)
+	for x, z, s_ in ((0.28, 0.3, 0.18), (-0.3, 0.68, 0.14), (0.3, 0.8, 0.1), (-0.14, 0.26, 0.1), (0.36, 0.56, 0.08)):   # green with age
+		p.blob((s_, 0.03, s_ * 0.8), (x, -0.08, z), SEAFOAM, segs=(6, 4), grad=(0.4, 0.9), jitter=0.02)
+	for sgn in (-1, 1):                                                                   # crossed swords...
+		p.seg((sgn * 0.24, -0.1, 0.3), (-sgn * 0.2, -0.1, 0.74), 0.03, 0.01, GOLD, sides=4, grad=(0.3, 0.9))
+		p.seg((sgn * 0.13, -0.1, 0.32), (sgn * 0.23, -0.1, 0.42), 0.02, 0.02, GOLD, sides=4, grad=(0.3, 0.9))
+		p.blob((0.05, 0.04, 0.05), (sgn * 0.26, -0.1, 0.28), GOLD, segs=(5, 3), grad=(0.3, 0.9))
+	p.box((0.26, 0.04, 0.06), (0, -0.11, 0.8), GOLD, grad=(0.3, 0.9))                       # ...under a crown
+	for x in (-0.1, 0.0, 0.1):
+		p.seg((x, -0.11, 0.82), (x, -0.11, 0.93 if x == 0 else 0.89), 0.03, 0.0, GOLD, sides=4, grad=(0.3, 0.9))
+	crack = [(-0.12, -0.1, 0.97), (-0.05, -0.1, 0.86), (-0.1, -0.1, 0.72), (0.02, -0.1, 0.56)]
+	_seam(p, crack, STONE_DARK, r=0.014, glow=0.0)                                           # cracked, and cold light seeping out
+	_seam(p, [(a[0] + 0.01, a[1] - 0.012, a[2]) for a in crack[1:]], AQUA, r=0.008, glow=2.0)
+	return p.build()
+
+
+def _sickle_claw(p, pts, r, sw=IRON, edge=CLOTH_WHITE):
+	"""A long hooked claw along pts (root first), with a pale edge down its inside curve."""
+	_line(p, pts, r, 0.0, sw, sides=8, grad=(0.0, 0.5))
+	inner = []
+	for i in range(1, len(pts) - 1):
+		a, b = Vector(pts[i - 1]), Vector(pts[i + 1])
+		d = (b - a).normalized()
+		n = Vector((d.z, 0, -d.x))                                                        # toward the inside of the curve
+		w = r * (1 - i / (len(pts) - 1))
+		inner.append(tuple(Vector(pts[i]) + n * w * 0.75 + Vector((0, -w * 0.5, 0))))
+	_seam(p, inner, edge, r=0.012, glow=0.9)
+
+
+def scythewings_talon():
+	p = Prop("scythewings_talon", 2215)
+	p.seg((-0.62, 0, 1.0), (-0.3, 0, 0.56), 0.15, 0.14, SEA_STONE, sides=8, grad=(0.1, 0.8))   # a scaly gray toe
+	for k in range(3):
+		t = 0.2 + k * 0.28
+		q = (-0.62 + 0.32 * t, -0.01, 1.0 - 0.44 * t)
+		p.seg(q, (q[0] + 0.03, q[1], q[2] - 0.04), 0.16, 0.16, STONE_WARM, sides=8)
+	pts = [(-0.3, 0, 0.56), (-0.02, 0, 0.5), (0.26, 0, 0.36), (0.46, 0, 0.12), (0.54, 0, -0.14), (0.46, 0, -0.38), (0.3, 0, -0.52)]
+	_sickle_claw(p, pts, 0.17)                                                            # and its black scythe of a claw
+	p.blob((0.06, 0.05, 0.08), (0.34, -0.03, -0.5), CLOTH_RED, segs=(5, 3), grad=(0.3, 0.9))   # blood at the point
+	p.seg((-0.62, 0, 1.0), (-0.66, 0, 1.06), 0.12, 0.12, CRIMSON, sides=8, grad=(0.5, 1.0))    # torn off
+	return p.build()
+
+
+# Stormcut Gorge's drops
+
+def gorge_croc_hide():
+	p = Prop("gorge_croc_hide", 2217)
+	p.blob((1.6, 1.0, 0.12), (0, 0, 0.06), PINE, segs=(12, 6), grad=(0.2, 0.9), jitter=0.05)   # a river-green crocodile hide
+	for x in (-1, 1):
+		for y in (-1, 1):
+			p.seg((x * 0.45, y * 0.34, 0.05), (x * 0.66, y * 0.58, 0.04), 0.1, 0.05, PINE, sides=5, grad=(0.3, 0.9))
+	for row in (-1, 0, 1):                                                                # rows of knobbed scutes
+		for k in range(7):
+			p.rock((0.13, 0.12, 0.12), (-0.6 + k * 0.2, row * 0.16, 0.14 if row == 0 else 0.11), STONE_DARK if row else IRON, jitter=0.03)
+	for y in (-0.42, 0.42):                                                               # the pale belly scales at its edges
+		for k in range(8):
+			p.box((0.14, 0.1, 0.03), (-0.56 + k * 0.16, y, 0.07), HIDE, grad=(0.1, 0.6))
+	p.seg((0.72, 0, 0.06), (1.12, 0.06, 0.05), 0.14, 0.04, PINE, sides=6, grad=(0.3, 0.9))   # tail
+	for x, y in ((-0.3, -0.12), (0.2, 0.14), (0.44, -0.1)):                                # wet from the river
+		p.blob((0.08, 0.05, 0.03), (x, y, 0.2), CLOTH_WHITE, segs=(5, 3), glow=1.0)
+	return _tip_back(p.build(), 28)
+
+
+def adder_venom_sac():
+	p = Prop("adder_venom_sac", 2219)
+	p.blob((0.64, 0.56, 0.66), (0, 0, 0.36), BOG_GREEN, segs=(12, 9), grad=(0.0, 0.5), glow=0.9)   # a swollen yellow-green venom sac
+	p.blob((0.26, 0.2, 0.22), (-0.12, -0.2, 0.5), GOLD, segs=(8, 5), grad=(0.0, 0.3), glow=1.2)       # its bright bulge
+	for k in range(4):                                                                    # veins
+		a = -0.8 + k * 0.55
+		p.seg((math.sin(a) * 0.16, -0.26, 0.6), (math.sin(a) * 0.3, -0.24, 0.2), 0.012, 0.008, CRIMSON, sides=3)
+	p.seg((0, 0, 0.64), (0.02, 0, 0.84), 0.13, 0.09, HIDE, sides=8)                          # torn from the jaw with a scrap of adder skin
+	for k in range(3):
+		p.seg((0.0, -0.1 - k * 0.001, 0.7 + k * 0.05), (0.04, -0.1, 0.72 + k * 0.05), 0.105, 0.105, WOOD, sides=8)
+	for sx in (-1, 1):                                                                    # and its two curved fangs
+		pts = [(sx * 0.08, -0.06, 0.82), (sx * 0.2, -0.1, 0.8), (sx * 0.28, -0.12, 0.66), (sx * 0.28, -0.12, 0.52)]
+		_line(p, pts, 0.05, 0.0, BONE, sides=6, grad=(0.0, 0.5))
+	p.seg((0.02, -0.02, 0.04), (0.04, -0.02, -0.14), 0.03, 0.012, BOG_GREEN, sides=5, glow=1.8)   # dripping
+	p.blob((0.08, 0.08, 0.1), (0.04, -0.02, -0.18), BOG_GREEN, segs=(6, 4), glow=2.0)
+	return p.build()
+
+
+def stonefist_tusk():
+	p = Prop("stonefist_tusk", 2221)
+	pts = [(-0.05, 0, 0.1), (0.02, 0, 0.45), (0.12, 0, 0.8), (0.3, 0, 1.08), (0.52, 0, 1.24)]
+	_line(p, pts, 0.26, 0.05, BONE, sides=9, grad=(0.1, 0.8))                              # a great yellowed tusk
+	p.seg((0.52, 0, 1.24), (0.58, 0, 1.24), 0.06, 0.0, BONE, sides=6)                        # its chipped point
+	for k in range(4):                                                                    # carved rings
+		t = 0.25 + k * 0.14
+		a, b = Vector(pts[1]), Vector(pts[2])
+		q = a + (b - a) * (t * 1.6 - 0.2)
+		p.seg(tuple(q), tuple(q + Vector((0.02, 0, 0.04))), 0.2 - k * 0.01, 0.2 - k * 0.01, HIDE, sides=9)
+	for x, z, s_ in ((-0.16, 0.02, 0.24), (0.12, -0.06, 0.26), (0.0, -0.14, 0.28), (-0.2, 0.2, 0.18), (0.18, 0.18, 0.16)):   # its root in a fist of stone
+		p.rock((s_, s_ * 0.9, s_ * 0.9), (x, -0.02, z), STONE_LIGHT, jitter=0.04)
+	p.seg((0.06, -0.14, 0.34), (0.1, -0.14, 0.58), 0.012, 0.008, STONE_DARK, sides=3)        # a crack
+	p.seg((0.1, -0.14, 0.58), (0.06, -0.15, 0.68), 0.01, 0.006, STONE_DARK, sides=3)
+	for k in range(3):                                                                    # red war-paint
+		p.seg((-0.02 + k * 0.03, -0.2 + k * 0.03, 0.7 + k * 0.1), (0.14 + k * 0.03, -0.16 + k * 0.03, 0.74 + k * 0.1), 0.02, 0.02, CLOTH_RED, sides=4)
+	return p.build()
+
+
+def falls_essence():
+	p = Prop("falls_essence", 2223)
+	c = (0, 0, 0.44)
+	_water_orb(p, c, 0.4, glow=1.6)                                                       # a round flask of swirling falls water
+	_potion(p, 0.8, neck=0.2, neck_r=0.1)
+	p.seg((0, 0, 1.12), (0, 0, 1.18), 0.1, 0.1, FALLS, sides=10)                             # sealed with blue wax
+	for k in range(6):                                                                    # spray and mist round it
+		a = math.radians(-30 + k * 45)
+		q = Vector(c) + Vector((math.cos(a) * 0.5, -0.1, math.sin(a) * 0.46))
+		s_ = 0.05 + (k % 3) * 0.02
+		p.blob((s_, s_, s_), tuple(q), CLOTH_WHITE if k % 2 else AQUA, segs=(5, 3), glow=2.2)
+	return p.build()
+
+
+def grukks_knuckle():
+	p = Prop("grukks_knuckle", 2225)
+	a, b = Vector((-0.46, 0, 0.28)), Vector((0.4, 0, 0.66))
+	p.seg(tuple(a), tuple(b), 0.14, 0.12, BONE, sides=10, grad=(0.1, 0.7))                   # a huge troll knuckle-bone
+	d = (b - a).normalized()
+	n = Vector((-d.z, 0, d.x))
+	for e, s_ in ((a, 1.1), (b, 1.0)):                                                    # knobbed joint ends
+		for sgn in (-1, 1):
+			p.blob((0.24 * s_, 0.24 * s_, 0.24 * s_), tuple(e + n * sgn * 0.08 * s_), BONE, segs=(8, 6), grad=(0.1, 0.7))
+	m = (a + b) / 2
+	for k in range(3):                                                                    # through a ring of gray stone
+		q = m + d * (k - 1) * 0.05
+		p.seg(tuple(q - d * 0.02), tuple(q + d * 0.02), 0.19, 0.19, STONE_LIGHT if k != 1 else STONE_WARM, sides=10, grad=(0.1, 0.8))
+	for k in range(3):                                                                    # red tribal marks
+		q = a + d * (0.22 + k * 0.06)
+		p.seg(tuple(q + n * 0.12 + Vector((0, -0.1, 0))), tuple(q - n * 0.1 + Vector((0, -0.1, 0))), 0.018, 0.018, CLOTH_RED, sides=4)
+	p.seg(tuple(b + d * 0.02 + Vector((0, -0.05, -0.06))), (0.5, -0.1, 0.2), 0.016, 0.016, HIDE, sides=4)   # a thong with a tusk bead
+	p.seg((0.5, -0.1, 0.2), (0.54, -0.1, -0.02), 0.05, 0.0, BONE, sides=6)
+	p.blob((0.1, 0.1, 0.1), (0.5, -0.1, 0.22), STONE_WARM, segs=(6, 4))
+	return p.build()
+
+
+def stormcrest_plume():
+	p = Prop("stormcrest_plume", 2227)
+	_vane(p, (-0.38, 0, 0.0), (0.42, 0, 1.28), 0.27, STONE_DARK, tip_swatch=CLOTH_WHITE)   # a storm-gray crest feather
+	for k, (t, w) in enumerate(((0.2, 0.9), (0.45, -0.95), (0.7, 0.8))):                  # its vane split in the wind
+		base, tip = Vector((-0.38, 0, 0.0)), Vector((0.42, 0, 1.28))
+		dd = tip - base
+		nn = Vector((-dd.z, 0, dd.x)).normalized()
+		q = base + dd * t + nn * 0.27 * w
+		p.seg(tuple(q + Vector((0, -0.02, 0))), tuple(q - nn * 0.1 * (1 if w > 0 else -1) + dd * 0.04 + Vector((0, -0.02, 0))),
+			  0.014, 0.01, STONE_DARK, sides=3)
+	_zap(p, [(-0.34, -0.06, 0.26), (-0.14, -0.06, 0.4), (-0.22, -0.06, 0.52), (0.02, -0.06, 0.7), (-0.04, -0.06, 0.82), (0.18, -0.06, 1.02),
+			 (0.36, -0.06, 1.12)], r=0.028)                                                # a crackle of lightning down it
+	_zap(p, [(-0.14, -0.06, 0.4), (0.04, -0.07, 0.36)], r=0.02, sw=SKY)
+	_zap(p, [(0.02, -0.06, 0.7), (0.2, -0.07, 0.72)], r=0.02, sw=SKY)
+	for x, z in ((0.54, 1.3), (0.3, 1.4), (0.6, 1.14)):                                    # sparks off the tip
+		p.blob((0.05, 0.05, 0.05), (x, -0.08, z), CLOTH_WHITE, segs=(5, 3), glow=3.0)
+	return p.build()
+
+
+def heart_of_the_cataract():
+	p = Prop("heart_of_the_cataract", 2229)
+	for sx in (-1, 1):                                                                    # a heart of living water, lit from inside
+		p.blob((0.54, 0.46, 0.52), (sx * 0.19, 0, 0.66), FALLS, segs=(12, 8), grad=(0.3, 0.9), glow=0.9)
+	p.seg((0, 0, 0.64), (0, 0, 0.02), 0.4, 0.0, FALLS, sides=12, grad=(0.4, 1.0), glow=0.9)
+	_foam_swirl(p, (0.0, 0, 0.5), 0.32, turns=1.3, r=0.02, glow=2.0)
+	p.blob((0.14, 0.06, 0.1), (-0.24, -0.24, 0.78), CLOTH_WHITE, segs=(6, 4), glow=1.8)      # its shine
+	ring = []
+	for k in range(33):                                                                   # a ring of rushing foam round it
+		a = k * math.tau / 32
+		ring.append((math.cos(a) * 0.62, math.sin(a) * 0.3, 0.46 + math.cos(a) * 0.14 + math.sin(a * 3) * 0.02))
+	for i, (a, b) in enumerate(zip(ring, ring[1:])):
+		p.seg(a, b, 0.035, 0.035, CLOTH_WHITE if i % 4 else AQUA, sides=5, glow=1.6)
+	for k in range(5):                                                                    # spray thrown off it
+		a = k * 1.25 + 0.4
+		p.blob((0.05, 0.05, 0.05), (math.cos(a) * 0.74, -0.1, 0.5 + math.sin(a) * 0.36), AQUA, segs=(5, 3), glow=2.0)
+	return p.build()
+
+
+# rewards
+
+def wardens_march_cloak():
+	p = Prop("wardens_march_cloak", 2231)
+	outline = _cape_outline(0.3, 0.62, 0.12)
+	_slab(p, outline, 0.04, 0.1, PINE, grad=(0.2, 0.9))                                    # a heath-green wool cloak
+	hem = [(x, z) for x, z in outline[2:]]
+	for a, b in zip(hem, hem[1:]):                                                        # a heather-purple border
+		p.seg((a[0] * 0.97, 0.03, a[1] + 0.07), (b[0] * 0.97, 0.03, b[1] + 0.07), 0.035, 0.035, HEATH, sides=4)
+		p.seg((a[0] * 0.95, 0.03, a[1] + 0.13), (b[0] * 0.95, 0.03, b[1] + 0.13), 0.015, 0.015, GOLD, sides=4)
+	for x in (-0.36, -0.12, 0.12, 0.36):                                                  # hanging folds
+		p.seg((x * 0.7, 0.03, 0.9), (x, 0.03, 0.2 - 0.1 * (1 - (x / 0.62) ** 2)), 0.03, 0.04, PINE, sides=5, grad=(0.7, 1.0))
+	for k in range(7):                                                                    # a gray wolf-fur collar
+		x = -0.3 + k * 0.1
+		p.blob((0.17, 0.12, 0.15), (x, -0.02, 0.97 + 0.02 * math.cos(x * 5)), STONE_WARM, segs=(6, 4), grad=(0.0, 0.6), jitter=0.02)
+	p.seg((0, 0.0, 0.93), (0, -0.1, 0.93), 0.13, 0.13, AMBER, sides=14, grad=(0.1, 0.7))     # a bronze warden's brooch
+	_loop(p, (0, -0.1, 0.93), 0.12, False, 0.02, GOLD, n=14)
+	p.seg((-0.2, -0.12, 0.86), (0.2, -0.12, 1.0), 0.018, 0.012, STONE_LIGHT, sides=4)        # and its pin
+	for dx, dz in ((0.06, 0.02), (0.03, -0.03), (0.08, -0.04)):                          # a sprig of heather tucked in it
+		p.blob((0.05, 0.05, 0.05), (0.14 + dx, -0.12, 0.84 + dz), HEATH, segs=(5, 3), glow=0.4)
+	return p.build()
+
+
+def reaverhide_boots():
+	p = Prop("reaverhide_boots", 2233)
+	for ox, oy in ((-0.34, 0.3), (0.26, -0.12)):
+		r = _boot(p, ox, oy, WOOD, WOOD_GRAY, IRON, grad=(0.2, 0.9), shaft=0.8)             # rough dark hide
+		for k in range(8):                                                                # a shaggy turned-down cuff
+			a = k * math.tau / 8
+			p.blob((0.14, 0.12, 0.16), (ox + 0.02 + math.cos(a) * (r + 0.04), oy + math.sin(a) * (r + 0.04), 0.84), WOOD_GRAY,
+				   segs=(6, 4), grad=(0.2, 0.8), jitter=0.02)
+		for z in (0.34, 0.58):                                                            # buckled straps
+			p.seg((ox, oy, z), (ox + 0.005, oy, z + 0.05), r + 0.022, r + 0.022, STONE_DARK, sides=14)
+			p.box((0.08, 0.04, 0.08), (ox + 0.05, oy - r - 0.03, z + 0.025), STONE_LIGHT, grad=(0.0, 0.4))
+		p.seg((ox + 0.02, oy - r - 0.02, 0.7), (ox + 0.12, oy - r - 0.06, 0.46), 0.03, 0.01, CLOTH_RED, sides=4)   # a Marchreaver's red rag
+		p.blob((0.07, 0.06, 0.06), (ox + 0.02, oy - r - 0.02, 0.72), CLOTH_RED, segs=(6, 4))
+	return p.build()
+
+
+def corvels_red_glove():
+	p = Prop("corvels_red_glove", 2235)
+	f = _hand_frame((0.0, 0.0, 0.0), -10, 1)
+	_glove(p, f, CLOTH_RED, IRON, GOLD, grad=(0.25, 0.95))                                  # one blood-red leather glove
+	for k in range(4):                                                                    # gold studs across the knuckles
+		x = -0.18 + k * 0.12
+		p.blob((0.07, 0.06, 0.07), f(x, -0.13, 0.72), GOLD, segs=(6, 4), glow=0.4)
+	for k in range(3):                                                                    # black stitching down the back
+		p.seg(f(-0.1 + k * 0.1, -0.13, 0.4), f(-0.12 + k * 0.12, -0.13, 0.62), 0.012, 0.012, IRON, sides=3)
+	p.seg(f(0.057, 0.0, 0.92), f(0.06, 0.0, 0.97), 0.085, 0.085, GOLD, sides=8)             # a gold ring worn over it
+	p.seg(f(-0.26, -0.1, 0.12), f(-0.26, -0.1, 0.24), 0.04, 0.04, GOLD, sides=6)              # a gold buckle at the cuff
+	return p.build()
+
+
+def gravewardens_band():
+	p = Prop("gravewardens_band", 2237)
+	_ring(p, IRON)                                                                        # a band of grave-iron
+	for k in range(4):                                                                    # set with faint pale runes
+		a = math.radians(-150 + k * 40)
+		p.blob((0.06, 0.04, 0.06), (math.cos(a) * 0.4, -0.08, 0.4 + math.sin(a) * 0.4), AQUA, segs=(5, 3), glow=2.0)
+	p.seg((0, 0.06, 0.84), (0, -0.06, 0.84), 0.2, 0.2, STONE_LIGHT, sides=12, grad=(0.0, 0.5))   # a silver setting
+	for k in range(4):                                                                    # its claws
+		a = math.radians(45 + k * 90)
+		p.seg((math.cos(a) * 0.19, -0.06, 0.84 + math.sin(a) * 0.19), (math.cos(a) * 0.12, -0.16, 0.84 + math.sin(a) * 0.12), 0.03, 0.015,
+			  STONE_LIGHT, sides=4)
+	p.blob((0.3, 0.2, 0.3), (0, -0.1, 0.84), CLOTH_WHITE, segs=(10, 6), grad=(0.0, 0.4), glow=1.6)   # a moonstone, cold and pale
+	p.blob((0.12, 0.05, 0.1), (-0.05, -0.2, 0.9), AQUA, segs=(6, 4), glow=2.2)
+	return p.build()
+
+
+def marshals_broken_blade():
+	p = Prop("marshals_broken_blade", 2239)
+	org, rot = (-0.62, -0.5), 48
+	outline = [(0.32, 0.15), (0.7, 0.145), (1.02, 0.14), (1.08, 0.07), (1.0, 0.03), (1.12, -0.02), (1.04, -0.08), (1.1, -0.14), (0.7, -0.145),
+			   (0.32, -0.15)]
+	_slab(p, _rot2(outline, rot, org), -0.035, 0.035, STONE_LIGHT, grad=(0.0, 0.6))          # an old war-blade, snapped short
+	f = _rot2([(0.36, 0.0), (0.98, 0.0)], rot, org)
+	p.seg((f[0][0], -0.045, f[0][1]), (f[1][0], -0.045, f[1][1]), 0.022, 0.022, STONE_DARK, sides=4)   # its fuller
+	for s, sgn in ((0.55, 1), (0.8, -1), (0.9, 1)):                                        # nicked and rusted
+		q = _rot2([(s, sgn * 0.08)], rot, org)[0]
+		p.blob((0.07, 0.04, 0.05), (q[0], -0.04, q[1]), EMBER, segs=(5, 3), grad=(0.7, 1.0))
+	brk = _rot2([(1.06, 0.06), (1.04, 0.0), (1.08, -0.07)], rot, org)                        # a cold light where it broke
+	for k, q in enumerate(brk):
+		p.blob((0.09, 0.06, 0.09), (q[0], -0.05, q[1]), AQUA if k % 2 else CLOTH_WHITE, segs=(6, 4), glow=2.2)
+	q = _rot2([(1.18, 0.0)], rot, org)[0]
+	for k in range(3):
+		p.blob((0.05, 0.05, 0.05), (q[0] + k * 0.06, -0.08, q[1] + 0.08 + k * 0.1), AQUA, segs=(5, 3), glow=2.4)
+	g = _rot2([(0.3, -0.34), (0.3, 0.34)], rot, org)
+	p.seg((g[0][0], 0, g[0][1]), (g[1][0], 0, g[1][1]), 0.06, 0.06, AMBER, sides=6, grad=(0.3, 0.9))   # a tarnished bronze crossguard
+	for end in g:
+		p.blob((0.12, 0.12, 0.12), (end[0], 0, end[1]), AMBER, segs=(6, 4), grad=(0.3, 0.9))
+	h = _rot2([(0.26, 0.0), (-0.18, 0.0), (-0.28, 0.0)], rot, org)
+	p.seg((h[0][0], 0, h[0][1]), (h[1][0], 0, h[1][1]), 0.06, 0.06, WOOD, sides=6)             # a grip of worn leather
+	for t in (0.2, 0.5, 0.8):
+		q = (h[0][0] + (h[1][0] - h[0][0]) * t, 0, h[0][1] + (h[1][1] - h[0][1]) * t)
+		p.seg((q[0] - 0.02, 0, q[2] - 0.02), (q[0] + 0.02, 0, q[2] + 0.02), 0.07, 0.07, HIDE, sides=6)
+	p.blob((0.2, 0.2, 0.2), (h[2][0], 0, h[2][1]), AMBER, segs=(8, 6), grad=(0.3, 0.9))
+	p.blob((0.08, 0.05, 0.08), (h[2][0], -0.1, h[2][1]), SEAFOAM, segs=(6, 4), grad=(0.3, 0.8))
+	return p.build()
+
+
+def scythewing_charm():
+	p = Prop("scythewing_charm", 2241)
+	_cord(p, 0.45, 0.84, HIDE)
+	p.seg((0, -0.3, 0.64), (0, -0.3, 0.5), 0.02, 0.02, HIDE, sides=4)
+	p.seg((0, -0.3, 0.52), (0, -0.3, 0.38), 0.11, 0.13, STONE_LIGHT, sides=10, grad=(0.0, 0.5))   # a silver cap...
+	p.blob((0.09, 0.05, 0.09), (0, -0.42, 0.45), FALLS, segs=(6, 4), glow=1.6)
+	pts = [(0, -0.3, 0.38), (0.04, -0.3, 0.2), (0.02, -0.3, 0.0), (-0.08, -0.3, -0.18), (-0.24, -0.3, -0.28)]
+	_sickle_claw(p, pts, 0.1)                                                             # ...on Scythewing's hooked talon
+	for sx in (-1, 1):                                                                    # between two gray scales
+		p.blob((0.14, 0.04, 0.18), (sx * 0.17, -0.3, 0.46), STONE_WARM, rot=(0, sx * 20, 0), segs=(6, 4), grad=(0.1, 0.8))
+	return p.build()
+
+
+def ropewalkers_gloves():
+	p, fr = _glove_pair("ropewalkers_gloves", 2243, WOOD, HIDE, WOOD_GRAY, grad=(0.15, 0.85))   # supple brown leather
+	for f in fr:
+		o = Vector(f(0, 0, 0))
+		u = (Vector(f(1, 0, 0)) - o).normalized()
+		_twist_ring(p, f(0, 0, 0.2), u, (0, 1, 0), 0.25, 0.028, (BONE, AMBER), turns=10)    # rope wound round the wrist
+		for k in range(2):                                                                # and a patch across the palm edge
+			p.seg(f(-0.26, -0.1, 0.42 + k * 0.12), f(0.24, -0.12, 0.46 + k * 0.12), 0.024, 0.024, AMBER, sides=4)
+	f = fr[1]
+	_line(p, [f(0.24, -0.02, 0.18), f(0.34, -0.06, 0.02), f(0.3, -0.08, -0.16), f(0.38, -0.1, -0.3)], 0.03, 0.026, BONE, sides=5)   # a loose end
+	p.blob((0.07, 0.07, 0.07), f(0.38, -0.1, -0.32), AMBER, segs=(6, 4))
+	return p.build()
+
+
+def stonefist_girdle():
+	p = Prop("stonefist_girdle", 2245)
+	f, out, tan = _belt(p, WOOD_GRAY, STONE_DARK, STONE_DARK, R=0.6, h=0.32, grad=(0.2, 0.9))   # a wide troll-hide girdle
+	c = Vector((0, 0.1, 0.5))
+	for k in range(9):                                                                    # set with plaques of gray stone
+		a = math.radians(-175 + k * 22)
+		if abs(a - math.radians(-61)) < 0.3:
+			continue
+		q = c + Vector((math.cos(a), math.sin(a), 0)) * 0.63
+		p.rock((0.17, 0.1, 0.2), tuple(q), STONE_LIGHT if k % 2 else STONE_WARM, jitter=0.03)
+	fist = f + out * 0.08                                                                 # its buckle a stone fist
+	p.rock((0.32, 0.16, 0.3), tuple(fist), STONE_LIGHT, jitter=0.03)
+	for k in range(4):
+		q = fist + tan * (-0.11 + k * 0.075) + Vector((0, 0, 0.12)) + out * 0.03
+		p.blob((0.09, 0.09, 0.09), tuple(q), STONE_LIGHT, segs=(6, 4), grad=(0.1, 0.7))
+	p.blob((0.1, 0.1, 0.14), tuple(fist + tan * 0.16 + out * 0.04 + Vector((0, 0, -0.02))), STONE_LIGHT, segs=(6, 4), grad=(0.1, 0.7))   # its thumb
+	for k in range(3):                                                                    # bound with rawhide
+		q = fist + tan * (-0.14 + k * 0.14) + out * 0.06
+		p.seg(tuple(q + Vector((0, 0, -0.16))), tuple(q + Vector((0, 0, -0.08))), 0.02, 0.02, HIDE, sides=4)
+	return p.build()
+
+
+def griffon_feather_mantle():
+	p = Prop("griffon_feather_mantle", 2247)
+	outline = [(-0.26, 1.0), (0.26, 1.0), (0.5, 0.86), (0.66, 0.6), (0.7, 0.3), (0.58, 0.12), (0.3, 0.02), (0.0, 0.0), (-0.3, 0.02),
+			   (-0.58, 0.12), (-0.7, 0.3), (-0.66, 0.6), (-0.5, 0.86)]
+	_slab(p, outline, 0.02, 0.08, HIDE, grad=(0.3, 0.9))                                   # a shoulder mantle...
+	for row, (z0, length, n, spread) in enumerate(((0.46, 0.46, 7, 0.62), (0.68, 0.44, 6, 0.54), (0.88, 0.4, 5, 0.42))):   # ...shingled with griffon feathers
+		for k in range(n):
+			u = -1 + 2 * k / (n - 1)
+			base = (u * spread, -0.01 - row * 0.03, z0)
+			ang = math.radians(u * 18)
+			tip = (base[0] + math.sin(ang) * length, base[1], z0 - math.cos(ang) * length)
+			_vane(p, base, tip, 0.12, AMBER if (k + row) % 2 else HIDE, bars=(0.4, 0.6) if row < 2 else None, tip_swatch=CLOTH_WHITE)
+	for k in range(9):                                                                    # a collar of white down
+		t = k / 8
+		x = -0.34 + t * 0.68
+		p.blob((0.18, 0.16, 0.16), (x, -0.12, 0.98 - math.sin(t * math.pi) * 0.08), CLOTH_WHITE, segs=(6, 4), grad=(0.0, 0.5), jitter=0.02)
+	p.blob((0.2, 0.1, 0.2), (0, -0.2, 0.86), STONE_LIGHT, segs=(8, 5), glow=0.3)               # a silver clasp with a sky-blue stone
+	p.blob((0.09, 0.05, 0.09), (0, -0.25, 0.86), FALLS, segs=(6, 4), glow=1.8)
+	obj = p.build()
+	obj.data.transform(Matrix.Rotation(math.radians(-15), 4, "X"))
+	return obj
+
+
+def stormcrest_plumed_cap():
+	p = Prop("stormcrest_plumed_cap", 2249)
+	for z0, z1, r0, r1 in ((0.0, 0.2, 0.42, 0.43), (0.2, 0.4, 0.43, 0.38), (0.4, 0.54, 0.38, 0.26), (0.54, 0.62, 0.26, 0.0)):
+		p.seg((0, 0, z0), (0, 0, z1), r0, r1, WOOD, sides=16, grad=(0.15, 0.85))             # a close leather cap
+	for k in range(6):                                                                    # stitched in panels
+		a = k * math.tau / 6 + 0.3
+		pts = [(math.cos(a) * r, math.sin(a) * r, z) for r, z in ((0.44, 0.14), (0.42, 0.34), (0.33, 0.5), (0.18, 0.6))]
+		_line(p, pts, 0.014, 0.012, HIDE, sides=4)
+	p.seg((0, 0, -0.02), (0, 0, 0.13), 0.45, 0.45, SEA_STONE, sides=16, grad=(0.1, 0.7))       # a storm-gray band
+	_vane(p, (0.3, -0.12, 0.2), (0.62, -0.12, 1.42), 0.2, STONE_DARK, tip_swatch=CLOTH_WHITE)   # Stormcrest's plume
+	_vane(p, (0.3, -0.08, 0.2), (0.9, -0.08, 1.08), 0.14, SEA_STONE, tip_swatch=CLOTH_WHITE)
+	_zap(p, [(0.4, -0.16, 0.5), (0.5, -0.16, 0.7), (0.44, -0.16, 0.84), (0.58, -0.16, 1.02), (0.54, -0.16, 1.16), (0.66, -0.16, 1.32)], r=0.024)
+	p.blob((0.1, 0.1, 0.1), (0.7, -0.17, 1.44), CLOTH_WHITE, segs=(5, 3), glow=3.0)
+	p.blob((0.16, 0.08, 0.16), (0.3, -0.42, 0.13), FALLS, segs=(8, 5), glow=2.0)               # pinned with a storm-blue stone
+	_loop(p, (0.3, -0.43, 0.13), 0.08, False, 0.018, STONE_LIGHT, n=10)
+	return p.build()
+
+
+def cataract_pendant():
+	p = Prop("cataract_pendant", 2251)
+	_cord(p, 0.45, 0.86, STONE_LIGHT)                                                     # a fine silver chain
+	c = (0, -0.3, 0.22)
+	_oval(p, (0, -0.3, 0.6), (1, 0, 0), (0, 0, 1), 0.06, 0.08, 0.018, STONE_LIGHT, n=10)     # its bail
+	p.blob((0.4, 0.24, 0.44), c, FALLS, segs=(12, 8), grad=(0.0, 0.5), glow=1.5)             # a teardrop of falls water, glowing
+	p.seg((0, -0.3, 0.34), (0, -0.3, 0.54), 0.16, 0.0, FALLS, sides=10, grad=(0.0, 0.5), glow=1.5)
+	_foam_swirl(p, c, 0.16, turns=1.2, r=0.012, glow=2.2)
+	pts = []
+	for k in range(25):                                                                   # set in a silver rim
+		t = k / 24 * math.tau
+		x = math.sin(t) * 0.215
+		z = 0.22 - math.cos(t) * 0.235
+		if z > 0.34:
+			x *= max(0.0, 1 - (z - 0.34) / 0.22)
+		pts.append((x, -0.31, z))
+	_seam(p, pts, STONE_LIGHT, r=0.022, glow=0.0)
+	p.blob((0.07, 0.04, 0.09), (-0.08, -0.45, 0.28), CLOTH_WHITE, segs=(6, 4), glow=1.8)
+	for k, x in enumerate((-0.07, 0.07)):                                                 # two silver droplets below
+		p.seg((x * 0.5, -0.3, 0.0), (x, -0.3, -0.12 - k * 0.05), 0.01, 0.01, STONE_LIGHT, sides=3)
+		p.blob((0.06, 0.06, 0.08), (x, -0.3, -0.15 - k * 0.05), AQUA, segs=(6, 4), glow=1.6)
+	return p.build()
+
+
+def stormcut_staff():
+	p = Prop("stormcut_staff", 2253)
+	org, rot = (-0.3, -0.7), 72
+	_haft(p, org, rot, 0.0, 1.6, 0.06, swatch=WOOD_GRAY, bands=(0.35, 1.0), band_swatch=STONE_LIGHT)   # pale river driftwood
+	for s in (0.6, 1.25):                                                                 # its knots
+		q = _rot2([(s, 0.07)], rot, org)[0]
+		p.blob((0.1, 0.1, 0.1), (q[0], -0.02, q[1]), WOOD, segs=(6, 4))
+	c = _rot2([(1.98, 0.0)], rot, org)[0]
+	c3 = (c[0], 0.0, c[1])
+	_water_orb(p, c3, 0.31, glow=1.6)                                                     # a ball of falls water, swirling
+	base = _rot2([(1.6, 0.0)], rot, org)[0]
+	p.seg((base[0], 0, base[1] - 0.06), (base[0], 0, base[1] + 0.08), 0.1, 0.12, STONE_LIGHT, sides=8)
+	for sgn in (-1, 1):                                                                   # held in two silver prongs
+		pts = [(base[0], 0, base[1] + 0.06), (c[0] + sgn * 0.3, -0.02, c[1] - 0.12), (c[0] + sgn * 0.3, -0.02, c[1] + 0.16),
+			   (c[0] + sgn * 0.12, -0.04, c[1] + 0.32)]
+		_line(p, pts, 0.045, 0.02, STONE_LIGHT, sides=6, grad=(0.0, 0.5))
+	ring = []
+	for k in range(25):                                                                   # water streaming round it
+		a = k * math.tau / 24
+		ring.append((c[0] + math.cos(a) * 0.4, math.sin(a) * 0.2, c[1] + math.sin(a) * 0.12 - 0.02))
+	for i, (a, b) in enumerate(zip(ring, ring[1:])):
+		if i % 6 < 4:
+			p.seg(a, b, 0.024, 0.024, CLOTH_WHITE if i % 6 else AQUA, sides=5, glow=1.6)
+	_zap(p, [(c[0] + 0.18, -0.2, c[1] + 0.28), (c[0] + 0.3, -0.2, c[1] + 0.42), (c[0] + 0.24, -0.2, c[1] + 0.5), (c[0] + 0.36, -0.2, c[1] + 0.62)], r=0.024)
+	for k in range(3):                                                                    # dripping
+		p.blob((0.05, 0.05, 0.07), (c[0] - 0.08 + k * 0.1, -0.1, c[1] - 0.38 - (k % 2) * 0.12), AQUA, segs=(5, 3), glow=2.0)
+	return p.build()
+
+
+WEST_MARCH = [march_wolf_pelt, boar_bristles, highwayman_token, grave_iron, wyvern_scale, corvels_signet, hollow_marshals_seal,
+			  scythewings_talon, gorge_croc_hide, adder_venom_sac, stonefist_tusk, falls_essence, grukks_knuckle, stormcrest_plume,
+			  heart_of_the_cataract, wardens_march_cloak, reaverhide_boots, corvels_red_glove, gravewardens_band, marshals_broken_blade,
+			  scythewing_charm, ropewalkers_gloves, stonefist_girdle, griffon_feather_mantle, stormcrest_plumed_cap, cataract_pendant,
+			  stormcut_staff]
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
 								 vial_of_spring_water, leatherwing_charm, coilback_scale_band, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
@@ -10368,7 +10960,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER + WEST_MARCH}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

@@ -351,6 +351,20 @@ TRACKS = {
 		"melody": "flute", "melody_octave": -1, "arp": "lute", "arp_pattern": [0, -1, 1, -1, 2, -1, 1, -1], "pad": True, "bass": True,
 		"drone": 0.5, "drum": [0, 2], "drum_sections": ["A", "B", "C"], "drum_low": 0.8, "drum_gain": 0.5, "reverb": 3.8, "sparse": 0.4, "bells": 0.1,
 	},
+	"broken_march": {  # the borderland heath, 14-20: a lonely mixolydian horn over a marching frame drum, wind in the pad
+		"key": (55, "mixolydian"), "bpm": 72, "beats": 4, "seed": 641,
+		"sections": {"A": [0, 6, 3, 0], "B": [3, 6, 0, 4], "C": [5, 3, 6, 0]},
+		"form": ["A", "B", "A", "C", "A"],
+		"melody": "horn", "melody_octave": -1, "arp": "lute", "arp_pattern": [0, -1, 2, -1, 0, -1, 1, -1], "pad": True, "bass": True,
+		"drone": 0.35, "drum": [0, 1, 2, 3], "drum_sections": ["A", "B", "C"], "drum_low": 0.7, "drum_gain": 0.45, "reverb": 3.0, "sparse": 0.35, "bells": 0.05,
+	},
+	"stormcut_gorge": {  # the rain canyon, 18-22: rushing dorian harp like falling water, a high flute, bells like rain in a big space
+		"key": (59, "dorian"), "bpm": 84, "beats": 3, "seed": 647,
+		"sections": {"A": [0, 3, 6, 0, 0, 5, 3, 4], "B": [3, 6, 0, 4, 5, 6, 4, 4]},
+		"form": ["A", "B", "A", "B", "A"],
+		"melody": "flute", "arp": "harp", "arp_pattern": [0, 2, 4, 3, 4, 2], "pad": True, "bass": True,
+		"drone": 0.3, "drum": [0, 2], "drum_sections": ["B"], "drum_gain": 0.3, "reverb": 4.6, "sparse": 0.3, "bells": 0.45,
+	},
 	"duskhold": {  # the cavern city under the wood: tolling bells and a slow harp in a huge dark reverb, stately and cold
 		"key": (52, "aeolian"), "bpm": 52, "beats": 3, "seed": 631,
 		"sections": {"A": [0, 5, 3, 4, 0, 5, 6, 0], "B": [3, 0, 5, 6, 3, 4, 4, 4]},

@@ -3,6 +3,7 @@
   "agnavars_hearth",
   "barrowhold",
   "blackglass",
+  "broken_march",
   "cinderpass",
   "dawnwatch",
   "dewstep",
@@ -30,6 +31,7 @@
   "silted_reach",
   "smokewood",
   "stonesail",
+  "stormcut_gorge",
   "sunward_steps",
   "the_bleach",
   "the_burn",
@@ -425,6 +427,24 @@
    "reached": "foot"
   },
   {
+   "id": "stormcut_gorge",
+   "name": "Stormcut Gorge",
+   "area": "monsoon",
+   "levels": [
+    18,
+    22
+   ],
+   "size": 448,
+   "cell": [
+    -2,
+    1
+   ],
+   "kind": "water",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
    "id": "cinderpass",
    "name": "Cinderpass",
    "area": "ashfall",
@@ -740,7 +760,7 @@
    ],
    "size": 224,
    "cell": [
-    -3,
+    -5,
     1
    ],
    "kind": "city",
@@ -758,7 +778,7 @@
    ],
    "size": 384,
    "cell": [
-    -2,
+    -4,
     1
    ],
    "kind": "water",
@@ -776,7 +796,7 @@
    ],
    "size": 384,
    "cell": [
-    -1,
+    -3,
     0
    ],
    "kind": "wood",
@@ -794,10 +814,28 @@
    ],
    "size": 448,
    "cell": [
-    -2,
+    -4,
     0
    ],
    "kind": "water",
+   "built": true,
+   "existing": true,
+   "reached": "foot"
+  },
+  {
+   "id": "broken_march",
+   "name": "The Broken March",
+   "area": "blackwater",
+   "levels": [
+    14,
+    20
+   ],
+   "size": 448,
+   "cell": [
+    -3,
+    1
+   ],
+   "kind": "plain",
    "built": true,
    "existing": true,
    "reached": "foot"
@@ -973,6 +1011,13 @@
   },
   {
    "a": "reedmere",
+   "a_edge": "south",
+   "b": "stormcut_gorge",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "reedmere",
    "a_edge": "east",
    "b": "weeping_throat",
    "b_edge": "west",
@@ -1023,9 +1068,9 @@
   {
    "a": "rainhold",
    "a_edge": "west",
-   "b": "the_wallow",
+   "b": "stormcut_gorge",
    "b_edge": "east",
-   "cross_area": true
+   "cross_area": false
   },
   {
    "a": "cinderpass",
@@ -1225,13 +1270,6 @@
   },
   {
    "a": "duskwood",
-   "a_edge": "north",
-   "b": "rainhold",
-   "b_edge": "south",
-   "cross_area": true
-  },
-  {
-   "a": "duskwood",
    "a_edge": "west",
    "b": "the_rotfen",
    "b_edge": "east",
@@ -1242,6 +1280,27 @@
    "a_edge": "north",
    "b": "the_wallow",
    "b_edge": "south",
+   "cross_area": false
+  },
+  {
+   "a": "broken_march",
+   "a_edge": "south",
+   "b": "duskwood",
+   "b_edge": "north",
+   "cross_area": false
+  },
+  {
+   "a": "broken_march",
+   "a_edge": "east",
+   "b": "stormcut_gorge",
+   "b_edge": "west",
+   "cross_area": true
+  },
+  {
+   "a": "broken_march",
+   "a_edge": "west",
+   "b": "the_wallow",
+   "b_edge": "east",
    "cross_area": false
   },
   {
