@@ -3734,6 +3734,8 @@ func _t_wellspring_quest() -> void:
 	await _wait(1.6)
 	var pond_clean: bool = main.zone._foul.all(func(f: Dictionary) -> bool: return f["clean"])
 	print("wellspring_quest: step 4 %s; pond clean %s" % [p.quests.get("merricks_line_pond"), pond_clean])
+	print("wellspring_quest: hailing pond Merrick after the quest:")
+	World.request_hail(p.entity_id)
 	p.global_position = main.zone.ground(-114, 157) + Vector3.UP
 	p.face_toward(main.zone.ground(-125, 145))
 	p.camera_pivot.rotation.y = 0.0

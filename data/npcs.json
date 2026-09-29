@@ -260,6 +260,18 @@
       "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. One of these days, {name}. One of these days.",
       "unknown": "Hm? Sorry, I was watching my line."
     },
+    "dialogue_after": {
+      "merricks_line_word": {
+        "hail": "There you are, {name}! Beat you here. Look at it: clear to the bottom. Now, that vial of yours.",
+        "unknown": "Later, {name}. Let's see that vial first."
+      },
+      "merricks_line_pond": {
+        "hail": "{name}! Come to watch the water run clear? The fish are biting again, thanks to you and Corran. Poles and bait, same as ever. Mind you don't spook the [trout].",
+        "trout": "Greenmoor trout, fat as your fist, and hungry again. There's one in this pond a good deal bigger, mind. [Old Gulper], I call him.",
+        "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. Now that the water's sweet again, he'll be back. One of these days, {name}. One of these days.",
+        "unknown": "Hm? Sorry, {name}, I was watching my line. Old habits."
+      }
+    },
     "after_started": "merricks_line_pond",
     "faction": "emberhold"
   },
