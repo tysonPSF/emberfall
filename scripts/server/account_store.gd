@@ -4,6 +4,7 @@ extends RefCounted
 ## (--data=<dir>, default user://server):
 ##   accounts/<account>.json    {salt, hash, characters: [names]}
 ##   characters/<name>.json     the character's save, exactly as offline saves look
+##   deleted/<name>_<time>.json  a deleted character's last save (restorable by hand)
 ## Clients send a hash of (account, password), never the password itself; the
 ## server stores that hash salted and stretched again.
 
@@ -109,6 +110,28 @@ func import_character(account: String, save: Dictionary) -> String:
 		if not known.call(eq[slot]):
 			eq.erase(slot)
 	return _add(account, d)
+
+
+## Deletes one of the account's characters, or says why not. The save is
+## moved to deleted/ (so whoever runs the server can put it back by hand) and
+## the name is free for someone else.
+func delete_character(account: String, name: String) -> String:
+	var a := _read(_account_path(account))
+	var listed: Array = a.get("characters", [])
+	var at := -1
+	for i in listed.size():
+		if str(listed[i]).to_lower() == name.to_lower():
+			at = i
+	if at < 0:
+		return "You have no character called %s." % name.to_lower().capitalize()
+	var real := str(listed[at])
+	listed.remove_at(at)
+	_write(_account_path(account), a)
+	DirAccess.make_dir_recursive_absolute(root.path_join("deleted"))
+	var path := _character_path(real)
+	if FileAccess.file_exists(path):
+		DirAccess.rename_absolute(path, root.path_join("deleted/%s_%d.json" % [real.to_lower(), int(Time.get_unix_time_from_system())]))
+	return ""
 
 
 func load_character(name: String) -> Dictionary:

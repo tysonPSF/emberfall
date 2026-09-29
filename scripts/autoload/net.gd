@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 19  # bump when the messages change, so old clients are turned away
+const PROTOCOL := 20  # bump when the messages change, so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -139,6 +139,12 @@ func create_character(name: String, cls: String, deity: String, stats: Dictionar
 	_c_create_character.rpc_id(1, name, cls, deity, stats, race, gender, hair)
 
 
+## Client: delete one of your characters; typed is the name as the player typed
+## it to confirm, checked again by the server.
+func delete_character(name: String, typed: String) -> void:
+	_c_delete_character.rpc_id(1, name, typed)
+
+
 ## Client: bring an offline character onto the server (once).
 func import_character(save: Dictionary) -> void:
 	_c_import.rpc_id(1, save)
@@ -205,6 +211,27 @@ func _c_create_character(name: String, cls: String, deity: String, stats: Dictio
 	if why != "":
 		_s_message.rpc_id(peer, why, true)
 		return
+	_send_characters(peer)
+
+
+@rpc("any_peer", "reliable")
+func _c_delete_character(name: String, typed: String) -> void:
+	var peer := multiplayer.get_remote_sender_id()
+	if not _sessions.has(peer) or _peer_player.has(peer):
+		return  # only from the character screen, never from in the world
+	if typed.strip_edges().to_lower() != name.to_lower():
+		_s_message.rpc_id(peer, "Type the character's name exactly to delete it.", true)
+		return
+	if not accounts.owns(_sessions[peer], name):
+		_s_message.rpc_id(peer, "You have no character called %s." % name.to_lower().capitalize(), true)
+		return
+	World.character_deleted(name)
+	var why := accounts.delete_character(_sessions[peer], name)
+	if why != "":
+		_s_message.rpc_id(peer, why, true)
+		return
+	print("%s deleted %s (peer %d)" % [_sessions[peer], name, peer])
+	_s_message.rpc_id(peer, "%s has been deleted." % name.to_lower().capitalize(), false)
 	_send_characters(peer)
 
 

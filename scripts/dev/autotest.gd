@@ -115,6 +115,7 @@ const SECTIONS := [
 	["blackwater_views", "murkhold"],
 	["deity_picker", "greenmoor"],
 	["quest_share", "greenmoor"],
+	["delete_guild", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
@@ -8219,6 +8220,26 @@ func _t_crits() -> void:
 ## Who may take up a shared quest: what they're on, what they've done, a quest
 ## line's earlier step, and whether its giver would talk to them. The share
 ## button shows in the journal only in a group.
+## A deleted character leaves its guild: a leader's guild passes to an
+## officer before a member, and a guild of one closes.
+func _t_delete_guild() -> void:
+	var gs := World.guilds()
+	for k: String in ["delete test"]:
+		if gs.guilds.has(k):
+			gs.disband(k)
+	gs.found("Delete Test", {"name": "Aleader"})
+	gs.join("delete test", {"name": "Bmember"}, "member")
+	gs.join("delete test", {"name": "Cofficer"}, "officer")
+	World.character_deleted("Aleader")
+	print("delete_guild: leader deleted -> Aleader in %s; Cofficer %s, Bmember %s" % [gs.key_of("Aleader") if gs.key_of("Aleader") != "" else "none", gs.rank_of("Cofficer"), gs.rank_of("Bmember")])
+	World.character_deleted("Cofficer")
+	print("delete_guild: new leader deleted -> Bmember %s" % gs.rank_of("Bmember"))
+	World.character_deleted("Bmember")
+	print("delete_guild: last one deleted -> guild still there %s" % gs.guilds.has("delete test"))
+	World.character_deleted("Nobody")  # in no guild: nothing happens
+	print("delete_guild: someone in no guild -> fine")
+
+
 func _t_quest_share() -> void:
 	var m := Player.new()
 	m.from_save({"name": "Probe", "class": "warrior", "level": 5, "stats": {}, "race": "human"})
