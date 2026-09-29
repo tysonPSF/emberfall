@@ -73,6 +73,7 @@ var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ..
 var stats_chosen := false
 var bind_zone := ""  # the city your soul is bound to (a bindstone there); "" = the starting city. Gate and the Homeward Stone take you there
 var pet_spell := ""  # the spell that summoned it: while set, World keeps a pet at your side (after zoning, logging in)
+var pet_gear: Dictionary = {}  # what you have given your pet, slot -> item id; it outlives each pet you summon (zoning, logging in), saved
 var pet_hp := -1  # its health when you last left, to bring it back as it was
 var _zone_hold := 0.0  # online: seconds left standing still in a zone line, waiting for the server to move us
 var _held_line := false
@@ -196,6 +197,11 @@ func from_save(d: Dictionary) -> void:
 	var saved_pet: Dictionary = d.get("pet", {})
 	pet_spell = str(saved_pet.get("spell", ""))
 	pet_hp = int(saved_pet.get("hp", -1))
+	pet_gear = {}
+	var saved_gear: Dictionary = saved_pet.get("gear", {})
+	for slot: String in saved_gear:
+		if GameData.item(str(saved_gear[slot])).has("slot"):
+			pet_gear[slot] = str(saved_gear[slot])
 	factions = (d.get("factions", {}) as Dictionary).duplicate()
 	for k: String in factions:
 		factions[k] = int(factions[k])
@@ -319,7 +325,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity"]:
+			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity"]:
 		set(key, d[key])
 	if str(d.get("guild_name", "")) != guild_name:
 		guild_name = str(d.get("guild_name", ""))
@@ -394,10 +400,10 @@ func to_save() -> Dictionary:
 
 
 func _pet_save() -> Dictionary:
-	if pet_spell == "":
+	if pet_spell == "" and pet_gear.is_empty():
 		return {}
 	var pet := World.get_object(pet_id) as Pet
-	return {"spell": pet_spell, "hp": pet.hp if pet != null and not pet.dead else pet_hp}
+	return {"spell": pet_spell, "hp": pet.hp if pet != null and not pet.dead else pet_hp, "gear": pet_gear}
 
 
 ## Whether one more of this item fits in the general slots and bags.
@@ -1027,6 +1033,8 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	if not cursor.is_empty():  # holding something: give it to the npc clicked, or drop it on the ground, as in EQ
 		if col is Npc:
 			World.request_give(entity_id, (col as Npc).entity_id)
+		elif col is Pet and (col as Pet).owner_id == entity_id:
+			World.request_give_pet(entity_id, (col as Pet).entity_id)  # your pet wears or wields it
 		elif col is Player and col != self:
 			World.request_give_player(entity_id, (col as Player).entity_id)  # a trade with them
 		else:

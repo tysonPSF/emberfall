@@ -122,6 +122,7 @@ const SECTIONS := [
 	["quest_marks", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
+	["pet_gear", "greenmoor"],
 	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
@@ -8281,6 +8282,73 @@ func _t_char_preview() -> void:
 ## A necromancer's servants take bone: a new one starts with three chips,
 ## Raise Bones is refused without one and uses one when it lands, an older
 ## necromancer is given three once, and provisioners sell them.
+## Arming a pet, EverQuest style: a skeleton given a greatsword, a helm and
+## a shield wields and wears them (stats and looks), hands back what it had,
+## keeps it all through a save and a re-summon, and leaves it on a corpse only
+## its owner may loot when it dies.
+func _t_pet_gear() -> void:
+	var p := World.local_player
+	var keep := [p.char_class, p.spells.duplicate(), p.level, p.pet_gear.duplicate()]
+	World.dismiss_pet(p)
+	p.pet_gear = {}
+	p.char_class = "necromancer"
+	p.level = 20
+	World.summon_pet(p, "raise_bones")
+	var pet := World.get_object(p.pet_id) as Pet
+	var before := "dmg %d-%d, ac %d" % [pet.dmg_min, pet.dmg_max, pet.ac]
+	for item_id: String in ["ossuary_greatmaul", "rusty_short_sword", "iron_coif", "tempered_kite_shield"]:
+		p.cursor = Pack.entry(item_id)
+		World.request_give_pet(p.entity_id, pet.entity_id)
+	print("pet_gear: a rusty sword (4 damage) -> dmg %d-%d (the pet's own is better)" % [pet.dmg_min, pet.dmg_max])
+	p.cursor = Pack.entry("unlit_worldblade")
+	World.request_give_pet(p.entity_id, pet.entity_id)
+	print("pet_gear: %s -> gear %s; %s -> dmg %d-%d, ac %d; cursor now %s" % [pet.display_name, p.pet_gear, before, pet.dmg_min, pet.dmg_max, pet.ac, p.cursor])
+	print("pet_gear: look weapon %s, offhand %s, worn %s" % [pet.look.get("weapon"), pet.look.get("offhand"), pet.look.get("worn")])
+	p.cursor = {}
+	p.cursor = Pack.entry("grove_seed")
+	World.request_give_pet(p.entity_id, pet.entity_id)
+	p.cursor = Pack.entry("crude_arrow", 5)
+	World.request_give_pet(p.entity_id, pet.entity_id)
+	p.cursor = {}
+	pet.mode = Pet.Mode.SIT
+	pet.global_position = p.global_position - p.global_basis.z * 4.0 + p.global_basis.x * 2.2
+	pet.face_toward(p.global_position)
+	get_tree().get_first_node_in_group("hud")._pet_panel.position = Vector2(620, 110)
+	await _wait(0.8)
+	await _shot("9pet_gear")
+	# a save and a re-summon (as after logging in)
+	var saved := p.to_save()
+	var reborn := Player.new()
+	reborn.from_save(saved)
+	print("pet_gear: saved -> %s; loaded back -> %s" % [saved.get("pet", {}).get("gear"), reborn.pet_gear])
+	reborn.free()
+	World.dismiss_pet(p, false)
+	World._check_pet(p)
+	pet = World.get_object(p.pet_id) as Pet
+	print("pet_gear: re-summoned %s wears %s, dmg %d-%d" % [pet.display_name, pet.gear.keys(), pet.dmg_min, pet.dmg_max])
+	# its death: a corpse only you may loot
+	var at := pet.global_position
+	World._kill_pet(pet)
+	await _wait(0.3)
+	var corpse: Corpse = null
+	for obj: Variant in World.objects.values():
+		if obj is Corpse and (obj as Corpse).owner_name == p.display_name and (obj as Corpse).global_position.distance_to(at) < 1.0:
+			corpse = obj
+	print("pet_gear: slain -> gear left %s; corpse %s owned by %s holding %s" % [p.pet_gear, corpse.display_name if corpse else "none",
+			corpse.owner_name if corpse else "-", corpse.entries.map(func(e: Dictionary) -> String: return str(e["item"])) if corpse else []])
+	if corpse != null:
+		p.global_position = corpse.global_position + Vector3(1, 0, 0)
+		World.request_loot_open(p.entity_id, corpse.object_id)
+		World.request_loot_all(p.entity_id, corpse.object_id)
+		print("pet_gear: looted back -> greatsword %d, coif %d, shield %d" % [p.pack.count("unlit_worldblade"), p.pack.count("iron_coif"), p.pack.count("tempered_kite_shield")])
+		for item_id: String in ["unlit_worldblade", "iron_coif", "tempered_kite_shield", "ossuary_greatmaul"]:
+			p.pack.remove(item_id, p.pack.count(item_id))
+	p.char_class = keep[0]
+	p.spells = keep[1]
+	p.level = keep[2]
+	p.pet_gear = keep[3]
+
+
 func _t_bone_chips() -> void:
 	var fresh := Player.new()
 	fresh.from_save({"name": "Probe", "class": "necromancer", "race": "human", "stats": {}})

@@ -640,6 +640,8 @@ static func weapon_item(e: Entity) -> Dictionary:
 		return GameData.item((e as Player).equipment.get("primary", ""))
 	if e is Mob:
 		return GameData.item((e as Mob).gear.get("primary", ""))
+	if e is Pet:
+		return GameData.item(str((e as Pet).gear.get("primary", "")))
 	return {}
 
 
@@ -713,6 +715,7 @@ func summon_pet(p: Player, spell_id: String, hp := -1) -> void:
 	dismiss_pet(p, false)
 	var pet := Pet.new()
 	pet.setup(p, spell_id)
+	pet.apply_gear(p.pet_gear)  # what you gave it comes back with it
 	if hp > 0:
 		pet.hp = mini(hp, pet.max_hp)
 	var z := zone_of(p)
@@ -725,6 +728,73 @@ func summon_pet(p: Player, spell_id: String, hp := -1) -> void:
 	var kind_name := str(k.get("name", pet.kind))
 	say(p, "You summon %s, %s %s." % [pet.display_name, "an" if kind_name[0] in "aeiou" else "a", kind_name], C_SPELL)
 	_ui(p, &"pet_changed")
+
+
+const PET_SLOTS: Array[String] = ["primary", "secondary", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
+
+
+## EverQuest's way of arming a pet: click it with an item on your cursor. It
+## wears or wields it (what it had there comes back to your cursor), keeps it
+## through zoning and logging in, and leaves it all on a corpse when it's gone.
+func request_give_pet(player_id: int, pet_id: int) -> void:
+	if _remote(&"request_give_pet", [player_id, pet_id]):
+		return
+	var p := get_object(player_id) as Player
+	var pet := get_object(pet_id) as Pet
+	if p == null or p.dead or pet == null or pet.dead or pet.owner_id != p.entity_id or p.cursor.is_empty():
+		return
+	if p.distance_to(pet) > TALK_RANGE:
+		say(p, "%s is too far away." % pet.display_name, C_WARN)
+		return
+	var item_id := str(p.cursor["item"])
+	var item := GameData.item(item_id)
+	var slot := str(item.get("slot", ""))
+	if item.get("no_drop", false) or p.cursor.has("contents"):
+		say(p, "You can't give that away.", C_WARN)
+		return
+	if slot == "ring":
+		slot = "ring2" if p.pet_gear.has("ring1") and not p.pet_gear.has("ring2") else "ring1"
+	if not slot in PET_SLOTS:
+		say(p, "%s can't use that." % pet.display_name, C_WARN)
+		return
+	var old := str(p.pet_gear.get(slot, ""))
+	p.pet_gear[slot] = item_id
+	if int(p.cursor.get("count", 1)) > 1:  # one of a stack
+		p.cursor["count"] = int(p.cursor["count"]) - 1
+	else:
+		p.cursor = Pack.entry(old) if old != "" else {}
+	pet.apply_gear(p.pet_gear)
+	Net.broadcast_look(pet)
+	var how := "wields" if slot == "primary" else ("takes up" if slot == "secondary" else "puts on")
+	say(p, "%s %s %s." % [pet.display_name, how, _the(GameData.item_name(item_id))] + (" You take back %s." % _the(GameData.item_name(old)) if old != "" else ""), C_SPELL)
+	p.inventory_changed.emit()
+	_ui(p, &"pet_changed")
+
+
+## "the Iron Coif", but "The Unlit Worldblade" as it is.
+static func _the(item_name: String) -> String:
+	return item_name if item_name.begins_with("The ") else "the " + item_name
+
+
+## A pet that's gone for good (slain, dismissed, or its owner dead) leaves what
+## it was given on a corpse only its owner can loot, like their own.
+func _drop_pet_gear(p: Player, pet: Pet) -> void:
+	if p.pet_gear.is_empty():
+		return
+	var entries: Array = []
+	for slot: String in p.pet_gear:
+		var e := Pack.entry(str(p.pet_gear[slot]))
+		e["slot"] = ""
+		entries.append(e)
+	var at := pet.global_position if pet != null else p.global_position
+	var z := zone_of(pet) if pet != null else zone_of(p)
+	var corpse := Corpse.new()
+	corpse.setup(pet.display_name if pet != null else "Your pet", pet.look if pet != null else {}, entries, 0,
+			float(cfg("player_corpse_decay_seconds", 3600)), p.display_name)
+	corpse.position = at
+	z.add_child(corpse)
+	p.pet_gear = {}
+	say(p, "Your pet's gear lies on its corpse.", C_WARN)
 
 
 ## Gets rid of a player's pet ("/pet leave", or a new summon replacing it).
@@ -747,6 +817,7 @@ func _kill_pet(pet: Pet) -> void:
 	var p := pet.owner_player()
 	if p != null:
 		say(p, "%s has been slain! Your pet is gone." % pet.display_name, C_WARN)
+		_drop_pet_gear(p, pet)
 		p.pet_id = -1
 		p.pet_spell = ""
 		_ui(p, &"pet_changed")
@@ -876,6 +947,7 @@ func request_pet(player_id: int, command: String) -> void:
 			say(p, "%s says, '%s, master.'" % [pet.display_name, "Taunting attackers" if pet.taunting else "No longer taunting"], C_SAY)
 		"leave":
 			say(p, "%s crumbles away." % pet.display_name, C_SPELL)
+			_drop_pet_gear(p, pet)
 			dismiss_pet(p)
 			return
 		"health":
@@ -1356,6 +1428,7 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 func _kill_player(p: Player, killer: Entity) -> void:
 	p.hostile_npcs.clear()
 	if p.pet_spell != "":  # the bond breaks with your death
+		_drop_pet_gear(p, get_object(p.pet_id) as Pet)
 		dismiss_pet(p)
 	p.feigning = false
 	request_trade_cancel(p.entity_id)

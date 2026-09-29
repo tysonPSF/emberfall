@@ -28,6 +28,7 @@ var _backoff := 0.0  # seconds after Back Off during which it won't pick a fight
 var _taunt_timer := 0.0
 var _think := 0.0
 var _base := {}  # stats as summoned, before buffs (Stoke the Flame, Elemental Bond)
+var gear: Dictionary = {}  # slot -> item id: what its owner gave it (Player.pet_gear), EverQuest style
 
 
 ## Server: rolls the pet for its owner from the summoning spell's pets.json kind.
@@ -64,14 +65,69 @@ func setup(owner: Player, from_spell: String) -> void:
 func recalc_stats() -> void:
 	if _base.is_empty():
 		return
-	max_hp = int(_base["max_hp"]) + buff_total("hp")
+	var g := gear_totals()
+	max_hp = int(_base["max_hp"]) + buff_total("hp") + int(g["hp"])
 	hp = mini(hp, max_hp)
-	ac = int(_base["ac"]) + buff_total("ac")
-	dmg_min = int(_base["dmg_min"]) + buff_total("dmg")
-	dmg_max = int(_base["dmg_max"]) + buff_total("dmg")
-	attack_delay = float(_base["attack_delay"]) / (1.0 + buff_total("haste") / 100.0)
+	ac = int(_base["ac"]) + buff_total("ac") + int(g["ac"])
+	var wd := int(g["weapon_dmg"])  # EverQuest's rule: a weapon only helps when it hits harder than the pet does
+	var lo := int(_base["dmg_min"])
+	var hi := int(_base["dmg_max"])
+	if wd > hi:
+		lo = maxi(lo, wd / 2)
+		hi = wd
+	dmg_min = lo + buff_total("dmg")
+	dmg_max = hi + buff_total("dmg")
+	attack_delay = float(_base["attack_delay"]) / (1.0 + (buff_total("haste") + int(g["haste"])) / 100.0)
 	hp_regen = int(_base["hp_regen"]) + buff_total("hp_regen")
 	stats_changed.emit()
+
+
+## What its gear adds: armor, health, haste, and its weapon's damage.
+func gear_totals() -> Dictionary:
+	var out := {"ac": 0, "hp": 0, "haste": 0, "weapon_dmg": 0}
+	for slot: String in gear:
+		var item := GameData.item(str(gear[slot]))
+		out["ac"] += int(item.get("ac", 0))
+		out["hp"] += int(item.get("hp", 0))
+		out["haste"] += int(item.get("haste", 0))
+		if slot == "primary":
+			out["weapon_dmg"] = int(item.get("dmg", 0))
+	return out
+
+
+## Whether its body can hold and wear things (the skeletons, on the shared rig;
+## an elemental or a wolf has its own, with no hands to hold a sword).
+func can_show_gear() -> bool:
+	return str(GameData.models["characters"].get(model_id, {}).get("rig", "")) != "own"
+
+
+## Puts on what its owner gave it: stats, and (for a body that can show them)
+## the weapon, shield and worn pieces in its look.
+func apply_gear(new_gear: Dictionary) -> void:
+	gear = new_gear.duplicate()
+	if can_show_gear():
+		var worn := {}
+		for slot: String in gear:
+			var wear := str(GameData.item(str(gear[slot])).get("wear", ""))
+			if wear != "":
+				worn[slot] = wear
+		look["weapon"] = str(GameData.item(str(gear.get("primary", ""))).get("model", str(GameData.pets["kinds"].get(kind, {}).get("weapon", ""))))
+		look["offhand"] = str(GameData.item(str(gear.get("secondary", ""))).get("model", ""))
+		look["worn"] = worn
+		look["tiers"] = GameData.gear_tiers(gear)
+		weapon_id = str(look["weapon"])
+	recalc_stats()
+	_dress()
+
+
+## Shows the look's gear on the body, when there is one.
+func _dress() -> void:
+	if visual is CharacterModel:
+		var m := visual as CharacterModel
+		m.set_weapon(str(look.get("weapon", "")))
+		m.set_offhand(str(look.get("offhand", "")))
+		m.set_worn(look.get("worn", {}))
+		m.set_tiers(look.get("tiers", {}))
 
 
 ## Client: a mirror of the server's pet, drawn as described.
@@ -111,6 +167,7 @@ func owner_player() -> Player:
 
 func _ready() -> void:
 	build_body("humanoid", Color(0.6, 0.7, 0.9), body_scale, model_id, weapon_id)
+	_dress()  # what its owner gave it, on the server's pet and every client's copy
 	var owner := owner_player()
 	nameplate.text = display_name
 	nameplate.modulate = Color(0.75, 0.95, 0.75)
