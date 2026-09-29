@@ -155,6 +155,11 @@ func _bake_navigation() -> void:
 ## flat steps, each ending in a short stone slope up to the next; the step
 ## edges wander with the noise so they curve round the hills. 0 where a zone
 ## has none.
+## A road's ramp up a terrace step is this many meters long per meter of
+## rise: about 25 degrees at its steepest (a body climbs 45 at most).
+const RAMP_PER_METER := 3.2
+
+
 func terrace_rise(x: float, z: float) -> float:
 	var t: Dictionary = data.get("terraces", {})
 	if t.is_empty():
@@ -169,6 +174,16 @@ func terrace_rise(x: float, z: float) -> float:
 	var k := minf(floorf(f), steps - 1)
 	var frac := f - k
 	var riser := float(t.get("riser", 8)) / (span / steps)  # the slope's share of a step
+	if f < steps and t.get("ramps", true):
+		# where a road climbs a step the slope is drawn out into a ramp you can
+		# walk up (a riser is steeper than a body can climb), easing back into
+		# the step's edge over 10 m either side of the road
+		var step_h := float(t["rise"]) / steps
+		var ramp := minf(maxf(riser, step_h * RAMP_PER_METER / (span / steps)), 0.7)
+		if frac > 1.0 - ramp:
+			var near := 1.0 - smoothstep(0.0, 10.0, road_distance(x, z))
+			if near > 0.0:
+				riser = lerpf(riser, ramp, near)
 	return float(t["rise"]) / steps * (k + smoothstep(1.0 - riser, 1.0, frac) if f < steps else float(steps))
 
 

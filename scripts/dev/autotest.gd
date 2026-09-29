@@ -103,6 +103,7 @@ const SECTIONS := [
 	["homeward", "greenmoor"],
 	["grove", "greenmoor"],
 	["emotes", "greenmoor"],
+	["terrace_roads", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7425,3 +7426,82 @@ func _t_emotes() -> void:
 	Input.action_release("move_forward")
 	print("emotes: dancing (%s), walked off -> now %s" % [before, m.anim.current_animation])
 	p.camera_pivot.rotation.y = 0.0
+
+
+## Roads up terraces ramp instead of climbing a riser too steep to walk: the
+## steepest point along every road in the terraced zones, then Dewstep's main
+## road walked end to end, uphill.
+func _t_terrace_roads() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for zone_id: String in ["dewstep", "high_terrace", "sunward_steps"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		await _wait(0.5)
+		World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+		for k in 80:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+		var z := main.zone as Zone
+		var worst := 0.0
+		var worst_at := Vector2.ZERO
+		for road: Dictionary in z.data.get("roads", []):
+			var pts: Array = road["points"]
+			for i in pts.size() - 1:
+				var a := Vector2(pts[i][0], pts[i][1])
+				var b := Vector2(pts[i + 1][0], pts[i + 1][1])
+				var n := int(a.distance_to(b))
+				for j in n:
+					var q := a.lerp(b, float(j) / n)
+					var dir := (b - a).normalized()
+					var h0 := z.height_at(q.x - dir.x * 0.5, q.y - dir.y * 0.5)
+					var h1 := z.height_at(q.x + dir.x * 0.5, q.y + dir.y * 0.5)
+					var deg := rad_to_deg(atan(absf(h1 - h0)))
+					if deg > worst:
+						worst = deg
+						worst_at = q
+		print("terrace_roads: %s: steepest point on its roads %.0f degrees at %s" % [zone_id, worst, worst_at])
+		if zone_id != "dewstep":
+			continue
+		# walk the main road from its far (low) end back up to the gate
+		var road: Array = z.data["roads"][0]["points"]
+		var start := Vector2(road[-1][0], road[-1][1])
+		p.global_position = Vector3(start.x, z.height_at(start.x, start.y) + 1.0, start.y)
+		await _wait(0.5)
+		var t := 0.0
+		var i := road.size() - 2
+		var stuck := 0.0
+		var last := p.global_position
+		Input.action_press("move_forward")
+		while i >= 0 and t < 120.0:
+			if main._changing_zone or (main.zone as Zone).zone_id != "dewstep":
+				i = -1  # through the gate: the road climbed all the way to Lanternhold
+				break
+			var goal := Vector3(road[i][0], p.global_position.y, road[i][1])
+			if Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(goal.x, goal.z)) < 3.0:
+				i -= 1
+				continue
+			p.face_toward(goal)
+			await get_tree().physics_frame
+			t += get_physics_process_delta_time()
+			stuck = stuck + get_physics_process_delta_time() if p.global_position.distance_to(last) < 0.02 else 0.0
+			last = p.global_position
+			if stuck > 0.8 and stuck < 1.0:  # a lantern or a rock in the way: step round it, as a player would
+				Input.action_press("move_right")
+				await _wait(0.6)
+				Input.action_release("move_right")
+			if stuck > 3.0:
+				break
+		Input.action_release("move_forward")
+		if i >= 0:
+			p.zoom = 7.0
+			p.pitch = -0.3
+			await _wait(0.5)
+			await _shot("9terrace_stuck")
+			p.camera_pivot.rotation.y = PI * 0.5
+			await _wait(0.3)
+			await _shot("9terrace_stuck_side")
+			p.camera_pivot.rotation.y = 0.0
+		print("terrace_roads: dewstep: walked the road uphill -> %s after %.0f s at %s" % ["reached the gate" if i < 0 else "STUCK", t, p.global_position.snapped(Vector3.ONE)])
