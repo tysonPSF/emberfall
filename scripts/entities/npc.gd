@@ -133,6 +133,19 @@ func _update_sight() -> void:
 			(c as StaticBody3D).collision_layer = Layers.WORLD if shown else 0
 
 
+## How a seated npc sits for whoever is watching: "seated_after" {quest: action}
+## changes it once the local player has finished that quest (Merrick sits up
+## eager once you've brought the sinew; he stays grumpy for everyone else).
+func seated_clip() -> String:
+	var after: Dictionary = data.get("seated_after", {})
+	var p := World.local_player
+	if p != null:
+		for quest_id: String in after:
+			if World.quest_done(p, quest_id):
+				return str(after[quest_id])
+	return "sit_chair"
+
+
 ## Turns to face whoever is talking to it for a while, then back to its post.
 func greet(who: Entity) -> void:
 	if data.get("fixed", false):

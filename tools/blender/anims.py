@@ -11,6 +11,9 @@ Clips:
   Sit_Floor_Idle  sitting, breathing (loops)
   Sit_Chair_Idle  slumped in a chair, arms folded, head down: a grumpy regular
                   (seated npcs, npcs.json "seated": "chair"; loops, 3 s)
+  Sit_Chair_Shock jolting back with hands thrown up, then fist pumps: good news
+                  (a quest's "complete_anim"; 2.6 s, ends in the eager pose)
+  Sit_Chair_Eager sitting up, leaning in, hands on the table, nodding (loops, 2 s)
   Kick            a front kick with the right leg: chamber, snap, recover
   Shield_Bash     a lunge driving the left (shield) arm forward
   Bow_Shoot       bow arm up (the bow is in the left hand), draw to the cheek,
@@ -681,6 +684,33 @@ SIT_CHAIR = [
 	(90, _with(_CHAIR_LEGS, {"spine": (8, 0, 0), "chest": (5, 0, 0), "head": (12, 0, 0)}), _CHAIR_HIPS, _FOLDED),
 ]
 
+# Merrick when the sinew comes in: jolts back in the chair with his hands
+# thrown up, then leans in pumping his fists, and settles eager (2.6 s)
+_CHAIR_GRUMP = _with(_CHAIR_LEGS, {"spine": (8, 0, 0), "chest": (5, 0, 0), "head": (12, 0, 0)})
+_THROWN_UP = {s: ("dir", (0.75, 0.55, 0.25), (0.25, 0.95, 0.15), (0, 0, 1)) for s in ("r", "l")}
+_FISTS_UP = {s: ("dir", (0.45, 0.2, 0.75), (0.15, 0.95, 0.2)) for s in ("r", "l")}
+_FISTS_DOWN = {s: ("dir", (0.45, -0.1, 0.8), (0.15, 0.7, 0.6)) for s in ("r", "l")}
+_EAGER_ARMS = {s: ("at", (0.02, -0.14, 0.3), (1, -1, 0)) for s in ("r", "l")}
+_EAGER = _with(_CHAIR_LEGS, {"spine": (-3, 0, 0), "chest": (-2, 0, 0), "head": (-10, 0, 0)})
+SIT_CHAIR_SHOCK = [
+	(0, _CHAIR_GRUMP, _CHAIR_HIPS, _FOLDED),
+	(6, _with(_CHAIR_LEGS, {"spine": (-12, 0, 0), "chest": (-10, 0, 0), "head": (-22, 0, 0)}), (0, -0.2, 0), _THROWN_UP),
+	(18, _with(_CHAIR_LEGS, {"spine": (-13, 0, 0), "chest": (-11, 0, 0), "head": (-24, 0, 0)}), (0, -0.205, 0), _THROWN_UP),
+	(28, _with(_CHAIR_LEGS, {"spine": (5, 0, 0), "chest": (2, 0, 0), "head": (-12, 0, 0)}), _CHAIR_HIPS, _FISTS_UP),
+	(35, _with(_CHAIR_LEGS, {"spine": (7, 0, 0), "chest": (4, 0, 0), "head": (-8, 0, 0)}), _CHAIR_HIPS, _FISTS_DOWN),
+	(42, _with(_CHAIR_LEGS, {"spine": (5, 0, 0), "chest": (2, 0, 0), "head": (-12, 0, 0)}), _CHAIR_HIPS, _FISTS_UP),
+	(49, _with(_CHAIR_LEGS, {"spine": (7, 0, 0), "chest": (4, 0, 0), "head": (-8, 0, 0)}), _CHAIR_HIPS, _FISTS_DOWN),
+	(64, _EAGER, _CHAIR_HIPS, _EAGER_ARMS),
+	(78, _EAGER, _CHAIR_HIPS, _EAGER_ARMS),
+]
+# ...and after: sitting up, leaning in with his hands on the table, a nod now and then (loops, 2 s)
+SIT_CHAIR_EAGER = [
+	(0, _EAGER, _CHAIR_HIPS, _EAGER_ARMS),
+	(20, _with(_EAGER, {"head": (-4, 0, 0)}), (0, -0.224, 0), _EAGER_ARMS),
+	(30, _with(_EAGER, {"head": (-11, 0, 0)}), _CHAIR_HIPS, _EAGER_ARMS),
+	(60, _EAGER, _CHAIR_HIPS, _EAGER_ARMS),
+]
+
 EMOTES = [("Emote_Wave", WAVE), ("Emote_Bow", BOW_EMOTE), ("Emote_Rude", RUDE), ("Emote_Cheer", CHEER),
 		  ("Emote_Dance", DANCE), ("Emote_Laugh", LAUGH), ("Emote_Cry", CRY), ("Emote_Point", POINT),
 		  ("Emote_Salute", SALUTE), ("Emote_Kneel", KNEEL), ("Emote_Shrug", SHRUG), ("Emote_Clap", CLAP),
@@ -711,6 +741,8 @@ def build(arm, base):
 	keep.append(_keys(arm, base, "Swim_Forward", SWIM, smooth=True))
 	keep.append(_keys(arm, base, "Swim_Idle", TREAD, smooth=True))
 	keep.append(_keys(arm, base, "Sit_Chair_Idle", SIT_CHAIR, smooth=True))
+	keep.append(_keys(arm, base, "Sit_Chair_Shock", SIT_CHAIR_SHOCK, smooth=True))
+	keep.append(_keys(arm, base, "Sit_Chair_Eager", SIT_CHAIR_EAGER, smooth=True))
 	for name, keys in EMOTES:
 		keep.append(_keys(arm, base, name, keys, smooth=True))
 	return keep

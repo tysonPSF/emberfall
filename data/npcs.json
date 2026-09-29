@@ -260,7 +260,7 @@
       "old gulper": "Thirty years I've been after that fish. He's snapped more of my lines than I can count. One of these days, {name}. One of these days.",
       "unknown": "Hm? Sorry, I was watching my line."
     },
-    "after_quest": "merricks_line_sinew",
+    "after_quest": "merricks_line_spring",
     "faction": "emberhold"
   },
   "merrick_tavern": {
@@ -275,7 +275,18 @@
       "sinew": "Yes, the sinew. The rats are drinking from the same streams. Their sinew's already steeped in whatever's wrong. Five lengths of sinew, {name}. That's enough to twist a line that'll hold.",
       "unknown": "Did I ask? Rat sinew, {name}. Five lengths. Else leave me to my ale."
     },
-    "until_quest": "merricks_line_sinew",
+    "dialogue_after": {
+      "merricks_line_sinew": {
+        "hail": "Well? What are you waiting for, {name}? The cave under the first hills, west of the pond. Something's fouling the [spring].",
+        "spring": "Whole zone drinks from it. Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat.",
+        "sinew": "Already twisting it. Won't matter a lick while the water's sour, though. The [spring], {name}.",
+        "unknown": "Later. The [spring] first."
+      }
+    },
+    "seated_after": {
+      "merricks_line_sinew": "sit_chair_eager"
+    },
+    "until_quest": "merricks_line_spring",
     "faction": "emberhold"
   },
   "gm_brask": {

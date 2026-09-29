@@ -5,5 +5,12 @@
     "stack": 100,
     "weight": 0.1,
     "desc": "A pale length of sinew from a Greenmoor rat, stained faintly green and smelling of bad water. Tough, though."
+  },
+  "proof_of_the_rot": {
+    "name": "Proof of the Rot",
+    "value": 0,
+    "lore": true,
+    "no_drop": true,
+    "desc": "Whatever is fouling Greenmoor's spring, this is proof of it. (Placeholder until the cave is built.)"
   }
 }

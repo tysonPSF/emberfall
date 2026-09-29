@@ -3787,7 +3787,11 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if refuses(p, npc):
 		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
 		return
-	var lines: Dictionary = npc.data.get("dialogue", {})
+	var lines: Dictionary = npc.data.get("dialogue", {}).duplicate()
+	var later: Dictionary = npc.data.get("dialogue_after", {})  # {quest: {keyword: line}}: what they say once you've done that quest
+	for quest_id: String in later:
+		if quest_done(p, quest_id):
+			lines.merge(later[quest_id], true)
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
@@ -3804,6 +3808,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
 		if q["giver"] == npc.npc_id and key == str(q.get("start_keyword", "")):
+			if q.has("requires_quest") and not quest_done(p, str(q["requires_quest"])):
+				continue  # a later step's keyword only works once the step before it is done
 			_accept_quest(p, quest_id)
 	if key == "bind" and npc.data.get("binds", false):
 		request_bind(p.entity_id)
@@ -4261,7 +4267,13 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	state["completions"] = int(state.get("completions", 0)) + 1
 	state["active"] = bool(q.get("repeatable", false))
 	p.quests[quest_id] = state
-	_npc_say(p, npc, str(q["complete_text"]))
+	if q.has("complete_anim"):  # the giver reacts (Merrick jolting up in his chair), for everyone watching
+		npc.animate(str(q["complete_anim"]))
+	var story: Array = q["complete_text"] if q["complete_text"] is Array else []
+	if story.is_empty():
+		_npc_say(p, npc, str(q["complete_text"]))
+	else:
+		_npc_say(p, npc, str(story[0]))
 	var reward: Dictionary = q.get("reward", {})
 	if int(reward.get("coin", 0)) > 0:
 		p.coin += int(reward["coin"])
@@ -4285,9 +4297,28 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	apply_faction(p, q.get("faction", {}))
 	if reward.has("grove_deity"):  # the endgame questlines bring each god to the Grove
 		unlock_grove_deity(p, str(reward["grove_deity"]))
-	if q.has("next"):  # a quest line: the next step starts as this one ends
+	if story.size() > 1:  # a story told a line at a time; the next step starts when it's told
+		_tell(p, npc, story.slice(1), func() -> void:
+			if q.has("next"):
+				_accept_quest(p, str(q["next"])))
+	elif q.has("next"):  # a quest line: the next step starts as this one ends
 		_accept_quest(p, str(q["next"]))
 	p.quests_changed.emit()
+
+
+## Says lines one after another, paced to how long each takes to read, then
+## calls done. Stops if the player leaves (the next step's start_keyword can
+## still start it).
+func _tell(p: Player, npc: Npc, lines: Array, done: Callable) -> void:
+	if lines.is_empty():
+		done.call()
+		return
+	var wait := clampf(str(lines[0]).length() * 0.045, 2.2, 7.0)
+	get_tree().create_timer(wait).timeout.connect(func() -> void:
+		if not is_instance_valid(p) or not is_instance_valid(npc) or not p.is_inside_tree():
+			return
+		_npc_say(p, npc, str(lines[0]))
+		_tell(p, npc, lines.slice(1), done))
 
 
 ## How many of each wanted item the player carries (bags plus an open trade),

@@ -1563,10 +1563,15 @@ func _build_pond(lm: Dictionary) -> void:
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()
 	mat.shader = WATER_SHADER
+	var tainted := bool(lm.get("tainted", false))
+	if tainted:
+		mat.set_shader_parameter("taint", 1.0)
 	water.material_override = mat
 	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	water.position = Vector3(center.x, level, center.y)
 	add_child(water)
+	if tainted and DisplayServer.get_name() != "headless":
+		_foul_pond(Vector3(center.x, level, center.y), r)
 
 	var dock_a := deg_to_rad(float(lm.get("dock", 0.0)))
 	var dir := Vector2(cos(dock_a), sin(dock_a))
@@ -1594,7 +1599,83 @@ func _build_pond(lm: Dictionary) -> void:
 		if absf(angle_difference(a, dock_a)) < 0.4:
 			continue
 		var at := center + Vector2(cos(a), sin(a)) * r * _rng.randf_range(0.25, 0.7)
-		_prop("lily_pads", Vector3(at.x, level + 0.01, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+		var pads := _prop("lily_pads", Vector3(at.x, level + 0.01, at.y), _rng.randf() * TAU, _rng.randf_range(0.8, 1.3), "none")
+		if tainted:
+			_wither(pads)
+
+
+## A fouled pond (Merrick's line): bubbles of gas rising and popping, and a
+## low green haze drifting over the water. Only a picture.
+func _foul_pond(at: Vector3, r: float) -> void:
+	var bubbles := CPUParticles3D.new()
+	var bead := SphereMesh.new()
+	bead.radius = 0.07
+	bead.height = 0.1
+	var bead_mat := StandardMaterial3D.new()
+	bead_mat.albedo_color = Color(0.55, 0.65, 0.2, 0.8)
+	bead_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	bead_mat.roughness = 0.2
+	bead.material = bead_mat
+	bubbles.mesh = bead
+	bubbles.amount = 40
+	bubbles.lifetime = 1.4
+	bubbles.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	bubbles.emission_box_extents = Vector3(r * 0.65, 0.02, r * 0.65)
+	bubbles.direction = Vector3.UP
+	bubbles.spread = 5.0
+	bubbles.initial_velocity_min = 0.05
+	bubbles.initial_velocity_max = 0.15
+	bubbles.gravity = Vector3.ZERO
+	bubbles.scale_amount_min = 0.6
+	bubbles.scale_amount_max = 1.6
+	var swell := Curve.new()  # each bubble swells up out of the water, then pops
+	swell.add_point(Vector2(0.0, 0.2))
+	swell.add_point(Vector2(0.8, 1.0))
+	swell.add_point(Vector2(1.0, 0.0))
+	bubbles.scale_amount_curve = swell
+	bubbles.position = at + Vector3.UP * 0.02
+	add_child(bubbles)
+
+	var haze := CPUParticles3D.new()
+	var puff := QuadMesh.new()
+	puff.size = Vector2(4.5, 2.2)
+	var puff_mat := StandardMaterial3D.new()
+	puff_mat.albedo_color = Color(0.5, 0.62, 0.25, 0.11)
+	puff_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	puff_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	puff_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	puff_mat.billboard_keep_scale = true
+	puff_mat.no_depth_test = false
+	puff.material = puff_mat
+	haze.mesh = puff
+	haze.amount = 18
+	haze.lifetime = 9.0
+	haze.preprocess = 9.0
+	haze.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	haze.emission_box_extents = Vector3(r * 0.8, 0.1, r * 0.8)
+	haze.direction = Vector3(1, 0.15, 0.3)
+	haze.spread = 180.0
+	haze.initial_velocity_min = 0.05
+	haze.initial_velocity_max = 0.25
+	haze.gravity = Vector3.ZERO
+	var fade := Curve.new()
+	fade.add_point(Vector2(0.0, 0.3))
+	fade.add_point(Vector2(0.4, 1.0))
+	fade.add_point(Vector2(1.0, 0.6))
+	haze.scale_amount_curve = fade
+	haze.position = at + Vector3.UP * 0.7
+	add_child(haze)
+
+
+## Browns a prop's meshes (dying lily pads on a fouled pond).
+func _wither(node: Node) -> void:
+	for mi: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+		var base := mi.get_active_material(0) as BaseMaterial3D
+		if base == null:
+			continue
+		var m := base.duplicate() as BaseMaterial3D
+		m.albedo_color = Color(0.62, 0.52, 0.22)
+		mi.material_override = m
 
 
 ## A ruined watchtower of KayKit dungeon walls (3 m pieces, 2 x 2): the

@@ -8,12 +8,12 @@ extends Node3D
 
 const KAYKIT_SCALE := 0.75
 const BLEND := 0.18
-const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump", "sit", "sit_chair", "swim", "tread"]
+const LOOPING: Array[String] = ["idle", "walk", "run", "cast", "jump", "sit", "sit_chair", "sit_chair_eager", "swim", "tread"]
 const KAYKIT_ANIMS := {
 	"idle": "Idle_A", "walk": "Walking_A", "run": "Running_A", "jump": "Jump_Idle",
 	"attack": "Throw", "hit": "Hit_A", "death": "Death_A", "dead": "Death_A_Pose",
 	"sit": "Sit_Floor_Idle", "sit_down": "Sit_Floor_Down", "cast": "Use_Item",  # the sits are ours (tools/blender/anims.py)
-	"sit_chair": "Sit_Chair_Idle",  # a seated npc (npcs.json "seated": "chair")
+	"sit_chair": "Sit_Chair_Idle", "sit_chair_eager": "Sit_Chair_Eager",  # a seated npc (npcs.json "seated": "chair", "seated_after")
 	"kick": "Kick", "bash": "Shield_Bash", "shoot": "Bow_Shoot",  # so are these
 	"swim": "Swim_Forward", "tread": "Swim_Idle",  # and these: swimming, and treading water
 }
@@ -697,7 +697,9 @@ func _process(delta: float) -> void:
 		_loop("cast")
 	elif e.sitting and _clip("sit") != "":
 		var chair := e is Npc and (e as Npc).seated == "chair" and _clip("sit_chair") != ""  # a seated npc: in the chair from the start, no sinking down
-		var sit := _clip("sit_chair" if chair else "sit")
+		var sit := _clip((e as Npc).seated_clip() if chair else "sit")
+		if sit == "":
+			sit = _clip("sit_chair")
 		var down := "" if chair else _clip("sit_down")
 		if anim.current_animation != sit and (down == "" or anim.current_animation != down):
 			if down != "":

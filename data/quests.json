@@ -4374,9 +4374,42 @@
     },
     "accept_text": "You have taken on a task: A Line That'll Hold. Bring Merrick five lengths of rat sinew from the large rats of Greenmoor.",
     "ready_text": "I can smell it from here. That's rat sinew you're carrying, {name}. Hand it over.",
-    "complete_text": "Five. Stinks like the streams, the lot of it. Good. That's the point. Now leave me be while I twist it.",
+    "complete_anim": "Sit_Chair_Shock",
+    "complete_text": [
+      "Ha! You actually brought it. Five lengths, still warm. I was sure the rats would send you home empty-handed.",
+      "Alright. You earned the full story.",
+      "I thought the water just turned. Bad season. Algae. Gnolls dumping their mess upstream. That's what I told the bar.",
+      "I was wrong about the why. Not about the where.",
+      "Greenmoor's water starts in a cave under the first hills. Whole zone drinks from that spring. I followed the sour taste as far as the mouth. Something in the deep is fouling the source. That's why the fish won't take a hook.",
+      "You walked Greenmoor and came back. That counts for something. Might be enough to put the spring right.",
+      "Safer with a party. Friends at your back, fewer graves. But if you're stubborn, you could manage it alone.",
+      "Go look. Don't drink what's down there. Bring me word of what's rotting the water, or kill it, if it has a throat."
+    ],
+    "next": "merricks_line_spring",
     "faction": {
       "emberhold": 5
+    }
+  },
+  "merricks_line_spring": {
+    "name": "The Sour Spring (2)",
+    "giver": "merrick_tavern",
+    "start_keyword": "spring",
+    "requires_quest": "merricks_line_sinew",
+    "wants": {
+      "proof_of_the_rot": 1
+    },
+    "reward": {
+      "xp": 150,
+      "coin": 40
+    },
+    "accept_text": "You have taken on a task: The Sour Spring. Find what is fouling Greenmoor's spring in the cave under the first hills, and bring Merrick word of it.",
+    "ready_text": "You went down there. I can see it on you. Tell me, {name}.",
+    "complete_text": "So that's what's been in our water. Good work, {name}.",
+    "hints": {
+      "proof_of_the_rot": "in the cave under Greenmoor's western hills, where the spring rises."
+    },
+    "faction": {
+      "emberhold": 10
     }
   }
 }
