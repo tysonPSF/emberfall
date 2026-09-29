@@ -124,6 +124,10 @@ var _bag_hint: Label
 
 var _service_panel: PanelContainer
 var _service_title: Label
+var _train_tabs: HBoxContainer  # at a guildmaster: what's left to learn, and what you know
+var _train_tab_learn: Button
+var _train_tab_known: Button
+var _train_known_tab := false
 var _service_hint: Label
 var _shop_list: VBoxContainer
 var _shop_scroll: ScrollContainer
@@ -2272,6 +2276,22 @@ func _build_service_window() -> void:
 	v.add_child(_service_title)
 	_service_hint = UIKit.label("", 12, UIKit.DIM)
 	v.add_child(_service_hint)
+	_train_tabs = HBoxContainer.new()
+	_train_tabs.add_theme_constant_override("separation", 6)
+	_train_tab_learn = UIKit.button("To learn", Vector2(0, 26))
+	_train_tab_learn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_train_tab_learn.pressed.connect(func() -> void:
+		_train_known_tab = false
+		_refresh_service())
+	_train_tabs.add_child(_train_tab_learn)
+	_train_tab_known = UIKit.button("Known", Vector2(0, 26))
+	_train_tab_known.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_train_tab_known.pressed.connect(func() -> void:
+		_train_known_tab = true
+		_refresh_service())
+	_train_tabs.add_child(_train_tab_known)
+	_train_tabs.visible = false
+	v.add_child(_train_tabs)
 	_shop_scroll = ScrollContainer.new()
 	_shop_scroll.custom_minimum_size = Vector2(330, 300)
 	_shop_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -2317,6 +2337,8 @@ func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_hint.text = hints[kind]
 	_shop_scroll.visible = kind != "bank"
 	_bank_box.visible = kind == "bank"
+	_train_tabs.visible = kind == "guild"
+	_train_known_tab = false  # open on what's left to learn
 	_service_panel.visible = true
 	_inv_panel.visible = true
 	_help_panel.visible = false
@@ -2330,17 +2352,31 @@ func _refresh_service() -> void:
 	if player.service == "guild":
 		for child in _shop_list.get_children():
 			child.queue_free()
-		for entry: Dictionary in World.class_spells(player.char_class):
+		var all: Array = World.class_spells(player.char_class)
+		var known: Array = all.filter(func(e: Dictionary) -> bool: return str(e["spell"]) in player.spells)
+		var left: Array = all.filter(func(e: Dictionary) -> bool: return not str(e["spell"]) in player.spells)
+		_train_tab_learn.text = "To learn (%d)" % left.size()
+		_train_tab_known.text = "Known (%d)" % known.size()
+		UIKit.frame(_train_tab_learn, not _train_known_tab)
+		UIKit.frame(_train_tab_known, _train_known_tab)
+		for entry: Dictionary in (known if _train_known_tab else left):
 			var spell_id: String = entry["spell"]
 			var why := World.train_block(player, spell_id)
 			var price := World.format_coin(int(entry["cost"])) if int(entry["cost"]) > 0 else "free"
-			var b := UIKit.button("Lv %d   %s   %s" % [entry["level"], GameData.spells[spell_id]["name"], "(known)" if why == "Known." else price])
+			var b := UIKit.button("Lv %d   %s   %s" % [entry["level"], GameData.spells[spell_id]["name"], "" if _train_known_tab else price])
 			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			b.add_theme_font_size_override("font_size", 12)
-			b.tooltip_text = spell_tooltip(spell_id) + ("\n" + why if why != "" else "")
+			b.icon = GameData.icon("spell_" + spell_id)
+			b.expand_icon = false
+			b.add_theme_constant_override("icon_max_width", 22)
+			b.tooltip_text = spell_tooltip(spell_id) + ("\n" + why if why != "" and not _train_known_tab else "")
 			b.disabled = why != ""
+			if why == "" :
+				b.add_theme_color_override("font_color", Color(0.55, 1.0, 0.55))  # yours to learn now
 			b.pressed.connect(func() -> void: World.request_train(player.entity_id, spell_id))
 			_shop_list.add_child(b)
+		if (known if _train_known_tab else left).is_empty():
+			_shop_list.add_child(UIKit.label("Nothing yet." if _train_known_tab else "You've learned everything this guild teaches.", 12, UIKit.DIM))
 	elif player.service == "shop":
 		for child in _shop_list.get_children():
 			child.queue_free()
