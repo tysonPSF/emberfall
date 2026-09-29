@@ -57,6 +57,7 @@ var grove_deities: Array = []  # the gods who have come to the Grove for this ch
 var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
 var friends: Array = []  # characters' names (/friend), saved with the character
 var alignment_mods: Dictionary = {}  # faction -> the offset alignment has put on it (World.apply_alignment), saved
+var given: Array = []  # one-time gifts this character has had (World._gifts: the bone chips older necromancers got), saved
 var home_seen := ""  # the race's home city this character was last given (World._follow_home moves the bind when it changes), saved
 var guild_name := ""  # shown as <Guild Name> under the nameplate (World._set_guild_tag)
 var guild_rank := ""  # leader, officer or member (your own; for the guild window)
@@ -146,8 +147,10 @@ func from_save(d: Dictionary) -> void:
 				pack.slots[g] = Pack.entry("small_sack")
 				break
 		var kit: Dictionary = GameData.classes.get(str(d.get("class", "warrior")), {}).get("starting_pack", {})
-		for item_id: String in kit:  # a ranger's first quiver
+		for item_id: String in kit:  # a ranger's first quiver, a necromancer's first bone chips
 			pack.add(item_id, int(kit[item_id]))
+		if not d.has("given"):
+			d["given"] = ["starting_pack_bone_chips"]  # a new character's pack already has what older ones are given once (World._gifts)
 	quests = (d.get("quests", {}) as Dictionary).duplicate(true)
 	bank = []
 	for i in int(World.cfg("bank_slots", 16)):
@@ -178,6 +181,7 @@ func from_save(d: Dictionary) -> void:
 	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
 	alignment_mods = d.get("alignment_mods", {}) if d.get("alignment_mods") is Dictionary else {}
 	home_seen = str(d.get("home_seen", ""))
+	given = (d.get("given", []) as Array).duplicate()
 	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
 	stat_points = clean_stat_points(d.get("stats", {}))
@@ -385,7 +389,7 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
-		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen,
+		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given,
 	}
 
 

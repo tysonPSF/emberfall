@@ -3428,6 +3428,8 @@ func _spell_usable(s: Dictionary, t: Entity) -> bool:
 		return false
 	if s.get("requires", "") == "shield" and not World.has_shield(player):
 		return false
+	if World._missing_reagent(player, s) != "":  # out of bone chips
+		return false
 	var reach := float(s.get("range", 0.0))
 	match str(s.get("target", "self")):
 		"enemy":
@@ -3657,6 +3659,8 @@ func spell_tooltip(spell_id: String) -> String:
 			lines.append("%d damage every 3s, %d times" % [int(s["tick"]), int(s["ticks"])])
 	var cost := "Mana %d" % int(s.get("mana", 0)) if int(s.get("mana", 0)) > 0 else "Ability"
 	lines.append("%s   Cast %.1fs   Recast %.0fs" % [cost, float(s.get("cast_time", 0)), float(s.get("recast", 0))])
+	for item_id: String in s.get("reagent", {}):
+		lines.append("Reagent: %s x%d (you have %d)" % [GameData.item_name(item_id), int(s["reagent"][item_id]), player.pack.count(item_id)])
 	return UIKit.wrap("\n".join(lines))
 
 

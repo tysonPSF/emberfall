@@ -1742,6 +1742,10 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if c.mana < int(s.get("mana", 0)):
 		say(c, "Insufficient Mana to cast this spell!", C_WARN)
 		return
+	var missing := _missing_reagent(c, s)
+	if missing != "":
+		say(c, "You need %s to cast %s." % [missing, s["name"]], C_WARN)
+		return
 	if s.get("requires", "") == "shield" and c is Player and not has_shield(c as Player):
 		say(c, "You need a shield equipped to %s." % str(s["name"]).to_lower(), C_WARN)
 		return
@@ -1794,6 +1798,34 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	c.cast = {"spell": spell_id, "target_id": t.entity_id, "time": 0.0,
 			"total": float(s["cast_time"]), "start_pos": c.global_position}
 	say(c, "You begin casting %s." % s["name"], C_SPELL)
+
+
+## What a spell's "reagent" ({item: count}, the bone chips a necromancer's
+## pets take) a player is short of, named ("a Bone Chip"), or "".
+func _missing_reagent(c: Entity, s: Dictionary) -> String:
+	if not (c is Player) or not s.has("reagent"):
+		return ""
+	for item_id: String in s["reagent"]:
+		var n := int(s["reagent"][item_id])
+		if (c as Player).pack.count(item_id) < n:
+			var item_name := GameData.item_name(item_id)
+			return ("a %s" % item_name.trim_suffix("s")) if n == 1 else "%d %s" % [n, item_name]
+	return ""
+
+
+## One-time gifts to characters made before something was in the starting
+## pack (Player.given remembers each): necromancers' first three bone chips.
+func _gifts(p: Player) -> void:
+	var kit: Dictionary = GameData.classes.get(p.char_class, {}).get("starting_pack", {})
+	if kit.has("bone_chips") and not "starting_pack_bone_chips" in p.given:
+		var n := int(kit["bone_chips"])
+		if p.pack.room_for("bone_chips") < n:
+			say(p, "You have no room in your pack for the Bone Chips you're owed. Make some, and log in again.", C_WARN)
+		else:
+			p.pack.add("bone_chips", n)
+			p.given.append("starting_pack_bone_chips")
+			say(p, "You find %d Bone Chips in your pack. Your servants rise only with bone: each casting of Raise Bones and its kin uses one. Skeletons drop more, and provisioners sell them." % int(kit["bone_chips"]), C_LOOT)
+			p.inventory_changed.emit()
 
 
 ## The zone a player is bound to: their bindstone city, or the starting city.
@@ -1868,6 +1900,7 @@ func player_entered(p: Player) -> void:
 	var came_from := _follow_home(p)
 	_keep_off_hostile_ground(p, came_from)
 	_check_deity(p)
+	_gifts(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
 	if not g.is_empty():
@@ -2756,6 +2789,14 @@ func spell_ready(e: Entity, spell_id: String) -> bool:
 ## caster's own recast timer alone.
 func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -> void:
 	var s: Dictionary = GameData.spells[spell_id]
+	if not from_item and s.has("reagent"):  # a necromancer's bone chips: used up as the spell takes hold
+		var missing := _missing_reagent(c, s)
+		if missing != "":
+			say(c, "You need %s to cast %s." % [missing, s["name"]], C_WARN)
+			return
+		for item_id: String in s["reagent"]:
+			(c as Player).pack.remove(item_id, int(s["reagent"][item_id]))
+		(c as Player).inventory_changed.emit()
 	if not from_item:
 		c.mana -= int(s.get("mana", 0))
 		c.cooldowns[spell_id] = float(s.get("recast", 0))

@@ -121,6 +121,7 @@ const SECTIONS := [
 	["login_home", "rainhold"],
 	["quest_marks", "greenmoor"],
 	["bridges", "greenmoor"],
+	["bone_chips", "greenmoor"],
 	["char_preview", "greenmoor"],
 	["trainer_tabs", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
@@ -8277,6 +8278,52 @@ func _t_char_preview() -> void:
 ## Every bridge stands over its water, not in it: a walk across Duskhold's
 ## north bridge from the shore to the island without swimming, and a look at
 ## each of the world's bridges.
+## A necromancer's servants take bone: a new one starts with three chips,
+## Raise Bones is refused without one and uses one when it lands, an older
+## necromancer is given three once, and provisioners sell them.
+func _t_bone_chips() -> void:
+	var fresh := Player.new()
+	fresh.from_save({"name": "Probe", "class": "necromancer", "race": "human", "stats": {}})
+	print("bone_chips: a new necromancer carries %d, given %s" % [fresh.pack.count("bone_chips"), fresh.given])
+	var old := Player.new()
+	old.from_save({"name": "Oldbones", "class": "necromancer", "race": "human", "stats": {}, "pack": fresh.pack.to_save()})
+	old.pack.remove("bone_chips", old.pack.count("bone_chips"))
+	print("bone_chips: an older necromancer's save -> carries %d, given %s" % [old.pack.count("bone_chips"), old.given])
+	World._gifts(old)
+	var once := old.pack.count("bone_chips")
+	World._gifts(old)
+	print("bone_chips: given once -> %d, again -> %d, given %s" % [once, old.pack.count("bone_chips"), old.given])
+	fresh.free()
+	old.free()
+	var p := World.local_player
+	var keep := [p.char_class, p.spells.duplicate(), p.mana, p.pack.count("bone_chips")]
+	World.dismiss_pet(p)
+	p.char_class = "necromancer"
+	p.spells = ["raise_bones"]
+	p.pack.remove("bone_chips", p.pack.count("bone_chips"))
+	p.mana = 500
+	p.cooldowns.erase("raise_bones")
+	World.request_cast(p.entity_id, "raise_bones")
+	print("bone_chips: no chips -> casting %s, pet %s" % [not p.cast.is_empty(), p.pet_id >= 0])
+	print("bone_chips: tooltip says: %s" % [get_tree().get_first_node_in_group("hud").spell_tooltip("raise_bones").split("\n")[-1]])
+	p.pack.add("bone_chips", 2)
+	World.request_cast(p.entity_id, "raise_bones")
+	var casting := not p.cast.is_empty()
+	for k in 80:
+		if p.cast.is_empty():
+			break
+		await _wait(0.1)
+	print("bone_chips: with 2 -> casting %s, then pet %s, chips left %d" % [casting, World.get_object(p.pet_id) != null, p.pack.count("bone_chips")])
+	var sellers := GameData.npcs.keys().filter(func(k: String) -> bool: return "bone_chips" in GameData.npcs[k].get("merchant", {}).get("sells", []))
+	print("bone_chips: sold by %s" % [sellers])
+	World.dismiss_pet(p)
+	p.pack.remove("bone_chips", p.pack.count("bone_chips"))
+	p.pack.add("bone_chips", keep[3]) if keep[3] > 0 else 0
+	p.char_class = keep[0]
+	p.spells = keep[1]
+	p.mana = keep[2]
+
+
 func _t_bridges() -> void:
 	var main := get_parent()
 	var p := World.local_player

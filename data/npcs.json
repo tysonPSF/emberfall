@@ -157,6 +157,7 @@
     "weapon": "",
     "merchant": {
       "sells": [
+        "bone_chips",
         "leather_cap",
         "leather_tunic",
         "leather_leggings",
@@ -1423,6 +1424,7 @@
     "faction": "emberhold",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -1462,6 +1464,7 @@
     "faction": "lanternhold",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -1501,6 +1504,7 @@
     "faction": "rainhold",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -2586,6 +2590,7 @@
     },
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -3532,6 +3537,7 @@
     "title": "Provisioner",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -4993,6 +4999,7 @@
     "title": "Provisioner",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -5783,6 +5790,7 @@
     "title": "Provisioner",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
@@ -6203,6 +6211,7 @@
     "gender": "female",
     "merchant": {
       "sells": [
+        "bone_chips",
         "draught_of_homecoming",
         "bag_of_flour",
         "jar_of_spices",
