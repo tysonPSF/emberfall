@@ -102,6 +102,7 @@ const SECTIONS := [
 	["shaman", "greenmoor"],
 	["homeward", "greenmoor"],
 	["grove", "greenmoor"],
+	["emotes", "greenmoor"],
 	["ashfall_borders", "hollowmere"],
 	["ranger", "greenmoor"],
 	["cap30", "greenmoor"],
@@ -7368,3 +7369,59 @@ func _t_grove() -> void:
 	World.request_say(p.entity_id, "return")
 	await wait_zone.call("greenmoor")
 	print("grove: keeper, return -> now in %s, %.1f m from where the seed was used" % [zone_now.call(), Vector2(p.global_position.x, p.global_position.z).distance_to(Vector2(from.x, from.z))])
+
+
+## Social emotes: the lines (alone, at a target, a word-only one, an alias,
+## /em), the clip each plays, and walking off cutting one short.
+func _t_emotes() -> void:
+	var p := World.local_player
+	var lines: Array = []
+	var grab := func(t: String, _c: Color) -> void: lines.append(t)
+	World.log_message.connect(grab)
+	var merrick: Npc = _npcs()["merrick"]
+	p.target = null
+	World.request_chat(p.entity_id, "/wave")
+	await _wait(0.8)
+	_stand_by(p, merrick)
+	World.request_chat(p.entity_id, "/rude")
+	await _wait(0.8)
+	World.request_chat(p.entity_id, "/hello")
+	await _wait(0.8)
+	World.request_chat(p.entity_id, "/smile")
+	await _wait(0.8)
+	World.request_chat(p.entity_id, "/em juggles three apples.")
+	World.request_chat(p.entity_id, "/notanemote")
+	await _wait(0.2)
+	World.log_message.disconnect(grab)
+	print("emotes: lines %s" % [lines])
+	var m := p.visual as CharacterModel
+	p.target = null
+	p.face_toward(p.global_position + Vector3(0, 0, 10))
+	p.camera_pivot.rotation.y = PI  # look at the player's face
+	p.zoom = 5.0
+	p.pitch = -0.1
+	var missing: Array = []
+	for id: String in GameData.emotes:
+		var e: Dictionary = GameData.emotes[id]
+		if not e.has("anim"):
+			continue
+		if not m.anim.has_animation(str(e["anim"])):
+			missing.append(e["anim"])
+			continue
+		await _wait(0.8)
+		World.request_emote(p.entity_id, id)
+		await _wait(minf(1.2, m.anim.get_animation(str(e["anim"])).length * 0.45))
+		print("emotes: /%s -> playing %s" % [id, m.anim.current_animation])
+		await _shot("9emote_" + id)
+		await _wait(m._one_shot_left + 0.3)
+	print("emotes: clips missing %s" % [missing])
+	# walking off stops a dance
+	await _wait(0.8)
+	World.request_emote(p.entity_id, "dance")
+	await _wait(0.5)
+	var before := m.anim.current_animation
+	Input.action_press("move_forward")
+	await _wait(0.4)
+	Input.action_release("move_forward")
+	print("emotes: dancing (%s), walked off -> now %s" % [before, m.anim.current_animation])
+	p.camera_pivot.rotation.y = 0.0

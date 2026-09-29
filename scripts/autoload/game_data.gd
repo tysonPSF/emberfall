@@ -16,6 +16,8 @@ var pets: Dictionary = {}  # data/pets.json: tiers, base stats, kinds
 var factions: Dictionary = {}
 var deities: Dictionary = {}
 var races: Dictionary = {}  # data/races.json: base stats, classes, home city, looks, trait
+var emotes: Dictionary = {}  # data/emotes.json: /wave, /bow...: the lines everyone sees, and the clip played
+var _emote_names: Dictionary = {}  # every command word (an emote's id or an alias) -> its emote id
 var loot: Dictionary = {}
 var skills: Dictionary = {}
 var _icons: Dictionary = {}  # base item id -> Texture2D or null
@@ -35,6 +37,11 @@ func _ready() -> void:
 	factions = _load("res://data/factions.json")
 	deities = _load("res://data/deities.json")
 	races = _load("res://data/races.json")
+	emotes = _load("res://data/emotes.json")
+	for id: String in emotes:
+		_emote_names[id] = id
+		for alias: String in emotes[id].get("aliases", []):
+			_emote_names[alias] = id
 	loot = _load("res://data/loot.json")
 	skills = _load("res://data/skills.json")
 
@@ -227,3 +234,8 @@ func _load(path: String) -> Dictionary:
 		push_error("Failed to parse %s" % path)
 		return {}
 	return parsed
+
+
+## The emote a command word names ("wave", or an alias like "hello"), or "".
+func emote_of(word: String) -> String:
+	return str(_emote_names.get(word.to_lower(), ""))
