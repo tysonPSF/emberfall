@@ -1303,7 +1303,7 @@ func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
 
 
 func damage(d: Entity, amount: int, src: Entity) -> void:
-	if d.dead or warded(d):
+	if d.dead or warded(d) or (d is Player and (d as Player).god_mode):
 		return
 	d.hp -= amount
 	d.sitting = false
@@ -4075,6 +4075,15 @@ func request_chat(player_id: int, text: String) -> void:
 			request_bind(player_id)
 		"/grove":
 			_grove_command(p, rest)
+		"/god":  # testing and admin only: walk the world unhurt and unnoticed
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				p.god_mode = not p.god_mode
+				if p.god_mode:
+					for m in get_mobs():
+						m.hate.erase(p.entity_id)
+				say(p, "God mode is %s." % ("on: nothing can hurt you, and monsters ignore you" if p.god_mode else "off"), C_SYSTEM)
 		"/friend", "/friends":
 			if cmd == "/friends" or rest == "":
 				request_friends_view(player_id)
