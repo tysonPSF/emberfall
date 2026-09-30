@@ -388,5 +388,215 @@
     "no_drop": true,
     "lore": true,
     "icon": "breathshard_ring"
+  },
+  "sr_croaker_gland": {
+    "name": "Croaker Gland",
+    "value": 12,
+    "stack": 20,
+    "icon": "wallow_toad_skin"
+  },
+  "sr_gulmogs_throat_sac": {
+    "name": "Gulmog's Throat-Sac",
+    "value": 60,
+    "lore": true,
+    "icon": "mire_toad_skin"
+  },
+  "sr_channelwatch_gloves": {
+    "name": "Channelwatch Gloves",
+    "slot": "hands",
+    "ac": 11,
+    "agi": 5,
+    "sta": 4,
+    "hp": 30,
+    "value": 10000,
+    "rec_level": 27,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves",
+    "icon": "serpentscale_gloves"
+  },
+  "sr_mangrove_root": {
+    "name": "Walking Mangrove Root",
+    "value": 12,
+    "stack": 20,
+    "icon": "ember_heartwood"
+  },
+  "sr_tanglefoots_heartroot": {
+    "name": "Old Tanglefoot's Heartroot",
+    "value": 60,
+    "lore": true,
+    "icon": "ember_heartwood"
+  },
+  "sr_mangrove_circlet": {
+    "name": "Mangrove Circlet",
+    "slot": "head",
+    "ac": 12,
+    "wis": 6,
+    "int": 6,
+    "hp": 30,
+    "mana": 50,
+    "value": 10000,
+    "rec_level": 28,
+    "no_drop": true,
+    "lore": true,
+    "wear": "cloth_cap",
+    "icon": "pearl_crown_of_the_river"
+  },
+  "bg_borer_carapace": {
+    "name": "Obsidian Borer Carapace",
+    "value": 20,
+    "stack": 20,
+    "icon": "obsidian_scale"
+  },
+  "bg_sable_mandible": {
+    "name": "The Sable Borer's Mandible",
+    "value": 100,
+    "lore": true,
+    "icon": "chitin_plate"
+  },
+  "bg_glassfire_leggings": {
+    "name": "Glassfire Leggings",
+    "slot": "legs",
+    "ac": 20,
+    "sta": 6,
+    "agi": 5,
+    "hp": 50,
+    "value": 21000,
+    "rec_level": 34,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_leggings",
+    "icon": "obsidian_scale_leggings"
+  },
+  "bg_wisp_prism": {
+    "name": "Wisp Prism",
+    "value": 20,
+    "stack": 20,
+    "icon": "glass_core"
+  },
+  "bg_prism_hearts_core": {
+    "name": "Prism-Heart's Core",
+    "value": 100,
+    "lore": true,
+    "icon": "salt_crystal"
+  },
+  "bg_diviners_lens": {
+    "name": "Diviner's Lens",
+    "slot": "neck",
+    "ac": 7,
+    "int": 7,
+    "wis": 7,
+    "mana": 70,
+    "hp": 40,
+    "value": 21000,
+    "rec_level": 35,
+    "no_drop": true,
+    "lore": true,
+    "icon": "glasswrights_lenses"
+  },
+  "sw_spore_sac": {
+    "name": "Spore Sac",
+    "value": 24,
+    "stack": 20,
+    "icon": "glowcap"
+  },
+  "sw_rotcaps_gills": {
+    "name": "The Rotcap's Gills",
+    "value": 120,
+    "lore": true,
+    "icon": "glowcap"
+  },
+  "sw_emberfall_hood": {
+    "name": "Emberfall Hood",
+    "slot": "head",
+    "ac": 13,
+    "int": 8,
+    "wis": 8,
+    "mana": 80,
+    "hp": 40,
+    "value": 23000,
+    "rec_level": 37,
+    "no_drop": true,
+    "lore": true,
+    "wear": "cloth_cap",
+    "icon": "sootveil_hood"
+  },
+  "sw_kiln_cinder": {
+    "name": "Kiln Cinder",
+    "value": 24,
+    "stack": 20,
+    "icon": "giants_coal"
+  },
+  "sw_bellows_horn": {
+    "name": "Old Bellows's Horn",
+    "value": 120,
+    "lore": true,
+    "icon": "imp_horn"
+  },
+  "sw_kilnkeepers_gloves": {
+    "name": "Kilnkeeper's Gloves",
+    "slot": "hands",
+    "ac": 14,
+    "str": 6,
+    "sta": 5,
+    "hp": 45,
+    "value": 23000,
+    "rec_level": 37,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves",
+    "icon": "smokehide_gloves"
+  },
+  "ss_harrier_feather": {
+    "name": "Harrier Flight-Feather",
+    "value": 28,
+    "stack": 20,
+    "icon": "firebird_feather"
+  },
+  "ss_talonmeres_talon": {
+    "name": "Old Talonmere's Talon",
+    "value": 140,
+    "lore": true,
+    "icon": "firebird_feather"
+  },
+  "ss_westwatch_cloak": {
+    "name": "Westwatch Cloak",
+    "slot": "arms",
+    "ac": 15,
+    "sta": 7,
+    "agi": 6,
+    "hp": 60,
+    "value": 26000,
+    "rec_level": 41,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves",
+    "icon": "moorhide_cloak"
+  },
+  "ss_cairn_bone": {
+    "name": "Cairn Bone",
+    "value": 28,
+    "stack": 20,
+    "icon": "bleached_bone"
+  },
+  "ss_cairn_kings_torc": {
+    "name": "The Cairn-King's Torc",
+    "value": 140,
+    "lore": true,
+    "icon": "bone_charm"
+  },
+  "ss_stonereaders_torque": {
+    "name": "Stone-Reader's Torque",
+    "slot": "neck",
+    "ac": 9,
+    "int": 8,
+    "wis": 8,
+    "mana": 80,
+    "hp": 50,
+    "value": 26000,
+    "rec_level": 41,
+    "no_drop": true,
+    "lore": true,
+    "icon": "singers_torque"
   }
 }

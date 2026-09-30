@@ -17137,5 +17137,695 @@
     },
     "named": true,
     "xp_bonus": 3.0
+  },
+  "sr_delta_toad": {
+    "name": "a delta toad",
+    "level": [
+      24,
+      26
+    ],
+    "hp_base": 172,
+    "hp_per_level": 23,
+    "dmg_min": 16,
+    "dmg_max": 33,
+    "attack_delay": 2.7,
+    "ac": 44,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#5a6a3a",
+    "scale": 1.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sr_croaker_gland",
+        "chance": 0.55
+      }
+    ],
+    "model": "mire_toad",
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    }
+  },
+  "sr_gulmog": {
+    "name": "Gulmog the Bellower",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 172,
+    "hp_per_level": 23,
+    "dmg_min": 16,
+    "dmg_max": 33,
+    "attack_delay": 2.7,
+    "ac": 44,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#5a6a3a",
+    "scale": 2.3,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sr_gulmogs_throat_sac",
+        "chance": 1.0
+      },
+      {
+        "item": "sr_croaker_gland",
+        "chance": 1.0
+      }
+    ],
+    "model": "mire_toad",
+    "proc": {
+      "spell": "naga_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "sr_mangrove_lurker": {
+    "name": "a mangrove lurker",
+    "level": [
+      25,
+      27
+    ],
+    "hp_base": 206,
+    "hp_per_level": 28,
+    "dmg_min": 16,
+    "dmg_max": 33,
+    "attack_delay": 2.7,
+    "ac": 53,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#6a7a6a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "sr_mangrove_root",
+        "chance": 0.55
+      }
+    ],
+    "model": "bog_lurker"
+  },
+  "sr_old_tanglefoot": {
+    "name": "Old Tanglefoot",
+    "level": [
+      29,
+      29
+    ],
+    "hp_base": 206,
+    "hp_per_level": 28,
+    "dmg_min": 16,
+    "dmg_max": 33,
+    "attack_delay": 2.7,
+    "ac": 53,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "humanoid",
+    "color": "#6a7a6a",
+    "scale": 1.8,
+    "coin": [
+      420,
+      1120
+    ],
+    "loot": [
+      {
+        "item": "sr_tanglefoots_heartroot",
+        "chance": 1.0
+      },
+      {
+        "item": "sr_mangrove_root",
+        "chance": 1.0
+      }
+    ],
+    "model": "bog_lurker",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "bg_obsidian_borer": {
+    "name": "an obsidian borer",
+    "level": [
+      32,
+      34
+    ],
+    "hp_base": 230,
+    "hp_per_level": 27,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 2.4,
+    "ac": 58,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#2a2a33",
+    "scale": 1.5,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bg_borer_carapace",
+        "chance": 0.55
+      }
+    ],
+    "model": "fire_beetle",
+    "proc": {
+      "spell": "glass_venom",
+      "chance": 0.18,
+      "text": "%s's fangs inject %s!"
+    }
+  },
+  "bg_sable_borer": {
+    "name": "the Sable Borer",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 230,
+    "hp_per_level": 27,
+    "dmg_min": 22,
+    "dmg_max": 40,
+    "attack_delay": 2.4,
+    "ac": 58,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#1a1a22",
+    "scale": 2.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bg_sable_mandible",
+        "chance": 1.0
+      },
+      {
+        "item": "bg_borer_carapace",
+        "chance": 1.0
+      }
+    ],
+    "model": "fire_beetle",
+    "proc": {
+      "spell": "glass_venom",
+      "chance": 0.18,
+      "text": "%s's fangs inject %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "bg_glass_wisp": {
+    "name": "a glass wisp",
+    "level": [
+      32,
+      34
+    ],
+    "hp_base": 300,
+    "hp_per_level": 30,
+    "dmg_min": 24,
+    "dmg_max": 44,
+    "attack_delay": 3.4,
+    "ac": 70,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "glass_constructs",
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "humanoid",
+    "color": "#18161c",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bg_wisp_prism",
+        "chance": 0.55
+      }
+    ],
+    "model": "mirage_wisp",
+    "proc": {
+      "spell": "shard_burst",
+      "chance": 0.15,
+      "text": "%s bursts, and %s cuts you!"
+    }
+  },
+  "bg_prism_heart": {
+    "name": "Prism-Heart",
+    "level": [
+      36,
+      36
+    ],
+    "hp_base": 300,
+    "hp_per_level": 30,
+    "dmg_min": 24,
+    "dmg_max": 44,
+    "attack_delay": 3.4,
+    "ac": 70,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "glass_constructs",
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "humanoid",
+    "color": "#18161c",
+    "scale": 1.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bg_prism_hearts_core",
+        "chance": 1.0
+      },
+      {
+        "item": "bg_wisp_prism",
+        "chance": 1.0
+      }
+    ],
+    "model": "mirage_wisp",
+    "proc": {
+      "spell": "shard_burst",
+      "chance": 0.15,
+      "text": "%s bursts, and %s cuts you!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "sw_spore_shambler": {
+    "name": "a spore-shambler",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 268,
+    "hp_per_level": 36,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#e8804a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sw_spore_sac",
+        "chance": 0.55
+      }
+    ],
+    "model": "walking_fungus"
+  },
+  "sw_rotcap": {
+    "name": "the Rotcap",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 268,
+    "hp_per_level": 36,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 68,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "slam",
+      "slams"
+    ],
+    "shape": "beetle",
+    "color": "#e8804a",
+    "scale": 2.2,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sw_rotcaps_gills",
+        "chance": 1.0
+      },
+      {
+        "item": "sw_spore_sac",
+        "chance": 1.0
+      }
+    ],
+    "model": "walking_fungus",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "sw_kiln_imp": {
+    "name": "a kiln imp",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 244,
+    "hp_per_level": 33,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#ff8a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sw_kiln_cinder",
+        "chance": 0.55
+      }
+    ],
+    "model": "fire_imp",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.12,
+      "text": "%s's wings shed %s!"
+    }
+  },
+  "sw_old_bellows": {
+    "name": "Old Bellows",
+    "level": [
+      38,
+      38
+    ],
+    "hp_base": 244,
+    "hp_per_level": 33,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "smokewood_wild",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#ff8a3a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "sw_bellows_horn",
+        "chance": 1.0
+      },
+      {
+        "item": "sw_kiln_cinder",
+        "chance": 1.0
+      }
+    ],
+    "model": "imp_lord",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.12,
+      "text": "%s's wings shed %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ss_moor_harrier": {
+    "name": "a moor harrier",
+    "level": [
+      37,
+      39
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.4,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#6a6258",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ss_harrier_feather",
+        "chance": 0.55
+      }
+    ],
+    "model": "giant_eagle"
+  },
+  "ss_old_talonmere": {
+    "name": "Old Talonmere",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.4,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "beetle",
+    "color": "#6a6258",
+    "scale": 1.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ss_talonmeres_talon",
+        "chance": 1.0
+      },
+      {
+        "item": "ss_harrier_feather",
+        "chance": 1.0
+      }
+    ],
+    "model": "giant_eagle",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ss_cairn_wight": {
+    "name": "a cairn wight",
+    "level": [
+      38,
+      40
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.7,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a7060",
+    "scale": 1.0,
+    "coin": [
+      80,
+      260
+    ],
+    "loot": [
+      {
+        "item": "ss_cairn_bone",
+        "chance": 0.55
+      }
+    ],
+    "model": "barrow_wight",
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.15,
+      "text": "%s sings, and %s shakes your bones!"
+    }
+  },
+  "ss_cairn_king": {
+    "name": "the Cairn-King",
+    "level": [
+      42,
+      42
+    ],
+    "hp_base": 276,
+    "hp_per_level": 37,
+    "dmg_min": 26,
+    "dmg_max": 51,
+    "attack_delay": 2.7,
+    "ac": 70,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#7a7060",
+    "scale": 1.0,
+    "coin": [
+      780,
+      2080
+    ],
+    "loot": [
+      {
+        "item": "ss_cairn_kings_torc",
+        "chance": 1.0
+      },
+      {
+        "item": "ss_cairn_bone",
+        "chance": 1.0
+      }
+    ],
+    "model": "barrow_lord",
+    "proc": {
+      "spell": "stone_song",
+      "chance": 0.15,
+      "text": "%s sings, and %s shakes your bones!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
   }
 }
