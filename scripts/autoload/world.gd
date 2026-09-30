@@ -4078,6 +4078,23 @@ func request_chat(player_id: int, text: String) -> void:
 			request_bind(player_id)
 		"/grove":
 			_grove_command(p, rest)
+		"/zone":  # testing and admin only: /zone <id or name> goes there, to its bind point (or the middle)
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				var want := rest.to_lower().replace(" ", "_").replace("'", "")
+				var found := ""
+				for f: String in DirAccess.get_files_at("res://data/zones"):
+					var id := f.get_basename()
+					var zname := str(GameData.load_zone(id).get("name", id)).to_lower().replace(" ", "_").replace("'", "")
+					if want != "" and (id == want or zname == want or zname.trim_prefix("the_") == want.trim_prefix("the_")):
+						found = id
+						break
+				if found == "":
+					say(p, "No zone called '%s'. Try an id like the_long_grass." % rest, C_WARN)
+				else:
+					_leave_for_elsewhere(p)
+					zone_change.emit(p, found, Vector2.INF, Vector2.INF)
 		"/god":  # testing and admin only: walk the world unhurt and unnoticed
 			if not Net.is_admin(p):
 				say(p, "That command is not available.", C_WARN)
