@@ -67,7 +67,7 @@ var gender_changed := false  # a character's one change of gender has been used
 var hair_style := ""  # models.json "hair_styles" id, "" = the head the body and gender give
 var hair_color := ""  # models.json "hair_colors" id, "" = the head's own
 var hair_changed := false  # a character's one restyle has been used
-var god_mode := false  # /god, admins testing: nothing hurts you and monsters don't notice you (not saved)
+var god_mode := false  # /god, admins testing: nothing hurts you, monsters don't notice you, endless running (not saved)
 var afk_message := ""  # the reply a tell gets while you're away ("/afk <message>")
 var _idle := 0.0  # seconds with no input (local player): past config afk_minutes you go AFK
 var stat_points: Dictionary = {}  # the points spent at creation ({"str": 10, ...}); empty until spent, and then the HUD asks

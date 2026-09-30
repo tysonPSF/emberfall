@@ -1741,7 +1741,7 @@ func request_sprint(entity_id: int, on: bool) -> void:
 	# stamina returns, which stutters your speed and repeats the winded message.
 	if on and (p.sitting or p.stamina < float(cfg("sprint_resume_at", 25.0))):
 		return
-	if on and p.encumbrance_speed() < 0.6:
+	if on and p.encumbrance_speed() < 0.6 and not p.god_mode:
 		say(p, "You are carrying too much to run.", C_WARN)
 		return
 	p.sprinting = on
@@ -1754,6 +1754,9 @@ func request_sprint(entity_id: int, on: bool) -> void:
 func _update_stamina(p: Player, delta: float) -> void:
 	if p.dead:
 		p.sprinting = false
+		return
+	if p.god_mode:  # testing: run as far as you like
+		p.stamina = float(p.max_stamina)
 		return
 	if p.sprinting:
 		p.stamina_idle = float(cfg("stamina_regen_delay", 1.5))
@@ -4083,7 +4086,7 @@ func request_chat(player_id: int, text: String) -> void:
 				if p.god_mode:
 					for m in get_mobs():
 						m.hate.erase(p.entity_id)
-				say(p, "God mode is %s." % ("on: nothing can hurt you, and monsters ignore you" if p.god_mode else "off"), C_SYSTEM)
+				say(p, "God mode is %s." % ("on: nothing can hurt you, monsters ignore you, and you never tire" if p.god_mode else "off"), C_SYSTEM)
 		"/friend", "/friends":
 			if cmd == "/friends" or rest == "":
 				request_friends_view(player_id)
