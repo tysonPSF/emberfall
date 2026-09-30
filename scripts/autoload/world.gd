@@ -420,7 +420,7 @@ func _update_melee(e: Entity) -> void:
 	if e.swing_timer <= 0.0:
 		e.swing_timer = e.attack_delay * slow_factor(e)
 		e.sitting = false
-		e.animate("attack")
+		e.animate(Entity.swing_for(str(e.look.get("weapon", ""))))  # a slash, a thrust or a chop, by weapon
 		_notice_attacker(t, e)
 		_swing(e, t, "primary")
 		# Double Attack: now and then the main hand swings again at once
@@ -434,6 +434,7 @@ func _update_melee(e: Entity) -> void:
 		try_skill_up(p, "dual_wield", t, 0.5)
 		if randf() < DUAL_WIELD_BASE + DUAL_WIELD_SKILL * skill_frac(p, "dual_wield"):
 			e.sitting = false
+			e.animate(Entity.swing_for(str(e.look.get("offhand", "")), true))  # the left hand's own cut
 			_notice_attacker(t, e)
 			_swing(e, t, "secondary")
 

@@ -21,6 +21,16 @@ Clips:
   Swim_Forward    breaststroke with a frog kick, leaning into it (loops, 1.2 s)
   Swim_Idle       treading water: arms sculling, legs cycling, a bob (loops, 2 s)
 
+Melee swings (the weapon in handslot.r, or handslot.l for the off hand):
+  Attack_Slash       0.8 s  one-handed diagonal cut: wound up over the right
+                            shoulder, down and across to the left hip
+  Attack_Slash_Left  0.7 s  the same cut with the left (off) hand
+  Attack_Thrust      0.7 s  hand drawn back by the hip, then a lunge driving it
+                            straight out ahead (daggers, spears)
+  Attack_Chop        1.0 s  two-handed overhead chop: both hands raised before
+                            the face, brought down hard, bending into it
+Their weapons are pointed as well as the hands placed (`_blade`).
+
 Emotes (one-shots that start and end on the idle's first frame):
   Emote_Wave      2.0 s  right arm up high, the hand waving out and in three times
   Emote_Bow       2.2 s  hand to the chest, a deep bow from the waist, hold, rise
@@ -58,7 +68,7 @@ import os
 import sys
 
 import bpy
-from mathutils import Euler, Quaternion, Vector
+from mathutils import Euler, Matrix, Quaternion, Vector
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SOURCE = os.path.join(ROOT, "assets/KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb")
@@ -145,6 +155,8 @@ def _keys(arm, base, name, keys, smooth=False):
 		frame, rots, hips = key[:3]
 		if len(key) > 3 and key[3]:
 			rots = _solve(arm, base, rots, hips, key[3])
+		if len(key) > 4 and key[4]:
+			rots = _blade(arm, base, rots, hips, key[4])
 		for pb in arm.pose.bones:
 			rot, loc = base[pb.name]
 			pb.rotation_mode = "QUATERNION"
@@ -255,6 +267,74 @@ def _solve(arm, base, rots, hips, aims):
 		_swing(lo, d_lo, palm, hand)
 		out[up.name] = _extra(base, up)
 		out[lo.name] = _extra(base, lo)
+	return out
+
+
+# Pointing a held weapon. The weapon rides the hand's handslot bone along its
+# +Y (the blade; the pommel is down -Y) with its edge along X (a sword's flat
+# faces Z), so after the arms are solved a swing key also says where each
+# blade points: {"r"/"l": (blade, edge)} as (out, up, forward) in the chest's
+# frame, like the aims. The turn it takes is split the way a wrist does it: a
+# twist about the forearm (the forearm turns, which moves nothing) and the rest
+# a bend at the hand. ("grip", side, along, pole, flip) instead puts that hand
+# on the other hand's haft, `along` meters toward the pommel, pointing the same
+# way, its X along the other's times flip (two-handed weapons: the left hand
+# under the right).
+def _point(bones, side, blade, edge, chest):
+	slot, hand, lo = bones["handslot." + side], bones["hand." + side], bones["lowerarm." + side]
+	y = blade.normalized()
+	x = (edge - y * edge.dot(y)).normalized()
+	want = Matrix((x, y, x.cross(y))).transposed()
+	have = slot.matrix.to_3x3().normalized()
+	q = (want @ have.transposed()).to_quaternion()
+	a = lo.matrix.col[1].xyz.normalized()
+	twist = Quaternion((q.w, *(a * q.axis.dot(a) * math.sin(q.angle / 2)))).normalized()
+	bend = q @ twist.inverted()
+	for pb, r in ((lo, twist), (hand, bend)):
+		m = pb.matrix.copy()
+		nm = (r.to_matrix() @ m.to_3x3().normalized()).to_4x4()
+		nm.translation = m.translation
+		pb.matrix = nm
+		bpy.context.view_layer.update()
+
+
+def _reach(bones, side, t, pole, chest):
+	"""The arm on `side` reaches its hand (the wrist's end) to t (armature
+	space), the elbow out toward pole (chest frame), as _solve's "at"."""
+	up, lo, wr = (bones[b + "." + side] for b in ("upperarm", "lowerarm", "wrist"))
+	s = up.head.copy()
+	a, b = up.length, lo.length + wr.length
+	v = t - s
+	dist = max(min(v.length, a + b - 0.002), abs(a - b) + 0.002)
+	u = v.normalized()
+	p = _frame_vec(chest, side, pole)
+	p = (p - u * p.dot(u)).normalized()
+	c = (a * a + dist * dist - b * b) / (2 * a * dist)
+	elbow = s + a * (u * c + p * math.sqrt(max(0.0, 1 - c * c)))
+	_swing(up, elbow - s)
+	_swing(lo, s + u * dist - elbow)
+
+
+def _blade(arm, base, rots, hips, blades):
+	"""rots with the forearms and hands turned so each weapon points as `blades` says."""
+	_pose_set(arm, base, rots, hips)
+	out = dict(rots)
+	bones = arm.pose.bones
+	chest = bones["chest"]
+	for side, spec in sorted(blades.items(), key=lambda kv: kv[1][0] == "grip"):  # grips after the hand they hold under
+		if spec[0] == "grip":
+			other = bones["handslot." + spec[1]]
+			d = other.matrix.col[1].xyz.normalized()
+			goal = other.head - d * spec[2]
+			slot, hand = bones["handslot." + side], bones["hand." + side]
+			for _ in range(4):  # the grip point sits off the wrist's end; settle it
+				_reach(bones, side, goal - (slot.head - hand.head), spec[3], chest)
+				_point(bones, side, d, other.matrix.col[0].xyz * spec[4], chest)
+		else:  # the left handslot's X is the right's mirrored and flipped, so its edge flips too
+			_point(bones, side, _frame_vec(chest, side, spec[0]), _frame_vec(chest, side, spec[1]) * (-1 if side == "l" else 1), chest)
+		for b in ("upperarm", "lowerarm", "hand"):
+			pb = bones[b + "." + side]
+			out[pb.name] = _extra(base, pb)
 	return out
 
 
@@ -711,6 +791,80 @@ SIT_CHAIR_EAGER = [
 	(60, _EAGER, _CHAIR_HIPS, _EAGER_ARMS),
 ]
 
+# --- Melee swings --------------------------------------------------------------
+# Keys are (frame, {bone: degrees}, hips offset, {side: aim}, {side: blade})
+# with the arms solved by the aims and the weapons then pointed by _blade.
+# A spine twist (Y) turns the shoulders: positive brings the right shoulder
+# forward. Each starts and ends on the idle's first frame; the game plays them
+# at 1.3x.
+
+def _cut(lean, twist, h=0.0):
+	"""The torso turned and bent into a swing, the knees giving a little (feet
+	planted)."""
+	legs, hips = _crouch(h) if h > 0 else ({}, (0, 0, 0))
+	return _with(legs, {"spine": (lean * 0.6, twist * 0.6, 0), "chest": (lean * 0.4, twist * 0.4, 0),
+						"head": (-lean * 0.7, -twist * 0.8, 0)}), hips
+
+
+def _slash(side):
+	"""A diagonal cut with one hand: wound up over that shoulder, down and
+	across to the other hip (a right hand's twist mirrored for the left)."""
+	t = 1 if side == "r" else -1
+	up, uph = _cut(-6, -22 * t)
+	hit, hith = _cut(10, 18 * t, 0.03)
+	fol, folh = _cut(14, 30 * t, 0.05)
+	mid, midh = _cut(2, -2 * t, 0.01)
+	return {"up": (up, uph, {side: ("at", (0.3, 0.3, -0.04), (1, 0.2, -0.6))},
+				   {side: ((0.45, 0.75, -0.35), (0.5, 0.2, 0.85))}),
+			"mid": (mid, midh, {side: ("at", (0.3, 0.14, 0.3), (1, 0.1, -0.4))},
+					{side: ((0.6, 0.5, 0.6), (-0.3, -0.5, 0.8))}),
+			"hit": (hit, hith, {side: ("at", (0.02, -0.02, 0.52), (1, -0.2, -0.3))},
+					{side: ((0.3, 0.05, 0.95), (-0.6, -0.8, 0))}),
+			"follow": (fol, folh, {side: ("at", (-0.22, -0.3, 0.36), (1, 0.2, 0))},
+					   {side: ((-0.8, -0.2, 0.55), (-0.2, -0.9, -0.3))})}
+
+
+def _swing_keys(poses, frames):
+	keys = [(0, {}, (0, 0, 0))]
+	for f, name in frames:
+		rots, hips, aims, blades = poses[name]
+		keys.append((f, rots, hips, aims, blades))
+	return keys
+
+
+_SLASH_R = _slash("r")
+_SLASH_L = _slash("l")
+SLASH = _swing_keys(_SLASH_R, [(7, "up"), (9, "mid"), (11, "hit"), (14, "follow"), (17, "follow")]) + [(24, {}, (0, 0, 0))]
+SLASH_LEFT = _swing_keys(_SLASH_L, [(6, "up"), (8, "mid"), (10, "hit"), (13, "follow"), (15, "follow")]) + [(21, {}, (0, 0, 0))]
+
+# a thrust: the hand drawn back by the hip, then the shoulder and hand driven
+# straight out ahead, the torso leaning in
+_DRAWN, _DRAWNH = _cut(-4, -24, 0.02)
+_LUNGE, _LUNGEH = _cut(18, 26, 0.06)
+THRUST = [
+	(0, {}, (0, 0, 0)),
+	(6, _DRAWN, _DRAWNH, {"r": ("at", (0.14, -0.28, -0.18), (1, 0, -1))}, {"r": ((0.1, 0.25, 1), (0, -1, 0.25))}),
+	(10, _LUNGE, _LUNGEH, {"r": ("at", (0.0, 0.0, 0.56), (1, -0.6, 0))}, {"r": ((0.3, 0.22, 1), (0, -1, 0.22))}),
+	(14, _LUNGE, _LUNGEH, {"r": ("at", (0.0, -0.01, 0.54), (1, -0.6, 0))}, {"r": ((0.3, 0.2, 1), (0, -1, 0.2))}),
+	(21, {}, (0, 0, 0)),
+]
+
+# a two-handed chop: both hands raised high before the face, the weapon up and
+# back, then brought down hard in front, the torso bending into it
+_RAISED, _RAISEDH = _cut(-10, -8)
+_CHOPPED, _CHOPPEDH = _cut(22, 6, 0.08)
+_GRIP = ("grip", "r", 0.16, (1, -0.3, -0.3), -1)
+CHOP = [
+	(0, {}, (0, 0, 0)),
+	(11, _RAISED, _RAISEDH, {"r": ("at", (0.06, 0.42, 0.14), (1, 0.2, -0.3))}, {"r": ((0.35, 0.7, -0.6), (0, 0.65, 0.75)), "l": _GRIP}),
+	(16, _with(_RAISED, {"spine": (-8, -5, 0)}), _RAISEDH, {"r": ("at", (0.06, 0.45, 0.1), (1, 0.2, -0.3))}, {"r": ((0.35, 0.55, -0.75), (0, 0.8, 0.6)), "l": _GRIP}),
+	(20, _CHOPPED, _CHOPPEDH, {"r": ("at", (-0.12, 0.0, 0.5), (1, -0.3, -0.2))}, {"r": ((0.1, 0.3, 1), (0, -1, 0.3)), "l": _GRIP}),
+	(23, _CHOPPED, _CHOPPEDH, {"r": ("at", (-0.12, -0.08, 0.48), (1, -0.3, -0.2))}, {"r": ((0.1, 0.05, 1), (0, -1, 0.05)), "l": _GRIP}),
+	(30, {}, (0, 0, 0)),
+]
+
+SWINGS = [("Attack_Slash", SLASH), ("Attack_Slash_Left", SLASH_LEFT), ("Attack_Thrust", THRUST), ("Attack_Chop", CHOP)]
+
 EMOTES = [("Emote_Wave", WAVE), ("Emote_Bow", BOW_EMOTE), ("Emote_Rude", RUDE), ("Emote_Cheer", CHEER),
 		  ("Emote_Dance", DANCE), ("Emote_Laugh", LAUGH), ("Emote_Cry", CRY), ("Emote_Point", POINT),
 		  ("Emote_Salute", SALUTE), ("Emote_Kneel", KNEEL), ("Emote_Shrug", SHRUG), ("Emote_Clap", CLAP),
@@ -744,6 +898,8 @@ def build(arm, base):
 	keep.append(_keys(arm, base, "Sit_Chair_Shock", SIT_CHAIR_SHOCK, smooth=True))
 	keep.append(_keys(arm, base, "Sit_Chair_Eager", SIT_CHAIR_EAGER, smooth=True))
 	for name, keys in EMOTES:
+		keep.append(_keys(arm, base, name, keys, smooth=True))
+	for name, keys in SWINGS:
 		keep.append(_keys(arm, base, name, keys, smooth=True))
 	return keep
 
