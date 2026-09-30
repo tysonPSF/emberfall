@@ -44,7 +44,7 @@ ZONES = [
     # out of a sanctuary's back door, which was the only lethal border on the map.
     ('the_grove',       'The Grove',          'emberlands', (1, 1),   256, None,    'sanctuary'),
     ('harrowfield',     'Harrowfield',        'emberlands', (3, 9),   384, (1, 1), 'field'),
-    ('thornwood',       'Thornwood Vale',     'emberlands', (6, 14),  512, (0, 2), 'wood'),
+    ('thornwood',       'Thornwood Vale',     'emberlands', (6, 14),  1024, (0, 2), 'wood'),
     ('hollowmere',      'Hollowmere',         'emberlands', (10, 15), 448, (1, 2), 'water'),
 
     # ---- THE DAWNSTAIR - Prabhagaj, the Dawn-Tusk. East, climbing.

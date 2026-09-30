@@ -154,7 +154,7 @@
     {"points": [[-1, 14], [-45, 10], [-100, 4], [-150, 2], [-192, 0]], "width": 3.0}],
   "zone_lines": [
     {"pos": [0, 181], "size": [18, 8], "to": "emberhold", "arrive": [0, -46], "arrive_face": [0, 0]},
-    {"pos": [0, -181], "size": [18, 8], "to": "thornwood", "arrive": [0, 228], "arrive_face": [0, 190]},
+    {"pos": [0, -181], "size": [18, 8], "to": "thornwood", "arrive": [0, 484], "arrive_face": [0, 446]},
     {"pos": [181, 0], "size": [8, 18], "to": "harrowfield", "arrive": [-167, 0], "arrive_face": [-127, 0]},
     {"pos": [-181, 0], "size": [8, 18], "to": "rainhold", "arrive": [46, 0], "arrive_face": [6, 0]},
     {"pos": [-157.5, -30], "size": [3, 4], "to": "wellspring", "arrive": [128, 128], "arrive_face": [100, 126],

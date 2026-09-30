@@ -723,14 +723,8 @@
         8
       ],
       "to": "thornwood",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
+      "arrive": [0, -487],
+      "arrive_face": [0, -447]
     },
     {
       "pos": [

@@ -8930,13 +8930,16 @@ func _t_zone_outlines() -> void:
 	for zone_id: String in ["greenmoor", "thornwood", "harrowfield", "the_long_grass", "stonesail"]:
 		while main._changing_zone:
 			await _wait(0.25)
+		var started := Time.get_ticks_msec()
 		World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
-		for k in 80:
+		for k in 160:
 			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
 				break
 			await _wait(0.25)
-		await _wait(1.0)
 		var z := main.zone as Zone
+		print("zone_outlines: %s (%d m) built in about %.1f s, %d monsters" % [zone_id, int(z.size), (Time.get_ticks_msec() - started) / 1000.0,
+				World.get_mobs().filter(func(m: Mob) -> bool: return World.zone_of(m) == z).size()])
+		await _wait(1.0)
 		var covered := 0
 		var moved := 0
 		for sp: Node in z.get_children():

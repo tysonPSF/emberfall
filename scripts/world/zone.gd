@@ -737,7 +737,7 @@ func _build_environment() -> void:
 
 
 func _build_terrain() -> void:
-	var grid := int(data.get("grid", GRID))  # a cave needs finer ground than a meadow (its passages are a few meters wide)
+	var grid := int(data.get("grid", maxi(GRID, ceili(size / 4.0))))  # a cave needs finer ground than a meadow (its passages are a few meters wide); a big zone keeps 4 m cells
 	var n := grid + 1
 	var cell := size / grid
 	var heights := PackedFloat32Array()
@@ -2474,73 +2474,142 @@ func _build_props() -> void:
 ## Grass, flowers, ferns, bushes and the like from the zone's "clutter" table:
 ## {prop_id: {density (per m²), patch (0-1 clumping), sway, range, shadow,
 ## tint ("ground" to match the terrain), scale [min, max], city (density
-## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk so
-## far chunks are skipped. Only logs and stumps collide (SOLID_CLUTTER).
+## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk,
+## built only round the camera (_process). Only logs and stumps collide (SOLID_CLUTTER).
 func _build_clutter() -> void:
 	var table: Dictionary = data.get("clutter", {})
-	if table.is_empty():
-		return
-	var rng := RandomNumberGenerator.new()
-	rng.seed = int(data.get("seed", 1)) + 7919
-	var patches := FastNoiseLite.new()
-	patches.seed = int(data.get("seed", 1)) + 31
-	patches.frequency = 0.045
-	var chunks := ceili(size / CLUTTER_CHUNK)
+	var patches_seed := int(data.get("seed", 1)) + 31
 	for id: String in table:
 		var spec: Dictionary = table[id]
+		patches_seed += 1  # each type clumps in its own places
 		var source := _clutter_source(id, float(spec.get("sway", 0.0)))
 		if source.is_empty():
 			continue
-		var density := float(spec.get("density", 0.1))
-		var patch := float(spec.get("patch", 0.5))
-		var city := float(spec.get("city", 0.0))
-		var by_ground := str(spec.get("tint", "")) == "ground"
-		var scale_range: Array = spec.get("scale", [0.8, 1.2])
-		patches.seed += 1  # each type clumps in its own places
-		for cx in chunks:
-			for cz in chunks:
-				var x0 := -half + cx * CLUTTER_CHUNK
-				var z0 := -half + cz * CLUTTER_CHUNK
-				var xforms: Array[Transform3D] = []
-				var colors: Array[Color] = []
-				var tries := int(density * CLUTTER_CHUNK * CLUTTER_CHUNK) + (1 if rng.randf() < fmod(density * CLUTTER_CHUNK * CLUTTER_CHUNK, 1.0) else 0)
-				for k in tries:
-					var x := x0 + rng.randf() * CLUTTER_CHUNK
-					var z := z0 + rng.randf() * CLUTTER_CHUNK
-					var keep := lerpf(1.0, smoothstep(-0.15, 0.35, patches.get_noise_2d(x, z)) * 1.6, patch)
-					if Vector2(x, z).length() < _clear_radius:
-						keep *= city
-					if rng.randf() >= keep or not _clutter_spot_ok(x, z):
-						continue
-					var h := height_at(x, z)
-					var s := rng.randf_range(float(scale_range[0]), float(scale_range[1]))
-					var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s)
-					xforms.append(Transform3D(basis, Vector3(x, h - 0.02, z)))
-					if by_ground:
-						var g := _ground_color(x, z, h)
-						colors.append(Color(g.r * 1.45, g.g * 1.4, g.b * 1.3) * rng.randf_range(0.9, 1.1))
-					else:
-						colors.append(Color.WHITE * rng.randf_range(0.88, 1.08))
-				if xforms.is_empty():
-					continue
-				var mm := MultiMesh.new()
-				mm.transform_format = MultiMesh.TRANSFORM_3D
-				mm.use_colors = true
-				mm.mesh = source["mesh"]
-				mm.instance_count = xforms.size()
-				for i in xforms.size():
-					mm.set_instance_transform(i, xforms[i])
-					mm.set_instance_color(i, colors[i])
-				if id in SOLID_CLUTTER:  # a log or a stump is in the way, like a rock
-					_solid_clutter(id, source["mesh"] as Mesh, xforms)
-				var mmi := MultiMeshInstance3D.new()
-				mmi.multimesh = mm
-				mmi.material_override = source["material"]
-				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if spec.get("shadow", false) else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				mmi.visibility_range_end = float(spec.get("range", 60.0))
-				mmi.visibility_range_end_margin = 10.0
-				mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-				add_child(mmi)
+		var patches := FastNoiseLite.new()
+		patches.seed = patches_seed
+		patches.frequency = 0.045
+		_clutter_types.append({"id": id, "spec": spec, "source": source, "patches": patches, "range": float(spec.get("range", 60.0))})
+
+
+## Clutter is built a chunk at a time round the camera, each type out to its own
+## view range, and taken down again past it: a big zone costs what you can see,
+## not its whole ground. The first frame builds everything in view at once;
+## after that a few milliseconds a frame (CLUTTER_BUDGET_USEC).
+const CLUTTER_BUDGET_USEC := 3000
+var _clutter_types: Array = []  # [{id, spec, source, patches, range}]
+var _clutter_built: Dictionary = {}  # Vector3i(type, cx, cz) -> [Node...]
+var _clutter_pending: Array[Vector3i] = []  # nearest first
+var _clutter_seen_at := Vector3.INF  # where the camera was when the pending list was made
+var _clutter_first := true
+
+
+func _process(_delta: float) -> void:
+	if _clutter_types.is_empty():
+		return
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var at := cam.global_position
+	if _clutter_seen_at == Vector3.INF or Vector2(at.x, at.z).distance_to(Vector2(_clutter_seen_at.x, _clutter_seen_at.z)) > 8.0:
+		_clutter_seen_at = at
+		_plan_clutter(at)
+	var started := Time.get_ticks_usec()
+	while not _clutter_pending.is_empty() and (_clutter_first or Time.get_ticks_usec() - started < CLUTTER_BUDGET_USEC):
+		var key: Vector3i = _clutter_pending.pop_front()
+		if not _clutter_built.has(key):
+			_clutter_built[key] = _build_clutter_chunk(key)
+	_clutter_first = false
+
+
+## Which chunks each type needs now (nearest first), and the ones left behind taken down.
+func _plan_clutter(at: Vector3) -> void:
+	var here := Vector2(at.x, at.z)
+	var chunks := ceili(size / CLUTTER_CHUNK)
+	var want := {}
+	var pending: Array = []
+	for t in _clutter_types.size():
+		var reach: float = _clutter_types[t]["range"] + CLUTTER_CHUNK * 0.75
+		var lo := Vector2i(clampi(floori((here.x - reach + half) / CLUTTER_CHUNK), 0, chunks - 1), clampi(floori((here.y - reach + half) / CLUTTER_CHUNK), 0, chunks - 1))
+		var hi := Vector2i(clampi(floori((here.x + reach + half) / CLUTTER_CHUNK), 0, chunks - 1), clampi(floori((here.y + reach + half) / CLUTTER_CHUNK), 0, chunks - 1))
+		for cx in range(lo.x, hi.x + 1):
+			for cz in range(lo.y, hi.y + 1):
+				var d := here.distance_to(Vector2(-half + (cx + 0.5) * CLUTTER_CHUNK, -half + (cz + 0.5) * CLUTTER_CHUNK))
+				if d < reach:
+					var key := Vector3i(t, cx, cz)
+					want[key] = true
+					if not _clutter_built.has(key):
+						pending.append([d, key])
+	pending.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+	_clutter_pending.clear()
+	for e: Array in pending:
+		_clutter_pending.append(e[1])
+	for key: Vector3i in _clutter_built.keys():
+		var reach: float = _clutter_types[key.x]["range"] + CLUTTER_CHUNK * 2.0
+		if not want.has(key) and here.distance_to(Vector2(-half + (key.y + 0.5) * CLUTTER_CHUNK, -half + (key.z + 0.5) * CLUTTER_CHUNK)) > reach:
+			for n: Node in _clutter_built[key]:
+				n.queue_free()
+			_clutter_built.erase(key)
+
+
+## One type's clutter in one chunk, the same every time it's built (its own seed).
+func _build_clutter_chunk(key: Vector3i) -> Array:
+	var t: Dictionary = _clutter_types[key.x]
+	var spec: Dictionary = t["spec"]
+	var id: String = t["id"]
+	var source: Dictionary = t["source"]
+	var patches: FastNoiseLite = t["patches"]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([int(data.get("seed", 1)), key.x, key.y, key.z])
+	var density := float(spec.get("density", 0.1))
+	var patch := float(spec.get("patch", 0.5))
+	var city := float(spec.get("city", 0.0))
+	var by_ground := str(spec.get("tint", "")) == "ground"
+	var scale_range: Array = spec.get("scale", [0.8, 1.2])
+	var x0 := -half + key.y * CLUTTER_CHUNK
+	var z0 := -half + key.z * CLUTTER_CHUNK
+	var xforms: Array[Transform3D] = []
+	var colors: Array[Color] = []
+	var tries := int(density * CLUTTER_CHUNK * CLUTTER_CHUNK) + (1 if rng.randf() < fmod(density * CLUTTER_CHUNK * CLUTTER_CHUNK, 1.0) else 0)
+	for k in tries:
+		var x := x0 + rng.randf() * CLUTTER_CHUNK
+		var z := z0 + rng.randf() * CLUTTER_CHUNK
+		var keep := lerpf(1.0, smoothstep(-0.15, 0.35, patches.get_noise_2d(x, z)) * 1.6, patch)
+		if Vector2(x, z).length() < _clear_radius:
+			keep *= city
+		if rng.randf() >= keep or not _clutter_spot_ok(x, z):
+			continue
+		var h := height_at(x, z)
+		var s := rng.randf_range(float(scale_range[0]), float(scale_range[1]))
+		var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s)
+		xforms.append(Transform3D(basis, Vector3(x, h - 0.02, z)))
+		if by_ground:
+			var g := _ground_color(x, z, h)
+			colors.append(Color(g.r * 1.45, g.g * 1.4, g.b * 1.3) * rng.randf_range(0.9, 1.1))
+		else:
+			colors.append(Color.WHITE * rng.randf_range(0.88, 1.08))
+	if xforms.is_empty():
+		return []
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	mm.mesh = source["mesh"]
+	mm.instance_count = xforms.size()
+	for i in xforms.size():
+		mm.set_instance_transform(i, xforms[i])
+		mm.set_instance_color(i, colors[i])
+	var made: Array = []
+	if id in SOLID_CLUTTER:  # a log or a stump is in the way, like a rock
+		made.append(_solid_clutter(id, source["mesh"] as Mesh, xforms))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.material_override = source["material"]
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if spec.get("shadow", false) else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mmi.visibility_range_end = t["range"]
+	mmi.visibility_range_end_margin = 10.0
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	add_child(mmi)
+	made.append(mmi)
+	return made
 
 
 ## Clutter you can't walk through: fallen logs and stumps. Grass and flowers
@@ -2549,7 +2618,7 @@ func _build_clutter() -> void:
 const SOLID_CLUTTER := ["log_fallen", "stump", "charred_log"]
 
 
-func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:
+func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> StaticBody3D:
 	var box := mesh.get_aabb()
 	var body := StaticBody3D.new()
 	body.set_meta("clutter", id)
@@ -2565,6 +2634,7 @@ func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:
 		cs.transform = Transform3D(turn, xf.origin + turn * (box.get_center() * s))
 		body.add_child(cs)
 	add_child(body)
+	return body
 
 
 ## The mesh and a wind-aware material for one clutter prop.
