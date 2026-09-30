@@ -226,6 +226,7 @@
     "ac": 11,
     "agi": 7,
     "str": 6,
+    "hp": 15,
     "value": 18000,
     "rec_level": 41,
     "wear": "rope_belt"

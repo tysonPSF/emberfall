@@ -900,9 +900,281 @@ def stonesail(z):
     return L, N, S, [camp] + huts
 
 
+# ================================================================ batch 4: Hollow Air, Fogfall, the Unlit, Lastwalk, High Terrace
+
+def _named_lines(t, rr, rd, nr, nd, nw):
+    t.update({"rep_ready": rr, "rep_done": rd, "n_ready": nr, "n_done": nd, "n_reward": nw})
+    return t
+
+
+def hollow_air(z):
+    F = "galehold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 2, 230, 1, "ha_skyrunner_odile", "Skyrunner Odile", "Driftwatch", "ranger_class",
+        "The Highwatch, {name}: Driftwatch's fire under the cloud hall. Imani's work, Kael's, Benedikt's, the Bosun's, hand it in here. And ask me about the [fallen isle].",
+        "ha_sutler_mato", "Sutler Mato", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Driftwatch sentinel", "Driftwatch", ["tempest_mote_q", "hollow_winds_eye_q", "serpent_plume_q", "coilclouds_fang_q", "cloudstone_q",
+        "hauvars_mist_crown_q", "skyship_sailcloth_q", "mirelas_spyglass_q"], {}, gender="female")
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "ha", "a Driftwatch sentinel", "Driftwatch", [(0, 400, 1), (1, 250, -1)])
+    L += hL
+    N += hN
+    dia = place(z, F, {"at": [220, -250], "giver": "ha_skyrunner_odile",
+        "props": [("fallen_isle", 0, 0, 30, "box"), ("rope_anchor", 18, 12, 0, "box"), ("kite_pole", -16, 14, 0, "box")],
+        "mob": {"id": "ha_cloud_ray", "name": "a cloud ray", "base": "sky_serpent", "level": (40, 42), "model": "sky_ray",
+                "drop": ("ha_ray_barb", "Cloud Ray Tail-Barb", 30, "serpent_scale"), "extra": {"verb": ["lash", "lashes"]}},
+        "named": {"id": "ha_old_stormbarb", "name": "Old Stormbarb", "base": "sky_serpent", "level": (44, 44), "model": "great_sky_ray",
+                  "trophy": ("ha_stormbarbs_spine", "Old Stormbarb's Spine", "wader_plume"), "extra": {"verb": ["lash", "lashes"]}},
+        "reward": ("ha_highwatch_bracer", {"name": "Highwatch Bracer", "slot": "arms", "ac": 16, "sta": 7, "agi": 6, "hp": 65, "value": 30000, "rec_level": 43,
+                   "no_drop": True, "lore": True, "wear": "leather_sleeves", "icon": "tempest_bracer"}),
+        "keywords": ("rays", "stormbarb"), "xp": (11700, 1300, 26000, 3120), "faction": {F: 8},
+        "text": _named_lines(_t("Cloud Ray Barbs", "cloud ray tail-barbs", "Old Stormbarb's spine",
+                   "Cloud rays feed round the isle that fell, north-east. Four of their tail-barbs and I'll pay, every time: Galehold tips its harpoons with them.",
+                   "Old Stormbarb, the oldest ray over the isle, grey as a thundercloud. Bring me its spine."),
+                   "Barbs. Careful where you put them.", "Four rays fewer in the sky.", "The spine! It's longer than I am.", "The sky over the isle is ours.",
+                   "A Highwatch bracer. Keeps the wind off your sword arm.")}, L, N, S)
+    bw.NPCS["ha_skyrunner_odile"]["dialogue"].update(dia)
+    bw.NPCS["ha_skyrunner_odile"]["dialogue"]["fallen isle"] = "North-east, an isle that lost its tether and came down. The [rays] feed round it, and [Stormbarb] is the oldest of them."
+    kw = [-250, 230]
+    sunniva = camp_npc("ha_kitewright_sunniva", "Kitewright Sunniva", F, "mage", {
+        "hail": "My glider, {name}, or what's left of it. The [sprites] tore it down, and their [Gustmother] with them.",
+        "unknown": "I build kites, {name}. Tarrow flies them."}, "Kitewright", [kw[0] + 60, kw[1] - 50], kw, L, N, gender="female")
+    dia = place(z, F, {"at": kw, "giver": sunniva,
+        "props": [("kite_glider", 0, 0, 40, "box"), ("kite_glider", 14, 12, 200, "box"), ("kite_pole", -14, -10, 0, "box")],
+        "mob": {"id": "ha_gale_sprite", "name": "a gale sprite", "base": "tempest_elemental", "level": (39, 41), "model": "gale_spirit",
+                "drop": ("ha_sprite_ribbon", "Sprite-Silk Ribbon", 30, "moonsilk_sash"), "extra": {"verb": ["buffet", "buffets"], "scale": 0.8}},
+        "named": {"id": "ha_gustmother", "name": "the Gustmother", "base": "tempest_elemental", "level": (44, 44), "model": "gale_spirit",
+                  "trophy": ("ha_gustmothers_breath", "The Gustmother's Breath", "tempest_mote"), "extra": {"verb": ["buffet", "buffets"], "scale": 1.7}},
+        "reward": ("ha_kitewrights_sash", {"name": "Kitewright's Sash", "slot": "waist", "ac": 12, "agi": 7, "int": 4, "wis": 4, "hp": 30, "mana": 30, "value": 30000,
+                   "rec_level": 43, "no_drop": True, "lore": True, "icon": "plumed_belt"}),
+        "keywords": ("sprites", "gustmother"), "xp": (11700, 1300, 26000, 3120), "faction": {F: 8},
+        "text": _named_lines(_t("Sprite-Silk Ribbons", "sprite-silk ribbons", "the Gustmother's breath",
+                   "The sprites weave ribbons of wind and wear them. Four of the ribbons and I'll pay, again and again: they make the best kite-tails.",
+                   "The Gustmother is the wind the sprites come from. Catch her breath in a jar and bring it to me."),
+                   "Ribbons! Look how they flutter with no wind.", "Four more kite-tails.", "Her breath. The jar's straining.", "I can rebuild in peace.",
+                   "My sash. The wind likes whoever wears it.")}, L, N, S)
+    bw.NPCS[sunniva]["dialogue"].update(dia)
+    L.append(lm("watchtower", [200, 230], face=[120, 190]))
+    return L, N, S, [camp] + huts
+
+
+def fogfall(z):
+    F = "barrowhold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 1, 384, -1, "ff_lanternrunner_quill", "Lanternrunner Quill", "Lanternwatch", "ranger_class",
+        "The Crossroads Lantern, {name}: as far into the fog as the Lanternwatch keeps a flame. Evander's work, Hilde's, Osric's, Cassia's, hand it in here. And ask me about the [crypt].",
+        "ff_sutler_greer", "Sutler Greer", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Barrowhold lantern-warden", "Lanternwatch", ["tarnished_court_silver_q", "ismays_mourning_veil_q", "gargoyle_stone_q", "grimwatchs_stone_heart_q",
+        "fog_hound_pelt_q", "whitemaws_collar_q", "stolen_grave_goods_q", "crowes_black_lantern_q"], {})
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "ff", "a Barrowhold lantern-warden", "Lanternwatch", [(1, 150, 1), (1, 620, -1), (0, 200, 1)])
+    L += hL
+    N += hN
+    cr = [-250, -250]
+    dia = place(z, F, {"at": cr, "giver": "ff_lanternrunner_quill",
+        "props": [("tombstone_cluster", 0, 0, 0, "box"), ("tombstone_cluster", 16, 12, 90, "box"), ("fog_lantern", -12, 10, 0, "box"), ("fog_ruin_wall", 14, -16, 30, "mesh")],
+        "mob": {"id": "ff_fog_wraith", "name": "a fog wraith", "base": "fog_courtier", "level": (41, 43), "model": "wraith",
+                "drop": ("ff_shroud_scrap", "Wraith-Shroud Scrap", 34, "sedge_charm"), "extra": {"verb": ["claw", "claws"]}},
+        "named": {"id": "ff_veiled_chaplain", "name": "the Veiled Chaplain", "base": "fog_courtier", "level": (44, 44), "model": "mummy_priest",
+                  "trophy": ("ff_chaplains_psalter", "The Veiled Chaplain's Psalter", "blackwaters_ledger"), "extra": {"verb": ["strike", "strikes"]}},
+        "reward": ("ff_lanternrunner_cloak", {"name": "Lanternrunner's Cloak", "slot": "arms", "ac": 16, "sta": 7, "wis": 5, "int": 5, "hp": 60, "value": 32000, "rec_level": 43,
+                   "no_drop": True, "lore": True, "wear": "leather_sleeves", "icon": "foghound_cloak"}),
+        "keywords": ("wraiths", "chaplain"), "xp": (15300, 1700, 34000, 4080), "faction": {F: 8},
+        "text": _named_lines(_t("Wraith-Shroud Scraps", "wraith-shroud scraps", "the Veiled Chaplain's psalter",
+                   "The crypt north-west has no lanterns left, and the wraiths walk out of it. Four scraps of their shrouds and I'll pay, every time.",
+                   "The Veiled Chaplain buried Ysmoor's dead, and reads over them still. Bring me his psalter."),
+                   "Scraps. They weigh nothing.", "Four wraiths gone back into the fog.", "His psalter. The last page is blank.", "The crypt's dark and quiet.",
+                   "A lanternrunner's cloak. The fog slides off it.")}, L, N, S)
+    bw.NPCS["ff_lanternrunner_quill"]["dialogue"].update(dia)
+    bw.NPCS["ff_lanternrunner_quill"]["dialogue"]["crypt"] = "North-west, Ysmoor's old crypt, the lanterns all out. [Wraiths] come out of it, and the [Chaplain] who kept it."
+    qy = [280, 40]
+    bertil = camp_npc("ff_quarryman_bertil", "Quarryman Bertil", F, "barbarian", {
+        "hail": "Ysmoor was built from this quarry, {name}, and the stone doesn't want to be quarried any more. [Rubble] gets up and walks. And [Old Cairnback].",
+        "unknown": "I cut stone. Hilde sets it."}, "Quarryman", [qy[0] - 60, qy[1] + 50], qy, L, N, weapon="axe_1handed")
+    dia = place(z, F, {"at": qy, "giver": bertil,
+        "props": [("dig_pit", 0, 0, 0, "none"), ("dig_pit", 16, 12, 90, "none"), ("rubble_large", -14, -12, 30, "box"), ("fog_ruin_wall", 18, -16, 120, "mesh")],
+        "mob": {"id": "ff_rubble_golem", "name": "a rubble golem", "base": "fog_gargoyle", "level": (41, 43), "model": "earth_elemental",
+                "drop": ("ff_fogstone_chip", "Fogstone Chip", 34, "rune_shard"), "extra": {"verb": ["crush", "crushes"]}},
+        "named": {"id": "ff_old_cairnback", "name": "Old Cairnback", "base": "fog_gargoyle", "level": (44, 44), "model": "earth_elemental",
+                  "trophy": ("ff_cairnbacks_keystone", "Old Cairnback's Keystone", "rune_shard"), "extra": {"verb": ["crush", "crushes"], "scale": 1.8}},
+        "reward": ("ff_quarrymans_girdle", {"name": "Quarryman's Girdle", "slot": "waist", "ac": 12, "str": 7, "sta": 6, "hp": 40, "value": 32000, "rec_level": 43,
+                   "no_drop": True, "lore": True, "icon": "robbers_sash"}),
+        "keywords": ("rubble", "cairnback"), "xp": (15300, 1700, 34000, 4080), "faction": {F: 8},
+        "text": _named_lines(_t("Fogstone Chips", "fogstone chips", "Old Cairnback's keystone",
+                   "Rubble that walks, in my quarry. Four chips of it and I'll pay, again and again: Hilde needs the stone.",
+                   "Old Cairnback is the old quarry face itself, come loose. Bring me the keystone out of him."),
+                   "Chips! Good stone, this.", "Four less rubble walking.", "The keystone. It's cracked right through.", "I can cut again tomorrow.",
+                   "My girdle. It's held up under a lot of stone.")}, L, N, S)
+    bw.NPCS[bertil]["dialogue"].update(dia)
+    L += [dict(bw.prop("fog_lantern", [-200, 250], collide="box"), **TAG)]
+    L.append(lm("watchtower", [-180, 240], face=[-100, 200]))
+    return L, N, S, [camp] + huts
+
+
+def the_unlit(z):
+    F = "barrowhold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 0, 330, 1, "un_lampbearer_ines", "Lampbearer Ines", "Lampward", "ranger_class",
+        "The Midnight Lamp, {name}: the Lampward's fire in the middle of the dark. Solenne's work, Kwame's, Yuna's, Aurelio's, hand it in here. And ask me about the [folly].",
+        "un_sutler_corwen", "Sutler Corwen", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Lampward sentinel", "Lampward", ["shade_essence_q", "nameless_echo_q", "shadowhide_q", "starveils_eye_q", "luminous_dust_q",
+        "moon_moths_antenna_q", "morvaine_crest_q", "countess_locket_q"], {}, gender="female")
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "un", "a Lampward sentinel", "Lampward", [(0, 200, -1), (0, 620, 1), (1, 200, 1)])
+    L += hL
+    N += hN
+    fo = [300, 20]
+    dia = place(z, F, {"at": fo, "giver": "un_lampbearer_ines",
+        "props": [("iron_fence", 0, -14, 0, "box"), ("iron_fence", 14, 0, 90, "box"), ("iron_fence", -14, 0, 90, "box"), ("lampward_lamp", 12, 14, 0, "box")],
+        "mob": {"id": "un_morvaine_hound", "name": "a Morvaine hound", "base": "night_stalker", "level": (44, 46), "model": "unlit_hound",
+                "drop": ("un_collar_stud", "Silver Collar-Stud", 40, "tarnished_ring"), "extra": {"verb": ["bite", "bites"], "faction": "house_morvaine"}},
+        "named": {"id": "un_blackfang", "name": "Blackfang, the Countess's Pet", "base": "night_stalker", "level": (48, 48), "model": "unlit_hound",
+                  "trophy": ("un_blackfangs_collar", "Blackfang's Jeweled Collar", "morvaine_signet_ring"), "extra": {"verb": ["bite", "bites"], "faction": "house_morvaine", "scale": 1.6}},
+        "reward": ("un_lampbearers_gloves", {"name": "Lampbearer's Gloves", "slot": "hands", "ac": 16, "agi": 8, "str": 6, "hp": 60, "value": 38000, "rec_level": 47,
+                   "no_drop": True, "lore": True, "wear": "leather_gloves", "icon": "shade_silk_gloves"}),
+        "keywords": ("hounds", "blackfang"), "xp": (18900, 2100, 42000, 5040), "faction": {F: 8},
+        "text": _named_lines(_t("Silver Collar-Studs", "silver collar-studs", "Blackfang's collar",
+                   "The Countess keeps her hounds at her summerhouse, east, behind the iron fence: Morvaine's Folly. Four of their collar-studs and I'll pay, every time.",
+                   "Blackfang, her favorite. Bring me its collar, and she'll know who took it."),
+                   "Studs. Real silver, too.", "Four hounds that won't bay.", "The collar! She'll be furious.", "The Folly's empty now.",
+                   "A lampbearer's gloves. The dark can't get a grip on you.")}, L, N, S)
+    bw.NPCS["un_lampbearer_ines"]["dialogue"].update(dia)
+    bw.NPCS["un_lampbearer_ines"]["dialogue"]["folly"] = "East, the Countess's summerhouse behind an iron fence: Morvaine's Folly. Her [hounds] run there, and her pet, [Blackfang]."
+    mw = [-300, 0]
+    oriel = camp_npc("un_wellwarden_oriel", "Well-Warden Oriel", F, "mage", {
+        "hail": "This well held the moon, {name}, before the moon went out. Now [wisps] rise out of it, and the [Pale Keeper].",
+        "unknown": "I keep the well. Solenne keeps the lamps."}, "Well-Warden", [mw[0] + 60, mw[1] + 50], mw, L, N)
+    dia = place(z, F, {"at": mw, "giver": oriel,
+        "props": [("moon_well", 0, 0, 0, "box"), ("shade_obelisk", 18, -12, 0, "box"), ("lampward_lamp", -14, 12, 0, "box")],
+        "mob": {"id": "un_well_wisp", "name": "a well-wisp", "base": "shade", "level": (44, 46), "model": "lantern_wisp",
+                "drop": ("un_moonwater", "Drop of Moonwater", 40, "vial_of_water"), "extra": {"verb": ["sear", "sears"]}},
+        "named": {"id": "un_pale_keeper", "name": "the Pale Keeper", "base": "shade", "level": (48, 48), "model": "wraith",
+                  "trophy": ("un_pale_keepers_lantern", "The Pale Keeper's Lantern", "echo_of_the_nameless"), "extra": {"verb": ["strike", "strikes"], "scale": 1.4}},
+        "reward": ("un_wellwardens_sash", {"name": "Well-Warden's Sash", "slot": "waist", "ac": 13, "int": 8, "wis": 8, "mana": 75, "hp": 30, "value": 38000, "rec_level": 47,
+                   "no_drop": True, "lore": True, "icon": "moonsilk_sash"}),
+        "keywords": ("wisps", "pale keeper"), "xp": (18900, 2100, 42000, 5040), "faction": {F: 8},
+        "text": _named_lines(_t("Drops of Moonwater", "drops of moonwater", "the Pale Keeper's lantern",
+                   "The wisps carry the last of the moon's water. Four drops and I'll pay you, as often as you bring them.",
+                   "The Pale Keeper was the well's first warden. Bring me his lantern, and the well will sleep."),
+                   "Moonwater. It glows in the jar.", "Four fewer wisps.", "His lantern. It's gone cold.", "The well is only a well again.",
+                   "My sash. It holds a little of the moon.")}, L, N, S)
+    bw.NPCS[oriel]["dialogue"].update(dia)
+    L.append(lm("watchtower", [-150, 250], face=[-80, 200]))
+    return L, N, S, [camp] + huts
+
+
+def lastwalk(z):
+    F = "barrowhold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "lw_vigilrunner_tamsin", "Vigilrunner Tamsin", "Pilgrim's Vigil", "ranger_class",
+        "The Last Fire, {name}: the Vigil's camp under the Marshal's hill. Mateo's work, Freydis's, Kanoa's, Wilhelmina's, hand it in here. And ask me about the [blade].",
+        "lw_sutler_ambrose", "Sutler Ambrose", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Vigil warden", "Pilgrim's Vigil", ["godwar_insignia_q", "marshals_broken_standard_q", "petrified_shard_q", "champions_stone_crest_q",
+        "divine_bronze_q", "godforged_core_q", "stolen_relic_q", "oszkars_relic_crown_q"], {}, gender="female", at=[-60, -40], face=[0, 0])
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "lw", "a Vigil warden", "Pilgrim's Vigil", [(0, 180, 1), (1, 200, -1)])
+    L += hL
+    N += hN
+    bl = [250, -260]
+    dia = place(z, F, {"at": bl, "giver": "lw_vigilrunner_tamsin",
+        "props": [("shattered_divine_blade", 0, 0, 30, "mesh"), ("war_crater", 16, 14, 0, "none"), ("divine_shield_fragment", -14, 12, 60, "box")],
+        "mob": {"id": "lw_blade_sentinel", "name": "a blade-shard sentinel", "base": "divine_construct", "level": (47, 49), "model": "sky_guardian",
+                "drop": ("lw_divine_steel", "Fleck of Divine Steel", 44, "divine_bronze"), "extra": {"verb": ["cut", "cuts"]}},
+        "named": {"id": "lw_blades_warden", "name": "the Blade's Warden", "base": "divine_construct", "level": (50, 50), "model": "sky_guardian",
+                  "trophy": ("lw_wardens_hilt_gem", "The Blade's Warden's Hilt-Gem", "godforged_heart_amulet"), "extra": {"verb": ["cut", "cuts"], "scale": 1.5}},
+        "reward": ("lw_last_fire_pauldrons", {"name": "Last Fire Pauldrons", "slot": "arms", "ac": 22, "str": 8, "sta": 8, "hp": 80, "value": 44000, "rec_level": 49,
+                   "no_drop": True, "lore": True, "wear": "plate_vambraces", "icon": "godwar_pauldrons", "classes": ["warrior", "cleric"]}),
+        "keywords": ("sentinels", "warden"), "xp": (21600, 2400, 48000, 5760), "faction": {F: 8},
+        "text": _named_lines(_t("Flecks of Divine Steel", "flecks of divine steel", "the Blade's Warden's hilt-gem",
+                   "North-east, a god's sword lies broken in the ground, and its shards stand up and guard it. Four flecks of the steel and I'll pay, every time.",
+                   "The Blade's Warden guards the hilt. Bring me the gem out of it."),
+                   "Flecks. They hum.", "Four sentinels down.", "The hilt-gem. Still warm from the war.", "Let the blade rest.",
+                   "Pauldrons from the Vigil's armory. The last fire's colors.")}, L, N, S)
+    bw.NPCS["lw_vigilrunner_tamsin"]["dialogue"].update(dia)
+    bw.NPCS["lw_vigilrunner_tamsin"]["dialogue"]["blade"] = "North-east, where a god's sword broke. Its shards stand guard: [sentinels], and the [Warden] at the hilt."
+    dg = [250, 230]
+    ingrith = camp_npc("lw_excavator_ingrith", "Excavator Ingrith", F, "barbarian", {
+        "hail": "The dig's mine, {name}, if I could get at it. The war-[hounds] of the last charge are still buried here, and they don't like being dug up. [Ashfang] least of all.",
+        "unknown": "I dig. Wilhelmina keeps what I find."}, "Excavator", [dg[0] - 60, dg[1] - 50], dg, L, N, weapon="axe_1handed", gender="female")
+    dia = place(z, F, {"at": dg, "giver": ingrith,
+        "props": [("relic_cart", 0, 0, 30, "box"), ("dig_pit", 16, 12, 0, "none") if False else ("war_crater", 16, 12, 0, "none"), ("godwar_banner", -14, 12, 0, "box")],
+        "mob": {"id": "lw_godwar_hound", "name": "a godwar hound", "base": "relic_scavenger", "level": (46, 48), "model": "fog_hound",
+                "drop": ("lw_hound_bone", "Godwar Hound Bone", 44, "bone_charm"), "extra": {"verb": ["bite", "bites"], "faction": "godwar_dead", "color": "#8a8478"}},
+        "named": {"id": "lw_ashfang", "name": "Ashfang, Hound of the Last Charge", "base": "relic_scavenger", "level": (50, 50), "model": "fog_hound",
+                  "trophy": ("lw_ashfangs_collar", "Ashfang's War-Collar", "tarnished_ring"), "extra": {"verb": ["bite", "bites"], "faction": "godwar_dead", "scale": 1.6}},
+        "reward": ("lw_excavators_ring", {"name": "Excavator's Ring", "slot": "ring", "ac": 9, "sta": 8, "agi": 6, "wis": 5, "hp": 70, "value": 44000, "rec_level": 49,
+                   "no_drop": True, "lore": True, "icon": "divine_bronze_ring"}),
+        "keywords": ("hounds", "ashfang"), "xp": (21600, 2400, 48000, 5760), "faction": {F: 8},
+        "text": _named_lines(_t("Godwar Hound Bones", "godwar hound bones", "Ashfang's war-collar",
+                   "The hounds of the last charge, dug up and walking. Four of their bones and I'll pay, as often as you bring them.",
+                   "Ashfang led the charge. Bring me the war-collar off him."),
+                   "Bones. Old as the war.", "Four fewer at my dig.", "His collar. Look at the work in it.", "I can dig in peace.",
+                   "The first thing I ever dug up here. It was lucky for me.")}, L, N, S)
+    bw.NPCS[ingrith]["dialogue"].update(dia)
+    L += [dict(bw.prop("petrified_giant", [-250, 40], collide="mesh", yaw=80), **TAG)]
+    return L, N, S, [camp] + huts
+
+
+def high_terrace(z):
+    F = "dawn_pilgrims"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 0, 470, -1, "ht_pilgrim_lobsang", "Pilgrim-Guide Lobsang", "Dawn Pilgrims", "ranger_class",
+        "The High Shelter, {name}: the pilgrims' last rest before the monastery. Brother Tenzin's work and the Tea-Mother's, you can hand it in here. And ask me about the [stupa].",
+        "ht_sutler_dechen", "Sutler Dechen", ["crude_arrow", "iron_tipped_arrow", "sling_stone", "loaf_of_bread", "terrace_tea", "water_flask"],
+        "a Terrace Warden", "Dawn Pilgrims", ["tenzins_beads", "the_abbots_seal", "the_colossus_heart", "pemas_talons", "skyrends_plume"], {})
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "ht", "a Terrace Warden", "Dawn Pilgrims", [(1, 290, 1), (2, 200, -1)])
+    L += hL
+    N += hN
+    st = [-280, 110]
+    dia = place(z, F, {"at": st, "giver": "ht_pilgrim_lobsang",
+        "props": [("stupa", 0, 0, 0, "box"), ("prayer_wheel", 14, 10, 0, "box"), ("prayer_flags", -12, 12, 0, "none"), ("broken_pillar", 16, -14, 60, "mesh")],
+        "mob": {"id": "ht_forsaken_pilgrim", "name": "a forsaken pilgrim", "base": "fallen_monk", "level": (19, 21), "model": "hungry_ghost",
+                "drop": ("ht_prayer_scrap", "Pilgrim's Prayer Scrap", 8, "sunken_charm"), "extra": {"verb": ["claw", "claws"], "faction": "undead"}},
+        "named": {"id": "ht_unshriven", "name": "the Unshriven", "base": "fallen_monk", "level": (23, 23), "model": "hungry_ghost",
+                  "trophy": ("ht_unshrivens_bell", "The Unshriven's Prayer-Bell", "bone_charm"), "extra": {"verb": ["claw", "claws"], "faction": "undead", "scale": 1.4}},
+        "reward": ("ht_high_shelter_wraps", {"name": "High Shelter Wraps", "slot": "hands", "ac": 9, "agi": 4, "wis": 4, "hp": 25, "value": 5800, "rec_level": 22,
+                   "no_drop": True, "lore": True, "wear": "leather_gloves", "icon": "monks_wraps"}),
+        "keywords": ("pilgrims", "unshriven"), "xp": (2200, 300, 5200, 700), "faction": {F: 8},
+        "text": _named_lines(_t("Pilgrims' Prayer Scraps", "pilgrims' prayer scraps", "the Unshriven's prayer-bell",
+                   "West, a stupa pilgrims died at in the snow, before they reached the monastery. They haunt it still. Four of their prayers and I'll pay, every time.",
+                   "The Unshriven led them. He rings his bell for a monastery that never answers. Bring it to me."),
+                   "Prayers. I'll say them for them.", "Four pilgrims at rest.", "His bell. It's quiet at last.", "The stupa can be a shrine again.",
+                   "Wraps the pilgrims wear for the climb. Warm hands, steady blade.")}, L, N, S)
+    bw.NPCS["ht_pilgrim_lobsang"]["dialogue"].update(dia)
+    bw.NPCS["ht_pilgrim_lobsang"]["dialogue"]["stupa"] = "West, a stupa where pilgrims froze on the way up. They're still there: forsaken [pilgrims], and the [Unshriven] who led them."
+    sh = [300, 140]
+    dolkar = camp_npc("ht_herder_dolkar", "Herder Dolkar", F, "barbarian", {
+        "hail": "The shielings are ours in summer, {name}, but the [wolves] came down early this year. And [Old Frostjaw] with them.",
+        "unknown": "I keep yaks, {name}. The Tea-Mother keeps everything else."}, "Yak-Herder", [sh[0] - 60, sh[1] + 50], sh, L, N, weapon="axe_1handed")
+    dia = place(z, F, {"at": sh, "giver": dolkar,
+        "props": [("pilgrim_shelter", 0, 0, 30, "box"), ("pilgrim_shelter", 16, 12, 200, "box"), ("prayer_flags", -12, 10, 0, "none")],
+        "mob": {"id": "ht_high_wolf", "name": "a high wolf", "base": "snow_leopard", "level": (19, 21), "model": "wolf",
+                "drop": ("ht_high_wolf_pelt", "High Wolf Pelt", 8, "wolf_pelt"), "extra": {"verb": ["bite", "bites"], "color": "#d8d8d8"}},
+        "named": {"id": "ht_old_frostjaw", "name": "Old Frostjaw", "base": "snow_leopard", "level": (23, 23), "model": "wolf",
+                  "trophy": ("ht_frostjaws_fang", "Old Frostjaw's Fang", "wolf_pelt"), "extra": {"verb": ["bite", "bites"], "scale": 1.6, "color": "#f0f0f0"}},
+        "reward": ("ht_herders_ring", {"name": "Herder's Ring", "slot": "ring", "ac": 4, "sta": 4, "agi": 3, "hp": 25, "value": 5800, "rec_level": 22,
+                   "no_drop": True, "lore": True, "icon": "heartstone_ring"}),
+        "keywords": ("wolves", "frostjaw"), "xp": (2200, 300, 5200, 700), "faction": {F: 8},
+        "text": _named_lines(_t("High Wolf Pelts", "high wolf pelts", "Old Frostjaw's fang",
+                   "The high wolves came down to the shielings. Four pelts and I'll pay, every time: the yaks sleep easier.",
+                   "Old Frostjaw leads them, white as the snow. Bring me his fang."),
+                   "Pelts. Good and thick.", "Four fewer at my yaks.", "His fang. Longer than my thumb.", "The herd can graze again.",
+                   "My father's ring. He'd want it on a wolf-killer.")}, L, N, S)
+    bw.NPCS[dolkar]["dialogue"].update(dia)
+    L.append(lm("watchtower", [280, -250], face=[200, -200]))
+    return L, N, S, [camp] + huts
+
+
 ZONES = {"thornwood": thornwood, "the_long_grass": long_grass, "the_bleach": bleach,
          "the_burn": the_burn, "mirror_flats": mirror_flats, "ivory_field": ivory_field, "reedmere": reedmere,
-         "silted_reach": silted_reach, "blackglass": blackglass, "smokewood": smokewood, "stonesail": stonesail}
+         "silted_reach": silted_reach, "blackglass": blackglass, "smokewood": smokewood, "stonesail": stonesail,
+         "hollow_air": hollow_air, "fogfall": fogfall, "the_unlit": the_unlit, "lastwalk": lastwalk, "high_terrace": high_terrace}
 
 
 def check_spot(zid, z, edges, p, what):
@@ -914,6 +1186,9 @@ def check_spot(zid, z, edges, p, what):
     for r in z.get("rivers", []):
         if not r.get("dry") and min(math.dist(p, q) for q in bw_poly(r["points"])) < r.get("width", 10) / 2 + 12:
             probs.append("in a river")
+    for f in z.get("fields", []):
+        if math.dist(p, f["pos"]) < max(f["size"]) * 0.5 + 12:
+            probs.append("on a field")
     for lk in z.get("lakes", []):
         on_island = any(math.dist(p, i[:2]) < i[2] - 4 for i in lk.get("islands", []))
         if outline._poly_inside(p, lk["points"]) and float(lk.get("depth", 1)) > 0.5 and not on_island:

@@ -591,7 +591,10 @@
     "faction": {
       "dawn_pilgrims": 10,
       "fallen_order": -10
-    }
+    },
+    "also_taken_by": [
+      "ht_pilgrim_lobsang"
+    ]
   },
   "the_abbots_seal": {
     "name": "The Abbot's Seal",
@@ -613,7 +616,10 @@
       "dawn_pilgrims": 25,
       "lanternhold": 10,
       "fallen_order": -30
-    }
+    },
+    "also_taken_by": [
+      "ht_pilgrim_lobsang"
+    ]
   },
   "the_colossus_heart": {
     "name": "A Heart of Stone",
@@ -634,7 +640,10 @@
     "faction": {
       "dawn_pilgrims": 20,
       "lanternhold": 5
-    }
+    },
+    "also_taken_by": [
+      "ht_pilgrim_lobsang"
+    ]
   },
   "pemas_talons": {
     "name": "Talons for the Pickers",
@@ -654,7 +663,10 @@
     "faction": {
       "dawn_pilgrims": 8,
       "harpies": -10
-    }
+    },
+    "also_taken_by": [
+      "ht_pilgrim_lobsang"
+    ]
   },
   "skyrends_plume": {
     "name": "The Matriarch's Plume",
@@ -674,7 +686,10 @@
     "first_complete_text": "Your cloak, {name}.",
     "faction": {
       "dawn_pilgrims": 15
-    }
+    },
+    "also_taken_by": [
+      "ht_pilgrim_lobsang"
+    ]
   },
   "ember_sigils": {
     "name": "Sigils of the Ember",
@@ -3281,7 +3296,10 @@
     "faction": {
       "galehold": 8,
       "sky_spirits": -10
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "hollow_winds_eye_q": {
     "name": "The Hollow Wind's Eye",
@@ -3302,7 +3320,10 @@
     "faction": {
       "galehold": 30,
       "sky_spirits": -30
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "serpent_plume_q": {
     "name": "Sky Serpent Plumes",
@@ -3323,7 +3344,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "galehold": 8
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "coilclouds_fang_q": {
     "name": "Coilcloud's Fang",
@@ -3343,7 +3367,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "galehold": 30
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "cloudstone_q": {
     "name": "Cloudstones",
@@ -3365,7 +3392,10 @@
     "faction": {
       "galehold": 8,
       "cloud_giants": -10
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "hauvars_mist_crown_q": {
     "name": "Hauvar's Mist-Crown",
@@ -3386,7 +3416,10 @@
     "faction": {
       "galehold": 30,
       "cloud_giants": -30
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "skyship_sailcloth_q": {
     "name": "Scraps Of Skyship Sailcloth",
@@ -3408,7 +3441,10 @@
     "faction": {
       "galehold": 8,
       "sky_pirates": -10
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "mirelas_spyglass_q": {
     "name": "Mirela's Spyglass",
@@ -3429,7 +3465,10 @@
     "faction": {
       "galehold": 30,
       "sky_pirates": -30
-    }
+    },
+    "also_taken_by": [
+      "ha_skyrunner_odile"
+    ]
   },
   "titans_thunderstone_q": {
     "name": "Titan's Thunderstones",
@@ -3621,7 +3660,10 @@
     "faction": {
       "barrowhold": 8,
       "ysmoor_court": -10
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "ismays_mourning_veil_q": {
     "name": "Ismay's Mourning Veil",
@@ -3642,7 +3684,10 @@
     "faction": {
       "barrowhold": 30,
       "ysmoor_court": -30
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "gargoyle_stone_q": {
     "name": "Gargoyle Stones",
@@ -3664,7 +3709,10 @@
     "faction": {
       "barrowhold": 8,
       "ysmoor_stones": -10
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "grimwatchs_stone_heart_q": {
     "name": "Grimwatch's Stone Heart",
@@ -3685,7 +3733,10 @@
     "faction": {
       "barrowhold": 30,
       "ysmoor_stones": -30
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "fog_hound_pelt_q": {
     "name": "Fog-hound Pelts",
@@ -3706,7 +3757,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "barrowhold": 8
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "whitemaws_collar_q": {
     "name": "Old Whitemaw's Collar",
@@ -3726,7 +3780,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "barrowhold": 30
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "stolen_grave_goods_q": {
     "name": "Bundles Of Stolen Grave-goods",
@@ -3748,7 +3805,10 @@
     "faction": {
       "barrowhold": 8,
       "grave_robbers": -10
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "crowes_black_lantern_q": {
     "name": "Crowe's Black Lantern",
@@ -3769,7 +3829,10 @@
     "faction": {
       "barrowhold": 30,
       "grave_robbers": -30
-    }
+    },
+    "also_taken_by": [
+      "ff_lanternrunner_quill"
+    ]
   },
   "ivory_shard_q": {
     "name": "Ivory Shards",
@@ -3985,7 +4048,10 @@
     "faction": {
       "barrowhold": 8,
       "shades": -10
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "nameless_echo_q": {
     "name": "The Nameless Echo",
@@ -4006,7 +4072,10 @@
     "faction": {
       "barrowhold": 30,
       "shades": -30
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "shadowhide_q": {
     "name": "Pieces Of Shadowhide",
@@ -4027,7 +4096,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "barrowhold": 8
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "starveils_eye_q": {
     "name": "Starveil's Eye",
@@ -4047,7 +4119,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "barrowhold": 30
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "luminous_dust_q": {
     "name": "Pinches Of Luminous Dust",
@@ -4068,7 +4143,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "barrowhold": 8
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "moon_moths_antenna_q": {
     "name": "The Moon Moth's Antenna",
@@ -4088,7 +4166,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "barrowhold": 30
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "morvaine_crest_q": {
     "name": "Morvaine Crests",
@@ -4110,7 +4191,10 @@
     "faction": {
       "barrowhold": 8,
       "house_morvaine": -10
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "countess_locket_q": {
     "name": "The Countess's Locket",
@@ -4131,7 +4215,10 @@
     "faction": {
       "barrowhold": 30,
       "house_morvaine": -30
-    }
+    },
+    "also_taken_by": [
+      "un_lampbearer_ines"
+    ]
   },
   "godwar_insignia_q": {
     "name": "Godwar Insignia",
@@ -4153,7 +4240,10 @@
     "faction": {
       "barrowhold": 8,
       "godwar_dead": -10
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "marshals_broken_standard_q": {
     "name": "The Marshal's Broken Standard",
@@ -4174,7 +4264,10 @@
     "faction": {
       "barrowhold": 30,
       "godwar_dead": -30
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "petrified_shard_q": {
     "name": "Petrified Shards",
@@ -4196,7 +4289,10 @@
     "faction": {
       "barrowhold": 8,
       "godwar_dead": -10
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "champions_stone_crest_q": {
     "name": "The Champion's Stone Crest",
@@ -4217,7 +4313,10 @@
     "faction": {
       "barrowhold": 30,
       "godwar_dead": -30
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "divine_bronze_q": {
     "name": "Pieces Of Divine Bronze",
@@ -4239,7 +4338,10 @@
     "faction": {
       "barrowhold": 8,
       "divine_constructs": -10
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "godforged_core_q": {
     "name": "The Godforged Core",
@@ -4260,7 +4362,10 @@
     "faction": {
       "barrowhold": 30,
       "divine_constructs": -30
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "stolen_relic_q": {
     "name": "Stolen Relics",
@@ -4282,7 +4387,10 @@
     "faction": {
       "barrowhold": 8,
       "relic_scavengers": -10
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "oszkars_relic_crown_q": {
     "name": "Oszkar's Relic Crown",
@@ -4303,7 +4411,10 @@
     "faction": {
       "barrowhold": 30,
       "relic_scavengers": -30
-    }
+    },
+    "also_taken_by": [
+      "lw_vigilrunner_tamsin"
+    ]
   },
   "grave_gold_q": {
     "name": "Grave-gold Coins",
@@ -6175,5 +6286,395 @@
     "first_reward_item": "ss_stonereaders_torque",
     "first_complete_text": "A reader's torque. The stones speak louder to whoever wears it.",
     "start_keyword": "cairn-king"
+  },
+  "ha_cloud_ray_q": {
+    "name": "Cloud Ray Barbs",
+    "giver": "ha_skyrunner_odile",
+    "wants": {
+      "ha_ray_barb": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "accept_text": "You have taken on a task: Cloud Ray Barbs. Bring Skyrunner Odile four cloud ray tail-barbs.",
+    "ready_text": "Barbs. Careful where you put them.",
+    "complete_text": "Four rays fewer in the sky.",
+    "faction": {
+      "galehold": 8
+    },
+    "start_keyword": "rays",
+    "repeatable": true
+  },
+  "ha_old_stormbarb_q": {
+    "name": "Old Stormbarb",
+    "giver": "ha_skyrunner_odile",
+    "wants": {
+      "ha_stormbarbs_spine": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "accept_text": "You have taken on a task: Old Stormbarb. Bring Skyrunner Odile Old Stormbarb's spine.",
+    "ready_text": "The spine! It's longer than I am.",
+    "complete_text": "The sky over the isle is ours.",
+    "faction": {
+      "galehold": 24
+    },
+    "first_reward_item": "ha_highwatch_bracer",
+    "first_complete_text": "A Highwatch bracer. Keeps the wind off your sword arm.",
+    "start_keyword": "stormbarb"
+  },
+  "ha_gale_sprite_q": {
+    "name": "Sprite-Silk Ribbons",
+    "giver": "ha_kitewright_sunniva",
+    "wants": {
+      "ha_sprite_ribbon": 4
+    },
+    "reward": {
+      "xp": 11700,
+      "coin": 1300
+    },
+    "accept_text": "You have taken on a task: Sprite-Silk Ribbons. Bring Kitewright Sunniva four sprite-silk ribbons.",
+    "ready_text": "Ribbons! Look how they flutter with no wind.",
+    "complete_text": "Four more kite-tails.",
+    "faction": {
+      "galehold": 8
+    },
+    "start_keyword": "sprites",
+    "repeatable": true
+  },
+  "ha_gustmother_q": {
+    "name": "The Gustmother",
+    "giver": "ha_kitewright_sunniva",
+    "wants": {
+      "ha_gustmothers_breath": 1
+    },
+    "reward": {
+      "xp": 26000,
+      "coin": 3120
+    },
+    "accept_text": "You have taken on a task: The Gustmother. Bring Kitewright Sunniva the Gustmother's breath.",
+    "ready_text": "Her breath. The jar's straining.",
+    "complete_text": "I can rebuild in peace.",
+    "faction": {
+      "galehold": 24
+    },
+    "first_reward_item": "ha_kitewrights_sash",
+    "first_complete_text": "My sash. The wind likes whoever wears it.",
+    "start_keyword": "gustmother"
+  },
+  "ff_fog_wraith_q": {
+    "name": "Wraith-Shroud Scraps",
+    "giver": "ff_lanternrunner_quill",
+    "wants": {
+      "ff_shroud_scrap": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "accept_text": "You have taken on a task: Wraith-Shroud Scraps. Bring Lanternrunner Quill four wraith-shroud scraps.",
+    "ready_text": "Scraps. They weigh nothing.",
+    "complete_text": "Four wraiths gone back into the fog.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "wraiths",
+    "repeatable": true
+  },
+  "ff_veiled_chaplain_q": {
+    "name": "The Veiled Chaplain",
+    "giver": "ff_lanternrunner_quill",
+    "wants": {
+      "ff_chaplains_psalter": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "accept_text": "You have taken on a task: The Veiled Chaplain. Bring Lanternrunner Quill the Veiled Chaplain's psalter.",
+    "ready_text": "His psalter. The last page is blank.",
+    "complete_text": "The crypt's dark and quiet.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "ff_lanternrunner_cloak",
+    "first_complete_text": "A lanternrunner's cloak. The fog slides off it.",
+    "start_keyword": "chaplain"
+  },
+  "ff_rubble_golem_q": {
+    "name": "Fogstone Chips",
+    "giver": "ff_quarryman_bertil",
+    "wants": {
+      "ff_fogstone_chip": 4
+    },
+    "reward": {
+      "xp": 15300,
+      "coin": 1700
+    },
+    "accept_text": "You have taken on a task: Fogstone Chips. Bring Quarryman Bertil four fogstone chips.",
+    "ready_text": "Chips! Good stone, this.",
+    "complete_text": "Four less rubble walking.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "rubble",
+    "repeatable": true
+  },
+  "ff_old_cairnback_q": {
+    "name": "Old Cairnback",
+    "giver": "ff_quarryman_bertil",
+    "wants": {
+      "ff_cairnbacks_keystone": 1
+    },
+    "reward": {
+      "xp": 34000,
+      "coin": 4080
+    },
+    "accept_text": "You have taken on a task: Old Cairnback. Bring Quarryman Bertil Old Cairnback's keystone.",
+    "ready_text": "The keystone. It's cracked right through.",
+    "complete_text": "I can cut again tomorrow.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "ff_quarrymans_girdle",
+    "first_complete_text": "My girdle. It's held up under a lot of stone.",
+    "start_keyword": "cairnback"
+  },
+  "un_morvaine_hound_q": {
+    "name": "Silver Collar-Studs",
+    "giver": "un_lampbearer_ines",
+    "wants": {
+      "un_collar_stud": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "accept_text": "You have taken on a task: Silver Collar-Studs. Bring Lampbearer Ines four silver collar-studs.",
+    "ready_text": "Studs. Real silver, too.",
+    "complete_text": "Four hounds that won't bay.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "hounds",
+    "repeatable": true
+  },
+  "un_blackfang_q": {
+    "name": "Blackfang, the Countess's Pet",
+    "giver": "un_lampbearer_ines",
+    "wants": {
+      "un_blackfangs_collar": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "accept_text": "You have taken on a task: Blackfang, the Countess's Pet. Bring Lampbearer Ines Blackfang's collar.",
+    "ready_text": "The collar! She'll be furious.",
+    "complete_text": "The Folly's empty now.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "un_lampbearers_gloves",
+    "first_complete_text": "A lampbearer's gloves. The dark can't get a grip on you.",
+    "start_keyword": "blackfang"
+  },
+  "un_well_wisp_q": {
+    "name": "Drops of Moonwater",
+    "giver": "un_wellwarden_oriel",
+    "wants": {
+      "un_moonwater": 4
+    },
+    "reward": {
+      "xp": 18900,
+      "coin": 2100
+    },
+    "accept_text": "You have taken on a task: Drops of Moonwater. Bring Well-Warden Oriel four drops of moonwater.",
+    "ready_text": "Moonwater. It glows in the jar.",
+    "complete_text": "Four fewer wisps.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "wisps",
+    "repeatable": true
+  },
+  "un_pale_keeper_q": {
+    "name": "The Pale Keeper",
+    "giver": "un_wellwarden_oriel",
+    "wants": {
+      "un_pale_keepers_lantern": 1
+    },
+    "reward": {
+      "xp": 42000,
+      "coin": 5040
+    },
+    "accept_text": "You have taken on a task: The Pale Keeper. Bring Well-Warden Oriel the Pale Keeper's lantern.",
+    "ready_text": "His lantern. It's gone cold.",
+    "complete_text": "The well is only a well again.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "un_wellwardens_sash",
+    "first_complete_text": "My sash. It holds a little of the moon.",
+    "start_keyword": "pale keeper"
+  },
+  "lw_blade_sentinel_q": {
+    "name": "Flecks of Divine Steel",
+    "giver": "lw_vigilrunner_tamsin",
+    "wants": {
+      "lw_divine_steel": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "accept_text": "You have taken on a task: Flecks of Divine Steel. Bring Vigilrunner Tamsin four flecks of divine steel.",
+    "ready_text": "Flecks. They hum.",
+    "complete_text": "Four sentinels down.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "sentinels",
+    "repeatable": true
+  },
+  "lw_blades_warden_q": {
+    "name": "The Blade's Warden",
+    "giver": "lw_vigilrunner_tamsin",
+    "wants": {
+      "lw_wardens_hilt_gem": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "accept_text": "You have taken on a task: The Blade's Warden. Bring Vigilrunner Tamsin the Blade's Warden's hilt-gem.",
+    "ready_text": "The hilt-gem. Still warm from the war.",
+    "complete_text": "Let the blade rest.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "lw_last_fire_pauldrons",
+    "first_complete_text": "Pauldrons from the Vigil's armory. The last fire's colors.",
+    "start_keyword": "warden"
+  },
+  "lw_godwar_hound_q": {
+    "name": "Godwar Hound Bones",
+    "giver": "lw_excavator_ingrith",
+    "wants": {
+      "lw_hound_bone": 4
+    },
+    "reward": {
+      "xp": 21600,
+      "coin": 2400
+    },
+    "accept_text": "You have taken on a task: Godwar Hound Bones. Bring Excavator Ingrith four godwar hound bones.",
+    "ready_text": "Bones. Old as the war.",
+    "complete_text": "Four fewer at my dig.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "hounds",
+    "repeatable": true
+  },
+  "lw_ashfang_q": {
+    "name": "Ashfang, Hound of the Last Charge",
+    "giver": "lw_excavator_ingrith",
+    "wants": {
+      "lw_ashfangs_collar": 1
+    },
+    "reward": {
+      "xp": 48000,
+      "coin": 5760
+    },
+    "accept_text": "You have taken on a task: Ashfang, Hound of the Last Charge. Bring Excavator Ingrith Ashfang's war-collar.",
+    "ready_text": "His collar. Look at the work in it.",
+    "complete_text": "I can dig in peace.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "lw_excavators_ring",
+    "first_complete_text": "The first thing I ever dug up here. It was lucky for me.",
+    "start_keyword": "ashfang"
+  },
+  "ht_forsaken_pilgrim_q": {
+    "name": "Pilgrims' Prayer Scraps",
+    "giver": "ht_pilgrim_lobsang",
+    "wants": {
+      "ht_prayer_scrap": 4
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 300
+    },
+    "accept_text": "You have taken on a task: Pilgrims' Prayer Scraps. Bring Pilgrim-Guide Lobsang four pilgrims' prayer scraps.",
+    "ready_text": "Prayers. I'll say them for them.",
+    "complete_text": "Four pilgrims at rest.",
+    "faction": {
+      "dawn_pilgrims": 8
+    },
+    "start_keyword": "pilgrims",
+    "repeatable": true
+  },
+  "ht_unshriven_q": {
+    "name": "The Unshriven",
+    "giver": "ht_pilgrim_lobsang",
+    "wants": {
+      "ht_unshrivens_bell": 1
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 700
+    },
+    "accept_text": "You have taken on a task: The Unshriven. Bring Pilgrim-Guide Lobsang the Unshriven's prayer-bell.",
+    "ready_text": "His bell. It's quiet at last.",
+    "complete_text": "The stupa can be a shrine again.",
+    "faction": {
+      "dawn_pilgrims": 24
+    },
+    "first_reward_item": "ht_high_shelter_wraps",
+    "first_complete_text": "Wraps the pilgrims wear for the climb. Warm hands, steady blade.",
+    "start_keyword": "unshriven"
+  },
+  "ht_high_wolf_q": {
+    "name": "High Wolf Pelts",
+    "giver": "ht_herder_dolkar",
+    "wants": {
+      "ht_high_wolf_pelt": 4
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 300
+    },
+    "accept_text": "You have taken on a task: High Wolf Pelts. Bring Herder Dolkar four high wolf pelts.",
+    "ready_text": "Pelts. Good and thick.",
+    "complete_text": "Four fewer at my yaks.",
+    "faction": {
+      "dawn_pilgrims": 8
+    },
+    "start_keyword": "wolves",
+    "repeatable": true
+  },
+  "ht_old_frostjaw_q": {
+    "name": "Old Frostjaw",
+    "giver": "ht_herder_dolkar",
+    "wants": {
+      "ht_frostjaws_fang": 1
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 700
+    },
+    "accept_text": "You have taken on a task: Old Frostjaw. Bring Herder Dolkar Old Frostjaw's fang.",
+    "ready_text": "His fang. Longer than my thumb.",
+    "complete_text": "The herd can graze again.",
+    "faction": {
+      "dawn_pilgrims": 24
+    },
+    "first_reward_item": "ht_herders_ring",
+    "first_complete_text": "My father's ring. He'd want it on a wolf-killer.",
+    "start_keyword": "frostjaw"
   }
 }
