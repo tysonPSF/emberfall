@@ -24,6 +24,7 @@ var _detail := FastNoiseLite.new()
 var _rng := RandomNumberGenerator.new()
 var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
+var _flat_scale: Array[float] = []  # each flat spot's size (a landmark's "size": a big camp levels more ground)
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
@@ -71,6 +72,7 @@ func load_zone(id: String) -> void:
 	for lm: Dictionary in data.get("landmarks", []):
 		var spot := Vector2(lm["pos"][0], lm["pos"][1])
 		_flat_spots.append(spot)
+		_flat_scale.append(float(lm.get("size", 1.0)))
 		if lm["type"] == "pond":
 			# the landmark flattens the ground to this height; the water sits a little below it
 			var flat := _noise.get_noise_2d(spot.x, spot.y) * amp * 0.5
@@ -275,10 +277,12 @@ func height_at(x: float, z: float) -> float:
 	else:
 		h = _noise.get_noise_2d(x, z) * amp + _detail.get_noise_2d(x, z) * 0.35
 		h = lerpf(h * 0.1, h, smoothstep(flat_radius, flat_radius + 25.0, Vector2(x, z).distance_to(_bind_xz)))
-		for spot in _flat_spots:
+		for i in _flat_spots.size():
+			var spot := _flat_spots[i]
 			var d := Vector2(x, z).distance_to(spot)
-			if d < 30.0:
-				h = lerpf(_noise.get_noise_2d(spot.x, spot.y) * amp * 0.5, h, smoothstep(14.0, 30.0, d))
+			var k := _flat_scale[i]
+			if d < 30.0 * k:
+				h = lerpf(_noise.get_noise_2d(spot.x, spot.y) * amp * 0.5, h, smoothstep(14.0 * k, 30.0 * k, d))
 	for pond: Dictionary in _ponds:
 		var d := Vector2(x, z).distance_to(pond["center"])
 		var r: float = pond["radius"]
@@ -943,7 +947,7 @@ func _build_landmarks() -> void:
 			"obelisk":
 				_build_obelisk(p)
 			"camp":
-				_build_camp(p)
+				_build_camp(p, lm)
 			"ruins":
 				_build_ruins(p)
 			"outpost":
@@ -1513,27 +1517,122 @@ func _build_obelisk(p: Vector3) -> void:
 
 ## Gnoll camp: hide tents around a fire, clutter, torches, and a palisade with
 ## its gate facing the bind point.
-func _build_camp(p: Vector3) -> void:
+## A camp: "style" war (the palisade ring, the default), wagons (a circle of
+## carts), scatter (tents, no walls) or huts ("hut": its prop), "size" (1 is
+## the old 14 m ring; hostile camps are about 1.8, so their people stand
+## apart and can be pulled a few at a time: 2026-09-29).
+func _build_camp(p: Vector3, lm: Dictionary = {}) -> void:
+	var size := float(lm.get("size", 1.0))
+	match str(lm.get("style", "war")):
+		"wagons":
+			_build_wagon_camp(p, size, str(lm.get("wagon", "caravan_wagon")))
+			return
+		"scatter":
+			_build_scatter_camp(p, size, str(lm.get("tent", "scout_tent")))
+			return
+		"huts":
+			_build_hut_camp(p, size, str(lm.get("hut", "reed_hut")), str(lm.get("totem", "")))
+			return
+	_build_war_camp(p, size)
+
+
+## The camp everyone had: tents round a fire inside a palisade, banners and
+## torches at the gate; bigger camps get more tents and a second fire.
+func _build_war_camp(p: Vector3, size: float) -> void:
 	var center := Vector2(p.x, p.z)
 	var gate := center.direction_to(_bind_xz).angle()
+	var r_tent := 9.0 * size
+	var r_wall := 14.0 * size
+	var tents := 4 if size < 1.3 else 7
 	_prop("campfire", p, 0.0, 1.0, "none")
 	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 12.0, 1.2)
-	for k in 4:
-		var a := gate + PI / 4.0 + k * TAU / 4.0
-		_prop("tent", _ring(p, a, 9.0), _face_center(a))
-
-	# palisade ring, open at the gate and at a back gap
-	var segments := 22
+	for k in tents:
+		var a := gate + PI / tents + k * TAU / tents
+		if size < 1.3:  # the ordinary camp, drawn exactly as it always was (the same random numbers, so nothing after it moves)
+			_prop("tent", _ring(p, a, r_tent), _face_center(a))
+		else:
+			_prop("tent" if k % 3 != 2 else "ogre_war_camp_tent", _ring(p, a, r_tent + _rng.randf_range(-1.5, 1.5)), _face_center(a))
+	var segments := int(22 * size)
 	for k in segments:
 		var a := k * TAU / segments
-		if absf(angle_difference(a, gate)) < 0.3 or absf(angle_difference(a, gate + PI)) < 0.15:
+		if absf(angle_difference(a, gate)) < 0.3 / size or absf(angle_difference(a, gate + PI)) < 0.15 / size:
 			continue
-		_prop("palisade", _ring(p, a, 14.0), _face_center(a) + _rng.randf_range(-0.04, 0.04))
+		_prop("palisade", _ring(p, a, r_wall), _face_center(a) + _rng.randf_range(-0.04, 0.04))
 	for s: float in [-1.0, 1.0]:
-		var a := gate + s * 0.36
-		_torch(_ring(p, a, 14.2))
-		_prop("banner_pole", _ring(p, a + s * 0.08, 15.5), _face_center(a), 1.0, "none")
-		_prop("banner_brown", _ring(p, a + s * 0.08, 15.5) + Vector3(0, 0.32, 0), _face_center(a) + PI, 1.0, "none")
+		var a := gate + s * 0.36 / size
+		_torch(_ring(p, a, r_wall + 0.2))
+		_prop("banner_pole", _ring(p, a + s * 0.08 / size, r_wall + 1.5), _face_center(a), 1.0, "none")
+		_prop("banner_brown", _ring(p, a + s * 0.08 / size, r_wall + 1.5) + Vector3(0, 0.32, 0), _face_center(a) + PI, 1.0, "none")
+	if size >= 1.3:
+		var side := _ring(p, gate + PI * 0.7, r_tent * 0.55)
+		_prop("campfire", side, 0.0, 1.0, "none")
+		_light(side + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 10.0, 1.0)
+		_prop("weapon_rack", _ring(p, gate - PI * 0.6, r_tent * 0.6), _face_center(gate - PI * 0.6))
+	_build_camp_old(p, gate)
+
+
+## Wagons drawn up in a ring, nomad tents inside it, a fire in the middle,
+## the way through where the wagons part (the Salt Raiders, the brigands).
+func _build_wagon_camp(p: Vector3, size: float, wagon: String) -> void:
+	var center := Vector2(p.x, p.z)
+	var gate := center.direction_to(_bind_xz).angle()
+	var r := 13.0 * size
+	_prop("campfire", p, 0.0, 1.0, "none")
+	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 12.0, 1.2)
+	var wagons := int(9 * size)
+	for k in wagons:
+		var a := gate + (k + 0.5) * TAU / wagons
+		if absf(angle_difference(a, gate)) < 0.45 / size or absf(angle_difference(a, gate + PI * 0.9)) < 0.2 / size:
+			continue  # the way in, and a gap at the back
+		_prop(wagon, _ring(p, a, r), _face_center(a) + PI / 2.0 + _rng.randf_range(-0.2, 0.2), 1.0, "mesh")
+	for k in 3 + int(size):
+		var a := gate + PI * 0.4 + k * TAU / (3 + int(size)) + _rng.randf_range(-0.2, 0.2)
+		_prop("nomad_tent", _ring(p, a, r * _rng.randf_range(0.45, 0.65)), _face_center(a))
+	for k in 6:
+		var a := _rng.randf() * TAU
+		_prop(["crates_stacked", "barrel_large", "hay_bale", "barrel_small_stack", "box_large", "keg_decorated"][k], _ring(p, a, r * _rng.randf_range(0.7, 0.85)), _rng.randf() * TAU)
+	for s: float in [-1.0, 1.0]:
+		_torch(_ring(p, gate + s * 0.5 / size, r + 1.0))
+
+
+## Tents pitched where they fell, no wall, fires between them (cultists,
+## scouts): open to be walked into from any side.
+func _build_scatter_camp(p: Vector3, size: float, tent: String) -> void:
+	var r := 13.0 * size
+	var fires: Array[Vector3] = [p]
+	for k in 2:
+		fires.append(_ring(p, _rng.randf() * TAU, r * _rng.randf_range(0.45, 0.6)))
+	for f in fires:
+		_prop("campfire", f, 0.0, 1.0, "none")
+		_light(f + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 10.0, 1.1)
+	var tents := int(5 * size)
+	for k in tents:
+		var a := k * TAU / tents + _rng.randf_range(-0.35, 0.35)
+		var at := _ring(p, a, r * _rng.randf_range(0.55, 1.0))
+		_prop(tent if k % 2 == 0 else "tent", at, _face_center(a) + _rng.randf_range(-0.6, 0.6))
+	for k in 5:
+		var a := _rng.randf() * TAU
+		_prop(["drying_rack", "crates_stacked", "barrel_small", "banner_pole", "trunk_medium_A"][k], _ring(p, a, r * _rng.randf_range(0.3, 0.9)), _rng.randf() * TAU)
+
+
+## A cluster of huts round a totem and a fire (lizardfolk, gnolls, trolls).
+func _build_hut_camp(p: Vector3, size: float, hut: String, totem: String) -> void:
+	var r := 12.0 * size
+	_prop("campfire", p, 0.0, 1.0, "none")
+	_light(p + Vector3(0, 1.2, 0), Color(1.0, 0.55, 0.2), 12.0, 1.2)
+	if totem != "":
+		_prop(totem, _ring(p, _rng.randf() * TAU, 4.0), _rng.randf() * TAU)
+	var huts := int(4 * size)
+	for k in huts:
+		var a := k * TAU / huts + _rng.randf_range(-0.3, 0.3)
+		_prop(hut, _ring(p, a, r * _rng.randf_range(0.7, 1.0)), _face_center(a), 1.0, "mesh")
+	for k in 4:
+		var a := _rng.randf() * TAU
+		_prop(["drying_rack", "barrel_small", "crates_stacked", "box_small"][k], _ring(p, a, r * _rng.randf_range(0.35, 0.6)), _rng.randf() * TAU)
+
+
+## The war camp's table, clutter and chest (as it always had).
+func _build_camp_old(p: Vector3, gate: float) -> void:
 	for k in 3:
 		_torch(_ring(p, gate + PI / 2.0 + k * TAU / 3.0, 4.2))
 
@@ -2471,8 +2570,8 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 			return false
 	if river_distance(x, z) < 1.0 or lake_distance(x, z) < 1.0 or in_field(x, z, 1.0) or on_bare_patch(x, z):
 		return false
-	for spot in _flat_spots:
-		if p.distance_to(spot) < 12.5:
+	for i in _flat_spots.size():
+		if p.distance_to(_flat_spots[i]) < 12.5 * _flat_scale[i]:
 			return false
 	return true
 
@@ -2502,8 +2601,8 @@ func _open_spot() -> Vector2:
 				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0 or in_field(xz.x, xz.y, 4.0):
 			continue
 		var clear := true
-		for spot in _flat_spots:
-			if xz.distance_to(spot) < 18.0:
+		for i in _flat_spots.size():
+			if xz.distance_to(_flat_spots[i]) < 18.0 * _flat_scale[i]:
 				clear = false
 				break
 		if clear:
