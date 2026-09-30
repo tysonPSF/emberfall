@@ -598,5 +598,269 @@
     "no_drop": true,
     "lore": true,
     "icon": "singers_torque"
+  },
+  "ha_ray_barb": {
+    "name": "Cloud Ray Tail-Barb",
+    "value": 30,
+    "stack": 20,
+    "icon": "serpent_scale"
+  },
+  "ha_stormbarbs_spine": {
+    "name": "Old Stormbarb's Spine",
+    "value": 150,
+    "lore": true,
+    "icon": "wader_plume"
+  },
+  "ha_highwatch_bracer": {
+    "name": "Highwatch Bracer",
+    "slot": "arms",
+    "ac": 16,
+    "sta": 7,
+    "agi": 6,
+    "hp": 65,
+    "value": 30000,
+    "rec_level": 43,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves",
+    "icon": "tempest_bracer"
+  },
+  "ha_sprite_ribbon": {
+    "name": "Sprite-Silk Ribbon",
+    "value": 30,
+    "stack": 20,
+    "icon": "moonsilk_sash"
+  },
+  "ha_gustmothers_breath": {
+    "name": "The Gustmother's Breath",
+    "value": 150,
+    "lore": true,
+    "icon": "tempest_mote"
+  },
+  "ha_kitewrights_sash": {
+    "name": "Kitewright's Sash",
+    "slot": "waist",
+    "ac": 12,
+    "agi": 7,
+    "int": 4,
+    "wis": 4,
+    "hp": 30,
+    "mana": 30,
+    "value": 30000,
+    "rec_level": 43,
+    "no_drop": true,
+    "lore": true,
+    "icon": "plumed_belt"
+  },
+  "ff_shroud_scrap": {
+    "name": "Wraith-Shroud Scrap",
+    "value": 34,
+    "stack": 20,
+    "icon": "sedge_charm"
+  },
+  "ff_chaplains_psalter": {
+    "name": "The Veiled Chaplain's Psalter",
+    "value": 170,
+    "lore": true,
+    "icon": "blackwaters_ledger"
+  },
+  "ff_lanternrunner_cloak": {
+    "name": "Lanternrunner's Cloak",
+    "slot": "arms",
+    "ac": 16,
+    "sta": 7,
+    "wis": 5,
+    "int": 5,
+    "hp": 60,
+    "value": 32000,
+    "rec_level": 43,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves",
+    "icon": "foghound_cloak"
+  },
+  "ff_fogstone_chip": {
+    "name": "Fogstone Chip",
+    "value": 34,
+    "stack": 20,
+    "icon": "rune_shard"
+  },
+  "ff_cairnbacks_keystone": {
+    "name": "Old Cairnback's Keystone",
+    "value": 170,
+    "lore": true,
+    "icon": "rune_shard"
+  },
+  "ff_quarrymans_girdle": {
+    "name": "Quarryman's Girdle",
+    "slot": "waist",
+    "ac": 12,
+    "str": 7,
+    "sta": 6,
+    "hp": 40,
+    "value": 32000,
+    "rec_level": 43,
+    "no_drop": true,
+    "lore": true,
+    "icon": "robbers_sash"
+  },
+  "un_collar_stud": {
+    "name": "Silver Collar-Stud",
+    "value": 40,
+    "stack": 20,
+    "icon": "tarnished_ring"
+  },
+  "un_blackfangs_collar": {
+    "name": "Blackfang's Jeweled Collar",
+    "value": 200,
+    "lore": true,
+    "icon": "morvaine_signet_ring"
+  },
+  "un_lampbearers_gloves": {
+    "name": "Lampbearer's Gloves",
+    "slot": "hands",
+    "ac": 16,
+    "agi": 8,
+    "str": 6,
+    "hp": 60,
+    "value": 38000,
+    "rec_level": 47,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves",
+    "icon": "shade_silk_gloves"
+  },
+  "un_moonwater": {
+    "name": "Drop of Moonwater",
+    "value": 40,
+    "stack": 20,
+    "icon": "vial_of_water"
+  },
+  "un_pale_keepers_lantern": {
+    "name": "The Pale Keeper's Lantern",
+    "value": 200,
+    "lore": true,
+    "icon": "echo_of_the_nameless"
+  },
+  "un_wellwardens_sash": {
+    "name": "Well-Warden's Sash",
+    "slot": "waist",
+    "ac": 13,
+    "int": 8,
+    "wis": 8,
+    "mana": 75,
+    "hp": 30,
+    "value": 38000,
+    "rec_level": 47,
+    "no_drop": true,
+    "lore": true,
+    "icon": "moonsilk_sash"
+  },
+  "lw_divine_steel": {
+    "name": "Fleck of Divine Steel",
+    "value": 44,
+    "stack": 20,
+    "icon": "divine_bronze"
+  },
+  "lw_wardens_hilt_gem": {
+    "name": "The Blade's Warden's Hilt-Gem",
+    "value": 220,
+    "lore": true,
+    "icon": "godforged_heart_amulet"
+  },
+  "lw_last_fire_pauldrons": {
+    "name": "Last Fire Pauldrons",
+    "slot": "arms",
+    "ac": 22,
+    "str": 8,
+    "sta": 8,
+    "hp": 80,
+    "value": 44000,
+    "rec_level": 49,
+    "no_drop": true,
+    "lore": true,
+    "wear": "plate_vambraces",
+    "icon": "godwar_pauldrons",
+    "classes": [
+      "warrior",
+      "cleric"
+    ]
+  },
+  "lw_hound_bone": {
+    "name": "Godwar Hound Bone",
+    "value": 44,
+    "stack": 20,
+    "icon": "bone_charm"
+  },
+  "lw_ashfangs_collar": {
+    "name": "Ashfang's War-Collar",
+    "value": 220,
+    "lore": true,
+    "icon": "tarnished_ring"
+  },
+  "lw_excavators_ring": {
+    "name": "Excavator's Ring",
+    "slot": "ring",
+    "ac": 9,
+    "sta": 8,
+    "agi": 6,
+    "wis": 5,
+    "hp": 70,
+    "value": 44000,
+    "rec_level": 49,
+    "no_drop": true,
+    "lore": true,
+    "icon": "divine_bronze_ring"
+  },
+  "ht_prayer_scrap": {
+    "name": "Pilgrim's Prayer Scrap",
+    "value": 8,
+    "stack": 20,
+    "icon": "sunken_charm"
+  },
+  "ht_unshrivens_bell": {
+    "name": "The Unshriven's Prayer-Bell",
+    "value": 40,
+    "lore": true,
+    "icon": "bone_charm"
+  },
+  "ht_high_shelter_wraps": {
+    "name": "High Shelter Wraps",
+    "slot": "hands",
+    "ac": 9,
+    "agi": 4,
+    "wis": 4,
+    "hp": 25,
+    "value": 5800,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves",
+    "icon": "monks_wraps"
+  },
+  "ht_high_wolf_pelt": {
+    "name": "High Wolf Pelt",
+    "value": 8,
+    "stack": 20,
+    "icon": "wolf_pelt"
+  },
+  "ht_frostjaws_fang": {
+    "name": "Old Frostjaw's Fang",
+    "value": 40,
+    "lore": true,
+    "icon": "wolf_pelt"
+  },
+  "ht_herders_ring": {
+    "name": "Herder's Ring",
+    "slot": "ring",
+    "ac": 4,
+    "sta": 4,
+    "agi": 3,
+    "hp": 25,
+    "value": 5800,
+    "rec_level": 22,
+    "no_drop": true,
+    "lore": true,
+    "icon": "heartstone_ring"
   }
 }

@@ -8939,5 +8939,1101 @@
     },
     "title": "Stone-Reader",
     "gender": "female"
+  },
+  "ha_skyrunner_odile": {
+    "name": "Skyrunner Odile",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Highwatch, {name}: Driftwatch's fire under the cloud hall. Imani's work, Kael's, Benedikt's, the Bosun's, hand it in here. And ask me about the [fallen isle].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "rays": "Cloud rays feed round the isle that fell, north-east. Four of their tail-barbs and I'll pay, every time: Galehold tips its harpoons with them.",
+      "stormbarb": "Old Stormbarb, the oldest ray over the isle, grey as a thundercloud. Bring me its spine.",
+      "fallen isle": "North-east, an isle that lost its tether and came down. The [rays] feed round it, and [Stormbarb] is the oldest of them."
+    },
+    "title": "Driftwatch",
+    "gender": "female"
+  },
+  "ha_sutler_mato": {
+    "name": "Sutler Mato",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Driftwatch",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ha_skyrunner_odile_guard": {
+    "name": "a Driftwatch sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Driftwatch"
+  },
+  "ha_hut_guard_0": {
+    "name": "a Driftwatch sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Driftwatch"
+  },
+  "ha_hut_guard_1": {
+    "name": "a Driftwatch sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Driftwatch"
+  },
+  "ha_kitewright_sunniva": {
+    "name": "Kitewright Sunniva",
+    "level": 30,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "My glider, {name}, or what's left of it. The [sprites] tore it down, and their [Gustmother] with them.",
+      "unknown": "I build kites, {name}. Tarrow flies them.",
+      "sprites": "The sprites weave ribbons of wind and wear them. Four of the ribbons and I'll pay, again and again: they make the best kite-tails.",
+      "gustmother": "The Gustmother is the wind the sprites come from. Catch her breath in a jar and bring it to me."
+    },
+    "title": "Kitewright",
+    "gender": "female"
+  },
+  "ff_lanternrunner_quill": {
+    "name": "Lanternrunner Quill",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Crossroads Lantern, {name}: as far into the fog as the Lanternwatch keeps a flame. Evander's work, Hilde's, Osric's, Cassia's, hand it in here. And ask me about the [crypt].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "wraiths": "The crypt north-west has no lanterns left, and the wraiths walk out of it. Four scraps of their shrouds and I'll pay, every time.",
+      "chaplain": "The Veiled Chaplain buried Ysmoor's dead, and reads over them still. Bring me his psalter.",
+      "crypt": "North-west, Ysmoor's old crypt, the lanterns all out. [Wraiths] come out of it, and the [Chaplain] who kept it."
+    },
+    "title": "Lanternwatch"
+  },
+  "ff_sutler_greer": {
+    "name": "Sutler Greer",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Lanternwatch",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ff_lanternrunner_quill_guard": {
+    "name": "a Barrowhold lantern-warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lanternwatch"
+  },
+  "ff_hut_guard_0": {
+    "name": "a Barrowhold lantern-warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lanternwatch"
+  },
+  "ff_hut_guard_1": {
+    "name": "a Barrowhold lantern-warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lanternwatch"
+  },
+  "ff_hut_guard_2": {
+    "name": "a Barrowhold lantern-warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lanternwatch"
+  },
+  "ff_quarryman_bertil": {
+    "name": "Quarryman Bertil",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Ysmoor was built from this quarry, {name}, and the stone doesn't want to be quarried any more. [Rubble] gets up and walks. And [Old Cairnback].",
+      "unknown": "I cut stone. Hilde sets it.",
+      "rubble": "Rubble that walks, in my quarry. Four chips of it and I'll pay, again and again: Hilde needs the stone.",
+      "cairnback": "Old Cairnback is the old quarry face itself, come loose. Bring me the keystone out of him."
+    },
+    "title": "Quarryman"
+  },
+  "un_lampbearer_ines": {
+    "name": "Lampbearer Ines",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Midnight Lamp, {name}: the Lampward's fire in the middle of the dark. Solenne's work, Kwame's, Yuna's, Aurelio's, hand it in here. And ask me about the [folly].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "hounds": "The Countess keeps her hounds at her summerhouse, east, behind the iron fence: Morvaine's Folly. Four of their collar-studs and I'll pay, every time.",
+      "blackfang": "Blackfang, her favorite. Bring me its collar, and she'll know who took it.",
+      "folly": "East, the Countess's summerhouse behind an iron fence: Morvaine's Folly. Her [hounds] run there, and her pet, [Blackfang]."
+    },
+    "title": "Lampward",
+    "gender": "female"
+  },
+  "un_sutler_corwen": {
+    "name": "Sutler Corwen",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Lampward",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "un_lampbearer_ines_guard": {
+    "name": "a Lampward sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lampward"
+  },
+  "un_hut_guard_0": {
+    "name": "a Lampward sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lampward"
+  },
+  "un_hut_guard_1": {
+    "name": "a Lampward sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lampward"
+  },
+  "un_hut_guard_2": {
+    "name": "a Lampward sentinel",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lampward"
+  },
+  "un_wellwarden_oriel": {
+    "name": "Well-Warden Oriel",
+    "level": 30,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "This well held the moon, {name}, before the moon went out. Now [wisps] rise out of it, and the [Pale Keeper].",
+      "unknown": "I keep the well. Solenne keeps the lamps.",
+      "wisps": "The wisps carry the last of the moon's water. Four drops and I'll pay you, as often as you bring them.",
+      "pale keeper": "The Pale Keeper was the well's first warden. Bring me his lantern, and the well will sleep."
+    },
+    "title": "Well-Warden"
+  },
+  "lw_vigilrunner_tamsin": {
+    "name": "Vigilrunner Tamsin",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Last Fire, {name}: the Vigil's camp under the Marshal's hill. Mateo's work, Freydis's, Kanoa's, Wilhelmina's, hand it in here. And ask me about the [blade].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "sentinels": "North-east, a god's sword lies broken in the ground, and its shards stand up and guard it. Four flecks of the steel and I'll pay, every time.",
+      "warden": "The Blade's Warden guards the hilt. Bring me the gem out of it.",
+      "blade": "North-east, where a god's sword broke. Its shards stand guard: [sentinels], and the [Warden] at the hilt."
+    },
+    "title": "Pilgrim's Vigil",
+    "gender": "female"
+  },
+  "lw_sutler_ambrose": {
+    "name": "Sutler Ambrose",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Pilgrim's Vigil",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "lw_vigilrunner_tamsin_guard": {
+    "name": "a Vigil warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Pilgrim's Vigil"
+  },
+  "lw_hut_guard_0": {
+    "name": "a Vigil warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Pilgrim's Vigil"
+  },
+  "lw_hut_guard_1": {
+    "name": "a Vigil warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "barrowhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Pilgrim's Vigil"
+  },
+  "lw_excavator_ingrith": {
+    "name": "Excavator Ingrith",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The dig's mine, {name}, if I could get at it. The war-[hounds] of the last charge are still buried here, and they don't like being dug up. [Ashfang] least of all.",
+      "unknown": "I dig. Wilhelmina keeps what I find.",
+      "hounds": "The hounds of the last charge, dug up and walking. Four of their bones and I'll pay, as often as you bring them.",
+      "ashfang": "Ashfang led the charge. Bring me the war-collar off him."
+    },
+    "title": "Excavator",
+    "gender": "female"
+  },
+  "ht_pilgrim_lobsang": {
+    "name": "Pilgrim-Guide Lobsang",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The High Shelter, {name}: the pilgrims' last rest before the monastery. Brother Tenzin's work and the Tea-Mother's, you can hand it in here. And ask me about the [stupa].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "pilgrims": "West, a stupa pilgrims died at in the snow, before they reached the monastery. They haunt it still. Four of their prayers and I'll pay, every time.",
+      "unshriven": "The Unshriven led them. He rings his bell for a monastery that never answers. Bring it to me.",
+      "stupa": "West, a stupa where pilgrims froze on the way up. They're still there: forsaken [pilgrims], and the [Unshriven] who led them."
+    },
+    "title": "Dawn Pilgrims"
+  },
+  "ht_sutler_dechen": {
+    "name": "Sutler Dechen",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Dawn Pilgrims",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "terrace_tea",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ht_pilgrim_lobsang_guard": {
+    "name": "a Terrace Warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Dawn Pilgrims"
+  },
+  "ht_hut_guard_0": {
+    "name": "a Terrace Warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Dawn Pilgrims"
+  },
+  "ht_hut_guard_1": {
+    "name": "a Terrace Warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Dawn Pilgrims"
+  },
+  "ht_herder_dolkar": {
+    "name": "Herder Dolkar",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The shielings are ours in summer, {name}, but the [wolves] came down early this year. And [Old Frostjaw] with them.",
+      "unknown": "I keep yaks, {name}. The Tea-Mother keeps everything else.",
+      "wolves": "The high wolves came down to the shielings. Four pelts and I'll pay, every time: the yaks sleep easier.",
+      "frostjaw": "Old Frostjaw leads them, white as the snow. Bring me his fang."
+    },
+    "title": "Yak-Herder"
   }
 }

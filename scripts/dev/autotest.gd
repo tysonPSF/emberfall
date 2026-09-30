@@ -130,6 +130,7 @@ const SECTIONS := [
 	["hubs_pilot", "thornwood"],
 	["hubs_1024", "the_burn"],
 	["hubs_768a", "silted_reach"],
+	["hubs_768b", "hollow_air"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -5077,7 +5078,8 @@ func _t_terrace_life() -> void:
 	print("terrace_life: the ghost leopard at 23:00 %s" % (_nearest_mob(p, "ghost_leopard") != null))
 	World.time_override = 12.0
 	var paddy := Vector2(z.data["fields"][0]["pos"][0], z.data["fields"][0]["pos"][1])
-	var sheets := z.get_children().filter(func(n: Node) -> bool: return n is MeshInstance3D and (n as MeshInstance3D).mesh is PlaneMesh).size()
+	var sheets := z.get_children().filter(func(n: Node) -> bool: return n is MeshInstance3D and (n as MeshInstance3D).mesh is PlaneMesh \
+			and z.in_field((n as Node3D).global_position.x, (n as Node3D).global_position.z, 1.0)).size()  # a plane on a paddy: its water (a camp's floor is a plane too)
 	print("terrace_life: paddy water sheets %d of %d paddies" % [sheets, z.data["fields"].filter(func(f: Dictionary) -> bool: return f.get("water", false)).size()])
 	var tea := Vector2(z.data["fields"][9]["pos"][0], z.data["fields"][9]["pos"][1])
 	for spot: Array in [[Vector2(-20, 215), Vector2(-20, 190), "rest"], [paddy + Vector2(8, -34), paddy, "paddies"], [tea + Vector2(20, 16), tea, "tea"], [Vector2(0, -120), Vector2(0, -205), "monastery"]]:
@@ -8859,6 +8861,20 @@ func _t_hubs_768a() -> void:
 			["sw_spore_shambler", "sw_rotcap", "sw_kiln_imp", "sw_old_bellows"], "sw_woodrunner_kasia", "smoke_pelt_q"],
 			["stonesail", "ss", {"ss_moorrunner_edric": ["ss_moor_harrier_q", "ss_old_talonmere_q"], "ss_stonereader_mabyn": ["ss_cairn_wight_q", "ss_cairn_king_q"]},
 			["ss_moor_harrier", "ss_old_talonmere", "ss_cairn_wight", "ss_cairn_king"], "ss_moorrunner_edric", "moor_hide_q"]])
+
+
+## And the rest of the 768 m zones (hubs.py batch 4).
+func _t_hubs_768b() -> void:
+	await _hubs_zones([["hollow_air", "ha", {"ha_skyrunner_odile": ["ha_cloud_ray_q", "ha_old_stormbarb_q"], "ha_kitewright_sunniva": ["ha_gale_sprite_q", "ha_gustmother_q"]},
+			["ha_cloud_ray", "ha_old_stormbarb", "ha_gale_sprite", "ha_gustmother"], "ha_skyrunner_odile", "tempest_mote_q"],
+			["fogfall", "ff", {"ff_lanternrunner_quill": ["ff_fog_wraith_q", "ff_veiled_chaplain_q"], "ff_quarryman_bertil": ["ff_rubble_golem_q", "ff_old_cairnback_q"]},
+			["ff_fog_wraith", "ff_veiled_chaplain", "ff_rubble_golem", "ff_old_cairnback"], "ff_lanternrunner_quill", "gargoyle_stone_q"],
+			["the_unlit", "un", {"un_lampbearer_ines": ["un_morvaine_hound_q", "un_blackfang_q"], "un_wellwarden_oriel": ["un_well_wisp_q", "un_pale_keeper_q"]},
+			["un_morvaine_hound", "un_blackfang", "un_well_wisp", "un_pale_keeper"], "un_lampbearer_ines", "shade_essence_q"],
+			["lastwalk", "lw", {"lw_vigilrunner_tamsin": ["lw_blade_sentinel_q", "lw_blades_warden_q"], "lw_excavator_ingrith": ["lw_godwar_hound_q", "lw_ashfang_q"]},
+			["lw_blade_sentinel", "lw_blades_warden", "lw_godwar_hound", "lw_ashfang"], "lw_vigilrunner_tamsin", "godwar_insignia_q"],
+			["high_terrace", "ht", {"ht_pilgrim_lobsang": ["ht_forsaken_pilgrim_q", "ht_unshriven_q"], "ht_herder_dolkar": ["ht_high_wolf_q", "ht_old_frostjaw_q"]},
+			["ht_forsaken_pilgrim", "ht_unshriven", "ht_high_wolf", "ht_old_frostjaw"], "ht_pilgrim_lobsang", "tenzins_beads"]])
 
 
 func _hubs_zones(legs: Array) -> void:

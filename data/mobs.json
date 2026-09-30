@@ -17827,5 +17827,865 @@
     },
     "named": true,
     "xp_bonus": 3.0
+  },
+  "ha_cloud_ray": {
+    "name": "a cloud ray",
+    "level": [
+      40,
+      42
+    ],
+    "hp_base": 300,
+    "hp_per_level": 40,
+    "dmg_min": 28,
+    "dmg_max": 55,
+    "attack_delay": 2.7,
+    "ac": 76,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "beetle",
+    "color": "#4a8ab0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ha_ray_barb",
+        "chance": 0.55
+      }
+    ],
+    "model": "sky_ray",
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "ha_old_stormbarb": {
+    "name": "Old Stormbarb",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 300,
+    "hp_per_level": 40,
+    "dmg_min": 28,
+    "dmg_max": 55,
+    "attack_delay": 2.7,
+    "ac": 76,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "lash",
+      "lashes"
+    ],
+    "shape": "beetle",
+    "color": "#4a8ab0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ha_stormbarbs_spine",
+        "chance": 1.0
+      },
+      {
+        "item": "ha_ray_barb",
+        "chance": 1.0
+      }
+    ],
+    "model": "great_sky_ray",
+    "proc": {
+      "spell": "thunder_strike",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ha_gale_sprite": {
+    "name": "a gale sprite",
+    "level": [
+      39,
+      41
+    ],
+    "hp_base": 292,
+    "hp_per_level": 39,
+    "dmg_min": 28,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#b8d0f0",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ha_sprite_ribbon",
+        "chance": 0.55
+      }
+    ],
+    "model": "gale_spirit",
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.15,
+      "text": "%s hurls %s at you!"
+    }
+  },
+  "ha_gustmother": {
+    "name": "the Gustmother",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 292,
+    "hp_per_level": 39,
+    "dmg_min": 28,
+    "dmg_max": 53,
+    "attack_delay": 2.7,
+    "ac": 74,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "sky_spirits",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#b8d0f0",
+    "scale": 1.7,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ha_gustmothers_breath",
+        "chance": 1.0
+      },
+      {
+        "item": "ha_sprite_ribbon",
+        "chance": 1.0
+      }
+    ],
+    "model": "gale_spirit",
+    "proc": {
+      "spell": "gale_buffet",
+      "chance": 0.15,
+      "text": "%s hurls %s at you!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ff_fog_wraith": {
+    "name": "a fog wraith",
+    "level": [
+      41,
+      43
+    ],
+    "hp_base": 300,
+    "hp_per_level": 40,
+    "dmg_min": 28,
+    "dmg_max": 55,
+    "attack_delay": 2.7,
+    "ac": 76,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "ysmoor_court",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#b0b8c8",
+    "scale": 1.0,
+    "coin": [
+      60,
+      220
+    ],
+    "loot": [
+      {
+        "item": "ff_shroud_scrap",
+        "chance": 0.55
+      }
+    ],
+    "model": "wraith",
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "ff_veiled_chaplain": {
+    "name": "the Veiled Chaplain",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 300,
+    "hp_per_level": 40,
+    "dmg_min": 28,
+    "dmg_max": 55,
+    "attack_delay": 2.7,
+    "ac": 76,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "ysmoor_court",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#b0b8c8",
+    "scale": 1.0,
+    "coin": [
+      660,
+      1760
+    ],
+    "loot": [
+      {
+        "item": "ff_chaplains_psalter",
+        "chance": 1.0
+      },
+      {
+        "item": "ff_shroud_scrap",
+        "chance": 1.0
+      }
+    ],
+    "model": "mummy_priest",
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ff_rubble_golem": {
+    "name": "a rubble golem",
+    "level": [
+      41,
+      43
+    ],
+    "hp_base": 400,
+    "hp_per_level": 53,
+    "dmg_min": 29,
+    "dmg_max": 56,
+    "attack_delay": 3.0,
+    "ac": 101,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "ysmoor_stones",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#707880",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ff_fogstone_chip",
+        "chance": 0.55
+      }
+    ],
+    "model": "earth_elemental"
+  },
+  "ff_old_cairnback": {
+    "name": "Old Cairnback",
+    "level": [
+      44,
+      44
+    ],
+    "hp_base": 400,
+    "hp_per_level": 53,
+    "dmg_min": 29,
+    "dmg_max": 56,
+    "attack_delay": 3.0,
+    "ac": 101,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "ysmoor_stones",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#707880",
+    "scale": 1.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ff_cairnbacks_keystone",
+        "chance": 1.0
+      },
+      {
+        "item": "ff_fogstone_chip",
+        "chance": 1.0
+      }
+    ],
+    "model": "earth_elemental",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "un_morvaine_hound": {
+    "name": "a Morvaine hound",
+    "level": [
+      44,
+      46
+    ],
+    "hp_base": 340,
+    "hp_per_level": 45,
+    "dmg_min": 32,
+    "dmg_max": 62,
+    "attack_delay": 2.3,
+    "ac": 85,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "house_morvaine",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#1a1a2a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "un_collar_stud",
+        "chance": 0.55
+      }
+    ],
+    "model": "unlit_hound"
+  },
+  "un_blackfang": {
+    "name": "Blackfang, the Countess's Pet",
+    "level": [
+      48,
+      48
+    ],
+    "hp_base": 340,
+    "hp_per_level": 45,
+    "dmg_min": 32,
+    "dmg_max": 62,
+    "attack_delay": 2.3,
+    "ac": 85,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "faction": "house_morvaine",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#1a1a2a",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "un_blackfangs_collar",
+        "chance": 1.0
+      },
+      {
+        "item": "un_collar_stud",
+        "chance": 1.0
+      }
+    ],
+    "model": "unlit_hound",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "un_well_wisp": {
+    "name": "a well-wisp",
+    "level": [
+      44,
+      46
+    ],
+    "hp_base": 332,
+    "hp_per_level": 44,
+    "dmg_min": 31,
+    "dmg_max": 60,
+    "attack_delay": 2.7,
+    "ac": 83,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "shades",
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "humanoid",
+    "color": "#3a3a5a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "un_moonwater",
+        "chance": 0.55
+      }
+    ],
+    "model": "lantern_wisp",
+    "proc": {
+      "spell": "shade_touch",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "un_pale_keeper": {
+    "name": "the Pale Keeper",
+    "level": [
+      48,
+      48
+    ],
+    "hp_base": 332,
+    "hp_per_level": 44,
+    "dmg_min": 31,
+    "dmg_max": 60,
+    "attack_delay": 2.7,
+    "ac": 83,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "shades",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#3a3a5a",
+    "scale": 1.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "un_pale_keepers_lantern",
+        "chance": 1.0
+      },
+      {
+        "item": "un_moonwater",
+        "chance": 1.0
+      }
+    ],
+    "model": "wraith",
+    "proc": {
+      "spell": "shade_touch",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "lw_blade_sentinel": {
+    "name": "a blade-shard sentinel",
+    "level": [
+      47,
+      49
+    ],
+    "hp_base": 462,
+    "hp_per_level": 61,
+    "dmg_min": 33,
+    "dmg_max": 64,
+    "attack_delay": 3.2,
+    "ac": 116,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "divine_constructs",
+    "verb": [
+      "cut",
+      "cuts"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "lw_divine_steel",
+        "chance": 0.55
+      }
+    ],
+    "model": "sky_guardian",
+    "proc": {
+      "spell": "godfire",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    }
+  },
+  "lw_blades_warden": {
+    "name": "the Blade's Warden",
+    "level": [
+      50,
+      50
+    ],
+    "hp_base": 462,
+    "hp_per_level": 61,
+    "dmg_min": 33,
+    "dmg_max": 64,
+    "attack_delay": 3.2,
+    "ac": 116,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "divine_constructs",
+    "verb": [
+      "cut",
+      "cuts"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a060",
+    "scale": 1.5,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "lw_wardens_hilt_gem",
+        "chance": 1.0
+      },
+      {
+        "item": "lw_divine_steel",
+        "chance": 1.0
+      }
+    ],
+    "model": "sky_guardian",
+    "proc": {
+      "spell": "godfire",
+      "chance": 0.12,
+      "text": "%s's attack carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "lw_godwar_hound": {
+    "name": "a godwar hound",
+    "level": [
+      46,
+      48
+    ],
+    "hp_base": 348,
+    "hp_per_level": 46,
+    "dmg_min": 33,
+    "dmg_max": 63,
+    "attack_delay": 2.7,
+    "ac": 87,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "godwar_dead",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#8a8478",
+    "scale": 1.0,
+    "coin": [
+      100,
+      340
+    ],
+    "loot": [
+      {
+        "item": "lw_hound_bone",
+        "chance": 0.55
+      }
+    ],
+    "model": "fog_hound"
+  },
+  "lw_ashfang": {
+    "name": "Ashfang, Hound of the Last Charge",
+    "level": [
+      50,
+      50
+    ],
+    "hp_base": 348,
+    "hp_per_level": 46,
+    "dmg_min": 33,
+    "dmg_max": 63,
+    "attack_delay": 2.7,
+    "ac": 87,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "godwar_dead",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#6a5a4a",
+    "scale": 1.6,
+    "coin": [
+      1020,
+      2720
+    ],
+    "loot": [
+      {
+        "item": "lw_ashfangs_collar",
+        "chance": 1.0
+      },
+      {
+        "item": "lw_hound_bone",
+        "chance": 1.0
+      }
+    ],
+    "model": "fog_hound",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ht_forsaken_pilgrim": {
+    "name": "a forsaken pilgrim",
+    "level": [
+      19,
+      21
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.2,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      30,
+      100
+    ],
+    "loot": [
+      {
+        "item": "ht_prayer_scrap",
+        "chance": 0.55
+      }
+    ],
+    "model": "hungry_ghost",
+    "proc": {
+      "spell": "monk_palm",
+      "chance": 0.14,
+      "text": "%s strikes with the %s!"
+    }
+  },
+  "ht_unshriven": {
+    "name": "the Unshriven",
+    "level": [
+      23,
+      23
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 12,
+    "dmg_max": 24,
+    "attack_delay": 2.2,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#888888",
+    "scale": 1.4,
+    "coin": [
+      300,
+      800
+    ],
+    "loot": [
+      {
+        "item": "ht_unshrivens_bell",
+        "chance": 1.0
+      },
+      {
+        "item": "ht_prayer_scrap",
+        "chance": 1.0
+      }
+    ],
+    "model": "hungry_ghost",
+    "proc": {
+      "spell": "monk_palm",
+      "chance": 0.14,
+      "text": "%s strikes with the %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ht_high_wolf": {
+    "name": "a high wolf",
+    "level": [
+      19,
+      21
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 12,
+    "dmg_max": 22,
+    "attack_delay": 2.2,
+    "ac": 26,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#d8d8d8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ht_high_wolf_pelt",
+        "chance": 0.55
+      }
+    ],
+    "model": "wolf"
+  },
+  "ht_old_frostjaw": {
+    "name": "Old Frostjaw",
+    "level": [
+      23,
+      23
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 12,
+    "dmg_max": 22,
+    "attack_delay": 2.2,
+    "ac": 26,
+    "speed": 7.6,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#f0f0f0",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ht_frostjaws_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "ht_high_wolf_pelt",
+        "chance": 1.0
+      }
+    ],
+    "model": "wolf",
+    "named": true,
+    "xp_bonus": 3.0
   }
 }
