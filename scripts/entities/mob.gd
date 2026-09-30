@@ -43,10 +43,33 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 	display_name = d["name"]
 	faction = d["faction"]
 	max_hp = int(d["hp_base"]) + int(d["hp_per_level"]) * (level - 1)
+	if d.get("named", false):  # one rule for every named: a hard solo at its level (config named_health), then more for each player it faces
+		max_hp = int(GameData.typical_hp(level) * float(World.cfg("named_health", 2.75)) * float(d.get("toughness", 1.0)))
 	hp = max_hp
 	dmg_min = int(d["dmg_min"])
 	dmg_max = int(d["dmg_max"]) + level / 2
 	attack_delay = float(d["attack_delay"])
+	if d.get("named", false):  # and hits as hard as the rule says (config named_damage), keeping its own swing speed and spread
+		var own := (dmg_min + dmg_max) * 0.5 / attack_delay
+		var want := GameData.typical_dps(level) * float(World.cfg("named_damage", 1.25)) * float(d.get("toughness", 1.0))
+		# its natural proc (a breath, a bolt, venom) is part of that: at most named_proc_share of it, its swings the rest
+		var proc: Dictionary = d.get("proc", {})
+		var s: Dictionary = GameData.spells.get(str(proc.get("spell", "")), {})
+		var per_proc := 0.0
+		if str(s.get("type", "")) == "damage":
+			per_proc = (float(s.get("min", 0)) + float(s.get("max", 0))) * 0.5 + float(s.get("per_level", 0)) * (level - 1)
+		elif str(s.get("type", "")) == "dot":
+			per_proc = (float(s.get("tick", 0)) + float(s.get("per_level", 0)) * (level - 1)) * float(s.get("ticks", 1))
+		if per_proc > 0.0:
+			var share := want * float(World.cfg("named_proc_share", 0.3))
+			var proc_dps := float(proc.get("chance", 0.0)) * per_proc / attack_delay
+			if proc_dps > share:
+				proc_chance = share * attack_delay / per_proc
+				proc_dps = share
+			want -= proc_dps
+		var k := want / maxf(own, 0.01)
+		dmg_min = maxi(1, roundi(dmg_min * k))
+		dmg_max = maxi(dmg_min + 1, roundi(dmg_max * k))
 	ac = int(d["ac"])
 	attack_verb = d["verb"]
 	hp_regen = int(d.get("hp_regen", maxi(1, level)))  # trolls knit fast, even mid-fight
@@ -67,6 +90,10 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 			dmg_max += int(it.get("dmg", 0)) / 2 + int(it.get("str", 0)) / 5
 			attack_verb = it.get("verb", attack_verb)
 	hp = max_hp
+	solo_max_hp = max_hp
+	solo_dmg = Vector2i(dmg_min, dmg_max)
+	if d.get("named", false):
+		_face(int(d.get("min_players", 1)))  # a group boss is never less than a group
 	var model: Variant = d.get("model", "")
 	model_id = _pick_model(model if model is Array else [model])
 	weapon_id = str(GameData.item(gear["primary"]).get("model", "")) if gear.has("primary") else str(d.get("weapon", ""))
@@ -190,6 +217,58 @@ func _process(delta: float) -> void:
 		nameplate.modulate = World.CON_COLORS[World.con_of(World.local_player.level, level)]
 
 
+## A named monster grows with the fight: its health (and a little its damage)
+## scale with how many players it faces, counted from its hate list with their
+## groupmates close by (a healer standing back counts). It only ever grows
+## during a fight, its wounds kept as a share of its health, and goes back to
+## its own size when it resets.
+var proc_chance := -1.0  # its natural proc's chance, when a rule has set it (named); else the data's
+var solo_max_hp := 0
+var solo_dmg := Vector2i.ZERO
+var facing_players := 1
+var _face_timer := 0.0
+
+
+func _face(n: int) -> void:
+	facing_players = n
+	var ratio := float(hp) / float(maxi(1, max_hp))
+	max_hp = int(solo_max_hp * (1.0 + float(World.cfg("named_health_per_player", 0.8)) * (n - 1)))
+	hp = clampi(roundi(ratio * max_hp), 1, max_hp)
+	var dmg := 1.0 + float(World.cfg("named_damage_per_player", 0.08)) * (n - 1)
+	dmg_min = roundi(solo_dmg.x * dmg)
+	dmg_max = roundi(solo_dmg.y * dmg)
+
+
+## The players this fight involves: whoever it hates (a pet's owner for the
+## pet), and their groupmates within named_group_radius.
+func players_faced() -> Array[Player]:
+	var out: Array[Player] = []
+	var reach := float(World.cfg("named_group_radius", 60))
+	for id: int in hate:
+		var e := World.get_object(id) as Entity
+		var p: Player = (e as Pet).owner_player() if e is Pet else e as Player
+		if p == null or p.dead:
+			continue
+		for q: Player in World.group_members(p):
+			if not q.dead and not q in out and (q == p or q.distance_to(p) <= reach):
+				out.append(q)
+	return out
+
+
+func _check_facing(delta: float) -> void:
+	_face_timer -= delta
+	if _face_timer > 0.0 or hate.is_empty():
+		return
+	_face_timer = 1.0
+	var faced := players_faced()
+	var n := maxi(faced.size(), int(data.get("min_players", 1)))
+	if n > facing_players:
+		_face(n)
+		for p in faced:
+			World.say(p, "%s grows stronger to face you all." % display_name, World.C_WARN)
+		stats_changed.emit()
+
+
 func add_hate(src: Entity, amount: float) -> void:
 	if src == null or src == self or dead or src.dead:
 		return
@@ -231,6 +310,8 @@ func _physics_process(delta: float) -> void:
 	apply_gravity(delta)
 	if dead or data.get("inert", false):
 		return  # a web hangs there: it doesn't move, notice anyone or fight back
+	if data.get("named", false):
+		_check_facing(delta)
 	_think_timer -= delta
 	var move := Vector3.ZERO
 	var move_speed := speed
@@ -334,6 +415,8 @@ func _scan_for_aggro(delta: float) -> void:
 
 
 func _reset() -> void:
+	if data.get("named", false) and facing_players != int(data.get("min_players", 1)):
+		_face(int(data.get("min_players", 1)))  # back to its own size
 	hate.clear()
 	target = null
 	auto_attack = false

@@ -126,6 +126,7 @@ const SECTIONS := [
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
 	["zone_outlines", "greenmoor"],
+	["named_scaling", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8814,6 +8815,61 @@ func _t_spawn_coverage() -> void:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
 	World.time_override = -1.0
+
+
+## Named monsters by one rule (config named_health, named_damage) and
+## growing with the fight: a second player grouped with the first, close by,
+## raises its health (its wounds kept as a share) and a little its damage; it
+## doesn't shrink when they leave, and goes back to its own size on a reset.
+## Morcant faces at least three even alone.
+func _t_named_scaling() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	p.god_mode = true
+	var d: Dictionary = (GameData.mobs["raider_chief"] as Dictionary).duplicate(true)
+	d.erase("gear")
+	var mob := Mob.new()
+	mob.setup("raider_chief", d, null)
+	print("named_scaling: Vashti at %d: health %d (an ordinary monster there %d, x%.2f), hits %d-%d every %.1f s (ordinary %.1f a second, x%.2f)" % [mob.level, mob.max_hp,
+			GameData.typical_hp(mob.level), mob.max_hp / GameData.typical_hp(mob.level), mob.dmg_min, mob.dmg_max, mob.attack_delay, GameData.typical_dps(mob.level),
+			(mob.dmg_min + mob.dmg_max) * 0.5 / mob.attack_delay / GameData.typical_dps(mob.level)])
+	mob.aggressive = false
+	mob.position = z.ground(p.global_position.x + 4.0, p.global_position.z) + Vector3.UP * 0.2
+	z.add_child(mob)
+	var solo := mob.max_hp
+	mob.add_hate(p, 1.0)
+	await _wait(1.5)
+	print("named_scaling: alone -> facing %d, health %d" % [mob.facing_players, mob.max_hp])
+	mob.hp = int(mob.max_hp * 0.6)
+	var q := Player.new()
+	q.from_save({"name": "Helper", "class": "cleric", "level": 21, "stats": {}, "race": "human"})
+	q.position = p.global_position + Vector3(-8, 0, 0)
+	z.add_child(q)
+	q.god_mode = true
+	await _wait(0.2)
+	World.groups[9901] = {"leader": p.entity_id, "members": [p.entity_id, q.entity_id]}
+	p.group_id = 9901
+	q.group_id = 9901
+	await _wait(1.5)
+	print("named_scaling: a groupmate 8 m off -> facing %d, health %d (x%.2f of alone), wounds %.0f%%, hits %d-%d" % [mob.facing_players, mob.max_hp, float(mob.max_hp) / solo,
+			100.0 - 100.0 * mob.hp / mob.max_hp, mob.dmg_min, mob.dmg_max])
+	print("named_scaling: its experience grows by x%.2f (health x%.2f)" % [World.named_growth(mob), float(mob.max_hp) / solo])
+	World.groups.erase(9901)
+	p.group_id = 0
+	q.group_id = 0
+	await _wait(1.5)
+	print("named_scaling: the groupmate leaves -> facing %d (never shrinks mid-fight)" % mob.facing_players)
+	mob._reset()
+	print("named_scaling: reset -> facing %d, health %d" % [mob.facing_players, mob.max_hp])
+	mob.queue_free()
+	q.queue_free()
+	var boss := Mob.new()
+	var bd: Dictionary = (GameData.mobs["the_uninvited"] as Dictionary).duplicate(true)
+	boss.setup("the_uninvited", bd, null)
+	print("named_scaling: Morcant alone -> facing %d, health %d (x%.1f an ordinary level %d monster)" % [boss.facing_players, boss.max_hp, boss.max_hp / GameData.typical_hp(boss.level), boss.level])
+	boss.free()
+	p.god_mode = false
 
 
 ## The zones' uneven mountain edges (tools/zones/outline.py): in every

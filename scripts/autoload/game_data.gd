@@ -29,6 +29,8 @@ func _ready() -> void:
 	classes = _load("res://data/classes.json")
 	spells = _load("res://data/spells.json")
 	mobs = _load("res://data/mobs.json")
+	_typical_hp.clear()
+	_typical_dps.clear()
 	items = _load_dir("res://data/items")
 	models = _load("res://data/models.json")
 	npcs = _load("res://data/npcs.json")
@@ -281,6 +283,55 @@ func item_color(item_id: String) -> Color:
 		return Color.html(str(loot.get("unique", {}).get("color", "#ff9a3c")))
 	var tier := quality_tier(item_id)
 	return Color.html(str(tier.get("color", "#e6e0d2")))
+
+
+## An ordinary (not named) monster's health at `level`: the median over every
+## monster whose levels reach it (and its neighbors, so a thin level still has
+## some), read from mobs.json once. Named monsters are measured against it.
+var _typical_hp: Array[float] = []
+func typical_hp(level: int) -> float:
+	if _typical_hp.is_empty():
+		var by_level := {}
+		for id: String in mobs:
+			var d: Dictionary = mobs[id]
+			if d.get("named", false) or not d.has("hp_base") or not d.has("level"):
+				continue
+			for l in range(int(d["level"][0]), int(d["level"][1]) + 1):
+				(by_level.get_or_add(l, []) as Array).append(float(d["hp_base"]) + float(d["hp_per_level"]) * (l - 1))
+		for l in 71:
+			var vals: Array = []
+			for k in range(l - 1, l + 2):
+				vals.append_array(by_level.get(k, []))
+			vals.sort()
+			_typical_hp.append(float(vals[vals.size() / 2]) if not vals.is_empty() else -1.0)
+		for l in range(1, 71):  # a level nobody reaches takes the one below
+			if _typical_hp[l] < 0.0:
+				_typical_hp[l] = _typical_hp[l - 1]
+	return _typical_hp[clampi(level, 1, 70)]
+
+
+## An ordinary monster's damage a second at `level` (its average hit, as
+## Mob.setup rolls it, over its attack delay), the median like typical_hp.
+var _typical_dps: Array[float] = []
+func typical_dps(level: int) -> float:
+	if _typical_dps.is_empty():
+		var by_level := {}
+		for id: String in mobs:
+			var d: Dictionary = mobs[id]
+			if d.get("named", false) or not d.has("dmg_min") or not d.has("level"):
+				continue
+			for l in range(int(d["level"][0]), int(d["level"][1]) + 1):
+				(by_level.get_or_add(l, []) as Array).append((float(d["dmg_min"]) + float(d["dmg_max"]) + l / 2) * 0.5 / float(d["attack_delay"]))
+		for l in 71:
+			var vals: Array = []
+			for k in range(l - 1, l + 2):
+				vals.append_array(by_level.get(k, []))
+			vals.sort()
+			_typical_dps.append(float(vals[vals.size() / 2]) if not vals.is_empty() else -1.0)
+		for l in range(1, 71):
+			if _typical_dps[l] < 0.0:
+				_typical_dps[l] = _typical_dps[l - 1]
+	return _typical_dps[clampi(level, 1, 70)]
 
 
 ## Merges every .json file in a folder, so content can be split by topic (and

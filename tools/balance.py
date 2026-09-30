@@ -50,6 +50,7 @@ def main():
     ap.add_argument("--levels", default="", help="e.g. 20,50")
     ap.add_argument("--fights", type=int, default=4, help="fights per monster (3 monsters a level)")
     ap.add_argument("--scale", type=int, default=120, help="game seconds per real second")
+    ap.add_argument("--named", action="store_true", help="fight named monsters alone instead (balance_named.json; the normal results are untouched)")
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 4) - 2), help="Godot processes at once")
     args = ap.parse_args()
 
@@ -68,7 +69,7 @@ def main():
             out = os.path.join(tmp, tag + ".json")
             log = os.path.join(tmp, tag + ".log")
             env = dict(os.environ, BALANCE_ONLY="%s:%s" % v, BALANCE_OUT=out, BALANCE_SCALE=str(args.scale),
-                       BALANCE_FIGHTS=str(args.fights), BALANCE_LEVELS=args.levels)
+                       BALANCE_FIGHTS=str(args.fights), BALANCE_LEVELS=args.levels, **({"BALANCE_NAMED": "1"} if args.named else {}))
             proc = subprocess.Popen([GODOT, "--headless", "--path", ROOT, "--", "--autotest", "--only=balance"],
                                     env=env, stdout=open(log, "w"), stderr=subprocess.STDOUT)
             running[v] = (proc, out, log)
@@ -96,6 +97,26 @@ def main():
         config = data["config"]
     config["fights"] = args.fights
     config["scale"] = args.scale
+
+    if args.named:
+        path = os.path.join(user_dir(), "balance_named.json")
+        with open(path, "w") as f:
+            json.dump({"rows": rows, "config": config}, f, indent=1)
+        levels = sorted({r["level"] for r in rows})
+        print("\nnamed monsters alone: wins of fights, health lost (of a full bar; over 100% needs a rest mid-fight), mana, kill time")
+        print("%-20s" % "" + "".join("%24s" % ("L%d" % l) for l in levels))
+        for v in wanted:
+            line = "%-20s" % ("%s %s" % v).strip()
+            for l in levels:
+                r = next((r for r in rows if (r["class"], r["pet"], r["level"]) == (v[0], v[1], l)), None)
+                if r is None:
+                    line += "%24s" % "-"
+                    continue
+                won = sum(1 for f in r["fights"] if not f["died"] and f["time"] < 449)  # "won" reads false once the corpse replaces the monster
+                line += "%24s" % ("%d/%d %3d%% %3d%% %4.0fs" % (won, len(r["fights"]), r["hp_lost"] * 100, r["mana_used"] * 100, r["kill_time"]))
+            print(line)
+        print("\nWrote %s (%.0f s)" % (path, time.time() - started))
+        return
 
     path = os.path.join(user_dir(), "balance.json")
     prev = {}
