@@ -104,7 +104,8 @@ func skill_cap(cls: String, skill_id: String, level: int) -> int:
 ## An item's inventory icon (rendered by tools/blender/icons.py), shared by
 ## every quality of it; null if there is none.
 func item_icon(item_id: String) -> Texture2D:
-	return icon(base_item(item_id))
+	var base := base_item(item_id)
+	return icon(str(items.get(base, {}).get("icon", base)))  # "icon": another item's picture (a trophy drawn like the pelt it is)
 
 
 ## Any rendered icon in assets/icons by name ("gnoll_fang", "spell_kick",

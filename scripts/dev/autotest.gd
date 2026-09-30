@@ -127,6 +127,7 @@ const SECTIONS := [
 	["spawn_coverage", "greenmoor"],
 	["zone_outlines", "greenmoor"],
 	["named_scaling", "greenmoor"],
+	["hubs_pilot", "thornwood"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8405,6 +8406,9 @@ func _t_high_terrace_ground() -> void:
 		while x < half:
 			var y := -half
 			while y < half:
+				if z.edge_depth(x, y) > -2.0:  # the mountains round the zone (its ridges reach in) are steep on purpose
+					y += 4.0
+					continue
 				var h := z.height_at(x, y)
 				var dx := z.height_at(x + 1.0, y) - h
 				var dy := z.height_at(x, y + 1.0) - h
@@ -8815,6 +8819,62 @@ func _t_spawn_coverage() -> void:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
 	World.time_override = -1.0
+
+
+## The grown zones' forward camps, guard huts and places (tools/zones/hubs.py):
+## in each of the three pilot zones the new quests are taken up and handed in,
+## the forward camp's scout takes the hand-in of a quest someone else gave, and
+## a look at the camp, a hut and each new place and monster.
+func _t_hubs_pilot() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.god_mode = true
+	for leg: Array in [["thornwood", "tw", {"tw_hob_woodcutter": ["tw_tusker_tusks", "tw_old_greyback"], "tw_corporal_brannic": ["tw_prayer_beads", "tw_brother_vesk"]},
+			["tw_tusker_boar", "tw_old_greyback", "tw_forsworn_acolyte", "tw_brother_vesk"], "tw_corporal_brannic", "bloodtusk_tusks"],
+			["the_long_grass", "lg", {"lg_outrider_temperance": ["lg_stone_chips", "lg_ringwarden"], "lg_herdwife_saule": ["lg_jackal_ears", "lg_old_rakemaw"]},
+			["lg_ringstone_sentinel", "lg_ringwarden", "lg_carrion_jackal", "lg_old_rakemaw"], "lg_outrider_temperance", "stalker_pelt_q"],
+			["the_bleach", "bl", {"bl_outrider_kofi": ["bl_mine_tags", "bl_foreman_dask"], "bl_trader_oyelowo": ["bl_crab_claws", "bl_wreck_shell"]},
+			["bl_brine_miner", "bl_foreman_dask", "bl_wreck_crab", "bl_wreck_shell"], "bl_outrider_kofi", "the_salt_wolf"]]:
+		while main._changing_zone:
+			await _wait(0.25)
+		if main.zone.zone_id != leg[0]:
+			World.zone_change.emit(p, leg[0], Vector2.INF, Vector2.INF)
+			for k in 160:
+				if (main.zone as Zone).zone_id == leg[0] and not main._changing_zone:
+					break
+				await _wait(0.25)
+		await _wait(1.0)
+		var z: Zone = main.zone
+		var tag := "hubs_%s" % leg[1]
+		var on_ground := 0
+		var npcs := _npcs()
+		for n: Dictionary in z.data["npcs"]:
+			if n.get("hubs", false) and npcs.has(n["id"]):
+				var at: Vector3 = (npcs[n["id"]] as Npc).global_position
+				on_ground += 1 if absf(at.y - z.surface_at(at.x, at.z)) < 1.5 else 0
+		print("%s: %d new npcs, %d standing on the ground" % [tag, z.data["npcs"].filter(func(n: Dictionary) -> bool: return n.get("hubs", false)).size(), on_ground])
+		await _zone_life(tag, leg[2], [], leg[3])
+		# a quest someone else gave, handed in at the forward camp
+		var scout: Npc = _npcs()[leg[4]]
+		var q_id: String = leg[5]
+		var q: Dictionary = GameData.quests[q_id]
+		p.quests[q_id] = {"active": true, "completions": 0}
+		for i in p.pack.slots.size():
+			p.pack.slots[i] = {}
+		for item_id: String in q["wants"]:
+			p.pack.add(item_id, int(q["wants"][item_id]))
+		_stand_by(p, scout)
+		var mark := World.quest_mark(p, scout.npc_id)
+		await _hand_in(p, scout, (q["wants"] as Dictionary).keys())
+		print("%s: %s's quest %s handed in to %s (mark was '%s') -> done %d time(s)" % [tag, QuestHints._npc_name(str(q["giver"])), q_id, scout.display_name, mark,
+				int(p.quests.get(q_id, {}).get("completions", 0))])
+		print("%s: hint -> %s" % [tag, QuestHints.giver_hint(q_id, z.zone_id, p.global_position)])
+		var views: Array = []
+		for lm: Dictionary in z.data["landmarks"]:
+			if lm.get("hubs", false) and str(lm["type"]) in ["waystation", "outpost", "cabin", "ruins", "watchtower"]:
+				views.append([Vector2(lm["pos"][0], lm["pos"][1]) + Vector2(18, 16), Vector2(lm["pos"][0], lm["pos"][1]), "%s_%d" % [lm["type"], views.size()]])
+		await _zone_views(tag, views)
+	p.god_mode = false
 
 
 ## Named monsters by one rule (config named_health, named_damage) and

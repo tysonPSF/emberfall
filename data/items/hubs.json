@@ -1,0 +1,166 @@
+{
+  "tw_tusker_tusk": {
+    "name": "Thornwood Tusker Tusk",
+    "value": 8,
+    "stack": 20,
+    "icon": "orc_tusk"
+  },
+  "tw_greybacks_hide": {
+    "name": "Old Greyback's Scarred Hide",
+    "value": 40,
+    "lore": true,
+    "icon": "bear_hide"
+  },
+  "tw_woodcutters_hatchet": {
+    "name": "Woodcutter's Hatchet",
+    "slot": "primary",
+    "dmg": 10,
+    "delay": 2.6,
+    "verb": [
+      "chop",
+      "chops"
+    ],
+    "model": "axe_1handed",
+    "skill": "1h_slashing",
+    "str": 3,
+    "sta": 2,
+    "value": 1800,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true
+  },
+  "tw_prayer_bead": {
+    "name": "Forsworn Prayer Bead",
+    "value": 9,
+    "stack": 20,
+    "icon": "bone_chips"
+  },
+  "tw_vesks_censer": {
+    "name": "Brother Vesk's Censer",
+    "value": 40,
+    "lore": true,
+    "icon": "bone_charm"
+  },
+  "tw_northwatch_cloak": {
+    "name": "Northwatch Cloak",
+    "slot": "arms",
+    "ac": 6,
+    "sta": 3,
+    "wis": 2,
+    "int": 2,
+    "hp": 18,
+    "value": 1900,
+    "rec_level": 13,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "lg_humming_stone_chip": {
+    "name": "Humming Stone Chip",
+    "value": 30,
+    "stack": 20,
+    "icon": "salt_crystal"
+  },
+  "lg_ringwardens_rune": {
+    "name": "The Ringwarden's Rune-Stone",
+    "value": 200,
+    "lore": true,
+    "icon": "salt_crystal"
+  },
+  "lg_ringstone_band": {
+    "name": "Ringstone Band",
+    "slot": "ring",
+    "ac": 6,
+    "sta": 6,
+    "wis": 5,
+    "int": 5,
+    "hp": 50,
+    "mana": 50,
+    "value": 24000,
+    "rec_level": 37,
+    "no_drop": true,
+    "lore": true,
+    "icon": "breathshard_ring"
+  },
+  "lg_jackal_ear": {
+    "name": "Carrion Jackal Ear",
+    "value": 28,
+    "stack": 20,
+    "icon": "stalker_pelt"
+  },
+  "lg_rakemaws_jawbone": {
+    "name": "Old Rakemaw's Jawbone",
+    "value": 200,
+    "lore": true,
+    "icon": "bleached_bone"
+  },
+  "lg_herdwifes_mantle": {
+    "name": "Herdwife's Mantle",
+    "slot": "arms",
+    "ac": 14,
+    "sta": 6,
+    "agi": 5,
+    "hp": 55,
+    "value": 24000,
+    "rec_level": 37,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "bl_miners_tag": {
+    "name": "Brine-Crusted Mine Tag",
+    "value": 14,
+    "stack": 20,
+    "icon": "tarnished_ring"
+  },
+  "bl_foremans_ledger": {
+    "name": "Foreman Dask's Ledger",
+    "value": 60,
+    "lore": true,
+    "icon": "blackwaters_ledger"
+  },
+  "bl_saltminers_girdle": {
+    "name": "Saltminer's Girdle",
+    "slot": "waist",
+    "ac": 10,
+    "str": 4,
+    "sta": 4,
+    "hp": 30,
+    "value": 5800,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "icon": "stonefist_girdle"
+  },
+  "bl_crab_claw": {
+    "name": "Wreck Crab Claw",
+    "value": 12,
+    "stack": 20,
+    "icon": "chitin_plate"
+  },
+  "bl_wreckshell_shard": {
+    "name": "Shard of the Wreck-Shell",
+    "value": 60,
+    "lore": true,
+    "icon": "chitin_plate"
+  },
+  "bl_wreckers_buckler": {
+    "name": "Wrecker's Buckler",
+    "slot": "secondary",
+    "ac": 12,
+    "sta": 4,
+    "hp": 35,
+    "value": 6000,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "shield": true,
+    "model": "shield_round",
+    "classes": [
+      "warrior",
+      "cleric",
+      "shaman",
+      "ranger"
+    ]
+  }
+}

@@ -15943,5 +15943,517 @@
       }
     ],
     "model": "lantern_moth"
+  },
+  "tw_tusker_boar": {
+    "name": "a thornwood tusker",
+    "level": [
+      8,
+      10
+    ],
+    "hp_base": 60,
+    "hp_per_level": 16,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 3.0,
+    "ac": 16,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "gore",
+      "gores"
+    ],
+    "shape": "beetle",
+    "color": "#2f2622",
+    "scale": 1.25,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tw_tusker_tusk",
+        "chance": 0.55
+      },
+      {
+        "item": "raw_meat",
+        "chance": 0.3
+      }
+    ],
+    "model": "boar"
+  },
+  "tw_old_greyback": {
+    "name": "Old Greyback",
+    "level": [
+      13,
+      13
+    ],
+    "hp_base": 60,
+    "hp_per_level": 16,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 3.0,
+    "ac": 16,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#8a8a86",
+    "scale": 1.45,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "tw_greybacks_hide",
+        "chance": 1.0
+      },
+      {
+        "item": "bear_hide",
+        "chance": 1.0
+      }
+    ],
+    "model": "bear",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "tw_forsworn_acolyte": {
+    "name": "a forsworn acolyte",
+    "level": [
+      10,
+      12
+    ],
+    "hp_base": 50,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.8,
+    "ac": 20,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "skeleton",
+    "color": "#e0dccb",
+    "scale": 1.05,
+    "coin": [
+      5,
+      30
+    ],
+    "loot": [
+      {
+        "item": "tw_prayer_bead",
+        "chance": 0.55
+      },
+      {
+        "item": "bone_chips",
+        "chance": 0.4
+      }
+    ],
+    "model": "skeleton_mage",
+    "spawn_anim": "Spawn_Ground"
+  },
+  "tw_brother_vesk": {
+    "name": "Brother Vesk the Forsworn",
+    "level": [
+      14,
+      14
+    ],
+    "hp_base": 50,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.8,
+    "ac": 20,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "skeleton",
+    "color": "#e0dccb",
+    "scale": 1.05,
+    "coin": [
+      90,
+      240
+    ],
+    "loot": [
+      {
+        "item": "tw_vesks_censer",
+        "chance": 1.0
+      },
+      {
+        "item": "bone_chips",
+        "chance": 1.0
+      }
+    ],
+    "model": "necromancer",
+    "spawn_anim": "Spawn_Ground",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "lg_ringstone_sentinel": {
+    "name": "a ringstone sentinel",
+    "level": [
+      35,
+      37
+    ],
+    "hp_base": 259,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 65,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#8aa08a",
+    "scale": 1.0,
+    "coin": [
+      40,
+      160
+    ],
+    "loot": [
+      {
+        "item": "lg_humming_stone_chip",
+        "chance": 0.55
+      }
+    ],
+    "model": "menhir",
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    },
+    "weapon": "barrow_blade"
+  },
+  "lg_ringwarden": {
+    "name": "the Ringwarden",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 259,
+    "hp_per_level": 34,
+    "dmg_min": 24,
+    "dmg_max": 48,
+    "attack_delay": 2.7,
+    "ac": 65,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#8aa08a",
+    "scale": 1.2,
+    "coin": [
+      480,
+      1280
+    ],
+    "loot": [
+      {
+        "item": "lg_ringwardens_rune",
+        "chance": 1.0
+      },
+      {
+        "item": "lg_humming_stone_chip",
+        "chance": 1.0
+      }
+    ],
+    "model": "old_thrum",
+    "proc": {
+      "spell": "barrow_chill",
+      "chance": 0.15,
+      "text": "%s's attack carries %s!"
+    },
+    "weapon": "barrow_blade",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "lg_carrion_jackal": {
+    "name": "a carrion jackal",
+    "level": [
+      34,
+      36
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a09060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "lg_jackal_ear",
+        "chance": 0.55
+      }
+    ],
+    "model": "marrow_jackal"
+  },
+  "lg_old_rakemaw": {
+    "name": "Old Rakemaw",
+    "level": [
+      39,
+      39
+    ],
+    "hp_base": 251,
+    "hp_per_level": 33,
+    "dmg_min": 24,
+    "dmg_max": 46,
+    "attack_delay": 2.7,
+    "ac": 63,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a09060",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "lg_rakemaws_jawbone",
+        "chance": 1.0
+      },
+      {
+        "item": "lg_jackal_ear",
+        "chance": 1.0
+      }
+    ],
+    "model": "gorgemaw",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "bl_brine_miner": {
+    "name": "a brine-drowned miner",
+    "level": [
+      17,
+      19
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a870",
+    "scale": 1.0,
+    "coin": [
+      30,
+      110
+    ],
+    "loot": [
+      {
+        "item": "bl_miners_tag",
+        "chance": 0.55
+      }
+    ],
+    "model": "sunken_villager"
+  },
+  "bl_foreman_dask": {
+    "name": "Foreman Dask",
+    "level": [
+      21,
+      21
+    ],
+    "hp_base": 100,
+    "hp_per_level": 18,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a870",
+    "scale": 1.0,
+    "coin": [
+      330,
+      880
+    ],
+    "loot": [
+      {
+        "item": "bl_foremans_ledger",
+        "chance": 1.0
+      },
+      {
+        "item": "bl_miners_tag",
+        "chance": 1.0
+      }
+    ],
+    "model": "drowned_captain",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "bl_wreck_crab": {
+    "name": "a wreck crab",
+    "level": [
+      16,
+      18
+    ],
+    "hp_base": 110,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 21,
+    "attack_delay": 2.5,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#d8c090",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bl_crab_claw",
+        "chance": 0.55
+      }
+    ],
+    "model": "salt_crab",
+    "proc": {
+      "spell": "scorpion_venom",
+      "chance": 0.15,
+      "text": "%s's sting carries %s!"
+    }
+  },
+  "bl_wreck_shell": {
+    "name": "the Wreck-Shell",
+    "level": [
+      21,
+      21
+    ],
+    "hp_base": 110,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 21,
+    "attack_delay": 2.5,
+    "ac": 30,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "beetle",
+    "color": "#d8c090",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "bl_wreckshell_shard",
+        "chance": 1.0
+      },
+      {
+        "item": "bl_crab_claw",
+        "chance": 1.0
+      }
+    ],
+    "model": "old_saltclaw",
+    "proc": {
+      "spell": "scorpion_venom",
+      "chance": 0.15,
+      "text": "%s's sting carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
   }
 }

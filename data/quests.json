@@ -105,7 +105,10 @@
     "first_complete_text": "And these. Wolfhide, stitched with thornback silk. They'll keep your feet quiet in the woods.",
     "faction": {
       "emberhold": 5
-    }
+    },
+    "also_taken_by": [
+      "tw_corporal_brannic"
+    ]
   },
   "silk_and_venom": {
     "name": "Silk and Venom",
@@ -126,7 +129,10 @@
     "first_complete_text": "Take these. Silkweave, light as breath and tougher than leather. Wear them into the deep woods.",
     "faction": {
       "emberhold": 10
-    }
+    },
+    "also_taken_by": [
+      "tw_corporal_brannic"
+    ]
   },
   "scales_for_the_nets": {
     "name": "Scales for the Nets",
@@ -336,7 +342,10 @@
     "first_complete_text": "And the boots I promised. Salt won't eat these.",
     "faction": {
       "salt_traders": 15
-    }
+    },
+    "also_taken_by": [
+      "bl_outrider_kofi"
+    ]
   },
   "the_salt_wolf": {
     "name": "The Salt-Wolf",
@@ -357,7 +366,10 @@
     "faction": {
       "salt_traders": 30,
       "lanternhold": 10
-    }
+    },
+    "also_taken_by": [
+      "bl_outrider_kofi"
+    ]
   },
   "heart_of_the_titan": {
     "name": "Heart of the Titan",
@@ -377,7 +389,10 @@
     "first_complete_text": "The talisman, carved from its first bone, as promised.",
     "faction": {
       "salt_traders": 25
-    }
+    },
+    "also_taken_by": [
+      "bl_outrider_kofi"
+    ]
   },
   "lagoon_snapper": {
     "name": "Snapper for Oji",
@@ -502,7 +517,10 @@
       "watch": 10,
       "emberhold": 5,
       "bloodtusk": -10
-    }
+    },
+    "also_taken_by": [
+      "tw_corporal_brannic"
+    ]
   },
   "grolthars_necklace": {
     "name": "The Warchief's Trophies",
@@ -524,7 +542,10 @@
       "watch": 25,
       "emberhold": 10,
       "bloodtusk": -25
-    }
+    },
+    "also_taken_by": [
+      "tw_corporal_brannic"
+    ]
   },
   "the_hollow_watch": {
     "name": "Rest for the Hollow Watch",
@@ -545,7 +566,10 @@
     "faction": {
       "emberhold": 15,
       "watch": 10
-    }
+    },
+    "also_taken_by": [
+      "tw_corporal_brannic"
+    ]
   },
   "tenzins_beads": {
     "name": "Rites for the Fallen",
@@ -2393,7 +2417,10 @@
     "faction": {
       "galehold": 8,
       "hoofborn": -10
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "khans_horsetail_banner_q": {
     "name": "The Khan's Horsetail Banner",
@@ -2414,7 +2441,10 @@
     "faction": {
       "galehold": 30,
       "hoofborn": -30
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "stalker_pelt_q": {
     "name": "Grass Stalker Pelts",
@@ -2435,7 +2465,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "galehold": 8
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "tawnyjaws_fang_q": {
     "name": "Tawnyjaw's Fang",
@@ -2455,7 +2488,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "galehold": 30
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "thunderhoof_horn_q": {
     "name": "Thunderhoof Horns",
@@ -2476,7 +2512,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "galehold": 8
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "herd_kings_horn_q": {
     "name": "The Herd-King's Horn",
@@ -2496,7 +2535,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "galehold": 30
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "barrow_bronze_q": {
     "name": "Pieces Of Barrow Bronze",
@@ -2517,7 +2559,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "galehold": 8
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "barrow_lords_death_mask_q": {
     "name": "The Barrow Lord's Death Mask",
@@ -2537,7 +2582,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "galehold": 30
-    }
+    },
+    "also_taken_by": [
+      "lg_outrider_temperance"
+    ]
   },
   "court_signet_q": {
     "name": "Ember Court Signets",
@@ -5073,5 +5121,243 @@
     "first_reward_item": "stormcut_staff",
     "first_complete_text": "A staff cut from the gorge's own stone. It hums when it rains.",
     "start_keyword": "voice"
+  },
+  "tw_tusker_tusks": {
+    "name": "Tusker Tusks",
+    "giver": "tw_hob_woodcutter",
+    "wants": {
+      "tw_tusker_tusk": 4
+    },
+    "reward": {
+      "xp": 480,
+      "coin": 110
+    },
+    "accept_text": "You have taken on a task: Tusker Tusks. Bring Hob the Woodcutter four thornwood tusker tusks.",
+    "ready_text": "Tusks! The Patrol will pay double for these.",
+    "complete_text": "Four fewer tuskers rooting through our things.",
+    "faction": {
+      "emberhold": 5,
+      "watch": 5
+    },
+    "start_keyword": "boars",
+    "repeatable": true
+  },
+  "tw_old_greyback": {
+    "name": "Old Greyback",
+    "giver": "tw_hob_woodcutter",
+    "wants": {
+      "tw_greybacks_hide": 1
+    },
+    "reward": {
+      "xp": 1400,
+      "coin": 320
+    },
+    "accept_text": "You have taken on a task: Old Greyback. Bring Hob the Woodcutter the scarred hide of Old Greyback.",
+    "ready_text": "That scar. That's him.",
+    "complete_text": "We can come home now. Thank you, {name}.",
+    "faction": {
+      "emberhold": 20,
+      "watch": 10
+    },
+    "first_reward_item": "tw_woodcutters_hatchet",
+    "first_complete_text": "My brother's hatchet. He'd want it swinging.",
+    "start_keyword": "old greyback"
+  },
+  "tw_prayer_beads": {
+    "name": "Forsworn Prayer Beads",
+    "giver": "tw_corporal_brannic",
+    "wants": {
+      "tw_prayer_bead": 4
+    },
+    "reward": {
+      "xp": 520,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: Forsworn Prayer Beads. Bring Corporal Brannic four forsworn prayer beads.",
+    "ready_text": "Beads. They're still warm.",
+    "complete_text": "Four fewer prayers. Good.",
+    "faction": {
+      "watch": 10
+    },
+    "start_keyword": "beads",
+    "repeatable": true
+  },
+  "tw_brother_vesk": {
+    "name": "Brother Vesk the Forsworn",
+    "giver": "tw_corporal_brannic",
+    "wants": {
+      "tw_vesks_censer": 1
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 340
+    },
+    "accept_text": "You have taken on a task: Brother Vesk the Forsworn. Bring Corporal Brannic Brother Vesk's censer.",
+    "ready_text": "The censer. It's gone cold at last.",
+    "complete_text": "The shrine's quiet. The Dawn-Tusk can have it back.",
+    "faction": {
+      "watch": 25
+    },
+    "first_reward_item": "tw_northwatch_cloak",
+    "first_complete_text": "The Northwatch's cloak. You've earned the colors.",
+    "start_keyword": "brother vesk"
+  },
+  "lg_stone_chips": {
+    "name": "Humming Stone",
+    "giver": "lg_outrider_temperance",
+    "wants": {
+      "lg_humming_stone_chip": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "accept_text": "You have taken on a task: Humming Stone. Bring Outrider Temperance four humming stone chips.",
+    "ready_text": "Chips! Put your ear to one.",
+    "complete_text": "The stonecutters will be up all night.",
+    "faction": {
+      "galehold": 15
+    },
+    "start_keyword": "sentinels",
+    "repeatable": true
+  },
+  "lg_ringwarden": {
+    "name": "The Ringwarden",
+    "giver": "lg_outrider_temperance",
+    "wants": {
+      "lg_ringwardens_rune": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "accept_text": "You have taken on a task: The Ringwarden. Bring Outrider Temperance the Ringwarden's rune-stone.",
+    "ready_text": "It's stopped humming.",
+    "complete_text": "The ring is only stones again.",
+    "faction": {
+      "galehold": 30
+    },
+    "first_reward_item": "lg_ringstone_band",
+    "first_complete_text": "Cut from its heart. It still hums, a little.",
+    "start_keyword": "ringwarden"
+  },
+  "lg_jackal_ears": {
+    "name": "Carrion Jackal Ears",
+    "giver": "lg_herdwife_saule",
+    "wants": {
+      "lg_jackal_ear": 4
+    },
+    "reward": {
+      "xp": 8550,
+      "coin": 950
+    },
+    "accept_text": "You have taken on a task: Carrion Jackal Ears. Bring Herdwife Saule four carrion jackal ears.",
+    "ready_text": "Ears. Good.",
+    "complete_text": "Four fewer at the bones.",
+    "faction": {
+      "galehold": 15
+    },
+    "start_keyword": "jackals",
+    "repeatable": true
+  },
+  "lg_old_rakemaw": {
+    "name": "Old Rakemaw",
+    "giver": "lg_herdwife_saule",
+    "wants": {
+      "lg_rakemaws_jawbone": 1
+    },
+    "reward": {
+      "xp": 19000,
+      "coin": 2280
+    },
+    "accept_text": "You have taken on a task: Old Rakemaw. Bring Herdwife Saule the jawbone of Old Rakemaw.",
+    "ready_text": "Her jaw. She won't bite again.",
+    "complete_text": "I can bury my husband's things now.",
+    "faction": {
+      "galehold": 30
+    },
+    "first_reward_item": "lg_herdwifes_mantle",
+    "first_complete_text": "My mantle. Wear it on the plain, it's kept me warm on worse nights.",
+    "start_keyword": "old rakemaw"
+  },
+  "bl_mine_tags": {
+    "name": "Mine Tags",
+    "giver": "bl_outrider_kofi",
+    "wants": {
+      "bl_miners_tag": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Mine Tags. Bring Outrider Kofi four brine-crusted mine tags.",
+    "ready_text": "Tags. Let me read the names.",
+    "complete_text": "Four families will know.",
+    "faction": {
+      "salt_traders": 15,
+      "lanternhold": 5
+    },
+    "start_keyword": "tags",
+    "repeatable": true
+  },
+  "bl_foreman_dask": {
+    "name": "Foreman Dask",
+    "giver": "bl_outrider_kofi",
+    "wants": {
+      "bl_foremans_ledger": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1500
+    },
+    "accept_text": "You have taken on a task: Foreman Dask. Bring Outrider Kofi Foreman Dask's ledger.",
+    "ready_text": "The ledger. Every name in it.",
+    "complete_text": "They'll be mourned properly now.",
+    "faction": {
+      "salt_traders": 30,
+      "lanternhold": 10
+    },
+    "first_reward_item": "bl_saltminers_girdle",
+    "first_complete_text": "His belt. It held up a lot of salt.",
+    "start_keyword": "foreman"
+  },
+  "bl_crab_claws": {
+    "name": "Wreck Crab Claws",
+    "giver": "bl_trader_oyelowo",
+    "wants": {
+      "bl_crab_claw": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Wreck Crab Claws. Bring Trader Oyelowo four wreck crab claws.",
+    "ready_text": "Claws! The cooks will sing.",
+    "complete_text": "Four fewer in my wagons.",
+    "faction": {
+      "salt_traders": 15
+    },
+    "start_keyword": "crabs",
+    "repeatable": true
+  },
+  "bl_wreck_shell": {
+    "name": "The Wreck-Shell",
+    "giver": "bl_trader_oyelowo",
+    "wants": {
+      "bl_wreckshell_shard": 1
+    },
+    "reward": {
+      "xp": 12000,
+      "coin": 1500
+    },
+    "accept_text": "You have taken on a task: The Wreck-Shell. Bring Trader Oyelowo a shard of the Wreck-Shell.",
+    "ready_text": "A piece of it. It's really gone.",
+    "complete_text": "My strongbox, at last.",
+    "faction": {
+      "salt_traders": 30
+    },
+    "first_reward_item": "bl_wreckers_buckler",
+    "first_complete_text": "Made from the lead wagon's wheel-guard. Take it.",
+    "start_keyword": "wreck-shell"
   }
 }
