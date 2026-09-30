@@ -27,7 +27,7 @@
     {"pos": [0, 373], "size": [18, 8], "to": "blackglass", "arrive": [0, -359], "arrive_face": [0, -319]},
     {"pos": [-373, 0], "size": [8, 18], "to": "hollow_air", "arrive": [359, 0], "arrive_face": [319, 0]},
     {"pos": [373, 0], "size": [8, 18], "to": "ivory_field", "arrive": [-487, 0], "arrive_face": [-447, 0]},
-    {"pos": [0, -373], "size": [18, 8], "to": "lastwalk", "arrive": [0.2, 329.2], "arrive_face": [0.2, 289.2]}
+    {"pos": [0, -373], "size": [18, 8], "to": "lastwalk", "arrive": [0, 359], "arrive_face": [0, 319]}
   ],
   "landmarks": [
     {"type": "ruins", "pos": [-3.6, -167.7]},

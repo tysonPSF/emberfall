@@ -28,7 +28,7 @@
     {"points": [[5.2, 29.8], [49.2, 29.8], [150, 12.5], [280, 0]], "width": 3.0}
   ],
   "zone_lines": [
-    {"pos": [0, 269], "size": [18, 8], "to": "high_terrace", "arrive": [-1.2, -265.7], "arrive_face": [-1.2, -225.7]},
+    {"pos": [0, 269], "size": [18, 8], "to": "high_terrace", "arrive": [0, -359], "arrive_face": [0, -319]},
     {"pos": [-269, 0], "size": [8, 18], "to": "the_burn", "arrive": [487, 0], "arrive_face": [447, 0]},
     {"pos": [269, 0], "size": [8, 18], "to": "mirror_flats", "arrive": [-487, 0], "arrive_face": [-447, 0]},
     {"pos": [0, -269], "size": [18, 8], "to": "forgehold", "arrive": [0, 46], "arrive_face": [0, 0]}

@@ -87,7 +87,7 @@
     {"pos": [-325, -30], "size": [8, 18], "to": "thornwood", "arrive": [487, -40], "arrive_face": [447, -40]},
     {"pos": [0, 325], "size": [18, 8], "to": "harrowfield", "arrive": [0, -263], "arrive_face": [0, -223]},
     {"pos": [325, 0], "size": [8, 18], "to": "sunward_steps", "arrive": [-311, 0], "arrive_face": [-271, 0]},
-    {"pos": [0, -325], "size": [18, 8], "to": "high_terrace", "arrive": [-1.2, 196.3], "arrive_face": [-1.2, 156.3]}
+    {"pos": [0, -325], "size": [18, 8], "to": "high_terrace", "arrive": [0, 359], "arrive_face": [0, 319]}
   ],
   "npcs": [
     {"id": "hollow_elder", "pos": [138, -22.5], "face": [169, -22.5]},

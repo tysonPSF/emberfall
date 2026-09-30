@@ -132,32 +132,8 @@
       "arrive": [0, -255],
       "arrive_face": [0, -215]
     },
-    {
-      "pos": [
-        97,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "agnavars_hearth",
-      "arrive": [-252.2, -2.6],
-      "arrive_face": [-212.2, -2.6]
-    },
-    {
-      "pos": [
-        0,
-        -97
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "ivory_field",
-      "arrive": [0.5, 427.5],
-      "arrive_face": [0.5, 387.5]
-    }
+    {"pos": [97, 0], "size": [8, 18], "to": "agnavars_hearth", "arrive": [-295, 0], "arrive_face": [-255, 0]},
+    {"pos": [0, -97], "size": [18, 8], "to": "ivory_field", "arrive": [0, 487], "arrive_face": [0, 447]}
   ],
   "landmarks": [
     {

@@ -34,7 +34,7 @@
     {"points": [[20, -120], [120, -120], [252.7, -129]], "width": 2.6}
   ],
   "zone_lines": [
-    {"pos": [0, 501], "size": [18, 8], "to": "cinderpass", "arrive": [-20, -280.7], "arrive_face": [-20, -240.7]},
+    {"pos": [0, 501], "size": [18, 8], "to": "cinderpass", "arrive": [0, -311], "arrive_face": [0, -271]},
     {"pos": [0, -501], "size": [18, 8], "to": "blackglass", "arrive": [0, 359], "arrive_face": [0, 319]},
     {"pos": [501, 0], "size": [8, 18], "to": "dawnwatch", "arrive": [-255, 0], "arrive_face": [-215, 0]},
     {"pos": [-501, 0], "size": [8, 18], "to": "windbreak", "arrive": [311, 0], "arrive_face": [271, 0]}

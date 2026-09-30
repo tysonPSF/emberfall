@@ -2773,27 +2773,9 @@ func _t_night_spawns() -> void:
 
 ## The Thornwood-Hollowmere border, walked both ways (east and west zone lines).
 func _t_hollowmere_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["thornwood", Vector2(225, -20), Vector2(1, 0), "hollowmere"], ["hollowmere", Vector2(-193, -20), Vector2(-1, 0), "thornwood"]]:
-		if main.zone.zone_id != leg[0]:
-			print("hollowmere_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("hollowmere_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		while not is_instance_valid(main.zone) or main.zone.zone_id != leg[3]:
-			await _wait(0.5)
-			if k_timeout(main):
-				break
-		var z: Zone = main.zone
-		print("hollowmere_border: walked %s from %s -> now in %s at %s (ground %.1f)" % [["east", "west"][0 if leg[2].x > 0 else 1], leg[0], z.zone_id,
-				Vector2(p.global_position.x, p.global_position.z), z.height_at(p.global_position.x, p.global_position.z)])
 
 
 var _patience := 0
@@ -3055,28 +3037,10 @@ func _t_physics_isolate() -> void:
 ## Harrowfield's borders, both walked both ways: Greenmoor's east edge, and
 ## Hollowmere's south edge.
 func _t_harrowfield_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["greenmoor", Vector2(170, 0), Vector2(1, 0), "harrowfield"], ["harrowfield", Vector2(0, -170), Vector2(0, -1), "hollowmere"],
 			["hollowmere", Vector2(0, 202), Vector2(0, 1), "harrowfield"], ["harrowfield", Vector2(-170, 0), Vector2(-1, 0), "greenmoor"]]:
-		if main.zone.zone_id != leg[0]:
-			print("harrowfield_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("harrowfield_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("harrowfield_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Harrowfield: the hamlet, fields, windmill, orchard and the brigands' farm.
@@ -4050,27 +4014,9 @@ func _t_venom_drop() -> void:
 
 ## The Hollowmere - Sunward Steps border, walked both ways.
 func _t_sunward_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["hollowmere", Vector2(200, 0), Vector2(1, 0), "sunward_steps"], ["sunward_steps", Vector2(-196, 0), Vector2(-1, 0), "hollowmere"]]:
-		if main.zone.zone_id != leg[0]:
-			print("sunward_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("sunward_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("sunward_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Sunward Steps: the terraces, the waystation, the shrines, the Great Temple.
@@ -7575,27 +7521,9 @@ func _t_level25() -> void:
 
 
 func _t_bleach_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["sunward_steps", Vector2(0, -196), Vector2(0, -1), "the_bleach"], ["the_bleach", Vector2(0, 226), Vector2(0, 1), "sunward_steps"]]:
-		if main.zone.zone_id != leg[0]:
-			print("bleach_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("bleach_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("bleach_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## The Bleach: the salt flats, the caravan camp, the titan's bones, the raider camp.
@@ -7697,27 +7625,9 @@ func _t_bleach_life() -> void:
 
 ## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
 func _t_lanternhold_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["sunward_steps", Vector2(200, 0), Vector2(1, 0), "lanternhold"], ["lanternhold", Vector2(-84, 0), Vector2(-1, 0), "sunward_steps"]]:
-		if main.zone.zone_id != leg[0]:
-			print("lanternhold_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("lanternhold_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("lanternhold_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Lanternhold: the gate, the shrine plaza by day and by night, the Dawn-Tusk's

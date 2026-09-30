@@ -86,10 +86,10 @@
     {"points": [[0, 7.5], [-90, 15], [-178.5, 7.5], [-336, 0]], "width": 2.8}
   ],
   "zone_lines": [
-    {"pos": [17.4, 300.5], "size": [18, 8], "to": "thornwood", "arrive": [0, -487], "arrive_face": [0, -447]},
+    {"pos": [0, 325], "size": [18, 8], "to": "thornwood", "arrive": [0, -487], "arrive_face": [0, -447]},
     {"pos": [325, 0], "size": [8, 18], "to": "high_terrace", "arrive": [-359, 0], "arrive_face": [-319, 0]},
     {"pos": [-325, 0], "size": [8, 18], "to": "drownfast", "arrive": [231, 0], "arrive_face": [191, 0]},
-    {"pos": [-20, -294.7], "size": [18, 8], "to": "the_burn", "arrive": [16, 439], "arrive_face": [16, 399]}
+    {"pos": [0, -325], "size": [18, 8], "to": "the_burn", "arrive": [0, 487], "arrive_face": [0, 447]}
   ],
   "npcs": [
     {"id": "scout_captain_brenna", "pos": [43.4, 273.5], "face": [27.4, 272.5]},

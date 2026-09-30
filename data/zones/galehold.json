@@ -132,19 +132,7 @@
       "arrive": [0, -255],
       "arrive_face": [0, -215]
     },
-    {
-      "pos": [
-        -97,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "stonesail",
-      "arrive": [327.4, -1.2],
-      "arrive_face": [287.4, -1.2]
-    },
+    {"pos": [-97, 0], "size": [8, 18], "to": "stonesail", "arrive": [359, 0], "arrive_face": [319, 0]},
     {
       "pos": [
         0,

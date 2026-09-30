@@ -94,7 +94,7 @@
   "zone_lines": [
     {"pos": [325, 60], "size": [8, 18], "to": "thornwood", "arrive": [-487, 80], "arrive_face": [-447, 80]},
     {"pos": [0, 325], "size": [18, 8], "to": "rainhold", "arrive": [0, -46], "arrive_face": [0, -6]},
-    {"pos": [-325, 0], "size": [8, 18], "to": "reedmere", "arrive": [439.2, -0.2], "arrive_face": [399.2, -0.2]},
+    {"pos": [-325, 0], "size": [8, 18], "to": "reedmere", "arrive": [487, 0], "arrive_face": [447, 0]},
     {"pos": [0, -325], "size": [18, 8], "to": "drownfast", "arrive": [0, 231], "arrive_face": [0, 191]}
   ],
   "npcs": [],

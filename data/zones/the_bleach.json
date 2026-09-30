@@ -81,7 +81,7 @@
     {"points": [[-60, 120], [-240, 40], [-512, 0]], "width": 3.0}
   ],
   "zone_lines": [
-    {"pos": [0, -501], "size": [18, 8], "to": "mirror_flats", "arrive": [8, 435.2], "arrive_face": [8, 395.2]},
+    {"pos": [0, -501], "size": [18, 8], "to": "mirror_flats", "arrive": [0, 487], "arrive_face": [0, 447]},
     {"pos": [0, 501], "size": [18, 8], "to": "sunward_steps", "arrive": [0, -311], "arrive_face": [0, -271]},
     {"pos": [-501, 0], "size": [8, 18], "to": "high_terrace", "arrive": [359, 0], "arrive_face": [319, 0]}
   ],

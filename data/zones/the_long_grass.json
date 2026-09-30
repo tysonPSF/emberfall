@@ -26,7 +26,7 @@
     {"pos": [0, 501], "size": [18, 8], "to": "windbreak", "arrive": [0, -311], "arrive_face": [0, -271]},
     {"pos": [-501, 0], "size": [8, 18], "to": "galehold", "arrive": [46, 0], "arrive_face": [0, 0]},
     {"pos": [501, 0], "size": [8, 18], "to": "blackglass", "arrive": [-359, 0], "arrive_face": [-319, 0]},
-    {"pos": [0, -501], "size": [18, 8], "to": "hollow_air", "arrive": [16.5, 312.5], "arrive_face": [16.5, 272.5]}
+    {"pos": [0, -501], "size": [18, 8], "to": "hollow_air", "arrive": [0, 359], "arrive_face": [0, 319]}
   ],
   "landmarks": [
     {"type": "prop", "pos": [-236.7, -260], "id": "barrow_mound", "collide": "mesh", "face": [-196.7, -230]},
@@ -61,6 +61,7 @@
   ],
   "npcs": [],
   "spawns": [
+    {"pos": [0, 320], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
     {"pos": [-88, 456], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
     {"pos": [0, -464], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
     {"pos": [128, -232], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},

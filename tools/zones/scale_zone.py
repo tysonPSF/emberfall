@@ -70,6 +70,16 @@ class Scaler:
             return math.copysign(self.new_half - (self.half - abs(v)), v)
         return v * self.f
 
+    def near_edge(self, p):
+        return max(abs(float(p[0])), abs(float(p[1]))) > self.half - EDGE
+
+    def border(self, p):
+        """A border's own point (a zone line in a pass, an arrival): it keeps its place on
+        its pass, never moving with a settlement that happens to stand by the pass."""
+        if self.near_edge(p):
+            return [_r(self.edge_keep(float(p[0]))), _r(self.edge_keep(float(p[1])))]
+        return self.point(p)  # a door inside the zone (a cave) goes with what it's in
+
     def point(self, p, g=None):
         """Where p goes: with its settlement (g, or the one it stands in), else stretched."""
         x, y = float(p[0]), float(p[1])
@@ -163,7 +173,7 @@ def scale(z, f):
     if "passes" in z:
         out["passes"] = [[_r(s.edge_keep(float(p[0]))), _r(s.edge_keep(float(p[1])))] + list(p[2:]) for p in z["passes"]]
     if "zone_lines" in z:
-        out["zone_lines"] = [dict(zl, pos=s.point(zl["pos"]), **({"refused_to": s.point(zl["refused_to"])} if "refused_to" in zl else {}))
+        out["zone_lines"] = [dict(zl, pos=s.border(zl["pos"]), **({"refused_to": s.point(zl["refused_to"])} if "refused_to" in zl else {}))
                              for zl in z["zone_lines"]]  # a cave's door, and where a guard turns you back from it, go with its cave
     if "terraces" in z:
         t = dict(z["terraces"])
@@ -192,7 +202,7 @@ def arrival(s, zl):
     """A neighbor's zone line into the scaled zone, with its arrival moved to match."""
     m = dict(zl)
     if isinstance(zl.get("arrive"), list):
-        m["arrive"] = s.point(zl["arrive"])
+        m["arrive"] = s.border(zl["arrive"])
         if isinstance(zl.get("arrive_face"), list):
             m["arrive_face"] = s.facing(zl["arrive"], zl["arrive_face"], m["arrive"])
     return m

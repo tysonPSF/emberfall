@@ -28,7 +28,7 @@
     {"pos": [0, 373], "size": [18, 8], "to": "the_burn", "arrive": [0, -487], "arrive_face": [0, -447]},
     {"pos": [373, 0], "size": [8, 18], "to": "forgehold", "arrive": [-46, 0], "arrive_face": [0, 0]},
     {"pos": [-373, 0], "size": [8, 18], "to": "the_long_grass", "arrive": [487, 0], "arrive_face": [447, 0]},
-    {"pos": [0, -373], "size": [18, 8], "to": "fogfall", "arrive": [0.2, 326.5], "arrive_face": [0.2, 286.5]}
+    {"pos": [0, -373], "size": [18, 8], "to": "fogfall", "arrive": [0, 359], "arrive_face": [0, 319]}
   ],
   "landmarks": [
     {"type": "signpost", "pos": [12, 358], "yaw": -90, "labels": ["The Burn", "Blackglass"]},
