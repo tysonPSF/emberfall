@@ -59,7 +59,7 @@ func run(t: Node) -> void:
 			if OS.get_environment("BALANCE_LEVELS") != "" and not str(lvl) in OS.get_environment("BALANCE_LEVELS").split(","):  # e.g. "30,35"
 				continue
 			var row := {"class": v[0], "pet": v[1], "level": lvl, "fights": []}
-			for mob_id: String in MOBS[lvl]:
+			for mob_id: String in (_named_near(lvl) if _named else MOBS[lvl]):
 				for k in (int(OS.get_environment("BALANCE_FIGHTS")) if OS.get_environment("BALANCE_FIGHTS") != "" else FIGHTS):
 					row["fights"].append(await _fight(p, z, str(v[0]), str(v[1]), lvl, mob_id))
 			_summarize(row)
@@ -75,6 +75,24 @@ func run(t: Node) -> void:
 	f.store_string(JSON.stringify({"rows": results, "config": {"levels": LEVELS, "mobs": MOBS, "fights": FIGHTS}}, " "))
 	f.close()
 	print("balance: wrote %s" % ProjectSettings.globalize_path(out_path))
+
+
+## BALANCE_NAMED: fight named monsters (each at the test level) instead of
+## ordinary ones, alone, to see what a solo named costs; a longer time limit.
+var _named := OS.get_environment("BALANCE_NAMED") != ""
+
+
+## Three named monsters from levels lvl to lvl + 3 (none that need a group), the same every run.
+func _named_near(lvl: int) -> Array:
+	var ids: Array = GameData.mobs.keys().filter(func(id: String) -> bool:
+		var d: Dictionary = GameData.mobs[id]
+		return d.get("named", false) and int(d.get("min_players", 1)) <= 1 and d.has("level") and int(d["level"][0]) >= lvl and int(d["level"][0]) <= lvl + 3)
+	ids.sort()
+	var out: Array = []
+	for k in 3:
+		if not ids.is_empty():
+			out.append(ids[(k * 7 + lvl) % ids.size()])
+	return out
 
 
 func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id: String) -> Dictionary:
@@ -166,7 +184,7 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	var mana0 := p.mana
 	var died := false
 	var real0 := Time.get_ticks_msec()
-	while t < TIME_LIMIT and is_instance_valid(mob) and not mob.dead:
+	while t < (TIME_LIMIT * 3.0 if _named else TIME_LIMIT) and is_instance_valid(mob) and not mob.dead:
 		if t >= next_decision:
 			next_decision += DECIDE_EVERY
 			if p.hp < p.max_hp * 0.05:  # as good as dead: stop before the real thing sends you to your bind point

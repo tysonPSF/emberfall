@@ -13958,6 +13958,8 @@
     ],
     "model": "the_uninvited",
     "named": true,
+    "min_players": 3,
+    "toughness": 1.5,
     "xp_bonus": 4.0,
     "weapon": "uninvited_scepter",
     "proc": {

@@ -58,6 +58,12 @@
   "crit_spell": [0.03, 0.0004],
   "crit_heal": [0.03, 0.0004],
   "crit_named": 0.05,
+  "named_health": 2.0,
+  "named_damage": 1.2,
+  "named_proc_share": 0.3,
+  "named_health_per_player": 0.8,
+  "named_damage_per_player": 0.08,
+  "named_group_radius": 60,
   "crit_melee_mult": 2.0,
   "crit_spell_mult": 1.5,
   "crit_heal_mult": 1.5

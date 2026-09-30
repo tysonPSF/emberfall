@@ -656,7 +656,10 @@ func _try_proc(e: Entity, t: Entity) -> void:
 	var natural := proc.is_empty() and (e is Mob or e is Pet)  # a monster's own: a spider's venom, a shaman's bolt
 	if natural:
 		proc = (e as Mob).data.get("proc", {}) if e is Mob else (e as Pet).proc
-	if proc.is_empty() or t.dead or randf() >= float(proc.get("chance", 0.0)):
+	var chance := float(proc.get("chance", 0.0))
+	if natural and e is Mob and (e as Mob).proc_chance >= 0.0:
+		chance = (e as Mob).proc_chance
+	if proc.is_empty() or t.dead or randf() >= chance:
 		return
 	var spell_id := str(proc["spell"])
 	if not GameData.spells.has(spell_id):
