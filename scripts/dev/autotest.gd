@@ -127,6 +127,8 @@ const SECTIONS := [
 	["spawn_coverage", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
+	["caster_stats", "greenmoor"],
+	["boss_camp_respawn", "thornwood"],
 	["giant_sizes", "the_bleach"],
 	["grove_uniques", "greenmoor"],
 	["bags_with_inventory", "greenmoor"],
@@ -8715,6 +8717,63 @@ func _t_giant_sizes() -> void:
 ## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
 ## fighting, with every clip its body plays (the main hand's slash and the
 ## off hand's own cut), and a shot of each.
+func _t_boss_camp_respawn() -> void:
+	# a quest boss's camp comes back twice as slowly, so it can be cleared to reach him
+	var z: Zone = get_parent().zone
+	var boss_at := Vector3.INF
+	for sp: Node in z.get_children():
+		if sp is SpawnPoint and (sp as SpawnPoint).pool.has("grolthar"):
+			boss_at = (sp as SpawnPoint).position
+	var rows := PackedStringArray()
+	var far_ok := true
+	for i in z.data["spawns"].size():
+		var entry: Dictionary = z.data["spawns"][i]
+		var sp: SpawnPoint = null
+		for c: Node in z.get_children():
+			if c is SpawnPoint and (c as SpawnPoint).pool == entry["pool"] and is_equal_approx((c as SpawnPoint).position.x, float(entry["pos"][0])) and is_equal_approx((c as SpawnPoint).position.z, float(entry["pos"][1])):
+				sp = c
+		if sp == null:
+			continue
+		var d := Vector2(sp.position.x - boss_at.x, sp.position.z - boss_at.z).length()
+		if d <= 28.0 and not sp.pool.has("grolthar"):
+			rows.append("%s %.0f -> %.0f" % [",".join(sp.pool.keys()), float(entry.get("respawn", 60)), sp.respawn_time])
+		elif d > 60.0 and not is_equal_approx(sp.respawn_time, float(entry.get("respawn", 60))) and not sp.has_meta("boss_guard"):
+			far_ok = false
+	print("boss_camp_respawn: Grolthar is a quest boss %s, Silkfang %s, a timber wolf %s" % [GameData.is_quest_boss("grolthar"), GameData.is_quest_boss("broodmother_silkfang"), GameData.is_quest_boss("timber_wolf")])
+	print("boss_camp_respawn: around Grolthar: %s" % [rows])
+	print("boss_camp_respawn: spawns away from any boss keep their time: %s" % far_ok)
+
+
+func _t_caster_stats() -> void:
+	# INT or WIS over 75: mana, mana regen, spell power (own spells only) and fewer fizzles
+	var p := World.local_player
+	var saved := [p.char_class, p.level, p.spells, p.stat_points, p.race]
+	p.char_class = "wizard"
+	p.level = 30
+	p.race = "human"
+	p.spells = ["fireball"]
+	var rows := PackedStringArray()
+	for n: int in [0, 15]:
+		p.stat_points = {"int": n}
+		p.recalc_stats()
+		rows.append("int +%d: mana %d, regen %d, fireball x%.3f, kick x%.3f, not in book x%.3f" % [p.caster_over(), p.max_mana, p.mana_regen,
+				World.spell_power(p, "fireball", GameData.spells["fireball"]), World.spell_power(p, "kick", GameData.spells["kick"]),
+				World.spell_power(p, "fire_bolt", GameData.spells["fire_bolt"])])
+	print("caster_stats: %s" % " | ".join(rows))
+	p.char_class = "cleric"
+	p.stat_points = {"int": 15}
+	p.recalc_stats()
+	print("caster_stats: a cleric's INT counts for nothing: over %d" % p.caster_over())
+	print("caster_stats: creation text, wizard int 15: '%s'; cleric int 15: '%s'; 20 wis cleric: '%s'" % [StatPicker.effect_text("int", 15, GameData.classes["wizard"]),
+			StatPicker.effect_text("int", 15, GameData.classes["cleric"]), StatPicker.effect_text("wis", 20, GameData.classes["cleric"])])
+	p.char_class = saved[0]
+	p.level = saved[1]
+	p.spells = saved[2]
+	p.stat_points = saved[3]
+	p.race = saved[4]
+	p.recalc_stats()
+
+
 func _t_plate_looks() -> void:
 	# plate (warrior and cleric only) must wear the knight's metal, never leather or cloth
 	var looks: Dictionary = GameData.models.get("body_parts", {})
