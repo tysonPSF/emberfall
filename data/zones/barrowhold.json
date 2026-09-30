@@ -106,14 +106,8 @@
         8
       ],
       "to": "the_unlit",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
+      "arrive": [0, -359],
+      "arrive_face": [0, -319]
     },
     {
       "pos": [

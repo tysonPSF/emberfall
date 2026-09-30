@@ -1,166 +1,47 @@
 {
   "name": "Dewstep",
-  "levels": [
-    1,
-    10
-  ],
+  "levels": [1, 10],
   "music": "dewstep",
   "seed": 9131,
-  "size": 384,
+  "size": 576,
   "height_amplitude": 5,
-  "bind_point": [
-    -12,
-    -150
-  ],
+  "bind_point": [-26.4, -177.9],
   "flat_radius": 18,
-  "trees": 120,
-  "tree_mix": [
-    "tree_round",
-    "tree_round",
-    "jungle_tree",
-    "pine_a"
-  ],
+  "trees": 270,
+  "tree_mix": ["tree_round", "tree_round", "jungle_tree", "pine_a"],
   "groves": 0.45,
-  "rocks": 50,
-  "grass_colors": [
-    "#5e8a38",
-    "#7c9e48"
-  ],
+  "rocks": 112,
+  "grass_colors": ["#5e8a38", "#7c9e48"],
   "fog_density": 0.0022,
   "fog_color": "#e2dcc6",
   "sun_energy": 1.1,
   "clutter": {
-    "grass_a": {
-      "density": 0.34,
-      "patch": 0.55,
-      "sway": 0.18,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "grass_b": {
-      "density": 0.26,
-      "patch": 0.35,
-      "sway": 0.16,
-      "range": 50,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.25
-      ]
-    },
-    "tea_bush": {
-      "density": 0.006,
-      "patch": 0.85,
-      "sway": 0.03,
-      "range": 70,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "flowers_yellow": {
-      "density": 0.008,
-      "patch": 0.9,
-      "sway": 0.12,
-      "range": 60,
-      "scale": [
-        0.9,
-        1.3
-      ]
-    },
-    "flowers_white": {
-      "density": 0.006,
-      "patch": 0.9,
-      "sway": 0.12,
-      "range": 60,
-      "scale": [
-        0.9,
-        1.3
-      ]
-    },
-    "fern": {
-      "density": 0.015,
-      "patch": 0.8,
-      "sway": 0.06,
-      "range": 65,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    }
+    "grass_a": {"density": 0.34, "patch": 0.55, "sway": 0.18, "range": 55, "tint": "ground", "scale": [0.8, 1.3]},
+    "grass_b": {"density": 0.26, "patch": 0.35, "sway": 0.16, "range": 50, "tint": "ground", "scale": [0.8, 1.25]},
+    "tea_bush": {"density": 0.006, "patch": 0.85, "sway": 0.03, "range": 70, "shadow": true, "scale": [0.8, 1.2]},
+    "flowers_yellow": {"density": 0.008, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3]},
+    "flowers_white": {"density": 0.006, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3]},
+    "fern": {"density": 0.015, "patch": 0.8, "sway": 0.06, "range": 65, "scale": [0.8, 1.2]}
   },
   "rivers": [
     {
       "points": [
-        [
-          -150,
-          10
-        ],
-        [
-          -130.0,
-          12.0
-        ],
-        [
-          -110.0,
-          14.0
-        ],
-        [
-          -90.0,
-          11.3
-        ],
-        [
-          -70.0,
-          8.7
-        ],
-        [
-          -50.0,
-          6.0
-        ],
-        [
-          -33.3,
-          7.3
-        ],
-        [
-          -16.7,
-          8.7
-        ],
-        [
-          0.0,
-          10.0
-        ],
-        [
-          20.0,
-          11.3
-        ],
-        [
-          40.0,
-          12.7
-        ],
-        [
-          60.0,
-          14.0
-        ],
-        [
-          80.0,
-          12.0
-        ],
-        [
-          100.0,
-          10.0
-        ],
-        [
-          120.0,
-          8.0
-        ],
-        [
-          150.0,
-          12.0
-        ]
+        [-225, 15],
+        [-195, 18],
+        [-165, 21],
+        [-135, 17],
+        [-105, 13],
+        [-75, 9],
+        [-49.9, 10.9],
+        [-25, 13],
+        [0, 15],
+        [30, 17],
+        [60, 19],
+        [90, 21],
+        [120, 18],
+        [150, 15],
+        [180, 12],
+        [225, 18]
       ],
       "width": 8,
       "depth": 1.0,
@@ -169,1380 +50,140 @@
     }
   ],
   "fields": [
-    {
-      "pos": [
-        -70,
-        -112
-      ],
-      "size": [
-        30,
-        16
-      ],
-      "yaw": 4,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 1.8,
-      "step": 1.2
-    },
-    {
-      "pos": [
-        42,
-        -118
-      ],
-      "size": [
-        30,
-        16
-      ],
-      "yaw": -6,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 1.8,
-      "step": 1.2
-    },
-    {
-      "pos": [
-        -58,
-        -58
-      ],
-      "size": [
-        28,
-        14
-      ],
-      "yaw": 3,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 1.8,
-      "step": 1.2
-    },
-    {
-      "pos": [
-        60,
-        -54
-      ],
-      "size": [
-        28,
-        14
-      ],
-      "yaw": -4,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 1.8,
-      "step": 1.2
-    },
-    {
-      "pos": [
-        -55,
-        72
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": 2,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        -22,
-        80
-      ],
-      "size": [
-        22,
-        12
-      ],
-      "yaw": -3,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        48,
-        66
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": 5,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        86,
-        72
-      ],
-      "size": [
-        22,
-        12
-      ],
-      "yaw": -2,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    }
+    {"pos": [-105, -168], "size": [30, 16], "yaw": 4, "fence": false, "crop": "tea_bush", "row": 1.8, "step": 1.2},
+    {"pos": [63, -177], "size": [30, 16], "yaw": -6, "fence": false, "crop": "tea_bush", "row": 1.8, "step": 1.2},
+    {"pos": [-87, -87], "size": [28, 14], "yaw": 3, "fence": false, "crop": "tea_bush", "row": 1.8, "step": 1.2},
+    {"pos": [45.6, -81.9], "size": [28, 14], "yaw": -4, "fence": false, "crop": "tea_bush", "row": 1.8, "step": 1.2},
+    {"pos": [-82.5, 108], "size": [26, 14], "yaw": 2, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [-36.4, 52.1], "size": [22, 12], "yaw": -3, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [72, 99], "size": [26, 14], "yaw": 5, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [129, 108], "size": [22, 12], "yaw": -2, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true}
   ],
-  "passes": [
-    [
-      0,
-      -192,
-      9
-    ]
-  ],
+  "passes": [[0, -288, 9]],
   "roads": [
     {
-      "points": [
-        [
-          0,
-          -192
-        ],
-        [
-          0,
-          -160
-        ],
-        [
-          -4,
-          -120
-        ],
-        [
-          6,
-          -70
-        ],
-        [
-          -4,
-          -20
-        ],
-        [
-          0,
-          10
-        ],
-        [
-          -6,
-          80
-        ],
-        [
-          -20,
-          120
-        ],
-        [
-          -60,
-          140
-        ]
-      ],
+      "points": [[0, -288], [-14.4, -187.9], [-18.4, -147.9], [-8.4, -97.9], [-18.4, -47.9], [-14.4, -17.9], [-20.4, 52.1], [-34.4, 92.1], [-90, 210]],
       "width": 3.2
     },
-    {
-      "points": [
-        [
-          -4,
-          -20
-        ],
-        [
-          -50,
-          -28
-        ],
-        [
-          -100,
-          -52
-        ]
-      ],
-      "width": 2.6
-    },
-    {
-      "points": [
-        [
-          6,
-          -70
-        ],
-        [
-          50,
-          -80
-        ],
-        [
-          95,
-          -118
-        ]
-      ],
-      "width": 2.6
-    },
-    {
-      "points": [
-        [
-          -6,
-          80
-        ],
-        [
-          50,
-          95
-        ],
-        [
-          100,
-          138
-        ]
-      ],
-      "width": 2.6
-    }
+    {"points": [[-18.4, -47.9], [-64.4, -55.9], [-114.4, -79.9]], "width": 2.6},
+    {"points": [[-8.4, -97.9], [35.6, -107.9], [147, -177]], "width": 2.6},
+    {"points": [[-20.4, 52.1], [75, 142.5], [161.9, 209.2]], "width": 2.6}
   ],
-  "zone_lines": [
-    {
-      "pos": [
-        0,
-        -181
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "lanternhold",
-      "arrive": [
-        0,
-        46
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
-    }
-  ],
+  "zone_lines": [{"pos": [0, -277], "size": [18, 8], "to": "lanternhold", "arrive": [0, 46], "arrive_face": [0, 0]}],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        -24,
-        -142
-      ],
-      "id": "tea_house",
-      "face": [
-        -4,
-        -146
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -152
-      ],
-      "id": "tea_drying_rack",
-      "face": [
-        -20,
-        -150
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -134
-      ],
-      "id": "tea_drying_rack",
-      "face": [
-        -20,
-        -140
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -8,
-        -134
-      ],
-      "id": "picker_basket"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -33,
-        -126
-      ],
-      "id": "picker_basket"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -12,
-        -128
-      ],
-      "id": "prayer_flags",
-      "face": [
-        0,
-        -128
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        7,
-        -165
-      ],
-      "yaw": 90,
-      "labels": [
-        "Lanternhold",
-        "Dewstep"
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        5,
-        -128
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -5,
-        -96
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        6,
-        -58
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -6,
-        -18
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        8,
-        24
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -7,
-        46
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        4,
-        84
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -30
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -75,
-        -28
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        40,
-        -60
-      ],
-      "id": "stone_lantern",
-      "collide": "box"
-    },
-    {
-      "type": "bridge",
-      "pos": [
-        0,
-        10
-      ],
-      "face": [
-        0,
-        0
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -110,
-        -52
-      ],
-      "id": "shrine_broken",
-      "face": [
-        -80,
-        -52
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -96,
-        -70
-      ],
-      "id": "stupa",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -124,
-        -34
-      ],
-      "id": "broken_pillar",
-      "collide": "box"
-    },
-    {
-      "type": "orchard",
-      "pos": [
-        104,
-        -118
-      ],
-      "yaw": 8,
-      "rows": 3,
-      "cols": 4
-    },
-    {
-      "type": "prop",
-      "pos": [
-        112,
-        134
-      ],
-      "id": "dustpaw_hut",
-      "face": [
-        124,
-        142
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        138,
-        132
-      ],
-      "id": "dustpaw_hut",
-      "face": [
-        124,
-        142
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        136,
-        158
-      ],
-      "id": "dustpaw_hut",
-      "face": [
-        124,
-        142
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        108,
-        156
-      ],
-      "id": "dustpaw_hut",
-      "face": [
-        124,
-        142
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        124,
-        143
-      ],
-      "id": "dustpaw_fire",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        98,
-        126
-      ],
-      "id": "dustpaw_totem",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        148
-      ],
-      "id": "dustpaw_totem",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -150,
-        146
-      ],
-      "id": "boulder_a",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        156
-      ],
-      "id": "boulder_b",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -158,
-        136
-      ],
-      "id": "boulder_c",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20,
-        120
-      ],
-      "id": "pilgrim_shelter",
-      "face": [
-        -4,
-        118
-      ],
-      "collide": "box"
-    }
+    {"type": "prop", "pos": [-38.4, -169.9], "id": "tea_house", "face": [-18.4, -173.9], "collide": "box"},
+    {"type": "prop", "pos": [-54.4, -179.9], "id": "tea_drying_rack", "face": [-34.4, -177.9], "collide": "box"},
+    {"type": "prop", "pos": [-54.4, -161.9], "id": "tea_drying_rack", "face": [-34.4, -167.9], "collide": "box"},
+    {"type": "prop", "pos": [-22.4, -161.9], "id": "picker_basket"},
+    {"type": "prop", "pos": [-47.4, -153.9], "id": "picker_basket"},
+    {"type": "prop", "pos": [-26.4, -155.9], "id": "prayer_flags", "face": [-14.4, -155.9]},
+    {"type": "signpost", "pos": [10.5, -261], "yaw": 90, "labels": ["Lanternhold", "Dewstep"]},
+    {"type": "prop", "pos": [-9.4, -155.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-19.4, -123.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-8.4, -85.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-20.4, -45.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-6.4, -3.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-21.4, 18.1], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-10.4, 56.1], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-54.4, -57.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [-89.4, -55.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "prop", "pos": [25.6, -87.9], "id": "stone_lantern", "collide": "box"},
+    {"type": "bridge", "pos": [-17.1, 13.6], "face": [-17.1, 3.6]},
+    {"type": "prop", "pos": [-124.4, -79.9], "id": "shrine_broken", "face": [-94.4, -79.9], "collide": "box"},
+    {"type": "prop", "pos": [-110.4, -97.9], "id": "stupa", "collide": "box"},
+    {"type": "prop", "pos": [-138.4, -61.9], "id": "broken_pillar", "collide": "box"},
+    {"type": "orchard", "pos": [156, -177], "yaw": 8, "rows": 3, "cols": 4},
+    {"type": "prop", "pos": [173.9, 205.2], "id": "dustpaw_hut", "face": [185.9, 213.2], "collide": "box"},
+    {"type": "prop", "pos": [199.9, 203.2], "id": "dustpaw_hut", "face": [185.9, 213.2], "collide": "box"},
+    {"type": "prop", "pos": [197.9, 229.2], "id": "dustpaw_hut", "face": [185.9, 213.2], "collide": "box"},
+    {"type": "prop", "pos": [169.9, 227.2], "id": "dustpaw_hut", "face": [185.9, 213.2], "collide": "box"},
+    {"type": "prop", "pos": [185.9, 214.2], "id": "dustpaw_fire", "collide": "box"},
+    {"type": "prop", "pos": [159.9, 197.2], "id": "dustpaw_totem", "collide": "box"},
+    {"type": "prop", "pos": [211.9, 219.2], "id": "dustpaw_totem", "collide": "box"},
+    {"type": "prop", "pos": [-224.7, 219], "id": "boulder_a", "collide": "box"},
+    {"type": "prop", "pos": [-214.7, 229], "id": "boulder_b", "collide": "box"},
+    {"type": "prop", "pos": [-232.7, 209], "id": "boulder_c", "collide": "box"},
+    {"type": "prop", "pos": [-34.4, 92.1], "id": "pilgrim_shelter", "face": [-18.4, 90.1], "collide": "box"}
   ],
   "npcs": [
-    {
-      "id": "headpicker_anjali",
-      "pos": [
-        -18,
-        -136
-      ],
-      "face": [
-        -2,
-        -140
-      ]
-    },
-    {
-      "id": "hunter_kaveri",
-      "pos": [
-        -2,
-        -146
-      ],
-      "face": [
-        -14,
-        -144
-      ]
-    },
-    {
-      "id": "brother_ravi",
-      "pos": [
-        -30,
-        -156
-      ],
-      "face": [
-        -14,
-        -150
-      ]
-    },
-    {
-      "id": "tea_seller_moti",
-      "pos": [
-        -12,
-        -155
-      ],
-      "face": [
-        -4,
-        -146
-      ]
-    },
-    {
-      "id": "warden_tashi",
-      "pos": [
-        -6,
-        -162
-      ],
-      "patrol": [
-        [
-          -6,
-          -162
-        ],
-        [
-          8,
-          -125
-        ],
-        [
-          -2,
-          -90
-        ],
-        [
-          -26,
-          -118
-        ],
-        [
-          -6,
-          -162
-        ]
-      ]
-    }
+    {"id": "headpicker_anjali", "pos": [-32.4, -163.9], "face": [-16.4, -167.9]},
+    {"id": "hunter_kaveri", "pos": [-16.4, -173.9], "face": [-28.4, -171.9]},
+    {"id": "brother_ravi", "pos": [-44.4, -183.9], "face": [-28.4, -177.9]},
+    {"id": "tea_seller_moti", "pos": [-26.4, -182.9], "face": [-18.4, -173.9]},
+    {"id": "warden_tashi", "pos": [-20.4, -189.9], "patrol": [[-20.4, -189.9], [-6.4, -152.9], [-16.4, -117.9], [-40.4, -145.9], [-20.4, -189.9]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        -60,
-        -118
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -80,
-        -100
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        30,
-        -112
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        55,
-        -100
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -45,
-        -70
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        70,
-        -52
-      ],
-      "pool": {
-        "lantern_moth": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -90,
-        -128
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        45,
-        -125
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -20,
-        -95
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        25,
-        -70
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -65,
-        64
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        45,
-        72
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -95,
-        58
-      ],
-      "pool": {
-        "paddy_rat": 1
-      },
-      "respawn": 40,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -40,
-        -40
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        60,
-        -30
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -55,
-        82
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        80,
-        60
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -25,
-        76
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        95,
-        76
-      ],
-      "pool": {
-        "rice_beetle": 1
-      },
-      "respawn": 45,
-      "wander": 10
-    },
-    {
-      "pos": [
-        88,
-        -128
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        112,
-        -112
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        96,
-        -98
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        124,
-        -132
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        80,
-        -148
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        118,
-        -90
-      ],
-      "pool": {
-        "temple_monkey": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        104,
-        -120
-      ],
-      "pool": {
-        "monkey_troop_king": 1
-      },
-      "respawn": 900,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -130,
-        -100
-      ],
-      "pool": {
-        "jackal": 1
-      },
-      "respawn": 60,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -150,
-        -62
-      ],
-      "pool": {
-        "jackal": 1
-      },
-      "respawn": 60,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -110,
-        -138
-      ],
-      "pool": {
-        "jackal": 1
-      },
-      "respawn": 60,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        -120
-      ],
-      "pool": {
-        "jackal": 1
-      },
-      "respawn": 60,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -140,
-        -56
-      ],
-      "pool": {
-        "jackal": 1
-      },
-      "respawn": 60,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -95,
-        -61
-      ],
-      "pool": {
-        "lantern_wisp": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -125,
-        -38
-      ],
-      "pool": {
-        "lantern_wisp": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -100,
-        -31
-      ],
-      "pool": {
-        "lantern_wisp": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -128,
-        -70
-      ],
-      "pool": {
-        "lantern_wisp": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -95,
-        -56
-      ],
-      "pool": {
-        "hungry_ghost": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -125,
-        -44
-      ],
-      "pool": {
-        "hungry_ghost": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -108,
-        -76
-      ],
-      "pool": {
-        "hungry_ghost": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -80,
-        -36
-      ],
-      "pool": {
-        "hungry_ghost": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -135,
-        -64
-      ],
-      "pool": {
-        "hungry_ghost": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -112,
-        -54
-      ],
-      "pool": {
-        "lantern_widow": 1
-      },
-      "respawn": 900,
-      "wander": 6,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -80,
-        122
-      ],
-      "pool": {
-        "hooded_cobra": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -130,
-        70
-      ],
-      "pool": {
-        "hooded_cobra": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -155,
-        95
-      ],
-      "pool": {
-        "hooded_cobra": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -60,
-        150
-      ],
-      "pool": {
-        "hooded_cobra": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        10,
-        120
-      ],
-      "pool": {
-        "wild_boar": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        40,
-        150
-      ],
-      "pool": {
-        "wild_boar": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -25,
-        160
-      ],
-      "pool": {
-        "wild_boar": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -110,
-        128
-      ],
-      "pool": {
-        "young_tiger": 1
-      },
-      "respawn": 90,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -150,
-        120
-      ],
-      "pool": {
-        "young_tiger": 1
-      },
-      "respawn": 90,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -120,
-        165
-      ],
-      "pool": {
-        "young_tiger": 1
-      },
-      "respawn": 90,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -148,
-        150
-      ],
-      "pool": {
-        "amberstripe": 1
-      },
-      "respawn": 1200,
-      "wander": 8
-    },
-    {
-      "pos": [
-        105,
-        130
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        135,
-        125
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        115,
-        155
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        140,
-        158
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        95,
-        158
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        150,
-        138
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        80,
-        45
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        120,
-        40
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        122,
-        140
-      ],
-      "pool": {
-        "dustpaw_howler": 1
-      },
-      "respawn": 80,
-      "wander": 6
-    },
-    {
-      "pos": [
-        100,
-        145
-      ],
-      "pool": {
-        "dustpaw_howler": 1
-      },
-      "respawn": 80,
-      "wander": 6
-    },
-    {
-      "pos": [
-        128,
-        146
-      ],
-      "pool": {
-        "chief_rattlejaw": 1
-      },
-      "respawn": 900,
-      "wander": 4
-    },
-    {
-      "pos": [
-        144,
-        -24
-      ],
-      "pool": {
-        "dustpaw_raider": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    }
+    {"pos": [-24, -240], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-232, 8], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [8, 0], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [-72, 24], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-152, 8], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
+    {"pos": [224, 120], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [144, 0], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [96, 168], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-74.4, -145.9], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-120, -150], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [15.6, -139.9], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [82.5, -150], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-67.5, -105], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [105, -78], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-135, -192], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [67.5, -187.5], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-34.4, -122.9], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [10.6, -97.9], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-97.5, 96], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [67.5, 108], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-142.5, 87], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-54.4, -67.9], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [90, -45], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [-82.5, 123], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [120, 90], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [-37.5, 114], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [142.5, 114], "pool": {"rice_beetle": 1}, "respawn": 45, "wander": 10},
+    {"pos": [140, -187], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [164, -171], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [148, -157], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [176, -191], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [120, -222], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [177, -135], "pool": {"temple_monkey": 1}, "respawn": 60, "wander": 12},
+    {"pos": [156, -179], "pool": {"monkey_troop_king": 1}, "respawn": 900, "wander": 8},
+    {"pos": [-195, -150], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [-225, -93], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [-165, -207], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [-256, -180], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [-154.4, -83.9], "pool": {"jackal": 1}, "respawn": 60, "wander": 16},
+    {"pos": [-109.4, -88.9], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-139.4, -65.9], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-114.4, -58.9], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-142.4, -97.9], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-109.4, -83.9], "pool": {"hungry_ghost": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-139.4, -71.9], "pool": {"hungry_ghost": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-122.4, -103.9], "pool": {"hungry_ghost": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-94.4, -63.9], "pool": {"hungry_ghost": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-149.4, -91.9], "pool": {"hungry_ghost": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-126.4, -81.9], "pool": {"lantern_widow": 1}, "respawn": 900, "wander": 6, "when": "night"},
+    {"pos": [-120, 183], "pool": {"hooded_cobra": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-195, 105], "pool": {"hooded_cobra": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-251, 142.5], "pool": {"hooded_cobra": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-90, 225], "pool": {"hooded_cobra": 1}, "respawn": 70, "wander": 8},
+    {"pos": [15, 180], "pool": {"wild_boar": 1}, "respawn": 60, "wander": 14},
+    {"pos": [60, 225], "pool": {"wild_boar": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-37.5, 256], "pool": {"wild_boar": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-165, 192], "pool": {"young_tiger": 1}, "respawn": 90, "wander": 14},
+    {"pos": [-224.7, 193], "pool": {"young_tiger": 1}, "respawn": 90, "wander": 14},
+    {"pos": [-194.7, 238], "pool": {"young_tiger": 1}, "respawn": 90, "wander": 14},
+    {"pos": [-222.7, 223], "pool": {"amberstripe": 1}, "respawn": 1200, "wander": 8},
+    {"pos": [166.9, 201.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [196.9, 196.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [176.9, 226.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [201.9, 229.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [156.9, 229.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [211.9, 209.2], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [120, 67.5], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [180, 60], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
+    {"pos": [183.9, 211.2], "pool": {"dustpaw_howler": 1}, "respawn": 80, "wander": 6},
+    {"pos": [161.9, 216.2], "pool": {"dustpaw_howler": 1}, "respawn": 80, "wander": 6},
+    {"pos": [189.9, 217.2], "pool": {"chief_rattlejaw": 1}, "respawn": 900, "wander": 4},
+    {"pos": [216, -36], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10}
   ]
 }

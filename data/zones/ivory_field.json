@@ -1,1185 +1,222 @@
 {
   "name": "The Ivory Field",
-  "levels": [
-    42,
-    45
-  ],
+  "levels": [42, 45],
   "music": "ivory_field",
   "seed": 9831,
-  "size": 512,
+  "size": 1024,
   "height_amplitude": 4,
-  "bind_point": [
-    2,
-    188
-  ],
+  "bind_point": [2.5, 384.5],
   "flat_radius": 18,
-  "trees": 30,
-  "tree_mix": [
-    "lone_tree",
-    "wind_bent_tree"
-  ],
+  "trees": 120,
+  "tree_mix": ["lone_tree", "wind_bent_tree"],
   "groves": 0.1,
-  "rocks": 60,
-  "grass_colors": [
-    "#9a8a4c",
-    "#b09e5a"
-  ],
+  "rocks": 240,
+  "grass_colors": ["#9a8a4c", "#b09e5a"],
   "fog_density": 0.003,
   "fog_color": "#d4c6a0",
   "sun_energy": 1.05,
   "clutter": {
-    "tallgrass": {
-      "density": 0.05,
-      "patch": 0.7,
-      "sway": 0.3,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.6,
-        0.9
-      ]
-    },
-    "grass_b": {
-      "density": 0.2,
-      "patch": 0.5,
-      "sway": 0.3,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "bone_scatter": {
-      "density": 0.006,
-      "patch": 0.7,
-      "range": 55,
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "pebbles": {
-      "density": 0.02,
-      "patch": 0.5,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.4
-      ]
-    }
+    "tallgrass": {"density": 0.05, "patch": 0.7, "sway": 0.3, "range": 55, "tint": "ground", "scale": [0.6, 0.9]},
+    "grass_b": {"density": 0.2, "patch": 0.5, "sway": 0.3, "range": 45, "tint": "ground", "scale": [0.8, 1.2]},
+    "bone_scatter": {"density": 0.006, "patch": 0.7, "range": 55, "scale": [0.8, 1.3]},
+    "pebbles": {"density": 0.02, "patch": 0.5, "range": 45, "tint": "ground", "scale": [0.8, 1.4]}
   },
-  "ground_patches": [
-    {
-      "pos": [
-        0,
-        -80
-      ],
-      "radius": 90,
-      "color": "#c8bc98",
-      "flatten": 0.3,
-      "bare": true
-    }
-  ],
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
+  "ground_patches": [{"pos": [15, -125], "radius": 90, "color": "#c8bc98", "flatten": 0.3, "bare": true}],
+  "passes": [[0, 512, 9], [-512, 0, 9], [512, 0, 9], [0, -512, 9]],
   "roads": [
-    {
-      "points": [
-        [
-          0,
-          256
-        ],
-        [
-          5,
-          150
-        ],
-        [
-          -10,
-          40
-        ],
-        [
-          0,
-          -20
-        ]
-      ],
-      "width": 3.0
-    },
-    {
-      "points": [
-        [
-          -256,
-          0
-        ],
-        [
-          -100,
-          10
-        ],
-        [
-          -10,
-          40
-        ],
-        [
-          120,
-          20
-        ],
-        [
-          256,
-          0
-        ]
-      ],
-      "width": 2.6
-    }
+    {"points": [[0, 512], [10, 300], [-20, 80], [0, -40]], "width": 3.0},
+    {"points": [[-512, 0], [-200, 20], [-20, 80], [240, 40], [512, 0]], "width": 2.6}
   ],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "forgehold",
-      "arrive": [
-        0,
-        -46
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "fogfall",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "the_unlit",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "timirajs_table",
-      "arrive": [
-        0,
-        231
-      ],
-      "arrive_face": [
-        0,
-        191
-      ]
-    }
+    {"pos": [0, 501], "size": [18, 8], "to": "forgehold", "arrive": [0, -46], "arrive_face": [0, 0]},
+    {"pos": [-501, 0], "size": [8, 18], "to": "fogfall", "arrive": [359, 0], "arrive_face": [319, 0]},
+    {"pos": [501, 0], "size": [8, 18], "to": "the_unlit", "arrive": [-359, 0], "arrive_face": [-319, 0]},
+    {"pos": [0, -501], "size": [18, 8], "to": "timirajs_table", "arrive": [0, 231], "arrive_face": [0, 191]}
   ],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -60
-      ],
-      "id": "giant_ribcage",
-      "collide": "mesh",
-      "face": [
-        40,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        -110
-      ],
-      "id": "giant_ribcage",
-      "collide": "mesh",
-      "face": [
-        -80,
-        -140
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        80,
-        -140
-      ],
-      "id": "giant_ribcage",
-      "collide": "mesh",
-      "face": [
-        120,
-        -120
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        60
-      ],
-      "id": "giant_ribcage",
-      "collide": "mesh",
-      "face": [
-        0,
-        90
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        30,
-        -30
-      ],
-      "id": "elephant_skull",
-      "collide": "mesh",
-      "face": [
-        0,
-        60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -150,
-        -60
-      ],
-      "id": "elephant_skull",
-      "collide": "mesh",
-      "face": [
-        -100,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        100,
-        -40
-      ],
-      "id": "elephant_skull",
-      "collide": "mesh",
-      "face": [
-        60,
-        0
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -70,
-        140
-      ],
-      "id": "elephant_skull",
-      "collide": "mesh",
-      "face": [
-        -40,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        60,
-        150
-      ],
-      "id": "elephant_skull",
-      "collide": "mesh",
-      "face": [
-        20,
-        120
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -80,
-        -30
-      ],
-      "id": "tusk_field",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        60,
-        40
-      ],
-      "id": "tusk_field",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20,
-        120
-      ],
-      "id": "tusk_field",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        130,
-        -80
-      ],
-      "id": "tusk_field",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -170,
-        20
-      ],
-      "id": "tusk_field",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        130,
-        80
-      ],
-      "id": "poacher_wagon",
-      "collide": "mesh",
-      "face": [
-        150,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        170,
-        120
-      ],
-      "id": "poacher_wagon",
-      "collide": "mesh",
-      "face": [
-        150,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        100
-      ],
-      "id": "ivory_pile",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        160,
-        70
-      ],
-      "id": "ivory_pile",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        125,
-        110
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        150,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        175,
-        85
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        150,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        148,
-        92
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -130,
-        110
-      ],
-      "id": "vulture_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -160,
-        150
-      ],
-      "id": "vulture_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -100,
-        90
-      ],
-      "id": "vulture_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        -130
-      ],
-      "id": "spirit_cairn",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        -80
-      ],
-      "id": "spirit_cairn",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -14,
-        196
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        14,
-        198
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        2,
-        186
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        206
-      ],
-      "id": "banner_pole",
-      "collide": "box"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        228
-      ],
-      "yaw": -90,
-      "labels": [
-        "Forgehold",
-        "The Ivory Field"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -228,
-        8
-      ],
-      "yaw": 180,
-      "labels": [
-        "Fogfall",
-        "The Ivory Field"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        228,
-        8
-      ],
-      "yaw": 0,
-      "labels": [
-        "The Unlit",
-        "The Ivory Field"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        -226
-      ],
-      "yaw": 90,
-      "labels": [
-        "Timiraj's Table",
-        "The Ivory Field"
-      ]
-    }
+    {"type": "prop", "pos": [15, -105], "id": "giant_ribcage", "collide": "mesh", "face": [55, -105]},
+    {"type": "prop", "pos": [-252.5, -205], "id": "giant_ribcage", "collide": "mesh", "face": [-212.5, -235]},
+    {"type": "prop", "pos": [160, -280], "id": "giant_ribcage", "collide": "mesh", "face": [200, -260]},
+    {"type": "prop", "pos": [-80, 120], "id": "giant_ribcage", "collide": "mesh", "face": [-40, 150]},
+    {"type": "prop", "pos": [45, -75], "id": "elephant_skull", "collide": "mesh", "face": [15, 15]},
+    {"type": "prop", "pos": [-282.5, -155], "id": "elephant_skull", "collide": "mesh", "face": [-232.5, -155]},
+    {"type": "prop", "pos": [215, -100], "id": "elephant_skull", "collide": "mesh", "face": [175, -60]},
+    {"type": "prop", "pos": [-115, 270], "id": "elephant_skull", "collide": "mesh", "face": [-85, 230]},
+    {"type": "prop", "pos": [120, 300], "id": "elephant_skull", "collide": "mesh", "face": [80, 270]},
+    {"type": "prop", "pos": [-160, -60], "id": "tusk_field", "collide": "box"},
+    {"type": "prop", "pos": [120, 80], "id": "tusk_field", "collide": "box"},
+    {"type": "prop", "pos": [-65, 250], "id": "tusk_field", "collide": "box"},
+    {"type": "prop", "pos": [245, -140], "id": "tusk_field", "collide": "box"},
+    {"type": "prop", "pos": [-340, 40], "id": "tusk_field", "collide": "box"},
+    {"type": "prop", "pos": [281.1, 173.9], "id": "poacher_wagon", "collide": "mesh", "face": [301.1, 193.9]},
+    {"type": "prop", "pos": [321.1, 213.9], "id": "poacher_wagon", "collide": "mesh", "face": [301.1, 193.9]},
+    {"type": "prop", "pos": [301.1, 193.9], "id": "ivory_pile", "collide": "box"},
+    {"type": "prop", "pos": [311.1, 163.9], "id": "ivory_pile", "collide": "box"},
+    {"type": "prop", "pos": [276.1, 203.9], "id": "scout_tent", "collide": "box", "face": [301.1, 193.9]},
+    {"type": "prop", "pos": [326.1, 178.9], "id": "scout_tent", "collide": "box", "face": [301.1, 193.9]},
+    {"type": "prop", "pos": [299.1, 185.9], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [-260, 226.7], "id": "vulture_perch", "collide": "box"},
+    {"type": "prop", "pos": [-290, 266.7], "id": "vulture_perch", "collide": "box"},
+    {"type": "prop", "pos": [-230, 206.7], "id": "vulture_perch", "collide": "box"},
+    {"type": "prop", "pos": [-272.5, -225], "id": "spirit_cairn", "collide": "box"},
+    {"type": "prop", "pos": [-252.5, -175], "id": "spirit_cairn", "collide": "box"},
+    {"type": "prop", "pos": [-13.5, 392.5], "id": "scout_tent", "collide": "box", "face": [0.5, 380.5]},
+    {"type": "prop", "pos": [14.5, 394.5], "id": "scout_tent", "collide": "box", "face": [0.5, 380.5]},
+    {"type": "prop", "pos": [2.5, 382.5], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [0.5, 402.5], "id": "banner_pole", "collide": "box"},
+    {"type": "signpost", "pos": [8.5, 424.5], "yaw": -90, "labels": ["Forgehold", "The Ivory Field"]},
+    {"type": "signpost", "pos": [-484, 16], "yaw": 180, "labels": ["Fogfall", "The Ivory Field"]},
+    {"type": "signpost", "pos": [484, 16], "yaw": 0, "labels": ["The Unlit", "The Ivory Field"]},
+    {"type": "signpost", "pos": [16, -482], "yaw": 90, "labels": ["Timiraj's Table", "The Ivory Field"]}
   ],
   "npcs": [
-    {
-      "id": "bonewarden_adaeze",
-      "pos": [
-        -8,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "ranger_tomas",
-      "pos": [
-        12,
-        176
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "carrion_hunter_leif",
-      "pos": [
-        -12,
-        178
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "sister_imelda",
-      "pos": [
-        10,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "supplier_nnamdi",
-      "pos": [
-        0,
-        202
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "tuskwatch_warden",
-      "pos": [
-        0,
-        168
-      ],
-      "patrol": [
-        [
-          0,
-          168
-        ],
-        [
-          22,
-          186
-        ],
-        [
-          0,
-          206
-        ],
-        [
-          -22,
-          186
-        ],
-        [
-          0,
-          168
-        ]
-      ]
-    }
+    {"id": "bonewarden_adaeze", "pos": [-7.5, 388.5], "face": [2.5, 380.5]},
+    {"id": "ranger_tomas", "pos": [12.5, 372.5], "face": [2.5, 380.5]},
+    {"id": "carrion_hunter_leif", "pos": [-11.5, 374.5], "face": [2.5, 380.5]},
+    {"id": "sister_imelda", "pos": [10.5, 388.5], "face": [2.5, 380.5]},
+    {"id": "supplier_nnamdi", "pos": [0.5, 398.5], "face": [2.5, 380.5]},
+    {"id": "tuskwatch_warden", "pos": [0.5, 364.5], "patrol": [[0.5, 364.5], [22.5, 382.5], [0.5, 402.5], [-21.5, 382.5], [0.5, 364.5]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        -20,
-        -60
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        40,
-        -90
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -60,
-        -110
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        20,
-        -140
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        70,
-        -50
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        0,
-        -110
-      ],
-      "pool": {
-        "old_ossuary": 1
-      },
-      "respawn": 1500,
-      "wander": 4
-    },
-    {
-      "pos": [
-        140,
-        90
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        170,
-        60
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        120,
-        130
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        160,
-        140
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        110,
-        70
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        185,
-        100
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        150,
-        100
-      ],
-      "pool": {
-        "tuskmonger_varga": 1
-      },
-      "respawn": 1500,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -130,
-        80
-      ],
-      "pool": {
-        "bone_vulture": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -160,
-        120
-      ],
-      "pool": {
-        "bone_vulture": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -100,
-        140
-      ],
-      "pool": {
-        "bone_vulture": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -60,
-        110
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -140,
-        40
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -110,
-        170
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -170,
-        80
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -135,
-        120
-      ],
-      "pool": {
-        "gorgemaw": 1
-      },
-      "respawn": 1500,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -140,
-        -100
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -170,
-        -60
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -110,
-        -150
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -160,
-        -150
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -100,
-        -70
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -140,
-        -130
-      ],
-      "pool": {
-        "herd_grandmother": 1
-      },
-      "respawn": 1500,
-      "wander": 8
-    },
-    {
-      "pos": [
-        208,
-        -208
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        208,
-        -72
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        104,
-        -208
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        56,
-        208
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        208
-      ],
-      "pool": {
-        "bone_vulture": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        16,
-        40
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        128,
-        -120
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -40,
-        -208
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        24,
-        128
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        208,
-        208
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -64,
-        8
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        144,
-        -16
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        -208
-      ],
-      "pool": {
-        "herd_spirit": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        128,
-        208
-      ],
-      "pool": {
-        "ivory_poacher": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        32,
-        -208
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -56,
-        208
-      ],
-      "pool": {
-        "marrow_jackal": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        192,
-        -144
-      ],
-      "pool": {
-        "ivory_colossus": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    }
+    {"pos": [-464, -24], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [464, 40], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-456, 280], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [168, 40], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-440, -160], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-288, 456], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-232, -432], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [432, 288], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-432, -288], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [168, 296], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-336, -32], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [128, 160], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [0, 464], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-432, 88], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [152, -312], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-128, -104], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-48, 320], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [448, 168], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [312, -376], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-320, -360], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-224, -48], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-72, 120], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-328, 352], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [336, 344], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [304, -144], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [64, -24], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-64, -312], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [360, 56], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [400, -40], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-176, 104], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-32, -8], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-328, -456], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [264, 64], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-432, 184], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [176, -192], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-24, 200], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-160, -368], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [456, -224], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-200, 432], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [56, 344], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-8, -464], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [240, -328], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [248, 328], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-376, -224], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [232, -96], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-136, 336], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [288, -456], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [360, -208], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-400, -88], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-360, 48], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-152, -456], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-8, -376], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-64, -160], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-216, 32], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [48, 160], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [184, 376], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [192, 208], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [448, -336], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [136, -448], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [200, 112], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [192, -32], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-192, 192], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [112, -248], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-400, 336], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-144, -296], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [80, -344], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [112, 88], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [120, 240], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-192, -232], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-360, -296], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [312, -296], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [344, 416], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-392, 248], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [392, 120], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [400, 224], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [64, -96], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-280, -88], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-88, -48], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [344, -88], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [456, -88], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-280, 8], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [240, -168], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-264, 392], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-280, 304], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [360, 280], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-248, -360], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-400, -352], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-400, -8], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-344, 416], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-64, 256], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-56, 56], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [192, -256], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [352, -432], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [376, -360], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-160, -168], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-368, -152], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-5, -105], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [80, -180], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-120, -220], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [40, -280], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [140, -100], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [0, -220], "pool": {"old_ossuary": 1}, "respawn": 1500, "wander": 4},
+    {"pos": [291.1, 183.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [321.1, 153.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [271.1, 223.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [311.1, 233.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [261.1, 163.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [336.1, 193.9], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [301.1, 193.9], "pool": {"tuskmonger_varga": 1}, "respawn": 1500, "wander": 6},
+    {"pos": [-260, 160], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-320, 240], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-200, 280], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-120, 220], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-280, 80], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-220, 340], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-340, 160], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-265, 236.7], "pool": {"gorgemaw": 1}, "respawn": 1500, "wander": 12},
+    {"pos": [-272.5, -195], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-302.5, -155], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-220, -300], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-292.5, -245], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-232.5, -165], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-272.5, -225], "pool": {"herd_grandmother": 1}, "respawn": 1500, "wander": 8},
+    {"pos": [416, -416], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [416, -144], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [208, -416], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [112, 416], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-416, 416], "pool": {"bone_vulture": 1}, "respawn": 100, "wander": 18},
+    {"pos": [32, 80], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [256, -240], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-80, -416], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [48, 256], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [416, 416], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-128, 16], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [288, -32], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-416, -416], "pool": {"herd_spirit": 1}, "respawn": 110, "wander": 14},
+    {"pos": [256, 416], "pool": {"ivory_poacher": 1}, "respawn": 100, "wander": 10},
+    {"pos": [64, -416], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-112, 416], "pool": {"marrow_jackal": 1}, "respawn": 100, "wander": 16},
+    {"pos": [384, -288], "pool": {"ivory_colossus": 1}, "respawn": 120, "wander": 6}
   ]
 }

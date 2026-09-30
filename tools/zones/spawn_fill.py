@@ -3,7 +3,8 @@
     python3 tools/zones/spawn_fill.py            # report: new spawns each zone would get
     python3 tools/zones/spawn_fill.py --write    # add them to the hand-made zone files
 
-Walks the open ground on an 8 m grid (48 m in from the mountain ring, off
+Walks the open ground on an 8 m grid (20 m in from the mountains' foot, which
+tools/zones/outline.py shapes per zone; off
 water, rivers, fields, and 45 m clear of towns, camps and the arrival points
 at borders) and, while any of it lies more than TARGET m from a spawn, puts a
 new spawn at the farthest spot, with the monsters of the nearest ordinary
@@ -17,6 +18,8 @@ fill() themselves as they write, so a rerun keeps the extra spawns; --write
 skips them. Rerun after changing a zone's spawns, lakes or camps.
 """
 import glob, json, math, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import outline  # noqa: E402  the zones' uneven mountain edges
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TARGET, KEEP_OUT, STEP, EDGE = 65, 45, 8, 48
@@ -61,8 +64,9 @@ def _blocked(z, p, npcs):
     return False
 
 
-def fill(z, mobs):
-    """The spawns to add to zone data z (a dict), as a list; z is not changed."""
+def fill(z, mobs, zid=""):
+    """The spawns to add to zone data z (a dict), as a list; z is not changed.
+    zid names its outline in data/zone_outlines.json (none: the square edge)."""
     def ordinary(s):
         return s.get("when") != "night" and not any(mobs.get(m, {}).get("named") for m in s["pool"])
     base = [s for s in z.get("spawns", []) if ordinary(s)]
@@ -72,12 +76,13 @@ def fill(z, mobs):
     npcs += [l["pos"] for l in z.get("landmarks", []) if l["type"] in ("camp", "outpost", "waystation", "hearth_plaza", "market",
                                                                      "stilt_village", "stilt_city")]
     half = z.get("size", 512) / 2 - EDGE
+    edges = outline.load().get(zid)
     grid = []
     x = -half
     while x <= half:
         y = -half
         while y <= half:
-            if not _blocked(z, (x, y), npcs):
+            if outline.edge_depth(edges, z.get("size", 512) / 2, x, y) <= -(EDGE - outline.FOOT) and not _blocked(z, (x, y), npcs):
                 grid.append((x, y))
             y += STEP
         x += STEP
@@ -105,7 +110,7 @@ def main():
             continue
         text = open(f).read()
         z = json.loads(text)
-        added = fill(z, mobs)
+        added = fill(z, mobs, zid)
         total += len(added)
         if added:
             print("%-16s +%d%s" % (zid, len(added), "  (its generator adds these)" if zid in GENERATED else ""))

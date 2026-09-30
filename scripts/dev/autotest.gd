@@ -125,6 +125,7 @@ const SECTIONS := [
 	["starter_spawns", "greenmoor"],
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
+	["zone_outlines", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -1965,26 +1966,29 @@ func _t_river() -> void:
 	var p := World.local_player
 	for m in World.get_mobs():
 		m.set_physics_process(false)  # nobody interrupts the survey
-	p.global_position = main.zone.ground(-1.0, 130.0) + Vector3.UP
+	var bridge: Dictionary = main.zone.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]
+	var b := Vector2(bridge["pos"][0], bridge["pos"][1])
+	var dir := (Vector2(bridge["face"][0], bridge["face"][1]) - b).normalized()  # along the road, north over the river
+	var start := b - dir * 24.0
+	p.global_position = main.zone.ground(start.x, start.y) + Vector3.UP
 	var lowest := INF
-	var dir := (Vector2(8, 80) - Vector2(-4, 150)).normalized()
 	for k in 360:
 		p.velocity = Vector3(dir.x, 0, dir.y) * 6.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
 		p.move_and_slide()
 		await get_tree().physics_frame
-		if absf(p.global_position.z - 106.0) < 8.0:
+		if Vector2(p.global_position.x, p.global_position.z).distance_to(b) < 8.0:
 			lowest = minf(lowest, p.global_position.y)
-	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
-	print("river: over the bridge from z 130 to %.0f; lowest on the crossing %.2f, water level %.2f" % [p.global_position.z, lowest, level])
-	p.global_position = main.zone.ground(-30.0, 130.0) + Vector3.UP
+	var level: float = main.zone._river_at(main.zone._rivers[0], b.x, b.y)[1]
+	print("river: over the bridge from z %.0f to %.0f; lowest on the crossing %.2f, water level %.2f" % [start.y, p.global_position.z, lowest, level])
+	p.global_position = main.zone.ground(b.x - 33.0, b.y + 24.0) + Vector3.UP
 	var deepest := INF
 	for k in 360:
 		p.velocity = Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), -6.0)
 		p.move_and_slide()
 		await get_tree().physics_frame
 		deepest = minf(deepest, p.global_position.y)
-	print("river: waded across at x -30 to z %.0f; deepest %.2f (%.2f under the water)" % [p.global_position.z, deepest, level - deepest])
-	for view: Array in [[Vector2(-18, 128), Vector2(3.5, 106), "bridge"], [Vector2(-60, 125), Vector2(-100, 100), "banks"]]:
+	print("river: waded across at x %.0f to z %.0f; deepest %.2f (%.2f under the water)" % [b.x - 33.0, p.global_position.z, deepest, level - deepest])
+	for view: Array in [[b + Vector2(-21.5, 22), b, "bridge"], [b + Vector2(-63.5, 19), b + Vector2(-103.5, -6), "banks"]]:
 		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
 		p.face_toward(main.zone.ground(view[1].x, view[1].y))
 		p.camera_pivot.rotation.y = 0.0
@@ -2287,18 +2291,23 @@ func _t_vale_patrol() -> void:
 	var main := get_parent()
 	var p := World.local_player
 	var harlan: Npc = _npcs()["vale_patrol"]
+	var bridge: Array = main.zone.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]["pos"]
+	var b := Vector2(bridge[0], bridge[1])
 	var lowest_on_bridge := INF
+	var start := harlan.global_position.z
 	var reached := 0.0
-	for k in 110:  # most of a leg, watching him cross the bridge
+	for k in 400:  # down the road and over the bridge
 		await _wait(0.5)
 		var at := harlan.global_position
 		reached = minf(reached, at.z) if reached != 0.0 else at.z
-		if absf(at.z - 106.0) < 6.0:
+		if Vector2(at.x, at.z).distance_to(b) < 6.0:
 			lowest_on_bridge = minf(lowest_on_bridge, at.y)
-	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
-	print("vale_patrol: Harlan (level %d) walked from z 212 to z %.0f; on the bridge his lowest was %.2f (water %.2f)" % [harlan.level, reached, lowest_on_bridge, level])
+		if at.z < b.y - 20.0:
+			break
+	var level: float = main.zone._river_at(main.zone._rivers[0], b.x, b.y)[1]
+	print("vale_patrol: Harlan (level %d) walked from z %.0f to z %.0f; on the bridge his lowest was %.2f (water %.2f)" % [harlan.level, start, reached, lowest_on_bridge, level])
 	for k in 60:  # off the bridge (its railings would keep him from a wolf in the river)
-		if harlan.global_position.z < 88.0:
+		if harlan.global_position.z < b.y - 18.0:
 			break
 		await _wait(0.5)
 	var wolf := _nearest_mob(harlan, "timber_wolf")
@@ -2772,27 +2781,9 @@ func _t_night_spawns() -> void:
 
 ## The Thornwood-Hollowmere border, walked both ways (east and west zone lines).
 func _t_hollowmere_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["thornwood", Vector2(225, -20), Vector2(1, 0), "hollowmere"], ["hollowmere", Vector2(-193, -20), Vector2(-1, 0), "thornwood"]]:
-		if main.zone.zone_id != leg[0]:
-			print("hollowmere_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("hollowmere_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		while not is_instance_valid(main.zone) or main.zone.zone_id != leg[3]:
-			await _wait(0.5)
-			if k_timeout(main):
-				break
-		var z: Zone = main.zone
-		print("hollowmere_border: walked %s from %s -> now in %s at %s (ground %.1f)" % [["east", "west"][0 if leg[2].x > 0 else 1], leg[0], z.zone_id,
-				Vector2(p.global_position.x, p.global_position.z), z.height_at(p.global_position.x, p.global_position.z)])
 
 
 var _patience := 0
@@ -3054,28 +3045,10 @@ func _t_physics_isolate() -> void:
 ## Harrowfield's borders, both walked both ways: Greenmoor's east edge, and
 ## Hollowmere's south edge.
 func _t_harrowfield_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["greenmoor", Vector2(170, 0), Vector2(1, 0), "harrowfield"], ["harrowfield", Vector2(0, -170), Vector2(0, -1), "hollowmere"],
 			["hollowmere", Vector2(0, 202), Vector2(0, 1), "harrowfield"], ["harrowfield", Vector2(-170, 0), Vector2(-1, 0), "greenmoor"]]:
-		if main.zone.zone_id != leg[0]:
-			print("harrowfield_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("harrowfield_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("harrowfield_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Harrowfield: the hamlet, fields, windmill, orchard and the brigands' farm.
@@ -4049,27 +4022,9 @@ func _t_venom_drop() -> void:
 
 ## The Hollowmere - Sunward Steps border, walked both ways.
 func _t_sunward_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["hollowmere", Vector2(200, 0), Vector2(1, 0), "sunward_steps"], ["sunward_steps", Vector2(-196, 0), Vector2(-1, 0), "hollowmere"]]:
-		if main.zone.zone_id != leg[0]:
-			print("sunward_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("sunward_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("sunward_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Sunward Steps: the terraces, the waystation, the shrines, the Great Temple.
@@ -5719,7 +5674,8 @@ func _t_dewstep_borders() -> void:
 ## ten quests handed in, and a look at each monster and at the tea house.
 func _t_dewstep_life() -> void:
 	var z: Zone = get_parent().zone
-	print("dewstep_life: the terraces climb %.1f m from the paddies to the tea house; there's water to fish by the bridge %s" % [z.height_at(-12, -150) - z.height_at(-20, 90), z.fishable_at(3, 10)])
+	var bridge: Array = z.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]["pos"]
+	print("dewstep_life: there's water to fish by the bridge %s" % z.fishable_at(float(bridge[0]) + 3.0, float(bridge[1])))
 	await _zone_life("dewstep_life", {"headpicker_anjali": ["dewstep_moth_wings", "pilfers_bangle"], "hunter_kaveri": ["jackal_pelts", "cobra_fangs", "amberstripes_fang"],
 			"warden_tashi": ["dustpaw_beads", "rattlejaws_necklace"], "brother_ravi": ["wisp_lights", "widows_lantern"]}, ["hungry_ghost", "lantern_widow"],
 			["lantern_moth", "paddy_rat", "rice_beetle", "temple_monkey", "monkey_troop_king", "jackal", "hooded_cobra", "young_tiger", "amberstripe",
@@ -7198,6 +7154,11 @@ func _walk_border(tag: String, from_zone: String, start: Vector2, dir: Vector2, 
 	if main.zone.zone_id != from_zone:
 		print("%s: expected to be in %s, in %s" % [tag, from_zone, main.zone.zone_id])
 		return false
+	# a wilderness zone may have grown since the leg was written: start 20 m short of its zone line
+	for zl: Dictionary in main.zone.data.get("zone_lines", []):
+		var at := Vector2(zl["pos"][0], zl["pos"][1])
+		if str(zl["to"]) == to_zone and start.distance_to(at) > 45.0 and not main.zone.data.get("bindstone", false):
+			start = at - dir * 20.0
 	p.global_position = Vector3(start.x, main.zone.surface_at(start.x, start.y) + 1.0, start.y)
 	for k in 400:
 		if not is_instance_valid(main.zone) or main.zone.zone_id == to_zone:
@@ -7569,27 +7530,9 @@ func _t_level25() -> void:
 
 
 func _t_bleach_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["sunward_steps", Vector2(0, -196), Vector2(0, -1), "the_bleach"], ["the_bleach", Vector2(0, 226), Vector2(0, 1), "sunward_steps"]]:
-		if main.zone.zone_id != leg[0]:
-			print("bleach_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("bleach_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("bleach_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## The Bleach: the salt flats, the caravan camp, the titan's bones, the raider camp.
@@ -7598,7 +7541,9 @@ func _t_bleach() -> void:
 	var p := World.local_player
 	var z: Zone = main.zone
 	World.time_override = 11.0
-	print("bleach: salt flat %s, mud %s, open ground %s" % [z.on_bare_patch(0, -20), z.on_bare_patch(-150, 90), z.on_bare_patch(-180, 180)])
+	var patches: Array = z.data["ground_patches"]
+	print("bleach: salt flat %s, mud %s, open ground %s" % [z.on_bare_patch(patches[0]["pos"][0], patches[0]["pos"][1]), z.on_bare_patch(patches[1]["pos"][0], patches[1]["pos"][1]),
+			z.on_bare_patch(-z.half * 0.7, z.half * 0.7)])
 	for view: Array in [[Vector2(0, 228), Vector2(0, 150), "arrival"], [Vector2(40, 195), Vector2(26, 208), "caravan"], [Vector2(20, 40), Vector2(0, -40), "flats"],
 			[Vector2(-15, -95), Vector2(-42, -125), "ribcage"], [Vector2(125, -10), Vector2(155, -40), "raiders"], [Vector2(-130, 70), Vector2(-165, 95), "oasis"],
 			[Vector2(100, -115), Vector2(135, -145), "queen"]]:
@@ -7691,27 +7636,9 @@ func _t_bleach_life() -> void:
 
 ## The Sunward Steps - Lanternhold border, walked both ways: in at the city's gate.
 func _t_lanternhold_border() -> void:
-	var main := get_parent()
-	var p := World.local_player
 	for leg: Array in [["sunward_steps", Vector2(200, 0), Vector2(1, 0), "lanternhold"], ["lanternhold", Vector2(-84, 0), Vector2(-1, 0), "sunward_steps"]]:
-		if main.zone.zone_id != leg[0]:
-			print("lanternhold_border: expected to be in %s, in %s" % [leg[0], main.zone.zone_id])
+		if not await _walk_border("lanternhold_border", leg[0], leg[1], leg[2], leg[3]):
 			return
-		p.global_position = main.zone.ground(leg[1].x, leg[1].y) + Vector3.UP
-		for k in 400:
-			if not is_instance_valid(main.zone) or main.zone.zone_id == leg[3]:
-				break
-			p.velocity = Vector3(leg[2].x, 0, leg[2].y) * 7.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
-			p.move_and_slide()
-			await get_tree().physics_frame
-		await _wait(1.5)
-		for k in 20:
-			if is_instance_valid(main.zone) and main.zone.zone_id == leg[3]:
-				break
-			await _wait(0.5)
-		var z: Zone = main.zone
-		print("lanternhold_border: from %s -> now in %s at %s (on the ground: %s)" % [leg[0], z.zone_id, Vector2(p.global_position.x, p.global_position.z),
-				absf(p.global_position.y - z.height_at(p.global_position.x, p.global_position.z)) < 1.5])
 
 
 ## Lanternhold: the gate, the shrine plaza by day and by night, the Dawn-Tusk's
@@ -8886,6 +8813,145 @@ func _t_spawn_coverage() -> void:
 			if m.spawn_point != null and Vector2(at.x, at.z).distance_to(Vector2(m.spawn_point.global_position.x, m.spawn_point.global_position.z)) > 40.0:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
+	World.time_override = -1.0
+
+
+## The zones' uneven mountain edges (tools/zones/outline.py): in every
+## outdoor zone nothing placed stands under a ridge (npcs, the bind point,
+## landmarks, arrivals from other zones), and in a few built zones every
+## spawn stands on open ground and each zone line's pass is still low enough
+## to walk; each built zone's map is saved to look at the shape.
+func _t_zone_outlines() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var outlines: Dictionary = GameData._load("res://data/zone_outlines.json")
+	var arrivals := {}
+	for f: String in DirAccess.get_files_at("res://data/zones"):
+		for zl: Dictionary in GameData.load_zone(f.get_basename()).get("zone_lines", []):
+			if zl.get("arrive") is Array:
+				(arrivals.get_or_add(str(zl["to"]), []) as Array).append(Vector2(zl["arrive"][0], zl["arrive"][1]))
+	var buried := 0
+	for id: String in outlines:
+		var d := GameData.load_zone(id)
+		var z := Zone.new()
+		z.half = float(d.get("size", 384)) * 0.5
+		z._outline = outlines[id]
+		var pts: Array = [[Vector2(d.get("bind_point", [0, 0])[0], d.get("bind_point", [0, 0])[1]), "bind point"]]
+		for n: Dictionary in d.get("npcs", []):
+			pts.append([Vector2(n["pos"][0], n["pos"][1]), str(n["id"])])
+		for lm: Dictionary in d.get("landmarks", []):
+			pts.append([Vector2(lm["pos"][0], lm["pos"][1]), str(lm["type"])])
+		for at: Vector2 in arrivals.get(id, []):
+			pts.append([at, "arrival"])
+		for pt: Array in pts:
+			var now := z.edge_depth(pt[0].x, pt[0].y)
+			var square := maxf(absf(pt[0].x), absf(pt[0].y)) - (z.half - 28.0)  # a pass's signpost, a city's wall stood in the ring already
+			if now > -8.0 and now > square + 0.5:
+				buried += 1
+				print("zone_outlines:   %s: %s at %s is under a ridge (%.1f)" % [id, pt[1], pt[0], now])
+		z.free()
+	print("zone_outlines: %d outlined zones, %d things under a ridge" % [outlines.size(), buried])
+	var hud: Hud = main.hud
+	World.time_override = 12.0
+	for zone_id: String in ["greenmoor", "thornwood", "harrowfield", "the_long_grass", "stonesail"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		var started := Time.get_ticks_msec()
+		World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+		for k in 160:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		var z := main.zone as Zone
+		print("zone_outlines: %s (%d m) built in about %.1f s, %d monsters" % [zone_id, int(z.size), (Time.get_ticks_msec() - started) / 1000.0,
+				World.get_mobs().filter(func(m: Mob) -> bool: return World.zone_of(m) == z).size()])
+		await _wait(1.0)
+		var covered := 0
+		var moved := 0
+		for sp: Node in z.get_children():
+			if sp is SpawnPoint:
+				var at := Vector2(sp.global_position.x, sp.global_position.z)
+				if z.edge_depth(at.x, at.y) > -4.0:
+					covered += 1
+				if not z.data.get("spawns", []).any(func(e: Dictionary) -> bool: return Vector2(e["pos"][0], e["pos"][1]).distance_to(at) < 0.5):
+					moved += 1
+		var steep := 0
+		for zl: Dictionary in z.data.get("zone_lines", []):
+			var at := Vector2(zl["pos"][0], zl["pos"][1])
+			var inward := -at.normalized() * 40.0
+			var rise := z.height_at(at.x, at.y) - z.height_at(at.x + inward.x, at.y + inward.y)
+			if rise > 12.0:
+				steep += 1
+				print("zone_outlines:   %s: the pass to %s climbs %.1f m in 40 m" % [zone_id, zl["to"], rise])
+		print("zone_outlines: %s: spawns under a ridge %d, walked off one %d, steep passes %d" % [zone_id, covered, moved, steep])
+		# the foot of the mountains, all the way round: too steep to climb except in a pass
+		var climbable := 0
+		var tallest := 0.0
+		var lowest := 999.0
+		var along := -z.half + 4.0
+		while along < z.half - 4.0:
+			for side: Array in [[Vector2(along, 0), Vector2(0, -1)], [Vector2(along, 0), Vector2(0, 1)], [Vector2(0, along), Vector2(1, 0)], [Vector2(0, along), Vector2(-1, 0)]]:
+				var out: Vector2 = side[1]
+				var at: Vector2 = side[0] + out * (z.half - 1.0)
+				var walked := 0
+				while z.edge_depth(at.x, at.y) > 0.0 and walked < int(z.half):  # in to the foot (a corner's other side may hold it all the way)
+					at -= out
+					walked += 1
+				if walked >= int(z.half) or z._pass_factor(at.x, at.y) < 1.0:
+					continue
+				var up := Vector2(z.edge_depth(at.x + 0.5, at.y) - z.edge_depth(at.x - 0.5, at.y), z.edge_depth(at.x, at.y + 0.5) - z.edge_depth(at.x, at.y - 0.5)).normalized()  # into the mountains, the steepest way
+				var worst := 99.0
+				var where := at
+				for k in 5:
+					var a := at + up * (1.5 + k * 2.5)
+					if z.edge_depth(a.x, a.y) > Zone.MOUNTAIN_BAND - 1.5:  # past the steep band: only reached by climbing it
+						break
+					var grad := Vector2(z.height_at(a.x + 1.0, a.y) - z.height_at(a.x - 1.0, a.y), z.height_at(a.x, a.y + 1.0) - z.height_at(a.x, a.y - 1.0)) / 2.0
+					if grad.length() < worst:
+						worst = grad.length()
+						where = a
+				if worst < 1.0:
+					climbable += 1
+					if climbable <= 5:
+						print("zone_outlines:   %s: a slope of %.2f at %s" % [zone_id, worst, where.snapped(Vector2.ONE)])
+				var top := z.height_at(at.x + up.x * 26.0, at.y + up.y * 26.0) - z.height_at(at.x, at.y)
+				tallest = maxf(tallest, top)
+				lowest = minf(lowest, top)
+			along += 8.0
+		print("zone_outlines: %s: the mountains' foot climbable at %d spots; 26 m in they stand %.0f to %.0f m over it" % [zone_id, climbable, lowest, tallest])
+		var map: MapWindow = hud._map
+		for k in 4000:
+			if map._painted.has(zone_id):
+				break
+			map._paint_some(z)
+		if shots_dir != "" and map._painted.has(zone_id):
+			(map._painted[zone_id] as ImageTexture).get_image().save_png("%s/9outline_%s.png" % [shots_dir, zone_id])
+		p.global_position = z.ground(z.bind_point.x, z.bind_point.z) + Vector3.UP * 2.0
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.15
+		for dir: Vector2 in [Vector2(0, -1), Vector2(1, 0)]:
+			p.face_toward(p.global_position + Vector3(dir.x, 0, dir.y))
+			await _wait(1.2)
+			await _shot("9outline_%s_%s" % [zone_id, "north" if dir.y < 0 else "east"])
+	# the range between Greenmoor and Thornwood from both sides of the pass
+	for view: Array in [["greenmoor", Vector2(-40, -120), Vector2(-40, -400)], ["thornwood", Vector2(40, 400), Vector2(40, 900)]]:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, view[0], view[1], view[2])
+		for k in 160:
+			if (main.zone as Zone).zone_id == view[0] and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(2.0)
+		var z := main.zone as Zone
+		p.global_position = z.ground(view[1].x, view[1].y) + Vector3.UP * 2.0
+		p.face_toward(Vector3(view[2].x, 0, view[2].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.1
+		await _wait(1.5)
+		await _shot("9outline_border_%s" % view[0])
 	World.time_override = -1.0
 
 

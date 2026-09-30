@@ -1,951 +1,113 @@
 {
   "name": "Tidemouth",
-  "levels": [
-    28,
-    30
-  ],
+  "levels": [28, 30],
   "music": "tidemouth",
   "seed": 9471,
-  "size": 448,
+  "size": 560,
   "height_amplitude": 3.5,
-  "bind_point": [
-    10,
-    40
-  ],
+  "bind_point": [11.3, 49.2],
   "flat_radius": 45,
-  "trees": 60,
-  "tree_mix": [
-    "pine_a",
-    "tree_round",
-    "pine_b"
-  ],
+  "trees": 94,
+  "tree_mix": ["pine_a", "tree_round", "pine_b"],
   "groves": 0.4,
-  "rocks": 90,
-  "grass_colors": [
-    "#6a8a5a",
-    "#7a9a68"
-  ],
+  "rocks": 141,
+  "grass_colors": ["#6a8a5a", "#7a9a68"],
   "fog_density": 0.009,
   "fog_color": "#9aaab8",
   "sun_energy": 0.9,
-  "rain": {
-    "amount": 1800,
-    "color": "#a8b8c8cc"
-  },
+  "rain": {"amount": 1800, "color": "#a8b8c8cc"},
   "lakes": [
     {
-      "points": [
-        [
-          -215,
-          -200
-        ],
-        [
-          -140,
-          -200
-        ],
-        [
-          -110,
-          -120
-        ],
-        [
-          -60,
-          -60
-        ],
-        [
-          -55,
-          20
-        ],
-        [
-          -70,
-          90
-        ],
-        [
-          -110,
-          200
-        ],
-        [
-          -215,
-          200
-        ]
-      ],
+      "points": [[-271, -256], [-175, -256], [-137.5, -150], [-75, -75], [-68.8, 25], [-87.5, 112.5], [-137.5, 256], [-271, 256]],
       "depth": 1.4,
       "shelf": 10,
       "bank": 6
     }
   ],
-  "rivers": [
-    {
-      "points": [
-        [
-          20,
-          200
-        ],
-        [
-          10,
-          140
-        ],
-        [
-          -20,
-          100
-        ],
-        [
-          -62,
-          80
-        ]
-      ],
-      "width": 9,
-      "depth": 1.0,
-      "bank": 6,
-      "flow": 0.8
-    }
-  ],
-  "passes": [
-    [
-      0,
-      224,
-      9
-    ],
-    [
-      224,
-      0,
-      9
-    ],
-    [
-      0,
-      -224,
-      9
-    ]
-  ],
-  "roads": [
-    {
-      "points": [
-        [
-          0,
-          224
-        ],
-        [
-          20,
-          150
-        ],
-        [
-          30,
-          90
-        ],
-        [
-          20,
-          40
-        ]
-      ],
-      "width": 3.0
-    },
-    {
-      "points": [
-        [
-          20,
-          40
-        ],
-        [
-          80,
-          -60
-        ],
-        [
-          110,
-          -140
-        ]
-      ],
-      "width": 2.6
-    }
-  ],
+  "rivers": [{"points": [[25, 256], [12.5, 175], [-25, 125], [-77.5, 100]], "width": 9, "depth": 1.0, "bank": 6, "flow": 0.8}],
+  "passes": [[0, 280, 9], [280, 0, 9], [0, -280, 9]],
+  "roads": [{"points": [[0, 280], [25, 187.5], [31.3, 99.2], [21.3, 49.2]], "width": 3.0}, {"points": [[21.3, 49.2], [100, -75], [137.5, -175]], "width": 2.6}],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        213
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "silted_reach",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
-    },
-    {
-      "pos": [
-        213,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "windbreak",
-      "arrive": [
-        -199,
-        0
-      ],
-      "arrive_face": [
-        -159,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -213
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "galehold",
-      "arrive": [
-        0,
-        46
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
-    }
+    {"pos": [0, 269], "size": [18, 8], "to": "silted_reach", "arrive": [0, -359], "arrive_face": [0, -319]},
+    {"pos": [269, 0], "size": [8, 18], "to": "windbreak", "arrive": [-311, 0], "arrive_face": [-271, 0]},
+    {"pos": [0, -269], "size": [18, 8], "to": "galehold", "arrive": [0, 46], "arrive_face": [0, 0]}
   ],
-  "fish": {
-    "lagoon_snapper": 3,
-    "mud_carp": 1,
-    "rainbow_koi": 1
-  },
+  "fish": {"lagoon_snapper": 3, "mud_carp": 1, "rainbow_koi": 1},
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -20
-      ],
-      "id": "lighthouse",
-      "collide": "mesh",
-      "face": [
-        0,
-        0
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        20,
-        30
-      ],
-      "id": "harbor_warehouse",
-      "collide": "mesh",
-      "face": [
-        0,
-        30
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        40,
-        -10
-      ],
-      "id": "harbor_warehouse",
-      "collide": "mesh",
-      "face": [
-        0,
-        0
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -30,
-        40
-      ],
-      "id": "harbor_pier",
-      "collide": "box",
-      "yaw": 90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -42,
-        40
-      ],
-      "id": "harbor_pier",
-      "collide": "box",
-      "yaw": 90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -30,
-        10
-      ],
-      "id": "harbor_pier",
-      "collide": "box",
-      "yaw": 90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        10,
-        70
-      ],
-      "id": "harbor_barricade",
-      "collide": "box",
-      "face": [
-        10,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        40,
-        65
-      ],
-      "id": "harbor_barricade",
-      "collide": "box",
-      "face": [
-        40,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -10,
-        75
-      ],
-      "id": "harbor_barricade",
-      "collide": "box",
-      "face": [
-        -10,
-        110
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        60
-      ],
-      "id": "storm_brazier",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        55,
-        55
-      ],
-      "id": "storm_brazier",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        130
-      ],
-      "id": "reaver_longship",
-      "collide": "mesh",
-      "face": [
-        -150,
-        140
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -150,
-        100
-      ],
-      "id": "reaver_longship",
-      "collide": "mesh",
-      "face": [
-        -170,
-        100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -100,
-        165
-      ],
-      "id": "reaver_longship",
-      "collide": "mesh",
-      "face": [
-        -120,
-        180
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -80,
-        -120
-      ],
-      "id": "shipwreck",
-      "collide": "mesh",
-      "face": [
-        -60,
-        -100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        40
-      ],
-      "id": "lamp_post",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        30,
-        50
-      ],
-      "id": "crates_stacked",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        28,
-        12
-      ],
-      "id": "barrel_small_stack",
-      "collide": "box"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        190
-      ],
-      "yaw": -90,
-      "labels": [
-        "The Silted Reach",
-        "Tidemouth"
-      ]
-    }
+    {"type": "prop", "pos": [-38.7, -10.8], "id": "lighthouse", "collide": "mesh", "face": [1.3, 9.2]},
+    {"type": "prop", "pos": [21.3, 39.2], "id": "harbor_warehouse", "collide": "mesh", "face": [1.3, 39.2]},
+    {"type": "prop", "pos": [41.3, -0.8], "id": "harbor_warehouse", "collide": "mesh", "face": [1.3, 9.2]},
+    {"type": "prop", "pos": [-28.7, 49.2], "id": "harbor_pier", "collide": "box", "yaw": 90},
+    {"type": "prop", "pos": [-40.7, 49.2], "id": "harbor_pier", "collide": "box", "yaw": 90},
+    {"type": "prop", "pos": [-28.7, 19.2], "id": "harbor_pier", "collide": "box", "yaw": 90},
+    {"type": "prop", "pos": [11.3, 79.2], "id": "harbor_barricade", "collide": "box", "face": [11.3, 109.2]},
+    {"type": "prop", "pos": [41.3, 74.2], "id": "harbor_barricade", "collide": "box", "face": [41.3, 109.2]},
+    {"type": "prop", "pos": [-8.7, 84.2], "id": "harbor_barricade", "collide": "box", "face": [-8.7, 119.2]},
+    {"type": "prop", "pos": [1.3, 69.2], "id": "storm_brazier", "collide": "box"},
+    {"type": "prop", "pos": [56.3, 64.2], "id": "storm_brazier", "collide": "box"},
+    {"type": "prop", "pos": [-150.8, 162.9], "id": "reaver_longship", "collide": "mesh", "face": [-180.8, 172.9]},
+    {"type": "prop", "pos": [-180.8, 132.9], "id": "reaver_longship", "collide": "mesh", "face": [-200.8, 132.9]},
+    {"type": "prop", "pos": [-130.8, 197.9], "id": "reaver_longship", "collide": "mesh", "face": [-150.8, 212.9]},
+    {"type": "prop", "pos": [-100, -150], "id": "shipwreck", "collide": "mesh", "face": [-80, -130]},
+    {"type": "prop", "pos": [1.3, 49.2], "id": "lamp_post", "collide": "box"},
+    {"type": "prop", "pos": [31.3, 59.2], "id": "crates_stacked", "collide": "box"},
+    {"type": "prop", "pos": [29.3, 21.2], "id": "barrel_small_stack", "collide": "box"},
+    {"type": "signpost", "pos": [10, 246], "yaw": -90, "labels": ["The Silted Reach", "Tidemouth"]}
   ],
   "npcs": [
-    {
-      "id": "harbormaster_quilla",
-      "pos": [
-        10,
-        30
-      ],
-      "face": [
-        0,
-        40
-      ]
-    },
-    {
-      "id": "lamplighter_soren",
-      "pos": [
-        -30,
-        -10
-      ],
-      "face": [
-        -10,
-        0
-      ]
-    },
-    {
-      "id": "diver_makoa",
-      "pos": [
-        -20,
-        30
-      ],
-      "face": [
-        0,
-        40
-      ]
-    },
-    {
-      "id": "harpooner_freya",
-      "pos": [
-        -10,
-        50
-      ],
-      "face": [
-        0,
-        40
-      ]
-    },
-    {
-      "id": "chandler_pim",
-      "pos": [
-        30,
-        36
-      ],
-      "face": [
-        10,
-        40
-      ]
-    },
-    {
-      "id": "tidemouth_marine",
-      "pos": [
-        10,
-        76
-      ]
-    },
-    {
-      "id": "tidemouth_marine",
-      "pos": [
-        40,
-        70
-      ]
-    },
-    {
-      "id": "tidemouth_marine",
-      "pos": [
-        20,
-        40
-      ],
-      "patrol": [
-        [
-          20,
-          40
-        ],
-        [
-          40,
-          60
-        ],
-        [
-          0,
-          70
-        ],
-        [
-          -20,
-          40
-        ],
-        [
-          20,
-          40
-        ]
-      ]
-    }
+    {"id": "harbormaster_quilla", "pos": [11.3, 39.2], "face": [1.3, 49.2]},
+    {"id": "lamplighter_soren", "pos": [-28.7, -0.8], "face": [-8.7, 9.2]},
+    {"id": "diver_makoa", "pos": [-18.7, 39.2], "face": [1.3, 49.2]},
+    {"id": "harpooner_freya", "pos": [-8.7, 59.2], "face": [1.3, 49.2]},
+    {"id": "chandler_pim", "pos": [31.3, 45.2], "face": [11.3, 49.2]},
+    {"id": "tidemouth_marine", "pos": [11.3, 85.2]},
+    {"id": "tidemouth_marine", "pos": [41.3, 79.2]},
+    {"id": "tidemouth_marine", "pos": [21.3, 49.2], "patrol": [[21.3, 49.2], [41.3, 69.2], [1.3, 79.2], [-18.7, 49.2], [21.3, 49.2]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        -150,
-        120
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -120,
-        150
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -170,
-        90
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -130,
-        60
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -100,
-        130
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -160,
-        160
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -150,
-        140
-      ],
-      "pool": {
-        "saltreaver_king": 1
-      },
-      "respawn": 1500,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -60,
-        -80
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -90,
-        -110
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -40,
-        -120
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -80,
-        -60
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -110,
-        -90
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -150,
-        -150
-      ],
-      "pool": {
-        "deep_horror": 1
-      },
-      "respawn": 1500,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -120,
-        -20
-      ],
-      "pool": {
-        "sea_serpent": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -160,
-        20
-      ],
-      "pool": {
-        "sea_serpent": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -140,
-        -60
-      ],
-      "pool": {
-        "sea_serpent": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        40,
-        100
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        80,
-        60
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        20,
-        150
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        100,
-        120
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -60,
-        170
-      ],
-      "pool": {
-        "sea_lion": 1
-      },
-      "respawn": 80,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -80,
-        190
-      ],
-      "pool": {
-        "sea_lion": 1
-      },
-      "respawn": 80,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -40,
-        185
-      ],
-      "pool": {
-        "sea_lion": 1
-      },
-      "respawn": 80,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -170,
-        -40
-      ],
-      "pool": {
-        "great_sea_serpent": 1
-      },
-      "respawn": 1500,
-      "wander": 10
-    },
-    {
-      "pos": [
-        80,
-        -140
-      ],
-      "pool": {
-        "harbor_storm_spirit": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        120,
-        -100
-      ],
-      "pool": {
-        "harbor_storm_spirit": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        60,
-        -170
-      ],
-      "pool": {
-        "harbor_storm_spirit": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        140,
-        -160
-      ],
-      "pool": {
-        "harbor_storm_spirit": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        110,
-        -165
-      ],
-      "pool": {
-        "tempest_lord": 1
-      },
-      "respawn": 1500,
-      "wander": 6
-    },
-    {
-      "pos": [
-        176,
-        0
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        32,
-        -32
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        176,
-        176
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        176,
-        88
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -56,
-        64
-      ],
-      "pool": {
-        "saltreaver": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        104,
-        -16
-      ],
-      "pool": {
-        "giant_gull": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -80,
-        -176
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        24,
-        -104
-      ],
-      "pool": {
-        "clawfolk": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    }
+    {"pos": [-8, -232], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [216, -80], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [160, 56], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [88, -80], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-40, 144], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-32, -48], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [112, 216], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-180.8, 152.9], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-150.8, 182.9], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-200.8, 122.9], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-162.5, 75], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-130.8, 162.9], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-200, 200], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-187.5, 175], "pool": {"saltreaver_king": 1}, "respawn": 1500, "wander": 6},
+    {"pos": [-75, -100], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-110, -140], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-50, -150], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-100, -75], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-137.5, -112.5], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-187.5, -187.5], "pool": {"deep_horror": 1}, "respawn": 1500, "wander": 6},
+    {"pos": [-150, -25], "pool": {"sea_serpent": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-200, 25], "pool": {"sea_serpent": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-175, -75], "pool": {"sea_serpent": 1}, "respawn": 110, "wander": 14},
+    {"pos": [50, 125], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [81.3, 69.2], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [25, 187.5], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [125, 150], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-75, 212.5], "pool": {"sea_lion": 1}, "respawn": 80, "wander": 10},
+    {"pos": [-100, 246], "pool": {"sea_lion": 1}, "respawn": 80, "wander": 10},
+    {"pos": [-50, 241], "pool": {"sea_lion": 1}, "respawn": 80, "wander": 10},
+    {"pos": [-212.5, -50], "pool": {"great_sea_serpent": 1}, "respawn": 1500, "wander": 10},
+    {"pos": [100, -175], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [150, -125], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [75, -212.5], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [175, -200], "pool": {"harbor_storm_spirit": 1}, "respawn": 100, "wander": 12},
+    {"pos": [137.5, -206.2], "pool": {"tempest_lord": 1}, "respawn": 1500, "wander": 6},
+    {"pos": [220, 0], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [33.3, -22.8], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [220, 220], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [220, 110], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-54.7, 73.2], "pool": {"saltreaver": 1}, "respawn": 100, "wander": 12},
+    {"pos": [130, -20], "pool": {"giant_gull": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-100, -220], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12},
+    {"pos": [30, -130], "pool": {"clawfolk": 1}, "respawn": 100, "wander": 12}
   ]
 }

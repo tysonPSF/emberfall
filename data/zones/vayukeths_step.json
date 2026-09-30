@@ -145,14 +145,8 @@
         18
       ],
       "to": "hollow_air",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
+      "arrive": [-359, 0],
+      "arrive_face": [-319, 0]
     }
   ],
   "landmarks": [

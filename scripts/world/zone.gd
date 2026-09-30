@@ -26,6 +26,8 @@ var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
 var _flat_scale: Array[float] = []  # each flat spot's size (a landmark's "size": a big camp levels more ground)
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
+var _outline: Dictionary = {}  # this zone's entry in data/zone_outlines.json: how far in the mountains reach along each side
+static var _outlines: Dictionary = {}  # every zone's, read once
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
@@ -77,6 +79,9 @@ func load_zone(id: String) -> void:
 			# the landmark flattens the ground to this height; the water sits a little below it
 			var flat := _noise.get_noise_2d(spot.x, spot.y) * amp * 0.5
 			_ponds.append({"center": spot, "radius": float(lm.get("radius", 12)), "depth": float(lm.get("depth", 1.6)), "level": flat - 0.25})
+	if _outlines.is_empty():
+		_outlines = GameData._load("res://data/zone_outlines.json")
+	_outline = _outlines.get(id, {}) if tunnel == null else {}
 	for ps: Array in data.get("passes", []):
 		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
 	for river: Dictionary in data.get("rivers", []):
@@ -316,11 +321,58 @@ func height_at(x: float, z: float) -> float:
 				h = lerpf(float(f[3]), h, smoothstep(0.0, 4.0, out))
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
-	# Mountains ring the zone so you can't walk off the edge.
-	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
-	if edge > 0.0 and tunnel == null:
-		h += (edge * 1.3 + edge * edge * 0.08) * _pass_factor(x, z)
+	# Mountains ring the zone so you can't walk off the edge; its ridges reach in unevenly (edge_depth).
+	if tunnel == null and edge_depth(x, z) > 0.0:
+		h += mountain_height(x, z) * _pass_factor(x, z)
 	return h
+
+
+## How high the mountains round the zone stand at (x, z), before a pass opens
+## them. A steep band at their foot (MOUNTAIN_BAND m deep, too steep to climb)
+## is all that keeps you in, so behind it the ground only climbs gently, but
+## for a tall summit here and there. Each side's crest and summits come from
+## tools/zones/outline.py, measured from the pass, so a border's two zones see
+## the same range; the highest side wins, which keeps the corners seamless.
+const MOUNTAIN_BAND := 14.0
+func mountain_height(x: float, z: float) -> float:
+	var base := half - 28.0
+	var rough := 1.0 + 0.25 * _noise.get_noise_2d(x * 0.8 + 911.0, z * 0.8 - 317.0)
+	if _outline.is_empty() or not _outline.has("cn"):
+		var d := maxf(absf(x), absf(z)) - base
+		return _mountain(d, 1.0, 0.0, rough)
+	var st := float(_outline["step"])
+	var best := 0.0
+	for side: Array in [["n", -z, x], ["s", z, x], ["e", x, z], ["w", -x, z]]:
+		var d: float = side[1] - base + _inset(_outline[side[0]], st, side[2])
+		if d > 0.0:
+			best = maxf(best, _mountain(d, _inset(_outline["c" + side[0]], st, side[2]), _inset(_outline["p" + side[0]], st, side[2]), rough))
+	return best
+
+
+func _mountain(d: float, crest: float, peak: float, rough: float) -> float:
+	var band := minf(d, MOUNTAIN_BAND) * 2.1 * crest  # well over 50 degrees even where the crest is lowest (0.75) and the hills fall away
+	var behind := maxf(0.0, d - MOUNTAIN_BAND)
+	return band + (behind * 0.35 + peak * smoothstep(0.0, 45.0, behind)) * rough
+
+
+## How far (x, z) stands past the foot of the mountains round the zone
+## (negative: open ground), before the passes open it. The foot is 28 m in
+## from the square edge, pushed further in along each side by the zone's
+## outline (tools/zones/outline.py: ridges, rounded corners), so a zone isn't
+## a box. tools/zones/outline.py edge_depth is the same in Python.
+func edge_depth(x: float, z: float) -> float:
+	var base := half - 28.0
+	if _outline.is_empty():
+		return maxf(absf(x), absf(z)) - base
+	var st := float(_outline["step"])
+	return maxf(maxf(-z - base + _inset(_outline["n"], st, x), z - base + _inset(_outline["s"], st, x)),
+			maxf(x - base + _inset(_outline["e"], st, z), -x - base + _inset(_outline["w"], st, z)))
+
+
+func _inset(prof: Array, st: float, along: float) -> float:
+	var f := (along + half) / st
+	var i := clampi(floori(f), 0, prof.size() - 2)
+	return lerpf(float(prof[i]), float(prof[i + 1]), clampf(f - i, 0.0, 1.0))
 
 
 ## 0 inside a mountain pass, 1 where the ring of mountains stands. A pass on
@@ -711,7 +763,7 @@ func _build_environment() -> void:
 
 
 func _build_terrain() -> void:
-	var grid := int(data.get("grid", GRID))  # a cave needs finer ground than a meadow (its passages are a few meters wide)
+	var grid := int(data.get("grid", maxi(GRID, ceili(size / 4.0))))  # a cave needs finer ground than a meadow (its passages are a few meters wide); a big zone keeps 4 m cells
 	var n := grid + 1
 	var cell := size / grid
 	var heights := PackedFloat32Array()
@@ -933,7 +985,7 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	var road := road_distance(x, z)
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
-	var edge := (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z)
+	var edge := (edge_depth(x, z) - 2.0) * _pass_factor(x, z)
 	var hill := h - terrace_rise(x, z)  # a terrace's height is built, not a mountain
 	if edge > 0.0 or hill > amp * 1.2:
 		c = c.lerp(Color(0.44, 0.42, 0.4), clampf(maxf(edge / 10.0, (hill - amp * 1.2) / 4.0), 0.0, 1.0))
@@ -2353,7 +2405,7 @@ func _build_road_lamps() -> void:
 			var t := spacing * 0.5
 			while t < seg.length():
 				var at: Vector2 = pts[i] + dir * t + normal * side * (float(road["width"]) * 0.5 + 1.2)
-				var skip := maxf(absf(at.x), absf(at.y)) > half - 30.0
+				var skip := edge_depth(at.x, at.y) > -2.0
 				for pl in plazas:
 					skip = skip or at.distance_to(pl) < 16.0
 				if not skip:
@@ -2448,73 +2500,142 @@ func _build_props() -> void:
 ## Grass, flowers, ferns, bushes and the like from the zone's "clutter" table:
 ## {prop_id: {density (per m²), patch (0-1 clumping), sway, range, shadow,
 ## tint ("ground" to match the terrain), scale [min, max], city (density
-## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk so
-## far chunks are skipped. Only logs and stumps collide (SOLID_CLUTTER).
+## factor inside clear_radius)}}. Drawn as one MultiMesh per type per chunk,
+## built only round the camera (_process). Only logs and stumps collide (SOLID_CLUTTER).
 func _build_clutter() -> void:
 	var table: Dictionary = data.get("clutter", {})
-	if table.is_empty():
-		return
-	var rng := RandomNumberGenerator.new()
-	rng.seed = int(data.get("seed", 1)) + 7919
-	var patches := FastNoiseLite.new()
-	patches.seed = int(data.get("seed", 1)) + 31
-	patches.frequency = 0.045
-	var chunks := ceili(size / CLUTTER_CHUNK)
+	var patches_seed := int(data.get("seed", 1)) + 31
 	for id: String in table:
 		var spec: Dictionary = table[id]
+		patches_seed += 1  # each type clumps in its own places
 		var source := _clutter_source(id, float(spec.get("sway", 0.0)))
 		if source.is_empty():
 			continue
-		var density := float(spec.get("density", 0.1))
-		var patch := float(spec.get("patch", 0.5))
-		var city := float(spec.get("city", 0.0))
-		var by_ground := str(spec.get("tint", "")) == "ground"
-		var scale_range: Array = spec.get("scale", [0.8, 1.2])
-		patches.seed += 1  # each type clumps in its own places
-		for cx in chunks:
-			for cz in chunks:
-				var x0 := -half + cx * CLUTTER_CHUNK
-				var z0 := -half + cz * CLUTTER_CHUNK
-				var xforms: Array[Transform3D] = []
-				var colors: Array[Color] = []
-				var tries := int(density * CLUTTER_CHUNK * CLUTTER_CHUNK) + (1 if rng.randf() < fmod(density * CLUTTER_CHUNK * CLUTTER_CHUNK, 1.0) else 0)
-				for k in tries:
-					var x := x0 + rng.randf() * CLUTTER_CHUNK
-					var z := z0 + rng.randf() * CLUTTER_CHUNK
-					var keep := lerpf(1.0, smoothstep(-0.15, 0.35, patches.get_noise_2d(x, z)) * 1.6, patch)
-					if Vector2(x, z).length() < _clear_radius:
-						keep *= city
-					if rng.randf() >= keep or not _clutter_spot_ok(x, z):
-						continue
-					var h := height_at(x, z)
-					var s := rng.randf_range(float(scale_range[0]), float(scale_range[1]))
-					var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s)
-					xforms.append(Transform3D(basis, Vector3(x, h - 0.02, z)))
-					if by_ground:
-						var g := _ground_color(x, z, h)
-						colors.append(Color(g.r * 1.45, g.g * 1.4, g.b * 1.3) * rng.randf_range(0.9, 1.1))
-					else:
-						colors.append(Color.WHITE * rng.randf_range(0.88, 1.08))
-				if xforms.is_empty():
-					continue
-				var mm := MultiMesh.new()
-				mm.transform_format = MultiMesh.TRANSFORM_3D
-				mm.use_colors = true
-				mm.mesh = source["mesh"]
-				mm.instance_count = xforms.size()
-				for i in xforms.size():
-					mm.set_instance_transform(i, xforms[i])
-					mm.set_instance_color(i, colors[i])
-				if id in SOLID_CLUTTER:  # a log or a stump is in the way, like a rock
-					_solid_clutter(id, source["mesh"] as Mesh, xforms)
-				var mmi := MultiMeshInstance3D.new()
-				mmi.multimesh = mm
-				mmi.material_override = source["material"]
-				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if spec.get("shadow", false) else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				mmi.visibility_range_end = float(spec.get("range", 60.0))
-				mmi.visibility_range_end_margin = 10.0
-				mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-				add_child(mmi)
+		var patches := FastNoiseLite.new()
+		patches.seed = patches_seed
+		patches.frequency = 0.045
+		_clutter_types.append({"id": id, "spec": spec, "source": source, "patches": patches, "range": float(spec.get("range", 60.0))})
+
+
+## Clutter is built a chunk at a time round the camera, each type out to its own
+## view range, and taken down again past it: a big zone costs what you can see,
+## not its whole ground. The first frame builds everything in view at once;
+## after that a few milliseconds a frame (CLUTTER_BUDGET_USEC).
+const CLUTTER_BUDGET_USEC := 3000
+var _clutter_types: Array = []  # [{id, spec, source, patches, range}]
+var _clutter_built: Dictionary = {}  # Vector3i(type, cx, cz) -> [Node...]
+var _clutter_pending: Array[Vector3i] = []  # nearest first
+var _clutter_seen_at := Vector3.INF  # where the camera was when the pending list was made
+var _clutter_first := true
+
+
+func _process(_delta: float) -> void:
+	if _clutter_types.is_empty():
+		return
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var at := cam.global_position
+	if _clutter_seen_at == Vector3.INF or Vector2(at.x, at.z).distance_to(Vector2(_clutter_seen_at.x, _clutter_seen_at.z)) > 8.0:
+		_clutter_seen_at = at
+		_plan_clutter(at)
+	var started := Time.get_ticks_usec()
+	while not _clutter_pending.is_empty() and (_clutter_first or Time.get_ticks_usec() - started < CLUTTER_BUDGET_USEC):
+		var key: Vector3i = _clutter_pending.pop_front()
+		if not _clutter_built.has(key):
+			_clutter_built[key] = _build_clutter_chunk(key)
+	_clutter_first = false
+
+
+## Which chunks each type needs now (nearest first), and the ones left behind taken down.
+func _plan_clutter(at: Vector3) -> void:
+	var here := Vector2(at.x, at.z)
+	var chunks := ceili(size / CLUTTER_CHUNK)
+	var want := {}
+	var pending: Array = []
+	for t in _clutter_types.size():
+		var reach: float = _clutter_types[t]["range"] + CLUTTER_CHUNK * 0.75
+		var lo := Vector2i(clampi(floori((here.x - reach + half) / CLUTTER_CHUNK), 0, chunks - 1), clampi(floori((here.y - reach + half) / CLUTTER_CHUNK), 0, chunks - 1))
+		var hi := Vector2i(clampi(floori((here.x + reach + half) / CLUTTER_CHUNK), 0, chunks - 1), clampi(floori((here.y + reach + half) / CLUTTER_CHUNK), 0, chunks - 1))
+		for cx in range(lo.x, hi.x + 1):
+			for cz in range(lo.y, hi.y + 1):
+				var d := here.distance_to(Vector2(-half + (cx + 0.5) * CLUTTER_CHUNK, -half + (cz + 0.5) * CLUTTER_CHUNK))
+				if d < reach:
+					var key := Vector3i(t, cx, cz)
+					want[key] = true
+					if not _clutter_built.has(key):
+						pending.append([d, key])
+	pending.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+	_clutter_pending.clear()
+	for e: Array in pending:
+		_clutter_pending.append(e[1])
+	for key: Vector3i in _clutter_built.keys():
+		var reach: float = _clutter_types[key.x]["range"] + CLUTTER_CHUNK * 2.0
+		if not want.has(key) and here.distance_to(Vector2(-half + (key.y + 0.5) * CLUTTER_CHUNK, -half + (key.z + 0.5) * CLUTTER_CHUNK)) > reach:
+			for n: Node in _clutter_built[key]:
+				n.queue_free()
+			_clutter_built.erase(key)
+
+
+## One type's clutter in one chunk, the same every time it's built (its own seed).
+func _build_clutter_chunk(key: Vector3i) -> Array:
+	var t: Dictionary = _clutter_types[key.x]
+	var spec: Dictionary = t["spec"]
+	var id: String = t["id"]
+	var source: Dictionary = t["source"]
+	var patches: FastNoiseLite = t["patches"]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([int(data.get("seed", 1)), key.x, key.y, key.z])
+	var density := float(spec.get("density", 0.1))
+	var patch := float(spec.get("patch", 0.5))
+	var city := float(spec.get("city", 0.0))
+	var by_ground := str(spec.get("tint", "")) == "ground"
+	var scale_range: Array = spec.get("scale", [0.8, 1.2])
+	var x0 := -half + key.y * CLUTTER_CHUNK
+	var z0 := -half + key.z * CLUTTER_CHUNK
+	var xforms: Array[Transform3D] = []
+	var colors: Array[Color] = []
+	var tries := int(density * CLUTTER_CHUNK * CLUTTER_CHUNK) + (1 if rng.randf() < fmod(density * CLUTTER_CHUNK * CLUTTER_CHUNK, 1.0) else 0)
+	for k in tries:
+		var x := x0 + rng.randf() * CLUTTER_CHUNK
+		var z := z0 + rng.randf() * CLUTTER_CHUNK
+		var keep := lerpf(1.0, smoothstep(-0.15, 0.35, patches.get_noise_2d(x, z)) * 1.6, patch)
+		if Vector2(x, z).length() < _clear_radius:
+			keep *= city
+		if rng.randf() >= keep or not _clutter_spot_ok(x, z):
+			continue
+		var h := height_at(x, z)
+		var s := rng.randf_range(float(scale_range[0]), float(scale_range[1]))
+		var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s)
+		xforms.append(Transform3D(basis, Vector3(x, h - 0.02, z)))
+		if by_ground:
+			var g := _ground_color(x, z, h)
+			colors.append(Color(g.r * 1.45, g.g * 1.4, g.b * 1.3) * rng.randf_range(0.9, 1.1))
+		else:
+			colors.append(Color.WHITE * rng.randf_range(0.88, 1.08))
+	if xforms.is_empty():
+		return []
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	mm.mesh = source["mesh"]
+	mm.instance_count = xforms.size()
+	for i in xforms.size():
+		mm.set_instance_transform(i, xforms[i])
+		mm.set_instance_color(i, colors[i])
+	var made: Array = []
+	if id in SOLID_CLUTTER:  # a log or a stump is in the way, like a rock
+		made.append(_solid_clutter(id, source["mesh"] as Mesh, xforms))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.material_override = source["material"]
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if spec.get("shadow", false) else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mmi.visibility_range_end = t["range"]
+	mmi.visibility_range_end_margin = 10.0
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	add_child(mmi)
+	made.append(mmi)
+	return made
 
 
 ## Clutter you can't walk through: fallen logs and stumps. Grass and flowers
@@ -2523,7 +2644,7 @@ func _build_clutter() -> void:
 const SOLID_CLUTTER := ["log_fallen", "stump", "charred_log"]
 
 
-func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:
+func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> StaticBody3D:
 	var box := mesh.get_aabb()
 	var body := StaticBody3D.new()
 	body.set_meta("clutter", id)
@@ -2539,6 +2660,7 @@ func _solid_clutter(id: String, mesh: Mesh, xforms: Array[Transform3D]) -> void:
 		cs.transform = Transform3D(turn, xf.origin + turn * (box.get_center() * s))
 		body.add_child(cs)
 	add_child(body)
+	return body
 
 
 ## The mesh and a wind-aware material for one clutter prop.
@@ -2563,7 +2685,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	var p := Vector2(x, z)
 	if p.distance_to(_bind_xz) < 9.0 or road_distance(x, z) < 0.6:
 		return false
-	if (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z) > 0.0:
+	if (edge_depth(x, z) - 2.0) * _pass_factor(x, z) > 0.0:
 		return false
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
@@ -2596,6 +2718,9 @@ func _build_spawns() -> void:
 		sp.when = str(entry.get("when", ""))
 		var x := float(entry["pos"][0])
 		var z := float(entry["pos"][1])
+		var off := _off_the_ridge(Vector2(x, z), sp.wander_radius)
+		x = off.x
+		z = off.y
 		sp.position = Vector3(x, surface_at(x, z), z)  # on a deck (a causeway, a boardwalk) when there's one over the ground
 		if entry.has("face"):  # facing a point, as npcs do (a web hung across a passage)
 			sp.yaw = atan2(-(float(entry["face"][0]) - x), -(float(entry["face"][1]) - z))
@@ -2604,10 +2729,22 @@ func _build_spawns() -> void:
 
 # --- helpers ----------------------------------------------------------------
 
+## An ordinary spawn that one of the outline's ridges covers walks in toward
+## the middle until its wandering ground is open (tools/zones/outline.py keeps
+## the ridges off everything else placed, but not off every spawn).
+func _off_the_ridge(at: Vector2, wander: float) -> Vector2:
+	var margin := minf(wander, 10.0) + 4.0
+	for k in 60:
+		if edge_depth(at.x, at.y) <= -margin or at.length() < 8.0:
+			break
+		at -= at.normalized() * 4.0
+	return at
+
+
 func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
-		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
+		if edge_depth(xz.x, xz.y) > -2.0 or xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
 				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0 or in_field(xz.x, xz.y, 4.0):
 			continue
 		var clear := true

@@ -1,1110 +1,208 @@
 {
   "name": "The Long Grass",
-  "levels": [
-    34,
-    38
-  ],
+  "levels": [34, 38],
   "music": "the_long_grass",
   "seed": 9531,
-  "size": 512,
+  "size": 1024,
   "height_amplitude": 4,
-  "bind_point": [
-    -200,
-    0
-  ],
+  "bind_point": [-400, 0],
   "flat_radius": 12,
-  "trees": 20,
-  "tree_mix": [
-    "tree_round"
-  ],
+  "trees": 80,
+  "tree_mix": ["tree_round"],
   "groves": 0.1,
-  "rocks": 40,
-  "grass_colors": [
-    "#7a9a3e",
-    "#98a84c"
-  ],
+  "rocks": 160,
+  "grass_colors": ["#7a9a3e", "#98a84c"],
   "fog_density": 0.0025,
   "fog_color": "#e4dcc0",
   "sun_energy": 1.0,
   "clutter": {
-    "tallgrass": {
-      "density": 0.16,
-      "patch": 0.75,
-      "sway": 0.12,
-      "range": 60,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "grass_a": {
-      "density": 0.3,
-      "patch": 0.5,
-      "sway": 0.3,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.9,
-        1.4
-      ]
-    },
-    "flowers_yellow": {
-      "density": 0.006,
-      "patch": 0.9,
-      "sway": 0.2,
-      "range": 50,
-      "scale": [
-        0.9,
-        1.3
-      ]
-    }
+    "tallgrass": {"density": 0.16, "patch": 0.75, "sway": 0.12, "range": 60, "scale": [0.8, 1.2]},
+    "grass_a": {"density": 0.3, "patch": 0.5, "sway": 0.3, "range": 45, "tint": "ground", "scale": [0.9, 1.4]},
+    "flowers_yellow": {"density": 0.006, "patch": 0.9, "sway": 0.2, "range": 50, "scale": [0.9, 1.3]}
   },
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
-  "roads": [
-    {
-      "points": [
-        [
-          0,
-          256
-        ],
-        [
-          10,
-          150
-        ],
-        [
-          -20,
-          40
-        ],
-        [
-          -120,
-          10
-        ],
-        [
-          -256,
-          0
-        ]
-      ],
-      "width": 2.6
-    },
-    {
-      "points": [
-        [
-          -20,
-          40
-        ],
-        [
-          80,
-          10
-        ],
-        [
-          256,
-          0
-        ]
-      ],
-      "width": 2.4
-    }
-  ],
+  "passes": [[0, 512, 9], [-512, 0, 9], [512, 0, 9], [0, -512, 9]],
+  "roads": [{"points": [[0, 512], [20, 300], [-40, 80], [-240, 20], [-512, 0]], "width": 2.6}, {"points": [[-40, 80], [160, 20], [512, 0]], "width": 2.4}],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "windbreak",
-      "arrive": [
-        0,
-        -199
-      ],
-      "arrive_face": [
-        0,
-        -159
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "galehold",
-      "arrive": [
-        46,
-        0
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
-    },
-    {
-      "pos": [
-        245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "blackglass",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "hollow_air",
-      "arrive": [
-        0,
-        231
-      ],
-      "arrive_face": [
-        0,
-        191
-      ]
-    }
+    {"pos": [0, 501], "size": [18, 8], "to": "windbreak", "arrive": [0, -311], "arrive_face": [0, -271]},
+    {"pos": [-501, 0], "size": [8, 18], "to": "galehold", "arrive": [46, 0], "arrive_face": [0, 0]},
+    {"pos": [501, 0], "size": [8, 18], "to": "blackglass", "arrive": [-359, 0], "arrive_face": [-319, 0]},
+    {"pos": [0, -501], "size": [18, 8], "to": "hollow_air", "arrive": [0, 359], "arrive_face": [0, 319]}
   ],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        -130
-      ],
-      "id": "barrow_mound",
-      "collide": "mesh",
-      "face": [
-        -80,
-        -100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -160,
-        -80
-      ],
-      "id": "barrow_mound",
-      "collide": "mesh",
-      "face": [
-        -100,
-        -80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90,
-        -170
-      ],
-      "id": "barrow_mound",
-      "collide": "mesh",
-      "face": [
-        -60,
-        -140
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -110,
-        -100
-      ],
-      "id": "standing_stone",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        -160
-      ],
-      "id": "standing_stone",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -80,
-        -140
-      ],
-      "id": "standing_stone",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        -90
-      ],
-      "id": "hoofborn_yurt",
-      "collide": "box",
-      "face": [
-        140,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        175,
-        -125
-      ],
-      "id": "hoofborn_yurt",
-      "collide": "box",
-      "face": [
-        140,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        130,
-        -120
-      ],
-      "id": "hoofborn_yurt",
-      "collide": "box",
-      "face": [
-        140,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        170,
-        -60
-      ],
-      "id": "hoofborn_yurt",
-      "collide": "box",
-      "face": [
-        140,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        145,
-        -110
-      ],
-      "id": "horse_totem",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        120,
-        -80
-      ],
-      "id": "horse_totem",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        -110
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        0
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        80,
-        100
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -60,
-        60
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        120,
-        160
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -30,
-        -60
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        60,
-        -150
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -180,
-        40
-      ],
-      "id": "lone_tree",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        30,
-        70
-      ],
-      "id": "herd_bones",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20,
-        120
-      ],
-      "id": "herd_bones",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        100,
-        -20
-      ],
-      "id": "herd_bones",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -10
-      ],
-      "id": "boulder_a",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        20,
-        -100
-      ],
-      "id": "boulder_b",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        160,
-        60
-      ],
-      "id": "boulder_c",
-      "collide": "box"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        230
-      ],
-      "yaw": -90,
-      "labels": [
-        "Windbreak",
-        "The Long Grass"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -230,
-        8
-      ],
-      "yaw": 180,
-      "labels": [
-        "Galehold",
-        "The Long Grass"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        230,
-        8
-      ],
-      "yaw": 0,
-      "labels": [
-        "Blackglass",
-        "The Long Grass"
-      ]
-    }
+    {"type": "prop", "pos": [-236.7, -260], "id": "barrow_mound", "collide": "mesh", "face": [-196.7, -230]},
+    {"type": "prop", "pos": [-276.7, -210], "id": "barrow_mound", "collide": "mesh", "face": [-216.7, -210]},
+    {"type": "prop", "pos": [-206.7, -300], "id": "barrow_mound", "collide": "mesh", "face": [-176.7, -270]},
+    {"type": "prop", "pos": [-226.7, -230], "id": "standing_stone", "collide": "box"},
+    {"type": "prop", "pos": [-256.7, -290], "id": "standing_stone", "collide": "box"},
+    {"type": "prop", "pos": [-196.7, -270], "id": "standing_stone", "collide": "box"},
+    {"type": "prop", "pos": [298.6, -189.3], "id": "hoofborn_yurt", "collide": "box", "face": [288.6, -159.3]},
+    {"type": "prop", "pos": [323.6, -224.3], "id": "hoofborn_yurt", "collide": "box", "face": [288.6, -159.3]},
+    {"type": "prop", "pos": [278.6, -219.3], "id": "hoofborn_yurt", "collide": "box", "face": [288.6, -159.3]},
+    {"type": "prop", "pos": [318.6, -159.3], "id": "hoofborn_yurt", "collide": "box", "face": [288.6, -159.3]},
+    {"type": "prop", "pos": [293.6, -209.3], "id": "horse_totem", "collide": "box"},
+    {"type": "prop", "pos": [268.6, -179.3], "id": "horse_totem", "collide": "box"},
+    {"type": "prop", "pos": [298.6, -209.3], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [-23.3, -23.3], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [160, 200], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [-120, 120], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [240, 320], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [-53.3, -83.3], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [120, -300], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [-360, 80], "id": "lone_tree", "collide": "trunk"},
+    {"type": "prop", "pos": [60, 140], "id": "herd_bones", "collide": "none"},
+    {"type": "prop", "pos": [-40, 240], "id": "herd_bones", "collide": "none"},
+    {"type": "prop", "pos": [200, -40], "id": "herd_bones", "collide": "none"},
+    {"type": "prop", "pos": [-63.3, -33.3], "id": "boulder_a", "collide": "box"},
+    {"type": "prop", "pos": [40, -200], "id": "boulder_b", "collide": "box"},
+    {"type": "prop", "pos": [320, 120], "id": "boulder_c", "collide": "box"},
+    {"type": "signpost", "pos": [16, 486], "yaw": -90, "labels": ["Windbreak", "The Long Grass"]},
+    {"type": "signpost", "pos": [-486, 16], "yaw": 180, "labels": ["Galehold", "The Long Grass"]},
+    {"type": "signpost", "pos": [486, 16], "yaw": 0, "labels": ["Blackglass", "The Long Grass"]}
   ],
   "npcs": [],
   "spawns": [
-    {
-      "pos": [
-        -120,
-        120
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -80,
-        160
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -150,
-        80
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -60,
-        110
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -170,
-        150
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -40,
-        150
-      ],
-      "pool": {
-        "grass_howler": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -100,
-        90
-      ],
-      "pool": {
-        "grass_howler": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -130,
-        170
-      ],
-      "pool": {
-        "grass_howler": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -150,
-        160
-      ],
-      "pool": {
-        "tawnyjaw": 1
-      },
-      "respawn": 1500,
-      "wander": 10
-    },
-    {
-      "pos": [
-        20,
-        40
-      ],
-      "pool": {
-        "thunderhoof": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        60,
-        20
-      ],
-      "pool": {
-        "thunderhoof": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -20,
-        0
-      ],
-      "pool": {
-        "thunderhoof": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        40,
-        -40
-      ],
-      "pool": {
-        "thunderhoof": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        90,
-        60
-      ],
-      "pool": {
-        "thunderhoof": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        0,
-        90
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        70,
-        110
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -50,
-        40
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        110,
-        20
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        50,
-        50
-      ],
-      "pool": {
-        "old_thunderhoof": 1
-      },
-      "respawn": 1500,
-      "wander": 14
-    },
-    {
-      "pos": [
-        140,
-        -60
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        170,
-        -100
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        120,
-        -110
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        180,
-        -40
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        150,
-        -140
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        160,
-        -80
-      ],
-      "pool": {
-        "hoofborn_archer": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        130,
-        -130
-      ],
-      "pool": {
-        "hoofborn_archer": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        185,
-        -120
-      ],
-      "pool": {
-        "hoofborn_archer": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        160,
-        -110
-      ],
-      "pool": {
-        "khan_oruk": 1
-      },
-      "respawn": 1500,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -120,
-        -120
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -150,
-        -90
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -100,
-        -160
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -170,
-        -140
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -80,
-        -110
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -140,
-        -170
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -130,
-        -140
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -100,
-        -100
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -130,
-        -130
-      ],
-      "pool": {
-        "barrow_lord": 1
-      },
-      "respawn": 1500,
-      "wander": 6,
-      "when": "night"
-    },
-    {
-      "pos": [
-        208,
-        208
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        8,
-        -160
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -208,
-        -48
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        208,
-        88
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        104,
-        208
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        -208
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -128,
-        -8
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -72,
-        -208
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        208,
-        -208
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    },
-    {
-      "pos": [
-        88,
-        -208
-      ],
-      "pool": {
-        "hoofborn_archer": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        24,
-        200
-      ],
-      "pool": {
-        "grass_howler": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        152,
-        144
-      ],
-      "pool": {
-        "dirkhorn": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        -128
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -24,
-        -88
-      ],
-      "pool": {
-        "barrow_wight": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        208
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -208,
-        48
-      ],
-      "pool": {
-        "grass_stalker": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        192,
-        24
-      ],
-      "pool": {
-        "hoofborn_rider": 1
-      },
-      "respawn": 100,
-      "wander": 14
-    }
+    {"pos": [0, 320], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-88, 456], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [0, -464], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [128, -232], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-280, -448], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [448, -72], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [448, -288], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-88, -240], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [296, -368], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-176, -112], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-424, 208], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [448, 296], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-296, -136], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [296, 160], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [200, -80], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [56, 280], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-200, 440], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-336, -336], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-464, 8], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [304, -32], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [16, -200], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [160, 320], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-448, 312], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-312, 440], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [200, -312], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-152, 0], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [312, 400], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [432, -176], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-216, 80], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-160, -320], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [80, -400], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-72, -352], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-328, -224], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-344, -40], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-248, -360], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [360, -304], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-304, 64], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [192, -168], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-40, 384], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [120, 448], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [232, 240], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [112, -320], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [328, -448], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [464, 16], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [304, 72], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [376, 248], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [376, 336], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-432, -336], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-400, -176], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-8, 464], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [88, -160], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-112, -160], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [240, 336], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-40, 56], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [448, 104], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-344, 224], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-448, 136], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-136, 392], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-72, -440], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-16, 256], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-352, 376], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-112, -72], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [368, -72], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [72, 200], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [136, -32], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [360, 120], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-344, -408], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-208, -456], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-8, -392], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [200, -240], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [24, -128], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [64, -264], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-72, 160], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [24, -40], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [88, 344], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-240, -88], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-232, -160], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-24, -264], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [272, -304], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-368, 160], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [144, -120], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [248, 112], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [400, -240], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-152, -216], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-176, 256], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-48, -184], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [144, 384], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [216, 176], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [264, -96], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-240, 240], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-160, 320], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-300, 160], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-120, 220], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-340, 300], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-80, 300], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-200, 180], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-260, 340], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-300, 320], "pool": {"tawnyjaw": 1}, "respawn": 1500, "wander": 10},
+    {"pos": [40, 80], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [120, 40], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-43.3, -23.3], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [80, -80], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [180, 120], "pool": {"thunderhoof": 1}, "respawn": 100, "wander": 18},
+    {"pos": [0, 180], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [150, 210], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-110, 100], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [220, 40], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [80, 120], "pool": {"old_thunderhoof": 1}, "respawn": 1500, "wander": 14},
+    {"pos": [288.6, -159.3], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [318.6, -199.3], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [268.6, -209.3], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [328.6, -139.3], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [298.6, -239.3], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [308.6, -179.3], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [278.6, -229.3], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [333.6, -219.3], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [308.6, -209.3], "pool": {"khan_oruk": 1}, "respawn": 1500, "wander": 8},
+    {"pos": [-236.7, -250], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-266.7, -220], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-216.7, -290], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-340, -280], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-160, -220], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-256.7, -300], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-246.7, -270], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-216.7, -230], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-246.7, -260], "pool": {"barrow_lord": 1}, "respawn": 1500, "wander": 6, "when": "night"},
+    {"pos": [416, 416], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [16, -320], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [-416, -96], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [416, 176], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [208, 416], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-416, -416], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-256, -16], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-144, -416], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [416, -416], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14},
+    {"pos": [176, -416], "pool": {"hoofborn_archer": 1}, "respawn": 100, "wander": 12},
+    {"pos": [48, 400], "pool": {"grass_howler": 1}, "respawn": 100, "wander": 18},
+    {"pos": [304, 288], "pool": {"dirkhorn": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-416, -256], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-47.3, -111.3], "pool": {"barrow_wight": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-416, 416], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-388, 88], "pool": {"grass_stalker": 1}, "respawn": 100, "wander": 16},
+    {"pos": [384, 48], "pool": {"hoofborn_rider": 1}, "respawn": 100, "wander": 14}
   ]
 }

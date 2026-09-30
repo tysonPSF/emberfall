@@ -1303,7 +1303,7 @@ func _combat_msg(a: Entity, d: Entity, verb: Array, dmg: int) -> void:
 
 
 func damage(d: Entity, amount: int, src: Entity) -> void:
-	if d.dead or warded(d):
+	if d.dead or warded(d) or (d is Player and (d as Player).god_mode):
 		return
 	d.hp -= amount
 	d.sitting = false
@@ -1741,7 +1741,7 @@ func request_sprint(entity_id: int, on: bool) -> void:
 	# stamina returns, which stutters your speed and repeats the winded message.
 	if on and (p.sitting or p.stamina < float(cfg("sprint_resume_at", 25.0))):
 		return
-	if on and p.encumbrance_speed() < 0.6:
+	if on and p.encumbrance_speed() < 0.6 and not p.god_mode:
 		say(p, "You are carrying too much to run.", C_WARN)
 		return
 	p.sprinting = on
@@ -1754,6 +1754,9 @@ func request_sprint(entity_id: int, on: bool) -> void:
 func _update_stamina(p: Player, delta: float) -> void:
 	if p.dead:
 		p.sprinting = false
+		return
+	if p.god_mode:  # testing: run as far as you like
+		p.stamina = float(p.max_stamina)
 		return
 	if p.sprinting:
 		p.stamina_idle = float(cfg("stamina_regen_delay", 1.5))
@@ -4075,6 +4078,32 @@ func request_chat(player_id: int, text: String) -> void:
 			request_bind(player_id)
 		"/grove":
 			_grove_command(p, rest)
+		"/zone":  # testing and admin only: /zone <id or name> goes there, to its bind point (or the middle)
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				var want := rest.to_lower().replace(" ", "_").replace("'", "")
+				var found := ""
+				for f: String in DirAccess.get_files_at("res://data/zones"):
+					var id := f.get_basename()
+					var zname := str(GameData.load_zone(id).get("name", id)).to_lower().replace(" ", "_").replace("'", "")
+					if want != "" and (id == want or zname == want or zname.trim_prefix("the_") == want.trim_prefix("the_")):
+						found = id
+						break
+				if found == "":
+					say(p, "No zone called '%s'. Try an id like the_long_grass." % rest, C_WARN)
+				else:
+					_leave_for_elsewhere(p)
+					zone_change.emit(p, found, Vector2.INF, Vector2.INF)
+		"/god":  # testing and admin only: walk the world unhurt and unnoticed
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				p.god_mode = not p.god_mode
+				if p.god_mode:
+					for m in get_mobs():
+						m.hate.erase(p.entity_id)
+				say(p, "God mode is %s." % ("on: nothing can hurt you, monsters ignore you, and you never tire" if p.god_mode else "off"), C_SYSTEM)
 		"/friend", "/friends":
 			if cmd == "/friends" or rest == "":
 				request_friends_view(player_id)

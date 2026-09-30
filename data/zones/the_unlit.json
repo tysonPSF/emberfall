@@ -1,1054 +1,158 @@
 {
   "name": "The Unlit",
-  "levels": [
-    44,
-    47
-  ],
+  "levels": [44, 47],
   "music": "the_unlit",
   "seed": 9851,
-  "size": 512,
+  "size": 768,
   "height_amplitude": 5,
-  "bind_point": [
-    2,
-    188
-  ],
+  "bind_point": [2.1, 277],
   "flat_radius": 18,
   "fixed_hour": 0.5,
-  "trees": 700,
-  "tree_mix": [
-    "black_tree",
-    "black_tree_b",
-    "black_tree"
-  ],
+  "trees": 1575,
+  "tree_mix": ["black_tree", "black_tree_b", "black_tree"],
   "groves": 0.75,
-  "rocks": 70,
-  "grass_colors": [
-    "#2a3440",
-    "#34404a"
-  ],
+  "rocks": 158,
+  "grass_colors": ["#2a3440", "#34404a"],
   "fog_density": 0.01,
   "fog_color": "#202838",
   "sun_energy": 0.6,
   "clutter": {
-    "grass_b": {
-      "density": 0.2,
-      "patch": 0.5,
-      "sway": 0.12,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "star_lily": {
-      "density": 0.01,
-      "patch": 0.8,
-      "sway": 0.1,
-      "range": 60,
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "glowcap_cluster": {
-      "density": 0.006,
-      "patch": 0.8,
-      "range": 60,
-      "scale": [
-        0.8,
-        1.4
-      ]
-    },
-    "fern": {
-      "density": 0.02,
-      "patch": 0.8,
-      "sway": 0.06,
-      "range": 50,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    }
+    "grass_b": {"density": 0.2, "patch": 0.5, "sway": 0.12, "range": 45, "tint": "ground", "scale": [0.8, 1.2]},
+    "star_lily": {"density": 0.01, "patch": 0.8, "sway": 0.1, "range": 60, "scale": [0.8, 1.3]},
+    "glowcap_cluster": {"density": 0.006, "patch": 0.8, "range": 60, "scale": [0.8, 1.4]},
+    "fern": {"density": 0.02, "patch": 0.8, "sway": 0.06, "range": 50, "scale": [0.8, 1.2]}
   },
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
+  "passes": [[0, 384, 9], [-384, 0, 9], [0, -384, 9]],
   "roads": [
-    {
-      "points": [
-        [
-          0,
-          256
-        ],
-        [
-          0,
-          120
-        ],
-        [
-          5,
-          0
-        ],
-        [
-          0,
-          -256
-        ]
-      ],
-      "width": 3.0
-    },
-    {
-      "points": [
-        [
-          -256,
-          0
-        ],
-        [
-          -100,
-          5
-        ],
-        [
-          5,
-          0
-        ]
-      ],
-      "width": 2.6
-    },
-    {
-      "points": [
-        [
-          5,
-          0
-        ],
-        [
-          60,
-          -40
-        ],
-        [
-          110,
-          -95
-        ]
-      ],
-      "width": 2.4
-    }
+    {"points": [[0, 384], [0.1, 209], [5, 0], [0, -384]], "width": 3.0},
+    {"points": [[-384, 0], [-150, 7.5], [5, 0]], "width": 2.6},
+    {"points": [[5, 0], [90, -60], [158.3, -150.8]], "width": 2.4}
   ],
   "road_lamps": 30,
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "agnavars_hearth",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "ivory_field",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "barrowhold",
-      "arrive": [
-        0,
-        46
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
-    }
+    {"pos": [0, 373], "size": [18, 8], "to": "agnavars_hearth", "arrive": [0, -295], "arrive_face": [0, -255]},
+    {"pos": [-373, 0], "size": [8, 18], "to": "ivory_field", "arrive": [487, 0], "arrive_face": [447, 0]},
+    {"pos": [0, -373], "size": [18, 8], "to": "barrowhold", "arrive": [0, 46], "arrive_face": [0, 0]}
   ],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        140,
-        -168
-      ],
-      "id": "morvaine_manor",
-      "collide": "mesh",
-      "face": [
-        120,
-        -120
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        110,
-        -95
-      ],
-      "id": "morvaine_gate",
-      "collide": "mesh",
-      "face": [
-        90,
-        -60
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        90,
-        -110
-      ],
-      "id": "iron_fence",
-      "collide": "box",
-      "yaw": 90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        90,
-        -130
-      ],
-      "id": "iron_fence",
-      "collide": "box",
-      "yaw": 90
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -130,
-        -110
-      ],
-      "id": "shade_obelisk",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90,
-        -70
-      ],
-      "id": "shade_obelisk",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -160,
-        -60
-      ],
-      "id": "shade_obelisk",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        0
-      ],
-      "id": "moon_well",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -60,
-        40
-      ],
-      "id": "moon_well",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        120
-      ],
-      "id": "moth_cocoon",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        150
-      ],
-      "id": "moth_cocoon",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90,
-        140
-      ],
-      "id": "moth_cocoon",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        110
-      ],
-      "id": "stalker_den",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -8,
-        170
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        8,
-        170
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        120
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        60
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -60
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -150
-      ],
-      "id": "lampward_lamp",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -14,
-        196
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        14,
-        198
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        2,
-        186
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        206
-      ],
-      "id": "banner_pole",
-      "collide": "box"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        228
-      ],
-      "yaw": -90,
-      "labels": [
-        "Agnavar's Hearth",
-        "The Unlit"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -228,
-        8
-      ],
-      "yaw": 180,
-      "labels": [
-        "The Ivory Field",
-        "The Unlit"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        -226
-      ],
-      "yaw": 90,
-      "labels": [
-        "Barrowhold",
-        "The Unlit"
-      ]
-    }
+    {"type": "prop", "pos": [210, -252], "id": "morvaine_manor", "collide": "mesh", "face": [190, -204]},
+    {"type": "prop", "pos": [158.3, -150.8], "id": "morvaine_gate", "collide": "mesh", "face": [138.3, -115.8]},
+    {"type": "prop", "pos": [138.3, -165.8], "id": "iron_fence", "collide": "box", "yaw": 90},
+    {"type": "prop", "pos": [138.3, -185.8], "id": "iron_fence", "collide": "box", "yaw": 90},
+    {"type": "prop", "pos": [-195, -165], "id": "shade_obelisk", "collide": "box"},
+    {"type": "prop", "pos": [-135, -105], "id": "shade_obelisk", "collide": "box"},
+    {"type": "prop", "pos": [-240, -90], "id": "shade_obelisk", "collide": "box"},
+    {"type": "prop", "pos": [0, 0], "id": "moon_well", "collide": "box"},
+    {"type": "prop", "pos": [-90, 60], "id": "moon_well", "collide": "box"},
+    {"type": "prop", "pos": [-178.3, 188.3], "id": "moth_cocoon", "collide": "box"},
+    {"type": "prop", "pos": [-198.3, 218.3], "id": "moth_cocoon", "collide": "box"},
+    {"type": "prop", "pos": [-148.3, 208.3], "id": "moth_cocoon", "collide": "box"},
+    {"type": "prop", "pos": [225, 165], "id": "stalker_den", "collide": "mesh"},
+    {"type": "prop", "pos": [-7.9, 259], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [8.1, 259], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [0.1, 209], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [0, 90], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [0, -90], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [0, -225], "id": "lampward_lamp", "collide": "box"},
+    {"type": "prop", "pos": [-13.9, 285], "id": "scout_tent", "collide": "box", "face": [0.1, 273]},
+    {"type": "prop", "pos": [14.1, 287], "id": "scout_tent", "collide": "box", "face": [0.1, 273]},
+    {"type": "prop", "pos": [2.1, 275], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [0.1, 295], "id": "banner_pole", "collide": "box"},
+    {"type": "signpost", "pos": [8.1, 317], "yaw": -90, "labels": ["Agnavar's Hearth", "The Unlit"]},
+    {"type": "signpost", "pos": [-356, 12], "yaw": 180, "labels": ["The Ivory Field", "The Unlit"]},
+    {"type": "signpost", "pos": [12, -354], "yaw": 90, "labels": ["Barrowhold", "The Unlit"]}
   ],
   "npcs": [
-    {
-      "id": "lampwarden_solenne",
-      "pos": [
-        -8,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "nighthunter_kwame",
-      "pos": [
-        12,
-        176
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "lepidarist_yuna",
-      "pos": [
-        -12,
-        178
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "witch_hunter_aurelio",
-      "pos": [
-        10,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "candle_seller_noor",
-      "pos": [
-        0,
-        202
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "lampward_sentinel",
-      "pos": [
-        0,
-        168
-      ],
-      "patrol": [
-        [
-          0,
-          168
-        ],
-        [
-          22,
-          186
-        ],
-        [
-          0,
-          206
-        ],
-        [
-          -22,
-          186
-        ],
-        [
-          0,
-          168
-        ]
-      ]
-    }
+    {"id": "lampwarden_solenne", "pos": [-7.9, 281], "face": [2.1, 273]},
+    {"id": "nighthunter_kwame", "pos": [12.1, 265], "face": [2.1, 273]},
+    {"id": "lepidarist_yuna", "pos": [-11.9, 267], "face": [2.1, 273]},
+    {"id": "witch_hunter_aurelio", "pos": [10.1, 281], "face": [2.1, 273]},
+    {"id": "candle_seller_noor", "pos": [0.1, 291], "face": [2.1, 273]},
+    {"id": "lampward_sentinel", "pos": [0.1, 257], "patrol": [[0.1, 257], [22.1, 275], [0.1, 295], [-21.9, 275], [0.1, 257]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        -120,
-        -60
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -150,
-        -100
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -90,
-        -120
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -160,
-        -40
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -110,
-        -160
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -60,
-        -90
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -130,
-        -110
-      ],
-      "pool": {
-        "nameless_shade": 1
-      },
-      "respawn": 1500,
-      "wander": 8
-    },
-    {
-      "pos": [
-        120,
-        60
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        150,
-        100
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        90,
-        120
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        170,
-        40
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        130,
-        160
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        140,
-        110
-      ],
-      "pool": {
-        "starveil": 1
-      },
-      "respawn": 1500,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -110,
-        90
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -150,
-        130
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -80,
-        150
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        60
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -60,
-        110
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -120,
-        130
-      ],
-      "pool": {
-        "moon_moth": 1
-      },
-      "respawn": 1500,
-      "wander": 12
-    },
-    {
-      "pos": [
-        100,
-        -100
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        130,
-        -80
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        150,
-        -130
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        110,
-        -150
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        80,
-        -130
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        125,
-        -138
-      ],
-      "pool": {
-        "morvaine_noble": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        152,
-        -142
-      ],
-      "pool": {
-        "morvaine_noble": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        118,
-        -148
-      ],
-      "pool": {
-        "morvaine_noble": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        134,
-        -148
-      ],
-      "pool": {
-        "countess_morvaine": 1
-      },
-      "respawn": 1500,
-      "wander": 4
-    },
-    {
-      "pos": [
-        8,
-        8
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -208,
-        -208
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -8,
-        -192
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -208,
-        208
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        208,
-        208
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        56,
-        208
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        208,
-        -40
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        208,
-        -208
-      ],
-      "pool": {
-        "morvaine_noble": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        24,
-        -72
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -72,
-        16
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        16,
-        88
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        88,
-        -16
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -128,
-        208
-      ],
-      "pool": {
-        "moth_giant": 1
-      },
-      "respawn": 100,
-      "wander": 16
-    },
-    {
-      "pos": [
-        64,
-        -208
-      ],
-      "pool": {
-        "morvaine_thrall": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        -136
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    },
-    {
-      "pos": [
-        208,
-        136
-      ],
-      "pool": {
-        "night_stalker": 1
-      },
-      "respawn": 110,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        8
-      ],
-      "pool": {
-        "shade": 1
-      },
-      "respawn": 100,
-      "wander": 12
-    }
+    {"pos": [-56, 336], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-320, 176], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [328, -168], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [32, -200], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [48, 224], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [88, 64], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-136, -328], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [224, -32], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-192, 8], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-64, -48], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [184, -328], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [224, 328], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [-56, 248], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-56, -216], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [320, 120], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [-312, -120], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-248, -256], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-48, 96], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [256, -120], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [320, 16], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-272, 240], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [104, -96], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-120, 296], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [16, 336], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [296, -232], "pool": {"morvaine_noble": 1}, "respawn": 110, "wander": 6},
+    {"pos": [264, 256], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [120, 248], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [-136, -32], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-96, -272], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-16, 192], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [64, -40], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-336, -56], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-24, -152], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-312, 80], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [88, -240], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [184, 24], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [-56, -336], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [32, -336], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-180, -90], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-215, -155], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-135, -180], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-240, -70], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-165, -240], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-90, -135], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-195, -165], "pool": {"nameless_shade": 1}, "respawn": 1500, "wander": 8},
+    {"pos": [180, 90], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [225, 155], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [135, 180], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [255, 60], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [195, 240], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [215, 165], "pool": {"starveil": 1}, "respawn": 1500, "wander": 12},
+    {"pos": [-165, 135], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-208.3, 198.3], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-138.3, 218.3], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-240, 90], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-90, 165], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [-178.3, 198.3], "pool": {"moon_moth": 1}, "respawn": 1500, "wander": 12},
+    {"pos": [148.3, -155.8], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [178.3, -135.8], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [225, -195], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [158.3, -205.8], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [128.3, -185.8], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [187.5, -207], "pool": {"morvaine_noble": 1}, "respawn": 110, "wander": 6},
+    {"pos": [222, -226], "pool": {"morvaine_noble": 1}, "respawn": 110, "wander": 6},
+    {"pos": [188, -232], "pool": {"morvaine_noble": 1}, "respawn": 110, "wander": 6},
+    {"pos": [204, -232], "pool": {"countess_morvaine": 1}, "respawn": 1500, "wander": 4},
+    {"pos": [8, 8], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-312, -312], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-12, -288], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [-312, 312], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [312, 312], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [84, 312], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [312, -60], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [312, -312], "pool": {"morvaine_noble": 1}, "respawn": 110, "wander": 6},
+    {"pos": [24, -102], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-102, 36], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [24, 132], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [132, -24], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-192, 312], "pool": {"moth_giant": 1}, "respawn": 100, "wander": 16},
+    {"pos": [96, -312], "pool": {"morvaine_thrall": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-312, -204], "pool": {"shade": 1}, "respawn": 100, "wander": 12},
+    {"pos": [312, 204], "pool": {"night_stalker": 1}, "respawn": 110, "wander": 18},
+    {"pos": [-312, 12], "pool": {"shade": 1}, "respawn": 100, "wander": 12}
   ]
 }

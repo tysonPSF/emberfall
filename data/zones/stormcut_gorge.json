@@ -62,11 +62,11 @@
       "to": "reedmere",
       "arrive": [
         0,
-        231.0
+        487.0
       ],
       "arrive_face": [
         0,
-        191.0
+        447.0
       ]
     },
     {
@@ -99,11 +99,11 @@
       ],
       "to": "broken_march",
       "arrive": [
-        199.0,
+        311,
         0
       ],
       "arrive_face": [
-        159.0,
+        271,
         0
       ]
     }
@@ -1174,6 +1174,17 @@
     },
     {
       "pos": [
+        176,
+        -8
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
         -176,
         176
       ],
@@ -1194,17 +1205,6 @@
       },
       "respawn": 120,
       "wander": 10
-    },
-    {
-      "pos": [
-        168,
-        -24
-      ],
-      "pool": {
-        "gorge_griffon": 1
-      },
-      "respawn": 120,
-      "wander": 14
     },
     {
       "pos": [

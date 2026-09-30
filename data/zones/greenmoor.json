@@ -3,216 +3,128 @@
   "levels": [1, 7],
   "music": "greenmoor",
   "seed": 1999,
-  "size": 384,
+  "size": 576,
   "height_amplitude": 10,
   "bind_point": [0, 0],
   "flat_radius": 26,
-  "trees": 170,
-  "rocks": 60,
+  "trees": 382,
+  "rocks": 135,
   "clutter": {
-      "grass_a": {
-          "density": 0.55,
-          "patch": 0.55,
-          "sway": 0.16,
-          "range": 55,
-          "tint": "ground",
-          "scale": [
-              0.8,
-              1.35
-          ],
-          "city": 0.2
-      },
-      "grass_b": {
-          "density": 0.6,
-          "patch": 0.35,
-          "sway": 0.14,
-          "range": 50,
-          "tint": "ground",
-          "scale": [
-              0.8,
-              1.3
-          ],
-          "city": 0.3
-      },
-      "flowers_yellow": {
-          "density": 0.012,
-          "patch": 0.9,
-          "sway": 0.12,
-          "range": 60,
-          "scale": [
-              0.9,
-              1.3
-          ],
-          "city": 0.2
-      },
-      "flowers_purple": {
-          "density": 0.01,
-          "patch": 0.9,
-          "sway": 0.12,
-          "range": 60,
-          "scale": [
-              0.9,
-              1.3
-          ]
-      },
-      "flowers_white": {
-          "density": 0.01,
-          "patch": 0.9,
-          "sway": 0.12,
-          "range": 60,
-          "scale": [
-              0.9,
-              1.3
-          ],
-          "city": 0.1
-      },
-      "fern": {
-          "density": 0.007,
-          "patch": 0.8,
-          "sway": 0.06,
-          "range": 65,
-          "scale": [
-              0.9,
-              1.5
-          ]
-      },
-      "bush_a": {
-          "density": 0.0025,
-          "patch": 0.6,
-          "range": 110,
-          "shadow": true,
-          "scale": [
-              0.8,
-              1.4
-          ]
-      },
-      "bush_b": {
-          "density": 0.0018,
-          "patch": 0.6,
-          "range": 110,
-          "shadow": true,
-          "scale": [
-              0.8,
-              1.5
-          ]
-      },
-      "mushrooms": {
-          "density": 0.0025,
-          "patch": 0.9,
-          "range": 45,
-          "scale": [
-              0.9,
-              1.6
-          ]
-      },
-      "pebbles": {
-          "density": 0.005,
-          "patch": 0.4,
-          "range": 50,
-          "scale": [
-              0.8,
-              1.6
-          ],
-          "city": 0.5
-      },
-      "log_fallen": {
-          "density": 0.00035,
-          "patch": 0.3,
-          "range": 120,
-          "shadow": true,
-          "scale": [
-              0.8,
-              1.2
-          ]
-      },
-      "stump": {
-          "density": 0.0005,
-          "patch": 0.4,
-          "range": 110,
-          "shadow": true,
-          "scale": [
-              0.8,
-              1.3
-          ]
-      }
+    "grass_a": {"density": 0.55, "patch": 0.55, "sway": 0.16, "range": 55, "tint": "ground", "scale": [0.8, 1.35], "city": 0.2},
+    "grass_b": {"density": 0.6, "patch": 0.35, "sway": 0.14, "range": 50, "tint": "ground", "scale": [0.8, 1.3], "city": 0.3},
+    "flowers_yellow": {"density": 0.012, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3], "city": 0.2},
+    "flowers_purple": {"density": 0.01, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3]},
+    "flowers_white": {"density": 0.01, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3], "city": 0.1},
+    "fern": {"density": 0.007, "patch": 0.8, "sway": 0.06, "range": 65, "scale": [0.9, 1.5]},
+    "bush_a": {"density": 0.0025, "patch": 0.6, "range": 110, "shadow": true, "scale": [0.8, 1.4]},
+    "bush_b": {"density": 0.0018, "patch": 0.6, "range": 110, "shadow": true, "scale": [0.8, 1.5]},
+    "mushrooms": {"density": 0.0025, "patch": 0.9, "range": 45, "scale": [0.9, 1.6]},
+    "pebbles": {"density": 0.005, "patch": 0.4, "range": 50, "scale": [0.8, 1.6], "city": 0.5},
+    "log_fallen": {"density": 0.00035, "patch": 0.3, "range": 120, "shadow": true, "scale": [0.8, 1.2]},
+    "stump": {"density": 0.0005, "patch": 0.4, "range": 110, "shadow": true, "scale": [0.8, 1.3]}
   },
   "landmarks": [
     {"type": "obelisk", "pos": [0, 0]},
-    {"type": "camp", "pos": [115, -100], "style": "huts", "hut": "dustpaw_hut", "totem": "dustpaw_totem", "size": 1.8},
-    {"type": "ruins", "pos": [-100, -80]},
-    {"type": "outpost", "pos": [40, -138]},
-    {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true, "tainted_until": "merricks_line_spring"},
-    {"type": "cave", "pos": [-150, -30], "face": [0, -30]},
-    {"type": "signpost", "pos": [4.5, 156], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
-    {"type": "signpost", "pos": [12.5, -168], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]},
-    {"type": "signpost", "pos": [14, 31], "yaw": 0, "labels": ["Harrowfield", "Obelisk"]},
+    {"type": "camp", "pos": [172.5, -150], "style": "huts", "hut": "dustpaw_hut", "totem": "dustpaw_totem", "size": 1.8},
+    {"type": "ruins", "pos": [-150, -120]},
+    {"type": "outpost", "pos": [60, -207]},
+    {"type": "pond", "pos": [-187.5, 217.5], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true, "tainted_until": "merricks_line_spring"},
+    {"type": "cave", "pos": [-225, -45], "face": [-75, -45]},
+    {"type": "signpost", "pos": [6.8, 252], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
+    {"type": "signpost", "pos": [18.8, -264], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]},
+    {"type": "signpost", "pos": [21, 46.5], "yaw": 0, "labels": ["Harrowfield", "Obelisk"]},
     {"type": "signpost", "pos": [-12, 6], "yaw": 0, "labels": ["Rainhold", "Obelisk"]}
   ],
-  "passes": [[0, 192, 9], [0, -192, 9], [192, 0, 9], [-192, 0, 9]],
-  "roads": [{"points": [[0, -192], [8, -175], [24, -150], [22, -105], [6, -60], [0, -6], [0, 6], [3, 60], [-2, 120], [0, 150], [0, 192]], "width": 3.5},
-    {"points": [[1, 22], [40, 28], [90, 20], [140, 8], [192, 0]], "width": 3.0},
-    {"points": [[-1, 14], [-45, 10], [-100, 4], [-150, 2], [-192, 0]], "width": 3.0}],
+  "passes": [[0, 288, 9], [0, -288, 9], [288, 0, 9], [-288, 0, 9]],
+  "roads": [
+    {"points": [[0, -288], [12, -271], [44, -219], [33, -157.5], [9, -90], [0, -6], [0, 6], [4.5, 90], [-3, 180], [0, 225], [0, 288]], "width": 3.5},
+    {"points": [[1, 22], [60, 42], [135, 30], [210, 12], [288, 0]], "width": 3.0},
+    {"points": [[-1, 14], [-67.5, 15], [-150, 6], [-225, 3], [-288, 0]], "width": 3.0}
+  ],
   "zone_lines": [
-    {"pos": [0, 181], "size": [18, 8], "to": "emberhold", "arrive": [0, -46], "arrive_face": [0, 0]},
-    {"pos": [0, -181], "size": [18, 8], "to": "thornwood", "arrive": [0, 228], "arrive_face": [0, 190]},
-    {"pos": [181, 0], "size": [8, 18], "to": "harrowfield", "arrive": [-167, 0], "arrive_face": [-127, 0]},
-    {"pos": [-181, 0], "size": [8, 18], "to": "rainhold", "arrive": [46, 0], "arrive_face": [6, 0]},
-    {"pos": [-157.5, -30], "size": [3, 4], "to": "wellspring", "arrive": [128, 128], "arrive_face": [100, 126],
-     "requires_started": "merricks_line_spring", "refused_by": "watchman_corran", "refused_to": [-140, -30]}
+    {"pos": [0, 277], "size": [18, 8], "to": "emberhold", "arrive": [0, -46], "arrive_face": [0, 0]},
+    {"pos": [0, -277], "size": [18, 8], "to": "thornwood", "arrive": [0, 484], "arrive_face": [0, 446]},
+    {"pos": [277, 0], "size": [8, 18], "to": "harrowfield", "arrive": [-263, 0], "arrive_face": [-223, 0]},
+    {"pos": [-277, 0], "size": [8, 18], "to": "rainhold", "arrive": [46, 0], "arrive_face": [6, 0]},
+    {
+      "pos": [-232.5, -45],
+      "size": [3, 4],
+      "to": "wellspring",
+      "arrive": [128, 128],
+      "arrive_face": [100, 126],
+      "requires_started": "merricks_line_spring",
+      "refused_by": "watchman_corran",
+      "refused_to": [-215, -45]
+    }
   ],
   "npcs": [
-    {"id": "watchman_corran", "pos": [-142, -25.5], "face": [-120, -30]},
-    {"id": "warden_holt", "pos": [38.8, -133.9], "face": [0, 0]},
-    {"id": "watch_patrol", "pos": [0, 170], "patrol": [[0, 170], [0, 150], [-2, 120], [3, 60], [1, 20], [7, 11], [11, 4], [11, -4], [7, -11], [3, -22], [6, -60], [22, -105], [24, -150], [8, -170]]},
-    {"id": "merrick", "pos": [-114.8, 136.3], "face": [0, 0]},
-    {"id": "emberhold_guard", "name": "Guard Brenna", "pos": [-4.5, 164], "face": [0, 120]},
-    {"id": "emberhold_guard", "name": "Guard Osric", "pos": [4.8, 166.5], "face": [0, 120]}
+    {"id": "watchman_corran", "pos": [-217, -40.5], "face": [-195, -45]},
+    {"id": "warden_holt", "pos": [58.8, -202.9], "face": [20, -69]},
+    {
+      "id": "watch_patrol",
+      "pos": [0, 266],
+      "patrol": [[0, 266], [0, 225], [-3, 180], [4.5, 90], [1, 20], [7, 11], [11, 4], [11, -4], [7, -11], [3, -22], [9, -90], [33, -157.5], [44, -219], [12, -266]]
+    },
+    {"id": "merrick", "pos": [-177.3, 208.8], "face": [-62.5, 72.5]},
+    {"id": "emberhold_guard", "name": "Guard Brenna", "pos": [-6.8, 260], "face": [-2.3, 216]},
+    {"id": "emberhold_guard", "name": "Guard Osric", "pos": [7.2, 262.5], "face": [2.4, 216]}
   ],
   "spawns": [
-    {"pos": [-80, -60], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [80, -10], "pool": {"large_rat": 2, "gnoll_pup": 1}, "respawn": 30, "wander": 10},
-    {"pos": [-20, 100], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
-    {"pos": [40, -100], "pool": {"gnoll_pup": 2, "large_rat": 1}, "respawn": 30, "wander": 10},
-    {"pos": [-100, -10], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 30, "wander": 10},
-    {"pos": [120, 10], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 10},
-    {"pos": [35, -20], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [-30, -35], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [20, 42], "pool": {"large_rat": 3, "gnoll_pup": 1}, "respawn": 30, "wander": 10},
-    {"pos": [-42, 25], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [52, 15], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 30, "wander": 10},
-    {"pos": [-15, 58], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [62, -48], "pool": {"gnoll_pup": 3, "fire_beetle": 1}, "respawn": 40, "wander": 10},
-    {"pos": [-58, -10], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
-    {"pos": [10, -62], "pool": {"gnoll_pup": 3, "large_rat": 1}, "respawn": 30, "wander": 10},
-    {"pos": [46, 58], "pool": {"fire_beetle": 2, "large_rat": 2}, "respawn": 40, "wander": 10},
-
-    {"pos": [82, 62], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [102, 92], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [72, 112], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [122, 52], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [132, 122], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [95, 142], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [-110, 60], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 12},
-    {"pos": [-130, 100], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 40, "wander": 12},
-
-    {"pos": [-95, -72], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
-    {"pos": [-110, -90], "pool": {"decaying_skeleton": 12, "magus_rotfinger": 1}, "respawn": 90, "wander": 4},
-    {"pos": [-86, -94], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
-    {"pos": [-118, -68], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
-    {"pos": [-102, -112], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
-    {"pos": [-62, -122], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 20},
-    {"pos": [-80, -50], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-    {"pos": [-120, -40], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-    {"pos": [-70, -100], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-    {"pos": [-130, -110], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-    {"pos": [-95, -20], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-    {"pos": [-50, -70], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
-
-    {"pos": [106, -86], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [127, -99], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [107, -115], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [113, -100], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
-    {"pos": [85, -75], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
-    {"pos": [117, -100], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
+    {"pos": [0, -240], "pool": {"gnoll_pup": 2, "large_rat": 1}, "respawn": 30, "wander": 10},
+    {"pos": [-112, 200], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-240, 32], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 12},
+    {"pos": [232, -64], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [32, 224], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [104, -232], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [224, -232], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [-216, 232], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-240, -80], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-48, 240], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-16, -160], "pool": {"gnoll_pup": 3, "large_rat": 1}, "respawn": 30, "wander": 10},
+    {"pos": [-96, 120], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-224, -168], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
+    {"pos": [40, 152], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-130, -100], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [120, -15], "pool": {"large_rat": 2, "gnoll_pup": 1}, "respawn": 30, "wander": 10},
+    {"pos": [-30, 150], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
+    {"pos": [60, -150], "pool": {"gnoll_pup": 2, "large_rat": 1}, "respawn": 30, "wander": 10},
+    {"pos": [-150, -15], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 30, "wander": 10},
+    {"pos": [180, 15], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 10},
+    {"pos": [52.5, -30], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [-45, -52.5], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [30, 63], "pool": {"large_rat": 3, "gnoll_pup": 1}, "respawn": 30, "wander": 10},
+    {"pos": [-63, 37.5], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [78, 22.5], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 30, "wander": 10},
+    {"pos": [-22.5, 87], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [93, -72], "pool": {"gnoll_pup": 3, "fire_beetle": 1}, "respawn": 40, "wander": 10},
+    {"pos": [-87, -15], "pool": {"gnoll_pup": 2, "large_rat": 2}, "respawn": 30, "wander": 10},
+    {"pos": [15, -93], "pool": {"gnoll_pup": 3, "large_rat": 1}, "respawn": 30, "wander": 10},
+    {"pos": [69, 87], "pool": {"fire_beetle": 2, "large_rat": 2}, "respawn": 40, "wander": 10},
+    {"pos": [123, 93], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [153, 138], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [108, 168], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [183, 78], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [198, 183], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [142.5, 213], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-165, 90], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-195, 150], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-145, -112], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-160, -130], "pool": {"decaying_skeleton": 12, "magus_rotfinger": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-136, -134], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-168, -108], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
+    {"pos": [-153, -168], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-93, -183], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 20},
+    {"pos": [-120, -75], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-180, -60], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-105, -150], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-195, -165], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-142.5, -30], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [-75, -105], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
+    {"pos": [163.5, -136], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [184.5, -149], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [164.5, -165], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [170.5, -150], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
+    {"pos": [142.5, -125], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
+    {"pos": [174.5, -150], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
   ]
 }

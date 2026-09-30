@@ -116,14 +116,8 @@
         18
       ],
       "to": "the_long_grass",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
+      "arrive": [-487, 0],
+      "arrive_face": [-447, 0]
     },
     {
       "pos": [
@@ -135,34 +129,10 @@
         8
       ],
       "to": "tidemouth",
-      "arrive": [
-        0,
-        -199
-      ],
-      "arrive_face": [
-        0,
-        -159
-      ]
+      "arrive": [0, -255],
+      "arrive_face": [0, -215]
     },
-    {
-      "pos": [
-        -97,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "stonesail",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
-    },
+    {"pos": [-97, 0], "size": [8, 18], "to": "stonesail", "arrive": [359, 0], "arrive_face": [319, 0]},
     {
       "pos": [
         0,
