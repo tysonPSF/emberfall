@@ -1400,6 +1400,13 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 			entries.append({"item": entry["item"], "slot": "", "count": randi_range(int(n[0]), int(n[1]))})
 	var coin_range: Array = mob.data.get("coin", [0, 0])
 	var coin := randi_range(int(coin_range[0]), int(coin_range[1]))
+	var unique: Dictionary = GameData.loot.get("unique", {})
+	if mob.data.get("named", false) and not unique.is_empty() and randf() < float(unique.get("chance", 0.0)):
+		# now and then a named monster carries one of Elephant Grove's rare weapons, made for its level
+		var pick := str((unique["items"] as Array).pick_random())
+		entries.append({"item": "%s~%d" % [pick, mob.level], "slot": ""})
+		if GameData.item(pick).get("ammo", "") == "arrow":
+			entries.append({"item": "dragonbone_arrow", "slot": "", "count": randi_range(30, 60)})
 	var lodged: Dictionary = mob.get_meta("lodged_ammo", {})  # arrows and stones that hit and stayed in
 	for ammo_id: String in lodged:
 		entries.append({"item": ammo_id, "slot": "", "count": int(lodged[ammo_id])})

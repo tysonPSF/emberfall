@@ -127,6 +127,8 @@ const SECTIONS := [
 	["spawn_coverage", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["giant_sizes", "the_bleach"],
+	["grove_uniques", "greenmoor"],
+	["bags_with_inventory", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8495,6 +8497,143 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
 		if zone_id == "dewstep":
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
+
+
+func _toggle_bag_for_shot(hud: Node, g: int) -> void:
+	if not hud._bag_windows.has(g):
+		hud._toggle_bag(g)
+
+
+## Bags open with the character window open: right-clicking a bag in the
+## General slots, and B, both open its window, on screen and in front.
+func _t_bags_with_inventory() -> void:
+	var hud: Node = get_tree().get_first_node_in_group("hud")
+	var p := World.local_player
+	var g := -1
+	for i in Pack.GENERAL:
+		if (p.pack.slots[i] as Dictionary).is_empty():
+			g = i
+			break
+	p.pack.slots[g] = Pack.entry("leather_backpack")
+	p.inventory_changed.emit()
+	await _wait(0.2)
+	if not hud._inv_panel.visible:
+		hud._toggle_inventory()
+	await _wait(0.4)
+	var place := "g:%d" % g
+	var buttons: Array = hud._slot_buttons[place]
+	print("bags_with_inventory: %d buttons show %s: %s" % [buttons.size(), place, buttons.map(func(b: Button) -> String: return "%s visible %s at %s" % [b.get_parent().get_parent().name, b.is_visible_in_tree(), b.global_position])])
+	for slot: Button in buttons:
+		hud._close_all_bags()
+		await _wait(0.1)
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_RIGHT
+		click.pressed = true
+		click.position = slot.size * 0.5
+		slot.gui_input.emit(click)
+		await _wait(0.3)
+		print("bags_with_inventory: right-click on the button at %s -> bag window %s" % [slot.global_position, hud._bag_windows.has(g)])
+	# and through the real input path: a right-click at the button's place on screen
+	hud._close_all_bags()
+	await _wait(0.1)
+	for slot: Button in buttons:
+		if not slot.is_visible_in_tree():
+			continue
+		var at := slot.get_global_rect().get_center()
+		for pressed: bool in [true, false]:
+			var ev := InputEventMouseButton.new()
+			ev.button_index = MOUSE_BUTTON_RIGHT
+			ev.pressed = pressed
+			ev.position = at
+			ev.global_position = at
+			Input.parse_input_event(ev)
+			await _wait(0.1)
+		await _wait(0.3)
+		print("bags_with_inventory: a real right-click at %s -> bag window %s" % [at, hud._bag_windows.has(g)])
+		hud._close_all_bags()
+		await _wait(0.1)
+	# a Mac laptop's right-click: Control+click
+	var ctrl := InputEventMouseButton.new()
+	ctrl.button_index = MOUSE_BUTTON_LEFT
+	ctrl.ctrl_pressed = true
+	ctrl.pressed = true
+	(buttons[0] as Button).gui_input.emit(ctrl)
+	await _wait(0.3)
+	print("bags_with_inventory: Control+click (%s) -> bag window %s, the bag still in its slot %s" % [OS.get_name(), hud._bag_windows.has(g),
+			str(p.pack.slots[g].get("item", "")) == "leather_backpack"])
+	hud._close_all_bags()
+	_toggle_bag_for_shot(hud, g)
+	await _wait(0.4)
+	var win: Control = hud._bag_windows.get(g)
+	print("bags_with_inventory: right-click with the window open -> bag window %s%s" % [win != null,
+			" at %s size %s, screen %s, visible %s" % [win.position, win.size, hud.root.size, win.is_visible_in_tree()] if win != null else ""])
+	await _shot("9bags_with_inventory")
+	hud._close_all_bags()
+	await _wait(0.2)
+	var key := InputEventKey.new()
+	key.keycode = KEY_B
+	key.physical_keycode = KEY_B
+	key.pressed = true
+	Input.parse_input_event(key)
+	await _wait(0.4)
+	print("bags_with_inventory: B with the window open -> %d bag windows" % hud._bag_windows.size())
+	hud._close_all_bags()
+	hud._toggle_inventory()
+	p.pack.slots[g] = {}
+	p.inventory_changed.emit()
+
+
+## Elephant Grove's uniques: made for the level they drop at, off a named
+## kill (forced here), worn with their glow, and kept through a save.
+func _t_grove_uniques() -> void:
+	for lvl: int in [10, 30, 50]:
+		var it := GameData.item("dragonfang_sword~%d" % lvl)
+		print("grove_uniques: %s at %d -> dmg %d delay %.1f, str %d sta %d hp %d, rec %d, value %d, color %s" % [it["name"], lvl, it["dmg"], it["delay"],
+				it.get("str", 0), it.get("sta", 0), it.get("hp", 0), it["rec_level"], it["value"], GameData.item_color("dragonfang_sword~%d" % lvl).to_html(false)])
+	var merchant := GameData.item("eclipse_blade")
+	print("grove_uniques: the best merchant sword, Eclipse Blade (47): dmg %d" % merchant["dmg"])
+	var staff := GameData.item("dragonheart_staff~40")
+	print("grove_uniques: Dragonheart Staff at 40: dmg %d int %d wis %d mana %d, classes %s" % [staff["dmg"], staff["int"], staff["wis"], staff["mana"], staff["classes"]])
+	# a named kill with the chance forced
+	var p := World.local_player
+	var named: Mob = null
+	for m in World.get_mobs():
+		if not m.dead:
+			named = m
+	var was_named: bool = named.data.get("named", false)
+	named.data["named"] = true  # stood in for a named one (none may be up)
+	var keep: float = GameData.loot["unique"]["chance"]
+	GameData.loot["unique"]["chance"] = 1.0
+	var level := named.level
+	var who := named.display_name
+	var data: Dictionary = named.data
+	World.damage(named, named.hp + 10, p)
+	GameData.loot["unique"]["chance"] = keep
+	if not was_named:
+		data.erase("named")
+	await _wait(0.3)
+	var got := ""
+	for obj: Variant in World.objects.values():
+		if obj is Corpse:
+			for e: Dictionary in (obj as Corpse).entries:
+				if str(e["item"]).contains("~"):
+					got = str(e["item"])
+	print("grove_uniques: %s (level %d) dropped %s" % [who, level, got])
+	# worn: its stats and glow
+	var keep_eq := p.equipment.duplicate()
+	var dmg0 := p.dmg_max
+	p.equipment["primary"] = "dragonfang_sword~20"
+	p.recalc_stats()
+	p.inventory_changed.emit()
+	await _wait(0.3)
+	print("grove_uniques: wielding it at 20 -> max damage %d (was %d), look tiers %s" % [p.dmg_max, dmg0, p.look.get("tiers")])
+	var back := Player.new()
+	back.from_save(p.to_save())
+	print("grove_uniques: saved and loaded -> primary %s" % back.equipment.get("primary"))
+	back.free()
+	p.equipment = keep_eq
+	p.recalc_stats()
+	p.inventory_changed.emit()
 
 
 ## Giants stand like giants: body height (and so nameplate and click box)
