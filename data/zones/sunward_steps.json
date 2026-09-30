@@ -52,7 +52,13 @@
     {"type": "prop", "id": "sun_banner", "pos": [7.6, 153.2], "face": [21.6, 171.2]},
     {"type": "prop", "id": "sun_banner", "pos": [37.6, 155.2], "face": [21.6, 171.2]},
     {"type": "signpost", "pos": [-238.8, -1.3], "yaw": 180, "labels": ["Sunward Steps", "Hollowmere"]},
-    {"type": "signpost", "pos": [99, -21], "yaw": 90, "labels": ["The Bleach", "Lanternhold"]}
+    {"type": "signpost", "pos": [99, -21], "yaw": 90, "labels": ["The Bleach", "Lanternhold"]},
+    {"type": "outpost", "pos": [-135.2, 7.0], "hubs": true},
+    {"type": "prop", "pos": [-72.0, 171.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [-66.0, 176.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [-116, 204], "id": "well", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [-102, 214], "id": "broken_pillar", "collide": "mesh", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [-128, 192], "id": "broken_pillar", "collide": "mesh", "yaw": 120, "hubs": true}
   ],
   "passes": [[-336, 0, 9], [0, -336, 9], [336, 0, 9]],
   "roads": [
@@ -67,18 +73,19 @@
   "npcs": [
     {"id": "pilgrim_mother", "pos": [-258.8, -19.3], "face": [-266.8, -25.3]},
     {"id": "quartermaster_dov", "pos": [-260.8, -35.3], "face": [-266.8, -25.3]},
-    {"id": "dawnwatch_sentry", "pos": [-244.8, 16.7], "patrol": [[-244.8, 16.7], [-260.8, -3.3], [-180, -6], [-135, -9]]}
+    {"id": "dawnwatch_sentry", "pos": [-244.8, 16.7], "patrol": [[-244.8, 16.7], [-260.8, -3.3], [-180, -6], [-135, -9]]},
+    {"id": "su_hut_guard_0", "pos": [-135.7, -1.0], "face": [-136.2, -8.9], "hubs": true},
+    {"id": "su_water_seeker_anil", "pos": [-64.0, 173.0], "face": [-116, 204], "hubs": true}
   ],
   "spawns": [
+    {"pos": [-88, -16], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-288, 48], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-200, 0], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [176, -272], "pool": {"sunhawk": 1}, "respawn": 75, "wander": 16},
     {"pos": [-272, 240], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
-    {"pos": [-104, 152], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [144, -24], "pool": {"stone_guardian": 1}, "respawn": 120, "wander": 3},
     {"pos": [152, 288], "pool": {"sunhawk": 1}, "respawn": 75, "wander": 16},
     {"pos": [288, -144], "pool": {"sunhawk": 1}, "respawn": 75, "wander": 16},
-    {"pos": [-120, -16], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-224, -72], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-128, -272], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [8, 272], "pool": {"sun_cultist": 1}, "respawn": 80, "wander": 14},
@@ -146,6 +153,14 @@
     {"pos": [21.6, 171.2], "pool": {"cult_hierophant": 1}, "respawn": 600, "wander": 2},
     {"pos": [-6.4, 199.2], "pool": {"sun_cultist": 1}, "respawn": 80, "wander": 14},
     {"pos": [63.6, 179.2], "pool": {"sun_cultist": 1}, "respawn": 80, "wander": 14},
-    {"pos": [48.6, 144.2], "pool": {"sun_cultist": 1}, "respawn": 80, "wander": 14}
+    {"pos": [48.6, 144.2], "pool": {"sun_cultist": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-79.7, 215.2], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-102.1, 239.4], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-135.0, 236.9], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-153.6, 209.6], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-143.8, 178.1], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-113.1, 166.1], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-84.6, 182.6], "pool": {"su_dust_scarab": 1}, "respawn": 75, "wander": 12, "hubs": true},
+    {"pos": [-113, 206], "pool": {"su_old_dunebore": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

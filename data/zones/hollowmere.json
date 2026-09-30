@@ -59,7 +59,13 @@
     {"type": "stilt_village", "pos": [193.8, -28.8], "face": [70.8, -28.8], "length": 10},
     {"type": "lizard_camp", "pos": [-255, 127.5]},
     {"type": "sunken_ruins", "pos": [15, 168]},
-    {"type": "signpost", "pos": [-298, -18], "yaw": 180, "labels": ["Fishers' Village", "Thornwood Vale"]}
+    {"type": "signpost", "pos": [-298, -18], "yaw": 180, "labels": ["Fishers' Village", "Thornwood Vale"]},
+    {"type": "outpost", "pos": [-195.3, -158.6], "hubs": true},
+    {"type": "prop", "pos": [-40.0, -227.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [-34.0, -222.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [-84, -260], "id": "reed_hut", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [-68, -250], "id": "reed_hut", "collide": "box", "yaw": 200, "hubs": true},
+    {"type": "prop", "pos": [-98, -248], "id": "rowboat", "collide": "box", "yaw": 60, "hubs": true}
   ],
   "passes": [[-336, -30, 9], [0, 336, 9], [336, 0, 9], [0, -336, 9]],
   "roads": [
@@ -92,7 +98,9 @@
   "npcs": [
     {"id": "hollow_elder", "pos": [138, -22.5], "face": [169, -22.5]},
     {"id": "hollow_netmaker", "pos": [185.8, -27.8], "face": [185.8, -33.8]},
-    {"id": "mere_sentry", "pos": [228.8, -50.8], "patrol": [[228.8, -50.8], [210.8, -33.8], [194.8, -28.8], [165.8, -28.8]]}
+    {"id": "mere_sentry", "pos": [228.8, -50.8], "patrol": [[228.8, -50.8], [210.8, -33.8], [194.8, -28.8], [165.8, -28.8]]},
+    {"id": "hm_hut_guard_0", "pos": [-202.8, -161.6], "face": [-210.2, -164.5], "hubs": true},
+    {"id": "hm_reedcutter_olwen", "pos": [-32.0, -225.0], "face": [-84, -260], "hubs": true}
   ],
   "spawns": [
     {"pos": [288, -8], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
@@ -107,7 +115,6 @@
     {"pos": [-64, 280], "pool": {"snapping_turtle": 1}, "respawn": 75, "wander": 10},
     {"pos": [80, 280], "pool": {"snapping_turtle": 1}, "respawn": 75, "wander": 10},
     {"pos": [224, -208], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
-    {"pos": [-120, -280], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {"pos": [-264, -24], "pool": {"mirescale_hunter": 3, "mirescale_shaman": 1}, "respawn": 80, "wander": 16},
     {"pos": [264, -132], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {"pos": [-264, -96], "pool": {"mire_toad": 2, "bog_leech": 1}, "respawn": 60, "wander": 12},
@@ -116,7 +123,6 @@
     {"pos": [0, -181.5], "pool": {"mire_toad": 2, "bog_leech": 1}, "respawn": 60, "wander": 12},
     {"pos": [82.5, -168], "pool": {"mire_toad": 2, "bog_leech": 1}, "respawn": 60, "wander": 12},
     {"pos": [-150, -138], "pool": {"mire_toad": 2, "bog_leech": 1}, "respawn": 60, "wander": 12},
-    {"pos": [-60, -247.5], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {"pos": [60, -240], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {"pos": [150, -232.5], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {"pos": [-180, -240], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
@@ -160,6 +166,14 @@
     {"pos": [82.5, 165], "pool": {"drowned_fisher": 1}, "respawn": 60, "wander": 18, "when": "night"},
     {"pos": [-52.5, 168], "pool": {"drowned_fisher": 1}, "respawn": 60, "wander": 18, "when": "night"},
     {"pos": [-105, 93], "pool": {"drowned_fisher": 1}, "respawn": 60, "wander": 6, "when": "night"},
-    {"pos": [15, 168], "pool": {"captain_maren": 1}, "respawn": 600, "wander": 3, "when": "night"}
+    {"pos": [15, 168], "pool": {"captain_maren": 1}, "respawn": 600, "wander": 3, "when": "night"},
+    {"pos": [-47.7, -248.8], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-70.1, -224.6], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-103.0, -227.1], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-121.6, -254.4], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-111.8, -285.9], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-81.1, -297.9], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-52.6, -281.4], "pool": {"hm_marsh_gnats": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [-81, -258], "pool": {"hm_droning_mother": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

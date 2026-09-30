@@ -1171,10 +1171,324 @@ def high_terrace(z):
     return L, N, S, [camp] + huts
 
 
+# ================================================================ batch 5: the smaller open zones (576-672 m): a hut and a place each
+
+def pick_base(z, level):
+    """An ordinary monster already in the zone nearest `level`: a new one takes its stats and manners."""
+    ids = {m for s in z["spawns"] for m in s["pool"] if not MOBS_NOW.get(m, {}).get("named") and m in MOBS_NOW and not s.get("hubs")}
+    return min(sorted(ids), key=lambda m: abs(sum(MOBS_NOW[m]["level"]) / 2 - level))
+
+
+def zone_xp(z):
+    """What the zone's own quests pay: (a repeatable one's xp, coin; a named one's xp, coin), medians."""
+    here = {n["id"] for n in z.get("npcs", [])}
+    drops = {l["item"] for s in z["spawns"] for m in s["pool"] for l in MOBS_NOW.get(m, {}).get("loot", [])}
+    qs = [q for q in QUESTS_NOW.values() if (q.get("giver") in here or set(q.get("wants", {})) & drops) and q.get("reward", {}).get("xp")]
+    med = lambda v: sorted(v)[len(v) // 2] if v else 0
+    rep = [q for q in qs if q.get("repeatable")]
+    one = [q for q in qs if not q.get("repeatable")]
+    return (med([q["reward"]["xp"] for q in rep]), med([q["reward"].get("coin", 0) for q in rep]),
+            med([q["reward"]["xp"] for q in one]), med([q["reward"].get("coin", 0) for q in one]))
+
+
+def reward_for(level, slot, name, icon, stats, **kw):
+    """A quest reward for its level: armor from a straight line in the level (tools/item_curve.py checks it),
+    `stats` naming which two attributes it favors."""
+    L = level
+    ac = round(0.3 * L) + 1 if slot not in ("ring", "neck") else round(0.16 * L) + 1
+    d = {"name": name, "slot": slot, "ac": ac, stats[0]: round(L / 6.5) + 1, stats[1]: round(L / 8) + 1, "hp": round(L * 1.1) + 4,
+         "value": L * L * 12, "rec_level": L, "no_drop": True, "lore": True, "icon": icon}
+    d.update(kw)
+    return d
+
+
+def light_zone(z, F, spec, hut=None):
+    """A smaller zone's share: one place with its own npc and two quests, and a guard hut on its main road."""
+    L, N, S = [], [], []
+    spots = []
+    if hut:
+        hL, hN, hs = huts_on(z, F, spec["prefix"], hut[0], hut[1], [hut[2]])
+        L += hL
+        N += hN
+        spots += hs
+    at = spec["at"]
+    home = spec.get("npc_at") or [at[0] - math.copysign(55, at[0]) * 0.8, at[1] - math.copysign(55, at[1]) * 0.6]
+    n = spec["npc"]
+    giver = camp_npc(n["id"], n["name"], F, n["model"], n["dialogue"], n["title"], home, at, L, N, weapon=n.get("weapon", "staff"),
+                     gender=n.get("gender"), race=n.get("race", "human"), level=n.get("level", 30))
+    lv = spec["level"]
+    spec["mob"]["base"] = pick_base(z, lv)
+    spec["named"]["base"] = spec["mob"]["base"]
+    spec["mob"]["level"] = (lv - 1, lv + 1)
+    spec["named"]["level"] = (lv + 3, lv + 3)
+    spec["giver"] = giver
+    spec["xp"] = spec.get("xp") or zone_xp(z)
+    spec["faction"] = spec.get("faction") or {F: 8}
+    dia = place(z, F, spec, L, N, S)
+    bw.NPCS[giver]["dialogue"].update(dia)
+    return L, N, S, spots + [home]
+
+
+def _p(pid, dx, dy, yaw=0, collide="box"):
+    return (pid, dx, dy, yaw, collide)
+
+
+def greenmoor(z):
+    F = "emberhold"
+    return light_zone(z, F, {"prefix": "gm", "at": [204, 60], "level": 4, "landmark": ("ruins", {}), "count": 7, "respawn": 45,
+        "props": [_p("well", 12, 14), _p("hay_bale", -14, 10), _p("hay_bale", -18, 4)],
+        "npc": {"id": "gm_farmwife_gudrun", "name": "Farmwife Gudrun", "model": "barbarian", "title": "of the Old Granary", "gender": "female", "level": 15,
+                "dialogue": {"hail": "That's our old granary, {name}, what the fire left. The [weevils] have it now, grain and all. And the [Granary Queen].",
+                             "unknown": "I only know grain, love. Ask in town."}},
+        "mob": {"id": "gm_grain_weevil", "name": "a grain weevil", "model": "rice_beetle", "drop": ("gm_weevil_husk", "Grain Weevil Husk", 2, "beetle_eye"),
+                "extra": {"verb": ["bite", "bites"], "aggressive": False, "aggro_radius": 0}},
+        "named": {"id": "gm_granary_queen", "name": "the Granary Queen", "model": "rice_beetle", "trophy": ("gm_granary_queens_crown", "The Granary Queen's Crest", "beetle_eye"),
+                  "extra": {"verb": ["bite", "bites"], "scale": 2.0}},
+        "reward": ("gm_gudruns_mittens", reward_for(6, "hands", "Gudrun's Harvest Mittens", "wolfhide_boots", ("sta", "agi"), wear="leather_gloves")),
+        "keywords": ("weevils", "granary queen"),
+        "text": _named_lines(_t("Weevil Husks", "grain weevil husks", "the Granary Queen's crest",
+                   "Weevils big as your boot, in what's left of the grain. Four of their husks and I'll pay, every time.",
+                   "The Queen, fat as a pig, in the granary cellar. Bring me her crest and the rest will scatter."),
+                   "Husks! Crunchy.", "Four fewer at the grain.", "Her crest. Nasty thing.", "We might plant again this spring.",
+                   "My harvest mittens. Warm hands for cold mornings.")},
+        hut=("a Watch patrolman", "The Watch", (0, 150, 1)))
+
+
+def harrowfield(z):
+    F = "emberhold"
+    return light_zone(z, F, {"prefix": "hf", "at": [44, -212], "level": 7, "landmark": ("ruins", {}), "respawn": 55,
+        "props": [_p("scarecrow_post", 0, 14), _p("hay_bale", 14, -10), _p("scarecrow_post", -16, -12, 90)],
+        "npc": {"id": "hf_crofter_ewan", "name": "Crofter Ewan", "model": "barbarian", "title": "Crofter", "level": 15,
+                "dialogue": {"hail": "The north field's lost, {name}. The [crows] came for the seed and never left, and [Old Blackwing] leads them.",
+                             "unknown": "Ask Farmer Oswin. He knows more than me."}},
+        "mob": {"id": "hf_field_crow", "name": "a field crow", "model": "bone_vulture", "drop": ("hf_crow_feather", "Field Crow Feather", 3, "carrion_feather"),
+                "extra": {"verb": ["peck", "pecks"], "scale": 0.5, "color": "#222222"}},
+        "named": {"id": "hf_old_blackwing", "name": "Old Blackwing", "model": "bone_vulture", "trophy": ("hf_blackwings_eye", "Old Blackwing's Eye", "carrion_feather"),
+                  "extra": {"verb": ["peck", "pecks"], "scale": 0.9, "color": "#111111"}},
+        "reward": ("hf_crofters_boots", reward_for(9, "feet", "Crofter's Boots", "wolfhide_boots", ("sta", "agi"), wear="leather_boots")),
+        "keywords": ("crows", "blackwing"),
+        "text": _named_lines(_t("Crow Feathers", "field crow feathers", "Old Blackwing's eye",
+                   "Four of their feathers and I'll pay, every time. My wife stuffs pillows with them. Small mercies.",
+                   "Old Blackwing, big as a goose. He sits on the old scarecrow and laughs at me. Bring me his eye."),
+                   "Feathers. Soft, at least.", "Four fewer at my seed.", "His eye! Ha.", "The north field's mine again.",
+                   "My good boots. For walking the furrows.")},
+        hut=("a Watch patrolman", "The Watch", (0, 150, -1)))
+
+
+def hollowmere(z):
+    F = "hollowfolk"
+    return light_zone(z, F, {"prefix": "hm", "at": [-84, -260], "level": 13, "respawn": 70,
+        "props": [_p("reed_hut", 0, 0, 30), _p("reed_hut", 16, 10, 200), _p("rowboat", -14, 12, 60)],
+        "npc": {"id": "hm_reedcutter_olwen", "name": "Reedcutter Olwen", "model": "ranger", "title": "Reedcutter", "gender": "female", "level": 20,
+                "dialogue": {"hail": "The north landing was ours, {name}, until the [gnats] bred in the shallows. And the [Droning Mother] they come from.",
+                             "unknown": "Ask Elder Tamsin. I cut reeds."}},
+        "mob": {"id": "hm_marsh_gnats", "name": "a marsh gnat swarm", "model": "biting_swarm", "drop": ("hm_gnat_wing", "Marsh Gnat Wing", 5, "bogwing_wing"),
+                "extra": {"verb": ["sting", "stings"]}},
+        "named": {"id": "hm_droning_mother", "name": "the Droning Mother", "model": "biting_swarm", "trophy": ("hm_drone_queens_sac", "The Droning Mother's Egg-Sac", "blightmothers_venom_sac"),
+                  "extra": {"verb": ["sting", "stings"], "scale": 2.0}},
+        "reward": ("hm_reedcutters_sleeves", reward_for(15, "arms", "Reedcutter's Sleeves", "brigand_armband", ("sta", "agi"), wear="leather_sleeves")),
+        "keywords": ("gnats", "droning mother"),
+        "text": _named_lines(_t("Gnat Wings", "marsh gnat wings", "the Droning Mother's egg-sac",
+                   "Swarms thick as smoke over the landing. Four of their wings and I'll pay, every time.",
+                   "The Droning Mother, big as a hen, in the reeds by my old hut. Bring me her egg-sac."),
+                   "Wings. Ugh.", "Four swarms fewer.", "Her egg-sac! Burn it, quick.", "The landing's quiet at last.",
+                   "Reed-cutting sleeves. Nothing bites through them.")},
+        hut=("a Mere Sentry", "Hollowfolk", (0, 200, 1)))
+
+
+def dewstep(z):
+    F = "lanternhold"
+    return light_zone(z, F, {"prefix": "ds", "at": [188, -20], "level": 6, "respawn": 45, "npc_at": [196, -78],
+        "props": [_p("stone_lantern", 0, 14), _p("stone_lantern", 14, -10), _p("shrine_broken", -12, -8, 90)],
+        "npc": {"id": "ds_tea_roller_sunita", "name": "Tea-Roller Sunita", "model": "mage", "title": "Tea-Roller", "gender": "female", "race": "high_elf", "level": 15,
+                "dialogue": {"hail": "Mind your ankles by the old shrine, {name}. The [vipers] nest in the lantern stones. And [Jade-Eye], the old mother.",
+                             "unknown": "Ask Anjali. She runs the gardens."}},
+        "mob": {"id": "ds_bamboo_viper", "name": "a bamboo viper", "model": "water_snake", "drop": ("ds_viper_skin", "Bamboo Viper Skin", 3, "serpent_scale"),
+                "extra": {"verb": ["bite", "bites"], "aggressive": False, "aggro_radius": 0, "color": "#6aa050"}},
+        "named": {"id": "ds_jade_eye", "name": "Jade-Eye", "model": "water_snake", "trophy": ("ds_jade_eyes_fang", "Jade-Eye's Fang", "serpent_scale"),
+                  "extra": {"verb": ["bite", "bites"], "scale": 1.8, "color": "#4a8a40"}},
+        "reward": ("ds_tea_rollers_gloves", reward_for(8, "hands", "Tea-Roller's Gloves", "wolfhide_boots", ("agi", "wis"), wear="leather_gloves")),
+        "keywords": ("vipers", "jade-eye"),
+        "text": _named_lines(_t("Viper Skins", "bamboo viper skins", "Jade-Eye's fang",
+                   "Four of their skins and I'll pay, every time: the lantern-makers want them for shades.",
+                   "Jade-Eye, green as new tea, sleeps under the broken shrine. Bring me her fang."),
+                   "Skins. Mind, they're still slippery.", "Four fewer by the stones.", "Her fang. Longer than my finger.", "The pickers can walk to the shrine again.",
+                   "My rolling gloves. Soft on the leaf, soft on your hands.")},
+        hut=("a Lanternhold warden", "Lanternhold", (0, 150, 1)))
+
+
+def sunward_steps(z):
+    F = "dawn_pilgrims"
+    return light_zone(z, F, {"prefix": "su", "at": [-116, 204], "level": 16, "respawn": 75,
+        "props": [_p("well", 0, 0), _p("broken_pillar", 14, 10, 30, "mesh"), _p("broken_pillar", -12, -12, 120, "mesh")],
+        "npc": {"id": "su_water_seeker_anil", "name": "Water-Seeker Anil", "model": "ranger", "title": "Water-Seeker", "level": 25,
+                "dialogue": {"hail": "The old cistern ran dry, {name}, and the [scarabs] came up out of it. And [Old Dunebore], who dug it dry.",
+                             "unknown": "Ask Pilgrim-Mother Ysolde."}},
+        "mob": {"id": "su_dust_scarab", "name": "a dust scarab", "model": "fire_beetle", "drop": ("su_scarab_shell", "Dust Scarab Shell", 7, "chitin_plate"),
+                "extra": {"verb": ["bite", "bites"], "color": "#c8a870", "scale": 1.2}},
+        "named": {"id": "su_old_dunebore", "name": "Old Dunebore", "model": "fire_beetle", "trophy": ("su_dunebores_horn", "Old Dunebore's Horn", "chitin_plate"),
+                  "extra": {"verb": ["bite", "bites"], "color": "#a88850", "scale": 2.4}},
+        "reward": ("su_water_seekers_sash", reward_for(18, "waist", "Water-Seeker's Sash", "barbel_whip_belt", ("sta", "wis"))),
+        "keywords": ("scarabs", "dunebore"),
+        "text": _named_lines(_t("Scarab Shells", "dust scarab shells", "Old Dunebore's horn",
+                   "Four of their shells and I'll pay, every time. They make good cups, and the pilgrims need cups.",
+                   "Old Dunebore dug under the cistern and drank it dry. Bring me his horn."),
+                   "Shells. Dusty.", "Four fewer in my cistern.", "His horn. The well might fill again.", "Water, by the next rains.",
+                   "A seeker's sash. It's found water in worse places.")},
+        hut=("a Dawnwatch Sentry", "Dawn Pilgrims", (0, 200, 1)))
+
+
+def weeping_throat(z):
+    F = "rainhold"
+    return light_zone(z, F, {"prefix": "wt", "at": [92, -228], "level": 22, "respawn": 80,
+        "props": [_p("tent", 0, 0, 30), _p("campfire", 8, 6, 0, "none"), _p("drying_rack", -12, 10, 60)],
+        "npc": {"id": "wt_tracker_mbali", "name": "Tracker Mbali", "model": "ranger_class", "title": "Rainhold Tracker", "gender": "female", "level": 30, "weapon": "bow",
+                "dialogue": {"hail": "Quiet, {name}. There are [panthers] in these trees you'll never see. And [Silkpaw], who I've tracked three rains.",
+                             "unknown": "I track, {name}. Ask in Rainhold."}},
+        "mob": {"id": "wt_rain_panther", "name": "a rain panther", "model": "tigress", "drop": ("wt_panther_whisker", "Rain Panther Whisker", 9, "whisker_barbel"),
+                "extra": {"verb": ["claw", "claws"], "color": "#222222"}},
+        "named": {"id": "wt_silkpaw", "name": "Silkpaw", "model": "tiger", "trophy": ("wt_silkpaws_pelt", "Silkpaw's Pelt", "smoke_pelt"),
+                  "extra": {"verb": ["claw", "claws"], "scale": 1.3, "color": "#111111"}},
+        "reward": ("wt_trackers_boots", reward_for(24, "feet", "Tracker's Boots", "stalkerhide_boots", ("agi", "sta"), wear="leather_boots")),
+        "keywords": ("panthers", "silkpaw"),
+        "text": _named_lines(_t("Panther Whiskers", "rain panther whiskers", "Silkpaw's pelt",
+                   "Four whiskers and I'll pay, every time: proof you got close enough to take them.",
+                   "Silkpaw, black as the rain at night. I've had her in my sights three times and missed. Bring me her pelt."),
+                   "Whiskers. You got close.", "Four fewer in the trees.", "Her pelt. Three rains I chased her.", "I can track something else now.",
+                   "My boots. Quiet on the leaves.")}, hut=None)
+
+
+def cinderpass(z):
+    F = "forgehold"
+    return light_zone(z, F, {"prefix": "cp", "at": [28, 44], "level": 28, "respawn": 85,
+        "props": [_p("caravan_wagon", 0, 0, 70), _p("rubble_large", 14, 10, 30), _p("smoldering_stump", -12, -10)],
+        "npc": {"id": "cp_carter_hodd", "name": "Carter Hodd", "model": "barbarian", "title": "Forgehold Carter", "level": 30, "weapon": "axe_1handed",
+                "dialogue": {"hail": "My cart, {name}, under the ash. Ore for the Forge, and the [beetles] have nested in it. [Cinderback] too, the big one.",
+                             "unknown": "Ask Scout-Captain Brenna. I haul ore."}},
+        "mob": {"id": "cp_ash_beetle", "name": "an ash beetle", "model": "fire_beetle", "drop": ("cp_ash_carapace", "Ash Beetle Carapace", 14, "chitin_plate"),
+                "extra": {"verb": ["bite", "bites"], "color": "#555050", "scale": 1.3}},
+        "named": {"id": "cp_cinderback", "name": "Cinderback", "model": "fire_beetle", "trophy": ("cp_cinderbacks_ember_gland", "Cinderback's Ember Gland", "phoenix_ember"),
+                  "extra": {"verb": ["bite", "bites"], "color": "#403838", "scale": 2.4}},
+        "reward": ("cp_carters_gloves", reward_for(30, "hands", "Carter's Gloves", "smokehide_gloves", ("str", "sta"), wear="leather_gloves")),
+        "keywords": ("beetles", "cinderback"),
+        "text": _named_lines(_t("Ash Beetle Carapaces", "ash beetle carapaces", "Cinderback's ember gland",
+                   "Four of their carapaces and I'll pay, every time. Smith Tovar fires them for flux.",
+                   "Cinderback, the biggest, sits right on my cart. Bring me its ember gland."),
+                   "Carapaces. Hot still.", "Four fewer in my cart.", "The gland. Careful, it's still burning.", "I can dig my ore out.",
+                   "Carter's gloves. For hot ore.")},
+        hut=("an Ashwatch sentry", "Forgehold Scouts", (0, 200, 1)))
+
+
+def windbreak(z):
+    F = "galehold"
+    return light_zone(z, F, {"prefix": "wb", "at": [28, -52], "level": 34, "respawn": 90,
+        "props": [_p("mesa", 0, -18, 30), _p("crag_rock", 16, 10, 90), _p("crag_rock", -16, 10, 200)],
+        "npc": {"id": "wb_arch_warden_petra", "name": "Arch-Warden Petra", "model": "ranger_class", "title": "Wind Scouts", "gender": "female", "level": 40, "weapon": "bow",
+                "dialogue": {"hail": "Under the arch, {name}, the rock's warm all day and the [lizards] know it. And [Old Sunbask], who's lain there since before the scouts.",
+                             "unknown": "Ask Scout-Leader Emeka."}},
+        "mob": {"id": "wb_crag_lizard", "name": "a crag lizard", "model": "lava_salamander", "drop": ("wb_crag_scale", "Crag Lizard Scale", 26, "obsidian_scale"),
+                "extra": {"verb": ["bite", "bites"], "color": "#a07850"}},
+        "named": {"id": "wb_old_sunbask", "name": "Old Sunbask", "model": "lava_salamander", "trophy": ("wb_sunbasks_frill", "Old Sunbask's Frill", "obsidian_scale"),
+                  "extra": {"verb": ["bite", "bites"], "color": "#806040", "scale": 1.9}},
+        "reward": ("wb_arch_wardens_bracer", reward_for(36, "arms", "Arch-Warden's Bracer", "tempest_bracer", ("agi", "sta"), wear="leather_sleeves")),
+        "keywords": ("lizards", "sunbask"),
+        "text": _named_lines(_t("Crag Lizard Scales", "crag lizard scales", "Old Sunbask's frill",
+                   "Four of their scales and I'll pay, every time: Galehold's shieldmakers want them.",
+                   "Old Sunbask, big as a skiff, on the warm stone under the arch. Bring me her frill."),
+                   "Scales. Warm from the sun.", "Four fewer under the arch.", "Her frill. What colors.", "The arch is ours for the watch.",
+                   "A warden's bracer. Cut from the arch's own hide, we say.")},
+        hut=("a wind scout", "Wind Scouts", (0, 200, 1)))
+
+
+def the_wallow(z):
+    F = "murkhold"
+    return light_zone(z, F, {"prefix": "wl", "at": [-116, 60], "level": 5, "respawn": 45,
+        "props": [_p("murk_hut", 0, 0, 30), _p("bog_lantern", 12, 10)],
+        "npc": {"id": "wl_bog_wife_grunna", "name": "Bog-Wife Grunna", "model": "shaman", "title": "of the Sinking Hut", "gender": "female", "race": "troll", "level": 15,
+                "dialogue": {"hail": "My hut's sinkin', {name}, and the [crawdads] come up through the floor. And [Old Pinchmud], the biggest.",
+                             "unknown": "Ask Hunter Snikk. Grunna only cooks."}},
+        "mob": {"id": "wl_bog_crawdad", "name": "a bog crawdad", "model": "salt_crab", "drop": ("wl_crawdad_tail", "Bog Crawdad Tail", 2, "salt_crab_claw"),
+                "extra": {"verb": ["pinch", "pinches"], "aggressive": False, "aggro_radius": 0, "scale": 0.6, "color": "#6a4a3a"}},
+        "named": {"id": "wl_old_pinchmud", "name": "Old Pinchmud", "model": "salt_crab", "trophy": ("wl_pinchmuds_claw", "Old Pinchmud's Great Claw", "salt_crab_claw"),
+                  "extra": {"verb": ["pinch", "pinches"], "scale": 1.3, "color": "#5a3a2a"}},
+        "reward": ("wl_grunnas_wrap", reward_for(7, "waist", "Grunna's Stewing Wrap", "barbel_whip_belt", ("sta", "str"))),
+        "keywords": ("crawdads", "pinchmud"),
+        "text": _named_lines(_t("Crawdad Tails", "bog crawdad tails", "Old Pinchmud's great claw",
+                   "Four tails and Grunna pays, every time. They're good in the pot.",
+                   "Old Pinchmud lives under the floor. Big as a stool. Bring Grunna his claw."),
+                   "Tails! Into the pot.", "Four for the stew.", "His claw! Grunna'll hang it on the door.", "Maybe the hut stops sinkin'.",
+                   "Grunna's stewing wrap. It's kept her warm by the pot for years.")}, hut=None)
+
+
+def duskwood(z):
+    F = "duskhold"
+    return light_zone(z, F, {"prefix": "dk", "at": [204, 12], "level": 5, "respawn": 45,
+        "props": [_p("stone_lantern", 0, 12), _p("shrine_broken", -12, -8, 90)],
+        "npc": {"id": "dk_moth_seer_lirael", "name": "Moth-Seer Lirael", "model": "mage", "title": "Moth-Seer", "gender": "female", "race": "dark_elf", "level": 15,
+                "dialogue": {"hail": "The shrine glows at dusk, {name}, and the [duskwings] come to it. And the [Pale Mothmother], who leads them.",
+                             "unknown": "The moths tell me little of the rest."}},
+        "mob": {"id": "dk_duskwing", "name": "a duskwing moth", "model": "lantern_moth", "drop": ("dk_duskwing_scale", "Duskwing Wing-Scale", 2, "bogwing_wing"),
+                "extra": {"verb": ["flutter at", "flutters at"], "aggressive": False, "aggro_radius": 0, "color": "#7050a0"}},
+        "named": {"id": "dk_pale_mothmother", "name": "the Pale Mothmother", "model": "lantern_moth", "trophy": ("dk_mothmothers_antenna", "The Pale Mothmother's Antenna", "bogwing_wing"),
+                  "extra": {"verb": ["flutter at", "flutters at"], "scale": 2.0, "color": "#d0c0f0"}},
+        "reward": ("dk_moth_seers_circlet", reward_for(7, "head", "Moth-Seer's Circlet", "pearl_crown_of_the_river", ("int", "wis"), wear="cloth_cap")),
+        "keywords": ("duskwings", "mothmother"),
+        "text": _named_lines(_t("Duskwing Scales", "duskwing wing-scales", "the Pale Mothmother's antenna",
+                   "Four of their wing-scales and I'll pay, every time: I read the dusk in them.",
+                   "The Pale Mothmother, white as the moon, at the shrine's heart. Bring me her antenna."),
+                   "Scales. Look how they shimmer.", "Four more for my readings.", "Her antenna. The dusk will be quieter.", "The shrine is only stone again.",
+                   "My circlet. It shows you a little of the dusk.")}, hut=None)
+
+
+def the_rotfen(z):
+    F = "rainhold"
+    return light_zone(z, F, {"prefix": "rf", "at": [252, -212], "level": 15, "respawn": 70,
+        "props": [_p("sunken_barge", 0, 0, 60), _p("rowboat", 14, 12, 200), _p("bone_totem", -12, 10)],
+        "npc": {"id": "rf_fen_priest_orun", "name": "Fen-Priest Orun", "model": "mage", "title": "of Jalendra", "level": 25,
+                "dialogue": {"hail": "A plague barge, {name}, run aground and never burned. Its [dead] still ride it. And the [Barge-Warden].",
+                             "unknown": "Grisk and Nyssa know the fen. I only know the dead."}},
+        "mob": {"id": "rf_bloated_dead", "name": "a bloated fen-dead", "model": "drowned", "drop": ("rf_plague_bone", "Plague-Barge Finger-Bone", 5, "bone_chips"),
+                "extra": {"verb": ["claw", "claws"], "faction": "undead", "flees": False}},
+        "named": {"id": "rf_barge_warden", "name": "the Barge-Warden", "model": "drowned_captain", "trophy": ("rf_wardens_bell", "The Barge-Warden's Plague-Bell", "bone_charm"),
+                  "extra": {"verb": ["strike", "strikes"], "faction": "undead"}},
+        "reward": ("rf_fen_priests_charm", reward_for(17, "neck", "Fen-Priest's Charm", "shellmask_amulet", ("wis", "sta"))),
+        "keywords": ("dead", "barge-warden"),
+        "text": _named_lines(_t("Plague Finger-Bones", "plague-barge finger-bones", "the Barge-Warden's plague-bell",
+                   "Four of their finger-bones and I'll bless them to rest, and pay you, every time.",
+                   "The Barge-Warden rang the plague-bell as they ran aground. Bring me the bell."),
+                   "Bones. I'll say the words.", "Four at rest.", "The bell. Silent now.", "I'll burn the barge at last.",
+                   "Jalendra's charm. The dead don't like it.")},
+        hut=("a Rainhold Reedwatch", "Reedwatch", (0, 150, 1)))
+
+
+def broken_march(z):
+    F = "rainhold"
+    return light_zone(z, F, {"prefix": "bm", "at": [12, -244], "level": 17, "landmark": ("ruins", {}), "respawn": 75,
+        "props": [_p("crag_rock", 14, 12, 90), _p("banner_pole", -12, 12)],
+        "npc": {"id": "bm_beacon_keeper_hesk", "name": "Beacon-Keeper Hesk", "model": "knight", "title": "of the Last Beacon", "level": 30, "weapon": "sword_1handed",
+                "dialogue": {"hail": "The Last Beacon, {name}: it warned the keep, once. Now the [ravens] nest in it, and [Grimquill] above them all.",
+                             "unknown": "Ask the Marchwarden."}},
+        "mob": {"id": "bm_cairn_raven", "name": "a cairn raven", "model": "bone_vulture", "drop": ("bm_raven_quill", "Cairn Raven Quill", 7, "carrion_feather"),
+                "extra": {"verb": ["peck", "pecks"], "scale": 0.6, "color": "#151515"}},
+        "named": {"id": "bm_grimquill", "name": "Grimquill", "model": "bone_vulture", "trophy": ("bm_grimquills_beak", "Grimquill's Beak", "carrion_feather"),
+                  "extra": {"verb": ["peck", "pecks"], "scale": 1.0, "color": "#0a0a0a"}},
+        "reward": ("bm_beacon_keepers_boots", reward_for(19, "feet", "Beacon-Keeper's Boots", "wolfhide_boots", ("sta", "agi"), wear="leather_boots")),
+        "keywords": ("ravens", "grimquill"),
+        "text": _named_lines(_t("Raven Quills", "cairn raven quills", "Grimquill's beak",
+                   "Four of their quills and I'll pay, every time. I'll write the beacon's last watch with them.",
+                   "Grimquill, the old king of them, sits on the beacon's top. Bring me his beak, and I'll light it again."),
+                   "Quills. Good for writing.", "Four fewer on the beacon.", "His beak. The beacon's mine.", "I'll light it tonight.",
+                   "A keeper's boots. For the climb to the top.")},
+        hut=("a Marchwatch guard", "Marchwatch", (0, 150, 1)))
+
+
 ZONES = {"thornwood": thornwood, "the_long_grass": long_grass, "the_bleach": bleach,
          "the_burn": the_burn, "mirror_flats": mirror_flats, "ivory_field": ivory_field, "reedmere": reedmere,
          "silted_reach": silted_reach, "blackglass": blackglass, "smokewood": smokewood, "stonesail": stonesail,
-         "hollow_air": hollow_air, "fogfall": fogfall, "the_unlit": the_unlit, "lastwalk": lastwalk, "high_terrace": high_terrace}
+         "hollow_air": hollow_air, "fogfall": fogfall, "the_unlit": the_unlit, "lastwalk": lastwalk, "high_terrace": high_terrace,
+         "greenmoor": greenmoor, "harrowfield": harrowfield, "hollowmere": hollowmere, "dewstep": dewstep, "sunward_steps": sunward_steps,
+         "weeping_throat": weeping_throat, "cinderpass": cinderpass, "windbreak": windbreak, "the_wallow": the_wallow, "duskwood": duskwood,
+         "the_rotfen": the_rotfen, "broken_march": broken_march}
 
 
 def check_spot(zid, z, edges, p, what):

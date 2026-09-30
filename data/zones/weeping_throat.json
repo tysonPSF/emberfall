@@ -87,7 +87,12 @@
     {"type": "prop", "id": "taro_plant", "pos": [-142.8, 226.3], "collide": "none"},
     {"type": "prop", "id": "fern_clump", "pos": [-139.8, 224.3], "collide": "none"},
     {"type": "prop", "id": "taro_plant", "pos": [9.5, -90.5], "collide": "none"},
-    {"type": "prop", "id": "fern_clump", "pos": [12.5, -92.5], "collide": "none"}
+    {"type": "prop", "id": "fern_clump", "pos": [12.5, -92.5], "collide": "none"},
+    {"type": "prop", "pos": [48.0, -195.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [54.0, -190.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [92, -228], "id": "tent", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [100, -222], "id": "campfire", "collide": "none", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [80, -218], "id": "drying_rack", "collide": "box", "yaw": 60, "hubs": true}
   ],
   "roads": [{"points": [[336, 60], [253.2, 62], [180, 112.5], [115.8, 169.5], [40.8, 234.5], [0, 336]], "width": 3}],
   "passes": [[336, 60, 9], [0, 336, 9], [-336, 0, 9], [0, -336, 9]],
@@ -97,7 +102,7 @@
     {"pos": [-325, 0], "size": [8, 18], "to": "reedmere", "arrive": [487, 0], "arrive_face": [447, 0]},
     {"pos": [0, -325], "size": [18, 8], "to": "drownfast", "arrive": [0, 231], "arrive_face": [0, 191]}
   ],
-  "npcs": [],
+  "npcs": [{"id": "wt_tracker_mbali", "pos": [56.0, -193.0], "face": [92, -228], "hubs": true}],
   "spawns": [
     {"pos": [288, 72], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [48, 288], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
@@ -124,7 +129,6 @@
     {"pos": [67.2, -43.7], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [-25.5, -90.5], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [240, -30], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
-    {"pos": [120, -225], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [-225, 30], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [-150, 270], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
     {"pos": [255, 255], "pool": {"giant_frog": 1}, "respawn": 80, "wander": 18},
@@ -173,6 +177,14 @@
     {"pos": [90, -90], "pool": {"river_troll": 1}, "respawn": 90, "wander": 16},
     {"pos": [165, 15], "pool": {"river_troll": 1}, "respawn": 90, "wander": 16},
     {"pos": [242.8, -130], "pool": {"river_troll": 1}, "respawn": 90, "wander": 16},
-    {"pos": [207.8, -98], "pool": {"troll_chieftain": 1}, "respawn": 900, "wander": 2}
+    {"pos": [207.8, -98], "pool": {"troll_chieftain": 1}, "respawn": 900, "wander": 2},
+    {"pos": [128.3, -216.8], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [105.9, -192.6], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [73.0, -195.1], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [54.4, -222.4], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [64.2, -253.9], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [94.9, -265.9], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [123.4, -249.4], "pool": {"wt_rain_panther": 1}, "respawn": 80, "wander": 12, "hubs": true},
+    {"pos": [95, -226], "pool": {"wt_silkpaw": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

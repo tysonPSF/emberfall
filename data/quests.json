@@ -6676,5 +6676,473 @@
     "first_reward_item": "ht_herders_ring",
     "first_complete_text": "My father's ring. He'd want it on a wolf-killer.",
     "start_keyword": "frostjaw"
+  },
+  "gm_grain_weevil_q": {
+    "name": "Weevil Husks",
+    "giver": "gm_farmwife_gudrun",
+    "wants": {
+      "gm_weevil_husk": 4
+    },
+    "reward": {
+      "xp": 80,
+      "coin": 50
+    },
+    "accept_text": "You have taken on a task: Weevil Husks. Bring Farmwife Gudrun four grain weevil husks.",
+    "ready_text": "Husks! Crunchy.",
+    "complete_text": "Four fewer at the grain.",
+    "faction": {
+      "emberhold": 8
+    },
+    "start_keyword": "weevils",
+    "repeatable": true
+  },
+  "gm_granary_queen_q": {
+    "name": "The Granary Queen",
+    "giver": "gm_farmwife_gudrun",
+    "wants": {
+      "gm_granary_queens_crown": 1
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "accept_text": "You have taken on a task: The Granary Queen. Bring Farmwife Gudrun the Granary Queen's crest.",
+    "ready_text": "Her crest. Nasty thing.",
+    "complete_text": "We might plant again this spring.",
+    "faction": {
+      "emberhold": 24
+    },
+    "first_reward_item": "gm_gudruns_mittens",
+    "first_complete_text": "My harvest mittens. Warm hands for cold mornings.",
+    "start_keyword": "granary queen"
+  },
+  "hf_field_crow_q": {
+    "name": "Crow Feathers",
+    "giver": "hf_crofter_ewan",
+    "wants": {
+      "hf_crow_feather": 4
+    },
+    "reward": {
+      "xp": 220,
+      "coin": 40
+    },
+    "accept_text": "You have taken on a task: Crow Feathers. Bring Crofter Ewan four field crow feathers.",
+    "ready_text": "Feathers. Soft, at least.",
+    "complete_text": "Four fewer at my seed.",
+    "faction": {
+      "emberhold": 8
+    },
+    "start_keyword": "crows",
+    "repeatable": true
+  },
+  "hf_old_blackwing_q": {
+    "name": "Old Blackwing",
+    "giver": "hf_crofter_ewan",
+    "wants": {
+      "hf_blackwings_eye": 1
+    },
+    "reward": {
+      "xp": 560,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: Old Blackwing. Bring Crofter Ewan Old Blackwing's eye.",
+    "ready_text": "His eye! Ha.",
+    "complete_text": "The north field's mine again.",
+    "faction": {
+      "emberhold": 24
+    },
+    "first_reward_item": "hf_crofters_boots",
+    "first_complete_text": "My good boots. For walking the furrows.",
+    "start_keyword": "blackwing"
+  },
+  "hm_marsh_gnats_q": {
+    "name": "Gnat Wings",
+    "giver": "hm_reedcutter_olwen",
+    "wants": {
+      "hm_gnat_wing": 4
+    },
+    "reward": {
+      "xp": 700,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: Gnat Wings. Bring Reedcutter Olwen four marsh gnat wings.",
+    "ready_text": "Wings. Ugh.",
+    "complete_text": "Four swarms fewer.",
+    "faction": {
+      "hollowfolk": 8
+    },
+    "start_keyword": "gnats",
+    "repeatable": true
+  },
+  "hm_droning_mother_q": {
+    "name": "The Droning Mother",
+    "giver": "hm_reedcutter_olwen",
+    "wants": {
+      "hm_drone_queens_sac": 1
+    },
+    "reward": {
+      "xp": 1500,
+      "coin": 300
+    },
+    "accept_text": "You have taken on a task: The Droning Mother. Bring Reedcutter Olwen the Droning Mother's egg-sac.",
+    "ready_text": "Her egg-sac! Burn it, quick.",
+    "complete_text": "The landing's quiet at last.",
+    "faction": {
+      "hollowfolk": 24
+    },
+    "first_reward_item": "hm_reedcutters_sleeves",
+    "first_complete_text": "Reed-cutting sleeves. Nothing bites through them.",
+    "start_keyword": "droning mother"
+  },
+  "ds_bamboo_viper_q": {
+    "name": "Viper Skins",
+    "giver": "ds_tea_roller_sunita",
+    "wants": {
+      "ds_viper_skin": 4
+    },
+    "reward": {
+      "xp": 260,
+      "coin": 36
+    },
+    "accept_text": "You have taken on a task: Viper Skins. Bring Tea-Roller Sunita four bamboo viper skins.",
+    "ready_text": "Skins. Mind, they're still slippery.",
+    "complete_text": "Four fewer by the stones.",
+    "faction": {
+      "lanternhold": 8
+    },
+    "start_keyword": "vipers",
+    "repeatable": true
+  },
+  "ds_jade_eye_q": {
+    "name": "Jade-Eye",
+    "giver": "ds_tea_roller_sunita",
+    "wants": {
+      "ds_jade_eyes_fang": 1
+    },
+    "reward": {
+      "xp": 1400,
+      "coin": 180
+    },
+    "accept_text": "You have taken on a task: Jade-Eye. Bring Tea-Roller Sunita Jade-Eye's fang.",
+    "ready_text": "Her fang. Longer than my finger.",
+    "complete_text": "The pickers can walk to the shrine again.",
+    "faction": {
+      "lanternhold": 24
+    },
+    "first_reward_item": "ds_tea_rollers_gloves",
+    "first_complete_text": "My rolling gloves. Soft on the leaf, soft on your hands.",
+    "start_keyword": "jade-eye"
+  },
+  "su_dust_scarab_q": {
+    "name": "Scarab Shells",
+    "giver": "su_water_seeker_anil",
+    "wants": {
+      "su_scarab_shell": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 300
+    },
+    "accept_text": "You have taken on a task: Scarab Shells. Bring Water-Seeker Anil four dust scarab shells.",
+    "ready_text": "Shells. Dusty.",
+    "complete_text": "Four fewer in my cistern.",
+    "faction": {
+      "dawn_pilgrims": 8
+    },
+    "start_keyword": "scarabs",
+    "repeatable": true
+  },
+  "su_old_dunebore_q": {
+    "name": "Old Dunebore",
+    "giver": "su_water_seeker_anil",
+    "wants": {
+      "su_dunebores_horn": 1
+    },
+    "reward": {
+      "xp": 7500,
+      "coin": 1000
+    },
+    "accept_text": "You have taken on a task: Old Dunebore. Bring Water-Seeker Anil Old Dunebore's horn.",
+    "ready_text": "His horn. The well might fill again.",
+    "complete_text": "Water, by the next rains.",
+    "faction": {
+      "dawn_pilgrims": 24
+    },
+    "first_reward_item": "su_water_seekers_sash",
+    "first_complete_text": "A seeker's sash. It's found water in worse places.",
+    "start_keyword": "dunebore"
+  },
+  "wt_rain_panther_q": {
+    "name": "Panther Whiskers",
+    "giver": "wt_tracker_mbali",
+    "wants": {
+      "wt_panther_whisker": 4
+    },
+    "reward": {
+      "xp": 7000,
+      "coin": 600
+    },
+    "accept_text": "You have taken on a task: Panther Whiskers. Bring Tracker Mbali four rain panther whiskers.",
+    "ready_text": "Whiskers. You got close.",
+    "complete_text": "Four fewer in the trees.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "panthers",
+    "repeatable": true
+  },
+  "wt_silkpaw_q": {
+    "name": "Silkpaw",
+    "giver": "wt_tracker_mbali",
+    "wants": {
+      "wt_silkpaws_pelt": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 2000
+    },
+    "accept_text": "You have taken on a task: Silkpaw. Bring Tracker Mbali Silkpaw's pelt.",
+    "ready_text": "Her pelt. Three rains I chased her.",
+    "complete_text": "I can track something else now.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "wt_trackers_boots",
+    "first_complete_text": "My boots. Quiet on the leaves.",
+    "start_keyword": "silkpaw"
+  },
+  "cp_ash_beetle_q": {
+    "name": "Ash Beetle Carapaces",
+    "giver": "cp_carter_hodd",
+    "wants": {
+      "cp_ash_carapace": 4
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Ash Beetle Carapaces. Bring Carter Hodd four ash beetle carapaces.",
+    "ready_text": "Carapaces. Hot still.",
+    "complete_text": "Four fewer in my cart.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "beetles",
+    "repeatable": true
+  },
+  "cp_cinderback_q": {
+    "name": "Cinderback",
+    "giver": "cp_carter_hodd",
+    "wants": {
+      "cp_cinderbacks_ember_gland": 1
+    },
+    "reward": {
+      "xp": 9000,
+      "coin": 1200
+    },
+    "accept_text": "You have taken on a task: Cinderback. Bring Carter Hodd Cinderback's ember gland.",
+    "ready_text": "The gland. Careful, it's still burning.",
+    "complete_text": "I can dig my ore out.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "cp_carters_gloves",
+    "first_complete_text": "Carter's gloves. For hot ore.",
+    "start_keyword": "cinderback"
+  },
+  "wb_crag_lizard_q": {
+    "name": "Crag Lizard Scales",
+    "giver": "wb_arch_warden_petra",
+    "wants": {
+      "wb_crag_scale": 4
+    },
+    "reward": {
+      "xp": 7200,
+      "coin": 800
+    },
+    "accept_text": "You have taken on a task: Crag Lizard Scales. Bring Arch-Warden Petra four crag lizard scales.",
+    "ready_text": "Scales. Warm from the sun.",
+    "complete_text": "Four fewer under the arch.",
+    "faction": {
+      "galehold": 8
+    },
+    "start_keyword": "lizards",
+    "repeatable": true
+  },
+  "wb_old_sunbask_q": {
+    "name": "Old Sunbask",
+    "giver": "wb_arch_warden_petra",
+    "wants": {
+      "wb_sunbasks_frill": 1
+    },
+    "reward": {
+      "xp": 16000,
+      "coin": 1920
+    },
+    "accept_text": "You have taken on a task: Old Sunbask. Bring Arch-Warden Petra Old Sunbask's frill.",
+    "ready_text": "Her frill. What colors.",
+    "complete_text": "The arch is ours for the watch.",
+    "faction": {
+      "galehold": 24
+    },
+    "first_reward_item": "wb_arch_wardens_bracer",
+    "first_complete_text": "A warden's bracer. Cut from the arch's own hide, we say.",
+    "start_keyword": "sunbask"
+  },
+  "wl_bog_crawdad_q": {
+    "name": "Crawdad Tails",
+    "giver": "wl_bog_wife_grunna",
+    "wants": {
+      "wl_crawdad_tail": 4
+    },
+    "reward": {
+      "xp": 120,
+      "coin": 40
+    },
+    "accept_text": "You have taken on a task: Crawdad Tails. Bring Bog-Wife Grunna four bog crawdad tails.",
+    "ready_text": "Tails! Into the pot.",
+    "complete_text": "Four for the stew.",
+    "faction": {
+      "murkhold": 8
+    },
+    "start_keyword": "crawdads",
+    "repeatable": true
+  },
+  "wl_old_pinchmud_q": {
+    "name": "Old Pinchmud",
+    "giver": "wl_bog_wife_grunna",
+    "wants": {
+      "wl_pinchmuds_claw": 1
+    },
+    "reward": {
+      "xp": 150,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: Old Pinchmud. Bring Bog-Wife Grunna Old Pinchmud's great claw.",
+    "ready_text": "His claw! Grunna'll hang it on the door.",
+    "complete_text": "Maybe the hut stops sinkin'.",
+    "faction": {
+      "murkhold": 24
+    },
+    "first_reward_item": "wl_grunnas_wrap",
+    "first_complete_text": "Grunna's stewing wrap. It's kept her warm by the pot for years.",
+    "start_keyword": "pinchmud"
+  },
+  "dk_duskwing_q": {
+    "name": "Duskwing Scales",
+    "giver": "dk_moth_seer_lirael",
+    "wants": {
+      "dk_duskwing_scale": 4
+    },
+    "reward": {
+      "xp": 140,
+      "coin": 50
+    },
+    "accept_text": "You have taken on a task: Duskwing Scales. Bring Moth-Seer Lirael four duskwing wing-scales.",
+    "ready_text": "Scales. Look how they shimmer.",
+    "complete_text": "Four more for my readings.",
+    "faction": {
+      "duskhold": 8
+    },
+    "start_keyword": "duskwings",
+    "repeatable": true
+  },
+  "dk_pale_mothmother_q": {
+    "name": "The Pale Mothmother",
+    "giver": "dk_moth_seer_lirael",
+    "wants": {
+      "dk_mothmothers_antenna": 1
+    },
+    "reward": {
+      "xp": 90,
+      "coin": 20
+    },
+    "accept_text": "You have taken on a task: The Pale Mothmother. Bring Moth-Seer Lirael the Pale Mothmother's antenna.",
+    "ready_text": "Her antenna. The dusk will be quieter.",
+    "complete_text": "The shrine is only stone again.",
+    "faction": {
+      "duskhold": 24
+    },
+    "first_reward_item": "dk_moth_seers_circlet",
+    "first_complete_text": "My circlet. It shows you a little of the dusk.",
+    "start_keyword": "mothmother"
+  },
+  "rf_bloated_dead_q": {
+    "name": "Plague Finger-Bones",
+    "giver": "rf_fen_priest_orun",
+    "wants": {
+      "rf_plague_bone": 4
+    },
+    "reward": {
+      "xp": 700,
+      "coin": 120
+    },
+    "accept_text": "You have taken on a task: Plague Finger-Bones. Bring Fen-Priest Orun four plague-barge finger-bones.",
+    "ready_text": "Bones. I'll say the words.",
+    "complete_text": "Four at rest.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "dead",
+    "repeatable": true
+  },
+  "rf_barge_warden_q": {
+    "name": "The Barge-Warden",
+    "giver": "rf_fen_priest_orun",
+    "wants": {
+      "rf_wardens_bell": 1
+    },
+    "reward": {
+      "xp": 1900,
+      "coin": 450
+    },
+    "accept_text": "You have taken on a task: The Barge-Warden. Bring Fen-Priest Orun the Barge-Warden's plague-bell.",
+    "ready_text": "The bell. Silent now.",
+    "complete_text": "I'll burn the barge at last.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "rf_fen_priests_charm",
+    "first_complete_text": "Jalendra's charm. The dead don't like it.",
+    "start_keyword": "barge-warden"
+  },
+  "bm_cairn_raven_q": {
+    "name": "Raven Quills",
+    "giver": "bm_beacon_keeper_hesk",
+    "wants": {
+      "bm_raven_quill": 4
+    },
+    "reward": {
+      "xp": 1000,
+      "coin": 180
+    },
+    "accept_text": "You have taken on a task: Raven Quills. Bring Beacon-Keeper Hesk four cairn raven quills.",
+    "ready_text": "Quills. Good for writing.",
+    "complete_text": "Four fewer on the beacon.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "ravens",
+    "repeatable": true
+  },
+  "bm_grimquill_q": {
+    "name": "Grimquill",
+    "giver": "bm_beacon_keeper_hesk",
+    "wants": {
+      "bm_grimquills_beak": 1
+    },
+    "reward": {
+      "xp": 2800,
+      "coin": 650
+    },
+    "accept_text": "You have taken on a task: Grimquill. Bring Beacon-Keeper Hesk Grimquill's beak.",
+    "ready_text": "His beak. The beacon's mine.",
+    "complete_text": "I'll light it tonight.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "bm_beacon_keepers_boots",
+    "first_complete_text": "A keeper's boots. For the climb to the top.",
+    "start_keyword": "grimquill"
   }
 }

@@ -420,6 +420,7 @@ def main():
     bad = sorted({m["model"] for m in bw.MOBS.values() if m["model"] not in models} | {n["model"] for n in bw.NPCS.values() if n["model"] not in models})
     print("wrote %s; %d npcs, %d mobs, %d quests, %d items%s%s" % (", ".join(zones), len(bw.NPCS), len(bw.MOBS), len(bw.QUESTS), len(bw.ITEMS),
           "; MISSING props: %s" % sorted(set(missing)) if missing else "", "; UNKNOWN models: %s" % bad if bad else ""))
+    print("Rerun python3 tools/zones/hubs.py: it adds its places to the zones this wrote from scratch.")
 
 
 if __name__ == "__main__":

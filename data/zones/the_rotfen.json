@@ -1,148 +1,43 @@
 {
   "name": "The Rotfen",
-  "levels": [
-    10,
-    18
-  ],
+  "levels": [10, 18],
   "music": "the_rotfen",
   "seed": 7351,
   "size": 672,
-  "bind_point": [
-    60,
-    -50
-  ],
+  "bind_point": [60, -50],
   "height_amplitude": 3.5,
   "flat_radius": 20,
   "trees": 382,
-  "tree_mix": [
-    "mangrove_tree",
-    "black_tree",
-    "mangrove_tree",
-    "jungle_tree"
-  ],
+  "tree_mix": ["mangrove_tree", "black_tree", "mangrove_tree", "jungle_tree"],
   "groves": 0.5,
   "rocks": 90,
-  "grass_colors": [
-    "#3e4a2a",
-    "#4e5634"
-  ],
+  "grass_colors": ["#3e4a2a", "#4e5634"],
   "fog_density": 0.016,
   "fog_color": "#5a6048",
   "sun_energy": 0.7,
-  "rain": {
-    "amount": 1500
-  },
-  "passes": [
-    [
-      336,
-      0,
-      9
-    ],
-    [
-      0,
-      -336,
-      9
-    ]
-  ],
+  "rain": {"amount": 1500},
+  "passes": [[336, 0, 9], [0, -336, 9]],
   "zone_lines": [
-    {
-      "pos": [
-        325,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "duskwood",
-      "arrive": [
-        -263,
-        0
-      ],
-      "arrive_face": [
-        -223,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -325
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "the_wallow",
-      "arrive": [
-        0,
-        263
-      ],
-      "arrive_face": [
-        0,
-        223
-      ]
-    }
+    {"pos": [325, 0], "size": [8, 18], "to": "duskwood", "arrive": [-263, 0], "arrive_face": [-223, 0]},
+    {"pos": [0, -325], "size": [18, 8], "to": "the_wallow", "arrive": [0, 263], "arrive_face": [0, 223]}
   ],
   "lakes": [
     {
       "points": [
-        [
-          0,
-          90
-        ],
-        [
-          2,
-          118
-        ],
-        [
-          -20.2,
-          135.7
-        ],
-        [
-          -48.2,
-          142.2
-        ],
-        [
-          -71.8,
-          142.2
-        ],
-        [
-          -99.8,
-          135.7
-        ],
-        [
-          -122,
-          118
-        ],
-        [
-          -120,
-          90
-        ],
-        [
-          -106.2,
-          62
-        ],
-        [
-          -95,
-          44.3
-        ],
-        [
-          -74.9,
-          37.8
-        ],
-        [
-          -45.1,
-          37.8
-        ],
-        [
-          -25,
-          44.3
-        ],
-        [
-          -13.8,
-          62
-        ]
+        [0, 90],
+        [2, 118],
+        [-20.2, 135.7],
+        [-48.2, 142.2],
+        [-71.8, 142.2],
+        [-99.8, 135.7],
+        [-122, 118],
+        [-120, 90],
+        [-106.2, 62],
+        [-95, 44.3],
+        [-74.9, 37.8],
+        [-45.1, 37.8],
+        [-25, 44.3],
+        [-13.8, 62]
       ],
       "depth": 1.2,
       "shelf": 12,
@@ -150,62 +45,20 @@
     },
     {
       "points": [
-        [
-          171,
-          -180
-        ],
-        [
-          172.7,
-          -156.2
-        ],
-        [
-          153.9,
-          -141.2
-        ],
-        [
-          130,
-          -135.7
-        ],
-        [
-          110,
-          -135.7
-        ],
-        [
-          86.1,
-          -141.2
-        ],
-        [
-          67.3,
-          -156.2
-        ],
-        [
-          69,
-          -180
-        ],
-        [
-          80.8,
-          -203.8
-        ],
-        [
-          90.3,
-          -218.8
-        ],
-        [
-          107.3,
-          -224.3
-        ],
-        [
-          132.7,
-          -224.3
-        ],
-        [
-          149.7,
-          -218.8
-        ],
-        [
-          159.2,
-          -203.8
-        ]
+        [171, -180],
+        [172.7, -156.2],
+        [153.9, -141.2],
+        [130, -135.7],
+        [110, -135.7],
+        [86.1, -141.2],
+        [67.3, -156.2],
+        [69, -180],
+        [80.8, -203.8],
+        [90.3, -218.8],
+        [107.3, -224.3],
+        [132.7, -224.3],
+        [149.7, -218.8],
+        [159.2, -203.8]
       ],
       "depth": 0.8,
       "shelf": 12,
@@ -213,62 +66,20 @@
     },
     {
       "points": [
-        [
-          -126,
-          225
-        ],
-        [
-          -124.2,
-          250.2
-        ],
-        [
-          -144.1,
-          266.1
-        ],
-        [
-          -169.4,
-          272
-        ],
-        [
-          -190.6,
-          272
-        ],
-        [
-          -215.9,
-          266.1
-        ],
-        [
-          -235.8,
-          250.2
-        ],
-        [
-          -234,
-          225
-        ],
-        [
-          -221.5,
-          199.8
-        ],
-        [
-          -211.5,
-          183.9
-        ],
-        [
-          -193.4,
-          178
-        ],
-        [
-          -166.6,
-          178
-        ],
-        [
-          -148.5,
-          183.9
-        ],
-        [
-          -138.5,
-          199.8
-        ]
+        [-126, 225],
+        [-124.2, 250.2],
+        [-144.1, 266.1],
+        [-169.4, 272],
+        [-190.6, 272],
+        [-215.9, 266.1],
+        [-235.8, 250.2],
+        [-234, 225],
+        [-221.5, 199.8],
+        [-211.5, 183.9],
+        [-193.4, 178],
+        [-166.6, 178],
+        [-148.5, 183.9],
+        [-138.5, 199.8]
       ],
       "depth": 0.9,
       "shelf": 12,
@@ -276,62 +87,20 @@
     },
     {
       "points": [
-        [
-          270,
-          45
-        ],
-        [
-          271.5,
-          66
-        ],
-        [
-          254.9,
-          79.2
-        ],
-        [
-          233.8,
-          84.1
-        ],
-        [
-          216.2,
-          84.1
-        ],
-        [
-          195.1,
-          79.2
-        ],
-        [
-          178.5,
-          66
-        ],
-        [
-          180,
-          45
-        ],
-        [
-          190.4,
-          24
-        ],
-        [
-          198.8,
-          10.8
-        ],
-        [
-          213.8,
-          5.9
-        ],
-        [
-          236.2,
-          5.9
-        ],
-        [
-          251.2,
-          10.8
-        ],
-        [
-          259.6,
-          24
-        ]
+        [270, 45],
+        [271.5, 66],
+        [254.9, 79.2],
+        [233.8, 84.1],
+        [216.2, 84.1],
+        [195.1, 79.2],
+        [178.5, 66],
+        [180, 45],
+        [190.4, 24],
+        [198.8, 10.8],
+        [213.8, 5.9],
+        [236.2, 5.9],
+        [251.2, 10.8],
+        [259.6, 24]
       ],
       "depth": 0.7,
       "shelf": 12,
@@ -339,914 +108,120 @@
     },
     {
       "points": [
-        [
-          -45,
-          225
-        ],
-        [
-          -43.5,
-          246
-        ],
-        [
-          -60.1,
-          259.2
-        ],
-        [
-          -81.2,
-          264.1
-        ],
-        [
-          -98.8,
-          264.1
-        ],
-        [
-          -119.9,
-          259.2
-        ],
-        [
-          -136.5,
-          246
-        ],
-        [
-          -135,
-          225
-        ],
-        [
-          -124.6,
-          204
-        ],
-        [
-          -116.2,
-          190.8
-        ],
-        [
-          -101.2,
-          185.9
-        ],
-        [
-          -78.8,
-          185.9
-        ],
-        [
-          -63.8,
-          190.8
-        ],
-        [
-          -55.4,
-          204
-        ]
+        [-45, 225],
+        [-43.5, 246],
+        [-60.1, 259.2],
+        [-81.2, 264.1],
+        [-98.8, 264.1],
+        [-119.9, 259.2],
+        [-136.5, 246],
+        [-135, 225],
+        [-124.6, 204],
+        [-116.2, 190.8],
+        [-101.2, 185.9],
+        [-78.8, 185.9],
+        [-63.8, 190.8],
+        [-55.4, 204]
       ],
       "depth": 2.4,
       "shelf": 12,
       "bank": 6
     }
   ],
-  "water": {
-    "shallow": "#303a26",
-    "deep": "#10150c",
-    "sky": "#465038"
-  },
-  "roads": [
-    {
-      "points": [
-        [
-          0,
-          -336
-        ],
-        [
-          15,
-          -225
-        ],
-        [
-          60,
-          -60
-        ],
-        [
-          180,
-          0
-        ],
-        [
-          336,
-          0
-        ]
-      ],
-      "width": 3.0
-    }
-  ],
+  "water": {"shallow": "#303a26", "deep": "#10150c", "sky": "#465038"},
+  "roads": [{"points": [[0, -336], [15, -225], [60, -60], [180, 0], [336, 0]], "width": 3.0}],
   "clutter": {
-    "grass_a": {
-      "density": 0.26,
-      "patch": 0.55,
-      "sway": 0.18,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "reeds_tall": {
-      "density": 0.025,
-      "patch": 0.8,
-      "sway": 0.2,
-      "range": 55,
-      "scale": [
-        0.8,
-        1.4
-      ]
-    },
-    "mushrooms": {
-      "density": 0.008,
-      "patch": 0.8,
-      "sway": 0.0,
-      "range": 40,
-      "scale": [
-        0.8,
-        1.4
-      ]
-    }
+    "grass_a": {"density": 0.26, "patch": 0.55, "sway": 0.18, "range": 55, "tint": "ground", "scale": [0.8, 1.3]},
+    "reeds_tall": {"density": 0.025, "patch": 0.8, "sway": 0.2, "range": 55, "scale": [0.8, 1.4]},
+    "mushrooms": {"density": 0.008, "patch": 0.8, "sway": 0.0, "range": 40, "scale": [0.8, 1.4]}
   },
   "landmarks": [
-    {
-      "type": "camp",
-      "pos": [
-        60,
-        -60
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        12,
-        -318
-      ],
-      "face": [
-        12,
-        -336
-      ],
-      "labels": [
-        "The Wallow"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        318,
-        12
-      ],
-      "face": [
-        336,
-        12
-      ],
-      "labels": [
-        "Duskwood"
-      ]
-    },
-    {
-      "type": "lizard_camp",
-      "pos": [
-        -210,
-        -90
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        210,
-        222.5
-      ],
-      "id": "hag_hut",
-      "collide": "mesh",
-      "face": [
-        210,
-        212.5
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        230,
-        192.5
-      ],
-      "id": "hag_hut",
-      "collide": "mesh",
-      "face": [
-        210,
-        212.5
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        190,
-        242.5
-      ],
-      "id": "hag_hut",
-      "collide": "mesh",
-      "face": [
-        210,
-        212.5
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        210,
-        212.5
-      ],
-      "id": "hag_cauldron",
-      "collide": "box"
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -60,
-        225
-      ]
-    }
+    {"type": "camp", "pos": [60, -60]},
+    {"type": "signpost", "pos": [12, -318], "face": [12, -336], "labels": ["The Wallow"]},
+    {"type": "signpost", "pos": [318, 12], "face": [336, 12], "labels": ["Duskwood"]},
+    {"type": "lizard_camp", "pos": [-210, -90]},
+    {"type": "prop", "pos": [210, 222.5], "id": "hag_hut", "collide": "mesh", "face": [210, 212.5]},
+    {"type": "prop", "pos": [230, 192.5], "id": "hag_hut", "collide": "mesh", "face": [210, 212.5]},
+    {"type": "prop", "pos": [190, 242.5], "id": "hag_hut", "collide": "mesh", "face": [210, 212.5]},
+    {"type": "prop", "pos": [210, 212.5], "id": "hag_cauldron", "collide": "box"},
+    {"type": "ruins", "pos": [-60, 225]},
+    {"type": "outpost", "pos": [9.6, -184.1], "hubs": true},
+    {"type": "prop", "pos": [208.0, -179.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [214.0, -174.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [252, -212], "id": "sunken_barge", "collide": "box", "yaw": 60, "hubs": true},
+    {"type": "prop", "pos": [266, -200], "id": "rowboat", "collide": "box", "yaw": 200, "hubs": true},
+    {"type": "prop", "pos": [240, -202], "id": "bone_totem", "collide": "box", "yaw": 0, "hubs": true}
   ],
   "npcs": [
-    {
-      "id": "fen_warden_grisk",
-      "pos": [
-        54,
-        -74
-      ],
-      "face": [
-        54,
-        -90
-      ]
-    },
-    {
-      "id": "blade_sister_nyssa",
-      "pos": [
-        66,
-        -74
-      ],
-      "face": [
-        66,
-        -90
-      ]
-    }
+    {"id": "fen_warden_grisk", "pos": [54, -74], "face": [54, -90]},
+    {"id": "blade_sister_nyssa", "pos": [66, -74], "face": [66, -90]},
+    {"id": "rf_hut_guard_0", "pos": [17.3, -186.2], "face": [25.0, -188.3], "hubs": true},
+    {"id": "rf_fen_priest_orun", "pos": [216.0, -177.0], "face": [252, -212], "hubs": true}
   ],
   "spawns": [
-    {
-      "pos": [
-        0,
-        -225
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        60,
-        -255
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -60,
-        -240
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        120,
-        -90
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        150,
-        -30
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -15,
-        -150
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -60,
-        90
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -30,
-        60
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        120,
-        -180
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        225,
-        45
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -180,
-        225
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -120,
-        60
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        0,
-        135
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        90,
-        180
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -150,
-        150
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        180,
-        90
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        30,
-        30
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -200,
-        -70
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -220,
-        -110
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -165,
-        -135
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -240,
-        -45
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -180,
-        -30
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        200,
-        212.5
-      ],
-      "pool": {
-        "gristle_hag": 1
-      },
-      "respawn": 100,
-      "wander": 8
-    },
-    {
-      "pos": [
-        230,
-        222.5
-      ],
-      "pool": {
-        "gristle_hag": 1
-      },
-      "respawn": 100,
-      "wander": 8
-    },
-    {
-      "pos": [
-        220,
-        182.5
-      ],
-      "pool": {
-        "gristle_hag": 1
-      },
-      "respawn": 100,
-      "wander": 8
-    },
-    {
-      "pos": [
-        180,
-        232.5
-      ],
-      "pool": {
-        "gristle_hag": 1
-      },
-      "respawn": 100,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -30,
-        270
-      ],
-      "pool": {
-        "feral_fen_troll": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        45,
-        302
-      ],
-      "pool": {
-        "feral_fen_troll": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -105,
-        302
-      ],
-      "pool": {
-        "feral_fen_troll": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        90,
-        240
-      ],
-      "pool": {
-        "feral_fen_troll": 1
-      },
-      "respawn": 110,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -210,
-        -92
-      ],
-      "pool": {
-        "chief_sisska": 1
-      },
-      "respawn": 1200,
-      "wander": 3
-    },
-    {
-      "pos": [
-        210,
-        208.5
-      ],
-      "pool": {
-        "mother_gristlewort": 1
-      },
-      "respawn": 1200,
-      "wander": 3
-    },
-    {
-      "pos": [
-        -80,
-        225
-      ],
-      "pool": {
-        "old_mudjaw": 1
-      },
-      "respawn": 1200,
-      "wander": 6
-    },
-    {
-      "pos": [
-        280,
-        -208
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -200,
-        -272
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -280,
-        96
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        272,
-        -72
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        184,
-        -280
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -64,
-        -48
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -280,
-        256
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        208,
-        -144
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        96,
-        96
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -248,
-        176
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        48
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -232,
-        -192
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        272,
-        112
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -136,
-        -216
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -88,
-        -128
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        8,
-        -72
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        16,
-        208
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        288,
-        0
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        56,
-        -128
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        104,
-        24
-      ],
-      "pool": {
-        "plague_rat": 1
-      },
-      "respawn": 60,
-      "wander": 14
-    },
-    {
-      "pos": [
-        184,
-        -208
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        152,
-        152
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        224,
-        -24
-      ],
-      "pool": {
-        "fen_eel": 1
-      },
-      "respawn": 70,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -64,
-        160
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -128,
-        -72
-      ],
-      "pool": {
-        "rotfen_mirescale": 2,
-        "rotfen_mirescale_shaman": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -208,
-        120
-      ],
-      "pool": {
-        "rotfen_lurker": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    }
+    {"pos": [0, -225], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [60, -255], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-60, -240], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [120, -90], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [150, -30], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-15, -150], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-60, 90], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-30, 60], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [120, -180], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [225, 45], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-180, 225], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-120, 60], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [0, 135], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [90, 180], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-150, 150], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [180, 90], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [30, 30], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-200, -70], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-220, -110], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-165, -135], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-240, -45], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-180, -30], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [200, 212.5], "pool": {"gristle_hag": 1}, "respawn": 100, "wander": 8},
+    {"pos": [230, 222.5], "pool": {"gristle_hag": 1}, "respawn": 100, "wander": 8},
+    {"pos": [220, 182.5], "pool": {"gristle_hag": 1}, "respawn": 100, "wander": 8},
+    {"pos": [180, 232.5], "pool": {"gristle_hag": 1}, "respawn": 100, "wander": 8},
+    {"pos": [-30, 270], "pool": {"feral_fen_troll": 1}, "respawn": 110, "wander": 14},
+    {"pos": [45, 302], "pool": {"feral_fen_troll": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-105, 302], "pool": {"feral_fen_troll": 1}, "respawn": 110, "wander": 14},
+    {"pos": [90, 240], "pool": {"feral_fen_troll": 1}, "respawn": 110, "wander": 14},
+    {"pos": [-210, -92], "pool": {"chief_sisska": 1}, "respawn": 1200, "wander": 3},
+    {"pos": [210, 208.5], "pool": {"mother_gristlewort": 1}, "respawn": 1200, "wander": 3},
+    {"pos": [-80, 225], "pool": {"old_mudjaw": 1}, "respawn": 1200, "wander": 6},
+    {"pos": [-200, -272], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-280, 96], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [272, -72], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [184, -280], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-64, -48], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-280, 256], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [96, 96], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-248, 176], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-208, 48], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-232, -192], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [272, 112], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-136, -216], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-88, -128], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [8, -72], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [16, 208], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [288, 0], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [56, -128], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [104, 24], "pool": {"plague_rat": 1}, "respawn": 60, "wander": 14},
+    {"pos": [152, 152], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [224, -24], "pool": {"fen_eel": 1}, "respawn": 70, "wander": 10},
+    {"pos": [-64, 160], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-128, -72], "pool": {"rotfen_mirescale": 2, "rotfen_mirescale_shaman": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-208, 120], "pool": {"rotfen_lurker": 1}, "respawn": 80, "wander": 14},
+    {"pos": [288.3, -200.8], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [265.9, -176.6], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [233.0, -179.1], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [214.4, -206.4], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [224.2, -237.9], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [254.9, -249.9], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [283.4, -233.4], "pool": {"rf_bloated_dead": 1}, "respawn": 70, "wander": 12, "hubs": true},
+    {"pos": [255, -210], "pool": {"rf_barge_warden": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

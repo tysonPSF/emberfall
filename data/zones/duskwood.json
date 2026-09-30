@@ -1,997 +1,123 @@
 {
   "name": "Duskwood",
-  "levels": [
-    1,
-    10
-  ],
+  "levels": [1, 10],
   "music": "duskwood",
   "seed": 7331,
   "size": 576,
-  "bind_point": [
-    245,
-    214.5
-  ],
+  "bind_point": [245, 214.5],
   "height_amplitude": 5.0,
   "flat_radius": 20,
   "trees": 720,
-  "tree_mix": [
-    "dusk_tree",
-    "dusk_tree_b",
-    "dusk_tree",
-    "pine_a"
-  ],
+  "tree_mix": ["dusk_tree", "dusk_tree_b", "dusk_tree", "pine_a"],
   "groves": 0.55,
   "rocks": 112,
-  "grass_colors": [
-    "#2e3a2a",
-    "#3c4632"
-  ],
+  "grass_colors": ["#2e3a2a", "#3c4632"],
   "fog_density": 0.02,
   "fog_color": "#3a3448",
   "sun_energy": 0.5,
-  "passes": [
-    [
-      -288,
-      0,
-      9
-    ],
-    [
-      0,
-      -288,
-      9
-    ]
-  ],
+  "passes": [[-288, 0, 9], [0, -288, 9]],
   "zone_lines": [
-    {
-      "pos": [
-        -277,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "the_rotfen",
-      "arrive": [
-        311,
-        0
-      ],
-      "arrive_face": [
-        271,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -277
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "broken_march",
-      "arrive": [
-        0,
-        311.0
-      ],
-      "arrive_face": [
-        0,
-        271.0
-      ]
-    },
-    {
-      "pos": [
-        221.5,
-        184.5
-      ],
-      "size": [
-        3,
-        4
-      ],
-      "to": "duskhold",
-      "arrive": [
-        0,
-        -80
-      ],
-      "arrive_face": [
-        0,
-        -40
-      ]
-    }
+    {"pos": [-277, 0], "size": [8, 18], "to": "the_rotfen", "arrive": [311, 0], "arrive_face": [271, 0]},
+    {"pos": [0, -277], "size": [18, 8], "to": "broken_march", "arrive": [0, 311.0], "arrive_face": [0, 271.0]},
+    {"pos": [221.5, 184.5], "size": [3, 4], "to": "duskhold", "arrive": [0, -80], "arrive_face": [0, -40]}
   ],
   "roads": [
-    {
-      "points": [
-        [
-          0,
-          -288
-        ],
-        [
-          -9,
-          -180
-        ],
-        [
-          15,
-          -60
-        ],
-        [
-          0,
-          60
-        ],
-        [
-          -90,
-          30
-        ],
-        [
-          -180,
-          0
-        ],
-        [
-          -288,
-          0
-        ]
-      ],
-      "width": 3.0
-    },
-    {
-      "points": [
-        [
-          0,
-          60
-        ],
-        [
-          90,
-          135
-        ],
-        [
-          180,
-          180
-        ],
-        [
-          229,
-          184.5
-        ]
-      ],
-      "width": 2.8
-    }
+    {"points": [[0, -288], [-9, -180], [15, -60], [0, 60], [-90, 30], [-180, 0], [-288, 0]], "width": 3.0},
+    {"points": [[0, 60], [90, 135], [180, 180], [229, 184.5]], "width": 2.8}
   ],
   "clutter": {
-    "grass_b": {
-      "density": 0.22,
-      "patch": 0.5,
-      "sway": 0.14,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "fern": {
-      "density": 0.04,
-      "patch": 0.8,
-      "sway": 0.08,
-      "range": 50,
-      "scale": [
-        0.9,
-        1.6
-      ]
-    },
-    "mushrooms": {
-      "density": 0.01,
-      "patch": 0.8,
-      "sway": 0.0,
-      "range": 40,
-      "scale": [
-        0.8,
-        1.4
-      ]
-    }
+    "grass_b": {"density": 0.22, "patch": 0.5, "sway": 0.14, "range": 45, "tint": "ground", "scale": [0.8, 1.2]},
+    "fern": {"density": 0.04, "patch": 0.8, "sway": 0.08, "range": 50, "scale": [0.9, 1.6]},
+    "mushrooms": {"density": 0.01, "patch": 0.8, "sway": 0.0, "range": 40, "scale": [0.8, 1.4]}
   },
   "landmarks": [
-    {
-      "type": "cave",
-      "pos": [
-        229,
-        184.5
-      ],
-      "face": [
-        379,
-        184.5
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        12,
-        -266
-      ],
-      "face": [
-        12,
-        -286
-      ],
-      "labels": [
-        "The Broken March"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -266,
-        12
-      ],
-      "face": [
-        -286,
-        12
-      ],
-      "labels": [
-        "The Rotfen"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        245,
-        172.5
-      ],
-      "face": [
-        229,
-        184.5
-      ],
-      "labels": [
-        "Duskhold"
-      ]
-    },
-    {
-      "type": "camp",
-      "pos": [
-        245,
-        202.5
-      ]
-    },
-    {
-      "type": "outpost",
-      "pos": [
-        180,
-        -165
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -180,
-        -90
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -90,
-        165
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        60,
-        90
-      ]
-    },
-    {
-      "type": "spider_nest",
-      "pos": [
-        -195,
-        180
-      ]
-    }
+    {"type": "cave", "pos": [229, 184.5], "face": [379, 184.5]},
+    {"type": "signpost", "pos": [12, -266], "face": [12, -286], "labels": ["The Broken March"]},
+    {"type": "signpost", "pos": [-266, 12], "face": [-286, 12], "labels": ["The Rotfen"]},
+    {"type": "signpost", "pos": [245, 172.5], "face": [229, 184.5], "labels": ["Duskhold"]},
+    {"type": "camp", "pos": [245, 202.5]},
+    {"type": "outpost", "pos": [180, -165]},
+    {"type": "ruins", "pos": [-180, -90]},
+    {"type": "ruins", "pos": [-90, 165]},
+    {"type": "ruins", "pos": [60, 90]},
+    {"type": "spider_nest", "pos": [-195, 180]},
+    {"type": "prop", "pos": [160.0, -21.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [166.0, -16.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [204, 24], "id": "stone_lantern", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [192, 4], "id": "shrine_broken", "collide": "box", "yaw": 90, "hubs": true}
   ],
   "npcs": [
-    {
-      "id": "dusk_sentinel_vaelith",
-      "pos": [
-        251,
-        194.5
-      ],
-      "face": [
-        229,
-        184.5
-      ]
-    },
-    {
-      "id": "dusk_huntress_ilvra",
-      "pos": [
-        239,
-        208.5
-      ],
-      "face": [
-        245,
-        202.5
-      ]
-    },
-    {
-      "id": "duskhold_guard",
-      "name": "Cave Sentinel Rhyzz",
-      "pos": [
-        237,
-        176.5
-      ],
-      "face": [
-        229,
-        184.5
-      ]
-    }
+    {"id": "dusk_sentinel_vaelith", "pos": [251, 194.5], "face": [229, 184.5]},
+    {"id": "dusk_huntress_ilvra", "pos": [239, 208.5], "face": [245, 202.5]},
+    {"id": "duskhold_guard", "name": "Cave Sentinel Rhyzz", "pos": [237, 176.5], "face": [229, 184.5]},
+    {"id": "dk_moth_seer_lirael", "pos": [168.0, -19.0], "face": [204, 12], "hubs": true}
   ],
   "spawns": [
-    {
-      "pos": [
-        195,
-        120
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        165,
-        225
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        135,
-        165
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        210,
-        90
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        105,
-        225
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        150,
-        60
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        225,
-        60
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        180,
-        150
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        90,
-        180
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        135,
-        105
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        60,
-        266
-      ],
-      "pool": {
-        "gloom_rat": 1
-      },
-      "respawn": 30,
-      "wander": 12
-    },
-    {
-      "pos": [
-        60,
-        165
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        0,
-        210
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -70,
-        155
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -120,
-        210
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        40,
-        90
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -150,
-        120
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        0,
-        150
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -60,
-        225
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        45,
-        195
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -90,
-        90
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        120,
-        -30
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        60,
-        -90
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -30,
-        30
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        30,
-        45
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -90,
-        -45
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        150,
-        -75
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -180,
-        -80
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -170,
-        -100
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -90,
-        155
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -100,
-        175
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        60,
-        80
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        50,
-        100
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -60,
-        0
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        0,
-        -45
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -120,
-        -30
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        60,
-        -60
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -30,
-        60
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        90,
-        15
-      ],
-      "pool": {
-        "gloomfang_wolf": 1
-      },
-      "respawn": 55,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -180,
-        -90
-      ],
-      "pool": {
-        "lesser_shade": 1
-      },
-      "respawn": 80,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -90,
-        165
-      ],
-      "pool": {
-        "lesser_shade": 1
-      },
-      "respawn": 80,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        60,
-        90
-      ],
-      "pool": {
-        "lesser_shade": 1
-      },
-      "respawn": 80,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -30,
-        -120
-      ],
-      "pool": {
-        "lesser_shade": 1
-      },
-      "respawn": 80,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        160,
-        -155
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        200,
-        -175
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        180,
-        -210
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        225,
-        -135
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        135,
-        -195
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -201,
-        184
-      ],
-      "pool": {
-        "silkmother_vyss": 1
-      },
-      "respawn": 900,
-      "wander": 4
-    },
-    {
-      "pos": [
-        182,
-        -169
-      ],
-      "pool": {
-        "scout_captain_aldren": 1
-      },
-      "respawn": 900,
-      "wander": 3
-    },
-    {
-      "pos": [
-        -48,
-        -240
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -240,
-        32
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -152,
-        -208
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -48,
-        -136
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        48,
-        -240
-      ],
-      "pool": {
-        "hearth_scout": 2,
-        "hearth_archer": 1
-      },
-      "respawn": 70,
-      "wander": 8
-    },
-    {
-      "pos": [
-        224,
-        -32
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        40
-      ],
-      "pool": {
-        "dusk_spiderling": 1
-      },
-      "respawn": 40,
-      "wander": 12
-    },
-    {
-      "pos": [
-        24,
-        -168
-      ],
-      "pool": {
-        "gloomwing_moth": 1
-      },
-      "respawn": 50,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -240,
-        -40
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    },
-    {
-      "pos": [
-        -120,
-        -144
-      ],
-      "pool": {
-        "restless_bones": 1
-      },
-      "respawn": 60,
-      "wander": 12
-    }
+    {"pos": [195, 120], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [165, 225], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [135, 165], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [210, 90], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [105, 225], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [150, 60], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [180, 150], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [90, 180], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [135, 105], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [60, 266], "pool": {"gloom_rat": 1}, "respawn": 30, "wander": 12},
+    {"pos": [60, 165], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [0, 210], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-70, 155], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-120, 210], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [40, 90], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-150, 120], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [0, 150], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-60, 225], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [45, 195], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-90, 90], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [120, -30], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [60, -90], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [-30, 30], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [30, 45], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [-90, -45], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [150, -75], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [-180, -80], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-170, -100], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-90, 155], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-100, 175], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [60, 80], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [50, 100], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-60, 0], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [0, -45], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [-120, -30], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [60, -60], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [-30, 60], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [90, 15], "pool": {"gloomfang_wolf": 1}, "respawn": 55, "wander": 12},
+    {"pos": [-180, -90], "pool": {"lesser_shade": 1}, "respawn": 80, "wander": 16, "when": "night"},
+    {"pos": [-90, 165], "pool": {"lesser_shade": 1}, "respawn": 80, "wander": 16, "when": "night"},
+    {"pos": [60, 90], "pool": {"lesser_shade": 1}, "respawn": 80, "wander": 16, "when": "night"},
+    {"pos": [-30, -120], "pool": {"lesser_shade": 1}, "respawn": 80, "wander": 16, "when": "night"},
+    {"pos": [160, -155], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [200, -175], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [180, -210], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [225, -135], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [135, -195], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-201, 184], "pool": {"silkmother_vyss": 1}, "respawn": 900, "wander": 4},
+    {"pos": [182, -169], "pool": {"scout_captain_aldren": 1}, "respawn": 900, "wander": 3},
+    {"pos": [-48, -240], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [-240, 32], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [-152, -208], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-48, -136], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [48, -240], "pool": {"hearth_scout": 2, "hearth_archer": 1}, "respawn": 70, "wander": 8},
+    {"pos": [-160, 40], "pool": {"dusk_spiderling": 1}, "respawn": 40, "wander": 12},
+    {"pos": [24, -168], "pool": {"gloomwing_moth": 1}, "respawn": 50, "wander": 16},
+    {"pos": [-240, -40], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [-120, -144], "pool": {"restless_bones": 1}, "respawn": 60, "wander": 12},
+    {"pos": [240.3, 23.2], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [217.9, 47.4], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [185.0, 44.9], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [166.4, 17.6], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [176.2, -13.9], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [206.9, -25.9], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [235.4, -9.4], "pool": {"dk_duskwing": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [207, 14], "pool": {"dk_pale_mothmother": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }
