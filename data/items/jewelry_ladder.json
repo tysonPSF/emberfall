@@ -7,7 +7,7 @@
     "agi": 1,
     "wis": 1,
     "int": 1,
-    "value": 400,
+    "value": 630,
     "rec_level": 8
   },
   "engraved_silver_ring": {
@@ -18,7 +18,7 @@
     "sta": 2,
     "wis": 2,
     "int": 2,
-    "value": 900,
+    "value": 1270,
     "rec_level": 15
   },
   "gold_band": {
@@ -29,7 +29,7 @@
     "wis": 2,
     "int": 2,
     "hp": 10,
-    "value": 1500,
+    "value": 2080,
     "rec_level": 20
   },
   "jeweled_gold_ring": {
@@ -40,7 +40,7 @@
     "sta": 3,
     "wis": 3,
     "hp": 15,
-    "value": 2400,
+    "value": 3770,
     "rec_level": 26
   },
   "starsilver_ring": {
@@ -51,7 +51,7 @@
     "agi": 4,
     "wis": 4,
     "hp": 25,
-    "value": 4200,
+    "value": 10140,
     "rec_level": 36
   },
   "moonsilver_ring": {
@@ -62,7 +62,7 @@
     "sta": 5,
     "int": 4,
     "hp": 30,
-    "value": 5400,
+    "value": 16620,
     "rec_level": 41
   },
   "eclipse_band": {
@@ -73,7 +73,7 @@
     "agi": 5,
     "wis": 5,
     "hp": 35,
-    "value": 6800,
+    "value": 27260,
     "rec_level": 46
   },
   "silver_locket": {
@@ -83,7 +83,7 @@
     "sta": 2,
     "wis": 2,
     "hp": 10,
-    "value": 500,
+    "value": 770,
     "rec_level": 10
   }
 }
