@@ -128,6 +128,7 @@ const SECTIONS := [
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
+	["boss_camp_respawn", "thornwood"],
 	["giant_sizes", "the_bleach"],
 	["grove_uniques", "greenmoor"],
 	["bags_with_inventory", "greenmoor"],
@@ -8716,6 +8717,33 @@ func _t_giant_sizes() -> void:
 ## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
 ## fighting, with every clip its body plays (the main hand's slash and the
 ## off hand's own cut), and a shot of each.
+func _t_boss_camp_respawn() -> void:
+	# a quest boss's camp comes back twice as slowly, so it can be cleared to reach him
+	var z: Zone = get_parent().zone
+	var boss_at := Vector3.INF
+	for sp: Node in z.get_children():
+		if sp is SpawnPoint and (sp as SpawnPoint).pool.has("grolthar"):
+			boss_at = (sp as SpawnPoint).position
+	var rows := PackedStringArray()
+	var far_ok := true
+	for i in z.data["spawns"].size():
+		var entry: Dictionary = z.data["spawns"][i]
+		var sp: SpawnPoint = null
+		for c: Node in z.get_children():
+			if c is SpawnPoint and (c as SpawnPoint).pool == entry["pool"] and is_equal_approx((c as SpawnPoint).position.x, float(entry["pos"][0])) and is_equal_approx((c as SpawnPoint).position.z, float(entry["pos"][1])):
+				sp = c
+		if sp == null:
+			continue
+		var d := Vector2(sp.position.x - boss_at.x, sp.position.z - boss_at.z).length()
+		if d <= 28.0 and not sp.pool.has("grolthar"):
+			rows.append("%s %.0f -> %.0f" % [",".join(sp.pool.keys()), float(entry.get("respawn", 60)), sp.respawn_time])
+		elif d > 60.0 and not is_equal_approx(sp.respawn_time, float(entry.get("respawn", 60))) and not sp.has_meta("boss_guard"):
+			far_ok = false
+	print("boss_camp_respawn: Grolthar is a quest boss %s, Silkfang %s, a timber wolf %s" % [GameData.is_quest_boss("grolthar"), GameData.is_quest_boss("broodmother_silkfang"), GameData.is_quest_boss("timber_wolf")])
+	print("boss_camp_respawn: around Grolthar: %s" % [rows])
+	print("boss_camp_respawn: spawns away from any boss keep their time: %s" % far_ok)
+
+
 func _t_caster_stats() -> void:
 	# INT or WIS over 75: mana, mana regen, spell power (own spells only) and fewer fizzles
 	var p := World.local_player

@@ -128,6 +128,25 @@ func item_name(item_id: String) -> String:
 ## An item's stats. Dropped gear carries a quality after an "@" in its id
 ## ("iron_dagger@fine"), which renames it and scales its damage, armor, hit
 ## points, mana and value by that tier in data/loot.json.
+var _quest_bosses: Dictionary = {}  # mob id -> true, worked out once
+
+
+## A named monster that drops something a quest wants: the boss a player
+## clears a camp to reach.
+func is_quest_boss(mob_id: String) -> bool:
+	if _quest_bosses.is_empty():
+		var wanted := {}
+		for q: Dictionary in quests.values():
+			for it: String in q.get("wants", {}):
+				wanted[it] = true
+		_quest_bosses[""] = false  # worked out, even when nothing matches
+		for id: String in mobs:
+			var m: Dictionary = mobs[id]
+			if m.get("named", false) and (m.get("loot", []) as Array).any(func(l: Dictionary) -> bool: return wanted.has(str(l.get("item", "")))):
+				_quest_bosses[id] = true
+	return _quest_bosses.get(mob_id, false)
+
+
 func item(item_id: String) -> Dictionary:
 	if item_id.contains("~"):
 		return _scaled_item(item_id)
