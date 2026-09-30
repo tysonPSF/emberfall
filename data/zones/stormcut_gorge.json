@@ -1160,6 +1160,119 @@
       },
       "respawn": 1500,
       "wander": 4
+    },
+    {
+      "pos": [
+        -168,
+        -176
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -176,
+        176
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -104,
+        -48
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        168,
+        -24
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        144,
+        176
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -120,
+        -120
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -56,
+        176
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -176,
+        0
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        32,
+        -8
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        -176
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
     }
   ]
 }

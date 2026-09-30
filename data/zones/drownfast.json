@@ -1634,6 +1634,105 @@
       },
       "respawn": 95,
       "wander": 8
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "naga_warrior": 1
+      },
+      "respawn": 95,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        208
+      ],
+      "pool": {
+        "tidesworn": 1
+      },
+      "respawn": 95,
+      "wander": 8
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "causeway_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        112,
+        208
+      ],
+      "pool": {
+        "causeway_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "causeway_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "causeway_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -208
+      ],
+      "pool": {
+        "tempest_spirit": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -88,
+        88
+      ],
+      "pool": {
+        "shellback": 1
+      },
+      "respawn": 95,
+      "wander": 8
+    },
+    {
+      "pos": [
+        208,
+        136
+      ],
+      "pool": {
+        "causeway_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
     }
   ]
 }

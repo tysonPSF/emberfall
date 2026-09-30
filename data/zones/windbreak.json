@@ -1017,6 +1017,28 @@
       },
       "respawn": 100,
       "wander": 14
+    },
+    {
+      "pos": [
+        0,
+        -176
+      ],
+      "pool": {
+        "gale_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        176,
+        176
+      ],
+      "pool": {
+        "cliff_drake": 1
+      },
+      "respawn": 100,
+      "wander": 14
     }
   ]
 }

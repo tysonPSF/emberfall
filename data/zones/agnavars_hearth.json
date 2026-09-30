@@ -1045,6 +1045,248 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -56
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -8,
+        40
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        8,
+        192
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -8
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -112,
+        0
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        88,
+        0
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -160,
+        -136
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -208
+      ],
+      "pool": {
+        "living_magma": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -16,
+        120
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        80,
+        208
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        136
+      ],
+      "pool": {
+        "salamander_kin": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        128
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -128,
+        -72
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -136
+      ],
+      "pool": {
+        "ember_court_guard": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        16,
+        -24
+      ],
+      "pool": {
+        "greater_fire_elemental": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        56
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -72,
+        56
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "fallen_fire_priest": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

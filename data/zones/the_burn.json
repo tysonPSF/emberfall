@@ -1084,6 +1084,149 @@
       },
       "respawn": 100,
       "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "fire_imp": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        64
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -128,
+        208
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        176,
+        136
+      ],
+      "pool": {
+        "ash_wolf": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -208,
+        -48
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        128,
+        208
+      ],
+      "pool": {
+        "firehound": 1
+      },
+      "respawn": 90,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        -128
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        136,
+        -208
+      ],
+      "pool": {
+        "firebird": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -208,
+        -136
+      ],
+      "pool": {
+        "smoke_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        144,
+        32
+      ],
+      "pool": {
+        "ember_giant": 1
+      },
+      "respawn": 110,
+      "wander": 10
     }
   ]
 }

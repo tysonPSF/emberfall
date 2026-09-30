@@ -870,6 +870,74 @@
       },
       "respawn": 1500,
       "wander": 8
+    },
+    {
+      "pos": [
+        -64,
+        0
+      ],
+      "pool": {
+        "march_wolf": 1
+      },
+      "respawn": 75,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -160,
+        8
+      ],
+      "pool": {
+        "marchreaver_cutthroat": 2,
+        "marchreaver_bowman": 1
+      },
+      "respawn": 100,
+      "wander": 8
+    },
+    {
+      "pos": [
+        0,
+        -128
+      ],
+      "pool": {
+        "restless_soldier": 2,
+        "restless_knight": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        176,
+        -48
+      ],
+      "pool": {
+        "crag_wyvern": 1
+      },
+      "respawn": 120,
+      "wander": 12
+    },
+    {
+      "pos": [
+        112,
+        -8
+      ],
+      "pool": {
+        "brambleback_boar": 1
+      },
+      "respawn": 70,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -24,
+        -56
+      ],
+      "pool": {
+        "brambleback_boar": 1
+      },
+      "respawn": 70,
+      "wander": 12
     }
   ]
 }

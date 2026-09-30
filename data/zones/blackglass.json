@@ -900,6 +900,204 @@
       },
       "respawn": 100,
       "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "glassbound_dead": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        200,
+        24
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -192
+      ],
+      "pool": {
+        "glass_golem": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        32
+      ],
+      "pool": {
+        "obsidian_drake": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -80,
+        208
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        16
+      ],
+      "pool": {
+        "glass_golem": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        128
+      ],
+      "pool": {
+        "glassbound_dead": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        104
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        128,
+        208
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        -48
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -48,
+        144
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "obsidian_drake": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -136,
+        8
+      ],
+      "pool": {
+        "obsidian_drake": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -144,
+        184
+      ],
+      "pool": {
+        "glassbound_dead": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -64,
+        -208
+      ],
+      "pool": {
+        "obsidian_drake": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        64,
+        -208
+      ],
+      "pool": {
+        "glass_spider": 1
+      },
+      "respawn": 100,
+      "wander": 10
     }
   ]
 }

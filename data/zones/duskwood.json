@@ -881,6 +881,39 @@
       },
       "respawn": 900,
       "wander": 3
+    },
+    {
+      "pos": [
+        -32,
+        -144
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -144,
+        -144
+      ],
+      "pool": {
+        "restless_bones": 1
+      },
+      "respawn": 60,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -144,
+        24
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 40,
+      "wander": 12
     }
   ]
 }

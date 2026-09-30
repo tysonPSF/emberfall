@@ -574,6 +574,12 @@
     }
   ],
   "spawns": [
+    {"pos": [-176, -88], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
+    {"pos": [-176, 96], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
+    {"pos": [-32, -176], "pool": {"sun_mummy": 1}, "respawn": 90, "wander": 8},
+    {"pos": [24, 0], "pool": {"stone_guardian": 1}, "respawn": 120, "wander": 3},
+    {"pos": [176, 176], "pool": {"sunhawk": 1}, "respawn": 75, "wander": 16},
+    {"pos": [56, -176], "pool": {"sunhawk": 1}, "respawn": 75, "wander": 16},
     {
       "pos": [
         -110,

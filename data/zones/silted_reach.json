@@ -925,6 +925,182 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        -208
+      ],
+      "pool": {
+        "river_hippo": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        48
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        72,
+        208
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        96,
+        -208
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        -120
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -200,
+        128
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        24,
+        112
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -32
+      ],
+      "pool": {
+        "delta_serpent": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        136
+      ],
+      "pool": {
+        "mudfolk": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -112,
+        -208
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -136
+      ],
+      "pool": {
+        "whiskerfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -136,
+        208
+      ],
+      "pool": {
+        "drowned_smuggler": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

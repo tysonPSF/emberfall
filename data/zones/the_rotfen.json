@@ -957,6 +957,75 @@
       },
       "respawn": 1200,
       "wander": 6
+    },
+    {
+      "pos": [
+        176,
+        -176
+      ],
+      "pool": {
+        "fen_eel": 1
+      },
+      "respawn": 70,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -176,
+        -176
+      ],
+      "pool": {
+        "rotfen_mirescale": 2,
+        "rotfen_mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 8
+    },
+    {
+      "pos": [
+        176,
+        -80
+      ],
+      "pool": {
+        "plague_rat": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -176,
+        56
+      ],
+      "pool": {
+        "rotfen_mirescale": 2,
+        "rotfen_mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -40,
+        -32
+      ],
+      "pool": {
+        "plague_rat": 1
+      },
+      "respawn": 60,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -112,
+        -160
+      ],
+      "pool": {
+        "rotfen_mirescale": 2,
+        "rotfen_mirescale_shaman": 1
+      },
+      "respawn": 90,
+      "wander": 8
     }
   ]
 }

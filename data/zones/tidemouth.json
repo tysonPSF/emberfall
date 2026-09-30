@@ -858,6 +858,94 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        176,
+        0
+      ],
+      "pool": {
+        "giant_gull": 1
+      },
+      "respawn": 90,
+      "wander": 18
+    },
+    {
+      "pos": [
+        32,
+        -32
+      ],
+      "pool": {
+        "clawfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        176,
+        176
+      ],
+      "pool": {
+        "giant_gull": 1
+      },
+      "respawn": 90,
+      "wander": 18
+    },
+    {
+      "pos": [
+        176,
+        88
+      ],
+      "pool": {
+        "giant_gull": 1
+      },
+      "respawn": 90,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -56,
+        64
+      ],
+      "pool": {
+        "saltreaver": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        104,
+        -16
+      ],
+      "pool": {
+        "giant_gull": 1
+      },
+      "respawn": 90,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -80,
+        -176
+      ],
+      "pool": {
+        "clawfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        24,
+        -104
+      ],
+      "pool": {
+        "clawfolk": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

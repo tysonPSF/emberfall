@@ -880,6 +880,116 @@
       },
       "respawn": 1800,
       "wander": 4
+    },
+    {
+      "pos": [
+        -176,
+        176
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        176,
+        -104
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -144,
+        72
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -80,
+        176
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        104,
+        -40
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        128,
+        -176
+      ],
+      "pool": {
+        "fallen_zephyr": 1
+      },
+      "respawn": 110,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        16
+      ],
+      "pool": {
+        "storm_titan": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        176,
+        176
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        176,
+        -32
+      ],
+      "pool": {
+        "thunder_drake": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        96,
+        -112
+      ],
+      "pool": {
+        "sky_guardian": 1
+      },
+      "respawn": 120,
+      "wander": 4
     }
   ]
 }

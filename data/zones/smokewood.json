@@ -912,6 +912,204 @@
       },
       "respawn": 1500,
       "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -208,
+        64
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -208,
+        -72
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -104
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        184,
+        -208
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -136,
+        136
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        128,
+        -64
+      ],
+      "pool": {
+        "smoke_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -96,
+        208
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -120,
+        -8
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        144,
+        168
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -168,
+        -136
+      ],
+      "pool": {
+        "smoke_bear": 1
+      },
+      "respawn": 110,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -128,
+        64
+      ],
+      "pool": {
+        "ember_treant": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -208,
+        136
+      ],
+      "pool": {
+        "fire_moth": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        -32
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        136
+      ],
+      "pool": {
+        "sootmask_cultist": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -136,
+        -72
+      ],
+      "pool": {
+        "smoke_stag": 1
+      },
+      "respawn": 100,
+      "wander": 18
     }
   ]
 }

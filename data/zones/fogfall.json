@@ -1069,6 +1069,215 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "fog_courtier": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -80
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        32,
+        8
+      ],
+      "pool": {
+        "fog_courtier": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -104,
+        -48
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -136,
+        -144
+      ],
+      "pool": {
+        "fog_courtier": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        192,
+        -16
+      ],
+      "pool": {
+        "fog_gargoyle": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        16,
+        120
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "fog_gargoyle": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "grave_robber": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        56,
+        208
+      ],
+      "pool": {
+        "grave_robber": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        -208
+      ],
+      "pool": {
+        "fog_courtier": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        112,
+        -16
+      ],
+      "pool": {
+        "fog_gargoyle": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -40,
+        -8
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        136
+      ],
+      "pool": {
+        "fog_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -88
+      ],
+      "pool": {
+        "fog_gargoyle": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        72,
+        -208
+      ],
+      "pool": {
+        "fog_gargoyle": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        208,
+        48
+      ],
+      "pool": {
+        "grave_robber": 1
+      },
+      "respawn": 100,
+      "wander": 10
     }
   ]
 }

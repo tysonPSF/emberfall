@@ -23,6 +23,7 @@ that isn't built yet for existing props.
 import json, math, os, sys, random
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 PLACEHOLDER = "--placeholder" in sys.argv
 MODELS = json.load(open(f"{ROOT}/data/models.json"))
 LAYOUT = json.load(open(f"{ROOT}/docs/world-layout.json"))
@@ -916,6 +917,10 @@ def spells():
 
 def main():
     zones = {"murkhold": murkhold(), "the_wallow": the_wallow(), "duskwood": duskwood(), "duskhold": duskhold(), "the_rotfen": the_rotfen()}
+    import spawn_fill  # the wilderness's empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
+    known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **MOBS)
+    for zid in ("the_wallow", "duskwood", "the_rotfen"):
+        zones[zid]["spawns"] += spawn_fill.fill(zones[zid], known)
     for zid, z in zones.items():
         with open(f"{ROOT}/data/zones/{zid}.json", "w") as f:
             f.write(json.dumps(z, indent=2) + "\n")

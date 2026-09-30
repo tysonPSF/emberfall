@@ -124,6 +124,7 @@ const SECTIONS := [
 	["high_terrace_ground", "high_terrace"],
 	["starter_spawns", "greenmoor"],
 	["item_ladder", "greenmoor"],
+	["spawn_coverage", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8492,6 +8493,47 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
 		if zone_id == "dewstep":
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
+
+
+## The filled-in zones (tools/zones/spawn_fill.py): every day spawn alive a
+## few seconds in, none under the ground, in lava or in deep water, and none
+## wandered far from its spot.
+func _t_spawn_coverage() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	World.time_override = 12.0
+	for zone_id: String in ["high_terrace", "agnavars_hearth", "hollow_air", "timirajs_table", "the_unlit", "mirror_flats", "cinderpass"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+		for k in 80:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(4.0)
+		var z := main.zone as Zone
+		var day := 0
+		for sp: Dictionary in z.data.get("spawns", []):
+			if sp.get("when", "") != "night":
+				day += 1
+		var under := 0
+		var hot := 0
+		var wet := 0
+		var strayed := 0
+		var mobs := World.get_mobs().filter(func(m: Mob) -> bool: return World.zone_of(m) == z)
+		for m: Mob in mobs:
+			var at := m.global_position
+			if at.y < z.height_at(at.x, at.z) - 3.0:
+				under += 1
+			if z.lava_at(at.x, at.z):
+				hot += 1
+				print("spawn_coverage:   in lava: %s at %s" % [m.mob_id, at.snapped(Vector3.ONE)])
+			if m.swimming:
+				wet += 1
+			if m.spawn_point != null and Vector2(at.x, at.z).distance_to(Vector2(m.spawn_point.global_position.x, m.spawn_point.global_position.z)) > 40.0:
+				strayed += 1
+		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
+	World.time_override = -1.0
 
 
 ## Gear that climbs with the mob wearing it: what a level 1 skeleton, a level

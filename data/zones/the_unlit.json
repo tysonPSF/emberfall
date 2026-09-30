@@ -862,6 +862,193 @@
       },
       "respawn": 1500,
       "wander": 4
+    },
+    {
+      "pos": [
+        8,
+        8
+      ],
+      "pool": {
+        "shade": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "shade": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -8,
+        -192
+      ],
+      "pool": {
+        "shade": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "moth_giant": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "night_stalker": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        56,
+        208
+      ],
+      "pool": {
+        "night_stalker": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -40
+      ],
+      "pool": {
+        "morvaine_thrall": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "morvaine_noble": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        24,
+        -72
+      ],
+      "pool": {
+        "morvaine_thrall": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -72,
+        16
+      ],
+      "pool": {
+        "moth_giant": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        16,
+        88
+      ],
+      "pool": {
+        "moth_giant": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        88,
+        -16
+      ],
+      "pool": {
+        "morvaine_thrall": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -128,
+        208
+      ],
+      "pool": {
+        "moth_giant": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        64,
+        -208
+      ],
+      "pool": {
+        "morvaine_thrall": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -136
+      ],
+      "pool": {
+        "shade": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        136
+      ],
+      "pool": {
+        "night_stalker": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        8
+      ],
+      "pool": {
+        "shade": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

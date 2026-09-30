@@ -1873,6 +1873,134 @@
       },
       "respawn": 85,
       "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        64
+      ],
+      "pool": {
+        "harpy": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -80,
+        192
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -8,
+        128
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -152,
+        136
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -128,
+        16
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        48,
+        208
+      ],
+      "pool": {
+        "mountain_yak": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        32,
+        64
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -96,
+        88
+      ],
+      "pool": {
+        "snow_leopard": 1,
+        "griffon": 1
+      },
+      "respawn": 85,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -192,
+        -8
+      ],
+      "pool": {
+        "harpy": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        80
+      ],
+      "pool": {
+        "mountain_yak": 1
+      },
+      "respawn": 80,
+      "wander": 16
     }
   ],
   "ground_patches": [

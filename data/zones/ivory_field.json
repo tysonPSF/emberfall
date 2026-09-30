@@ -993,6 +993,193 @@
       },
       "respawn": 1500,
       "wander": 8
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        208,
+        -72
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        104,
+        -208
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        56,
+        208
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "bone_vulture": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        16,
+        40
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        128,
+        -120
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -40,
+        -208
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        24,
+        128
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -64,
+        8
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        144,
+        -16
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "herd_spirit": 1
+      },
+      "respawn": 110,
+      "wander": 14
+    },
+    {
+      "pos": [
+        128,
+        208
+      ],
+      "pool": {
+        "ivory_poacher": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        32,
+        -208
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "marrow_jackal": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        192,
+        -144
+      ],
+      "pool": {
+        "ivory_colossus": 1
+      },
+      "respawn": 120,
+      "wander": 6
     }
   ]
 }
