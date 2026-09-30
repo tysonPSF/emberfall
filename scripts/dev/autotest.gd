@@ -8958,6 +8958,41 @@ func _t_zone_outlines() -> void:
 				steep += 1
 				print("zone_outlines:   %s: the pass to %s climbs %.1f m in 40 m" % [zone_id, zl["to"], rise])
 		print("zone_outlines: %s: spawns under a ridge %d, walked off one %d, steep passes %d" % [zone_id, covered, moved, steep])
+		# the foot of the mountains, all the way round: too steep to climb except in a pass
+		var climbable := 0
+		var tallest := 0.0
+		var lowest := 999.0
+		var along := -z.half + 4.0
+		while along < z.half - 4.0:
+			for side: Array in [[Vector2(along, 0), Vector2(0, -1)], [Vector2(along, 0), Vector2(0, 1)], [Vector2(0, along), Vector2(1, 0)], [Vector2(0, along), Vector2(-1, 0)]]:
+				var out: Vector2 = side[1]
+				var at: Vector2 = side[0] + out * (z.half - 1.0)
+				var walked := 0
+				while z.edge_depth(at.x, at.y) > 0.0 and walked < int(z.half):  # in to the foot (a corner's other side may hold it all the way)
+					at -= out
+					walked += 1
+				if walked >= int(z.half) or z._pass_factor(at.x, at.y) < 1.0:
+					continue
+				var up := Vector2(z.edge_depth(at.x + 0.5, at.y) - z.edge_depth(at.x - 0.5, at.y), z.edge_depth(at.x, at.y + 0.5) - z.edge_depth(at.x, at.y - 0.5)).normalized()  # into the mountains, the steepest way
+				var worst := 99.0
+				var where := at
+				for k in 5:
+					var a := at + up * (1.5 + k * 2.5)
+					if z.edge_depth(a.x, a.y) > Zone.MOUNTAIN_BAND - 1.5:  # past the steep band: only reached by climbing it
+						break
+					var grad := Vector2(z.height_at(a.x + 1.0, a.y) - z.height_at(a.x - 1.0, a.y), z.height_at(a.x, a.y + 1.0) - z.height_at(a.x, a.y - 1.0)) / 2.0
+					if grad.length() < worst:
+						worst = grad.length()
+						where = a
+				if worst < 1.0:
+					climbable += 1
+					if climbable <= 5:
+						print("zone_outlines:   %s: a slope of %.2f at %s" % [zone_id, worst, where.snapped(Vector2.ONE)])
+				var top := z.height_at(at.x + up.x * 26.0, at.y + up.y * 26.0) - z.height_at(at.x, at.y)
+				tallest = maxf(tallest, top)
+				lowest = minf(lowest, top)
+			along += 8.0
+		print("zone_outlines: %s: the mountains' foot climbable at %d spots; 26 m in they stand %.0f to %.0f m over it" % [zone_id, climbable, lowest, tallest])
 		var map: MapWindow = hud._map
 		for k in 4000:
 			if map._painted.has(zone_id):
@@ -8973,6 +9008,24 @@ func _t_zone_outlines() -> void:
 			p.face_toward(p.global_position + Vector3(dir.x, 0, dir.y))
 			await _wait(1.2)
 			await _shot("9outline_%s_%s" % [zone_id, "north" if dir.y < 0 else "east"])
+	# the range between Greenmoor and Thornwood from both sides of the pass
+	for view: Array in [["greenmoor", Vector2(-40, -120), Vector2(-40, -400)], ["thornwood", Vector2(40, 400), Vector2(40, 900)]]:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, view[0], view[1], view[2])
+		for k in 160:
+			if (main.zone as Zone).zone_id == view[0] and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(2.0)
+		var z := main.zone as Zone
+		p.global_position = z.ground(view[1].x, view[1].y) + Vector3.UP * 2.0
+		p.face_toward(Vector3(view[2].x, 0, view[2].y))
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.1
+		await _wait(1.5)
+		await _shot("9outline_border_%s" % view[0])
 	World.time_override = -1.0
 
 

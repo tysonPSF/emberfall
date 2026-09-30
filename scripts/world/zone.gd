@@ -322,11 +322,37 @@ func height_at(x: float, z: float) -> float:
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
 	# Mountains ring the zone so you can't walk off the edge; its ridges reach in unevenly (edge_depth).
-	var edge := edge_depth(x, z)
-	if edge > 0.0 and tunnel == null:
-		var rugged := 1.0 + 0.6 * _noise.get_noise_2d(x * 0.8 + 911.0, z * 0.8 - 317.0)  # peaks and saddles along the ridge; the foot's slope stays unclimbable
-		h += (edge * 1.3 + edge * edge * 0.08 * rugged) * _pass_factor(x, z)
+	if tunnel == null and edge_depth(x, z) > 0.0:
+		h += mountain_height(x, z) * _pass_factor(x, z)
 	return h
+
+
+## How high the mountains round the zone stand at (x, z), before a pass opens
+## them. A steep band at their foot (MOUNTAIN_BAND m deep, too steep to climb)
+## is all that keeps you in, so behind it the ground only climbs gently, but
+## for a tall summit here and there. Each side's crest and summits come from
+## tools/zones/outline.py, measured from the pass, so a border's two zones see
+## the same range; the highest side wins, which keeps the corners seamless.
+const MOUNTAIN_BAND := 14.0
+func mountain_height(x: float, z: float) -> float:
+	var base := half - 28.0
+	var rough := 1.0 + 0.25 * _noise.get_noise_2d(x * 0.8 + 911.0, z * 0.8 - 317.0)
+	if _outline.is_empty() or not _outline.has("cn"):
+		var d := maxf(absf(x), absf(z)) - base
+		return _mountain(d, 1.0, 0.0, rough)
+	var st := float(_outline["step"])
+	var best := 0.0
+	for side: Array in [["n", -z, x], ["s", z, x], ["e", x, z], ["w", -x, z]]:
+		var d: float = side[1] - base + _inset(_outline[side[0]], st, side[2])
+		if d > 0.0:
+			best = maxf(best, _mountain(d, _inset(_outline["c" + side[0]], st, side[2]), _inset(_outline["p" + side[0]], st, side[2]), rough))
+	return best
+
+
+func _mountain(d: float, crest: float, peak: float, rough: float) -> float:
+	var band := minf(d, MOUNTAIN_BAND) * 2.1 * crest  # well over 50 degrees even where the crest is lowest (0.75) and the hills fall away
+	var behind := maxf(0.0, d - MOUNTAIN_BAND)
+	return band + (behind * 0.35 + peak * smoothstep(0.0, 45.0, behind)) * rough
 
 
 ## How far (x, z) stands past the foot of the mountains round the zone

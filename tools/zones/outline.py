@@ -250,12 +250,57 @@ def load():
 MOBS = json.load(open(f"{ROOT}/data/mobs.json"))
 
 
+def mountain_line(key, u):
+    """The skyline of one range of mountains at u m along it from its pass: (crest, peak).
+    crest scales the steep band at the mountains' foot (0.75-1.3); peak is how much a
+    tall summit adds behind it (0 along most of the range). A border's range is keyed
+    by both zones and measured from its pass, so the two sides see the same mountains."""
+    rng = random.Random(key)
+    ph = [rng.uniform(0, math.tau) for _ in range(3)]
+    crest = 1.0 + 0.18 * math.sin(u * 0.013 + ph[0]) + 0.1 * math.sin(u * 0.037 + ph[1])
+    peak = 0.0
+    for _ in range(rng.randint(2, 4)):
+        c = rng.choice((-1, 1)) * rng.uniform(80, 480)  # never over the pass itself
+        w = rng.uniform(40, 95)
+        t = abs(u - c) / w
+        if t < 1.0:
+            peak = max(peak, rng.uniform(50, 170) * (0.5 + 0.5 * math.cos(t * math.pi)))
+        else:
+            rng.uniform(50, 170)  # the same draws either way, so each peak's height doesn't hang on u
+    return crest, peak
+
+
+def skylines(zid, z, half, links):
+    """Each side's crest and peak, sampled like the insets: shared with the zone across a border."""
+    count = int(round(2 * half / STEP)) + 1
+    out = {}
+    for s in SIDES:
+        key, k = f"{zid}:{s}", 0.0
+        if s in links:
+            other = links[s]
+            key = "|".join(sorted((zid, other)))
+            for ps in z.get("passes", []):
+                px, py = float(ps[0]), float(ps[1])
+                side = ("s" if py > 0 else "n") if abs(py) >= abs(px) else ("e" if px > 0 else "w")
+                if side == s:
+                    k = px if s in ("n", "s") else py
+        vals = [mountain_line(key, -half + i * STEP - k) for i in range(count)]
+        out["c" + s] = [round(v[0], 2) for v in vals]
+        out["p" + s] = [round(v[1], 1) for v in vals]
+    return out
+
+
 def main():
     write = "--check" not in sys.argv
     layout = {z["id"]: z for z in json.load(open(f"{ROOT}/docs/world-layout.json"))["zones"]}
     zones = {}
     for f in sorted(glob.glob(f"{ROOT}/data/zones/*.json")):
         zones[os.path.basename(f)[:-5]] = json.load(open(f))
+    edge_names = {"north": "n", "south": "s", "east": "e", "west": "w"}
+    links = {}
+    for l in json.load(open(f"{ROOT}/docs/world-layout.json"))["links"]:
+        links.setdefault(l["a"], {})[edge_names[l["a_edge"]]] = l["b"]
+        links.setdefault(l["b"], {})[edge_names[l["b_edge"]]] = l["a"]
     arrivals = {}
     for zid, z in zones.items():
         for zl in z.get("zone_lines", []):
@@ -267,6 +312,7 @@ def main():
             continue
         city = layout.get(zid, {}).get("kind") == "city"
         o = outline(zid, z, arrivals.get(zid, []), city)
+        o.update(skylines(zid, z, float(z.get("size", 384)) * 0.5, links.get(zid, {})))
         result[zid] = o
         deep = max(max(o[s]) for s in SIDES)
         print(f"{zid:20s} {int(z.get('size', 384)):4d} m  deepest ridge {deep:5.1f} m  open ground kept {open_share(z, o) * 100:5.1f}%")
