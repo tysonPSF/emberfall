@@ -1515,11 +1515,21 @@ func _award_group(credited: Player, mob: Mob) -> void:
 		return
 	var base := float(cfg("xp_base", 10)) + mob.level * mob.level * float(cfg("xp_per_mob_level_sq", 5))
 	var total := base * float(cfg("xp_rate", 1.0)) * float(mob.data.get("xp_bonus", 1.0)) * (1.0 + GROUP_XP_BONUS * (eligible.size() - 1))
+	total *= named_growth(mob)  # a named that grew to face a group is worth as much more as it grew
 	var level_sum := 0
 	for m: Player in eligible:
 		level_sum += m.level
 	for m: Player in eligible:
 		m.add_xp(maxi(1, int(total * m.level / level_sum)), eligible.size() > 1)
+
+
+## How much bigger a named grew to face the players it fought (Mob._face):
+## its experience grows by the same, so every point of its health is worth the
+## same alone or in a group. 1 for anything else.
+func named_growth(mob: Mob) -> float:
+	if not mob.data.get("named", false):
+		return 1.0
+	return 1.0 + float(cfg("named_health_per_player", 0.8)) * (mob.facing_players - 1)
 
 
 ## The group members who share a kill's experience: everyone within

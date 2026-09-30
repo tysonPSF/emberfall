@@ -8854,6 +8854,7 @@ func _t_named_scaling() -> void:
 	await _wait(1.5)
 	print("named_scaling: a groupmate 8 m off -> facing %d, health %d (x%.2f of alone), wounds %.0f%%, hits %d-%d" % [mob.facing_players, mob.max_hp, float(mob.max_hp) / solo,
 			100.0 - 100.0 * mob.hp / mob.max_hp, mob.dmg_min, mob.dmg_max])
+	print("named_scaling: its experience grows by x%.2f (health x%.2f)" % [World.named_growth(mob), float(mob.max_hp) / solo])
 	World.groups.erase(9901)
 	p.group_id = 0
 	q.group_id = 0
