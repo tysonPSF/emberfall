@@ -955,6 +955,7 @@ def main():
     missing = [l["id"] for z in zones.values() for l in z["landmarks"] if l.get("type") == "prop" and l["id"] not in MODELS["props"]]
     print("wrote %s; %d npcs, %d mobs, %d quests, %d items%s" % (", ".join(zones), len(NPCS), len(MOBS), len(QUESTS), len(ITEMS),
                                                                   "; MISSING props: %s" % sorted(set(missing)) if missing else ""))
+    print("Rerun python3 tools/zones/hubs.py: it adds its places to the zones this wrote from scratch.")
 
 
 if __name__ == "__main__":

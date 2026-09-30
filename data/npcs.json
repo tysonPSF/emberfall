@@ -10035,5 +10035,624 @@
       "frostjaw": "Old Frostjaw leads them, white as the snow. Bring me his fang."
     },
     "title": "Yak-Herder"
+  },
+  "gm_hut_guard_0": {
+    "name": "a Watch patrolman",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "The Watch"
+  },
+  "gm_farmwife_gudrun": {
+    "name": "Farmwife Gudrun",
+    "level": 15,
+    "model": "barbarian",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "That's our old granary, {name}, what the fire left. The [weevils] have it now, grain and all. And the [Granary Queen].",
+      "unknown": "I only know grain, love. Ask in town.",
+      "weevils": "Weevils big as your boot, in what's left of the grain. Four of their husks and I'll pay, every time.",
+      "granary queen": "The Queen, fat as a pig, in the granary cellar. Bring me her crest and the rest will scatter."
+    },
+    "title": "of the Old Granary",
+    "gender": "female"
+  },
+  "hf_hut_guard_0": {
+    "name": "a Watch patrolman",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "emberhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "The Watch"
+  },
+  "hf_crofter_ewan": {
+    "name": "Crofter Ewan",
+    "level": 15,
+    "model": "barbarian",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The north field's lost, {name}. The [crows] came for the seed and never left, and [Old Blackwing] leads them.",
+      "unknown": "Ask Farmer Oswin. He knows more than me.",
+      "crows": "Four of their feathers and I'll pay, every time. My wife stuffs pillows with them. Small mercies.",
+      "blackwing": "Old Blackwing, big as a goose. He sits on the old scarecrow and laughs at me. Bring me his eye."
+    },
+    "title": "Crofter"
+  },
+  "hm_hut_guard_0": {
+    "name": "a Mere Sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "hollowfolk",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Hollowfolk"
+  },
+  "hm_reedcutter_olwen": {
+    "name": "Reedcutter Olwen",
+    "level": 20,
+    "model": "ranger",
+    "weapon": "staff",
+    "faction": "hollowfolk",
+    "race": "human",
+    "dialogue": {
+      "hail": "The north landing was ours, {name}, until the [gnats] bred in the shallows. And the [Droning Mother] they come from.",
+      "unknown": "Ask Elder Tamsin. I cut reeds.",
+      "gnats": "Swarms thick as smoke over the landing. Four of their wings and I'll pay, every time.",
+      "droning mother": "The Droning Mother, big as a hen, in the reeds by my old hut. Bring me her egg-sac."
+    },
+    "title": "Reedcutter",
+    "gender": "female"
+  },
+  "ds_hut_guard_0": {
+    "name": "a Lanternhold warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "lanternhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Lanternhold"
+  },
+  "ds_tea_roller_sunita": {
+    "name": "Tea-Roller Sunita",
+    "level": 15,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "race": "high_elf",
+    "dialogue": {
+      "hail": "Mind your ankles by the old shrine, {name}. The [vipers] nest in the lantern stones. And [Jade-Eye], the old mother.",
+      "unknown": "Ask Anjali. She runs the gardens.",
+      "vipers": "Four of their skins and I'll pay, every time: the lantern-makers want them for shades.",
+      "jade-eye": "Jade-Eye, green as new tea, sleeps under the broken shrine. Bring me her fang."
+    },
+    "title": "Tea-Roller",
+    "gender": "female"
+  },
+  "su_hut_guard_0": {
+    "name": "a Dawnwatch Sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Dawn Pilgrims"
+  },
+  "su_water_seeker_anil": {
+    "name": "Water-Seeker Anil",
+    "level": 25,
+    "model": "ranger",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The old cistern ran dry, {name}, and the [scarabs] came up out of it. And [Old Dunebore], who dug it dry.",
+      "unknown": "Ask Pilgrim-Mother Ysolde.",
+      "scarabs": "Four of their shells and I'll pay, every time. They make good cups, and the pilgrims need cups.",
+      "dunebore": "Old Dunebore dug under the cistern and drank it dry. Bring me his horn."
+    },
+    "title": "Water-Seeker"
+  },
+  "wt_tracker_mbali": {
+    "name": "Tracker Mbali",
+    "level": 30,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Quiet, {name}. There are [panthers] in these trees you'll never see. And [Silkpaw], who I've tracked three rains.",
+      "unknown": "I track, {name}. Ask in Rainhold.",
+      "panthers": "Four whiskers and I'll pay, every time: proof you got close enough to take them.",
+      "silkpaw": "Silkpaw, black as the rain at night. I've had her in my sights three times and missed. Bring me her pelt."
+    },
+    "title": "Rainhold Tracker",
+    "gender": "female"
+  },
+  "cp_hut_guard_0": {
+    "name": "an Ashwatch sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Forgehold Scouts"
+  },
+  "cp_carter_hodd": {
+    "name": "Carter Hodd",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "My cart, {name}, under the ash. Ore for the Forge, and the [beetles] have nested in it. [Cinderback] too, the big one.",
+      "unknown": "Ask Scout-Captain Brenna. I haul ore.",
+      "beetles": "Four of their carapaces and I'll pay, every time. Smith Tovar fires them for flux.",
+      "cinderback": "Cinderback, the biggest, sits right on my cart. Bring me its ember gland."
+    },
+    "title": "Forgehold Carter"
+  },
+  "wb_hut_guard_0": {
+    "name": "a wind scout",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Wind Scouts"
+  },
+  "wb_arch_warden_petra": {
+    "name": "Arch-Warden Petra",
+    "level": 40,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Under the arch, {name}, the rock's warm all day and the [lizards] know it. And [Old Sunbask], who's lain there since before the scouts.",
+      "unknown": "Ask Scout-Leader Emeka.",
+      "lizards": "Four of their scales and I'll pay, every time: Galehold's shieldmakers want them.",
+      "sunbask": "Old Sunbask, big as a skiff, on the warm stone under the arch. Bring me her frill."
+    },
+    "title": "Wind Scouts",
+    "gender": "female"
+  },
+  "wl_bog_wife_grunna": {
+    "name": "Bog-Wife Grunna",
+    "level": 15,
+    "model": "shaman",
+    "weapon": "staff",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "My hut's sinkin', {name}, and the [crawdads] come up through the floor. And [Old Pinchmud], the biggest.",
+      "unknown": "Ask Hunter Snikk. Grunna only cooks.",
+      "crawdads": "Four tails and Grunna pays, every time. They're good in the pot.",
+      "pinchmud": "Old Pinchmud lives under the floor. Big as a stool. Bring Grunna his claw."
+    },
+    "title": "of the Sinking Hut",
+    "gender": "female"
+  },
+  "dk_moth_seer_lirael": {
+    "name": "Moth-Seer Lirael",
+    "level": 15,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "The shrine glows at dusk, {name}, and the [duskwings] come to it. And the [Pale Mothmother], who leads them.",
+      "unknown": "The moths tell me little of the rest.",
+      "duskwings": "Four of their wing-scales and I'll pay, every time: I read the dusk in them.",
+      "mothmother": "The Pale Mothmother, white as the moon, at the shrine's heart. Bring me her antenna."
+    },
+    "title": "Moth-Seer",
+    "gender": "female"
+  },
+  "rf_hut_guard_0": {
+    "name": "a Rainhold Reedwatch",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Reedwatch"
+  },
+  "rf_fen_priest_orun": {
+    "name": "Fen-Priest Orun",
+    "level": 25,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "A plague barge, {name}, run aground and never burned. Its [dead] still ride it. And the [Barge-Warden].",
+      "unknown": "Grisk and Nyssa know the fen. I only know the dead.",
+      "dead": "Four of their finger-bones and I'll bless them to rest, and pay you, every time.",
+      "barge-warden": "The Barge-Warden rang the plague-bell as they ran aground. Bring me the bell."
+    },
+    "title": "of Jalendra"
+  },
+  "bm_hut_guard_0": {
+    "name": "a Marchwatch guard",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Marchwatch"
+  },
+  "bm_beacon_keeper_hesk": {
+    "name": "Beacon-Keeper Hesk",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Last Beacon, {name}: it warned the keep, once. Now the [ravens] nest in it, and [Grimquill] above them all.",
+      "unknown": "Ask the Marchwarden.",
+      "ravens": "Four of their quills and I'll pay, every time. I'll write the beacon's last watch with them.",
+      "grimquill": "Grimquill, the old king of them, sits on the beacon's top. Bring me his beak, and I'll light it again."
+    },
+    "title": "of the Last Beacon"
   }
 }

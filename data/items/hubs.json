@@ -862,5 +862,314 @@
     "no_drop": true,
     "lore": true,
     "icon": "heartstone_ring"
+  },
+  "gm_weevil_husk": {
+    "name": "Grain Weevil Husk",
+    "value": 2,
+    "stack": 20,
+    "icon": "beetle_eye"
+  },
+  "gm_granary_queens_crown": {
+    "name": "The Granary Queen's Crest",
+    "value": 10,
+    "lore": true,
+    "icon": "beetle_eye"
+  },
+  "gm_gudruns_mittens": {
+    "name": "Gudrun's Harvest Mittens",
+    "slot": "hands",
+    "ac": 3,
+    "sta": 2,
+    "agi": 2,
+    "hp": 11,
+    "value": 432,
+    "rec_level": 6,
+    "no_drop": true,
+    "lore": true,
+    "icon": "wolfhide_boots",
+    "wear": "leather_gloves"
+  },
+  "hf_crow_feather": {
+    "name": "Field Crow Feather",
+    "value": 3,
+    "stack": 20,
+    "icon": "carrion_feather"
+  },
+  "hf_blackwings_eye": {
+    "name": "Old Blackwing's Eye",
+    "value": 15,
+    "lore": true,
+    "icon": "carrion_feather"
+  },
+  "hf_crofters_boots": {
+    "name": "Crofter's Boots",
+    "slot": "feet",
+    "ac": 4,
+    "sta": 2,
+    "agi": 2,
+    "hp": 14,
+    "value": 972,
+    "rec_level": 9,
+    "no_drop": true,
+    "lore": true,
+    "icon": "wolfhide_boots",
+    "wear": "leather_boots"
+  },
+  "hm_gnat_wing": {
+    "name": "Marsh Gnat Wing",
+    "value": 5,
+    "stack": 20,
+    "icon": "bogwing_wing"
+  },
+  "hm_drone_queens_sac": {
+    "name": "The Droning Mother's Egg-Sac",
+    "value": 25,
+    "lore": true,
+    "icon": "blightmothers_venom_sac"
+  },
+  "hm_reedcutters_sleeves": {
+    "name": "Reedcutter's Sleeves",
+    "slot": "arms",
+    "ac": 5,
+    "sta": 3,
+    "agi": 3,
+    "hp": 20,
+    "value": 2700,
+    "rec_level": 15,
+    "no_drop": true,
+    "lore": true,
+    "icon": "brigand_armband",
+    "wear": "leather_sleeves"
+  },
+  "ds_viper_skin": {
+    "name": "Bamboo Viper Skin",
+    "value": 3,
+    "stack": 20,
+    "icon": "serpent_scale"
+  },
+  "ds_jade_eyes_fang": {
+    "name": "Jade-Eye's Fang",
+    "value": 15,
+    "lore": true,
+    "icon": "serpent_scale"
+  },
+  "ds_tea_rollers_gloves": {
+    "name": "Tea-Roller's Gloves",
+    "slot": "hands",
+    "ac": 3,
+    "agi": 2,
+    "wis": 2,
+    "hp": 13,
+    "value": 768,
+    "rec_level": 8,
+    "no_drop": true,
+    "lore": true,
+    "icon": "wolfhide_boots",
+    "wear": "leather_gloves"
+  },
+  "su_scarab_shell": {
+    "name": "Dust Scarab Shell",
+    "value": 7,
+    "stack": 20,
+    "icon": "chitin_plate"
+  },
+  "su_dunebores_horn": {
+    "name": "Old Dunebore's Horn",
+    "value": 35,
+    "lore": true,
+    "icon": "chitin_plate"
+  },
+  "su_water_seekers_sash": {
+    "name": "Water-Seeker's Sash",
+    "slot": "waist",
+    "ac": 6,
+    "sta": 4,
+    "wis": 3,
+    "hp": 24,
+    "value": 3888,
+    "rec_level": 18,
+    "no_drop": true,
+    "lore": true,
+    "icon": "barbel_whip_belt"
+  },
+  "wt_panther_whisker": {
+    "name": "Rain Panther Whisker",
+    "value": 9,
+    "stack": 20,
+    "icon": "whisker_barbel"
+  },
+  "wt_silkpaws_pelt": {
+    "name": "Silkpaw's Pelt",
+    "value": 45,
+    "lore": true,
+    "icon": "smoke_pelt"
+  },
+  "wt_trackers_boots": {
+    "name": "Tracker's Boots",
+    "slot": "feet",
+    "ac": 8,
+    "agi": 5,
+    "sta": 4,
+    "hp": 30,
+    "value": 6912,
+    "rec_level": 24,
+    "no_drop": true,
+    "lore": true,
+    "icon": "stalkerhide_boots",
+    "wear": "leather_boots"
+  },
+  "cp_ash_carapace": {
+    "name": "Ash Beetle Carapace",
+    "value": 14,
+    "stack": 20,
+    "icon": "chitin_plate"
+  },
+  "cp_cinderbacks_ember_gland": {
+    "name": "Cinderback's Ember Gland",
+    "value": 70,
+    "lore": true,
+    "icon": "phoenix_ember"
+  },
+  "cp_carters_gloves": {
+    "name": "Carter's Gloves",
+    "slot": "hands",
+    "ac": 10,
+    "str": 6,
+    "sta": 5,
+    "hp": 37,
+    "value": 10800,
+    "rec_level": 30,
+    "no_drop": true,
+    "lore": true,
+    "icon": "smokehide_gloves",
+    "wear": "leather_gloves"
+  },
+  "wb_crag_scale": {
+    "name": "Crag Lizard Scale",
+    "value": 26,
+    "stack": 20,
+    "icon": "obsidian_scale"
+  },
+  "wb_sunbasks_frill": {
+    "name": "Old Sunbask's Frill",
+    "value": 130,
+    "lore": true,
+    "icon": "obsidian_scale"
+  },
+  "wb_arch_wardens_bracer": {
+    "name": "Arch-Warden's Bracer",
+    "slot": "arms",
+    "ac": 12,
+    "agi": 7,
+    "sta": 5,
+    "hp": 44,
+    "value": 15552,
+    "rec_level": 36,
+    "no_drop": true,
+    "lore": true,
+    "icon": "tempest_bracer",
+    "wear": "leather_sleeves"
+  },
+  "wl_crawdad_tail": {
+    "name": "Bog Crawdad Tail",
+    "value": 2,
+    "stack": 20,
+    "icon": "salt_crab_claw"
+  },
+  "wl_pinchmuds_claw": {
+    "name": "Old Pinchmud's Great Claw",
+    "value": 10,
+    "lore": true,
+    "icon": "salt_crab_claw"
+  },
+  "wl_grunnas_wrap": {
+    "name": "Grunna's Stewing Wrap",
+    "slot": "waist",
+    "ac": 3,
+    "sta": 2,
+    "str": 2,
+    "hp": 12,
+    "value": 588,
+    "rec_level": 7,
+    "no_drop": true,
+    "lore": true,
+    "icon": "barbel_whip_belt"
+  },
+  "dk_duskwing_scale": {
+    "name": "Duskwing Wing-Scale",
+    "value": 2,
+    "stack": 20,
+    "icon": "bogwing_wing"
+  },
+  "dk_mothmothers_antenna": {
+    "name": "The Pale Mothmother's Antenna",
+    "value": 10,
+    "lore": true,
+    "icon": "bogwing_wing"
+  },
+  "dk_moth_seers_circlet": {
+    "name": "Moth-Seer's Circlet",
+    "slot": "head",
+    "ac": 3,
+    "int": 2,
+    "wis": 2,
+    "hp": 12,
+    "value": 588,
+    "rec_level": 7,
+    "no_drop": true,
+    "lore": true,
+    "icon": "pearl_crown_of_the_river",
+    "wear": "cloth_cap"
+  },
+  "rf_plague_bone": {
+    "name": "Plague-Barge Finger-Bone",
+    "value": 5,
+    "stack": 20,
+    "icon": "bone_chips"
+  },
+  "rf_wardens_bell": {
+    "name": "The Barge-Warden's Plague-Bell",
+    "value": 25,
+    "lore": true,
+    "icon": "bone_charm"
+  },
+  "rf_fen_priests_charm": {
+    "name": "Fen-Priest's Charm",
+    "slot": "neck",
+    "ac": 4,
+    "wis": 4,
+    "sta": 3,
+    "hp": 23,
+    "value": 3468,
+    "rec_level": 17,
+    "no_drop": true,
+    "lore": true,
+    "icon": "shellmask_amulet"
+  },
+  "bm_raven_quill": {
+    "name": "Cairn Raven Quill",
+    "value": 7,
+    "stack": 20,
+    "icon": "carrion_feather"
+  },
+  "bm_grimquills_beak": {
+    "name": "Grimquill's Beak",
+    "value": 35,
+    "lore": true,
+    "icon": "carrion_feather"
+  },
+  "bm_beacon_keepers_boots": {
+    "name": "Beacon-Keeper's Boots",
+    "slot": "feet",
+    "ac": 7,
+    "sta": 4,
+    "agi": 3,
+    "hp": 25,
+    "value": 4332,
+    "rec_level": 19,
+    "no_drop": true,
+    "lore": true,
+    "icon": "wolfhide_boots",
+    "wear": "leather_boots"
   }
 }

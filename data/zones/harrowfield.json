@@ -52,7 +52,14 @@
     {"type": "camp", "pos": [-179.5, 161], "style": "wagons", "wagon": "farm_cart", "size": 1.8},
     {"type": "ruins", "pos": [177, -168]},
     {"type": "signpost", "pos": [-225, 12], "yaw": 180, "labels": ["Harrow's Rest", "Greenmoor"]},
-    {"type": "signpost", "pos": [45, -84], "yaw": 90, "labels": ["Hollowmere", "Harrow's Rest"]}
+    {"type": "signpost", "pos": [45, -84], "yaw": 90, "labels": ["Hollowmere", "Harrow's Rest"]},
+    {"type": "outpost", "pos": [-137.1, -4.7], "hubs": true},
+    {"type": "prop", "pos": [0.0, -179.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [6.0, -174.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "ruins", "pos": [44, -212], "hubs": true},
+    {"type": "prop", "pos": [44, -198], "id": "scarecrow_post", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [58, -222], "id": "hay_bale", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [28, -224], "id": "scarecrow_post", "collide": "box", "yaw": 90, "hubs": true}
   ],
   "passes": [[-288, 0, 9], [0, -288, 9]],
   "roads": [
@@ -67,14 +74,16 @@
     {"id": "farmer_oswin", "pos": [57, 30.5], "face": [64, 33.5]},
     {"id": "widow_marta", "pos": [51, 45.5], "face": [64, 33.5]},
     {"id": "grocer_tilda", "pos": [72, 43.5], "face": [64, 33.5]},
-    {"id": "hamlet_watchman", "pos": [66, 27.5], "patrol": [[66, 27.5], [34, 29.5], [-60, 18], [-165, 9], [-225, 3]]}
+    {"id": "hamlet_watchman", "pos": [66, 27.5], "patrol": [[66, 27.5], [34, 29.5], [-60, 18], [-165, 9], [-225, 3]]},
+    {"id": "hf_hut_guard_0", "pos": [-137.8, 3.3], "face": [-138.5, 11.3], "hubs": true},
+    {"id": "hf_crofter_ewan", "pos": [8.0, -177.0], "face": [44, -212], "hubs": true}
   ],
   "spawns": [
+    {"pos": [144, -232], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [8, -136], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [24, 224], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-96, 224], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-240, 48], "pool": {"brigand_cutpurse": 1}, "respawn": 70, "wander": 12},
-    {"pos": [16, -240], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [152, 88], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [16, 128], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-128, -112], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
@@ -86,7 +95,6 @@
     {"pos": [-48, 60], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-30, -37.5], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [34, -31.5], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
-    {"pos": [-135, -22.5], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-167.5, 117], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [-50, 152], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [90, 142.5], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
@@ -98,7 +106,6 @@
     {"pos": [119, 23.5], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [195, -90], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [225, 90], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
-    {"pos": [90, -210], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [-60, -225], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [225, 225], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [-225, -210], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
@@ -113,7 +120,6 @@
     {"pos": [-162.5, 162], "pool": {"brigand_cutpurse": 2, "brigand_thug": 1}, "respawn": 80, "wander": 4},
     {"pos": [-193.5, 170], "pool": {"brigand_cutpurse": 2, "brigand_thug": 1}, "respawn": 80, "wander": 4},
     {"pos": [-179.5, 161], "pool": {"garrick_the_red": 1}, "respawn": 420, "wander": 2},
-    {"pos": [-127.5, -12], "pool": {"brigand_cutpurse": 1}, "respawn": 70, "wander": 12},
     {"pos": [-210, -37.5], "pool": {"brigand_cutpurse": 1}, "respawn": 70, "wander": 12},
     {"pos": [-90, -45], "pool": {"brigand_cutpurse": 1}, "respawn": 70, "wander": 12},
     {"pos": [-207.5, 127], "pool": {"brigand_cutpurse": 1}, "respawn": 70, "wander": 12},
@@ -123,6 +129,14 @@
     {"pos": [124, 77.5], "pool": {"walking_scarecrow": 1}, "respawn": 60, "wander": 14, "when": "night"},
     {"pos": [-42, 104], "pool": {"walking_scarecrow": 1}, "respawn": 60, "wander": 14, "when": "night"},
     {"pos": [94, -32.5], "pool": {"walking_scarecrow": 1}, "respawn": 60, "wander": 14, "when": "night"},
-    {"pos": [28.1, 87.5], "pool": {"old_tatters": 1}, "respawn": 600, "wander": 5, "when": "night"}
+    {"pos": [28.1, 87.5], "pool": {"old_tatters": 1}, "respawn": 600, "wander": 5, "when": "night"},
+    {"pos": [80.3, -200.8], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [57.9, -176.6], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [25.0, -179.1], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [6.4, -206.4], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [16.2, -237.9], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [46.9, -249.9], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [75.4, -233.4], "pool": {"hf_field_crow": 1}, "respawn": 55, "wander": 12, "hubs": true},
+    {"pos": [47, -210], "pool": {"hf_old_blackwing": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

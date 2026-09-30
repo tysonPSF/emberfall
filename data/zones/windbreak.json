@@ -69,7 +69,13 @@
     {"type": "signpost", "pos": [12, 302], "yaw": -90, "labels": ["Drownfast", "Windbreak"]},
     {"type": "signpost", "pos": [-302, 12], "yaw": 180, "labels": ["Tidemouth", "Windbreak"]},
     {"type": "signpost", "pos": [302, 12], "yaw": 0, "labels": ["The Burn", "Windbreak"]},
-    {"type": "signpost", "pos": [12, -302], "yaw": 90, "labels": ["The Long Grass", "Windbreak"]}
+    {"type": "signpost", "pos": [12, -302], "yaw": 90, "labels": ["The Long Grass", "Windbreak"]},
+    {"type": "outpost", "pos": [30.0, 140.4], "hubs": true},
+    {"type": "prop", "pos": [-16.0, -19.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [-10.0, -14.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [28, -70], "id": "mesa", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [44, -42], "id": "crag_rock", "collide": "box", "yaw": 90, "hubs": true},
+    {"type": "prop", "pos": [12, -42], "id": "crag_rock", "collide": "box", "yaw": 200, "hubs": true}
   ],
   "npcs": [
     {"id": "scout_leader_emeka", "pos": [-9.5, 211.4], "face": [-1.5, 217.4]},
@@ -77,9 +83,13 @@
     {"id": "windwatcher_reyes", "pos": [-17.5, 225.4], "face": [-1.5, 217.4]},
     {"id": "falconer_ines", "pos": [16.5, 227.4], "face": [-1.5, 217.4]},
     {"id": "supply_sergeant_pavel", "pos": [-1.5, 203.4], "face": [-1.5, 217.4]},
-    {"id": "windbreak_sentry", "pos": [-1.5, 196.4], "patrol": [[-1.5, 196.4], [-26.5, 221.4], [-1.5, 241.4], [23.5, 221.4], [-1.5, 196.4]]}
+    {"id": "windbreak_sentry", "pos": [-1.5, 196.4], "patrol": [[-1.5, 196.4], [-26.5, 221.4], [-1.5, 241.4], [23.5, 221.4], [-1.5, 196.4]]},
+    {"id": "wb_hut_guard_0", "pos": [22.1, 138.9], "face": [14.2, 137.5], "hubs": true},
+    {"id": "wb_arch_warden_petra", "pos": [-8.0, -17.0], "face": [28, -52], "hubs": true}
   ],
   "spawns": [
+    {"pos": [-24, 152], "pool": {"dust_devil": 1}, "respawn": 90, "wander": 16},
+    {"pos": [56, 192], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [-56, 288], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [288, -48], "pool": {"stone_giant": 1}, "respawn": 110, "wander": 12},
     {"pos": [-224, -280], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
@@ -93,7 +103,6 @@
     {"pos": [-144, 56], "pool": {"giant_eagle": 1}, "respawn": 100, "wander": 16},
     {"pos": [-88, -256], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-48, -88], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
-    {"pos": [8, 152], "pool": {"dust_devil": 1}, "respawn": 90, "wander": 16},
     {"pos": [264, 176], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [-272, -216], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-176, -16], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
@@ -106,7 +115,6 @@
     {"pos": [-152, -280], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
     {"pos": [16, 288], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [-120, 120], "pool": {"dust_devil": 1}, "respawn": 90, "wander": 16},
-    {"pos": [-8, -32], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
     {"pos": [176, 96], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-173.5, -149.8], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-203.5, -179.8], "pool": {"kitewing_bandit": 1}, "respawn": 100, "wander": 12},
@@ -120,7 +128,6 @@
     {"pos": [160.5, -205], "pool": {"stone_giant": 1}, "respawn": 110, "wander": 12},
     {"pos": [220.5, -195], "pool": {"stone_giant": 1}, "respawn": 110, "wander": 12},
     {"pos": [195.5, -180], "pool": {"old_stackstone": 1}, "respawn": 1500, "wander": 6},
-    {"pos": [60, -30], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-30, 30], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
     {"pos": [115, 70], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
     {"pos": [-90, -15], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
@@ -141,6 +148,14 @@
     {"pos": [180, 165], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [75, 255], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
     {"pos": [0, -264], "pool": {"gale_spirit": 1}, "respawn": 100, "wander": 12},
-    {"pos": [264, 264], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14}
+    {"pos": [264, 264], "pool": {"cliff_drake": 1}, "respawn": 100, "wander": 14},
+    {"pos": [64.3, -40.8], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [41.9, -16.6], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [9.0, -19.1], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [-9.6, -46.4], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [0.2, -77.9], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [30.9, -89.9], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [59.4, -73.4], "pool": {"wb_crag_lizard": 1}, "respawn": 90, "wander": 12, "hubs": true},
+    {"pos": [31, -50], "pool": {"wb_old_sunbask": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

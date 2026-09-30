@@ -131,6 +131,7 @@ const SECTIONS := [
 	["hubs_1024", "the_burn"],
 	["hubs_768a", "silted_reach"],
 	["hubs_768b", "hollow_air"],
+	["hubs_small", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8877,6 +8878,20 @@ func _t_hubs_768b() -> void:
 			["ht_forsaken_pilgrim", "ht_unshriven", "ht_high_wolf", "ht_old_frostjaw"], "ht_pilgrim_lobsang", "tenzins_beads"]])
 
 
+## The smaller open zones' places (hubs.py batch 5): no forward camp, one place and its npc each.
+func _t_hubs_small() -> void:
+	var legs: Array = []
+	for row: Array in [["greenmoor", "gm", "gm_farmwife_gudrun", "gm_grain_weevil", "gm_granary_queen"], ["harrowfield", "hf", "hf_crofter_ewan", "hf_field_crow", "hf_old_blackwing"],
+			["hollowmere", "hm", "hm_reedcutter_olwen", "hm_marsh_gnats", "hm_droning_mother"], ["dewstep", "ds", "ds_tea_roller_sunita", "ds_bamboo_viper", "ds_jade_eye"],
+			["sunward_steps", "su", "su_water_seeker_anil", "su_dust_scarab", "su_old_dunebore"], ["weeping_throat", "wt", "wt_tracker_mbali", "wt_rain_panther", "wt_silkpaw"],
+			["cinderpass", "cp", "cp_carter_hodd", "cp_ash_beetle", "cp_cinderback"], ["windbreak", "wb", "wb_arch_warden_petra", "wb_crag_lizard", "wb_old_sunbask"],
+			["the_wallow", "wl", "wl_bog_wife_grunna", "wl_bog_crawdad", "wl_old_pinchmud"], ["duskwood", "dk", "dk_moth_seer_lirael", "dk_duskwing", "dk_pale_mothmother"],
+			["the_rotfen", "rf", "rf_fen_priest_orun", "rf_bloated_dead", "rf_barge_warden"], ["broken_march", "bm", "bm_beacon_keeper_hesk", "bm_cairn_raven", "bm_grimquill"]]:
+		var race: String = {"the_wallow": "troll", "duskwood": "dark_elf"}.get(row[0], "human")  # the evil homelands' folk won't talk to a human
+		legs.append([row[0], row[1], {row[2]: [row[3] + "_q", row[4] + "_q"]}, [row[3], row[4]], "", "", race])
+	await _hubs_zones(legs)
+
+
 func _hubs_zones(legs: Array) -> void:
 	var main := get_parent()
 	var p := World.local_player
@@ -8893,6 +8908,9 @@ func _hubs_zones(legs: Array) -> void:
 		await _wait(1.0)
 		var z: Zone = main.zone
 		var tag := "hubs_%s" % leg[1]
+		if leg.size() > 6 and p.race != str(leg[6]):
+			p.race = str(leg[6])
+			World.apply_alignment(p)
 		var on_ground := 0
 		var npcs := _npcs()
 		for n: Dictionary in z.data["npcs"]:
@@ -8901,6 +8919,8 @@ func _hubs_zones(legs: Array) -> void:
 				on_ground += 1 if absf(at.y - z.surface_at(at.x, at.z)) < 1.5 else 0
 		print("%s: %d new npcs, %d standing on the ground" % [tag, z.data["npcs"].filter(func(n: Dictionary) -> bool: return n.get("hubs", false)).size(), on_ground])
 		await _zone_life(tag, leg[2], [], leg[3])
+		if str(leg[4]) == "":  # a smaller zone has no forward camp
+			continue
 		# a quest someone else gave, handed in at the forward camp
 		var scout: Npc = _npcs()[leg[4]]
 		var q_id: String = leg[5]
@@ -8921,6 +8941,9 @@ func _hubs_zones(legs: Array) -> void:
 			if lm.get("hubs", false) and str(lm["type"]) in ["waystation", "outpost", "cabin", "ruins", "watchtower"]:
 				views.append([Vector2(lm["pos"][0], lm["pos"][1]) + Vector2(18, 16), Vector2(lm["pos"][0], lm["pos"][1]), "%s_%d" % [lm["type"], views.size()]])
 		await _zone_views(tag, views)
+	if p.race != "human":
+		p.race = "human"
+		World.apply_alignment(p)
 	p.god_mode = false
 
 

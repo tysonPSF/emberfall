@@ -18687,5 +18687,1007 @@
     "model": "wolf",
     "named": true,
     "xp_bonus": 3.0
+  },
+  "gm_grain_weevil": {
+    "name": "a grain weevil",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": true,
+    "faction": "gnolls",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#6e5230",
+    "scale": 1.0,
+    "coin": [
+      3,
+      25
+    ],
+    "loot": [
+      {
+        "item": "gm_weevil_husk",
+        "chance": 0.55
+      }
+    ],
+    "model": "rice_beetle"
+  },
+  "gm_granary_queen": {
+    "name": "the Granary Queen",
+    "level": [
+      7,
+      7
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "gnolls",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#6e5230",
+    "scale": 2.0,
+    "coin": [
+      75,
+      200
+    ],
+    "loot": [
+      {
+        "item": "gm_granary_queens_crown",
+        "chance": 1.0
+      },
+      {
+        "item": "gm_weevil_husk",
+        "chance": 1.0
+      }
+    ],
+    "model": "rice_beetle",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "hf_field_crow": {
+    "name": "a field crow",
+    "level": [
+      6,
+      8
+    ],
+    "hp_base": 40,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "attack_delay": 2.7,
+    "ac": 13,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": true,
+    "faction": "brigands",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "humanoid",
+    "color": "#222222",
+    "scale": 0.5,
+    "coin": [
+      12,
+      40
+    ],
+    "loot": [
+      {
+        "item": "hf_crow_feather",
+        "chance": 0.55
+      }
+    ],
+    "model": "bone_vulture"
+  },
+  "hf_old_blackwing": {
+    "name": "Old Blackwing",
+    "level": [
+      10,
+      10
+    ],
+    "hp_base": 40,
+    "hp_per_level": 12,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "attack_delay": 2.7,
+    "ac": 13,
+    "speed": 6.2,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "brigands",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "humanoid",
+    "color": "#111111",
+    "scale": 0.9,
+    "coin": [
+      120,
+      320
+    ],
+    "loot": [
+      {
+        "item": "hf_blackwings_eye",
+        "chance": 1.0
+      },
+      {
+        "item": "hf_crow_feather",
+        "chance": 1.0
+      }
+    ],
+    "model": "bone_vulture",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "hm_marsh_gnats": {
+    "name": "a marsh gnat swarm",
+    "level": [
+      12,
+      14
+    ],
+    "hp_base": 46,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.7,
+    "ac": 16,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "skeleton",
+    "color": "#9fc4b8",
+    "scale": 1.0,
+    "coin": [
+      5,
+      30
+    ],
+    "loot": [
+      {
+        "item": "hm_gnat_wing",
+        "chance": 0.55
+      }
+    ],
+    "model": "biting_swarm",
+    "spawn_anim": "Spawn_Ground",
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.1,
+      "text": "%s's grip carries %s!"
+    }
+  },
+  "hm_droning_mother": {
+    "name": "the Droning Mother",
+    "level": [
+      16,
+      16
+    ],
+    "hp_base": 46,
+    "hp_per_level": 14,
+    "dmg_min": 5,
+    "dmg_max": 12,
+    "attack_delay": 2.7,
+    "ac": 16,
+    "speed": 5.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "sting",
+      "stings"
+    ],
+    "shape": "skeleton",
+    "color": "#9fc4b8",
+    "scale": 2.0,
+    "coin": [
+      90,
+      240
+    ],
+    "loot": [
+      {
+        "item": "hm_drone_queens_sac",
+        "chance": 1.0
+      },
+      {
+        "item": "hm_gnat_wing",
+        "chance": 1.0
+      }
+    ],
+    "model": "biting_swarm",
+    "spawn_anim": "Spawn_Ground",
+    "proc": {
+      "spell": "drowning_cold",
+      "chance": 0.1,
+      "text": "%s's grip carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "ds_bamboo_viper": {
+    "name": "a bamboo viper",
+    "level": [
+      5,
+      7
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 5.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#6aa050",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ds_viper_skin",
+        "chance": 0.55
+      }
+    ],
+    "model": "water_snake",
+    "proc": {
+      "spell": "cobra_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    }
+  },
+  "ds_jade_eye": {
+    "name": "Jade-Eye",
+    "level": [
+      9,
+      9
+    ],
+    "hp_base": 22,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 5.0,
+    "aggressive": true,
+    "aggro_radius": 8,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#4a8a40",
+    "scale": 1.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "ds_jade_eyes_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "ds_viper_skin",
+        "chance": 1.0
+      }
+    ],
+    "model": "water_snake",
+    "proc": {
+      "spell": "cobra_venom",
+      "chance": 0.15,
+      "text": "%s's fangs deliver %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "su_dust_scarab": {
+    "name": "a dust scarab",
+    "level": [
+      15,
+      17
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 3.2,
+    "ac": 38,
+    "speed": 4.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#c8a870",
+    "scale": 1.2,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "su_scarab_shell",
+        "chance": 0.55
+      }
+    ],
+    "model": "fire_beetle"
+  },
+  "su_old_dunebore": {
+    "name": "Old Dunebore",
+    "level": [
+      19,
+      19
+    ],
+    "hp_base": 120,
+    "hp_per_level": 20,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 3.2,
+    "ac": 38,
+    "speed": 4.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "guardians",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#a88850",
+    "scale": 2.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "su_dunebores_horn",
+        "chance": 1.0
+      },
+      {
+        "item": "su_scarab_shell",
+        "chance": 1.0
+      }
+    ],
+    "model": "fire_beetle",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "wt_rain_panther": {
+    "name": "a rain panther",
+    "level": [
+      21,
+      23
+    ],
+    "hp_base": 150,
+    "hp_per_level": 22,
+    "dmg_min": 14,
+    "dmg_max": 27,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#222222",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wt_panther_whisker",
+        "chance": 0.55
+      }
+    ],
+    "model": "tigress",
+    "proc": {
+      "spell": "death_roll",
+      "chance": 0.08,
+      "text": "%s drags you into a %s!"
+    }
+  },
+  "wt_silkpaw": {
+    "name": "Silkpaw",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 150,
+    "hp_per_level": 22,
+    "dmg_min": 14,
+    "dmg_max": 27,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 6.0,
+    "aggressive": true,
+    "aggro_radius": 11,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "beetle",
+    "color": "#111111",
+    "scale": 1.3,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wt_silkpaws_pelt",
+        "chance": 1.0
+      },
+      {
+        "item": "wt_panther_whisker",
+        "chance": 1.0
+      }
+    ],
+    "model": "tiger",
+    "proc": {
+      "spell": "death_roll",
+      "chance": 0.08,
+      "text": "%s drags you into a %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "cp_ash_beetle": {
+    "name": "an ash beetle",
+    "level": [
+      27,
+      29
+    ],
+    "hp_base": 190,
+    "hp_per_level": 26,
+    "dmg_min": 19,
+    "dmg_max": 34,
+    "attack_delay": 2.6,
+    "ac": 48,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#555050",
+    "scale": 1.3,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cp_ash_carapace",
+        "chance": 0.55
+      }
+    ],
+    "model": "fire_beetle",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.14,
+      "text": "%s exhales %s!"
+    }
+  },
+  "cp_cinderback": {
+    "name": "Cinderback",
+    "level": [
+      31,
+      31
+    ],
+    "hp_base": 190,
+    "hp_per_level": 26,
+    "dmg_min": 19,
+    "dmg_max": 34,
+    "attack_delay": 2.6,
+    "ac": 48,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#403838",
+    "scale": 2.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cp_cinderbacks_ember_gland",
+        "chance": 1.0
+      },
+      {
+        "item": "cp_ash_carapace",
+        "chance": 1.0
+      }
+    ],
+    "model": "fire_beetle",
+    "proc": {
+      "spell": "ember_breath",
+      "chance": 0.14,
+      "text": "%s exhales %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "wb_crag_lizard": {
+    "name": "a crag lizard",
+    "level": [
+      33,
+      35
+    ],
+    "hp_base": 243,
+    "hp_per_level": 32,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a07850",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wb_crag_scale",
+        "chance": 0.55
+      }
+    ],
+    "model": "lava_salamander"
+  },
+  "wb_old_sunbask": {
+    "name": "Old Sunbask",
+    "level": [
+      37,
+      37
+    ],
+    "hp_base": 243,
+    "hp_per_level": 32,
+    "dmg_min": 23,
+    "dmg_max": 45,
+    "attack_delay": 2.7,
+    "ac": 62,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 14,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#806040",
+    "scale": 1.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "wb_sunbasks_frill",
+        "chance": 1.0
+      },
+      {
+        "item": "wb_crag_scale",
+        "chance": 1.0
+      }
+    ],
+    "model": "lava_salamander",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "wl_bog_crawdad": {
+    "name": "a bog crawdad",
+    "level": [
+      4,
+      6
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": true,
+    "faction": "wallow_pondkin",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "humanoid",
+    "color": "#6a4a3a",
+    "scale": 0.6,
+    "coin": [
+      3,
+      20
+    ],
+    "loot": [
+      {
+        "item": "wl_crawdad_tail",
+        "chance": 0.55
+      }
+    ],
+    "model": "salt_crab"
+  },
+  "wl_old_pinchmud": {
+    "name": "Old Pinchmud",
+    "level": [
+      8,
+      8
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wallow_pondkin",
+    "verb": [
+      "pinch",
+      "pinches"
+    ],
+    "shape": "humanoid",
+    "color": "#5a3a2a",
+    "scale": 1.3,
+    "coin": [
+      60,
+      160
+    ],
+    "loot": [
+      {
+        "item": "wl_pinchmuds_claw",
+        "chance": 1.0
+      },
+      {
+        "item": "wl_crawdad_tail",
+        "chance": 1.0
+      }
+    ],
+    "model": "salt_crab",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "dk_duskwing": {
+    "name": "a duskwing moth",
+    "level": [
+      4,
+      6
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 7.0,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "flutter at",
+      "flutters at"
+    ],
+    "shape": "humanoid",
+    "color": "#7050a0",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "dk_duskwing_scale",
+        "chance": 0.55
+      }
+    ],
+    "model": "lantern_moth"
+  },
+  "dk_pale_mothmother": {
+    "name": "the Pale Mothmother",
+    "level": [
+      8,
+      8
+    ],
+    "hp_base": 23,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 9,
+    "speed": 7.0,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "flutter at",
+      "flutters at"
+    ],
+    "shape": "humanoid",
+    "color": "#d0c0f0",
+    "scale": 2.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "dk_mothmothers_antenna",
+        "chance": 1.0
+      },
+      {
+        "item": "dk_duskwing_scale",
+        "chance": 1.0
+      }
+    ],
+    "model": "lantern_moth",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "rf_bloated_dead": {
+    "name": "a bloated fen-dead",
+    "level": [
+      14,
+      16
+    ],
+    "hp_base": 88,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.6,
+    "ac": 23,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      20,
+      70
+    ],
+    "loot": [
+      {
+        "item": "rf_plague_bone",
+        "chance": 0.55
+      }
+    ],
+    "model": "drowned"
+  },
+  "rf_barge_warden": {
+    "name": "the Barge-Warden",
+    "level": [
+      18,
+      18
+    ],
+    "hp_base": 88,
+    "hp_per_level": 17,
+    "dmg_min": 8,
+    "dmg_max": 17,
+    "attack_delay": 2.6,
+    "ac": 23,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#707060",
+    "scale": 1.0,
+    "coin": [
+      210,
+      560
+    ],
+    "loot": [
+      {
+        "item": "rf_wardens_bell",
+        "chance": 1.0
+      },
+      {
+        "item": "rf_plague_bone",
+        "chance": 1.0
+      }
+    ],
+    "model": "drowned_captain",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "bm_cairn_raven": {
+    "name": "a cairn raven",
+    "level": [
+      16,
+      18
+    ],
+    "hp_base": 105,
+    "hp_per_level": 19,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "humanoid",
+    "color": "#151515",
+    "scale": 0.6,
+    "coin": [
+      10,
+      50
+    ],
+    "loot": [
+      {
+        "item": "bm_raven_quill",
+        "chance": 0.55
+      }
+    ],
+    "model": "bone_vulture"
+  },
+  "bm_grimquill": {
+    "name": "Grimquill",
+    "level": [
+      20,
+      20
+    ],
+    "hp_base": 105,
+    "hp_per_level": 19,
+    "dmg_min": 10,
+    "dmg_max": 20,
+    "attack_delay": 2.6,
+    "ac": 28,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "peck",
+      "pecks"
+    ],
+    "shape": "humanoid",
+    "color": "#0a0a0a",
+    "scale": 1.0,
+    "coin": [
+      150,
+      400
+    ],
+    "loot": [
+      {
+        "item": "bm_grimquills_beak",
+        "chance": 1.0
+      },
+      {
+        "item": "bm_raven_quill",
+        "chance": 1.0
+      }
+    ],
+    "model": "bone_vulture",
+    "named": true,
+    "xp_bonus": 3.0
   }
 }

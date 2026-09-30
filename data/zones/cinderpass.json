@@ -77,7 +77,13 @@
     {"type": "prop", "pos": [56, -83], "id": "ash_boulder_c", "yaw": 225.74172474419356, "collide": "mesh"},
     {"type": "prop", "pos": [-230, -187.5], "id": "ash_boulder_b", "yaw": 127.08382950976318, "collide": "mesh"},
     {"type": "prop", "pos": [212.5, 19.5], "id": "ash_boulder_c", "yaw": 123.01022001873741, "collide": "mesh"},
-    {"type": "bridge", "pos": [-178.8, 7.5], "face": [-119.8, 7.5]}
+    {"type": "bridge", "pos": [-178.8, 7.5], "face": [-119.8, 7.5]},
+    {"type": "outpost", "pos": [21.8, 117.5], "hubs": true},
+    {"type": "prop", "pos": [-16.0, 11.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [-10.0, 16.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [28, 44], "id": "caravan_wagon", "collide": "box", "yaw": 70, "hubs": true},
+    {"type": "prop", "pos": [42, 54], "id": "rubble_large", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [16, 34], "id": "smoldering_stump", "collide": "box", "yaw": 0, "hubs": true}
   ],
   "passes": [[0, 336, 9], [336, 0, 9], [-336, 0, 9], [0, -336, 9]],
   "roads": [
@@ -94,7 +100,9 @@
   "npcs": [
     {"id": "scout_captain_brenna", "pos": [43.4, 273.5], "face": [27.4, 272.5]},
     {"id": "smith_tovar", "pos": [51.4, 251.5], "face": [55.4, 247.5]},
-    {"id": "forgehold_scout", "pos": [21.4, 287.5], "patrol": [[21.4, 287.5], [11.4, 247.5], [37.4, 237.5], [53.4, 287.5], [21.4, 287.5]]}
+    {"id": "forgehold_scout", "pos": [21.4, 287.5], "patrol": [[21.4, 287.5], [11.4, 247.5], [37.4, 237.5], [53.4, 287.5], [21.4, 287.5]]},
+    {"id": "cp_hut_guard_0", "pos": [13.9, 119.1], "face": [6.1, 120.7], "hubs": true},
+    {"id": "cp_carter_hodd", "pos": [-8.0, 13.0], "face": [28, 44], "hubs": true}
   ],
   "spawns": [
     {"pos": [-288, 40], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
@@ -107,7 +115,6 @@
     {"pos": [64, -16], "pool": {"ember_cultist": 1}, "respawn": 90, "wander": 14},
     {"pos": [176, -40], "pool": {"wild_fire_elemental": 1}, "respawn": 85, "wander": 14},
     {"pos": [-192, -288], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
-    {"pos": [8, 112], "pool": {"ember_cultist": 1}, "respawn": 90, "wander": 14},
     {"pos": [0, -48], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
     {"pos": [-64, 8], "pool": {"ember_cultist": 1}, "respawn": 90, "wander": 14},
     {"pos": [-216, 32], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
@@ -165,14 +172,20 @@
     {"pos": [56, -103], "pool": {"wild_fire_elemental": 1}, "respawn": 85, "wander": 14},
     {"pos": [0, -30], "pool": {"ash_wraith": 1}, "respawn": 90, "wander": 14, "when": "night"},
     {"pos": [-70, 30], "pool": {"ash_wraith": 1}, "respawn": 90, "wander": 14, "when": "night"},
-    {"pos": [75, 45], "pool": {"ash_wraith": 1}, "respawn": 90, "wander": 14, "when": "night"},
     {"pos": [-30, 90], "pool": {"ash_wraith": 1}, "respawn": 90, "wander": 14, "when": "night"},
     {"pos": [56, -63], "pool": {"ash_wraith": 1}, "respawn": 90, "wander": 14, "when": "night"},
     {"pos": [212.5, 89.5], "pool": {"high_pyromancer": 1}, "respawn": 1200, "wander": 4},
     {"pos": [-117, -308], "pool": {"cinder_drake": 1}, "respawn": 1400, "wander": 10},
     {"pos": [103.7, -255], "pool": {"magma_colossus": 1}, "respawn": 1500, "wander": 8},
     {"pos": [-32.5, -75], "pool": {"ash_wraith_lord": 1}, "respawn": 1400, "wander": 12, "when": "night"},
-    {"pos": [0, 36], "pool": {"ember_cultist": 1}, "respawn": 90, "wander": 14},
-    {"pos": [264, 240], "pool": {"charred_dead": 1}, "respawn": 85, "wander": 12}
+    {"pos": [264, 240], "pool": {"charred_dead": 1}, "respawn": 85, "wander": 12},
+    {"pos": [64.3, 55.2], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [41.9, 79.4], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [9.0, 76.9], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-9.6, 49.6], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [0.2, 18.1], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [30.9, 6.1], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [59.4, 22.6], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [31, 46], "pool": {"cp_cinderback": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

@@ -33,7 +33,14 @@
     {"type": "signpost", "pos": [6.8, 252], "yaw": -90, "labels": ["Emberhold", "Obelisk"]},
     {"type": "signpost", "pos": [18.8, -264], "yaw": -90, "labels": ["Obelisk", "Thornwood Vale"]},
     {"type": "signpost", "pos": [21, 46.5], "yaw": 0, "labels": ["Harrowfield", "Obelisk"]},
-    {"type": "signpost", "pos": [-12, 6], "yaw": 0, "labels": ["Rainhold", "Obelisk"]}
+    {"type": "signpost", "pos": [-12, 6], "yaw": 0, "labels": ["Rainhold", "Obelisk"]},
+    {"type": "outpost", "pos": [16.0, -157.5], "hubs": true},
+    {"type": "prop", "pos": [160.0, 27.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [166.0, 32.0], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "ruins", "pos": [204, 60], "hubs": true},
+    {"type": "prop", "pos": [216, 74], "id": "well", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [190, 70], "id": "hay_bale", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [186, 64], "id": "hay_bale", "collide": "box", "yaw": 0, "hubs": true}
   ],
   "passes": [[0, 288, 9], [0, -288, 9], [288, 0, 9], [-288, 0, 9]],
   "roads": [
@@ -67,9 +74,12 @@
     },
     {"id": "merrick", "pos": [-177.3, 208.8], "face": [-62.5, 72.5]},
     {"id": "emberhold_guard", "name": "Guard Brenna", "pos": [-6.8, 260], "face": [-2.3, 216]},
-    {"id": "emberhold_guard", "name": "Guard Osric", "pos": [7.2, 262.5], "face": [2.4, 216]}
+    {"id": "emberhold_guard", "name": "Guard Osric", "pos": [7.2, 262.5], "face": [2.4, 216]},
+    {"id": "gm_hut_guard_0", "pos": [23.6, -154.8], "face": [31.1, -152.2], "hubs": true},
+    {"id": "gm_farmwife_gudrun", "pos": [168.0, 29.0], "face": [204, 60], "hubs": true}
   ],
   "spawns": [
+    {"pos": [-48, -128], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 20},
     {"pos": [0, -240], "pool": {"gnoll_pup": 2, "large_rat": 1}, "respawn": 30, "wander": 10},
     {"pos": [-112, 200], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
     {"pos": [-240, 32], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 12},
@@ -80,7 +90,6 @@
     {"pos": [-216, 232], "pool": {"gnoll_pup": 1, "fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [-240, -80], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 4},
     {"pos": [-48, 240], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
-    {"pos": [-16, -160], "pool": {"gnoll_pup": 3, "large_rat": 1}, "respawn": 30, "wander": 10},
     {"pos": [-96, 120], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
     {"pos": [-224, -168], "pool": {"decaying_skeleton": 1}, "respawn": 90, "wander": 6},
     {"pos": [40, 152], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
@@ -89,7 +98,6 @@
     {"pos": [-30, 150], "pool": {"large_rat": 2, "fire_beetle": 1}, "respawn": 40, "wander": 10},
     {"pos": [60, -150], "pool": {"gnoll_pup": 2, "large_rat": 1}, "respawn": 30, "wander": 10},
     {"pos": [-150, -15], "pool": {"large_rat": 2, "gnoll_pup": 2}, "respawn": 30, "wander": 10},
-    {"pos": [180, 15], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [52.5, -30], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
     {"pos": [-45, -52.5], "pool": {"gnoll_pup": 3, "large_rat": 2}, "respawn": 30, "wander": 10},
     {"pos": [30, 63], "pool": {"large_rat": 3, "gnoll_pup": 1}, "respawn": 30, "wander": 10},
@@ -103,7 +111,6 @@
     {"pos": [123, 93], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [153, 138], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [108, 168], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
-    {"pos": [183, 78], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [198, 183], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [142.5, 213], "pool": {"fire_beetle": 1}, "respawn": 40, "wander": 12},
     {"pos": [-165, 90], "pool": {"fire_beetle": 1, "large_rat": 1}, "respawn": 40, "wander": 12},
@@ -125,6 +132,14 @@
     {"pos": [164.5, -165], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
     {"pos": [170.5, -150], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
     {"pos": [142.5, -125], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
-    {"pos": [174.5, -150], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
+    {"pos": [174.5, -150], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0},
+    {"pos": [240.3, 71.2], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [217.9, 95.4], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [185.0, 92.9], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [166.4, 65.6], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [176.2, 34.1], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [206.9, 22.1], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [235.4, 38.6], "pool": {"gm_grain_weevil": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [207, 62], "pool": {"gm_granary_queen": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

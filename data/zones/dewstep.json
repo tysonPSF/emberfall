@@ -103,14 +103,22 @@
     {"type": "prop", "pos": [-224.7, 219], "id": "boulder_a", "collide": "box"},
     {"type": "prop", "pos": [-214.7, 229], "id": "boulder_b", "collide": "box"},
     {"type": "prop", "pos": [-232.7, 209], "id": "boulder_c", "collide": "box"},
-    {"type": "prop", "pos": [-34.4, 92.1], "id": "pilgrim_shelter", "face": [-18.4, 90.1], "collide": "box"}
+    {"type": "prop", "pos": [-34.4, 92.1], "id": "pilgrim_shelter", "face": [-18.4, 90.1], "collide": "box"},
+    {"type": "outpost", "pos": [-32.4, -136.3], "hubs": true},
+    {"type": "prop", "pos": [196, -78], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [202, -73], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [188, -6], "id": "stone_lantern", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [202, -30], "id": "stone_lantern", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [176, -28], "id": "shrine_broken", "collide": "box", "yaw": 90, "hubs": true}
   ],
   "npcs": [
     {"id": "headpicker_anjali", "pos": [-32.4, -163.9], "face": [-16.4, -167.9]},
     {"id": "hunter_kaveri", "pos": [-16.4, -173.9], "face": [-28.4, -171.9]},
     {"id": "brother_ravi", "pos": [-44.4, -183.9], "face": [-28.4, -177.9]},
     {"id": "tea_seller_moti", "pos": [-26.4, -182.9], "face": [-18.4, -173.9]},
-    {"id": "warden_tashi", "pos": [-20.4, -189.9], "patrol": [[-20.4, -189.9], [-6.4, -152.9], [-16.4, -117.9], [-40.4, -145.9], [-20.4, -189.9]]}
+    {"id": "warden_tashi", "pos": [-20.4, -189.9], "patrol": [[-20.4, -189.9], [-6.4, -152.9], [-16.4, -117.9], [-40.4, -145.9], [-20.4, -189.9]]},
+    {"id": "ds_hut_guard_0", "pos": [-24.5, -137.9], "face": [-16.7, -139.4], "hubs": true},
+    {"id": "ds_tea_roller_sunita", "pos": [204, -76], "face": [188, -20], "hubs": true}
   ],
   "spawns": [
     {"pos": [-24, -240], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
@@ -119,7 +127,6 @@
     {"pos": [-72, 24], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [-152, 8], "pool": {"lantern_wisp": 1}, "respawn": 70, "wander": 8},
     {"pos": [224, 120], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
-    {"pos": [144, 0], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10},
     {"pos": [96, 168], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [-74.4, -145.9], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
     {"pos": [-120, -150], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
@@ -129,7 +136,6 @@
     {"pos": [105, -78], "pool": {"lantern_moth": 1}, "respawn": 40, "wander": 10},
     {"pos": [-135, -192], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [67.5, -187.5], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
-    {"pos": [-34.4, -122.9], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [10.6, -97.9], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [-97.5, 96], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
     {"pos": [67.5, 108], "pool": {"paddy_rat": 1}, "respawn": 40, "wander": 10},
@@ -184,6 +190,13 @@
     {"pos": [183.9, 211.2], "pool": {"dustpaw_howler": 1}, "respawn": 80, "wander": 6},
     {"pos": [161.9, 216.2], "pool": {"dustpaw_howler": 1}, "respawn": 80, "wander": 6},
     {"pos": [189.9, 217.2], "pool": {"chief_rattlejaw": 1}, "respawn": 900, "wander": 4},
-    {"pos": [216, -36], "pool": {"dustpaw_raider": 1}, "respawn": 70, "wander": 10}
+    {"pos": [224.3, -8.8], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [201.9, 15.4], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [169.0, 12.9], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [150.4, -14.4], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [160.2, -45.9], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [190.9, -57.9], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [219.4, -41.4], "pool": {"ds_bamboo_viper": 1}, "respawn": 45, "wander": 12, "hubs": true},
+    {"pos": [191, -18], "pool": {"ds_jade_eye": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }
