@@ -121,6 +121,8 @@ const SECTIONS := [
 	["dusk_gods", "greenmoor"],
 	["login_home", "rainhold"],
 	["quest_marks", "greenmoor"],
+	["high_terrace_ground", "high_terrace"],
+	["starter_spawns", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8440,6 +8442,73 @@ func _t_bridges() -> void:
 	p.factions = keep[1]
 	p.alignment_mods = keep[2]
 	p.deity = keep[3]
+
+
+## High Terrace without its steps: how much of it (and a few other zones, to
+## compare) is too steep to walk up, where its snow lies and who's on it.
+func _t_high_terrace_ground() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	for zone_id: String in ["high_terrace", "thornwood", "cinderpass", "sunward_steps"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		if (main.zone as Zone).zone_id != zone_id:
+			World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+			for k in 80:
+				if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+					break
+				await _wait(0.25)
+			await _wait(0.5)
+		var z := main.zone as Zone
+		var half := float(z.data.get("size", 512)) * 0.5 - 30.0
+		var steep := 0
+		var total := 0
+		var x := -half
+		while x < half:
+			var y := -half
+			while y < half:
+				var h := z.height_at(x, y)
+				var dx := z.height_at(x + 1.0, y) - h
+				var dy := z.height_at(x, y + 1.0) - h
+				if rad_to_deg(atan(sqrt(dx * dx + dy * dy))) > 40.0:
+					steep += 1
+				total += 1
+				y += 4.0
+			x += 4.0
+		print("high_terrace_ground: %s: %.1f%% of the ground too steep to walk up (over 40 degrees)" % [zone_id, 100.0 * steep / total])
+		if zone_id == "high_terrace":
+			var on_snow := 0
+			var leopards := 0
+			for m in World.get_mobs():
+				if m.mob_id in ["snow_leopard", "ghost_leopard"]:
+					leopards += 1
+					if z.on_bare_patch(m.global_position.x, m.global_position.z):
+						on_snow += 1
+			print("high_terrace_ground: snow leopards %d, on the snow %d" % [leopards, on_snow])
+			await _zone_views("high_terrace", [[Vector2(0, 150), Vector2(-60, 175), "paddies"], [Vector2(-40, -60), Vector2(-80, -160), "snowfields"],
+					[Vector2(60, -140), Vector2(78, -205), "monastery"], [Vector2(20, 60), Vector2(0, -60), "climb"]])
+
+
+## The beginners' calm monsters, levels 1 to 5, in each starting zone.
+func _t_starter_spawns() -> void:
+	for zone_id: String in ["greenmoor", "the_wallow", "duskwood", "dewstep"]:
+		var d := GameData.load_zone(zone_id)
+		var calm := 0.0
+		var quick := 0
+		for sp: Dictionary in d.get("spawns", []):
+			if sp.get("when", "") == "night":
+				continue
+			var pool: Dictionary = sp["pool"]
+			var total := 0.0
+			for w: Variant in pool.values():
+				total += float(w)
+			for mob_id: String in pool:
+				var m: Dictionary = GameData.mobs.get(mob_id, {})
+				if not m.get("aggressive", true) and not m.get("named", false) and int((m.get("level", [0, 0]) as Array)[0]) <= 5:
+					calm += float(pool[mob_id]) / total
+			if float(sp.get("respawn", 60)) <= 30.0:
+				quick += 1
+		print("starter_spawns: %s: %.0f calm beginners' monsters, %d spots back in 30 s" % [zone_id, calm, quick])
 
 
 func _t_quest_marks() -> void:

@@ -7,7 +7,7 @@
   "music": "high_terrace",
   "seed": 8831,
   "size": 512,
-  "height_amplitude": 5,
+  "height_amplitude": 10,
   "bind_point": [
     -20,
     200
@@ -113,15 +113,6 @@
         1.1
       ]
     }
-  },
-  "terraces": {
-    "start": -215,
-    "end": 175,
-    "steps": 8,
-    "rise": 72,
-    "riser": 9,
-    "wobble": 14,
-    "toward": "north"
   },
   "fields": [
     {
@@ -941,6 +932,60 @@
         -175,
         -160
       ]
+    },
+    {
+      "type": "prop",
+      "pos": [
+        150,
+        -205
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -30,
+        -150
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        175,
+        -110
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -205,
+        -40
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -100,
+        -205
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        40,
+        -130
+      ],
+      "id": "crag_rock",
+      "collide": "mesh"
     }
   ],
   "passes": [
@@ -1247,52 +1292,8 @@
     },
     {
       "pos": [
-        -140,
-        140
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -100,
-        90
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        60
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -90,
-        30
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -150,
-        0
+        -120,
+        -110
       ],
       "pool": {
         "snow_leopard": 1
@@ -1303,7 +1304,7 @@
     {
       "pos": [
         -60,
-        60
+        -150
       ],
       "pool": {
         "snow_leopard": 1
@@ -1313,8 +1314,52 @@
     },
     {
       "pos": [
-        -120,
-        -30
+        20,
+        -165
+      ],
+      "pool": {
+        "snow_leopard": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -160,
+        -80
+      ],
+      "pool": {
+        "snow_leopard": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        120,
+        -125
+      ],
+      "pool": {
+        "snow_leopard": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        165,
+        -175
+      ],
+      "pool": {
+        "snow_leopard": 1
+      },
+      "respawn": 80,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -30,
+        -205
       ],
       "pool": {
         "snow_leopard": 1
@@ -1753,8 +1798,8 @@
     },
     {
       "pos": [
-        -130,
-        40
+        -80,
+        -160
       ],
       "pool": {
         "ghost_leopard": 1
@@ -1798,6 +1843,78 @@
       },
       "respawn": 85,
       "wander": 18
+    }
+  ],
+  "ground_patches": [
+    {
+      "pos": [
+        0,
+        -200
+      ],
+      "radius": 85,
+      "color": "#e6ecf0",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        -150,
+        -170
+      ],
+      "radius": 80,
+      "color": "#e2e8ee",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        150,
+        -170
+      ],
+      "radius": 75,
+      "color": "#e4eaef",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        -70,
+        -120
+      ],
+      "radius": 55,
+      "color": "#e8eef2",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        80,
+        -110
+      ],
+      "radius": 50,
+      "color": "#e6ecf0",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        -200,
+        -70
+      ],
+      "radius": 45,
+      "color": "#e2e8ec",
+      "flatten": 0.0,
+      "bare": true
+    },
+    {
+      "pos": [
+        200,
+        -80
+      ],
+      "radius": 45,
+      "color": "#e4eaee",
+      "flatten": 0.0,
+      "bare": true
     }
   ]
 }
