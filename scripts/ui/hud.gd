@@ -3552,7 +3552,8 @@ func _refresh_quests() -> void:
 			var done := int(have[item_id]) >= need
 			lines.append("[url=item:%s:%s][color=#%s]  %s  %d/%d[/color][/url]" % [quest_id, item_id, "8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
 		if World.quest_items_ready(player, quest_id):
-			lines.append("[color=#8fe08f]  Trade them to %s (G)[/color]" % GameData.npcs[q["giver"]]["name"])
+			var takers: Array = [str(q["giver"])] + Array(q.get("also_taken_by", []))
+			lines.append("[color=#8fe08f]  Trade them to %s (G)[/color]" % " or ".join(takers.map(func(id: String) -> String: return str(GameData.npcs.get(id, {}).get("name", id)))))
 	_quest_label.text = "\n".join(lines)
 	_quest_panel.visible = not lines.is_empty()
 

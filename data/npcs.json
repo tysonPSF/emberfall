@@ -6595,5 +6595,702 @@
     },
     "title": "Priestess of Jalendra",
     "gender": "female"
+  },
+  "tw_corporal_brannic": {
+    "name": "Corporal Brannic",
+    "level": 30,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Northwatch, {name}: as far up the vale as the Patrol keeps a fire. Harlan's work and the hermit's, you can hand in here; I'll see it gets to them. And there's the [shrine].",
+      "shrine": "North-east, a shrine to the Dawn-Tusk nobody's prayed at since the Watch fell. There are acolytes there again, dead ones, telling [beads]. The one who leads them is [Brother Vesk].",
+      "beads": "Their prayer beads. Four, and the Patrol pays, as often as you bring them. Every bead you take is one less prayer to whatever they pray to now.",
+      "brother vesk": "He kept that shrine when the Watch still stood. Now he keeps it for something else. His censer still smokes: bring it to me.",
+      "unknown": "Ask Harlan, back down the road. He's walked it longer."
+    },
+    "title": "Vale Patrol"
+  },
+  "tw_sutler_wenna": {
+    "name": "Sutler Wenna",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "watch",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Vale Patrol",
+    "gender": "female",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "tw_northwatch_guard": {
+    "name": "a Northwatch sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Vale Patrol"
+  },
+  "tw_hut_guard_0": {
+    "name": "a Vale Patrol watchman",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Vale Patrol"
+  },
+  "tw_hut_guard_1": {
+    "name": "a Vale Patrol watchman",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Vale Patrol"
+  },
+  "tw_hut_guard_2": {
+    "name": "a Vale Patrol watchman",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "watch",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Vale Patrol"
+  },
+  "tw_hob_woodcutter": {
+    "name": "Hob the Woodcutter",
+    "level": 20,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "emberhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Don't mind the mess, {name}. We had a camp here, six of us, until [Old Greyback] came. And the [boars] that follow him about for his leavings.",
+      "boars": "Tuskers, the size of a cart. Four of their tusks and I'll pay, again and again: I'm selling them to the Patrol for spear points.",
+      "old greyback": "A bear, grey as ash, with a scar down his back where my brother's axe went in. He sleeps west of the camp. Bring me his hide and we can come home.",
+      "unknown": "I cut wood, {name}. Ask the hermit."
+    },
+    "title": "Woodcutter"
+  },
+  "lg_outrider_temperance": {
+    "name": "Outrider Temperance",
+    "level": 45,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Windrider's Rest, {name}: Galehold's last fire before the herds. Whatever the city's asked of you out here, you can hand in to me; the riders carry it back. Mind the [stones] up north.",
+      "stones": "A ring of standing stones in the north grass, humming. They get up and walk now, the [sentinels], and something wakes in the middle of them: the [Ringwarden].",
+      "sentinels": "Stone that walks. Bring me four chips of it and I'll pay, as often as you like: Galehold's stonecutters want to know what they're made of.",
+      "ringwarden": "The biggest of the stones, the one in the middle. It carries a rune-stone in its chest. Bring me that.",
+      "unknown": "Galehold's the place for questions. I'm the place for answers you can use."
+    },
+    "title": "Galehold Outrider",
+    "gender": "female"
+  },
+  "lg_sutler_ansgar": {
+    "name": "Sutler Ansgar",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Galehold Outriders",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "lg_rest_guard": {
+    "name": "a Galehold outrider",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Galehold Outriders"
+  },
+  "lg_hut_guard_0": {
+    "name": "a Galehold outrider",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Galehold Outriders"
+  },
+  "lg_hut_guard_1": {
+    "name": "a Galehold outrider",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Galehold Outriders"
+  },
+  "lg_hut_guard_2": {
+    "name": "a Galehold outrider",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Galehold Outriders"
+  },
+  "lg_herdwife_saule": {
+    "name": "Herdwife Saule",
+    "level": 40,
+    "model": "ranger",
+    "weapon": "staff",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "That was my husband's camp, {name}, before the fever took the herd and the Khan took the riders. Now the [jackals] have it. And [Old Rakemaw].",
+      "jackals": "Carrion jackals, come for the bones. Bring me four of their ears and I'll pay you every time: I'll have them gone from that camp if I have to buy every ear on the plain.",
+      "old rakemaw": "The pack's old mother. Grey muzzle, one eye. She dens in my husband's yurt. Bring me her jawbone.",
+      "unknown": "I only know the herd, {name}. What's left of it."
+    },
+    "title": "of the Broken Wheel",
+    "gender": "female"
+  },
+  "bl_outrider_kofi": {
+    "name": "Outrider Kofi",
+    "level": 30,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "salt_traders",
+    "race": "human",
+    "dialogue": {
+      "hail": "Saltwater Well, {name}: the only sweet water north of the waystation, and the caravans' last stop before the pan. Suri's and Ibrem's business you can hand in here. And ask me about the [mine].",
+      "mine": "The old salt mine east of here. The miners never left: the brine got into them. They wander the shacks still, with their [tags] round their necks, and their [foreman] with them.",
+      "tags": "Their mine tags. Bring me four and I'll pay each time; their families in Lanternhold will want to know.",
+      "foreman": "Foreman Dask. He kept the ledger. Bring it to me and the families will know who went down and didn't come up.",
+      "unknown": "Suri knows the road. I know the water."
+    },
+    "title": "Salt Traders"
+  },
+  "bl_sutler_amara": {
+    "name": "Sutler Amara",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "salt_traders",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Salt Traders",
+    "gender": "female",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "bl_well_guard": {
+    "name": "a caravan guard",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Salt Traders"
+  },
+  "bl_hut_guard_0": {
+    "name": "a caravan guard",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Salt Traders"
+  },
+  "bl_hut_guard_1": {
+    "name": "a caravan guard",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "salt_traders",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Salt Traders"
+  },
+  "bl_trader_oyelowo": {
+    "name": "Trader Oyelowo",
+    "level": 25,
+    "model": "rogue_hooded",
+    "weapon": "dagger",
+    "faction": "salt_traders",
+    "race": "human",
+    "dialogue": {
+      "hail": "My caravan, {name}. Lost to the salt in a storm, three years ago. I came back for the cargo and found the [crabs] living in it. And the [Wreck-Shell].",
+      "crabs": "Salt crabs, big ones, nesting in the wagons. Four of their claws and I'll pay: the cooks in Lanternhold pay me more.",
+      "wreck-shell": "The old one. A shell like a wagon wheel. It lives under the lead wagon, on my strongbox. Bring me a piece of its shell and I'll know it's done.",
+      "unknown": "I trade, {name}. I don't know much else."
+    },
+    "title": "Trader"
   }
 }

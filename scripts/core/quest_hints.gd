@@ -104,17 +104,26 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 	return out
 
 
-## Where a quest's giver stands, for handing it in.
+## Where a quest's giver stands, for handing it in; or, if someone in the
+## field also takes it ("also_taken_by"), the nearest of them: one in this
+## zone before one elsewhere.
 static func giver_hint(quest_id: String, here: String, at: Vector3) -> String:
 	var q: Dictionary = GameData.quests.get(quest_id, {})
 	var giver := str(q.get("giver", ""))
+	var takers: Array = [giver] + Array(q.get("also_taken_by", []))
+	var best: Array = []  # [rank, npc id, zone id, pos]
 	for zone_id: String in zones():
 		var z: Dictionary = zones()[zone_id]
 		for n: Dictionary in z.get("npcs", []):
-			if str(n.get("id", "")) == giver:
+			if str(n.get("id", "")) in takers:
 				var pos := Vector2(float(n["pos"][0]), float(n["pos"][1]))
-				return "%s: hand it in to %s in %s, %s." % [q["name"], _npc_name(giver), z.get("name", zone_id), _region(z, [pos], zone_id == here, at)]
-	return "%s: hand it in to %s." % [q.get("name", quest_id), _npc_name(giver)]
+				var rank := pos.distance_to(Vector2(at.x, at.z)) if zone_id == here else 1e9 + takers.find(str(n["id"]))
+				if best.is_empty() or rank < float(best[0]):
+					best = [rank, str(n["id"]), zone_id, pos]
+	if best.is_empty():
+		return "%s: hand it in to %s." % [q.get("name", quest_id), _npc_name(giver)]
+	var bz: Dictionary = zones()[best[2]]
+	return "%s: hand it in to %s in %s, %s." % [q["name"], _npc_name(best[1]), bz.get("name", best[2]), _region(bz, [best[3]], best[2] == here, at)]
 
 
 static func _npc_name(npc_id: String) -> String:

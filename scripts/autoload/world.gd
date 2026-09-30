@@ -2436,11 +2436,13 @@ func quest_mark(p: Player, npc_id: String) -> String:
 		var q: Dictionary = GameData.quests[quest_id]
 		var state: Dictionary = p.quests.get(quest_id, {})
 		if state.get("active", false):
-			if q["giver"] == npc_id and quest_items_ready(p, quest_id):
+			if takes_hand_in(q, npc_id) and quest_items_ready(p, quest_id):
 				ready = true
 			continue
 		if int(state.get("completions", 0)) > 0:
 			continue  # done (a repeatable one too: no mark for doing it again)
+		if str(q.get("giver", "")) != npc_id and str(q.get("starter", "")) != npc_id:
+			continue  # only takes its hand-in (a forward camp's scout): the "?", never the "!"
 		var keyword := str(q.get("start_keyword", ""))
 		if keyword == "" and not state.has("active"):
 			continue  # a quest line's later step comes by finishing the one before, not by asking
@@ -2459,7 +2461,7 @@ func quest_mark(p: Player, npc_id: String) -> String:
 var _npc_quests: Dictionary = {}  # npc id -> the quests they give or start (built once)
 
 
-## Every npc that gives or starts a quest (the ones that get a mark).
+## Every npc that gives or starts a quest, or takes one's hand-in (the ones that get a mark).
 func quest_mark_npcs() -> Dictionary:
 	_quests_of_npc("")
 	return _npc_quests
@@ -2469,7 +2471,7 @@ func _quests_of_npc(npc_id: String) -> Array:
 	if _npc_quests.is_empty():
 		for quest_id: String in GameData.quests:
 			var q: Dictionary = GameData.quests[quest_id]
-			for who: String in [str(q.get("giver", "")), str(q.get("starter", ""))]:
+			for who: String in [str(q.get("giver", "")), str(q.get("starter", ""))] + Array(q.get("also_taken_by", [])):
 				if who != "":
 					if not _npc_quests.has(who):
 						_npc_quests[who] = []
@@ -4303,8 +4305,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if key == "hail":
 		for quest_id: String in p.quests:
 			var q: Dictionary = GameData.quests.get(quest_id, {})
-			if q.get("giver") == npc.npc_id and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
-				_npc_say(p, npc, str(q.get("ready_text", "Hand those over, {name}.")))
+			if takes_hand_in(q, npc.npc_id) and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+				_npc_say(p, npc, str(q.get("ready_text", "Hand those over, {name}.")) if q.get("giver") == npc.npc_id else "You've done %s's work for %s? I can take that for them, {name}." % [QuestHints._npc_name(str(q["giver"])), q["name"]])
 				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
@@ -4530,10 +4532,17 @@ func request_trade_open(player_id: int) -> void:
 
 
 ## Whether this npc runs a quest you're on and carry everything for.
+## Whether npc_id takes a quest's hand-in: its giver, or someone out in the
+## field it names in "also_taken_by" (a forward camp's scout, so the far
+## end of a big zone needn't be walked back from). Only the giver hands it out.
+func takes_hand_in(q: Dictionary, npc_id: String) -> bool:
+	return str(q.get("giver", "")) == npc_id or npc_id in q.get("also_taken_by", [])
+
+
 func _hand_in_waiting(p: Player, npc: Npc) -> bool:
 	for quest_id: String in p.quests:
 		var q: Dictionary = GameData.quests.get(quest_id, {})
-		if q.get("giver") == npc.npc_id and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+		if takes_hand_in(q, npc.npc_id) and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
 			return true
 	return false
 
@@ -4639,7 +4648,7 @@ func request_trade_give(player_id: int) -> void:
 		say(p, "%s has no use for %s and hands %s back." % [npc.display_name, ", ".join(names), "it" if left.size() == 1 else "them"], C_SYSTEM)
 		for quest_id: String in p.quests:  # meant for someone else's quest: say whose
 			var q: Dictionary = GameData.quests.get(quest_id, {})
-			if p.quests[quest_id].get("active", false) and q.get("giver") != npc.npc_id \
+			if p.quests[quest_id].get("active", false) and not takes_hand_in(q, npc.npc_id) \
 					and left.any(func(id: String) -> bool: return (q["wants"] as Dictionary).has(id)):
 				say(p, "(%s: these are for %s.)" % [q["name"], GameData.npcs[q["giver"]]["name"]], C_XP)
 		_return_to_pack(p, left.map(func(id: String) -> Dictionary: return Pack.entry(id)))
@@ -4870,7 +4879,7 @@ func _npc_take_items(p: Player, npc: Npc, offered: Array) -> Array:
 	var left := offered.duplicate()
 	for quest_id: String in GameData.quests:
 		var q: Dictionary = GameData.quests[quest_id]
-		if q["giver"] != npc.npc_id:
+		if not takes_hand_in(q, npc.npc_id):
 			continue
 		var wants: Dictionary = q["wants"]
 		while _has_all(left, wants):

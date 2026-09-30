@@ -11699,6 +11699,8 @@ def main():
 	for item_id, item in load_items().items():
 		if only and item_id not in only:
 			continue
+		if item.get("icon"):  # it borrows another item's picture
+			continue
 		props.reset_scene()
 		props._materials.clear()
 		if not build_subject(item_id, item, models):
