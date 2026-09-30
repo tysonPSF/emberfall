@@ -594,6 +594,7 @@ func _fizzles(p: Player, s: Dictionary) -> bool:
 	if s.get("ability", false) or not school in ["evocation", "alteration", "abjuration"]:
 		return false
 	var chance := maxf(0.0, 0.15 * (1.0 - skill_frac(p, school)))
+	chance *= 1.0 - minf(float(cfg("caster_fizzle_max_cut", 0.5)), p.caster_over() * float(cfg("caster_fizzle_per_point", 0.005)))  # a sharp mind fizzles less
 	if randf() >= chance:
 		return false
 	p.mana -= int(s.get("mana", 0)) / 3
@@ -2841,6 +2842,15 @@ func sitting_mana(level: int) -> float:
 	return 2.0 + level / 2 + float(cfg("sit_mana_per_level_sq", 0.015)) * level * level
 
 
+## How much harder a player's own spell lands from their casting stat (INT
+## or WIS over the base, config "caster_power_per_point"): only spells they
+## cast from their book, not abilities, item clicks or procs.
+func spell_power(c: Entity, spell_id: String, s: Dictionary) -> float:
+	if not (c is Player) or s.get("ability", false) or not (spell_id in c.spells):
+		return 1.0
+	return 1.0 + (c as Player).caster_over() * float(cfg("caster_power_per_point", 0.001))
+
+
 ## Stuns someone, and then they can't be stunned again until config
 ## "stun_immunity" seconds after it wears off: stuns interrupt, they can't lock.
 func _stun(t: Entity, seconds: float) -> void:
@@ -2898,6 +2908,8 @@ func _finish_spell(c: Entity, spell_id: String, t: Entity, from_item := false) -
 		if s.get("ability", false) and skill != "taunt":  # kick, bash, bind wound grow with the skill
 			power = maxi(1, roundi(power * (0.6 + 0.5 * skill_frac(c as Player, skill))))
 		try_skill_up(c as Player, skill, t if s.get("ability", false) and t != c else null)
+	if str(s["type"]) in ["damage", "heal", "lifetap"]:
+		power = roundi(power * spell_power(c, spell_id, s))
 	if str(s.get("target", "")) == "group" and c is Player:  # every member in range, the caster too
 		for m: Player in group_members(c as Player):
 			if not m.dead and (m == c or c.distance_to(m) <= float(s.get("range", 30))):
@@ -3035,6 +3047,7 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			var per_tick := int(s.get("tick", 1)) + int(float(s.get("per_level", 0)) * (c.level - 1))
 			if c is Player and (c as Player).bonus("dot_pct") != 0.0:  # Tantuvi's followers: their slow poisons bite deeper
 				per_tick = int(round(per_tick * (1.0 + (c as Player).bonus("dot_pct") / 100.0)))
+			per_tick = roundi(per_tick * spell_power(c, spell_id, s))
 			t.dots = t.dots.filter(func(d: Dictionary) -> bool: return not (d["spell"] == spell_id and d["caster_id"] == c.entity_id))
 			t.dots.append({"spell": spell_id, "caster_id": c.entity_id, "damage": per_tick, "ticks": int(s.get("ticks", 3)), "next": 3.0})
 			say(c, str(s.get("dot_text", "%s begins to smolder.")) % cap(t.display_name), C_SPELL)

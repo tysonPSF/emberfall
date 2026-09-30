@@ -127,6 +127,7 @@ const SECTIONS := [
 	["spawn_coverage", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
+	["caster_stats", "greenmoor"],
 	["giant_sizes", "the_bleach"],
 	["grove_uniques", "greenmoor"],
 	["bags_with_inventory", "greenmoor"],
@@ -8715,6 +8716,36 @@ func _t_giant_sizes() -> void:
 ## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
 ## fighting, with every clip its body plays (the main hand's slash and the
 ## off hand's own cut), and a shot of each.
+func _t_caster_stats() -> void:
+	# INT or WIS over 75: mana, mana regen, spell power (own spells only) and fewer fizzles
+	var p := World.local_player
+	var saved := [p.char_class, p.level, p.spells, p.stat_points, p.race]
+	p.char_class = "wizard"
+	p.level = 30
+	p.race = "human"
+	p.spells = ["fireball"]
+	var rows := PackedStringArray()
+	for n: int in [0, 15]:
+		p.stat_points = {"int": n}
+		p.recalc_stats()
+		rows.append("int +%d: mana %d, regen %d, fireball x%.3f, kick x%.3f, not in book x%.3f" % [p.caster_over(), p.max_mana, p.mana_regen,
+				World.spell_power(p, "fireball", GameData.spells["fireball"]), World.spell_power(p, "kick", GameData.spells["kick"]),
+				World.spell_power(p, "fire_bolt", GameData.spells["fire_bolt"])])
+	print("caster_stats: %s" % " | ".join(rows))
+	p.char_class = "cleric"
+	p.stat_points = {"int": 15}
+	p.recalc_stats()
+	print("caster_stats: a cleric's INT counts for nothing: over %d" % p.caster_over())
+	print("caster_stats: creation text, wizard int 15: '%s'; cleric int 15: '%s'; 20 wis cleric: '%s'" % [StatPicker.effect_text("int", 15, GameData.classes["wizard"]),
+			StatPicker.effect_text("int", 15, GameData.classes["cleric"]), StatPicker.effect_text("wis", 20, GameData.classes["cleric"])])
+	p.char_class = saved[0]
+	p.level = saved[1]
+	p.spells = saved[2]
+	p.stat_points = saved[3]
+	p.race = saved[4]
+	p.recalc_stats()
+
+
 func _t_plate_looks() -> void:
 	# plate (warrior and cleric only) must wear the knight's metal, never leather or cloth
 	var looks: Dictionary = GameData.models.get("body_parts", {})

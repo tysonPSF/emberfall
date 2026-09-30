@@ -385,6 +385,13 @@ func stat_value(stat: String) -> int:
 	return int(World.cfg("stat_base", 75)) + int(attributes.get(stat, 0))
 
 
+## Points of the class's casting stat (INT or WIS) above the base: they add
+## mana, mana regen and spell power and cut fizzles. Never below 0.
+func caster_over() -> int:
+	var stat := str(GameData.classes.get(char_class, {}).get("caster_stat", ""))
+	return maxi(0, int(attributes.get(stat, 0))) if stat != "" else 0
+
+
 func to_save() -> Dictionary:
 	var p := global_position
 	return {
@@ -496,6 +503,8 @@ func recalc_stats() -> void:
 		off_delay /= 1.0 + haste / 100.0
 	hp_regen = int(cls["hp_regen"]) + level / 4 + int(bonus("hp_regen")) + int(attr.get("hp_regen", 0)) + buff_total("hp_regen")
 	mana_regen = int(cls["mana_regen"]) + int(attr.get("mana_regen", 0)) + buff_total("mana_regen") + (int(bonus("mana_regen")) if max_mana > 0 else 0)
+	if max_mana > 0 and caster_stat != "":  # the casting stat quickens mana too
+		mana_regen += maxi(0, int(attr.get(caster_stat, 0))) / maxi(1, int(World.cfg("caster_regen_per", 20)))
 	max_hp += int(max_hp * bonus("hp_pct") / 100.0)
 	# Every lever that could lengthen a run lands in max_stamina, so nothing else
 	# has to change to grant more. STA is the gear route: it is already the

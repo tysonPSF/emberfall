@@ -138,5 +138,9 @@ static func effect_text(stat: String, n: int, cls: Dictionary) -> String:
 		"wis", "int":
 			if str(cls.get("caster_stat", "")) != stat:
 				return "(your class doesn't cast with it)"
-			return "+%d mana" % n if n > 0 else "mana"
+			if n <= 0:
+				return "mana, regen, spell power"
+			var text := "+%d mana, +%s%% spell power" % [n, str(snappedf(n * float(World.cfg("caster_power_per_point", 0.001)) * 100.0, 0.1))]
+			var regen := n / maxi(1, int(World.cfg("caster_regen_per", 20)))
+			return text + (", +%d mana regen" % regen if regen > 0 else ", fewer fizzles")
 	return ""
