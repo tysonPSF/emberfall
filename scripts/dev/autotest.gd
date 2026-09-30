@@ -8406,6 +8406,9 @@ func _t_high_terrace_ground() -> void:
 		while x < half:
 			var y := -half
 			while y < half:
+				if z.edge_depth(x, y) > -2.0:  # the mountains round the zone (its ridges reach in) are steep on purpose
+					y += 4.0
+					continue
 				var h := z.height_at(x, y)
 				var dx := z.height_at(x + 1.0, y) - h
 				var dy := z.height_at(x, y + 1.0) - h

@@ -409,7 +409,44 @@ def bw_poly(points):
     return outline._polyline(points, 4.0)
 
 
+# Places that stayed packed together when their zone grew (a settlement moves whole),
+# pulled apart: every landmark (not a signpost) and spawn within `radius` of `from`
+# moves by the same offset to `to`, and ordinary spawns already there make room.
+# A rerun finds nothing left at `from` and does nothing.
+MOVES = {
+    "high_terrace": [  # the Terrace Colossus's sun shrine sat 80 m from the monastery; the Ghost at its gate
+        {"from": (76.8, -239.7), "radius": 30, "to": (280, -40), "what": "the Terrace Colossus's sun shrine and golems"},
+        {"from": (-81.2, -194.7), "radius": 3, "to": (-300, -60), "what": "the Ghost of the Terraces"},
+    ],
+}
+
+
+def move_places():
+    for zid, moves in MOVES.items():
+        path = f"{ROOT}/data/zones/{zid}.json"
+        z = json.load(open(path))
+        changed = False
+        for mv in moves:
+            fx, fy = mv["from"]
+            dx, dy = mv["to"][0] - fx, mv["to"][1] - fy
+            near = lambda e: math.dist(e["pos"], (fx, fy)) <= mv["radius"]
+            lms = [l for l in z["landmarks"] if near(l) and l["type"] not in ("signpost", "rockslide", "bridge")]
+            sps = [s for s in z["spawns"] if near(s)]
+            if not lms and not sps:
+                continue
+            print("%-16s moving %s: %d landmarks, %d spawns, %.0f m" % (zid, mv["what"], len(lms), len(sps), math.hypot(dx, dy)))
+            for e in lms + sps:
+                e["pos"] = [round(e["pos"][0] + dx, 1), round(e["pos"][1] + dy, 1)]
+                if "face" in e:
+                    e["face"] = [round(e["face"][0] + dx, 1), round(e["face"][1] + dy, 1)]
+            z["spawns"] = [s for s in z["spawns"] if s in sps or math.dist(s["pos"], mv["to"]) > 40]
+            changed = True
+        if changed and not CHECK:
+            open(path, "w").write(scale_zone.dumps(z) + "\n")
+
+
 def main():
+    move_places()
     edges_all = outline.load()
     for zid, build in ZONES.items():
         path = f"{ROOT}/data/zones/{zid}.json"
