@@ -125,6 +125,7 @@ const SECTIONS := [
 	["starter_spawns", "greenmoor"],
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
+	["zone_outlines", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8886,6 +8887,89 @@ func _t_spawn_coverage() -> void:
 			if m.spawn_point != null and Vector2(at.x, at.z).distance_to(Vector2(m.spawn_point.global_position.x, m.spawn_point.global_position.z)) > 40.0:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
+	World.time_override = -1.0
+
+
+## The zones' uneven mountain edges (tools/zones/outline.py): in every
+## outdoor zone nothing placed stands under a ridge (npcs, the bind point,
+## landmarks, arrivals from other zones), and in a few built zones every
+## spawn stands on open ground and each zone line's pass is still low enough
+## to walk; each built zone's map is saved to look at the shape.
+func _t_zone_outlines() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var outlines: Dictionary = GameData._load("res://data/zone_outlines.json")
+	var arrivals := {}
+	for f: String in DirAccess.get_files_at("res://data/zones"):
+		for zl: Dictionary in GameData.load_zone(f.get_basename()).get("zone_lines", []):
+			if zl.get("arrive") is Array:
+				(arrivals.get_or_add(str(zl["to"]), []) as Array).append(Vector2(zl["arrive"][0], zl["arrive"][1]))
+	var buried := 0
+	for id: String in outlines:
+		var d := GameData.load_zone(id)
+		var z := Zone.new()
+		z.half = float(d.get("size", 384)) * 0.5
+		z._outline = outlines[id]
+		var pts: Array = [[Vector2(d.get("bind_point", [0, 0])[0], d.get("bind_point", [0, 0])[1]), "bind point"]]
+		for n: Dictionary in d.get("npcs", []):
+			pts.append([Vector2(n["pos"][0], n["pos"][1]), str(n["id"])])
+		for lm: Dictionary in d.get("landmarks", []):
+			pts.append([Vector2(lm["pos"][0], lm["pos"][1]), str(lm["type"])])
+		for at: Vector2 in arrivals.get(id, []):
+			pts.append([at, "arrival"])
+		for pt: Array in pts:
+			var now := z.edge_depth(pt[0].x, pt[0].y)
+			var square := maxf(absf(pt[0].x), absf(pt[0].y)) - (z.half - 28.0)  # a pass's signpost, a city's wall stood in the ring already
+			if now > -8.0 and now > square + 0.5:
+				buried += 1
+				print("zone_outlines:   %s: %s at %s is under a ridge (%.1f)" % [id, pt[1], pt[0], now])
+		z.free()
+	print("zone_outlines: %d outlined zones, %d things under a ridge" % [outlines.size(), buried])
+	var hud: Hud = main.hud
+	World.time_override = 12.0
+	for zone_id: String in ["greenmoor", "thornwood", "harrowfield", "the_long_grass", "stonesail"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+		for k in 80:
+			if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(1.0)
+		var z := main.zone as Zone
+		var covered := 0
+		var moved := 0
+		for sp: Node in z.get_children():
+			if sp is SpawnPoint:
+				var at := Vector2(sp.global_position.x, sp.global_position.z)
+				if z.edge_depth(at.x, at.y) > -4.0:
+					covered += 1
+				if not z.data.get("spawns", []).any(func(e: Dictionary) -> bool: return Vector2(e["pos"][0], e["pos"][1]).distance_to(at) < 0.5):
+					moved += 1
+		var steep := 0
+		for zl: Dictionary in z.data.get("zone_lines", []):
+			var at := Vector2(zl["pos"][0], zl["pos"][1])
+			var inward := -at.normalized() * 40.0
+			var rise := z.height_at(at.x, at.y) - z.height_at(at.x + inward.x, at.y + inward.y)
+			if rise > 12.0:
+				steep += 1
+				print("zone_outlines:   %s: the pass to %s climbs %.1f m in 40 m" % [zone_id, zl["to"], rise])
+		print("zone_outlines: %s: spawns under a ridge %d, walked off one %d, steep passes %d" % [zone_id, covered, moved, steep])
+		var map: MapWindow = hud._map
+		for k in 4000:
+			if map._painted.has(zone_id):
+				break
+			map._paint_some(z)
+		if shots_dir != "" and map._painted.has(zone_id):
+			(map._painted[zone_id] as ImageTexture).get_image().save_png("%s/9outline_%s.png" % [shots_dir, zone_id])
+		p.global_position = z.ground(z.bind_point.x, z.bind_point.z) + Vector3.UP * 2.0
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 9.0
+		p.pitch = -0.15
+		for dir: Vector2 in [Vector2(0, -1), Vector2(1, 0)]:
+			p.face_toward(p.global_position + Vector3(dir.x, 0, dir.y))
+			await _wait(1.2)
+			await _shot("9outline_%s_%s" % [zone_id, "north" if dir.y < 0 else "east"])
 	World.time_override = -1.0
 
 

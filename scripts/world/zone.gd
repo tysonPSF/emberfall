@@ -26,6 +26,8 @@ var _bind_xz := Vector2.ZERO
 var _flat_spots: Array[Vector2] = []
 var _flat_scale: Array[float] = []  # each flat spot's size (a landmark's "size": a big camp levels more ground)
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
+var _outline: Dictionary = {}  # this zone's entry in data/zone_outlines.json: how far in the mountains reach along each side
+static var _outlines: Dictionary = {}  # every zone's, read once
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
@@ -77,6 +79,9 @@ func load_zone(id: String) -> void:
 			# the landmark flattens the ground to this height; the water sits a little below it
 			var flat := _noise.get_noise_2d(spot.x, spot.y) * amp * 0.5
 			_ponds.append({"center": spot, "radius": float(lm.get("radius", 12)), "depth": float(lm.get("depth", 1.6)), "level": flat - 0.25})
+	if _outlines.is_empty():
+		_outlines = GameData._load("res://data/zone_outlines.json")
+	_outline = _outlines.get(id, {}) if tunnel == null else {}
 	for ps: Array in data.get("passes", []):
 		_passes.append([float(ps[0]), float(ps[1]), float(ps[2]) if ps.size() > 2 else 9.0])
 	for river: Dictionary in data.get("rivers", []):
@@ -316,11 +321,32 @@ func height_at(x: float, z: float) -> float:
 				h = lerpf(float(f[3]), h, smoothstep(0.0, 4.0, out))
 	for lake: Dictionary in _lakes:
 		h = _lake_height(lake, x, z, h)
-	# Mountains ring the zone so you can't walk off the edge.
-	var edge := maxf(absf(x), absf(z)) - (half - 28.0)
+	# Mountains ring the zone so you can't walk off the edge; its ridges reach in unevenly (edge_depth).
+	var edge := edge_depth(x, z)
 	if edge > 0.0 and tunnel == null:
-		h += (edge * 1.3 + edge * edge * 0.08) * _pass_factor(x, z)
+		var rugged := 1.0 + 0.6 * _noise.get_noise_2d(x * 0.8 + 911.0, z * 0.8 - 317.0)  # peaks and saddles along the ridge; the foot's slope stays unclimbable
+		h += (edge * 1.3 + edge * edge * 0.08 * rugged) * _pass_factor(x, z)
 	return h
+
+
+## How far (x, z) stands past the foot of the mountains round the zone
+## (negative: open ground), before the passes open it. The foot is 28 m in
+## from the square edge, pushed further in along each side by the zone's
+## outline (tools/zones/outline.py: ridges, rounded corners), so a zone isn't
+## a box. tools/zones/outline.py edge_depth is the same in Python.
+func edge_depth(x: float, z: float) -> float:
+	var base := half - 28.0
+	if _outline.is_empty():
+		return maxf(absf(x), absf(z)) - base
+	var st := float(_outline["step"])
+	return maxf(maxf(-z - base + _inset(_outline["n"], st, x), z - base + _inset(_outline["s"], st, x)),
+			maxf(x - base + _inset(_outline["e"], st, z), -x - base + _inset(_outline["w"], st, z)))
+
+
+func _inset(prof: Array, st: float, along: float) -> float:
+	var f := (along + half) / st
+	var i := clampi(floori(f), 0, prof.size() - 2)
+	return lerpf(float(prof[i]), float(prof[i + 1]), clampf(f - i, 0.0, 1.0))
 
 
 ## 0 inside a mountain pass, 1 where the ring of mountains stands. A pass on
@@ -933,7 +959,7 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	var road := road_distance(x, z)
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
-	var edge := (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z)
+	var edge := (edge_depth(x, z) - 2.0) * _pass_factor(x, z)
 	var hill := h - terrace_rise(x, z)  # a terrace's height is built, not a mountain
 	if edge > 0.0 or hill > amp * 1.2:
 		c = c.lerp(Color(0.44, 0.42, 0.4), clampf(maxf(edge / 10.0, (hill - amp * 1.2) / 4.0), 0.0, 1.0))
@@ -2353,7 +2379,7 @@ func _build_road_lamps() -> void:
 			var t := spacing * 0.5
 			while t < seg.length():
 				var at: Vector2 = pts[i] + dir * t + normal * side * (float(road["width"]) * 0.5 + 1.2)
-				var skip := maxf(absf(at.x), absf(at.y)) > half - 30.0
+				var skip := edge_depth(at.x, at.y) > -2.0
 				for pl in plazas:
 					skip = skip or at.distance_to(pl) < 16.0
 				if not skip:
@@ -2563,7 +2589,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 	var p := Vector2(x, z)
 	if p.distance_to(_bind_xz) < 9.0 or road_distance(x, z) < 0.6:
 		return false
-	if (maxf(absf(x), absf(z)) - (half - 30.0)) * _pass_factor(x, z) > 0.0:
+	if (edge_depth(x, z) - 2.0) * _pass_factor(x, z) > 0.0:
 		return false
 	for pond: Dictionary in _ponds:
 		if p.distance_to(pond["center"]) < float(pond["radius"]) + 1.5:
@@ -2596,6 +2622,9 @@ func _build_spawns() -> void:
 		sp.when = str(entry.get("when", ""))
 		var x := float(entry["pos"][0])
 		var z := float(entry["pos"][1])
+		var off := _off_the_ridge(Vector2(x, z), sp.wander_radius)
+		x = off.x
+		z = off.y
 		sp.position = Vector3(x, surface_at(x, z), z)  # on a deck (a causeway, a boardwalk) when there's one over the ground
 		if entry.has("face"):  # facing a point, as npcs do (a web hung across a passage)
 			sp.yaw = atan2(-(float(entry["face"][0]) - x), -(float(entry["face"][1]) - z))
@@ -2604,10 +2633,22 @@ func _build_spawns() -> void:
 
 # --- helpers ----------------------------------------------------------------
 
+## An ordinary spawn that one of the outline's ridges covers walks in toward
+## the middle until its wandering ground is open (tools/zones/outline.py keeps
+## the ridges off everything else placed, but not off every spawn).
+func _off_the_ridge(at: Vector2, wander: float) -> Vector2:
+	var margin := minf(wander, 10.0) + 4.0
+	for k in 60:
+		if edge_depth(at.x, at.y) <= -margin or at.length() < 8.0:
+			break
+		at -= at.normalized() * 4.0
+	return at
+
+
 func _open_spot() -> Vector2:
 	for attempt in 30:
 		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
-		if xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
+		if edge_depth(xz.x, xz.y) > -2.0 or xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
 				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0 or in_field(xz.x, xz.y, 4.0):
 			continue
 		var clear := true

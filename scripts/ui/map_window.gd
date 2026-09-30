@@ -193,7 +193,7 @@ func _paint_row(z: Zone, j: int, step: float) -> void:
 		var ground := z._ground_color(x, y, h)
 		var c := PARCHMENT.lerp(Color(ground.r, ground.g, ground.b), 0.5)
 		c = Color(c.r * shade, c.g * shade, c.b * shade)
-		var edge := maxf(absf(x), absf(y)) - (z.half - 30.0)
+		var edge := z.edge_depth(x, y) - 2.0
 		if edge > 0.0 and h > z.amp * 0.6:  # the mountain ring, darker toward the rim
 			c = c.lerp(Color(0.42, 0.37, 0.32), clampf(edge / 30.0, 0.0, 0.75))
 		_image.set_pixel(i, j, c)

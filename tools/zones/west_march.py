@@ -384,8 +384,8 @@ def main():
     zones = {"broken_march": broken_march(), "stormcut_gorge": stormcut_gorge()}
     import spawn_fill  # the empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
     known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **bw.MOBS)
-    for z in zones.values():
-        z["spawns"] += spawn_fill.fill(z, known)
+    for zid, z in zones.items():
+        z["spawns"] += spawn_fill.fill(z, known, zid)
     for zid, z in zones.items():
         with open(f"{ROOT}/data/zones/{zid}.json", "w") as f:
             f.write(json.dumps(z, indent=2) + "\n")
