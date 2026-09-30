@@ -123,6 +123,7 @@ const SECTIONS := [
 	["quest_marks", "greenmoor"],
 	["high_terrace_ground", "high_terrace"],
 	["starter_spawns", "greenmoor"],
+	["item_ladder", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8491,6 +8492,25 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
 		if zone_id == "dewstep":
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
+
+
+## Gear that climbs with the mob wearing it: what a level 1 skeleton, a level
+## 15 and 17 sun cultist and a level 46 revenant spawn wearing, rolled many
+## times through the real World.roll_gear (tiered tables, then the ladders).
+func _t_item_ladder() -> void:
+	for pair: Array in [["decaying_skeleton", 1], ["sun_cultist", 15], ["sun_cultist", 17], ["godwar_revenant", 46]]:
+		var data: Dictionary = GameData.mobs[pair[0]]
+		var seen := {}
+		var lowest := 99
+		for k in 400:
+			var gear := World.roll_gear(data, int(pair[1]))
+			for slot: String in gear:
+				var base := GameData.base_item(str(gear[slot]))
+				seen[base] = true
+				lowest = mini(lowest, int(GameData.item(base).get("rec_level", 0)))
+		var names: Array = seen.keys()
+		names.sort()
+		print("item_ladder: %s at %d wears (lowest rec %d): %s" % [pair[0], pair[1], lowest, names])
 
 
 ## The beginners' calm monsters, levels 1 to 5, in each starting zone.

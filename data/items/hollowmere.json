@@ -129,9 +129,9 @@
   "netmakers_sleeves": {
     "name": "Netmaker's Sleeves",
     "slot": "arms",
-    "ac": 5,
-    "agi": 1,
-    "sta": 1,
+    "ac": 8,
+    "agi": 2,
+    "sta": 2,
     "value": 520,
     "rec_level": 10,
     "no_drop": true,

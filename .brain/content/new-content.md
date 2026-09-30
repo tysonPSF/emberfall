@@ -22,6 +22,17 @@ And don't lean on the stepped `terraces` design for new zones: High
 Terrace lost its steps (their risers were walls, and too many zones
 shared the look). *Tyson 2026-09-29.*
 
+## Gear must get better with the zone
+
+A reward or a drop from a harder zone must beat one from an easier one.
+Run `python3 tools/item_curve.py` after adding items, rewards or mob gear:
+it fits each slot's score to zone level and flags rewards under 70% of
+the curve, and mobs whose random gear is more than 12 levels below them.
+Give generic mob gear a `"ladders"` rung in loot.json (it climbs with the
+mob's level) rather than a fixed low item; flavor gear stays off ladders.
+*Tyson 2026-09-29: a Sunward Steps ring was worse than an earlier zone's:
+the shared `rings` table served levels 1-28.*
+
 ## The gods belong to another game too
 
 The five deities come from Tyson's other game, Elephant Grove
