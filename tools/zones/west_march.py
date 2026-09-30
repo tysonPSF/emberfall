@@ -240,6 +240,9 @@ def stormcut_gorge():
     for pos, yaw in [([40, 206], 180), ([-196, -70], 90), ([198, 110], -90)]:
         L.append({"type": "prop", "pos": pos, "id": "waterfall", "yaw": yaw, "collide": "mesh"})
         L.append({"type": "prop", "pos": pos, "id": "waterfall_water", "yaw": yaw, "collide": "none"})
+        if yaw != 180:  # a cliff behind the side falls to spill off (the south one has the mountains)
+            back = -1 if yaw == 90 else 1
+            L.append(prop("mesa", [pos[0] + back * 13, pos[1]], collide="mesh", yaw=(pos[1] * 7) % 360))
     # the canyon walls: a line of mesas (20 m across, 11 high) down both sides and across the south, crags in the gaps,
     # open where the roads come through (west and east at z 0) and where the falls spill
     for side in (-1, 1):

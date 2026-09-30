@@ -405,6 +405,16 @@
     {
       "type": "prop",
       "pos": [
+        -209,
+        -70
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 230
+    },
+    {
+      "type": "prop",
+      "pos": [
         198,
         110
       ],
@@ -421,6 +431,16 @@
       "id": "waterfall_water",
       "yaw": -90,
       "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        211,
+        110
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 50
     },
     {
       "type": "prop",

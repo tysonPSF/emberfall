@@ -8486,7 +8486,7 @@ func _t_high_terrace_ground() -> void:
 					if z.on_bare_patch(m.global_position.x, m.global_position.z):
 						on_snow += 1
 			print("high_terrace_ground: snow leopards %d, on the snow %d" % [leopards, on_snow])
-			await _zone_views("high_terrace", [[Vector2(0, 150), Vector2(-60, 175), "paddies"], [Vector2(-40, -60), Vector2(-80, -160), "snowfields"],
+			await _zone_views("high_terrace", [[Vector2(-160, 70), Vector2(-190, 60), "falls"], [Vector2(0, 150), Vector2(-60, 175), "paddies"], [Vector2(-40, -60), Vector2(-80, -160), "snowfields"],
 					[Vector2(60, -140), Vector2(78, -205), "monastery"], [Vector2(20, 60), Vector2(0, -60), "climb"]])
 		if zone_id == "sunward_steps":
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
