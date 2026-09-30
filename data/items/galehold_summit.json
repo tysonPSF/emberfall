@@ -25,7 +25,7 @@
       "warrior",
       "cleric"
     ],
-    "wear": "studded_tunic"
+    "wear": "plate_breastplate"
   },
   "stormcrest_vambraces": {
     "name": "Stormcrest Vambraces",
@@ -38,7 +38,7 @@
       "warrior",
       "cleric"
     ],
-    "wear": "leather_sleeves"
+    "wear": "plate_vambraces"
   },
   "stormcrest_gauntlets": {
     "name": "Stormcrest Gauntlets",

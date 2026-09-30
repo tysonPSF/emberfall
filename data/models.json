@@ -3860,6 +3860,34 @@
         }
       ]
     },
+    "plate_breastplate": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/studded_tunic.glb",
+          "bone": "chest"
+        }
+      ]
+    },
+    "plate_vambraces": {
+      "pieces": [
+        {
+          "path": "res://assets/gear/leather_sleeves_lower.glb",
+          "bone": "lowerarm.l"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_lower_r.glb",
+          "bone": "lowerarm.r"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_upper.glb",
+          "bone": "upperarm.l"
+        },
+        {
+          "path": "res://assets/gear/leather_sleeves_upper_r.glb",
+          "bone": "upperarm.r"
+        }
+      ]
+    },
     "iron_gauntlets": {
       "pieces": [
         {
@@ -4163,6 +4191,26 @@
       "parts": [
         "Rogue_ArmLeft",
         "Rogue_ArmRight"
+      ],
+      "covers": [
+        "ArmLeft",
+        "ArmRight"
+      ]
+    },
+    "plate_breastplate": {
+      "model": "knight",
+      "parts": [
+        "Knight_Body"
+      ],
+      "covers": [
+        "Body"
+      ]
+    },
+    "plate_vambraces": {
+      "model": "knight",
+      "parts": [
+        "Knight_ArmLeft",
+        "Knight_ArmRight"
       ],
       "covers": [
         "ArmLeft",

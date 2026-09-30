@@ -126,9 +126,11 @@ const SECTIONS := [
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
 	["melee_swings", "greenmoor"],
+	["plate_looks", "greenmoor"],
 	["giant_sizes", "the_bleach"],
 	["grove_uniques", "greenmoor"],
 	["bags_with_inventory", "greenmoor"],
+	["camps", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8499,6 +8501,58 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
 
 
+## Hostile camps, bigger, spread out and each its own look: in each, the
+## camp member nearest the edge is hit from range and we count who comes
+## (only it and whoever is within ASSIST_RADIUS of it, no chain), then a look.
+func _t_camps() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	World.time_override = 12.0
+	for zone_id: String in ["greenmoor", "harrowfield", "thornwood", "sunward_steps", "the_bleach", "cinderpass"]:
+		while main._changing_zone:
+			await _wait(0.25)
+		if (main.zone as Zone).zone_id != zone_id:
+			World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+			for k in 80:
+				if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+					break
+				await _wait(0.25)
+			await _wait(1.5)
+		var z := main.zone as Zone
+		var lm: Dictionary = {}
+		for l: Dictionary in z.data["landmarks"]:
+			if l["type"] == "camp" and l.has("size"):
+				lm = l
+		var c := Vector3(float(lm["pos"][0]), 0, float(lm["pos"][1]))
+		var camp: Array = World.get_mobs().filter(func(m: Mob) -> bool:
+			return World.zone_of(m) == z and not m.dead and Vector2(m.global_position.x, m.global_position.z).distance_to(Vector2(c.x, c.z)) < 26.0)
+		camp.sort_custom(func(a: Mob, b: Mob) -> bool:
+			return Vector2(a.global_position.x, a.global_position.z).distance_to(Vector2(c.x, c.z)) > Vector2(b.global_position.x, b.global_position.z).distance_to(Vector2(c.x, c.z)))
+		var outer: Mob = camp[0]
+		var away := (outer.global_position - c).normalized() * 30.0
+		p.global_position = outer.global_position + Vector3(away.x, 0, away.z) + Vector3.UP * 2.0
+		p.level = 60  # nothing here kills the tester before we've counted
+		p.recalc_stats()
+		p.hp = p.max_hp
+		await _wait(0.3)
+		outer.add_hate(p, 5.0)
+		await _wait(1.0)
+		var came := camp.filter(func(m: Mob) -> bool: return not m.hate.is_empty()).size()
+		print("camps: %s (%s x%.1f): %d in the camp, hitting the outermost brought %d" % [zone_id, lm.get("style", "war"), float(lm["size"]), camp.size(), came])
+		for m: Mob in camp:
+			m.hate.clear()
+			m.state = Mob.State.RETURN
+		var eye := c + (Vector3(_bind_dir(z, c).x, 0, _bind_dir(z, c).y) * 34.0)
+		await _zone_views("camps_" + zone_id, [[Vector2(eye.x, eye.z), Vector2(c.x, c.z), "camp"]])
+	p.level = 1
+	p.recalc_stats()
+	World.time_override = -1.0
+
+
+func _bind_dir(z: Zone, c: Vector3) -> Vector2:
+	return (Vector2(z.bind_point.x, z.bind_point.z) - Vector2(c.x, c.z)).normalized()
+
+
 func _toggle_bag_for_shot(hud: Node, g: int) -> void:
 	if not hud._bag_windows.has(g):
 		hud._toggle_bag(g)
@@ -8661,6 +8715,33 @@ func _t_giant_sizes() -> void:
 ## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
 ## fighting, with every clip its body plays (the main hand's slash and the
 ## off hand's own cut), and a shot of each.
+func _t_plate_looks() -> void:
+	# plate (warrior and cleric only) must wear the knight's metal, never leather or cloth
+	var looks: Dictionary = GameData.models.get("body_parts", {})
+	var bad: Array = []
+	for id: String in GameData.items:
+		var it: Dictionary = GameData.items[id]
+		if it.get("classes", []) != ["warrior", "cleric"] or str(it.get("slot", "")) not in ["chest", "arms", "legs", "hands", "feet", "head"]:
+			continue
+		var look: Dictionary = looks.get(str(it.get("wear", "")), {})
+		if str(look.get("model", "")) not in ["knight", "skeleton_warrior"]:
+			bad.append("%s (%s)" % [id, it.get("wear", "none")])
+	print("plate_looks: plate pieces not in metal: %s" % [bad])
+	var p := World.local_player
+	var cm := p.visual as CharacterModel
+	cm.set_worn({"chest": "plate_breastplate", "arms": "plate_vambraces", "hands": "iron_gauntlets"})
+	await get_tree().process_frame
+	var parts: Array = []
+	for n: Node in cm.skeleton.get_children():
+		if str(n.name).begins_with("Worn_"):
+			parts.append(str(n.name))
+	print("plate_looks: a dressed warrior wears %s" % [parts])
+	if bad.is_empty() and "Worn_Knight_ArmLeft" in parts and "Worn_Knight_Body" in parts:
+		print("plate_looks: OK")
+	else:
+		print("plate_looks: FAIL")
+
+
 func _t_melee_swings() -> void:
 	var picks := {}
 	for w: String in ["sword_1handed", "dagger", "axe_2handed", "staff", "axe_1handed", "countess_rapier", "vorlaug_maul", "bow", ""]:

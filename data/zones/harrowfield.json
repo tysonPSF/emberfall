@@ -354,7 +354,7 @@
       "pos": [
         -122,
         104
-      ]
+      ], "style": "wagons", "wagon": "farm_cart", "size": 1.8
     },
     {
       "type": "ruins",
@@ -817,8 +817,8 @@
     },
     {
       "pos": [
-        -115,
-        98
+        -117,
+        93
       ],
       "pool": {
         "brigand_cutpurse": 2,
@@ -829,8 +829,8 @@
     },
     {
       "pos": [
-        -129,
-        98
+        -135,
+        93
       ],
       "pool": {
         "brigand_cutpurse": 2,
@@ -841,8 +841,8 @@
     },
     {
       "pos": [
-        -122,
-        112
+        -119,
+        116
       ],
       "pool": {
         "brigand_cutpurse": 2,
@@ -853,8 +853,8 @@
     },
     {
       "pos": [
-        -113,
-        110
+        -105,
+        105
       ],
       "pool": {
         "brigand_cutpurse": 2,
@@ -865,8 +865,8 @@
     },
     {
       "pos": [
-        -131,
-        108
+        -136,
+        113
       ],
       "pool": {
         "brigand_cutpurse": 2,

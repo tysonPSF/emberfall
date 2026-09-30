@@ -93,7 +93,9 @@ const FACTION_MAX := 2000
 const REFUSE_BELOW := -500  # Dubious or worse: townsfolk won't deal with you
 const KOS_BELOW := -1100  # Scowls: guards attack on sight
 const ATTACK_CONFIRM_MS := 5000
-const CALL_FOR_HELP_RADIUS := 14.0
+const CALL_FOR_HELP_RADIUS := 14.0  # how near kin must be for a mob not to flee (Mob._kin_nearby)
+const ASSIST_RADIUS := 10.0  # how far a social mob's call for help carries (call_for_help)
+var _calling := false  # inside call_for_help: those who come don't call others in turn
 const EQUIP_SLOTS: Array[String] = ["primary", "secondary", "range", "head", "neck", "arms", "hands", "chest", "waist", "legs", "feet", "ring1", "ring2"]
 ## Item "slot" values that fit more than one equipment slot.
 const SLOT_FITS := {"ring": ["ring1", "ring2"]}
@@ -3196,11 +3198,19 @@ func unhide(e: Entity, text := "You are no longer hidden.") -> void:
 	say(e, text, C_SPELL)
 
 
+## A social mob set upon calls its kin within ASSIST_RADIUS. Only the one
+## attacked calls: those who come don't call their own neighbors, so pulling
+## the edge of a camp brings one or two, not the whole camp in a chain
+## (2026-09-29: camps came all at once and were hard to take solo).
 func call_for_help(caller: Mob, enemy: Entity) -> void:
+	if _calling:
+		return
+	_calling = true
 	for m in get_mobs():
 		if m != caller and not m.dead and m.faction == caller.faction and m.hate.is_empty() \
-				and m.distance_to(caller) <= CALL_FOR_HELP_RADIUS:
+				and m.distance_to(caller) <= ASSIST_RADIUS:
 			m.add_hate(enemy, 1.0)
+	_calling = false
 
 
 # --- loot & inventory -------------------------------------------------------

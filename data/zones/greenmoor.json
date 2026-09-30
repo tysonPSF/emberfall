@@ -138,7 +138,7 @@
   },
   "landmarks": [
     {"type": "obelisk", "pos": [0, 0]},
-    {"type": "camp", "pos": [115, -100]},
+    {"type": "camp", "pos": [115, -100], "style": "huts", "hut": "dustpaw_hut", "totem": "dustpaw_totem", "size": 1.8},
     {"type": "ruins", "pos": [-100, -80]},
     {"type": "outpost", "pos": [40, -138]},
     {"type": "pond", "pos": [-125, 145], "radius": 12, "depth": 1.6, "dock": -50, "tainted": true, "tainted_until": "merricks_line_spring"},
@@ -208,11 +208,11 @@
     {"pos": [-95, -20], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
     {"pos": [-50, -70], "pool": {"decaying_skeleton": 1}, "respawn": 60, "wander": 22, "when": "night"},
 
-    {"pos": [104, -88], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [126, -106], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [108, -114], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
-    {"pos": [128, -86], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
+    {"pos": [106, -86], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [127, -99], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [107, -115], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 3},
+    {"pos": [113, -100], "pool": {"gnoll_scout": 10, "rhagg": 1}, "respawn": 120, "wander": 3},
     {"pos": [85, -75], "pool": {"gnoll_scout": 1}, "respawn": 120, "wander": 25},
-    {"pos": [115, -93], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
+    {"pos": [117, -100], "pool": {"gnoll_scout": 5, "grubnak": 1}, "respawn": 300, "wander": 0}
   ]
 }
