@@ -15904,5 +15904,42 @@
     ],
     "model": "water_elemental",
     "named": true
+  },
+  "gloomwing_moth": {
+    "name": "a gloomwing moth",
+    "level": [
+      3,
+      5
+    ],
+    "hp_base": 20,
+    "hp_per_level": 10,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "attack_delay": 2.6,
+    "ac": 8,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 0,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "buffet",
+      "buffets"
+    ],
+    "shape": "humanoid",
+    "color": "#6a5a8a",
+    "scale": 1.25,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "moth_wing",
+        "chance": 0.5
+      }
+    ],
+    "model": "lantern_moth"
   }
 }

@@ -460,8 +460,11 @@ def the_wallow():
             if when:
                 e["when"] = when
             spawns.append(e)
-    spawn({"bog_rat": 1}, [[-130, -80], [-110, -10], [-120, 40], [-90, -40], [-140, 70], [-70, 10]], 40)
-    spawn({"wallow_toad": 1}, [[-40, -20], [-10, -60], [-60, -100], [40, 10], [80, 70], [30, 80]], 45)
+    # the beginners' own: enough rats and toads that a few new trolls and ogres don't queue for them (2026-09-29: was 6 of each)
+    spawn({"bog_rat": 1}, [[-130, -80], [-110, -10], [-120, 40], [-90, -40], [-140, 70], [-70, 10], [-100, -120], [-150, 20], [-60, -60],
+                           [-100, 110], [-30, 40]], 30)
+    spawn({"wallow_toad": 1}, [[-40, -20], [-10, -60], [-60, -100], [40, 10], [80, 70], [30, 80], [0, -110], [60, -40], [100, 20],
+                               [-20, 120], [60, 130]], 40)
     spawn({"swamp_leech": 1}, [[-80, 60], [-100, 110], [-50, 120], [20, 130], [90, 40]], 50)
     spawn({"pondkin_forager": 3, "pondkin_mudslinger": 1}, [[100, -110], [140, -90], [110, -150], [160, -140], [80, -130], [130, -70]], 70, 8)
     spawn({"mud_turtle": 1}, [[0, 150], [60, 140], [-40, 160], [120, 100], [150, 40]], 70)
@@ -546,6 +549,8 @@ def duskwood():
           {"duskhold": 10})
     mob("gloom_rat", "a gloom rat", (1, 2), "rat", loot=[("gloom_rat_tail", 0.5), ("raw_meat", 0.2)], aggressive=False, speed=6.0)
     mob("dusk_spiderling", "a duskwood spiderling", (2, 4), "spider", loot=[("duskwood_silk", 0.55)], scale=0.55, aggressive=False)
+    mob("gloomwing_moth", "a gloomwing moth", (3, 5), "lantern_moth", verb=("buffet", "buffets"), loot=[("moth_wing", 0.5)], scale=1.25,
+        aggressive=False, extra={"color": "#6a5a8a"})
     mob("restless_bones", "restless bones", (3, 5), "skeleton_minion", faction="undead", verb=("claw", "claws"), loot=[("bone_chips", 0.4)],
         coin=(0, 8))
     mob("gloomfang_wolf", "a gloomfang wolf", (4, 6), "wolf", loot=[("gloomfang_pelt", 0.5), ("raw_meat", 0.3)], social=True, speed=7.0)
@@ -565,8 +570,12 @@ def duskwood():
             if when:
                 e["when"] = when
             spawns.append(e)
-    spawn({"gloom_rat": 1}, [[130, 80], [110, 150], [90, 110], [140, 60], [70, 150], [100, 40]], 40)
-    spawn({"dusk_spiderling": 1}, [[40, 110], [0, 140], [-40, 100], [-80, 140], [20, 60], [-100, 80]], 45)
+    # the beginners' own (2026-09-29: was 6 rats and 6 spiderlings, then only things that attack on sight)
+    spawn({"gloom_rat": 1}, [[130, 80], [110, 150], [90, 110], [140, 60], [70, 150], [100, 40], [150, 40], [120, 100], [60, 120],
+                             [90, 70], [40, 170]], 30)
+    spawn({"dusk_spiderling": 1}, [[40, 110], [0, 140], [-40, 100], [-80, 140], [20, 60], [-100, 80], [0, 100], [-40, 150], [30, 130],
+                                   [-60, 60]], 40)
+    spawn({"gloomwing_moth": 1}, [[80, -20], [40, -60], [-20, 20], [20, 30], [-60, -30], [100, -50]], 50, 16)  # a calm step between the spiderlings and the wolves
     spawn({"restless_bones": 1}, [[-120, -50], [-110, -70], [-60, 100], [-70, 120], [40, 50], [30, 70]], 60)
     spawn({"gloomfang_wolf": 1}, [[-40, 0], [0, -30], [-80, -20], [40, -40], [-20, 40], [60, 10]], 55)
     spawn({"lesser_shade": 1}, [[-120, -60], [-60, 110], [40, 60], [-20, -80]], 80, 16, "night")

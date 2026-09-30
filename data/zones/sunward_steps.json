@@ -4,7 +4,7 @@
   "music": "sunward_steps",
   "seed": 7717,
   "size": 448,
-  "height_amplitude": 5,
+  "height_amplitude": 8,
   "bind_point": [
     -160,
     18
@@ -153,15 +153,87 @@
       ]
     }
   },
-  "terraces": {
-    "start": -140,
-    "end": 175,
-    "steps": 7,
-    "rise": 42,
-    "riser": 9,
-    "wobble": 18
-  },
   "landmarks": [
+    {
+      "type": "prop",
+      "pos": [
+        -160,
+        110
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -180,
+        -100
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 67
+    },
+    {
+      "type": "prop",
+      "pos": [
+        110,
+        -170
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 134
+    },
+    {
+      "type": "prop",
+      "pos": [
+        190,
+        170
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 201
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -40,
+        -190
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 268
+    },
+    {
+      "type": "prop",
+      "pos": [
+        190,
+        -110
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 335
+    },
+    {
+      "type": "prop",
+      "pos": [
+        130,
+        190
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 42
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -195,
+        40
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 109
+    },
     {
       "type": "obelisk",
       "pos": [

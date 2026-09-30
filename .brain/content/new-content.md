@@ -11,6 +11,17 @@ move a race's home, add one in the same change.
 *Tyson 2026-09-28: "make sure we add one every time we add a city as a
 starting city"* — Rainhold and Lanternhold starters had gone without.
 
+## A beginner ground needs enough calm monsters to share
+
+A race's first zone should hold at least ~20 non-aggressive monsters of
+levels 1-5 (the lowest back in 30 s), spread over its starting area: a
+server's new players all hunt there at once. The Wallow and Duskwood
+shipped with 12 each and felt empty; Duskwood had nothing calm past
+level 4 but its wolves and bones. Autotest `starter_spawns` counts them.
+And don't lean on the stepped `terraces` design for new zones: High
+Terrace lost its steps (their risers were walls, and too many zones
+shared the look). *Tyson 2026-09-29.*
+
 ## The gods belong to another game too
 
 The five deities come from Tyson's other game, Elephant Grove

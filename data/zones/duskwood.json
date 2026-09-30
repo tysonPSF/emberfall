@@ -331,7 +331,7 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -342,7 +342,7 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -353,7 +353,7 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -364,7 +364,7 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -375,7 +375,7 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -386,7 +386,62 @@
       "pool": {
         "gloom_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        150,
+        40
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        120,
+        100
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        120
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        90,
+        70
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        40,
+        170
+      ],
+      "pool": {
+        "gloom_rat": 1
+      },
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -397,7 +452,7 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -408,7 +463,7 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -419,7 +474,7 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -430,7 +485,7 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -441,7 +496,7 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -452,8 +507,118 @@
       "pool": {
         "dusk_spiderling": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        100
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -40,
+        150
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        30,
+        130
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        60
+      ],
+      "pool": {
+        "dusk_spiderling": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        80,
+        -20
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
+    },
+    {
+      "pos": [
+        40,
+        -60
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -20,
+        20
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
+    },
+    {
+      "pos": [
+        20,
+        30
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -60,
+        -30
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
+    },
+    {
+      "pos": [
+        100,
+        -50
+      ],
+      "pool": {
+        "gloomwing_moth": 1
+      },
+      "respawn": 50,
+      "wander": 16
     },
     {
       "pos": [

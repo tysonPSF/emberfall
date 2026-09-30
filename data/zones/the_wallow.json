@@ -746,7 +746,7 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -757,7 +757,7 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -768,7 +768,7 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -779,7 +779,7 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -790,7 +790,7 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -801,7 +801,62 @@
       "pool": {
         "bog_rat": 1
       },
-      "respawn": 40,
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        -120
+      ],
+      "pool": {
+        "bog_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -150,
+        20
+      ],
+      "pool": {
+        "bog_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -60,
+        -60
+      ],
+      "pool": {
+        "bog_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -100,
+        110
+      ],
+      "pool": {
+        "bog_rat": 1
+      },
+      "respawn": 30,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -30,
+        40
+      ],
+      "pool": {
+        "bog_rat": 1
+      },
+      "respawn": 30,
       "wander": 12
     },
     {
@@ -812,7 +867,7 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -823,7 +878,7 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -834,7 +889,7 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -845,7 +900,7 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -856,7 +911,7 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
       "wander": 12
     },
     {
@@ -867,7 +922,62 @@
       "pool": {
         "wallow_toad": 1
       },
-      "respawn": 45,
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        -110
+      ],
+      "pool": {
+        "wallow_toad": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        -40
+      ],
+      "pool": {
+        "wallow_toad": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        100,
+        20
+      ],
+      "pool": {
+        "wallow_toad": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -20,
+        120
+      ],
+      "pool": {
+        "wallow_toad": 1
+      },
+      "respawn": 40,
+      "wander": 12
+    },
+    {
+      "pos": [
+        60,
+        130
+      ],
+      "pool": {
+        "wallow_toad": 1
+      },
+      "respawn": 40,
       "wander": 12
     },
     {

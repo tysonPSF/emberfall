@@ -37,6 +37,7 @@ Everything below is conditional. Don't read it speculatively.
 |---|---|
 | Edit `data/*.json` with a script (Python, `json.dump`) | [data/editing-json.md](data/editing-json.md) — 20 files don't survive a dump; you'd rewrite the whole file |
 | Make a city a starting city, or change a race's `"home"` | [content/new-content.md](content/new-content.md) — it needs its own bag quest |
+| Build or change a beginner zone, or plan a zone's terrain | [content/new-content.md](content/new-content.md) — ~20 calm level 1-5 monsters to share; avoid the stepped terraces |
 | Name or restyle a god, or use Merrick | [content/new-content.md](content/new-content.md) — they're shared with Elephant Grove |
 | Name anything new (monster, spell, item, place) | [conventions.md](conventions.md) — our own theme, no EverQuest proper nouns |
 
