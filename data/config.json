@@ -34,6 +34,7 @@
   "caster_fizzle_max_cut": 0.5,
   "boss_guard_radius": 28,
   "boss_guard_respawn_mult": 2.0,
+  "boss_guard_respawn_min": 600,
   "day_seconds": 4320,
   "night_hours": [21, 5],
   "elders_blessing": {"xp_pct": 15, "until_level": 15},

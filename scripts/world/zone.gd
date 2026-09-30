@@ -2577,7 +2577,7 @@ func _clutter_spot_ok(x: float, z: float) -> bool:
 
 
 func _build_spawns() -> void:
-	var bosses: Array[Vector2] = []  # where quest bosses stand: their camp comes back slower, so it can be cleared to reach them
+	var bosses: Array[Vector2] = []  # where quest bosses stand: their camp comes back slower (at least 10 minutes), so it can be cleared to reach them
 	for entry: Dictionary in data.get("spawns", []):
 		if (entry["pool"] as Dictionary).keys().any(func(id: String) -> bool: return GameData.is_quest_boss(id)):
 			bosses.append(Vector2(float(entry["pos"][0]), float(entry["pos"][1])))
@@ -2590,7 +2590,7 @@ func _build_spawns() -> void:
 		var at := Vector2(float(entry["pos"][0]), float(entry["pos"][1]))
 		if sp.respawn_time > 0.0 and bosses.any(func(b: Vector2) -> bool: return b.distance_to(at) <= guard_radius) \
 				and not (entry["pool"] as Dictionary).keys().any(func(id: String) -> bool: return bool(GameData.mobs.get(id, {}).get("named", false))):
-			sp.respawn_time *= float(World.cfg("boss_guard_respawn_mult", 2.0))
+			sp.respawn_time = maxf(sp.respawn_time * float(World.cfg("boss_guard_respawn_mult", 2.0)), float(World.cfg("boss_guard_respawn_min", 600)))  # long enough to clear the camp and rest
 			sp.set_meta("boss_guard", true)
 		sp.wander_radius = float(entry.get("wander", 8))
 		sp.when = str(entry.get("when", ""))
