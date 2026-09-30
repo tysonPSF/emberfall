@@ -3651,13 +3651,55 @@ func roll_gear(mob_data: Dictionary, mob_level: int) -> Dictionary:
 			continue
 		var item_id := str(entry.get("item", ""))
 		if entry.has("table"):
-			item_id = _pick_weighted(GameData.loot["tables"].get(entry["table"], {}))
+			item_id = _pick_weighted(loot_table(str(entry["table"]), mob_level))
 		if item_id == "" or not GameData.items.has(item_id):
 			continue
+		item_id = climb_ladder(item_id, mob_level)
 		# lore items are one of a kind: always exactly themselves
 		var quality := "" if GameData.item(item_id).get("lore", false) else roll_quality(mob_level, bool(mob_data.get("named", false)))
 		out[str(entry["slot"])] = item_id if quality == "" else "%s@%s" % [item_id, quality]
 	return out
+
+
+var _ladder_of: Dictionary = {}  # item id -> [ladder, its rung's level] (loot.json "ladders", built once)
+
+
+## Generic gear climbs with the one wearing it: an item on one of loot.json's
+## "ladders" (daggers, swords, plate helms, leather chests, rings...: [[level,
+## item], ...], built from the merchants' sets) becomes the best rung of its
+## ladder this mob's level has reached. A level 17 cultist's iron dagger is a
+## steel dirk; flavor gear (a named mob's cleaver, the cultists' own staff) is
+## on no ladder and stays itself. tools/item_curve.py checks the result.
+func climb_ladder(item_id: String, mob_level: int) -> String:
+	if _ladder_of.is_empty():
+		for name: String in GameData.loot.get("ladders", {}):
+			for rung: Array in GameData.loot["ladders"][name]:
+				_ladder_of[str(rung[1])] = [name, int(rung[0])]
+	if not _ladder_of.has(item_id):
+		return item_id
+	var best := item_id
+	var best_level := int(_ladder_of[item_id][1])
+	for rung: Array in GameData.loot["ladders"][_ladder_of[item_id][0]]:
+		if int(rung[0]) > best_level and int(rung[0]) <= mob_level:
+			best = str(rung[1])
+			best_level = int(rung[0])
+	return best
+
+
+## A gear table's items for a mob of this level. A table that climbs with
+## level ({"tiers": [[from level, {item: weight}], ...]}: loot.json's rings,
+## light armor and weapons) gives the highest tier the level has reached, so
+## a level 16 cultist's ring is a silver one, not the tarnished ring a level
+## 1 skeleton drops.
+func loot_table(table_id: String, mob_level: int) -> Dictionary:
+	var t: Dictionary = GameData.loot["tables"].get(table_id, {})
+	if not t.has("tiers"):
+		return t
+	var pick: Dictionary = (t["tiers"][0] as Array)[1]
+	for tier: Array in t["tiers"]:
+		if mob_level >= int(tier[0]):
+			pick = tier[1]
+	return pick
 
 
 ## A quality tier id ("" for plain): a roll of 0-100 plus a bonus for the mob's

@@ -73,7 +73,7 @@
   },
   "tables": {
     "dustpaw_weapons": {"rusty_dagger": 3, "rusty_short_sword": 3, "worn_staff": 1},
-    "glassbound_weapons": {"blackglass_dirk": 1, "magmasteel_sword": 1, "emberforged_sword": 2, "emberforged_war_axe": 1},
+    "glassbound_weapons": {"tiers": [[1, {"blackglass_dirk": 1, "magmasteel_sword": 1, "emberforged_sword": 2, "emberforged_war_axe": 1}], [37, {"zephyr_dirk": 1, "skyforged_sword": 2, "skyforged_war_axe": 1, "stormwood_staff": 1}], [42, {"cloudpiercer_dirk": 1, "stormcrest_sword": 2, "stormcrest_war_axe": 1, "thundercloud_staff": 1}], [47, {"starshard_dirk": 1, "eclipse_blade": 2, "umbral_war_axe": 1, "moonwood_staff": 1}]]},
     "stonebrow_weapons": {"iron_short_sword": 2, "iron_dagger": 1, "oak_staff": 1},
     "nomad_weapons": {"iron_short_sword": 2, "iron_dagger": 2},
     "pondkin_weapons": {"iron_short_sword": 2, "iron_dagger": 2, "oak_staff": 1},
@@ -85,12 +85,8 @@
     "troll_mountain_weapons": {"troll_club": 1},
     "ember_weapons": {"obsidian_dirk": 2, "cinderwood_staff": 1, "emberforged_sword": 1},
     "ember_chest": {"ashweave_robe": 1},
-    "ashfall_rings": {"wraithbone_ring": 1},
-    "crude_weapons": {
-      "rusty_dagger": 3,
-      "rusty_short_sword": 3,
-      "worn_staff": 2
-    },
+    "ashfall_rings": {"tiers": [[1, {"wraithbone_ring": 1}], [36, {"starsilver_ring": 1}], [41, {"moonsilver_ring": 1}], [46, {"eclipse_band": 1}]]},
+    "crude_weapons": {"tiers": [[1, {"rusty_dagger": 3, "rusty_short_sword": 3, "worn_staff": 2}], [6, {"iron_dagger": 2, "iron_short_sword": 2, "iron_hand_axe": 1, "oak_staff": 1}], [10, {"tempered_dirk": 1, "tempered_longsword": 2, "tempered_war_axe": 1}], [16, {"steel_dirk": 1, "steel_longsword": 2, "steel_war_axe": 1, "sunwood_staff": 1}], [21, {"coral_dirk": 1, "tidesteel_sword": 2, "tidesteel_war_axe": 1, "driftwood_staff": 1}], [27, {"obsidian_dirk": 1, "emberforged_sword": 2, "emberforged_war_axe": 1, "cinderwood_staff": 1}], [32, {"blackglass_dirk": 1, "magmasteel_sword": 2, "magmasteel_war_axe": 1, "forgeheart_staff": 1}], [37, {"zephyr_dirk": 1, "skyforged_sword": 2, "skyforged_war_axe": 1, "stormwood_staff": 1}], [42, {"cloudpiercer_dirk": 1, "stormcrest_sword": 2, "stormcrest_war_axe": 1, "thundercloud_staff": 1}], [47, {"starshard_dirk": 1, "eclipse_blade": 2, "umbral_war_axe": 1, "moonwood_staff": 1}]]},
     "crude_head": {
       "cloth_cap": 1
     },
@@ -111,18 +107,9 @@
       "iron_short_sword": 1,
       "iron_hand_axe": 1
     },
-    "light_head": {
-      "cloth_cap": 2,
-      "leather_cap": 1
-    },
-    "light_chest": {
-      "patchwork_tunic": 2,
-      "leather_tunic": 1
-    },
-    "light_legs": {
-      "patchwork_pants": 2,
-      "leather_leggings": 1
-    },
+    "light_head": {"tiers": [[1, {"cloth_cap": 2, "leather_cap": 1}], [15, {"dawnweave_cap": 1}], [20, {"rainsilk_cap": 1}], [26, {"ashweave_cap": 1}], [31, {"flameweave_cap": 1}], [36, {"galeweave_cap": 1}], [41, {"skysilk_cap": 1}], [46, {"starweave_cap": 1}]]},
+    "light_chest": {"tiers": [[1, {"patchwork_tunic": 2, "leather_tunic": 1}], [10, {"hardened_leather_jerkin": 1}], [16, {"shadowleather_jerkin": 1}], [21, {"sharkskin_jerkin": 1}], [27, {"cinderscale_jerkin": 1}], [32, {"emberhide_jerkin": 1}], [37, {"windrunner_jerkin": 1}], [42, {"cloudhide_jerkin": 1}], [47, {"umbral_jerkin": 1}]]},
+    "light_legs": {"tiers": [[1, {"patchwork_pants": 2, "leather_leggings": 1}], [9, {"hardened_leather_leggings": 1}], [21, {"sharkskin_leggings": 1}], [27, {"cinderscale_leggings": 1}], [32, {"emberhide_leggings": 1}], [37, {"windrunner_leggings": 1}], [42, {"cloudhide_leggings": 1}], [47, {"umbral_leggings": 1}]]},
     "grubnak_weapon": {
       "grubnaks_cleaver": 3,
       "iron_hand_axe": 1
@@ -142,10 +129,7 @@
     "bone_neck": {
       "bone_charm": 1
     },
-    "rings": {
-      "tarnished_ring": 3,
-      "copper_band": 1
-    },
+    "rings": {"tiers": [[1, {"tarnished_ring": 3, "copper_band": 1}], [8, {"silver_band": 1}], [15, {"engraved_silver_ring": 1}], [20, {"gold_band": 1}], [26, {"jeweled_gold_ring": 1}], [36, {"starsilver_ring": 1}], [41, {"moonsilver_ring": 1}], [46, {"eclipse_band": 1}]]},
     "light_hands": {
       "cloth_gloves": 2,
       "leather_gloves": 1
@@ -162,9 +146,7 @@
       "splintered_buckler": 3,
       "round_shield": 1
     },
-    "fang_neck": {
-      "fang_necklace": 1
-    },
+    "fang_neck": {"tiers": [[1, {"fang_necklace": 1}], [10, {"fang_necklace": 1, "silver_locket": 2}]]},
     "rotfinger_weapon": {
       "frost_etched_wand": 1,
       "worn_staff": 1
@@ -201,11 +183,7 @@
       "oak_staff": 3,
       "worn_staff": 1
     },
-    "knight_weapons": {
-      "iron_short_sword": 3,
-      "iron_hand_axe": 2,
-      "rusty_short_sword": 1
-    },
+    "knight_weapons": {"tiers": [[1, {"iron_short_sword": 3, "iron_hand_axe": 2, "rusty_short_sword": 1}], [10, {"tempered_dirk": 1, "tempered_longsword": 2, "tempered_war_axe": 1}], [16, {"steel_dirk": 1, "steel_longsword": 2, "steel_war_axe": 1, "sunwood_staff": 1}], [21, {"coral_dirk": 1, "tidesteel_sword": 2, "tidesteel_war_axe": 1, "driftwood_staff": 1}], [27, {"obsidian_dirk": 1, "emberforged_sword": 2, "emberforged_war_axe": 1, "cinderwood_staff": 1}], [32, {"blackglass_dirk": 1, "magmasteel_sword": 2, "magmasteel_war_axe": 1, "forgeheart_staff": 1}], [37, {"zephyr_dirk": 1, "skyforged_sword": 2, "skyforged_war_axe": 1, "stormwood_staff": 1}], [42, {"cloudpiercer_dirk": 1, "stormcrest_sword": 2, "stormcrest_war_axe": 1, "thundercloud_staff": 1}], [47, {"starshard_dirk": 1, "eclipse_blade": 2, "umbral_war_axe": 1, "moonwood_staff": 1}]]},
     "knight_head": {
       "iron_coif": 3,
       "bone_helm": 1
@@ -239,8 +217,30 @@
     "brigand_weapons": {"rusty_short_sword": 3, "rusty_dagger": 2, "iron_dagger": 2, "iron_short_sword": 1},
     "cult_weapons": {"cultist_staff": 1, "iron_dagger": 2, "oak_staff": 2},
     "cult_chest": {"sunburnt_robe": 1, "patchwork_tunic": 2},
-    "raider_weapons": {"raider_scimitar": 1, "iron_short_sword": 2, "steel_dirk": 1},
+    "raider_weapons": {"tiers": [[1, {"raider_scimitar": 1, "iron_short_sword": 2, "steel_dirk": 1}], [21, {"coral_dirk": 1, "tidesteel_sword": 2, "tidesteel_war_axe": 1, "driftwood_staff": 1}], [27, {"obsidian_dirk": 1, "emberforged_sword": 2, "emberforged_war_axe": 1, "cinderwood_staff": 1}], [32, {"blackglass_dirk": 1, "magmasteel_sword": 2, "magmasteel_war_axe": 1, "forgeheart_staff": 1}], [37, {"zephyr_dirk": 1, "skyforged_sword": 2, "skyforged_war_axe": 1, "stormwood_staff": 1}], [42, {"cloudpiercer_dirk": 1, "stormcrest_sword": 2, "stormcrest_war_axe": 1, "thundercloud_staff": 1}], [47, {"starshard_dirk": 1, "eclipse_blade": 2, "umbral_war_axe": 1, "moonwood_staff": 1}]]},
     "raider_head": {"sandwrap_hood": 1, "leather_cap": 2},
     "troll_weapons": {"troll_club": 4, "steel_war_axe": 1, "tidesteel_war_axe": 1}
+  },
+  "ladders": {
+    "dagger": [[0, "rusty_dagger"], [4, "iron_dagger"], [9, "tempered_dirk"], [16, "steel_dirk"], [21, "coral_dirk"], [27, "obsidian_dirk"], [32, "blackglass_dirk"], [37, "zephyr_dirk"], [42, "cloudpiercer_dirk"], [47, "starshard_dirk"]],
+    "sword": [[0, "rusty_short_sword"], [4, "iron_short_sword"], [9, "tempered_longsword"], [16, "steel_longsword"], [21, "tidesteel_sword"], [27, "emberforged_sword"], [32, "magmasteel_sword"], [37, "skyforged_sword"], [42, "stormcrest_sword"], [47, "eclipse_blade"]],
+    "axe": [[4, "iron_hand_axe"], [10, "tempered_war_axe"], [16, "steel_war_axe"], [21, "tidesteel_war_axe"], [27, "emberforged_war_axe"], [32, "magmasteel_war_axe"], [37, "skyforged_war_axe"], [42, "stormcrest_war_axe"], [47, "umbral_war_axe"]],
+    "staff": [[0, "worn_staff"], [4, "oak_staff"], [12, "sunwood_staff"], [21, "driftwood_staff"], [27, "cinderwood_staff"], [32, "forgeheart_staff"], [37, "stormwood_staff"], [42, "thundercloud_staff"], [47, "moonwood_staff"]],
+    "cloth_head": [[0, "cloth_cap"], [0, "leather_cap"], [0, "floppy_hat"], [12, "dawnweave_cap"], [20, "rainsilk_cap"], [26, "ashweave_cap"], [31, "flameweave_cap"], [36, "galeweave_cap"], [41, "skysilk_cap"], [46, "starweave_cap"]],
+    "plate_head": [[0, "iron_coif"], [9, "tempered_helm"], [15, "steel_helm"], [20, "tidesteel_helm"], [26, "emberforged_helm"], [31, "magmasteel_helm"], [36, "skyforged_helm"], [41, "stormcrest_helm"], [46, "eclipsed_helm"]],
+    "leather_chest": [[0, "patchwork_tunic"], [0, "leather_tunic"], [5, "mangy_hide_vest"], [8, "bearhide_vest"], [10, "hardened_leather_jerkin"], [10, "scaled_jerkin"], [16, "shadowleather_jerkin"], [21, "sharkskin_jerkin"], [27, "cinderscale_jerkin"], [32, "emberhide_jerkin"], [37, "windrunner_jerkin"], [42, "cloudhide_jerkin"], [47, "umbral_jerkin"]],
+    "robe": [[14, "sunburnt_robe"], [16, "dawnweave_robe"], [21, "rainsilk_robe"], [27, "ashweave_robe"], [32, "flameweave_robe"], [37, "galeweave_robe"], [42, "skysilk_robe"], [47, "starweave_robe"]],
+    "plate_chest": [[0, "studded_tunic"], [10, "tempered_breastplate"], [16, "steel_breastplate"], [21, "tidesteel_breastplate"], [27, "emberforged_breastplate"], [32, "magmasteel_breastplate"], [37, "skyforged_breastplate"], [42, "stormcrest_breastplate"], [47, "eclipsed_breastplate"]],
+    "leather_legs": [[0, "patchwork_pants"], [0, "leather_leggings"], [9, "hardened_leather_leggings"], [10, "scaled_leggings"], [21, "sharkskin_leggings"], [27, "cinderscale_leggings"], [32, "emberhide_leggings"], [37, "windrunner_leggings"], [42, "cloudhide_leggings"], [47, "umbral_leggings"]],
+    "plate_legs": [[0, "iron_greaves"], [10, "tempered_greaves"], [16, "steel_greaves"], [21, "tidesteel_greaves"], [27, "emberforged_greaves"], [32, "magmasteel_greaves"], [37, "skyforged_greaves"], [42, "stormcrest_greaves"], [47, "eclipsed_greaves"]],
+    "light_hands": [[0, "cloth_gloves"], [0, "leather_gloves"], [8, "hardened_leather_gloves"], [15, "dawnweave_gloves"], [20, "sharkskin_gloves"], [26, "cinderscale_gloves"], [31, "emberhide_gloves"], [36, "windrunner_gloves"], [41, "cloudhide_gloves"], [46, "umbral_gloves"]],
+    "plate_hands": [[0, "iron_gauntlets"], [8, "tempered_gauntlets"], [15, "steel_gauntlets"], [20, "tidesteel_gauntlets"], [26, "emberforged_gauntlets"], [31, "magmasteel_gauntlets"], [36, "skyforged_gauntlets"], [41, "stormcrest_gauntlets"], [46, "eclipsed_gauntlets"]],
+    "light_feet": [[0, "leather_boots"], [0, "worn_sandals"], [8, "hardened_leather_boots"], [15, "shadowleather_boots"], [20, "sharkskin_boots"], [26, "cinderscale_boots"], [31, "emberhide_boots"], [36, "windrunner_boots"], [41, "cloudhide_boots"], [46, "umbral_boots"]],
+    "plate_feet": [[0, "iron_boots"], [8, "tempered_boots"], [15, "steel_boots"], [20, "tidesteel_boots"], [26, "emberforged_boots"], [31, "magmasteel_boots"], [36, "skyforged_boots"], [41, "stormcrest_boots"], [46, "eclipsed_boots"]],
+    "arms": [[0, "cloth_sleeves"], [0, "leather_sleeves"], [9, "tempered_vambraces"], [15, "steel_vambraces"], [20, "tidesteel_vambraces"], [26, "emberforged_vambraces"], [31, "magmasteel_vambraces"], [36, "skyforged_vambraces"], [41, "stormcrest_vambraces"], [46, "eclipsed_vambraces"]],
+    "shield": [[0, "round_shield"], [0, "splintered_buckler"], [4, "iron_kite_shield"], [10, "tempered_kite_shield"], [16, "steel_kite_shield"], [21, "tidesteel_shield"], [27, "emberforged_shield"], [32, "magmasteel_shield"], [37, "skyforged_shield"], [42, "stormcrest_shield"], [47, "eclipsed_shield"]],
+    "ring": [[0, "tarnished_ring"], [0, "copper_band"], [8, "silver_band"], [15, "engraved_silver_ring"], [20, "gold_band"], [26, "jeweled_gold_ring"], [27, "wraithbone_ring"], [36, "starsilver_ring"], [41, "moonsilver_ring"], [46, "eclipse_band"]],
+    "neck": [[0, "fang_necklace"], [0, "bone_charm"], [0, "bonecarved_talisman"], [10, "silver_locket"]],
+    "bow": [[0, "hunting_shortbow"], [8, "ashwood_recurve"], [27, "cinderwood_longbow"], [32, "forgehold_longbow"], [37, "galehold_longbow"], [42, "summit_longbow"], [47, "barrowhold_longbow"]]
   }
 }

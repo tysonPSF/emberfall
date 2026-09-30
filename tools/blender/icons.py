@@ -10946,6 +10946,152 @@ WEST_MARCH = [march_wolf_pelt, boar_bristles, highwayman_token, grave_iron, wyve
 			  stormcut_staff]
 
 
+# ---------------------------------------------------------------- The jewelry ladder
+# Generic rings and a locket that drop at random, plain and well made: finer
+# with level, from plain silver to gold, a set gem, then starsilver,
+# moonsilver and the eclipse band. Smoother than the faceted _ring, so they
+# read as a jeweler's work rather than a trinket.
+
+def _band(p, swatch, R=0.4, t=0.07, w=0.07, n=48, grad=(0.0, 0.85), cy=0.0, cz=0.4):
+	"""A smooth band round the y axis, one part so its shading runs light at the top to dark
+	at the bottom: t is its half thickness, w its half width along the finger, the edges rounded."""
+	prof = []
+	for j in range(16):
+		b = j * math.tau / 16
+		cb, sb = math.cos(b), math.sin(b)
+		prof.append((t * math.copysign(abs(cb) ** 0.45, cb), w * math.copysign(abs(sb) ** 0.45, sb)))
+	verts = [(math.cos(k * math.tau / n) * (R + dr), cy + dy, cz + math.sin(k * math.tau / n) * (R + dr)) for k in range(n) for dr, dy in prof]
+	m = len(prof)
+	faces = [(k * m + j, k * m + (j + 1) % m, ((k + 1) % n) * m + (j + 1) % m, ((k + 1) % n) * m + j) for k in range(n) for j in range(m)]
+	p.poly(verts, faces, swatch, grad=grad)
+
+
+def _on_band(R, y, a, lift=0.0, cz=0.4):
+	"""A point on the band's outer surface at angle a (degrees, 90 = top)."""
+	a = math.radians(a)
+	return (math.cos(a) * (R + lift), y, cz + math.sin(a) * (R + lift))
+
+
+def _brilliant(p, c, r, swatch, glow=0.6, depth=0.12):
+	"""A cut stone facing the camera: a pavilion behind, the crown and its table in front."""
+	x, y, z = c
+	p.seg((x, y + depth, z), (x, y, z), 0.0, r, swatch, sides=8, grad=(0.4, 1.0), glow=glow * 0.6)
+	p.seg((x, y, z), (x, y - depth * 0.45, z), r, r * 0.62, swatch, sides=8, grad=(0.0, 0.5), glow=glow)
+
+
+def _prongs(p, c, r, swatch, n=4, start=45, depth=0.12):
+	x, y, z = c
+	for k in range(n):
+		a = math.radians(start + k * 360 / n)
+		dx, dz = math.cos(a), math.sin(a)
+		p.seg((x + dx * r * 1.1, y + depth * 0.5, z + dz * r * 1.1), (x + dx * r * 0.82, y - depth * 0.5, z + dz * r * 0.82),
+			  0.028, 0.02, swatch, sides=5, grad=(0.0, 0.5))
+
+
+def silver_band():
+	p = Prop("silver_band", 2255)
+	_band(p, STONE_LIGHT, t=0.075, w=0.075, grad=(0.0, 0.65))                              # a plain, polished silver band
+	return p.build()
+
+
+def engraved_silver_ring():
+	p = Prop("engraved_silver_ring", 2257)
+	_band(p, STONE_LIGHT, t=0.085, w=0.1, grad=(0.0, 0.65))                                # a broad silver band
+	waves, amp = 11, 0.035
+	for y in (-0.104, 0.104):                                                             # a running vine engraved round both faces
+		pts = [(math.cos(math.radians(a)) * (0.4 + amp * math.sin(math.radians(a) * waves)), y,
+				0.4 + math.sin(math.radians(a)) * (0.4 + amp * math.sin(math.radians(a) * waves))) for a in range(0, 361, 4)]
+		_line(p, pts, 0.012, 0.012, STONE_DARK, sides=4, grad=(0.2, 0.7))
+		for k in range(waves * 2):                                                        # a leaf in the bend of every wave
+			a = (k + 0.5) * 180 / waves
+			rr = 0.4 - amp * 0.9 * math.copysign(1, math.sin(math.radians(a) * waves))
+			p.blob((0.03, 0.012, 0.03), (math.cos(math.radians(a)) * rr, y * 1.01, 0.4 + math.sin(math.radians(a)) * rr), STONE_DARK, segs=(5, 3))
+	return p.build()
+
+
+def gold_band():
+	p = Prop("gold_band", 2259)
+	_band(p, GOLD, t=0.085, w=0.09)                                                        # a heavy plain band of gold
+	return p.build()
+
+
+def jeweled_gold_ring():
+	p = Prop("jeweled_gold_ring", 2261)
+	_band(p, GOLD, t=0.065, w=0.055)                                                       # a slender gold band
+	for sx in (-1, 1):                                                                    # its shoulders rising to the setting
+		p.seg((sx * 0.3, -0.02, 0.68), (sx * 0.1, -0.04, 0.86), 0.07, 0.05, GOLD, sides=8, grad=(0.0, 0.6))
+	p.seg((0, 0.06, 0.92), (0, -0.08, 0.92), 0.17, 0.2, GOLD, sides=10, grad=(0.0, 0.7))        # a gold collet
+	_brilliant(p, (0.0, -0.1, 0.92), 0.17, CLOTH_RED, glow=0.9)                              # set with a ruby
+	_prongs(p, (0, -0.14, 0.92), 0.17, GOLD, n=6, start=0)
+	for sx in (-1, 1):                                                                    # a little gold bead at each side
+		p.blob((0.05, 0.05, 0.05), (sx * 0.24, -0.08, 0.86), GOLD, segs=(6, 4), grad=(0.0, 0.4))
+	return p.build()
+
+
+def starsilver_ring():
+	p = Prop("starsilver_ring", 2263)
+	for y in (-0.06, 0.06):                                                               # twin rails of pale, bright starsilver
+		_band(p, CLOTH_WHITE, t=0.045, w=0.04, grad=(0.0, 0.7), cy=y)
+	for a in range(-40, 221, 40):                                                         # bridged with tiny stars
+		_star(p, _on_band(0.4, -0.1, a), 0.1, sw=CLOTH_WHITE, glow=1.8)
+	p.seg((0, 0.06, 0.9), (0, -0.08, 0.9), 0.16, 0.18, STONE_LIGHT, sides=10, grad=(0.0, 0.6))   # a setting
+	_brilliant(p, (0.0, -0.1, 0.9), 0.15, SKY, glow=1.0)                                     # a small clear stone, cold as a star
+	_prongs(p, (0, -0.14, 0.9), 0.15, CLOTH_WHITE, n=4)
+	_star(p, (0.06, -0.22, 0.95), 0.2, sw=CLOTH_WHITE, glow=3.2)                              # catching the light
+	return p.build()
+
+
+def moonsilver_ring():
+	p = Prop("moonsilver_ring", 2265)
+	_band(p, CLOTH_WHITE, t=0.075, w=0.08, grad=(0.35, 1.0))                               # cool blue-white moonsilver
+	for y in (-0.092, 0.092):                                                             # a thread of moonlight round each face
+		_loop(p, (0, y * 1.08, 0.4), 0.4, False, 0.018, SKY, n=48, glow=1.0)
+	p.seg((0, 0.06, 0.93), (0, -0.07, 0.93), 0.2, 0.21, CLOTH_WHITE, sides=16, grad=(0.3, 0.9))    # a bezel
+	_loop(p, (0, -0.08, 0.93), 0.215, False, 0.02, CLOTH_WHITE, n=24, squash=1.15)
+	p.blob((0.38, 0.18, 0.44), (0.0, -0.08, 0.93), CLOTH_WHITE, segs=(16, 10), grad=(0.1, 0.9), glow=0.1)   # a milky moonstone
+	to3 = _front_of((0.0, -0.08, 0.93), (0.38, 0.18, 0.44))
+	for rr, w in ((0.12, 0.05), (0.09, 0.035)):                                          # its blue sheen, a crescent
+		pts = [to3(rr * math.cos(math.radians(a)) - 0.01, 0.92 + rr * 1.2 * math.sin(math.radians(a)), 0.01) for a in range(-70, 71, 10)]
+		_line(p, pts, w * 0.5, w * 0.5, SKY, sides=5, grad=(0.0, 0.3), glow=1.4)
+	return p.build()
+
+
+def eclipse_band():
+	p = Prop("eclipse_band", 2267)
+	_band(p, IRON, t=0.08, w=0.1, grad=(0.0, 0.6))                                          # a broad band of dark metal
+	for y in (-0.1, 0.1):                                                                 # inlaid with gold round each face
+		_loop(p, (0, y, 0.4), 0.4, False, 0.02, GOLD, n=40)
+	p.seg((0, 0.06, 0.92), (0, -0.1, 0.92), 0.22, 0.24, GOLD, sides=16, grad=(0.0, 0.6))   # a gold bezel
+	p.seg((0, -0.1, 0.92), (0, -0.16, 0.92), 0.19, 0.17, IRON, sides=16, grad=(0.0, 0.4))  # a black stone
+	_loop(p, (0, -0.15, 0.92), 0.2, False, 0.025, GOLD, n=20, glow=2.4)                      # rimmed by a ring of light
+	for k in range(12):                                                                   # the corona
+		a = math.radians(k * 30 + 15)
+		ln = 0.08 if k % 2 else 0.13
+		p.seg((math.cos(a) * 0.23, -0.14, 0.92 + math.sin(a) * 0.23), (math.cos(a) * (0.23 + ln), -0.14, 0.92 + math.sin(a) * (0.23 + ln)),
+			  0.02, 0.0, GOLD, sides=4, glow=2.0)
+	return p.build()
+
+
+def silver_locket():
+	p = Prop("silver_locket", 2269)
+	for k in range(20):                                                                   # a fine silver chain
+		a = math.radians(-50 + k * 280 / 19 - 90)
+		_loop(p, (math.cos(a) * 0.36, math.sin(a) * 0.24, 0.98 + math.sin(a) * 0.14), 0.035, k % 2 == 0, 0.013, STONE_LIGHT, n=8)
+	p.seg((0, -0.3, 0.88), (0, -0.3, 0.8), 0.05, 0.05, STONE_LIGHT, sides=8)                 # its bail
+	p.blob((0.54, 0.18, 0.7), (0, -0.3, 0.44), STONE_LIGHT, segs=(16, 10), grad=(0.0, 0.75))   # an oval silver locket
+	_loop(p, (0, -0.4, 0.44), 0.26, False, 0.025, CLOTH_WHITE, n=28, squash=1.3)             # a bright rim
+	_loop(p, (0, -0.41, 0.44), 0.15, False, 0.014, STONE_DARK, n=20, squash=1.3)             # an engraved oval inside it
+	for k in range(5):                                                                    # and a little engraved flower in the middle
+		a = math.radians(90 + k * 72)
+		_loop(p, (math.cos(a) * 0.055, -0.415, 0.44 + math.sin(a) * 0.055), 0.03, False, 0.009, STONE_DARK, n=8)
+	p.seg((0.27, -0.3, 0.52), (0.27, -0.3, 0.36), 0.03, 0.03, STONE_LIGHT, sides=6)          # its hinge
+	return p.build()
+
+
+JEWELRY_LADDER = [silver_band, engraved_silver_ring, gold_band, jeweled_gold_ring, starsilver_ring, moonsilver_ring, eclipse_band,
+				  silver_locket]
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
 								 vial_of_spring_water, leatherwing_charm, coilback_scale_band, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
@@ -10960,7 +11106,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER + WEST_MARCH}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER + WEST_MARCH + JEWELRY_LADDER}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

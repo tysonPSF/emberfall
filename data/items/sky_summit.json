@@ -294,9 +294,9 @@
     "lore": true,
     "name": "Plumed Belt",
     "slot": "waist",
-    "ac": 10,
-    "agi": 7,
-    "str": 5,
+    "ac": 13,
+    "agi": 9,
+    "str": 6,
     "value": 16000,
     "rec_level": 40,
     "wear": "rope_belt"

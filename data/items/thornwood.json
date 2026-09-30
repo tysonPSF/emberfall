@@ -60,8 +60,8 @@
   "wolfhide_boots": {
     "name": "Wolfhide Boots",
     "slot": "feet",
-    "ac": 4,
-    "agi": 1,
+    "ac": 5,
+    "agi": 2,
     "value": 240,
     "rec_level": 7,
     "wear": "leather_boots"

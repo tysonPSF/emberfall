@@ -63,19 +63,19 @@ item("reaverhide_boots", "Reaver-Hide Boots", slot="feet", ac=6, agi=3, sta=1, v
      wear="leather_boots")
 item("corvels_red_glove", "Corvel's Red Glove", slot="hands", ac=5, str=3, agi=2, value=2400, rec_level=17, no_drop=True, lore=True,
      wear="leather_gloves")
-item("gravewardens_band", "Gravewarden's Band", slot="ring", ac=2, wis=2, int=2, mana=15, value=1800, rec_level=16, no_drop=True, lore=True)
+item("gravewardens_band", "Gravewarden's Band", slot="ring", ac=3, wis=3, int=3, mana=23, value=1800, rec_level=16, no_drop=True, lore=True)
 item("marshals_broken_blade", "The Marshal's Broken Blade", slot="primary", dmg=13, delay=2.8, verb=["slash", "slashes"], model="sword_1handed",
      skill="1h_slashing", str=2, sta=2, value=3600, rec_level=18, no_drop=True, lore=True, classes=["warrior", "rogue", "ranger", "shaman"])
-item("scythewing_charm", "Scythewing Talon Charm", slot="neck", ac=3, agi=3, str=2, hp=20, value=3200, rec_level=19, no_drop=True, lore=True)
+item("scythewing_charm", "Scythewing Talon Charm", slot="neck", ac=4, agi=4, str=3, hp=30, value=3200, rec_level=19, no_drop=True, lore=True)
 item("ropewalkers_gloves", "Ropewalker's Gloves", slot="hands", ac=7, agi=3, str=2, value=2400, rec_level=19, no_drop=True, lore=True,
      wear="leather_gloves")
 item("stonefist_girdle", "Stonefist Girdle", slot="waist", ac=8, str=4, sta=3, hp=25, value=4200, rec_level=21, no_drop=True, lore=True,
      wear="leather_belt")
 item("griffon_feather_mantle", "Griffon-Feather Mantle", slot="arms", ac=8, agi=3, sta=2, hp=20, value=3000, rec_level=20, no_drop=True,
      lore=True, wear="leather_sleeves")
-item("stormcrest_plumed_cap", "Stormcrest Plumed Cap", slot="head", ac=8, agi=3, wis=2, hp=25, value=4400, rec_level=21, no_drop=True,
+item("stormcrest_plumed_cap", "Stormcrest Plumed Cap", slot="head", ac=12, agi=4, wis=3, hp=35, value=4400, rec_level=21, no_drop=True,
      lore=True, wear="leather_cap")
-item("cataract_pendant", "Cataract Pendant", slot="neck", ac=2, wis=3, int=3, mana=30, value=3000, rec_level=20, no_drop=True, lore=True)
+item("cataract_pendant", "Cataract Pendant", slot="neck", ac=3, wis=4, int=4, mana=45, value=3000, rec_level=20, no_drop=True, lore=True)
 item("stormcut_staff", "Stormcut Staff", slot="primary", dmg=14, delay=3.1, verb=["crush", "crushes"], model="staff", skill="2h_blunt",
      int=5, wis=5, mana=50, value=6000, rec_level=22, no_drop=True, lore=True,
      classes=["cleric", "wizard", "magician", "necromancer", "shaman"])
