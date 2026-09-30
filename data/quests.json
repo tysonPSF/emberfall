@@ -781,7 +781,10 @@
     "faction": {
       "rainhold": 8,
       "pondkin": -10
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "bloatking_crown": {
     "name": "The Bloatking's Crown",
@@ -802,7 +805,10 @@
     "faction": {
       "rainhold": 25,
       "pondkin": -30
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "reedstalker_plumes": {
     "name": "Plumes for Fletching",
@@ -821,7 +827,10 @@
     "complete_text": "That's a quiver's worth of fletching. Here's your coin.",
     "faction": {
       "rainhold": 6
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "stilt_legs_plume": {
     "name": "The Great Heron",
@@ -841,7 +850,10 @@
     "first_complete_text": "Your cloak. The rain will run right off it.",
     "faction": {
       "rainhold": 20
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "sunken_charms": {
     "name": "Rest for Veyamar",
@@ -860,7 +872,10 @@
     "complete_text": "I will sing them to Jalendra. Four souls go home tonight.",
     "faction": {
       "rainhold": 8
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "headwomans_lotus": {
     "name": "The Headwoman's Lotus",
@@ -880,7 +895,10 @@
     "first_complete_text": "This locket was hers. She would want it worn by the living.",
     "faction": {
       "rainhold": 25
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "marrowroot_heart": {
     "name": "The Coven's Heart",
@@ -901,7 +919,10 @@
     "faction": {
       "rainhold": 30,
       "sedge_coven": -40
-    }
+    },
+    "also_taken_by": [
+      "rm_reedwatcher_achebe"
+    ]
   },
   "tidesworn_insignias": {
     "name": "The Tide Kings' Insignia",
@@ -1252,7 +1273,10 @@
     "first_complete_text": "And my gauntlets. Don't take them off near the forges.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "thanes_crown": {
     "name": "The Thane's Iron Crown",
@@ -1272,7 +1296,10 @@
     "first_complete_text": "His hammer too. Can you even lift it?",
     "faction": {
       "forgehold": 35
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "imp_horns": {
     "name": "Imp Horns",
@@ -1293,7 +1320,10 @@
     "first_complete_text": "My signet from the mill. Tallpine's gone, but it's still good silver.",
     "faction": {
       "forgehold": 6
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "bottled_smoke": {
     "name": "Bottled Smoke",
@@ -1314,7 +1344,10 @@
     "first_complete_text": "A sash woven from it. It never quite stops moving.",
     "faction": {
       "forgehold": 6
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "cackleflames_crown": {
     "name": "Cackleflame's Crown",
@@ -1334,7 +1367,10 @@
     "first_complete_text": "Take his scepter. I don't want it.",
     "faction": {
       "forgehold": 25
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "firehound_manes": {
     "name": "Firehound Manes",
@@ -1355,7 +1391,10 @@
     "first_complete_text": "And the mantle. It'll keep you warm, to say the least.",
     "faction": {
       "forgehold": 6
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "ashmaws_mane": {
     "name": "Ashmaw's Mane",
@@ -1375,7 +1414,10 @@
     "first_complete_text": "His fangs, on a cord.",
     "faction": {
       "forgehold": 25
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "firebird_feathers": {
     "name": "Firebird Feathers",
@@ -1396,7 +1438,10 @@
     "first_complete_text": "A cap sewn with them. Wear it proudly.",
     "faction": {
       "forgehold": 6
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "phoenix_ember": {
     "name": "The Phoenix's Ember",
@@ -1416,7 +1461,10 @@
     "first_complete_text": "A ring set with a spark of it.",
     "faction": {
       "forgehold": 25
-    }
+    },
+    "also_taken_by": [
+      "burn_ashrunner_beppe"
+    ]
   },
   "glass_cores": {
     "name": "Glass Golem Cores",
@@ -1747,7 +1795,10 @@
     "faction": {
       "salt_traders": 8,
       "duneskiff": -10
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "asras_salt_crown_q": {
     "name": "Asra's Salt Crown",
@@ -1768,7 +1819,10 @@
     "faction": {
       "salt_traders": 30,
       "duneskiff": -30
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "mirror_shard_q": {
     "name": "Mirror Shards",
@@ -1789,7 +1843,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "salt_traders": 8
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "cracked_mirror_face_q": {
     "name": "The Reflection's Cracked Face",
@@ -1809,7 +1866,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "salt_traders": 30
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "salt_crab_claw_q": {
     "name": "Salt Crab Claws",
@@ -1830,7 +1890,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "salt_traders": 8
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "saltclaws_pearl_q": {
     "name": "Saltclaw's Salt Pearl",
@@ -1850,7 +1913,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "salt_traders": 30
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "wader_plume_q": {
     "name": "Wader Plumes",
@@ -1871,7 +1937,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "salt_traders": 8
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "sky_ray_spine_q": {
     "name": "The Great Ray's Spine",
@@ -1891,7 +1960,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "salt_traders": 30
-    }
+    },
+    "also_taken_by": [
+      "mf_skiffscout_imara"
+    ]
   },
   "whisker_barbel_q": {
     "name": "Whiskerfolk Barbels",
@@ -3623,7 +3695,10 @@
     "faction": {
       "barrowhold": 8,
       "herd_spirits": -10
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "ossuary_heartbone_q": {
     "name": "The Ossuary's Heartbone",
@@ -3644,7 +3719,10 @@
     "faction": {
       "barrowhold": 30,
       "herd_spirits": -30
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "poached_ivory_q": {
     "name": "Pieces Of Poached Ivory",
@@ -3666,7 +3744,10 @@
     "faction": {
       "barrowhold": 8,
       "poachers": -10
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "vargas_tusk_saw_q": {
     "name": "Varga's Tusk-Saw",
@@ -3687,7 +3768,10 @@
     "faction": {
       "barrowhold": 30,
       "poachers": -30
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "carrion_feather_q": {
     "name": "Carrion Feathers",
@@ -3708,7 +3792,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "barrowhold": 8
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "gorgemaws_beak_q": {
     "name": "Gorgemaw's Beak",
@@ -3728,7 +3815,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "barrowhold": 30
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "ghost_ivory_q": {
     "name": "Pieces Of Ghost-ivory",
@@ -3750,7 +3840,10 @@
     "faction": {
       "barrowhold": 8,
       "herd_spirits": -10
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "grandmothers_tusk_q": {
     "name": "The Grandmother's Tusk",
@@ -3771,7 +3864,10 @@
     "faction": {
       "barrowhold": 30,
       "herd_spirits": -30
-    }
+    },
+    "also_taken_by": [
+      "if_pathfinder_anselm"
+    ]
   },
   "shade_essence_q": {
     "name": "Shade Essences",
@@ -5359,5 +5455,317 @@
     "first_reward_item": "bl_wreckers_buckler",
     "first_complete_text": "Made from the lead wagon's wheel-guard. Take it.",
     "start_keyword": "wreck-shell"
+  },
+  "burn_kindled_husk_q": {
+    "name": "Cinder Rosaries",
+    "giver": "burn_ashrunner_beppe",
+    "wants": {
+      "burn_cinder_bead": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 620
+    },
+    "accept_text": "You have taken on a task: Cinder Rosaries. Bring Ashrunner Beppe four cinder rosary beads.",
+    "ready_text": "Beads. They're still smoking.",
+    "complete_text": "Four husks that won't pray again.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "husks",
+    "repeatable": true
+  },
+  "burn_kindled_deacon_q": {
+    "name": "The Kindled Deacon",
+    "giver": "burn_ashrunner_beppe",
+    "wants": {
+      "burn_deacons_censer": 1
+    },
+    "reward": {
+      "xp": 13500,
+      "coin": 1850
+    },
+    "accept_text": "You have taken on a task: The Kindled Deacon. Bring Ashrunner Beppe the Kindled Deacon's censer.",
+    "ready_text": "The censer's gone cold. Good.",
+    "complete_text": "The chapel burns out at last.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "burn_cinderwatch_mantle",
+    "first_complete_text": "The Cinderwatch's mantle. Ash doesn't stick to it.",
+    "start_keyword": "deacon"
+  },
+  "burn_cinder_newt_q": {
+    "name": "Newt Blisters",
+    "giver": "burn_prospector_renske",
+    "wants": {
+      "burn_newt_blister": 4
+    },
+    "reward": {
+      "xp": 5200,
+      "coin": 620
+    },
+    "accept_text": "You have taken on a task: Newt Blisters. Bring Prospector Renske four cinder newt blisters.",
+    "ready_text": "Blisters! Careful, they pop.",
+    "complete_text": "Four fewer in my rift.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "newts",
+    "repeatable": true
+  },
+  "burn_old_blisterback_q": {
+    "name": "Old Blisterback",
+    "giver": "burn_prospector_renske",
+    "wants": {
+      "burn_blisterbacks_heartstone": 1
+    },
+    "reward": {
+      "xp": 13500,
+      "coin": 1850
+    },
+    "accept_text": "You have taken on a task: Old Blisterback. Bring Prospector Renske Old Blisterback's heartstone.",
+    "ready_text": "His heartstone. Still warm.",
+    "complete_text": "The rift's mine now.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "burn_prospectors_pick",
+    "first_complete_text": "My old pick. It's dug through worse than him.",
+    "start_keyword": "old blisterback"
+  },
+  "mf_drowned_salter_q": {
+    "name": "Salters' Lockets",
+    "giver": "mf_skiffscout_imara",
+    "wants": {
+      "mf_salters_locket": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "accept_text": "You have taken on a task: Salters' Lockets. Bring Skiff-Scout Imara four salters' lockets.",
+    "ready_text": "Lockets. There's a face in this one.",
+    "complete_text": "Four families can stop waiting.",
+    "faction": {
+      "salt_traders": 8
+    },
+    "start_keyword": "salters",
+    "repeatable": true
+  },
+  "mf_skiffmaster_dunmore_q": {
+    "name": "Skiffmaster Dunmore the Drowned",
+    "giver": "mf_skiffscout_imara",
+    "wants": {
+      "mf_dunmores_logbook": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "accept_text": "You have taken on a task: Skiffmaster Dunmore the Drowned. Bring Skiff-Scout Imara Skiffmaster Dunmore's logbook.",
+    "ready_text": "His logbook. Every crossing he made.",
+    "complete_text": "The skiff can rest.",
+    "faction": {
+      "salt_traders": 24
+    },
+    "first_reward_item": "mf_glasswater_boots",
+    "first_complete_text": "Boots cut for the glass. You won't slip.",
+    "start_keyword": "dunmore"
+  },
+  "mf_saltglass_sentinel_q": {
+    "name": "Salt-Glass Chips",
+    "giver": "mf_glassseeker_wenzel",
+    "wants": {
+      "mf_saltglass_chip": 4
+    },
+    "reward": {
+      "xp": 3420,
+      "coin": 380
+    },
+    "accept_text": "You have taken on a task: Salt-Glass Chips. Bring Glass-Seeker Wenzel four salt-glass chips.",
+    "ready_text": "Chips! Look how the light goes through.",
+    "complete_text": "Four more for my cases.",
+    "faction": {
+      "salt_traders": 8
+    },
+    "start_keyword": "sentinels",
+    "repeatable": true
+  },
+  "mf_pillarmother_q": {
+    "name": "The Pillarmother",
+    "giver": "mf_glassseeker_wenzel",
+    "wants": {
+      "mf_pillarmothers_core": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "accept_text": "You have taken on a task: The Pillarmother. Bring Glass-Seeker Wenzel the Pillarmother's core.",
+    "ready_text": "Her core. It's humming.",
+    "complete_text": "The pillars sleep.",
+    "faction": {
+      "salt_traders": 24
+    },
+    "first_reward_item": "mf_saltglass_lens",
+    "first_complete_text": "Ground from the purest glass. See the salt through it.",
+    "start_keyword": "pillarmother"
+  },
+  "if_starving_shade_q": {
+    "name": "Shades' Prayer Beads",
+    "giver": "if_pathfinder_anselm",
+    "wants": {
+      "if_shade_bead": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "accept_text": "You have taken on a task: Shades' Prayer Beads. Bring Pathfinder Anselm four shades' prayer beads.",
+    "ready_text": "Beads. Cold as snow.",
+    "complete_text": "Four shades gone quiet.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "shades",
+    "repeatable": true
+  },
+  "if_hollow_mahout_q": {
+    "name": "The Hollow Mahout",
+    "giver": "if_pathfinder_anselm",
+    "wants": {
+      "if_mahouts_goad": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "accept_text": "You have taken on a task: The Hollow Mahout. Bring Pathfinder Anselm the Hollow Mahout's goad.",
+    "ready_text": "His goad. The herds are free of him.",
+    "complete_text": "The gate's only bones now.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "if_tusk_gate_cowl",
+    "first_complete_text": "A cowl the Tuskwatch wore at the gate. Take it.",
+    "start_keyword": "mahout"
+  },
+  "if_marrow_beetle_q": {
+    "name": "Marrow Beetle Shells",
+    "giver": "if_bonecarver_ulrike",
+    "wants": {
+      "if_beetle_shell": 4
+    },
+    "reward": {
+      "xp": 17100,
+      "coin": 1900
+    },
+    "accept_text": "You have taken on a task: Marrow Beetle Shells. Bring Bone-Carver Ulrike four marrow beetle shells.",
+    "ready_text": "Shells! Good for inlay.",
+    "complete_text": "Four fewer in my hollow.",
+    "faction": {
+      "barrowhold": 8
+    },
+    "start_keyword": "beetles",
+    "repeatable": true
+  },
+  "if_marrow_queen_q": {
+    "name": "The Marrow Queen",
+    "giver": "if_bonecarver_ulrike",
+    "wants": {
+      "if_queens_mandible": 1
+    },
+    "reward": {
+      "xp": 38000,
+      "coin": 4560
+    },
+    "accept_text": "You have taken on a task: The Marrow Queen. Bring Bone-Carver Ulrike the Marrow Queen's mandible.",
+    "ready_text": "Her mandible. What a size.",
+    "complete_text": "The hollow's mine to work.",
+    "faction": {
+      "barrowhold": 24
+    },
+    "first_reward_item": "if_bonecarvers_gloves",
+    "first_complete_text": "My carving gloves. Keep your fingers.",
+    "start_keyword": "marrow queen"
+  },
+  "rm_drowned_ringer_q": {
+    "name": "Bell Clappers",
+    "giver": "rm_reedwatcher_achebe",
+    "wants": {
+      "rm_bell_clapper": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 380
+    },
+    "accept_text": "You have taken on a task: Bell Clappers. Bring Reedwatcher Achebe four tarnished bell clappers.",
+    "ready_text": "Clappers. They'll ring no more floods.",
+    "complete_text": "Four bells quiet.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "ringers",
+    "repeatable": true
+  },
+  "rm_bellwarden_q": {
+    "name": "The Bellwarden",
+    "giver": "rm_reedwatcher_achebe",
+    "wants": {
+      "rm_bellwardens_bell": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "accept_text": "You have taken on a task: The Bellwarden. Bring Reedwatcher Achebe the Bellwarden's bell.",
+    "ready_text": "His bell. Listen: nothing.",
+    "complete_text": "The marsh can sleep.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "rm_heronwatch_blade",
+    "first_complete_text": "The Heronwatch's blade. It's cut a lot of reeds.",
+    "start_keyword": "bellwarden"
+  },
+  "rm_weir_eel_q": {
+    "name": "Weir Eel Fins",
+    "giver": "rm_fisher_makena",
+    "wants": {
+      "rm_eel_fin": 4
+    },
+    "reward": {
+      "xp": 3200,
+      "coin": 380
+    },
+    "accept_text": "You have taken on a task: Weir Eel Fins. Bring Fisher Makena four weir eel fins.",
+    "ready_text": "Fins! Makes a good soup.",
+    "complete_text": "Four fewer in my weir.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "eels",
+    "repeatable": true
+  },
+  "rm_eel_mother_q": {
+    "name": "The Eel-Mother",
+    "giver": "rm_fisher_makena",
+    "wants": {
+      "rm_eel_mothers_eye": 1
+    },
+    "reward": {
+      "xp": 7600,
+      "coin": 912
+    },
+    "accept_text": "You have taken on a task: The Eel-Mother. Bring Fisher Makena the Eel-Mother's eye.",
+    "ready_text": "Her eye. Big as a plate.",
+    "complete_text": "I'll mend the weir tomorrow.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "rm_weirkeepers_ring",
+    "first_complete_text": "My mother's ring. She kept this weir before me.",
+    "start_keyword": "eel-mother"
   }
 }

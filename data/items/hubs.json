@@ -162,5 +162,231 @@
       "shaman",
       "ranger"
     ]
+  },
+  "burn_cinder_bead": {
+    "name": "Cinder Rosary Bead",
+    "value": 14,
+    "stack": 20,
+    "icon": "bone_chips"
+  },
+  "burn_deacons_censer": {
+    "name": "The Kindled Deacon's Censer",
+    "value": 70,
+    "lore": true,
+    "icon": "phoenix_ember"
+  },
+  "burn_cinderwatch_mantle": {
+    "name": "Cinderwatch Mantle",
+    "slot": "arms",
+    "ac": 12,
+    "sta": 5,
+    "agi": 4,
+    "hp": 45,
+    "value": 20000,
+    "rec_level": 33,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves",
+    "icon": "lg_herdwifes_mantle"
+  },
+  "burn_newt_blister": {
+    "name": "Cinder Newt Blister",
+    "value": 14,
+    "stack": 20,
+    "icon": "imp_horn"
+  },
+  "burn_blisterbacks_heartstone": {
+    "name": "Old Blisterback's Heartstone",
+    "value": 70,
+    "lore": true,
+    "icon": "phoenix_ember"
+  },
+  "burn_prospectors_pick": {
+    "name": "Prospector's Pick",
+    "slot": "primary",
+    "dmg": 24,
+    "delay": 2.8,
+    "verb": [
+      "smash",
+      "smashes"
+    ],
+    "model": "miners_pick",
+    "skill": "1h_blunt",
+    "str": 5,
+    "sta": 4,
+    "hp": 30,
+    "value": 20000,
+    "rec_level": 33,
+    "no_drop": true,
+    "lore": true,
+    "icon": "tw_woodcutters_hatchet"
+  },
+  "mf_salters_locket": {
+    "name": "Salter's Locket",
+    "value": 10,
+    "stack": 20,
+    "icon": "waterlogged_locket"
+  },
+  "mf_dunmores_logbook": {
+    "name": "Skiffmaster Dunmore's Logbook",
+    "value": 50,
+    "lore": true,
+    "icon": "blackwaters_ledger"
+  },
+  "mf_glasswater_boots": {
+    "name": "Glasswater Boots",
+    "slot": "feet",
+    "ac": 10,
+    "agi": 4,
+    "sta": 3,
+    "hp": 25,
+    "value": 9000,
+    "rec_level": 24,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_boots",
+    "icon": "stalkerhide_boots"
+  },
+  "mf_saltglass_chip": {
+    "name": "Salt-Glass Chip",
+    "value": 10,
+    "stack": 20,
+    "icon": "salt_crystal"
+  },
+  "mf_pillarmothers_core": {
+    "name": "The Pillarmother's Core",
+    "value": 50,
+    "lore": true,
+    "icon": "salt_crystal"
+  },
+  "mf_saltglass_lens": {
+    "name": "Salt-Glass Lens",
+    "slot": "neck",
+    "ac": 5,
+    "int": 5,
+    "wis": 5,
+    "mana": 45,
+    "hp": 25,
+    "value": 9000,
+    "rec_level": 24,
+    "no_drop": true,
+    "lore": true,
+    "icon": "bone_talisman"
+  },
+  "if_shade_bead": {
+    "name": "Shade's Prayer Bead",
+    "value": 40,
+    "stack": 20,
+    "icon": "ghost_ivory"
+  },
+  "if_mahouts_goad": {
+    "name": "The Hollow Mahout's Goad",
+    "value": 200,
+    "lore": true,
+    "icon": "ivory_shard"
+  },
+  "if_tusk_gate_cowl": {
+    "name": "Tusk Gate Cowl",
+    "slot": "head",
+    "ac": 16,
+    "int": 9,
+    "wis": 9,
+    "mana": 100,
+    "hp": 55,
+    "value": 44000,
+    "rec_level": 45,
+    "no_drop": true,
+    "lore": true,
+    "wear": "cloth_cap",
+    "icon": "death_mask_cowl"
+  },
+  "if_beetle_shell": {
+    "name": "Marrow Beetle Shell",
+    "value": 40,
+    "stack": 20,
+    "icon": "chitin_plate"
+  },
+  "if_queens_mandible": {
+    "name": "The Marrow Queen's Mandible",
+    "value": 200,
+    "lore": true,
+    "icon": "chitin_plate"
+  },
+  "if_bonecarvers_gloves": {
+    "name": "Bone-Carver's Gloves",
+    "slot": "hands",
+    "ac": 14,
+    "agi": 7,
+    "str": 5,
+    "hp": 50,
+    "value": 44000,
+    "rec_level": 45,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves",
+    "icon": "hornbone_gauntlets"
+  },
+  "rm_bell_clapper": {
+    "name": "Tarnished Bell Clapper",
+    "value": 10,
+    "stack": 20,
+    "icon": "tarnished_ring"
+  },
+  "rm_bellwardens_bell": {
+    "name": "The Bellwarden's Bell",
+    "value": 50,
+    "lore": true,
+    "icon": "bone_charm"
+  },
+  "rm_heronwatch_blade": {
+    "name": "Heronwatch Blade",
+    "slot": "primary",
+    "dmg": 16,
+    "delay": 2.6,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "agi": 4,
+    "str": 4,
+    "hp": 25,
+    "value": 9000,
+    "rec_level": 25,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger"
+    ],
+    "icon": "asras_skiff_blade"
+  },
+  "rm_eel_fin": {
+    "name": "Weir Eel Fin",
+    "value": 10,
+    "stack": 20,
+    "icon": "eel_skin"
+  },
+  "rm_eel_mothers_eye": {
+    "name": "The Eel-Mother's Eye",
+    "value": 50,
+    "lore": true,
+    "icon": "eel_skin"
+  },
+  "rm_weirkeepers_ring": {
+    "name": "Weirkeeper's Ring",
+    "slot": "ring",
+    "ac": 5,
+    "sta": 4,
+    "agi": 3,
+    "wis": 3,
+    "hp": 35,
+    "value": 9000,
+    "rec_level": 25,
+    "no_drop": true,
+    "lore": true,
+    "icon": "breathshard_ring"
   }
 }

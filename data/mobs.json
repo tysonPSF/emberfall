@@ -16455,5 +16455,687 @@
     },
     "named": true,
     "xp_bonus": 3.0
+  },
+  "burn_kindled_husk": {
+    "name": "a kindled husk",
+    "level": [
+      30,
+      32
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 2.2,
+    "ac": 44,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "fire_imps",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#e0401a",
+    "scale": 0.8,
+    "coin": [
+      20,
+      90
+    ],
+    "loot": [
+      {
+        "item": "burn_cinder_bead",
+        "chance": 0.55
+      }
+    ],
+    "model": "charred_dead",
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.18,
+      "text": "%s cackles and hurls %s!"
+    }
+  },
+  "burn_kindled_deacon": {
+    "name": "the Kindled Deacon",
+    "level": [
+      35,
+      35
+    ],
+    "hp_base": 170,
+    "hp_per_level": 24,
+    "dmg_min": 18,
+    "dmg_max": 32,
+    "attack_delay": 2.2,
+    "ac": 44,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "fire_imps",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#e0401a",
+    "scale": 1.15,
+    "coin": [
+      270,
+      720
+    ],
+    "loot": [
+      {
+        "item": "burn_deacons_censer",
+        "chance": 1.0
+      },
+      {
+        "item": "burn_cinder_bead",
+        "chance": 1.0
+      }
+    ],
+    "model": "fallen_fire_priest",
+    "proc": {
+      "spell": "cinder_bolt",
+      "chance": 0.18,
+      "text": "%s cackles and hurls %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "burn_cinder_newt": {
+    "name": "a cinder newt",
+    "level": [
+      30,
+      32
+    ],
+    "hp_base": 210,
+    "hp_per_level": 27,
+    "dmg_min": 21,
+    "dmg_max": 38,
+    "attack_delay": 2.4,
+    "ac": 50,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#c8501a",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "burn_newt_blister",
+        "chance": 0.55
+      }
+    ],
+    "model": "lava_salamander",
+    "proc": {
+      "spell": "burning_bite",
+      "chance": 0.15,
+      "text": "%s's bite leaves %s!"
+    }
+  },
+  "burn_old_blisterback": {
+    "name": "Old Blisterback",
+    "level": [
+      35,
+      35
+    ],
+    "hp_base": 210,
+    "hp_per_level": 27,
+    "dmg_min": 21,
+    "dmg_max": 38,
+    "attack_delay": 2.4,
+    "ac": 50,
+    "speed": 7.2,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#c8501a",
+    "scale": 1.9,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "burn_blisterbacks_heartstone",
+        "chance": 1.0
+      },
+      {
+        "item": "burn_newt_blister",
+        "chance": 1.0
+      }
+    ],
+    "model": "lava_salamander",
+    "proc": {
+      "spell": "burning_bite",
+      "chance": 0.15,
+      "text": "%s's bite leaves %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "mf_drowned_salter": {
+    "name": "a drowned salter",
+    "level": [
+      21,
+      23
+    ],
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.7,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#c8b090",
+    "scale": 1.0,
+    "coin": [
+      40,
+      140
+    ],
+    "loot": [
+      {
+        "item": "mf_salters_locket",
+        "chance": 0.55
+      }
+    ],
+    "model": "drowned",
+    "weapon": "salt_scimitar"
+  },
+  "mf_skiffmaster_dunmore": {
+    "name": "Skiffmaster Dunmore the Drowned",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.7,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#c8b090",
+    "scale": 1.0,
+    "coin": [
+      420,
+      1120
+    ],
+    "loot": [
+      {
+        "item": "mf_dunmores_logbook",
+        "chance": 1.0
+      },
+      {
+        "item": "mf_salters_locket",
+        "chance": 1.0
+      }
+    ],
+    "model": "drowned_captain",
+    "weapon": "salt_scimitar",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "mf_saltglass_sentinel": {
+    "name": "a salt-glass sentinel",
+    "level": [
+      21,
+      23
+    ],
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.7,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "reflections",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d0d8",
+    "scale": 0.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mf_saltglass_chip",
+        "chance": 0.55
+      }
+    ],
+    "model": "glass_golem"
+  },
+  "mf_pillarmother": {
+    "name": "the Pillarmother",
+    "level": [
+      25,
+      25
+    ],
+    "hp_base": 147,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.7,
+    "ac": 39,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "reflections",
+    "verb": [
+      "crush",
+      "crushes"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d0d8",
+    "scale": 1.4,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "mf_pillarmothers_core",
+        "chance": 1.0
+      },
+      {
+        "item": "mf_saltglass_chip",
+        "chance": 1.0
+      }
+    ],
+    "model": "glass_golem",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "if_starving_shade": {
+    "name": "a starving shade",
+    "level": [
+      43,
+      45
+    ],
+    "hp_base": 388,
+    "hp_per_level": 51,
+    "dmg_min": 30,
+    "dmg_max": 59,
+    "attack_delay": 3.2,
+    "ac": 98,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": true,
+    "flees": false,
+    "faction": "herd_spirits",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d8e8",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "if_shade_bead",
+        "chance": 0.55
+      }
+    ],
+    "model": "hungry_ghost",
+    "proc": {
+      "spell": "spirit_trumpet",
+      "chance": 0.15,
+      "text": "%s trumpets, and %s shakes you!"
+    }
+  },
+  "if_hollow_mahout": {
+    "name": "the Hollow Mahout",
+    "level": [
+      46,
+      46
+    ],
+    "hp_base": 388,
+    "hp_per_level": 51,
+    "dmg_min": 30,
+    "dmg_max": 59,
+    "attack_delay": 3.2,
+    "ac": 98,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 10,
+    "social": true,
+    "flees": false,
+    "faction": "herd_spirits",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#c8d8e8",
+    "scale": 1.2,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "if_mahouts_goad",
+        "chance": 1.0
+      },
+      {
+        "item": "if_shade_bead",
+        "chance": 1.0
+      }
+    ],
+    "model": "wraith",
+    "proc": {
+      "spell": "spirit_trumpet",
+      "chance": 0.15,
+      "text": "%s trumpets, and %s shakes you!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "if_marrow_beetle": {
+    "name": "a marrow beetle",
+    "level": [
+      42,
+      44
+    ],
+    "hp_base": 316,
+    "hp_per_level": 42,
+    "dmg_min": 30,
+    "dmg_max": 57,
+    "attack_delay": 2.3,
+    "ac": 79,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a08a60",
+    "scale": 1.6,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "if_beetle_shell",
+        "chance": 0.55
+      }
+    ],
+    "model": "fire_beetle"
+  },
+  "if_marrow_queen": {
+    "name": "the Marrow Queen",
+    "level": [
+      46,
+      46
+    ],
+    "hp_base": 316,
+    "hp_per_level": 42,
+    "dmg_min": 30,
+    "dmg_max": 57,
+    "attack_delay": 2.3,
+    "ac": 79,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#a08a60",
+    "scale": 2.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "if_queens_mandible",
+        "chance": 1.0
+      },
+      {
+        "item": "if_beetle_shell",
+        "chance": 1.0
+      }
+    ],
+    "model": "fire_beetle",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "rm_drowned_ringer": {
+    "name": "a drowned bell-ringer",
+    "level": [
+      23,
+      25
+    ],
+    "hp_base": 160,
+    "hp_per_level": 22,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rm_bell_clapper",
+        "chance": 0.55
+      }
+    ],
+    "model": "drowned"
+  },
+  "rm_bellwarden": {
+    "name": "the Bellwarden",
+    "level": [
+      26,
+      26
+    ],
+    "hp_base": 160,
+    "hp_per_level": 22,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 3.0,
+    "ac": 38,
+    "speed": 5.6,
+    "aggressive": true,
+    "aggro_radius": 13,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "skeleton",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rm_bellwardens_bell",
+        "chance": 1.0
+      },
+      {
+        "item": "rm_bell_clapper",
+        "chance": 1.0
+      }
+    ],
+    "model": "tide_knight",
+    "named": true,
+    "xp_bonus": 3.0
+  },
+  "rm_weir_eel": {
+    "name": "a weir eel",
+    "level": [
+      22,
+      24
+    ],
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.4,
+    "ac": 36,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rm_eel_fin",
+        "chance": 0.55
+      }
+    ],
+    "model": "marsh_eel",
+    "proc": {
+      "spell": "eel_shock",
+      "chance": 0.08,
+      "text": "%s lets loose an %s!"
+    }
+  },
+  "rm_eel_mother": {
+    "name": "the Eel-Mother",
+    "level": [
+      26,
+      26
+    ],
+    "hp_base": 140,
+    "hp_per_level": 20,
+    "dmg_min": 15,
+    "dmg_max": 28,
+    "attack_delay": 2.4,
+    "ac": 36,
+    "speed": 6.8,
+    "aggressive": true,
+    "aggro_radius": 12,
+    "social": false,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "beetle",
+    "color": "#888888",
+    "scale": 2.2,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "rm_eel_mothers_eye",
+        "chance": 1.0
+      },
+      {
+        "item": "rm_eel_fin",
+        "chance": 1.0
+      }
+    ],
+    "model": "marsh_eel",
+    "proc": {
+      "spell": "eel_shock",
+      "chance": 0.08,
+      "text": "%s lets loose an %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
   }
 }
