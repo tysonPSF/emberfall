@@ -7199,6 +7199,11 @@ func _walk_border(tag: String, from_zone: String, start: Vector2, dir: Vector2, 
 	if main.zone.zone_id != from_zone:
 		print("%s: expected to be in %s, in %s" % [tag, from_zone, main.zone.zone_id])
 		return false
+	# a wilderness zone may have grown since the leg was written: start 20 m short of its zone line
+	for zl: Dictionary in main.zone.data.get("zone_lines", []):
+		var at := Vector2(zl["pos"][0], zl["pos"][1])
+		if str(zl["to"]) == to_zone and start.distance_to(at) > 45.0 and not main.zone.data.get("bindstone", false):
+			start = at - dir * 20.0
 	p.global_position = Vector3(start.x, main.zone.surface_at(start.x, start.y) + 1.0, start.y)
 	for k in 400:
 		if not is_instance_valid(main.zone) or main.zone.zone_id == to_zone:

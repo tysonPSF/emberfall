@@ -3,166 +3,34 @@
   "levels": [16, 21],
   "music": "the_bleach",
   "seed": 9133,
-  "size": 512,
+  "size": 1024,
   "height_amplitude": 7,
-  "bind_point": [
-    26,
-    214
-  ],
+  "bind_point": [52, 411.7],
   "flat_radius": 16,
-  "trees": 40,
-  "tree_mix": [
-    "dead_palm",
-    "dead_palm",
-    "tree_round"
-  ],
+  "trees": 160,
+  "tree_mix": ["dead_palm", "dead_palm", "tree_round"],
   "groves": 0.2,
-  "rocks": 240,
-  "grass_colors": [
-    "#c9b88a",
-    "#dccb9c"
-  ],
+  "rocks": 960,
+  "grass_colors": ["#c9b88a", "#dccb9c"],
   "fog_density": 0.0035,
   "fog_color": "#e6dcc4",
   "sun_energy": 1.1,
   "clutter": {
-    "grass_a": {
-      "density": 0.096,
-      "patch": 0.55,
-      "sway": 0.16,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.35
-      ],
-      "city": 0.2
-    },
-    "grass_b": {
-      "density": 0.09,
-      "patch": 0.35,
-      "sway": 0.14,
-      "range": 50,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.3
-      ],
-      "city": 0.3
-    },
-    "bush_a": {
-      "density": 0.0018,
-      "patch": 0.6,
-      "range": 110,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.4
-      ]
-    },
-    "pebbles": {
-      "density": 0.0015,
-      "patch": 0.4,
-      "range": 50,
-      "scale": [
-        0.8,
-        1.6
-      ],
-      "city": 0.5
-    },
-    "log_fallen": {
-      "density": 0.0004,
-      "patch": 0.3,
-      "range": 120,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "stump": {
-      "density": 0.0005,
-      "patch": 0.4,
-      "range": 110,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.3
-      ]
-    }
+    "grass_a": {"density": 0.096, "patch": 0.55, "sway": 0.16, "range": 55, "tint": "ground", "scale": [0.8, 1.35], "city": 0.2},
+    "grass_b": {"density": 0.09, "patch": 0.35, "sway": 0.14, "range": 50, "tint": "ground", "scale": [0.8, 1.3], "city": 0.3},
+    "bush_a": {"density": 0.0018, "patch": 0.6, "range": 110, "shadow": true, "scale": [0.8, 1.4]},
+    "pebbles": {"density": 0.0015, "patch": 0.4, "range": 50, "scale": [0.8, 1.6], "city": 0.5},
+    "log_fallen": {"density": 0.0004, "patch": 0.3, "range": 120, "shadow": true, "scale": [0.8, 1.2]},
+    "stump": {"density": 0.0005, "patch": 0.4, "range": 110, "shadow": true, "scale": [0.8, 1.3]}
   },
   "ground_patches": [
-    {
-      "pos": [
-        0,
-        -20
-      ],
-      "radius": 110,
-      "color": "#e4e0d4",
-      "flatten": 0.9,
-      "bare": true
-    },
-    {
-      "pos": [
-        -150,
-        90
-      ],
-      "radius": 34,
-      "color": "#9c8a6a",
-      "flatten": 0.8,
-      "bare": true
-    },
-    {
-      "pos": [
-        135,
-        -145
-      ],
-      "radius": 55,
-      "color": "#e4e0d4",
-      "flatten": 0.8,
-      "bare": true
-    }
+    {"pos": [-20, -30], "radius": 110, "color": "#e4e0d4", "flatten": 0.9, "bare": true},
+    {"pos": [-314.5, 182.5], "radius": 34, "color": "#9c8a6a", "flatten": 0.8, "bare": true},
+    {"pos": [256, -305], "radius": 55, "color": "#e4e0d4", "flatten": 0.8, "bare": true}
   ],
   "rivers": [
     {
-      "points": [
-        [
-          -210,
-          -210
-        ],
-        [
-          -150,
-          -150
-        ],
-        [
-          -120,
-          -60
-        ],
-        [
-          -170,
-          20
-        ],
-        [
-          -110,
-          60
-        ],
-        [
-          -40,
-          110
-        ],
-        [
-          60,
-          140
-        ],
-        [
-          150,
-          100
-        ],
-        [
-          210,
-          60
-        ]
-      ],
+      "points": [[-420, -420], [-300, -300], [-240, -120], [-340, 40], [-220, 120], [-80, 220], [120, 280], [300, 200], [420, 120]],
       "width": 18,
       "depth": 1.6,
       "bank": 14,
@@ -170,983 +38,197 @@
     }
   ],
   "landmarks": [
-    {
-      "type": "waystation",
-      "pos": [
-        26,
-        205
-      ],
-      "face": [
-        0,
-        256
-      ]
-    },
-    {
-      "type": "prop",
-      "id": "caravan_wagon",
-      "pos": [
-        42,
-        198
-      ],
-      "yaw": 20
-    },
-    {
-      "type": "prop",
-      "id": "caravan_wagon",
-      "pos": [
-        10,
-        190
-      ],
-      "yaw": -35
-    },
-    {
-      "type": "prop",
-      "id": "titan_ribcage",
-      "pos": [
-        -40,
-        -118
-      ],
-      "yaw": 15,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "titan_skull",
-      "pos": [
-        -46,
-        -142
-      ],
-      "yaw": 195,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "titan_ribcage",
-      "pos": [
-        128,
-        118
-      ],
-      "yaw": -40,
-      "collide": "mesh"
-    },
-    {
-      "type": "camp",
-      "pos": [
-        155,
-        -40
-      ], "style": "wagons", "wagon": "caravan_wagon", "size": 1.8
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -8,
-        216
-      ],
-      "yaw": 180,
-      "labels": [
-        "The Bleach",
-        "Sunward Steps"
-      ]
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        -160,
-        -60
-      ],
-      "yaw": 320,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        170,
-        40
-      ],
-      "yaw": 110,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        -70,
-        150
-      ],
-      "yaw": 230,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        90,
-        -195
-      ],
-      "yaw": 270,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        -195,
-        170
-      ],
-      "yaw": 75,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        205,
-        -110
-      ],
-      "yaw": 355,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "mesa",
-      "pos": [
-        -205,
-        -170
-      ],
-      "yaw": 5,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        -20,
-        -10
-      ],
-      "yaw": 230,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        30,
-        20
-      ],
-      "yaw": 260,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        -60,
-        30
-      ],
-      "yaw": 30,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        10,
-        -60
-      ],
-      "yaw": 300,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        60,
-        -30
-      ],
-      "yaw": 330,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        -150,
-        95
-      ],
-      "yaw": 155,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        -135,
-        70
-      ],
-      "yaw": 190,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        125,
-        -150
-      ],
-      "yaw": 210,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        145,
-        -160
-      ],
-      "yaw": 80,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        110,
-        -165
-      ],
-      "yaw": 15,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        135,
-        -130
-      ],
-      "yaw": 110,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        40,
-        70
-      ],
-      "yaw": 190,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "salt_crystals",
-      "pos": [
-        -90,
-        -40
-      ],
-      "yaw": 200,
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -156.0,
-        95.0
-      ],
-      "yaw": 0,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -160.1,
-        104.9
-      ],
-      "yaw": 45,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -170.0,
-        109.0
-      ],
-      "yaw": 90,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -179.9,
-        104.9
-      ],
-      "yaw": 135,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -184.0,
-        95.0
-      ],
-      "yaw": 180,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -179.9,
-        85.1
-      ],
-      "yaw": 225,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -170.0,
-        81.0
-      ],
-      "yaw": 270,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "id": "dead_palm",
-      "pos": [
-        -160.1,
-        85.1
-      ],
-      "yaw": 315,
-      "collide": "trunk"
-    }
+    {"type": "waystation", "pos": [52, 402.7], "face": [26, 453.7]},
+    {"type": "prop", "id": "caravan_wagon", "pos": [68, 395.7], "yaw": 20},
+    {"type": "prop", "id": "caravan_wagon", "pos": [36, 387.7], "yaw": -35},
+    {"type": "prop", "id": "titan_ribcage", "pos": [-83, -248], "yaw": 15, "collide": "mesh"},
+    {"type": "prop", "id": "titan_skull", "pos": [-89, -272], "yaw": 195, "collide": "mesh"},
+    {"type": "prop", "id": "titan_ribcage", "pos": [256, 236], "yaw": -40, "collide": "mesh"},
+    {"type": "camp", "pos": [310, -80], "style": "wagons", "wagon": "caravan_wagon", "size": 1.8},
+    {"type": "signpost", "pos": [-16, 432], "yaw": 180, "labels": ["The Bleach", "Sunward Steps"]},
+    {"type": "prop", "id": "mesa", "pos": [-320, -120], "yaw": 320, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [340, 80], "yaw": 110, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [-140, 300], "yaw": 230, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [211, -355], "yaw": 270, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [-390, 340], "yaw": 75, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [410, -220], "yaw": 355, "collide": "mesh"},
+    {"type": "prop", "id": "mesa", "pos": [-410, -340], "yaw": 5, "collide": "mesh"},
+    {"type": "prop", "id": "salt_crystals", "pos": [-40, -20], "yaw": 230, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [65, 65], "yaw": 260, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [-120, 60], "yaw": 30, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [20, -120], "yaw": 300, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [120, -60], "yaw": 330, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [-314.5, 187.5], "yaw": 155, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [-299.5, 162.5], "yaw": 190, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [246, -310], "yaw": 210, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [266, -320], "yaw": 80, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [231, -325], "yaw": 15, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [256, -290], "yaw": 110, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [75, 115], "yaw": 190, "collide": "box"},
+    {"type": "prop", "id": "salt_crystals", "pos": [-180, -80], "yaw": 200, "collide": "box"},
+    {"type": "prop", "id": "dead_palm", "pos": [-320.5, 187.5], "yaw": 0, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-324.6, 197.4], "yaw": 45, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-334.5, 201.5], "yaw": 90, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-344.4, 197.4], "yaw": 135, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-348.5, 187.5], "yaw": 180, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-344.4, 177.6], "yaw": 225, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-334.5, 173.5], "yaw": 270, "collide": "trunk"},
+    {"type": "prop", "id": "dead_palm", "pos": [-324.6, 177.6], "yaw": 315, "collide": "trunk"}
   ],
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
+  "passes": [[0, 512, 9], [-512, 0, 9], [0, -512, 9]],
   "roads": [
-    {
-      "points": [
-        [
-          0,
-          256
-        ],
-        [
-          8,
-          200
-        ],
-        [
-          -10,
-          140
-        ],
-        [
-          -30,
-          60
-        ],
-        [
-          -15,
-          -40
-        ],
-        [
-          -5,
-          -140
-        ],
-        [
-          0,
-          -256
-        ]
-      ],
-      "width": 3.2
-    },
-    {
-      "points": [
-        [
-          -30,
-          60
-        ],
-        [
-          -120,
-          20
-        ],
-        [
-          -256,
-          0
-        ]
-      ],
-      "width": 3.0
-    }
+    {"points": [[0, 512], [34, 397.7], [-20, 280], [-60, 120], [-30, -80], [-10, -280], [0, -512]], "width": 3.2},
+    {"points": [[-60, 120], [-240, 40], [-512, 0]], "width": 3.0}
   ],
   "zone_lines": [
-    {"pos": [0, -245], "size": [18, 8], "to": "mirror_flats", "arrive": [0, 231], "arrive_face": [0, 191]},
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "sunward_steps",
-      "arrive": [
-        0,
-        -199
-      ],
-      "arrive_face": [
-        0,
-        -159
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "high_terrace",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
-    }
+    {"pos": [0, -501], "size": [18, 8], "to": "mirror_flats", "arrive": [8, 435.2], "arrive_face": [8, 395.2]},
+    {"pos": [0, 501], "size": [18, 8], "to": "sunward_steps", "arrive": [0, -311], "arrive_face": [0, -271]},
+    {"pos": [-501, 0], "size": [8, 18], "to": "high_terrace", "arrive": [359, 0], "arrive_face": [319, 0]}
   ],
   "npcs": [
-    {
-      "id": "caravan_master_suri",
-      "pos": [
-        20,
-        212
-      ],
-      "face": [
-        26,
-        205
-      ]
-    },
-    {
-      "id": "saltmaster_ibrem",
-      "pos": [
-        33,
-        213
-      ],
-      "face": [
-        26,
-        205
-      ]
-    },
-    {
-      "id": "caravan_guard",
-      "pos": [
-        18,
-        196
-      ],
-      "patrol": [
-        [
-          18,
-          196
-        ],
-        [
-          5,
-          178
-        ],
-        [
-          -6,
-          150
-        ],
-        [
-          8,
-          200
-        ]
-      ]
-    }
+    {"id": "caravan_master_suri", "pos": [46, 409.7], "face": [52, 402.7]},
+    {"id": "saltmaster_ibrem", "pos": [59, 410.7], "face": [52, 402.7]},
+    {"id": "caravan_guard", "pos": [44, 393.7], "patrol": [[44, 393.7], [31, 375.7], [-12, 300], [34, 397.7]]}
   ],
   "spawns": [
-    {"pos": [-208, -176], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [-208, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [208, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [-112, -208], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
-    {"pos": [-208, -80], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [-32, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [40, -208], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
-    {"pos": [208, 120], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [208, -208], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
-    {"pos": [208, -120], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
-    {"pos": [-88, 40], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
-    {"pos": [-40, -200], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
-    {"pos": [-208, 136], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
-    {"pos": [-208, 48], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
-    {"pos": [-128, -144], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
-    {
-      "pos": [
-        -60,
-        120
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        60,
-        110
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -110,
-        150
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        110,
-        170
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        0
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        170,
-        -20
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        80,
-        40
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -90,
-        -80
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        0,
-        90
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        150,
-        60
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        125,
-        -140
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        140,
-        -160
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        115,
-        -160
-      ],
-      "pool": {
-        "giant_scorpion": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        135,
-        -150
-      ],
-      "pool": {
-        "scorpion_queen": 1
-      },
-      "respawn": 900,
-      "wander": 3
-    },
-    {
-      "pos": [
-        -20,
-        -20
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        30,
-        10
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -50,
-        -40
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        40,
-        -60
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -10,
-        30
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -150,
-        90
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        10,
-        -90
-      ],
-      "pool": {
-        "salt_basilisk": 1
-      },
-      "respawn": 90,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -50,
-        -110
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -30,
-        -125
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -45,
-        -100
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -60,
-        -130
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 120,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -40,
-        -120
-      ],
-      "pool": {
-        "bone_titan": 1
-      },
-      "respawn": 1200,
-      "wander": 2
-    },
-    {
-      "pos": [
-        125,
-        112
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 90,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        140,
-        125
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 90,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -100,
-        -160
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 90,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        80,
-        -110
-      ],
-      "pool": {
-        "bone_giant": 1
-      },
-      "respawn": 90,
-      "wander": 16,
-      "when": "night"
-    },
-    {
-      "pos": [
-        143,
-        -52
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 90,
-      "wander": 4
-    },
-    {
-      "pos": [
-        161,
-        -51
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 90,
-      "wander": 4
-    },
-    {
-      "pos": [
-        140,
-        -32
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 90,
-      "wander": 4
-    },
-    {
-      "pos": [
-        172,
-        -37
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 90,
-      "wander": 4
-    },
-    {
-      "pos": [
-        157,
-        -28
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 90,
-      "wander": 4
-    },
-    {
-      "pos": [
-        155,
-        -40
-      ],
-      "pool": {
-        "raider_chief": 1
-      },
-      "respawn": 700,
-      "wander": 2
-    },
-    {
-      "pos": [
-        90,
-        -20
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        200,
-        20
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        120,
-        -90
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        60,
-        10
-      ],
-      "pool": {
-        "salt_raider": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    }
+    {"pos": [96, 456], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [216, -456], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-464, -32], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [40, 328], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [104, -280], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [288, 232], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-232, 424], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-344, -448], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [448, -112], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-296, -120], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [248, 456], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-208, -32], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-328, 344], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [336, 336], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-208, 160], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-360, -256], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [312, -416], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [440, 136], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [368, -320], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [208, 168], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [256, 24], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-168, -336], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-144, 360], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-248, 72], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-56, 312], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-8, -464], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [8, -352], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [144, -192], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-88, 144], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-448, 184], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [128, 360], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [320, -240], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-448, -432], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-376, -72], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-328, 440], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-320, -360], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [152, -360], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-448, -264], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [424, 328], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [48, -32], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-144, 448], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [328, 424], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [80, 144], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [16, -264], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-296, 264], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-328, 96], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [368, -160], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-456, 344], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-184, -248], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-56, -152], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-288, -200], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [408, -40], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [184, -120], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-400, 16], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-144, -448], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [360, 184], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [160, 288], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [176, 424], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-112, 0], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [0, -96], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [184, -256], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [232, 96], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [0, 264], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-64, -328], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-192, 232], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [440, -312], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [280, 160], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [328, 24], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-224, -104], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-376, 216], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [0, 384], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [232, 272], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-464, 40], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-256, 360], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [80, -344], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [80, -216], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [112, -56], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [152, -432], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [240, -392], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [352, 264], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [272, 384], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-16, 464], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-352, -184], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-240, -352], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-413, -346], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-416, 416], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [416, 416], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-224, -416], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-416, -160], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-64, 416], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [80, -416], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [416, 240], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [416, -416], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [413, -230], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-148, 70], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-80, -400], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-416, 272], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-416, 96], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-256, -288], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-120, 240], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [120, 220], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-220, 300], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [220, 340], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-320, 0], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [325, -60], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [160, 80], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-180, -160], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [0, 180], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [320, 100], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [246, -300], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [261, -320], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [236, -320], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [256, -310], "pool": {"scorpion_queen": 1}, "respawn": 900, "wander": 3},
+    {"pos": [-40, -30], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [65, 55], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-100, -80], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [80, -120], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-20, 60], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-314.5, 182.5], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [20, -180], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-93, -240], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-73, -255], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-88, -230], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-103, -260], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-83, -250], "pool": {"bone_titan": 1}, "respawn": 1200, "wander": 2},
+    {"pos": [253, 230], "pool": {"bone_giant": 1}, "respawn": 90, "wander": 16, "when": "night"},
+    {"pos": [268, 243], "pool": {"bone_giant": 1}, "respawn": 90, "wander": 16, "when": "night"},
+    {"pos": [-200, -320], "pool": {"bone_giant": 1}, "respawn": 90, "wander": 16, "when": "night"},
+    {"pos": [160, -220], "pool": {"bone_giant": 1}, "respawn": 90, "wander": 16, "when": "night"},
+    {"pos": [298, -92], "pool": {"salt_raider": 1}, "respawn": 90, "wander": 4},
+    {"pos": [316, -91], "pool": {"salt_raider": 1}, "respawn": 90, "wander": 4},
+    {"pos": [295, -72], "pool": {"salt_raider": 1}, "respawn": 90, "wander": 4},
+    {"pos": [327, -77], "pool": {"salt_raider": 1}, "respawn": 90, "wander": 4},
+    {"pos": [312, -68], "pool": {"salt_raider": 1}, "respawn": 90, "wander": 4},
+    {"pos": [310, -80], "pool": {"raider_chief": 1}, "respawn": 700, "wander": 2},
+    {"pos": [180, -40], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [400, 40], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [240, -180], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16},
+    {"pos": [120, 20], "pool": {"salt_raider": 1}, "respawn": 80, "wander": 16}
   ]
 }

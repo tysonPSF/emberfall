@@ -1,1283 +1,171 @@
 {
   "name": "Fogfall",
-  "levels": [
-    40,
-    43
-  ],
+  "levels": [40, 43],
   "music": "fogfall",
   "seed": 9811,
-  "size": 512,
+  "size": 768,
   "height_amplitude": 5,
-  "bind_point": [
-    2,
-    188
-  ],
+  "bind_point": [2.2, 283.5],
   "flat_radius": 18,
-  "trees": 120,
-  "tree_mix": [
-    "wind_bent_tree",
-    "charred_tree_tall",
-    "pine_b"
-  ],
+  "trees": 270,
+  "tree_mix": ["wind_bent_tree", "charred_tree_tall", "pine_b"],
   "groves": 0.5,
-  "rocks": 90,
-  "grass_colors": [
-    "#5a6450",
-    "#6a7058"
-  ],
+  "rocks": 202,
+  "grass_colors": ["#5a6450", "#6a7058"],
   "fog_density": 0.012,
   "fog_color": "#a4acb4",
   "sun_energy": 0.7,
   "clutter": {
-    "grass_b": {
-      "density": 0.24,
-      "patch": 0.5,
-      "sway": 0.12,
-      "range": 45,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "fern": {
-      "density": 0.02,
-      "patch": 0.8,
-      "sway": 0.06,
-      "range": 50,
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "mushrooms": {
-      "density": 0.006,
-      "patch": 0.9,
-      "range": 40,
-      "scale": [
-        0.9,
-        1.5
-      ]
-    },
-    "pebbles": {
-      "density": 0.02,
-      "patch": 0.5,
-      "range": 40,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.4
-      ]
-    }
+    "grass_b": {"density": 0.24, "patch": 0.5, "sway": 0.12, "range": 45, "tint": "ground", "scale": [0.8, 1.2]},
+    "fern": {"density": 0.02, "patch": 0.8, "sway": 0.06, "range": 50, "scale": [0.8, 1.3]},
+    "mushrooms": {"density": 0.006, "patch": 0.9, "range": 40, "scale": [0.9, 1.5]},
+    "pebbles": {"density": 0.02, "patch": 0.5, "range": 40, "tint": "ground", "scale": [0.8, 1.4]}
   },
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
-  "roads": [
-    {
-      "points": [
-        [
-          0,
-          256
-        ],
-        [
-          0,
-          120
-        ],
-        [
-          0,
-          20
-        ],
-        [
-          0,
-          -90
-        ]
-      ],
-      "width": 3.2
-    },
-    {
-      "points": [
-        [
-          -256,
-          0
-        ],
-        [
-          -100,
-          5
-        ],
-        [
-          0,
-          20
-        ],
-        [
-          100,
-          5
-        ],
-        [
-          256,
-          0
-        ]
-      ],
-      "width": 2.8
-    }
-  ],
+  "passes": [[0, 384, 9], [-384, 0, 9], [384, 0, 9], [0, -384, 9]],
+  "roads": [{"points": [[0, 384], [0, 180], [0, 30], [0, -135]], "width": 3.2}, {"points": [[-384, 0], [-160, 5], [0, 30], [160, 5], [384, 0]], "width": 2.8}],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "blackglass",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "hollow_air",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "ivory_field",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "lastwalk",
-      "arrive": [
-        0,
-        231
-      ],
-      "arrive_face": [
-        0,
-        191
-      ]
-    }
+    {"pos": [0, 373], "size": [18, 8], "to": "blackglass", "arrive": [0, -359], "arrive_face": [0, -319]},
+    {"pos": [-373, 0], "size": [8, 18], "to": "hollow_air", "arrive": [359, 0], "arrive_face": [319, 0]},
+    {"pos": [373, 0], "size": [8, 18], "to": "ivory_field", "arrive": [-487, 0], "arrive_face": [-447, 0]},
+    {"pos": [0, -373], "size": [18, 8], "to": "lastwalk", "arrive": [0.2, 329.2], "arrive_face": [0.2, 289.2]}
   ],
   "landmarks": [
-    {
-      "type": "ruins",
-      "pos": [
-        0,
-        -130
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -30,
-        -100
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        30,
-        -100
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -60,
-        0
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        60,
-        20
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -40,
-        60
-      ]
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        40,
-        -40
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -140
-      ],
-      "id": "ysmoor_throne_hall",
-      "collide": "mesh",
-      "face": [
-        0,
-        -100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        140,
-        -130
-      ],
-      "id": "fog_ruin_tower",
-      "collide": "mesh",
-      "face": [
-        100,
-        -100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        -140
-      ],
-      "id": "fog_ruin_tower",
-      "collide": "mesh",
-      "face": [
-        -100,
-        -100
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -60,
-        -40
-      ],
-      "id": "fog_ruin_tower",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -50,
-        -80
-      ],
-      "id": "fog_ruin_wall",
-      "collide": "mesh",
-      "face": [
-        0,
-        -80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        50,
-        -80
-      ],
-      "id": "fog_ruin_wall",
-      "collide": "mesh",
-      "face": [
-        0,
-        -80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        90,
-        -60
-      ],
-      "id": "fog_ruin_wall",
-      "collide": "mesh",
-      "face": [
-        0,
-        -80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90,
-        -60
-      ],
-      "id": "fog_ruin_wall",
-      "collide": "mesh",
-      "face": [
-        0,
-        -80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        120,
-        -110
-      ],
-      "id": "gargoyle_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        155,
-        -95
-      ],
-      "id": "gargoyle_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        105,
-        -150
-      ],
-      "id": "gargoyle_perch",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -130,
-        100
-      ],
-      "id": "kennel_ruin",
-      "collide": "mesh",
-      "face": [
-        -100,
-        80
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        120,
-        100
-      ],
-      "id": "dig_pit",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        130
-      ],
-      "id": "dig_pit",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        100,
-        130
-      ],
-      "id": "dig_pit",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        140,
-        80
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        135,
-        105
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        160,
-        115
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        135,
-        105
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        135,
-        100
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        80,
-        60
-      ],
-      "id": "tombstone_cluster",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        60,
-        100
-      ],
-      "id": "tombstone_cluster",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        170,
-        60
-      ],
-      "id": "tombstone_cluster",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        90,
-        170
-      ],
-      "id": "tombstone_cluster",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -10,
-        180
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        10,
-        180
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        120
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        60
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -120,
-        0
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        120,
-        0
-      ],
-      "id": "fog_lantern",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -14,
-        196
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        14,
-        198
-      ],
-      "id": "scout_tent",
-      "collide": "box",
-      "face": [
-        0,
-        184
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        2,
-        186
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        206
-      ],
-      "id": "banner_pole",
-      "collide": "box"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        228
-      ],
-      "yaw": -90,
-      "labels": [
-        "Blackglass",
-        "Fogfall"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        -228,
-        8
-      ],
-      "yaw": 180,
-      "labels": [
-        "Hollow Air",
-        "Fogfall"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        228,
-        8
-      ],
-      "yaw": 0,
-      "labels": [
-        "The Ivory Field",
-        "Fogfall"
-      ]
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        -226
-      ],
-      "yaw": 90,
-      "labels": [
-        "Lastwalk",
-        "Fogfall"
-      ]
-    }
+    {"type": "ruins", "pos": [-3.6, -167.7]},
+    {"type": "ruins", "pos": [-33.6, -137.7]},
+    {"type": "ruins", "pos": [26.4, -137.7]},
+    {"type": "ruins", "pos": [-63.6, -37.7]},
+    {"type": "ruins", "pos": [117.5, 68.4]},
+    {"type": "ruins", "pos": [-50, 90]},
+    {"type": "ruins", "pos": [36.4, -77.7]},
+    {"type": "prop", "pos": [-3.6, -177.7], "id": "ysmoor_throne_hall", "collide": "mesh", "face": [-3.6, -137.7]},
+    {"type": "prop", "pos": [205, -190.6], "id": "fog_ruin_tower", "collide": "mesh", "face": [165, -160.6]},
+    {"type": "prop", "pos": [-210, -210], "id": "fog_ruin_tower", "collide": "mesh", "face": [-170, -170]},
+    {"type": "prop", "pos": [-63.6, -77.7], "id": "fog_ruin_tower", "collide": "mesh"},
+    {"type": "prop", "pos": [-53.6, -117.7], "id": "fog_ruin_wall", "collide": "mesh", "face": [-3.6, -117.7]},
+    {"type": "prop", "pos": [46.4, -117.7], "id": "fog_ruin_wall", "collide": "mesh", "face": [-3.6, -117.7]},
+    {"type": "prop", "pos": [86.4, -97.7], "id": "fog_ruin_wall", "collide": "mesh", "face": [-3.6, -117.7]},
+    {"type": "prop", "pos": [-93.6, -97.7], "id": "fog_ruin_wall", "collide": "mesh", "face": [-3.6, -117.7]},
+    {"type": "prop", "pos": [185, -170.6], "id": "gargoyle_perch", "collide": "box"},
+    {"type": "prop", "pos": [220, -155.6], "id": "gargoyle_perch", "collide": "box"},
+    {"type": "prop", "pos": [170, -210.6], "id": "gargoyle_perch", "collide": "box"},
+    {"type": "prop", "pos": [-195, 150], "id": "kennel_ruin", "collide": "mesh", "face": [-165, 130]},
+    {"type": "prop", "pos": [177.5, 148.4], "id": "dig_pit", "collide": "none"},
+    {"type": "prop", "pos": [207.5, 178.4], "id": "dig_pit", "collide": "none"},
+    {"type": "prop", "pos": [157.5, 178.4], "id": "dig_pit", "collide": "none"},
+    {"type": "prop", "pos": [197.5, 128.4], "id": "scout_tent", "collide": "box", "face": [192.5, 153.4]},
+    {"type": "prop", "pos": [217.5, 163.4], "id": "scout_tent", "collide": "box", "face": [192.5, 153.4]},
+    {"type": "prop", "pos": [192.5, 148.4], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [137.5, 108.4], "id": "tombstone_cluster", "collide": "box"},
+    {"type": "prop", "pos": [117.5, 148.4], "id": "tombstone_cluster", "collide": "box"},
+    {"type": "prop", "pos": [227.5, 108.4], "id": "tombstone_cluster", "collide": "box"},
+    {"type": "prop", "pos": [147.5, 218.4], "id": "tombstone_cluster", "collide": "box"},
+    {"type": "prop", "pos": [-9.8, 275.5], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [10.2, 275.5], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [0, 180], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [-10, 90], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [-180, 0], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [180, 0], "id": "fog_lantern", "collide": "none"},
+    {"type": "prop", "pos": [-13.8, 291.5], "id": "scout_tent", "collide": "box", "face": [0.2, 279.5]},
+    {"type": "prop", "pos": [14.2, 293.5], "id": "scout_tent", "collide": "box", "face": [0.2, 279.5]},
+    {"type": "prop", "pos": [2.2, 281.5], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [0.2, 301.5], "id": "banner_pole", "collide": "box"},
+    {"type": "signpost", "pos": [8.2, 323.5], "yaw": -90, "labels": ["Blackglass", "Fogfall"]},
+    {"type": "signpost", "pos": [-356, 12], "yaw": 180, "labels": ["Hollow Air", "Fogfall"]},
+    {"type": "signpost", "pos": [356, 12], "yaw": 0, "labels": ["The Ivory Field", "Fogfall"]},
+    {"type": "signpost", "pos": [12, -354], "yaw": 90, "labels": ["Lastwalk", "Fogfall"]}
   ],
   "npcs": [
-    {
-      "id": "loremaster_evander",
-      "pos": [
-        -8,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "mason_hilde",
-      "pos": [
-        12,
-        176
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "kennelwarden_osric",
-      "pos": [
-        -12,
-        178
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "warden_cassia",
-      "pos": [
-        10,
-        192
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "sutler_wendel",
-      "pos": [
-        0,
-        202
-      ],
-      "face": [
-        2,
-        184
-      ]
-    },
-    {
-      "id": "lanternwatch_warden",
-      "pos": [
-        0,
-        168
-      ],
-      "patrol": [
-        [
-          0,
-          168
-        ],
-        [
-          22,
-          186
-        ],
-        [
-          0,
-          206
-        ],
-        [
-          -22,
-          186
-        ],
-        [
-          0,
-          168
-        ]
-      ]
-    }
+    {"id": "loremaster_evander", "pos": [-7.8, 287.5], "face": [2.2, 279.5]},
+    {"id": "mason_hilde", "pos": [12.2, 271.5], "face": [2.2, 279.5]},
+    {"id": "kennelwarden_osric", "pos": [-11.8, 273.5], "face": [2.2, 279.5]},
+    {"id": "warden_cassia", "pos": [10.2, 287.5], "face": [2.2, 279.5]},
+    {"id": "sutler_wendel", "pos": [0.2, 297.5], "face": [2.2, 279.5]},
+    {"id": "lanternwatch_warden", "pos": [0.2, 263.5], "patrol": [[0.2, 263.5], [22.2, 281.5], [0.2, 301.5], [-21.8, 281.5], [0.2, 263.5]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        -20,
-        -110
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        20,
-        -120
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -40,
-        -140
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        30,
-        -150
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        0,
-        -95
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -30,
-        -125
-      ],
-      "pool": {
-        "fog_knight": 1
-      },
-      "respawn": 110,
-      "wander": 8
-    },
-    {
-      "pos": [
-        25,
-        -135
-      ],
-      "pool": {
-        "fog_knight": 1
-      },
-      "respawn": 110,
-      "wander": 8
-    },
-    {
-      "pos": [
-        0,
-        -160
-      ],
-      "pool": {
-        "fog_knight": 1
-      },
-      "respawn": 110,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -10,
-        -100
-      ],
-      "pool": {
-        "fog_knight": 1
-      },
-      "respawn": 110,
-      "wander": 8
-    },
-    {
-      "pos": [
-        0,
-        -140
-      ],
-      "pool": {
-        "queen_ismay": 1
-      },
-      "respawn": 1500,
-      "wander": 4
-    },
-    {
-      "pos": [
-        110,
-        -120
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        140,
-        -90
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        160,
-        -140
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        120,
-        -160
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        90,
-        -90
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        140,
-        -130
-      ],
-      "pool": {
-        "grimwatch": 1
-      },
-      "respawn": 1500,
-      "wander": 4
-    },
-    {
-      "pos": [
-        -120,
-        60
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -150,
-        100
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -90,
-        110
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -160,
-        40
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -110,
-        150
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -60,
-        80
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -130,
-        110
-      ],
-      "pool": {
-        "whitemaw": 1
-      },
-      "respawn": 1500,
-      "wander": 12
-    },
-    {
-      "pos": [
-        110,
-        90
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        140,
-        60
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        130,
-        120
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        160,
-        100
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        100,
-        140
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        150,
-        150
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        135,
-        105
-      ],
-      "pool": {
-        "silas_crowe": 1
-      },
-      "respawn": 1500,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -208,
-        -208
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -208,
-        -80
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        208
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        32,
-        8
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -104,
-        -48
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -136,
-        -144
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        192,
-        -16
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        16,
-        120
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        208,
-        -208
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        208,
-        208
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        56,
-        208
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -88,
-        -208
-      ],
-      "pool": {
-        "fog_courtier": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -56,
-        208
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        112,
-        -16
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -40,
-        -8
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        136
-      ],
-      "pool": {
-        "fog_hound": 1
-      },
-      "respawn": 100,
-      "wander": 18
-    },
-    {
-      "pos": [
-        208,
-        -88
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        72,
-        -208
-      ],
-      "pool": {
-        "fog_gargoyle": 1
-      },
-      "respawn": 110,
-      "wander": 6
-    },
-    {
-      "pos": [
-        208,
-        48
-      ],
-      "pool": {
-        "grave_robber": 1
-      },
-      "respawn": 100,
-      "wander": 10
-    }
+    {"pos": [-336, -8], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-16, -320], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-216, -56], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [200, 312], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [208, -328], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [-320, -216], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [304, 216], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-128, 8], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [72, 104], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-200, 312], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-320, 112], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-64, 224], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [64, -80], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [320, -224], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [-136, -168], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-232, -136], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [80, 232], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [136, 56], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [-32, 40], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [240, 40], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-248, 248], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-208, -296], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [224, -72], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [296, 144], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-128, -240], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [144, 264], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [256, -264], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [0, 104], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-264, -256], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [248, 256], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [112, -208], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [-72, -280], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-288, -56], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [104, -24], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-200, 8], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-23.6, -147.7], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [16.4, -157.7], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-60, -210], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [45, -225], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [0, -142.5], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-33.6, -162.7], "pool": {"fog_knight": 1}, "respawn": 110, "wander": 8},
+    {"pos": [21.4, -172.7], "pool": {"fog_knight": 1}, "respawn": 110, "wander": 8},
+    {"pos": [-3.6, -197.7], "pool": {"fog_knight": 1}, "respawn": 110, "wander": 8},
+    {"pos": [-13.6, -137.7], "pool": {"fog_knight": 1}, "respawn": 110, "wander": 8},
+    {"pos": [-3.6, -177.7], "pool": {"queen_ismay": 1}, "respawn": 1500, "wander": 4},
+    {"pos": [175, -180.6], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [205, -150.6], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [225, -200.6], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [185, -220.6], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [135, -135], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [205, -190.6], "pool": {"grimwatch": 1}, "respawn": 1500, "wander": 4},
+    {"pos": [-180, 90], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-215, 150], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-135, 165], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-240, 60], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-165, 225], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-70, 110], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-195, 160], "pool": {"whitemaw": 1}, "respawn": 1500, "wander": 12},
+    {"pos": [167.5, 138.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [197.5, 108.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [187.5, 168.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [217.5, 148.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [157.5, 188.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [207.5, 198.4], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [192.5, 153.4], "pool": {"silas_crowe": 1}, "respawn": 1500, "wander": 6},
+    {"pos": [-312, -312], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-312, -120], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-312, 312], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [48, 12], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-107.6, -85.7], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-206, -214], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [288, -24], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [16, 180], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [312, -312], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [312, 312], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [84, 312], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-132, -312], "pool": {"fog_courtier": 1}, "respawn": 100, "wander": 10},
+    {"pos": [-84, 312], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [172, -16], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [-43.6, -45.7], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [-312, 204], "pool": {"fog_hound": 1}, "respawn": 100, "wander": 18},
+    {"pos": [312, -132], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [108, -312], "pool": {"fog_gargoyle": 1}, "respawn": 110, "wander": 6},
+    {"pos": [312, 72], "pool": {"grave_robber": 1}, "respawn": 100, "wander": 10}
   ]
 }

@@ -1,145 +1,35 @@
 {
   "name": "High Terrace",
-  "levels": [
-    18,
-    23
-  ],
+  "levels": [18, 23],
   "music": "high_terrace",
   "seed": 8831,
-  "size": 512,
+  "size": 768,
   "height_amplitude": 10,
-  "bind_point": [
-    -20,
-    200
-  ],
+  "bind_point": [-21.2, 165.3],
   "flat_radius": 20,
-  "trees": 150,
-  "tree_mix": [
-    "pine_a",
-    "pine_b",
-    "pine_a",
-    "tree_round"
-  ],
+  "trees": 338,
+  "tree_mix": ["pine_a", "pine_b", "pine_a", "tree_round"],
   "groves": 0.55,
-  "rocks": 110,
-  "grass_colors": [
-    "#6f8a48",
-    "#8aa05a"
-  ],
+  "rocks": 248,
+  "grass_colors": ["#6f8a48", "#8aa05a"],
   "fog_density": 0.009,
   "fog_color": "#e4e8ec",
   "sun_energy": 1.05,
   "clutter": {
-    "grass_a": {
-      "density": 0.34,
-      "patch": 0.55,
-      "sway": 0.18,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "grass_b": {
-      "density": 0.28,
-      "patch": 0.35,
-      "sway": 0.16,
-      "range": 50,
-      "tint": "ground",
-      "scale": [
-        0.8,
-        1.25
-      ]
-    },
-    "tea_bush": {
-      "density": 0.012,
-      "patch": 0.85,
-      "sway": 0.03,
-      "range": 70,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "flowers_white": {
-      "density": 0.006,
-      "patch": 0.9,
-      "sway": 0.12,
-      "range": 60,
-      "scale": [
-        0.9,
-        1.3
-      ]
-    },
-    "flowers_purple": {
-      "density": 0.004,
-      "patch": 0.9,
-      "sway": 0.12,
-      "range": 60,
-      "scale": [
-        0.9,
-        1.3
-      ]
-    },
-    "fern": {
-      "density": 0.02,
-      "patch": 0.8,
-      "sway": 0.06,
-      "range": 65,
-      "scale": [
-        0.9,
-        1.4
-      ]
-    },
-    "log_fallen": {
-      "density": 0.0006,
-      "patch": 0.3,
-      "range": 120,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.1
-      ]
-    },
-    "stump": {
-      "density": 0.0008,
-      "patch": 0.3,
-      "range": 110,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.1
-      ]
-    }
+    "grass_a": {"density": 0.34, "patch": 0.55, "sway": 0.18, "range": 55, "tint": "ground", "scale": [0.8, 1.3]},
+    "grass_b": {"density": 0.28, "patch": 0.35, "sway": 0.16, "range": 50, "tint": "ground", "scale": [0.8, 1.25]},
+    "tea_bush": {"density": 0.012, "patch": 0.85, "sway": 0.03, "range": 70, "shadow": true, "scale": [0.8, 1.2]},
+    "flowers_white": {"density": 0.006, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3]},
+    "flowers_purple": {"density": 0.004, "patch": 0.9, "sway": 0.12, "range": 60, "scale": [0.9, 1.3]},
+    "fern": {"density": 0.02, "patch": 0.8, "sway": 0.06, "range": 65, "scale": [0.9, 1.4]},
+    "log_fallen": {"density": 0.0006, "patch": 0.3, "range": 120, "shadow": true, "scale": [0.8, 1.1]},
+    "stump": {"density": 0.0008, "patch": 0.3, "range": 110, "shadow": true, "scale": [0.8, 1.1]}
   },
   "fields": [
+    {"pos": [-165, 255], "size": [26, 14], "yaw": -5.019874203835479, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
     {
-      "pos": [
-        -110,
-        170
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -5.019874203835479,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        -60,
-        175
-      ],
-      "size": [
-        26,
-        14
-      ],
+      "pos": [-61.2, 140.3],
+      "size": [26, 14],
       "yaw": -0.21179878865647694,
       "fence": false,
       "crop": "rice_shoots",
@@ -147,1932 +37,233 @@
       "step": 0.6,
       "water": true
     },
-    {
-      "pos": [
-        60,
-        172
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -3.086692353922452,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        110,
-        168
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -5.710793144664768,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        -120,
-        120
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -1.795976954315436,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        70,
-        118
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -5.291721455036658,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        130,
-        122
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": -4.0022486678889795,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        -70,
-        125
-      ],
-      "size": [
-        26,
-        14
-      ],
-      "yaw": 4.037486015621832,
-      "fence": false,
-      "crop": "rice_shoots",
-      "row": 0.8,
-      "step": 0.6,
-      "water": true
-    },
-    {
-      "pos": [
-        -130,
-        40
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": -3.7560310050081034,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    },
-    {
-      "pos": [
-        -80,
-        35
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": -1.5150509662512412,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    },
-    {
-      "pos": [
-        90,
-        45
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": 4.8573192629554605,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    },
-    {
-      "pos": [
-        140,
-        30
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": -1.6763575009981557,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    },
-    {
-      "pos": [
-        -120,
-        -10
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": 3.630326913205529,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    },
-    {
-      "pos": [
-        110,
-        -15
-      ],
-      "size": [
-        24,
-        12
-      ],
-      "yaw": -4.167227630366011,
-      "fence": false,
-      "crop": "tea_bush",
-      "row": 2.2,
-      "step": 1.6
-    }
+    {"pos": [90, 258], "size": [26, 14], "yaw": -3.086692353922452, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [165, 252], "size": [26, 14], "yaw": -5.710793144664768, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [-180, 180], "size": [26, 14], "yaw": -1.795976954315436, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [105, 177], "size": [26, 14], "yaw": -5.291721455036658, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [195, 183], "size": [26, 14], "yaw": -4.0022486678889795, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [-105, 187.5], "size": [26, 14], "yaw": 4.037486015621832, "fence": false, "crop": "rice_shoots", "row": 0.8, "step": 0.6, "water": true},
+    {"pos": [-195, 60], "size": [24, 12], "yaw": -3.7560310050081034, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6},
+    {"pos": [-120, 52.5], "size": [24, 12], "yaw": -1.5150509662512412, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6},
+    {"pos": [135, 67.5], "size": [24, 12], "yaw": 4.8573192629554605, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6},
+    {"pos": [210, 45], "size": [24, 12], "yaw": -1.6763575009981557, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6},
+    {"pos": [-180, -15], "size": [24, 12], "yaw": 3.630326913205529, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6},
+    {"pos": [165, -22.5], "size": [24, 12], "yaw": -4.167227630366011, "fence": false, "crop": "tea_bush", "row": 2.2, "step": 1.6}
   ],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        -24,
-        196
-      ],
-      "id": "pilgrim_shelter",
-      "face": [
-        -20,
-        215
-      ],
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -8,
-        204
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -38,
-        206
-      ],
-      "id": "tent",
-      "face": [
-        -20,
-        200
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -34,
-        188
-      ],
-      "id": "tent",
-      "face": [
-        -20,
-        200
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -12,
-        186
-      ],
-      "id": "stupa",
-      "face": [
-        -20,
-        200
-      ],
-      "scale": 0.7
-    },
-    {
-      "type": "prop",
-      "pos": [
-        4,
-        212
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        4,
-        188
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -2,
-        196
-      ],
-      "id": "prayer_wheel",
-      "face": [
-        -20,
-        200
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20,
-        222
-      ],
-      "id": "prayer_flags",
-      "yaw": 90,
-      "collide": "none"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        8,
-        226
-      ],
-      "yaw": 0,
-      "labels": [
-        "Pilgrims' Rest",
-        "Hollowmere"
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        10,
-        140
-      ],
-      "id": "prayer_flags",
-      "yaw": 20,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -14,
-        80
-      ],
-      "id": "prayer_flags",
-      "yaw": -15,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        12,
-        20
-      ],
-      "id": "prayer_flags",
-      "yaw": 10,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -10,
-        -40
-      ],
-      "id": "prayer_flags",
-      "yaw": -10,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        8,
-        -100
-      ],
-      "id": "prayer_flags",
-      "yaw": 15,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -150
-      ],
-      "id": "prayer_flags",
-      "yaw": 0,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        18,
-        160
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -18,
-        100
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        18,
-        40
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -18,
-        -20
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        18,
-        -80
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -18,
-        -130
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -60,
-        90
-      ],
-      "id": "stupa",
-      "face": [
-        0,
-        90
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        70,
-        -40
-      ],
-      "id": "stupa",
-      "face": [
-        0,
-        -40
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -40,
-        -70
-      ],
-      "id": "stupa",
-      "face": [
-        0,
-        -70
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -190,
-        60
-      ],
-      "id": "waterfall",
-      "yaw": 90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -190,
-        60
-      ],
-      "id": "waterfall_water",
-      "yaw": 90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        195,
-        -60
-      ],
-      "id": "waterfall",
-      "yaw": -90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        195,
-        -60
-      ],
-      "id": "waterfall_water",
-      "yaw": -90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -200,
-        -110
-      ],
-      "id": "waterfall",
-      "yaw": 90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -200,
-        -110
-      ],
-      "id": "waterfall_water",
-      "yaw": 90,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -176
-      ],
-      "id": "monastery_gate",
-      "face": [
-        0,
-        -150
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        0,
-        -205
-      ],
-      "id": "monastery_hall",
-      "face": [
-        0,
-        -150
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -34,
-        -196
-      ],
-      "id": "stupa",
-      "face": [
-        0,
-        -196
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        34,
-        -196
-      ],
-      "id": "stupa",
-      "face": [
-        0,
-        -196
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -14,
-        -186
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        14,
-        -186
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -26,
-        -212
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        26,
-        -212
-      ],
-      "id": "stone_lantern"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20,
-        -168
-      ],
-      "id": "prayer_wheel",
-      "face": [
-        0,
-        -168
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        20,
-        -168
-      ],
-      "id": "prayer_wheel",
-      "face": [
-        0,
-        -168
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -50,
-        -180
-      ],
-      "id": "prayer_flags",
-      "yaw": 0,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        50,
-        -180
-      ],
-      "id": "prayer_flags",
-      "yaw": 0,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -70,
-        -150
-      ],
-      "id": "broken_pillar",
-      "yaw": 63.23506650281449,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -58,
-        -128
-      ],
-      "id": "broken_pillar",
-      "yaw": 185.49744736338366,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        62,
-        -150
-      ],
-      "id": "broken_pillar",
-      "yaw": 107.10728246241874,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        76,
-        -130
-      ],
-      "id": "broken_pillar",
-      "yaw": 238.59468117010059,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90,
-        -190
-      ],
-      "id": "broken_pillar",
-      "yaw": 93.75936649638248,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        92,
-        -188
-      ],
-      "id": "broken_pillar",
-      "yaw": 120.96544860596596,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        70,
-        -210
-      ],
-      "id": "broken_pillar",
-      "yaw": 111.30348200629231,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        96,
-        -214
-      ],
-      "id": "broken_pillar",
-      "yaw": 226.4991110015286,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        58,
-        -226
-      ],
-      "id": "broken_pillar",
-      "yaw": 200.1880093023057,
-      "collide": "mesh"
-    },
-    {
-      "type": "sun_shrine",
-      "pos": [
-        78,
-        -205
-      ],
-      "face": [
-        0,
-        -205
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140,
-        -110
-      ],
-      "id": "harpy_nest",
-      "yaw": 169.5420759865426,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -100,
-        -135
-      ],
-      "id": "harpy_nest",
-      "yaw": 21.783232629936133,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -165,
-        -80
-      ],
-      "id": "harpy_nest",
-      "yaw": 256.82630732990754,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -60,
-        -120
-      ],
-      "id": "harpy_nest",
-      "yaw": 149.99492028900784,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        185,
-        -165
-      ],
-      "id": "harpy_nest",
-      "yaw": 40,
-      "scale": 1.4,
-      "collide": "none"
-    },
-    {
-      "type": "ruins",
-      "pos": [
-        -175,
-        -160
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        150,
-        -205
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -30,
-        -150
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        175,
-        -110
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -205,
-        -40
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -100,
-        -205
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        40,
-        -130
-      ],
-      "id": "crag_rock",
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -203.0,
-        60.0
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 60
-    },
-    {
-      "type": "prop",
-      "pos": [
-        208.0,
-        -60.0
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 300
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -213.0,
-        -110.0
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 310
-    }
+    {"type": "prop", "pos": [-25.2, 161.3], "id": "pilgrim_shelter", "face": [-21.2, 180.3], "collide": "box"},
+    {"type": "prop", "pos": [-9.2, 169.3], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [-39.2, 171.3], "id": "tent", "face": [-21.2, 165.3]},
+    {"type": "prop", "pos": [-35.2, 153.3], "id": "tent", "face": [-21.2, 165.3]},
+    {"type": "prop", "pos": [-13.2, 151.3], "id": "stupa", "face": [-21.2, 165.3], "scale": 0.7},
+    {"type": "prop", "pos": [2.8, 177.3], "id": "stone_lantern"},
+    {"type": "prop", "pos": [2.8, 153.3], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-3.2, 161.3], "id": "prayer_wheel", "face": [-21.2, 165.3]},
+    {"type": "prop", "pos": [-21.2, 187.3], "id": "prayer_flags", "yaw": 90, "collide": "none"},
+    {"type": "signpost", "pos": [6.8, 191.3], "yaw": 0, "labels": ["Pilgrims' Rest", "Hollowmere"]},
+    {"type": "prop", "pos": [8.8, 105.3], "id": "prayer_flags", "yaw": 20, "collide": "none"},
+    {"type": "prop", "pos": [-15.2, 45.3], "id": "prayer_flags", "yaw": -15, "collide": "none"},
+    {"type": "prop", "pos": [10.8, -14.7], "id": "prayer_flags", "yaw": 10, "collide": "none"},
+    {"type": "prop", "pos": [-11.2, -74.7], "id": "prayer_flags", "yaw": -10, "collide": "none"},
+    {"type": "prop", "pos": [6.8, -134.7], "id": "prayer_flags", "yaw": 15, "collide": "none"},
+    {"type": "prop", "pos": [-1.2, -184.7], "id": "prayer_flags", "yaw": 0, "collide": "none"},
+    {"type": "prop", "pos": [16.8, 125.3], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-19.2, 65.3], "id": "stone_lantern"},
+    {"type": "prop", "pos": [16.8, 5.3], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-19.2, -54.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [16.8, -114.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-19.2, -164.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-61.2, 55.3], "id": "stupa", "face": [-1.2, 55.3]},
+    {"type": "prop", "pos": [105, -60], "id": "stupa", "face": [35, -60]},
+    {"type": "prop", "pos": [-41.2, -104.7], "id": "stupa", "face": [-1.2, -104.7]},
+    {"type": "prop", "pos": [-287.2, 90], "id": "waterfall", "yaw": 90, "collide": "none"},
+    {"type": "prop", "pos": [-287.2, 90], "id": "waterfall_water", "yaw": 90, "collide": "none"},
+    {"type": "prop", "pos": [193.8, -94.7], "id": "waterfall", "yaw": -90, "collide": "none"},
+    {"type": "prop", "pos": [193.8, -94.7], "id": "waterfall_water", "yaw": -90, "collide": "none"},
+    {"type": "prop", "pos": [-201.2, -144.7], "id": "waterfall", "yaw": 90, "collide": "none"},
+    {"type": "prop", "pos": [-201.2, -144.7], "id": "waterfall_water", "yaw": 90, "collide": "none"},
+    {"type": "prop", "pos": [-1.2, -210.7], "id": "monastery_gate", "face": [-1.2, -184.7], "collide": "mesh"},
+    {"type": "prop", "pos": [-1.2, -239.7], "id": "monastery_hall", "face": [-1.2, -184.7], "collide": "mesh"},
+    {"type": "prop", "pos": [-35.2, -230.7], "id": "stupa", "face": [-1.2, -230.7]},
+    {"type": "prop", "pos": [32.8, -230.7], "id": "stupa", "face": [-1.2, -230.7]},
+    {"type": "prop", "pos": [-15.2, -220.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [12.8, -220.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-27.2, -246.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [24.8, -246.7], "id": "stone_lantern"},
+    {"type": "prop", "pos": [-21.2, -202.7], "id": "prayer_wheel", "face": [-1.2, -202.7]},
+    {"type": "prop", "pos": [18.8, -202.7], "id": "prayer_wheel", "face": [-1.2, -202.7]},
+    {"type": "prop", "pos": [-51.2, -214.7], "id": "prayer_flags", "yaw": 0, "collide": "none"},
+    {"type": "prop", "pos": [48.8, -214.7], "id": "prayer_flags", "yaw": 0, "collide": "none"},
+    {"type": "prop", "pos": [-71.2, -184.7], "id": "broken_pillar", "yaw": 63.23506650281449, "collide": "mesh"},
+    {"type": "prop", "pos": [-59.2, -162.7], "id": "broken_pillar", "yaw": 185.49744736338366, "collide": "mesh"},
+    {"type": "prop", "pos": [60.8, -184.7], "id": "broken_pillar", "yaw": 107.10728246241874, "collide": "mesh"},
+    {"type": "prop", "pos": [74.8, -164.7], "id": "broken_pillar", "yaw": 238.59468117010059, "collide": "mesh"},
+    {"type": "prop", "pos": [-91.2, -224.7], "id": "broken_pillar", "yaw": 93.75936649638248, "collide": "mesh"},
+    {"type": "prop", "pos": [90.8, -222.7], "id": "broken_pillar", "yaw": 120.96544860596596, "collide": "mesh"},
+    {"type": "prop", "pos": [68.8, -244.7], "id": "broken_pillar", "yaw": 111.30348200629231, "collide": "mesh"},
+    {"type": "prop", "pos": [94.8, -248.7], "id": "broken_pillar", "yaw": 226.4991110015286, "collide": "mesh"},
+    {"type": "prop", "pos": [56.8, -260.7], "id": "broken_pillar", "yaw": 200.1880093023057, "collide": "mesh"},
+    {"type": "sun_shrine", "pos": [76.8, -239.7], "face": [-1.2, -239.7]},
+    {"type": "prop", "pos": [-141.2, -144.7], "id": "harpy_nest", "yaw": 169.5420759865426, "collide": "none"},
+    {"type": "prop", "pos": [-101.2, -169.7], "id": "harpy_nest", "yaw": 21.783232629936133, "collide": "none"},
+    {"type": "prop", "pos": [-166.2, -114.7], "id": "harpy_nest", "yaw": 256.82630732990754, "collide": "none"},
+    {"type": "prop", "pos": [-61.2, -154.7], "id": "harpy_nest", "yaw": 149.99492028900784, "collide": "none"},
+    {"type": "prop", "pos": [183.8, -199.7], "id": "harpy_nest", "yaw": 40, "scale": 1.4, "collide": "none"},
+    {"type": "ruins", "pos": [-176.2, -194.7]},
+    {"type": "prop", "pos": [148.8, -239.7], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [-31.2, -184.7], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [173.8, -144.7], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [-307.5, -60], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [-101.2, -239.7], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [38.8, -164.7], "id": "crag_rock", "collide": "mesh"},
+    {"type": "prop", "pos": [-300.2, 90], "id": "mesa", "collide": "mesh", "yaw": 60},
+    {"type": "prop", "pos": [206.8, -94.7], "id": "mesa", "collide": "mesh", "yaw": 300},
+    {"type": "prop", "pos": [-214.2, -144.7], "id": "mesa", "collide": "mesh", "yaw": 310}
   ],
-  "passes": [
-    [
-      0,
-      256,
-      9
-    ],
-    [
-      256,
-      0,
-      9
-    ],
-    [
-      -256,
-      0,
-      9
-    ],
-    [
-      0,
-      -256,
-      9
-    ]
-  ],
+  "passes": [[0, 384, 9], [384, 0, 9], [-384, 0, 9], [0, -384, 9]],
   "roads": [
     {
       "points": [
-        [
-          0,
-          256
-        ],
-        [
-          0,
-          220
-        ],
-        [
-          -10,
-          190
-        ],
-        [
-          8,
-          150
-        ],
-        [
-          -12,
-          100
-        ],
-        [
-          10,
-          50
-        ],
-        [
-          -10,
-          0
-        ],
-        [
-          12,
-          -50
-        ],
-        [
-          -6,
-          -100
-        ],
-        [
-          4,
-          -140
-        ],
-        [
-          0,
-          -176
-        ]
+        [0, 384],
+        [-1.2, 185.3],
+        [-11.2, 155.3],
+        [6.8, 115.3],
+        [-13.2, 65.3],
+        [8.8, 15.3],
+        [-11.2, -34.7],
+        [10.8, -84.7],
+        [-7.2, -134.7],
+        [2.8, -174.7],
+        [-1.2, -210.7]
       ],
       "width": 3.2
     },
-    {
-      "points": [
-        [
-          -10,
-          0
-        ],
-        [
-          -80,
-          5
-        ],
-        [
-          -160,
-          2
-        ],
-        [
-          -256,
-          0
-        ]
-      ],
-      "width": 2.8
-    },
-    {
-      "points": [
-        [
-          10,
-          50
-        ],
-        [
-          90,
-          20
-        ],
-        [
-          180,
-          5
-        ],
-        [
-          256,
-          0
-        ]
-      ],
-      "width": 2.8
-    }
+    {"points": [[-11.2, -34.7], [-120, 7.5], [-240, 3], [-384, 0]], "width": 2.8},
+    {"points": [[8.8, 15.3], [135, 30], [270, 7.5], [384, 0]], "width": 2.8}
   ],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "hollowmere",
-      "arrive": [
-        0,
-        -199
-      ],
-      "arrive_face": [
-        0,
-        -159
-      ]
-    },
-    {
-      "pos": [
-        245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "the_bleach",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
-    },
-    {
-      "pos": [
-        -245,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "cinderpass",
-      "arrive": [
-        199,
-        0
-      ],
-      "arrive_face": [
-        159,
-        0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        -245
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "dawnwatch",
-      "arrive": [
-        0,
-        199
-      ],
-      "arrive_face": [
-        0,
-        159
-      ]
-    }
+    {"pos": [0, 373], "size": [18, 8], "to": "hollowmere", "arrive": [0, -311], "arrive_face": [0, -271]},
+    {"pos": [373, 0], "size": [8, 18], "to": "the_bleach", "arrive": [-487, 0], "arrive_face": [-447, 0]},
+    {"pos": [-373, 0], "size": [8, 18], "to": "cinderpass", "arrive": [311, 0], "arrive_face": [271, 0]},
+    {"pos": [0, -373], "size": [18, 8], "to": "dawnwatch", "arrive": [0, 255], "arrive_face": [0, 215]}
   ],
   "npcs": [
-    {
-      "id": "brother_tenzin",
-      "pos": [
-        -16,
-        190
-      ],
-      "face": [
-        -8,
-        204
-      ]
-    },
-    {
-      "id": "tea_mother_pema",
-      "pos": [
-        -30,
-        200
-      ],
-      "face": [
-        -8,
-        204
-      ]
-    },
-    {
-      "id": "terrace_warden",
-      "pos": [
-        -4,
-        214
-      ],
-      "patrol": [
-        [
-          -4,
-          214
-        ],
-        [
-          8,
-          226
-        ],
-        [
-          -2,
-          180
-        ],
-        [
-          -24,
-          176
-        ],
-        [
-          -4,
-          214
-        ]
-      ]
-    }
+    {"id": "brother_tenzin", "pos": [-17.2, 155.3], "face": [-9.2, 169.3]},
+    {"id": "tea_mother_pema", "pos": [-31.2, 165.3], "face": [-9.2, 169.3]},
+    {"id": "terrace_warden", "pos": [-5.2, 179.3], "patrol": [[-5.2, 179.3], [6.8, 191.3], [-3.2, 145.3], [-25.2, 141.3], [-5.2, 179.3]]}
   ],
   "spawns": [
-    {
-      "pos": [
-        120,
-        150
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        150,
-        110
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        90,
-        140
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        160,
-        170
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        110,
-        90
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -120,
-        -110
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -60,
-        -150
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        20,
-        -165
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -160,
-        -80
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        120,
-        -125
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        165,
-        -175
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -30,
-        -205
-      ],
-      "pool": {
-        "snow_leopard": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        140,
-        60
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        170,
-        20
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        120,
-        -10
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        160,
-        -50
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        100,
-        -70
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        190,
-        -100
-      ],
-      "pool": {
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -190,
-        -150
-      ],
-      "pool": {
-        "mountain_troll": 1
-      },
-      "respawn": 85,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -160,
-        -190
-      ],
-      "pool": {
-        "mountain_troll": 1
-      },
-      "respawn": 85,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -205,
-        -120
-      ],
-      "pool": {
-        "mountain_troll": 1
-      },
-      "respawn": 85,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -140,
-        -175
-      ],
-      "pool": {
-        "mountain_troll": 1
-      },
-      "respawn": 85,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -120,
-        -205
-      ],
-      "pool": {
-        "mountain_troll": 1
-      },
-      "respawn": 85,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -140,
-        -100
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -100,
-        -120
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -160,
-        -70
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -60,
-        -110
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -120,
-        -140
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -80,
-        -90
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -30,
-        -120
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -30,
-        -160
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        30,
-        -160
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -20,
-        -190
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        20,
-        -190
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        0,
-        -215
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -45,
-        -205
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        45,
-        -205
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -10,
-        -150
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        15,
-        -140
-      ],
-      "pool": {
-        "fallen_monk": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -66,
-        -146
-      ],
-      "pool": {
-        "gargoyle": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        66,
-        -146
-      ],
-      "pool": {
-        "gargoyle": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -86,
-        -186
-      ],
-      "pool": {
-        "gargoyle": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        88,
-        -184
-      ],
-      "pool": {
-        "gargoyle": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        74,
-        -128
-      ],
-      "pool": {
-        "gargoyle": 1
-      },
-      "respawn": 90,
-      "wander": 6
-    },
-    {
-      "pos": [
-        60,
-        -210
-      ],
-      "pool": {
-        "terrace_golem": 1
-      },
-      "respawn": 95,
-      "wander": 8
-    },
-    {
-      "pos": [
-        96,
-        -200
-      ],
-      "pool": {
-        "terrace_golem": 1
-      },
-      "respawn": 95,
-      "wander": 8
-    },
-    {
-      "pos": [
-        80,
-        -225
-      ],
-      "pool": {
-        "terrace_golem": 1
-      },
-      "respawn": 95,
-      "wander": 8
-    },
-    {
-      "pos": [
-        0,
-        -206
-      ],
-      "pool": {
-        "fallen_abbot": 1
-      },
-      "respawn": 900,
-      "wander": 4
-    },
-    {
-      "pos": [
-        80,
-        -210
-      ],
-      "pool": {
-        "terrace_colossus": 1
-      },
-      "respawn": 1200,
-      "wander": 6
-    },
-    {
-      "pos": [
-        182,
-        -160
-      ],
-      "pool": {
-        "griffon_matriarch": 1
-      },
-      "respawn": 1200,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -150,
-        -120
-      ],
-      "pool": {
-        "harpy_matriarch": 1
-      },
-      "respawn": 1100,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -80,
-        -160
-      ],
-      "pool": {
-        "ghost_leopard": 1
-      },
-      "respawn": 1100,
-      "wander": 20,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -40,
-        40
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        40,
-        -10
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -30,
-        -60
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        208
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -208,
-        64
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -80,
-        192
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -8,
-        128
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -152,
-        136
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -128,
-        16
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        48,
-        208
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    },
-    {
-      "pos": [
-        32,
-        64
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -96,
-        88
-      ],
-      "pool": {
-        "snow_leopard": 1,
-        "griffon": 1
-      },
-      "respawn": 85,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -192,
-        -8
-      ],
-      "pool": {
-        "harpy": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        208,
-        80
-      ],
-      "pool": {
-        "mountain_yak": 1
-      },
-      "respawn": 80,
-      "wander": 16
-    }
+    {"pos": [328, -336], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [328, -192], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-336, -184], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [192, -336], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-24, 224], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [336, -40], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-32, 336], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-56, -336], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [256, -264], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-216, 304], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [168, 320], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-104, -24], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [56, 160], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-328, 184], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-288, -104], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [112, 64], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [32, -336], "pool": {"terrace_golem": 1}, "respawn": 95, "wander": 8},
+    {"pos": [-224, 112], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [304, 200], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [112, -336], "pool": {"terrace_golem": 1}, "respawn": 95, "wander": 8},
+    {"pos": [336, 40], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-120, 208], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-224, -56], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-312, -256], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [304, -120], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [48, -88], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-136, -312], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [48, 240], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [256, -176], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-264, -200], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-32, -8], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [328, -264], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-288, 240], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [152, -280], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-256, 48], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-336, -56], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-336, 32], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [180, 225], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [225, 165], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [135, 210], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [240, 255], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [165, 135], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-121.2, -144.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-61.2, -184.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [18.8, -199.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-161.2, -114.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [180, -187.5], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [163.8, -209.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-31.2, -239.7], "pool": {"snow_leopard": 1}, "respawn": 80, "wander": 16},
+    {"pos": [210, 90], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [255, 30], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [180, -15], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [240, -75], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [150, -105], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [188.8, -134.7], "pool": {"griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-191.2, -184.7], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-240, -285], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-206.2, -154.7], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-210, -262.5], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-121.2, -239.7], "pool": {"mountain_troll": 1}, "respawn": 85, "wander": 14},
+    {"pos": [-141.2, -134.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-101.2, -154.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-161.2, -104.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-61.2, -144.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-121.2, -174.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-120, -135], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-31.2, -154.7], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-31.2, -194.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [28.8, -194.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-21.2, -224.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [18.8, -224.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-1.2, -249.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-46.2, -239.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [43.8, -239.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-11.2, -184.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [13.8, -174.7], "pool": {"fallen_monk": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-67.2, -180.7], "pool": {"gargoyle": 1}, "respawn": 90, "wander": 6},
+    {"pos": [64.8, -180.7], "pool": {"gargoyle": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-87.2, -220.7], "pool": {"gargoyle": 1}, "respawn": 90, "wander": 6},
+    {"pos": [86.8, -218.7], "pool": {"gargoyle": 1}, "respawn": 90, "wander": 6},
+    {"pos": [72.8, -162.7], "pool": {"gargoyle": 1}, "respawn": 90, "wander": 6},
+    {"pos": [58.8, -244.7], "pool": {"terrace_golem": 1}, "respawn": 95, "wander": 8},
+    {"pos": [94.8, -234.7], "pool": {"terrace_golem": 1}, "respawn": 95, "wander": 8},
+    {"pos": [78.8, -259.7], "pool": {"terrace_golem": 1}, "respawn": 95, "wander": 8},
+    {"pos": [-1.2, -240.7], "pool": {"fallen_abbot": 1}, "respawn": 900, "wander": 4},
+    {"pos": [78.8, -244.7], "pool": {"terrace_colossus": 1}, "respawn": 1200, "wander": 6},
+    {"pos": [180.8, -194.7], "pool": {"griffon_matriarch": 1}, "respawn": 1200, "wander": 10},
+    {"pos": [-151.2, -154.7], "pool": {"harpy_matriarch": 1}, "respawn": 1100, "wander": 8},
+    {"pos": [-81.2, -194.7], "pool": {"ghost_leopard": 1}, "respawn": 1100, "wander": 20, "when": "night"},
+    {"pos": [-60, 60], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [60, -15], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-31.2, -94.7], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-312, 312], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-305.2, 94], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-120, 288], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-9.2, 93.3], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-228, 204], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-192, 24], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [72, 312], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16},
+    {"pos": [30.8, 29.3], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-144, 132], "pool": {"snow_leopard": 1, "griffon": 1}, "respawn": 85, "wander": 18},
+    {"pos": [-288, -12], "pool": {"harpy": 1}, "respawn": 80, "wander": 14},
+    {"pos": [312, 120], "pool": {"mountain_yak": 1}, "respawn": 80, "wander": 16}
   ],
   "ground_patches": [
-    {
-      "pos": [
-        0,
-        -200
-      ],
-      "radius": 85,
-      "color": "#e6ecf0",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        -150,
-        -170
-      ],
-      "radius": 80,
-      "color": "#e2e8ee",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        150,
-        -170
-      ],
-      "radius": 75,
-      "color": "#e4eaef",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        -70,
-        -120
-      ],
-      "radius": 55,
-      "color": "#e8eef2",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        80,
-        -110
-      ],
-      "radius": 50,
-      "color": "#e6ecf0",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        -200,
-        -70
-      ],
-      "radius": 45,
-      "color": "#e2e8ec",
-      "flatten": 0.0,
-      "bare": true
-    },
-    {
-      "pos": [
-        200,
-        -80
-      ],
-      "radius": 45,
-      "color": "#e4eaee",
-      "flatten": 0.0,
-      "bare": true
-    }
+    {"pos": [-1.2, -234.7], "radius": 85, "color": "#e6ecf0", "flatten": 0.0, "bare": true},
+    {"pos": [-151.2, -204.7], "radius": 80, "color": "#e2e8ee", "flatten": 0.0, "bare": true},
+    {"pos": [225, -255], "radius": 112.5, "color": "#e4eaef", "flatten": 0.0, "bare": true},
+    {"pos": [-71.2, -154.7], "radius": 55, "color": "#e8eef2", "flatten": 0.0, "bare": true},
+    {"pos": [78.8, -144.7], "radius": 50, "color": "#e6ecf0", "flatten": 0.0, "bare": true},
+    {"pos": [-300, -105], "radius": 67.5, "color": "#e2e8ec", "flatten": 0.0, "bare": true},
+    {"pos": [198.8, -114.7], "radius": 45, "color": "#e4eaee", "flatten": 0.0, "bare": true}
   ]
 }

@@ -116,14 +116,8 @@
         18
       ],
       "to": "blackglass",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
+      "arrive": [359, 0],
+      "arrive_face": [319, 0]
     },
     {
       "pos": [
@@ -135,14 +129,8 @@
         8
       ],
       "to": "dawnwatch",
-      "arrive": [
-        0,
-        -199
-      ],
-      "arrive_face": [
-        0,
-        -159
-      ]
+      "arrive": [0, -255],
+      "arrive_face": [0, -215]
     },
     {
       "pos": [
@@ -154,14 +142,8 @@
         18
       ],
       "to": "agnavars_hearth",
-      "arrive": [
-        -231,
-        0
-      ],
-      "arrive_face": [
-        -191,
-        0
-      ]
+      "arrive": [-252.2, -2.6],
+      "arrive_face": [-212.2, -2.6]
     },
     {
       "pos": [
@@ -173,14 +155,8 @@
         8
       ],
       "to": "ivory_field",
-      "arrive": [
-        0,
-        231
-      ],
-      "arrive_face": [
-        0,
-        191
-      ]
+      "arrive": [0.5, 427.5],
+      "arrive_face": [0.5, 387.5]
     }
   ],
   "landmarks": [

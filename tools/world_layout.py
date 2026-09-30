@@ -37,22 +37,22 @@ OUT = _outdir()
 ZONES = [
     # ---- THE EMBERLANDS - the start, no deity. Everything already built lives here.
     ('emberhold',       'Emberhold',          'emberlands', (1, 1),   224, (0, 0), 'city'),
-    ('greenmoor',       'Greenmoor',          'emberlands', (1, 7),   384, (0, 1), 'field'),
+    ('greenmoor',       'Greenmoor',          'emberlands', (1, 7),   576, (0, 1), 'field'),
     # OFF THE GRID ON PURPOSE. No cell, so it has no neighbours and no passes:
     # the Grove is reached by teleport, not on foot. It was at (-1, 1) and its
     # north gate opened onto The Weeping Throat at 20-24 - a nineteen-level drop
     # out of a sanctuary's back door, which was the only lethal border on the map.
     ('the_grove',       'The Grove',          'emberlands', (1, 1),   256, None,    'sanctuary'),
-    ('harrowfield',     'Harrowfield',        'emberlands', (3, 9),   384, (1, 1), 'field'),
+    ('harrowfield',     'Harrowfield',        'emberlands', (3, 9),   576, (1, 1), 'field'),
     ('thornwood',       'Thornwood Vale',     'emberlands', (6, 14),  1024, (0, 2), 'wood'),
-    ('hollowmere',      'Hollowmere',         'emberlands', (10, 15), 448, (1, 2), 'water'),
+    ('hollowmere',      'Hollowmere',         'emberlands', (10, 15), 672, (1, 2), 'water'),
 
     # ---- THE DAWNSTAIR - Prabhagaj, the Dawn-Tusk. East, climbing.
-    ('sunward_steps',   'Sunward Steps',      'dawnstair',  (14, 18), 448, (2, 2), 'terrace'),
-    ('high_terrace',    'High Terrace',       'dawnstair',  (18, 23), 512, (1, 3), 'terrace'),
-    ('the_bleach',      'The Bleach',         'dawnstair',  (16, 21), 512, (2, 3), 'waste'),
-    ('dawnwatch',       'Dawnwatch',          'dawnstair',  (22, 24), 448, (1, 4), 'outpost'),
-    ('mirror_flats',    'Mirror Flats',       'dawnstair',  (20, 24), 512, (2, 4), 'waste'),
+    ('sunward_steps',   'Sunward Steps',      'dawnstair',  (14, 18), 672, (2, 2), 'terrace'),
+    ('high_terrace',    'High Terrace',       'dawnstair',  (18, 23), 768, (1, 3), 'terrace'),
+    ('the_bleach',      'The Bleach',         'dawnstair',  (16, 21), 1024, (2, 3), 'waste'),
+    ('dawnwatch',       'Dawnwatch',          'dawnstair',  (22, 24), 560, (1, 4), 'outpost'),
+    ('mirror_flats',    'Mirror Flats',       'dawnstair',  (20, 24), 1024, (2, 4), 'waste'),
     # Beside Sunward Steps, the zone you arrive in: you enter the Dawnstair and
     # the town is right there.
     ('lanternhold',     'Lanternhold',        'dawnstair',  (14, 24), 224, (3, 2), 'city'),
@@ -61,14 +61,14 @@ ZONES = [
     # and Rainhold's do. Below the city, the first step of the stair. The cell
     # touches only Lanternhold, so no wilderness border drops a newcomer
     # anywhere deep; they leave by the city, toward Sunward Steps.
-    ('dewstep',         'Dewstep',            'dawnstair',  (1, 10),  384, (3, 1), 'field'),
+    ('dewstep',         'Dewstep',            'dawnstair',  (1, 10),  576, (3, 1), 'field'),
 
     # ---- THE LONG MONSOON - Jalendra, the Tide-Trunked. West, and rising water.
-    ('weeping_throat',  'The Weeping Throat', 'monsoon',    (20, 24), 448, (-1, 2), 'water'),
-    ('reedmere',        'Reedmere',           'monsoon',    (22, 26), 512, (-2, 2), 'water'),
+    ('weeping_throat',  'The Weeping Throat', 'monsoon',    (20, 24), 672, (-1, 2), 'water'),
+    ('reedmere',        'Reedmere',           'monsoon',    (22, 26), 1024, (-2, 2), 'water'),
     ('drownfast',       'Drownfast',          'monsoon',    (26, 30), 512, (-1, 3), 'water'),
-    ('silted_reach',    'The Silted Reach',   'monsoon',    (24, 28), 512, (-2, 3), 'water'),
-    ('tidemouth',       'Tidemouth',          'monsoon',    (28, 30), 448, (-2, 4), 'outpost'),
+    ('silted_reach',    'The Silted Reach',   'monsoon',    (24, 28), 768, (-2, 3), 'water'),
+    ('tidemouth',       'Tidemouth',          'monsoon',    (28, 30), 560, (-2, 4), 'outpost'),
     # The cell the Grove left. It touches Greenmoor as well as The Weeping
     # Throat, so a level 5 character can run to the water city and live - which
     # is the oldest rite of passage this genre has.
@@ -78,13 +78,13 @@ ZONES = [
     ('stormcut_gorge',  'Stormcut Gorge',     'monsoon',    (18, 22), 448, (-2, 1), 'water'),
 
     # ---- THE ASHFALL - Agnavar, the Ember-Tusked. Due north of home.
-    ('cinderpass',      'Cinderpass',         'ashfall',    (26, 30), 448, (0, 3), 'burn'),
-    ('the_burn',        'The Burn',           'ashfall',    (29, 33), 512, (0, 4), 'burn'),
-    ('blackglass',      'Blackglass',         'ashfall',    (31, 35), 512, (0, 5), 'burn'),
+    ('cinderpass',      'Cinderpass',         'ashfall',    (26, 30), 672, (0, 3), 'burn'),
+    ('the_burn',        'The Burn',           'ashfall',    (29, 33), 1024, (0, 4), 'burn'),
+    ('blackglass',      'Blackglass',         'ashfall',    (31, 35), 768, (0, 5), 'burn'),
     # Smokewood and Forgehold swapped cells (2026-09-27): the wood went to the
     # far end, past the Hearth, and the city came forward.
-    ('smokewood',       'Smokewood',          'ashfall',    (33, 37), 512, (3, 5), 'wood'),
-    ('agnavars_hearth', "Agnavar's Hearth",   'ashfall',    (35, 38), 512, (2, 5), 'burn'),
+    ('smokewood',       'Smokewood',          'ashfall',    (33, 37), 768, (3, 5), 'wood'),
+    ('agnavars_hearth', "Agnavar's Hearth",   'ashfall',    (35, 38), 640, (2, 5), 'burn'),
     # FORWARD, where the players are. It sat past Agnavar's Hearth at first,
     # the only free cell beside the Ashfall, so the fire city was five zones
     # deep; it swapped cells with Smokewood. At [1, 5] it touches Blackglass,
@@ -93,12 +93,12 @@ ZONES = [
     ('forgehold',       'Forgehold',          'ashfall',    (26, 38), 224, (1, 5), 'city'),
 
     # ---- THE STANDING SKY - Vayuketh. North-west, open and high.
-    ('windbreak',       'Windbreak',          'standingsky',(32, 36), 448, (-1, 4), 'plain'),
-    ('the_long_grass',  'The Long Grass',     'standingsky',(34, 38), 512, (-1, 5), 'plain'),
+    ('windbreak',       'Windbreak',          'standingsky',(32, 36), 672, (-1, 4), 'plain'),
+    ('the_long_grass',  'The Long Grass',     'standingsky',(34, 38), 1024, (-1, 5), 'plain'),
     # Stonesail and Galehold swapped cells (2026-09-27), as Forgehold did with
     # Smokewood: the stones went past the city, and the city came forward.
-    ('stonesail',       'Stonesail',          'standingsky',(37, 41), 512, (-3, 5), 'plain'),
-    ('hollow_air',      'Hollow Air',         'standingsky',(39, 43), 512, (-1, 6), 'plain'),
+    ('stonesail',       'Stonesail',          'standingsky',(37, 41), 768, (-3, 5), 'plain'),
+    ('hollow_air',      'Hollow Air',         'standingsky',(39, 43), 768, (-1, 6), 'plain'),
     ('vayukeths_step',  "Vayuketh's Step",    'standingsky',(42, 44), 448, (-2, 6), 'outpost'),
     # FORWARD, like Forgehold. It sat west of Stonesail at first, reachable
     # only through three zones up to 41; at [-2, 5] it touches Tidemouth, The
@@ -107,10 +107,10 @@ ZONES = [
     ('galehold',        'Galehold',           'standingsky',(32, 44), 224, (-2, 5), 'city'),
 
     # ---- THE BONEYARD - Timiraj, the Unlit. The top of the world.
-    ('fogfall',         'Fogfall',            'boneyard',   (40, 43), 512, (0, 6), 'fog'),
-    ('ivory_field',     'The Ivory Field',    'boneyard',   (42, 45), 512, (1, 6), 'fog'),
-    ('the_unlit',       'The Unlit',          'boneyard',   (44, 47), 512, (2, 6), 'fog'),
-    ('lastwalk',        'Lastwalk',           'boneyard',   (46, 49), 512, (0, 7), 'fog'),
+    ('fogfall',         'Fogfall',            'boneyard',   (40, 43), 768, (0, 6), 'fog'),
+    ('ivory_field',     'The Ivory Field',    'boneyard',   (42, 45), 1024, (1, 6), 'fog'),
+    ('the_unlit',       'The Unlit',          'boneyard',   (44, 47), 768, (2, 6), 'fog'),
+    ('lastwalk',        'Lastwalk',           'boneyard',   (46, 49), 768, (0, 7), 'fog'),
     ('timirajs_table',  "Timiraj's Table",    'boneyard',   (48, 50), 512, (1, 7), 'fog'),
     # ---- THE BLACKWATER - the evil races' homelands, no deity of its own.
     # ADDED 2026-09-29 with alignment: dark elves, trolls and ogres start here,
@@ -123,12 +123,12 @@ ZONES = [
     # Broken March (their way out after the Rotfen) and Stormcut Gorge, which
     # opens on Rainhold and Reedmere.
     ('murkhold',        'Murkhold',           'blackwater', (1, 1),   224, (-5, 1), 'city'),
-    ('the_wallow',      'The Wallow',         'blackwater', (1, 10),  384, (-4, 1), 'water'),
-    ('duskwood',        'Duskwood',           'blackwater', (1, 10),  384, (-3, 0), 'wood'),
-    ('the_rotfen',      'The Rotfen',         'blackwater', (10, 18), 448, (-4, 0), 'water'),
+    ('the_wallow',      'The Wallow',         'blackwater', (1, 10),  576, (-4, 1), 'water'),
+    ('duskwood',        'Duskwood',           'blackwater', (1, 10),  576, (-3, 0), 'wood'),
+    ('the_rotfen',      'The Rotfen',         'blackwater', (10, 18), 672, (-4, 0), 'water'),
     # The borderland: neutral ground the Blackwater's peoples cross to reach the
     # rest of the world, and the rest of the world crosses to fight them.
-    ('broken_march',    'The Broken March',   'blackwater', (14, 20), 448, (-3, 1), 'plain'),
+    ('broken_march',    'The Broken March',   'blackwater', (14, 20), 672, (-3, 1), 'plain'),
     # Underground, below Duskwood: no cell. It's reached on foot through a cave
     # door in Duskwood (DOORS), like the Emberhold crypt, so it holds no cell
     # and has no passes, but it is walkable.

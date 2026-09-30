@@ -69,6 +69,9 @@ cross-axis offset `k` (use `0` unless there is a reason):
 
 ### Worked example, against shipped data
 
+(Written when Greenmoor was 384 m and Thornwood 512 m. Both have grown since
+(`tools/zones/scale_zone.py`, 2026-09-30), but the arithmetic is the same.)
+
 Greenmoor (384, `half` 192) north → Thornwood Vale (512, `half` 256):
 
 ```jsonc

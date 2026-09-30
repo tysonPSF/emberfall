@@ -380,9 +380,16 @@ def factions():
     open(path, "w").write(t2)
 
 
+AUTHORED = {"broken_march": 448, "stormcut_gorge": 448}  # drawn at these sizes; a bigger layout size stretches them (blackwater.AUTHORED)
+
+
 def main():
+    bw.AUTHORED.update(AUTHORED)
+    bw.BUILDING.update(AUTHORED)
     zones = {"broken_march": broken_march(), "stormcut_gorge": stormcut_gorge()}
     import spawn_fill  # the empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
+    import scale_zone
+    scale_zone.grow(zones, AUTHORED, {zid: bw.ZONES[zid]["size"] for zid in zones})
     known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **bw.MOBS)
     for zid, z in zones.items():
         z["spawns"] += spawn_fill.fill(z, known, zid)

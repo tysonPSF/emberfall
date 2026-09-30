@@ -78,8 +78,15 @@ CITY_DEPTH = {"rainhold": {"south": 54}}  # Rainhold's south arrival, if it ever
 CITY_INSET = 15
 
 
+# The sizes these zones were drawn at. The layout may make one bigger: it's
+# built at this size and then stretched (tools/zones/scale_zone.py), so every
+# position below stays as written.
+AUTHORED = {"murkhold": 224, "the_wallow": 384, "duskwood": 384, "duskhold": 224, "the_rotfen": 448}
+BUILDING = set()  # the zones this run writes: their borders are drawn at their authored size
+
+
 def half(zid):
-    return ZONES[zid]["size"] / 2
+    return (AUTHORED[zid] if zid in BUILDING else ZONES[zid]["size"]) / 2
 
 
 def edge_pass(zid, edge, k=0):
@@ -916,9 +923,12 @@ def spells():
 
 
 def main():
+    BUILDING.update(AREA)
     zones = {"murkhold": murkhold(), "the_wallow": the_wallow(), "duskwood": duskwood(), "duskhold": duskhold(), "the_rotfen": the_rotfen()}
     import spawn_fill  # the wilderness's empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
     known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **MOBS)
+    import scale_zone
+    scale_zone.grow(zones, AUTHORED, {zid: ZONES[zid]["size"] for zid in zones})
     for zid in ("the_wallow", "duskwood", "the_rotfen"):
         zones[zid]["spawns"] += spawn_fill.fill(zones[zid], known, zid)
     for zid, z in zones.items():

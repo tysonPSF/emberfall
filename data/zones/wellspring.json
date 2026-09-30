@@ -68,7 +68,7 @@
                {"chance": 0.35, "pick": {"round_shield": 1}}]}
   ],
   "zone_lines": [
-    {"pos": [140, 128], "size": [3, 7], "to": "greenmoor", "arrive": [-143, -30], "arrive_face": [0, -30]}
+    {"pos": [140, 128], "size": [3, 7], "to": "greenmoor", "arrive": [-218, -45], "arrive_face": [-75, -45]}
   ],
   "npcs": [
     {"id": "spring_crystal", "pos": [46, -130], "face": [62, -118]}

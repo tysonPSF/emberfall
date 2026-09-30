@@ -455,14 +455,8 @@
         8
       ],
       "to": "greenmoor",
-      "arrive": [
-        0,
-        168
-      ],
-      "arrive_face": [
-        0,
-        0
-      ]
+      "arrive": [0, 264],
+      "arrive_face": [0, 96]
     },
     {
       "pos": [

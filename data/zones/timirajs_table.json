@@ -162,14 +162,8 @@
         8
       ],
       "to": "ivory_field",
-      "arrive": [
-        0,
-        -231
-      ],
-      "arrive_face": [
-        0,
-        -191
-      ]
+      "arrive": [0, -487],
+      "arrive_face": [0, -447]
     },
     {
       "pos": [
@@ -181,14 +175,8 @@
         18
       ],
       "to": "lastwalk",
-      "arrive": [
-        231,
-        0
-      ],
-      "arrive_face": [
-        191,
-        0
-      ]
+      "arrive": [359, 0],
+      "arrive_face": [319, 0]
     },
     {
       "pos": [

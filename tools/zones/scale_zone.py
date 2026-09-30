@@ -22,6 +22,9 @@ import glob, json, math, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 EDGE = 40.0      # points this close to a side keep their distance from it
 LINK = 12.0      # landmarks whose grounds come this close are one settlement
+GENERATED = {"the_wallow": "tools/zones/blackwater.py", "duskwood": "tools/zones/blackwater.py", "the_rotfen": "tools/zones/blackwater.py",
+             "murkhold": "tools/zones/blackwater.py", "duskhold": "tools/zones/blackwater.py",
+             "broken_march": "tools/zones/west_march.py", "stormcut_gorge": "tools/zones/west_march.py", "the_grove": "tools/zones/the_grove.py"}
 NEVER_GROUP = {"bridge", "signpost", "rockslide"}  # they sit on a road or in a pass, which stretches: they go with it
 
 
@@ -111,6 +114,8 @@ def scale(z, f):
             n["face"] = s.facing(l["pos"], l["face"], n["pos"])
         if "y_at" in l:
             n["y_at"] = [s.facing(l["pos"], p, n["pos"]) for p in l["y_at"]]
+        if "pieces" in l:  # a stilt city's pieces are laid where they stand: they move with it
+            n["pieces"] = [[pc[0]] + s.facing(l["pos"], pc[1:3], n["pos"]) + list(pc[3:]) for pc in l["pieces"]]
         lms.append(n)
     out["landmarks"] = lms
     npcs = []
@@ -137,6 +142,8 @@ def scale(z, f):
             for e in z[key]:
                 m = dict(e)
                 m["pos"] = s.point(e["pos"])
+                if key == "ground_patches" and s.settlement_of(e["pos"]) is None:
+                    m["radius"] = _r(float(e["radius"]) * f)  # a salt pan or a mud flat is land: it grows with it
                 if "face" in e:
                     m["face"] = s.facing(e["pos"], e["face"], m["pos"])
                 items.append(m)
@@ -147,13 +154,17 @@ def scale(z, f):
     if "rivers" in z:
         out["rivers"] = [dict(r, points=[stretch(p) for p in r["points"]]) for r in z["rivers"]]
     if "lakes" in z:
-        out["lakes"] = [dict(l, points=[stretch(p) for p in l["points"]],
-                             **({"islands": [[_r(i[0] * f), _r(i[1] * f), _r(i[2] * f)] for i in l["islands"]]} if "islands" in l else {}))
+        def island(i):  # grows with the lake, unless a settlement stands on it
+            if s.settlement_of((i[0], i[1])) is not None:
+                return s.point((i[0], i[1])) + [i[2]]
+            return [_r(i[0] * f), _r(i[1] * f), _r(i[2] * f)]
+        out["lakes"] = [dict(l, points=[stretch(p) for p in l["points"]], **({"islands": [island(i) for i in l["islands"]]} if "islands" in l else {}))
                         for l in z["lakes"]]
     if "passes" in z:
         out["passes"] = [[_r(s.edge_keep(float(p[0]))), _r(s.edge_keep(float(p[1])))] + list(p[2:]) for p in z["passes"]]
     if "zone_lines" in z:
-        out["zone_lines"] = [dict(zl, pos=stretch(zl["pos"])) for zl in z["zone_lines"]]
+        out["zone_lines"] = [dict(zl, pos=s.point(zl["pos"]), **({"refused_to": s.point(zl["refused_to"])} if "refused_to" in zl else {}))
+                             for zl in z["zone_lines"]]  # a cave's door, and where a guard turns you back from it, go with its cave
     if "terraces" in z:
         t = dict(z["terraces"])
         for key in ("start", "end"):
@@ -161,6 +172,20 @@ def scale(z, f):
                 t[key] = _r(float(t[key]) * f)
         out["terraces"] = t
     return out, s
+
+
+def grow(zones, authored, sizes):
+    """For a generator: zones ({id: data} built at `authored` sizes) scaled to `sizes`
+    in place, and the arrivals between them moved to match."""
+    for zid in list(zones):
+        f = float(sizes[zid]) / float(authored[zid])
+        if abs(f - 1.0) < 1e-6:
+            continue
+        zones[zid], sc = scale(zones[zid], f)
+        for oid, oz in zones.items():
+            if oid != zid:
+                oz["zone_lines"] = [arrival(sc, zl) if zl.get("to") == zid else zl for zl in oz.get("zone_lines", [])]
+    return zones
 
 
 def arrival(s, zl):
@@ -190,6 +215,8 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     write = "--write" in sys.argv
     zid, f = args[0], float(args[1])
+    if zid in GENERATED:
+        sys.exit(f"{zid} is written by {GENERATED[zid]}: set its size in tools/world_layout.py and rerun that generator (it scales what it writes)")
     path = f"{ROOT}/data/zones/{zid}.json"
     z = json.load(open(path))
     out, s = scale(z, f)
@@ -227,7 +254,7 @@ def main():
         open(other, "w").write(text)
     lay = f"{ROOT}/tools/world_layout.py"
     t = open(lay).read()
-    pat = re.compile(r"(\('%s',\s*'[^']*',\s*'[^']*',\s*\([^)]*\),\s*)(\d+)" % re.escape(zid))
+    pat = re.compile(r"""(\('%s',\s*(?:'[^']*'|"[^"]*"),\s*'[^']*',\s*\([^)]*\),\s*)(\d+)""" % re.escape(zid))  # a name with an apostrophe is in double quotes
     t2, n = pat.subn(lambda mt: mt.group(1) + str(int(out["size"])), t, count=1)
     if n == 1:
         open(lay, "w").write(t2)

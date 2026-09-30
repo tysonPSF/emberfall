@@ -47,10 +47,10 @@
     {"points": [[0, 40], [-140, 68], [-300, 100], [-420, 84], [-512, 80]], "width": 3.0}
   ],
   "zone_lines": [
-    {"pos": [0, 501], "size": [18, 8], "to": "greenmoor", "arrive": [0, -168], "arrive_face": [0, -100]},
-    {"pos": [501, -40], "size": [8, 18], "to": "hollowmere", "arrive": [-199, -20], "arrive_face": [-159, -20]},
-    {"pos": [-501, 80], "size": [8, 18], "to": "weeping_throat", "arrive": [199, 40], "arrive_face": [159, 40]},
-    {"pos": [0, -501], "size": [18, 8], "to": "cinderpass", "arrive": [0, 199], "arrive_face": [0, 159]}
+    {"pos": [0, 501], "size": [18, 8], "to": "greenmoor", "arrive": [0, -264], "arrive_face": [0, -196]},
+    {"pos": [501, -40], "size": [8, 18], "to": "hollowmere", "arrive": [-311, -30], "arrive_face": [-271, -30]},
+    {"pos": [-501, 80], "size": [8, 18], "to": "weeping_throat", "arrive": [282.2, 62], "arrive_face": [242.2, 62]},
+    {"pos": [0, -501], "size": [18, 8], "to": "cinderpass", "arrive": [17.4, 286.5], "arrive_face": [17.4, 246.5]}
   ],
   "npcs": [
     {"id": "elowen", "pos": [-50, 359], "face": [-19, 359]},
