@@ -387,7 +387,302 @@ def bleach(z):
 
 # ================================================================ write
 
-ZONES = {"thornwood": thornwood, "the_long_grass": long_grass, "the_bleach": bleach}
+# ================================================================ batch 2: the four other 1024 m zones
+
+def place(z, F, spec, L, N, S):
+    """A place worth finding, from a spec: its landmark and props, its own monsters and their drop, its named and
+    trophy, the reward, and two quests (a repeatable one for the drop, one for the trophy) from its own npc or the
+    forward camp's scout (spec["giver"], an npc id). Returns the giver's dialogue entries for the place."""
+    at = spec["at"]
+    if spec.get("landmark"):
+        kind, extra = spec["landmark"]
+        L.append(lm(kind, at, **extra))
+    for pid, dx, dy, yaw, collide in spec.get("props", []):
+        p = bw.prop(pid, [at[0] + dx, at[1] + dy], collide=collide, yaw=yaw)
+        if p:
+            L.append(dict(p, **TAG))
+    m, n = spec["mob"], spec["named"]
+    did, dname, dvalue, dicon = m["drop"]
+    bw.drop(did, dname, dvalue)
+    bw.ITEMS[did]["icon"] = dicon
+    tid, tname, ticon = n["trophy"]
+    bw.item(tid, tname, value=dvalue * 5, lore=True, icon=ticon)
+    mob_like(m["id"], m["base"], m["name"], m["level"], m["model"], [(did, 0.55)] + m.get("loot", []), **m.get("extra", {}))
+    mob_like(n["id"], n["base"], n["name"], n["level"], n["model"], [(tid, 1.0), (did, 1.0)], named=True, **n.get("extra", {}))
+    S += spawns({m["id"]: 1}, spread(at, spec.get("radius", 38), spec.get("count", 7), spec.get("turn", 0.3)), spec.get("respawn", 95), 12)
+    S += spawns({n["id"]: 1}, [[at[0] + 3, at[1] + 2]], 1500, 4)
+    rid, ritem = spec["reward"]
+    bw.item(rid, **ritem)
+    giver = spec["giver"]
+    gname = bw.NPCS[giver]["name"] if giver in bw.NPCS else giver
+    kw_m, kw_n = spec["keywords"]
+    rep_xp, rep_coin, n_xp, n_coin = spec["xp"]
+    t = spec["text"]
+    bw.quest(m["id"] + "_q", t["rep_name"], giver, {did: 4}, rep_xp, rep_coin, None,
+             "You have taken on a task: %s. Bring %s four %s." % (t["rep_name"], gname, t["drop_plural"]),
+             t["rep_ready"], t["rep_done"], "", dict(spec["faction"]), keyword=kw_m, repeatable=True)
+    bw.quest(n["id"] + "_q", n["name"][0].upper() + n["name"][1:], giver, {tid: 1}, n_xp, n_coin, rid,
+             "You have taken on a task: %s. Bring %s %s." % (n["name"][0].upper() + n["name"][1:], gname, t["trophy_phrase"]),
+             t["n_ready"], t["n_done"], t["n_reward"], {k: v * 3 for k, v in spec["faction"].items()}, keyword=kw_n)
+    return {kw_m: t["kw_mob"], kw_n: t["kw_named"]}
+
+
+def forward_camp(z, F, road, dist, side, scout, scout_name, scout_title, scout_model, scout_hail, sutler_id, sutler_name, sells,
+                 guard_name, guard_title, takes, extra_dialogue, off=22, gender=None, at=None, face=None, scout_race="human"):
+    """The camp near the far quests: waystation, scout (hand-ins for `takes`), sutler, guard."""
+    L, N = [], []
+    if at is None:
+        camp, road_at = road_point(z, road, dist, side=side, off=off)
+    else:
+        camp, road_at = at, face
+    L.append(lm("waystation", camp, face=road_at))
+    dialogue = dict({"hail": scout_hail, "unknown": "Ask back at camp. I only watch the far end."}, **extra_dialogue)
+    kw = {"gender": gender} if gender else {}
+    bw.npc(scout, scout_name, F, scout_race, scout_model, dialogue, title=scout_title, weapon="bow", level=35, **kw)
+    N += [npc_at(scout, [camp[0] + 4, camp[1] + 3], road_at),
+          npc_at(sutler(sutler_id, sutler_name, F, scout_title, sells), [camp[0] - 5, camp[1] + 4], road_at),
+          npc_at(guard(scout + "_guard", guard_name, F, guard_title), [camp[0] + 2, camp[1] - 8], road_at)]
+    also_take(N, takes, scout)
+    return L, N, camp
+
+
+def huts_on(z, F, prefix, name, title, specs):
+    L, N, spots = [], [], []
+    for i, (road, dist, side) in enumerate(specs):
+        hut, at = road_point(z, road, dist, side=side, off=16)
+        L.append(lm("outpost", hut))
+        N.append(npc_at(guard("%s_hut_guard_%d" % (prefix, i), name, F, title), [(hut[0] + at[0]) / 2, (hut[1] + at[1]) / 2], at))
+        spots.append(hut)
+    return L, N, spots
+
+
+def camp_npc(nid, name, F, model, dialogue, title, pos, face, L, N, weapon="staff", gender=None, race="human", level=30):
+    """Someone living by a place, with a tent and a fire of their own."""
+    L += [dict(bw.prop("tent", pos, collide="box", yaw=45), **TAG), dict(bw.prop("campfire", [pos[0] + 6, pos[1] + 5], collide="none"), **TAG)]
+    kw = {"gender": gender} if gender else {}
+    bw.npc(nid, name, F, race, model, dialogue, title=title, weapon=weapon, level=level, **kw)
+    N.append(npc_at(nid, [pos[0] + 8, pos[1] + 2], face))
+    return nid
+
+
+def the_burn(z):
+    F = "forgehold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 0, 650, -1, "burn_ashrunner_beppe", "Ashrunner Beppe", "Forgehold Scouts", "ranger_class",
+        "Cinderwatch, {name}: the Ashwatch's fire on the north road. The Warden's business, Mott's, Ilse's and the Ashseer's, you can all hand in here. And ask me about the [chapel].",
+        "burn_sutler_jorunn", "Sutler Jorunn", ["iron_tipped_arrow", "windcutter_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "an Ashwatch sentry", "Forgehold Scouts", ["giants_coals", "thanes_crown", "imp_horns", "bottled_smoke", "cackleflames_crown", "firehound_manes",
+        "ashmaws_mane", "firebird_feathers", "phoenix_ember"], {})
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "burn", "an Ashwatch sentry", "Forgehold Scouts", [(0, 300, 1), (1, 150, 1), (2, 140, -1)])
+    L += hL
+    N += hN
+    dia = place(z, F, {"at": [330, 330], "landmark": ("ruins", {}), "giver": "burn_ashrunner_beppe",
+        "props": [("smoldering_stump", 20, 18, 0, "box"), ("smoldering_stump", -18, 22, 0, "box"), ("burned_cabin", -30, -24, 40, "box")],
+        "mob": {"id": "burn_kindled_husk", "name": "a kindled husk", "base": "fire_imp", "level": (30, 32), "model": "charred_dead",
+                "drop": ("burn_cinder_bead", "Cinder Rosary Bead", 14, "bone_chips"), "extra": {"verb": ["claw", "claws"], "shape": "humanoid"}},
+        "named": {"id": "burn_kindled_deacon", "name": "the Kindled Deacon", "base": "fire_imp", "level": (35, 35), "model": "fallen_fire_priest",
+                  "trophy": ("burn_deacons_censer", "The Kindled Deacon's Censer", "phoenix_ember"), "extra": {"verb": ["strike", "strikes"], "shape": "humanoid", "scale": 1.15}},
+        "reward": ("burn_cinderwatch_mantle", {"name": "Cinderwatch Mantle", "slot": "arms", "ac": 12, "sta": 5, "agi": 4, "hp": 45, "value": 20000, "rec_level": 33,
+                   "no_drop": True, "lore": True, "wear": "leather_sleeves", "icon": "lg_herdwifes_mantle"}),
+        "keywords": ("husks", "deacon"), "xp": (5200, 620, 13500, 1850), "faction": {F: 8},
+        "text": {"rep_name": "Cinder Rosaries", "drop_plural": "cinder rosary beads", "trophy_phrase": "the Kindled Deacon's censer",
+                 "rep_ready": "Beads. They're still smoking.", "rep_done": "Four husks that won't pray again.",
+                 "n_ready": "The censer's gone cold. Good.", "n_done": "The chapel burns out at last.", "n_reward": "The Cinderwatch's mantle. Ash doesn't stick to it.",
+                 "kw_mob": "Husks, burned in the chapel when the fire came through, still at their prayers. Four of their rosary beads and the Forge pays you, every time.",
+                 "kw_named": "The Kindled Deacon. He led the prayers when the chapel burned, and he's leading them still. Bring me his censer."}}, L, N, S)
+    bw.NPCS["burn_ashrunner_beppe"]["dialogue"].update(dia)
+    bw.NPCS["burn_ashrunner_beppe"]["dialogue"]["chapel"] = "South-east, a chapel that burned with its congregation inside. They're still in there: [husks], and their [deacon]."
+    rift = [-330, -280]
+    renske = camp_npc("burn_prospector_renske", "Prospector Renske", F, "barbarian", {
+        "hail": "Mind the rift, {name}. There's ore down there, Forge-grade, if you can get past the [newts]. And [Old Blisterback].",
+        "unknown": "I dig, {name}. Ask the scouts."}, "Prospector", [rift[0] + 70, rift[1] + 55], rift, L, N, weapon="axe_1handed", race="dwarf", gender="female")
+    dia = place(z, F, {"at": rift, "landmark": ("vent", {}), "giver": renske,
+        "props": [("smoldering_stump", 24, -10, 0, "box"), ("giant_anvil", -26, 14, 30, "box")],
+        "mob": {"id": "burn_cinder_newt", "name": "a cinder newt", "base": "firehound", "level": (30, 32), "model": "lava_salamander",
+                "drop": ("burn_newt_blister", "Cinder Newt Blister", 14, "imp_horn"), "extra": {"verb": ["bite", "bites"]}},
+        "named": {"id": "burn_old_blisterback", "name": "Old Blisterback", "base": "firehound", "level": (35, 35), "model": "lava_salamander",
+                  "trophy": ("burn_blisterbacks_heartstone", "Old Blisterback's Heartstone", "phoenix_ember"), "extra": {"verb": ["bite", "bites"], "scale": 1.9}},
+        "reward": ("burn_prospectors_pick", {"name": "Prospector's Pick", "slot": "primary", "dmg": 24, "delay": 2.8, "verb": ["smash", "smashes"], "model": "miners_pick",
+                   "skill": "1h_blunt", "str": 5, "sta": 4, "hp": 30, "value": 20000, "rec_level": 33, "no_drop": True, "lore": True, "icon": "tw_woodcutters_hatchet"}),
+        "keywords": ("newts", "old blisterback"), "xp": (5200, 620, 13500, 1850), "faction": {F: 8},
+        "text": {"rep_name": "Newt Blisters", "drop_plural": "cinder newt blisters", "trophy_phrase": "Old Blisterback's heartstone",
+                 "rep_ready": "Blisters! Careful, they pop.", "rep_done": "Four fewer in my rift.", "n_ready": "His heartstone. Still warm.",
+                 "n_done": "The rift's mine now.", "n_reward": "My old pick. It's dug through worse than him.",
+                 "kw_mob": "Cinder newts, fat with fire. Four of their blisters and I'll pay, as often as you like: the Forge uses them for flux.",
+                 "kw_named": "The biggest newt in the rift, blistered all over. Bring me the heartstone out of him."}}, L, N, S)
+    bw.NPCS[renske]["dialogue"].update(dia)
+    L.append(lm("watchtower", [400, 150], face=[300, 150]))
+    return L, N, S, [camp] + huts
+
+
+def mirror_flats(z):
+    F = "salt_traders"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "mf_skiffscout_imara", "Skiff-Scout Imara", "Salt Traders", "ranger_class",
+        "Glasswater Camp, {name}: the traders' last fire before the glass. Rahel's work, Anouk's, Bram's, Kiri's, you can hand it all in to me. And ask me about the [skiff].",
+        "mf_sutler_ilka", "Sutler Ilka", ["crude_arrow", "iron_tipped_arrow", "sling_stone", "loaf_of_bread", "roast_meat", "water_flask"],
+        "a caravan guard", "Salt Traders", ["nomad_veil_q", "asras_salt_crown_q", "mirror_shard_q", "cracked_mirror_face_q", "salt_crab_claw_q",
+        "saltclaws_pearl_q", "wader_plume_q", "sky_ray_spine_q"], {}, gender="female", at=[-60, -60], face=[0, 0])
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "mf", "a caravan guard", "Salt Traders", [(1, 70, 1)])
+    L += hL
+    N += hN
+    L.append(lm("outpost", [236, 172]))
+    N.append(npc_at(guard("mf_hut_guard_island", "a caravan guard", F, "Salt Traders"), [228, 162], [220, 150]))
+    huts.append([236, 172])
+    dia = place(z, F, {"at": [290, -270], "giver": "mf_skiffscout_imara",
+        "props": [("sand_skiff", 0, 0, 120, "box"), ("sand_skiff", 14, 8, 250, "box"), ("caravan_wagon", -12, 10, 30, "box")],
+        "mob": {"id": "mf_drowned_salter", "name": "a drowned salter", "base": "duneskiff_nomad", "level": (21, 23), "model": "drowned",
+                "drop": ("mf_salters_locket", "Salter's Locket", 10, "waterlogged_locket"), "extra": {"verb": ["claw", "claws"], "faction": "undead", "flees": False}},
+        "named": {"id": "mf_skiffmaster_dunmore", "name": "Skiffmaster Dunmore the Drowned", "base": "duneskiff_nomad", "level": (25, 25), "model": "drowned_captain",
+                  "trophy": ("mf_dunmores_logbook", "Skiffmaster Dunmore's Logbook", "blackwaters_ledger"), "extra": {"verb": ["strike", "strikes"], "faction": "undead"}},
+        "reward": ("mf_glasswater_boots", {"name": "Glasswater Boots", "slot": "feet", "ac": 10, "agi": 4, "sta": 3, "hp": 25, "value": 9000, "rec_level": 24,
+                   "no_drop": True, "lore": True, "wear": "leather_boots", "icon": "stalkerhide_boots"}),
+        "keywords": ("salters", "dunmore"), "xp": (3420, 380, 7600, 912), "faction": {F: 8},
+        "text": {"rep_name": "Salters' Lockets", "drop_plural": "salters' lockets", "trophy_phrase": "Skiffmaster Dunmore's logbook",
+                 "rep_ready": "Lockets. There's a face in this one.", "rep_done": "Four families can stop waiting.", "n_ready": "His logbook. Every crossing he made.",
+                 "n_done": "The skiff can rest.", "n_reward": "Boots cut for the glass. You won't slip.",
+                 "kw_mob": "A skiff went down in the far north-east, crew and all, and the salt kept them. They wander still. Their lockets, four at a time, and I'll pay.",
+                 "kw_named": "Skiffmaster Dunmore. He still walks his deck. Bring me his logbook."}}, L, N, S)
+    bw.NPCS["mf_skiffscout_imara"]["dialogue"].update(dia)
+    bw.NPCS["mf_skiffscout_imara"]["dialogue"]["skiff"] = "A sand-skiff wrecked north-east of here, on a crossing nobody finished. The [salters] still crew it, and [Dunmore] still has the helm."
+    pil = [-330, -60]
+    wenzel = camp_npc("mf_glassseeker_wenzel", "Glass-Seeker Wenzel", F, "mage", {
+        "hail": "The pillars, {name}! Salt, grown like glass, and something wakes in them. [Sentinels]. And the [Pillarmother].",
+        "unknown": "I only study the glass."}, "Glass-Seeker", [pil[0] + 60, pil[1] + 50], pil, L, N)
+    L += ring_of("salt_pillar", pil, 20, 7)
+    dia = place(z, F, {"at": pil, "giver": wenzel, "radius": 40,
+        "mob": {"id": "mf_saltglass_sentinel", "name": "a salt-glass sentinel", "base": "mirror_image", "level": (21, 23), "model": "glass_golem",
+                "drop": ("mf_saltglass_chip", "Salt-Glass Chip", 10, "salt_crystal"), "extra": {"verb": ["crush", "crushes"], "scale": 0.8}},
+        "named": {"id": "mf_pillarmother", "name": "the Pillarmother", "base": "mirror_image", "level": (25, 25), "model": "glass_golem",
+                  "trophy": ("mf_pillarmothers_core", "The Pillarmother's Core", "salt_crystal"), "extra": {"verb": ["crush", "crushes"], "scale": 1.4}},
+        "reward": ("mf_saltglass_lens", {"name": "Salt-Glass Lens", "slot": "neck", "ac": 5, "int": 5, "wis": 5, "mana": 45, "hp": 25, "value": 9000, "rec_level": 24,
+                   "no_drop": True, "lore": True, "icon": "bone_talisman"}),
+        "keywords": ("sentinels", "pillarmother"), "xp": (3420, 380, 7600, 912), "faction": {F: 8},
+        "text": {"rep_name": "Salt-Glass Chips", "drop_plural": "salt-glass chips", "trophy_phrase": "the Pillarmother's core",
+                 "rep_ready": "Chips! Look how the light goes through.", "rep_done": "Four more for my cases.", "n_ready": "Her core. It's humming.",
+                 "n_done": "The pillars sleep.", "n_reward": "Ground from the purest glass. See the salt through it.",
+                 "kw_mob": "The sentinels grow out of the pillars and walk. Four chips of them and I'll pay, again and again.",
+                 "kw_named": "The Pillarmother. The oldest pillar, and the others grow from her. Bring me her core."}}, L, N, S)
+    bw.NPCS[wenzel]["dialogue"].update(dia)
+    L += [dict(bw.prop("market_stall", [-230, 330], collide="box", yaw=200), **TAG), dict(bw.prop("nomad_tent", [-244, 320], collide="box", yaw=140), **TAG)]
+    return L, N, S, [camp] + huts
+
+
+def ivory_field(z):
+    F = "barrowhold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 0, 530, 1, "if_pathfinder_anselm", "Pathfinder Anselm", "Tuskwatch", "ranger_class",
+        "Hollowtusk Camp, {name}: Tuskwatch's fire at the crossroads. Anything the Bonewarden or the others asked of you, hand it in here. And ask me about the [gate].",
+        "if_sutler_oona", "Sutler Oona", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Tuskwatch warden", "Tuskwatch", ["ivory_shard_q", "ossuary_heartbone_q", "poached_ivory_q", "vargas_tusk_saw_q", "carrion_feather_q",
+        "gorgemaws_beak_q", "ghost_ivory_q", "grandmothers_tusk_q"], {})
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "if", "a Tuskwatch warden", "Tuskwatch", [(1, 260, 1), (1, 780, -1), (0, 250, -1)])
+    L += hL
+    N += hN
+    dia = place(z, F, {"at": [300, -300], "giver": "if_pathfinder_anselm",
+        "props": [("tusk_field", 0, -16, 0, "box"), ("elephant_skull", 14, 6, 200, "box"), ("spirit_cairn", -16, 8, 0, "box")],
+        "mob": {"id": "if_starving_shade", "name": "a starving shade", "base": "herd_spirit", "level": (43, 45), "model": "hungry_ghost",
+                "drop": ("if_shade_bead", "Shade's Prayer Bead", 40, "ghost_ivory"), "extra": {"verb": ["claw", "claws"], "shape": "humanoid"}},
+        "named": {"id": "if_hollow_mahout", "name": "the Hollow Mahout", "base": "herd_spirit", "level": (46, 46), "model": "wraith",
+                  "trophy": ("if_mahouts_goad", "The Hollow Mahout's Goad", "ivory_shard"), "extra": {"verb": ["strike", "strikes"], "shape": "humanoid", "scale": 1.2}},
+        "reward": ("if_tusk_gate_cowl", {"name": "Tusk Gate Cowl", "slot": "head", "ac": 16, "int": 9, "wis": 9, "mana": 100, "hp": 55, "value": 44000, "rec_level": 45,
+                   "no_drop": True, "lore": True, "wear": "cloth_cap", "icon": "death_mask_cowl"}),
+        "keywords": ("shades", "mahout"), "xp": (17100, 1900, 38000, 4560), "faction": {F: 8},
+        "text": {"rep_name": "Shades' Prayer Beads", "drop_plural": "shades' prayer beads", "trophy_phrase": "the Hollow Mahout's goad",
+                 "rep_ready": "Beads. Cold as snow.", "rep_done": "Four shades gone quiet.", "n_ready": "His goad. The herds are free of him.",
+                 "n_done": "The gate's only bones now.", "n_reward": "A cowl the Tuskwatch wore at the gate. Take it.",
+                 "kw_mob": "Shades gather at the Tusk Gate, starving for the herds they drove. Four of their beads and I'll pay, every time.",
+                 "kw_named": "The Hollow Mahout drove the great herds here to die, and drives them still. Bring me his goad."}}, L, N, S)
+    bw.NPCS["if_pathfinder_anselm"]["dialogue"].update(dia)
+    bw.NPCS["if_pathfinder_anselm"]["dialogue"]["gate"] = "North-east, the Tusk Gate: an arch of tusks where the old herds came in to die. [Shades] wait there, and the [Mahout] who drove them."
+    bh = [330, 320]
+    ulrike = camp_npc("if_bonecarver_ulrike", "Bone-Carver Ulrike", F, "barbarian", {
+        "hail": "Good ivory in that hollow, {name}, if the [beetles] would let a body work. And their [Marrow Queen].",
+        "unknown": "I carve, {name}. The Bonewarden knows the rest."}, "Bone-Carver", [bh[0] - 70, bh[1] - 50], bh, L, N, weapon="dagger", gender="female")
+    dia = place(z, F, {"at": bh, "giver": ulrike,
+        "props": [("giant_ribcage", 0, 0, 30, "mesh"), ("ivory_pile", 18, -12, 0, "box"), ("ivory_pile", -16, 14, 0, "box")],
+        "mob": {"id": "if_marrow_beetle", "name": "a marrow beetle", "base": "marrow_jackal", "level": (42, 44), "model": "fire_beetle",
+                "drop": ("if_beetle_shell", "Marrow Beetle Shell", 40, "chitin_plate"), "extra": {"verb": ["bite", "bites"], "scale": 1.6}},
+        "named": {"id": "if_marrow_queen", "name": "the Marrow Queen", "base": "marrow_jackal", "level": (46, 46), "model": "fire_beetle",
+                  "trophy": ("if_queens_mandible", "The Marrow Queen's Mandible", "chitin_plate"), "extra": {"verb": ["bite", "bites"], "scale": 2.8}},
+        "reward": ("if_bonecarvers_gloves", {"name": "Bone-Carver's Gloves", "slot": "hands", "ac": 14, "agi": 7, "str": 5, "hp": 50, "value": 44000, "rec_level": 45,
+                   "no_drop": True, "lore": True, "wear": "leather_gloves", "icon": "hornbone_gauntlets"}),
+        "keywords": ("beetles", "marrow queen"), "xp": (17100, 1900, 38000, 4560), "faction": {F: 8},
+        "text": {"rep_name": "Marrow Beetle Shells", "drop_plural": "marrow beetle shells", "trophy_phrase": "the Marrow Queen's mandible",
+                 "rep_ready": "Shells! Good for inlay.", "rep_done": "Four fewer in my hollow.", "n_ready": "Her mandible. What a size.",
+                 "n_done": "The hollow's mine to work.", "n_reward": "My carving gloves. Keep your fingers.",
+                 "kw_mob": "Beetles that eat the marrow out of the old bones. Four of their shells and I'll pay, as often as you bring them.",
+                 "kw_named": "The Marrow Queen, as big as a cart, laying in the great ribcage. Bring me her mandible."}}, L, N, S)
+    bw.NPCS[ulrike]["dialogue"].update(dia)
+    L.append(lm("watchtower", [-400, 60], face=[-300, 60]))
+    return L, N, S, [camp] + huts
+
+
+REEDMERE_ISLANDS = [[-170, 10, 24], [200, 250, 16]]  # dry ground for the Heronwatch and the weir
+
+
+def reedmere(z):
+    F = "rainhold"
+    L, N, S = [], [], []
+    lake = z["lakes"][0]
+    for isl in REEDMERE_ISLANDS:
+        if isl not in lake["islands"]:
+            lake["islands"].append(isl)
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "rm_reedwatcher_achebe", "Reedwatcher Achebe", "Reedwatch", "ranger_class",
+        "The Heronwatch, {name}: the Reedwatch's island out in the middle. Pallavi's work, Kesh's, the Priestess's, you can hand it in here and save the wade back. And ask me about the [bell].",
+        "rm_sutler_naledi", "Sutler Naledi", ["crude_arrow", "iron_tipped_arrow", "sling_stone", "loaf_of_bread", "roast_meat", "water_flask"],
+        "a Rainhold Reedwatch", "Reedwatch", ["pondkin_fetishes", "bloatking_crown", "reedstalker_plumes", "stilt_legs_plume", "sunken_charms",
+        "headwomans_lotus", "marrowroot_heart"], {}, at=[-170, 10], face=[-120, 10])
+    L += cL
+    N += cN
+    dia = place(z, F, {"at": [0, -330], "giver": "rm_reedwatcher_achebe",
+        "props": [("stilt_hut_sunken", 0, 0, 20, "box"), ("stilt_hut_sunken", 18, 10, 200, "box"), ("mooring_post", -12, 12, 0, "box")],
+        "mob": {"id": "rm_drowned_ringer", "name": "a drowned bell-ringer", "base": "sunken_villager", "level": (23, 25), "model": "drowned",
+                "drop": ("rm_bell_clapper", "Tarnished Bell Clapper", 10, "tarnished_ring"), "extra": {"verb": ["claw", "claws"]}},
+        "named": {"id": "rm_bellwarden", "name": "the Bellwarden", "base": "sunken_villager", "level": (26, 26), "model": "tide_knight",
+                  "trophy": ("rm_bellwardens_bell", "The Bellwarden's Bell", "bone_charm"), "extra": {"verb": ["strike", "strikes"]}},
+        "reward": ("rm_heronwatch_blade", {"name": "Heronwatch Blade", "slot": "primary", "dmg": 16, "delay": 2.6, "verb": ["slash", "slashes"], "model": "sword_1handed",
+                   "skill": "1h_slashing", "agi": 4, "str": 4, "hp": 25, "value": 9000, "rec_level": 25, "no_drop": True, "lore": True,
+                   "classes": ["warrior", "rogue", "ranger"], "icon": "asras_skiff_blade"}),
+        "keywords": ("ringers", "bellwarden"), "xp": (3200, 380, 7600, 912), "faction": {F: 8},
+        "text": {"rep_name": "Bell Clappers", "drop_plural": "tarnished bell clappers", "trophy_phrase": "the Bellwarden's bell",
+                 "rep_ready": "Clappers. They'll ring no more floods.", "rep_done": "Four bells quiet.", "n_ready": "His bell. Listen: nothing.",
+                 "n_done": "The marsh can sleep.", "n_reward": "The Heronwatch's blade. It's cut a lot of reeds.",
+                 "kw_mob": "The bell-ringers of the north hamlet, drowned at their ropes when the water came. Four of their clappers and I'll pay, every time.",
+                 "kw_named": "The Bellwarden. He rang the flood bell too late, and now he rings it for the drowned. Bring me the bell."}}, L, N, S)
+    bw.NPCS["rm_reedwatcher_achebe"]["dialogue"].update(dia)
+    bw.NPCS["rm_reedwatcher_achebe"]["dialogue"]["bell"] = "North, a hamlet the marsh took, stilts and all. Its [ringers] still ring the flood bell, and the [Bellwarden] with them."
+    weir = [250, 300]
+    makena = camp_npc("rm_fisher_makena", "Fisher Makena", F, "barbarian", {
+        "hail": "That was my weir, {name}, before the [eels] came up it. And the [Eel-Mother] behind them.",
+        "unknown": "I fish, {name}. Ask Kesh about boats."}, "Fisher", [200, 250], weir, L, N, weapon="axe_1handed", gender="female")
+    dia = place(z, F, {"at": weir, "giver": makena,
+        "props": [("mooring_post", 0, -10, 0, "box"), ("mooring_post", 10, -4, 0, "box"), ("canoe", -10, 8, 60, "box"), ("drying_rack", 16, 12, 30, "box")],
+        "mob": {"id": "rm_weir_eel", "name": "a weir eel", "base": "marsh_eel", "level": (22, 24), "model": "marsh_eel",
+                "drop": ("rm_eel_fin", "Weir Eel Fin", 10, "eel_skin"), "extra": {"verb": ["bite", "bites"]}},
+        "named": {"id": "rm_eel_mother", "name": "the Eel-Mother", "base": "marsh_eel", "level": (26, 26), "model": "marsh_eel",
+                  "trophy": ("rm_eel_mothers_eye", "The Eel-Mother's Eye", "eel_skin"), "extra": {"verb": ["bite", "bites"], "scale": 2.2}},
+        "reward": ("rm_weirkeepers_ring", {"name": "Weirkeeper's Ring", "slot": "ring", "ac": 5, "sta": 4, "agi": 3, "wis": 3, "hp": 35, "value": 9000, "rec_level": 25,
+                   "no_drop": True, "lore": True, "icon": "breathshard_ring"}),
+        "keywords": ("eels", "eel-mother"), "xp": (3200, 380, 7600, 912), "faction": {F: 8},
+        "text": {"rep_name": "Weir Eel Fins", "drop_plural": "weir eel fins", "trophy_phrase": "the Eel-Mother's eye",
+                 "rep_ready": "Fins! Makes a good soup.", "rep_done": "Four fewer in my weir.", "n_ready": "Her eye. Big as a plate.",
+                 "n_done": "I'll mend the weir tomorrow.", "n_reward": "My mother's ring. She kept this weir before me.",
+                 "kw_mob": "Eels, thick as your arm, up from the deep channels. Four of their fins and I'll pay, again and again.",
+                 "kw_named": "The Eel-Mother, the one they all came up behind. Bring me her eye."}}, L, N, S)
+    bw.NPCS[makena]["dialogue"].update(dia)
+    L.append(lm("watchtower", [260, 80], face=[160, 80]))
+    return L, N, S, [camp]
+
+
+ZONES = {"thornwood": thornwood, "the_long_grass": long_grass, "the_bleach": bleach,
+         "the_burn": the_burn, "mirror_flats": mirror_flats, "ivory_field": ivory_field, "reedmere": reedmere}
 
 
 def check_spot(zid, z, edges, p, what):
@@ -400,7 +695,8 @@ def check_spot(zid, z, edges, p, what):
         if not r.get("dry") and min(math.dist(p, q) for q in bw_poly(r["points"])) < r.get("width", 10) / 2 + 12:
             probs.append("in a river")
     for lk in z.get("lakes", []):
-        if outline._poly_inside(p, lk["points"]):
+        on_island = any(math.dist(p, i[:2]) < i[2] - 4 for i in lk.get("islands", []))
+        if outline._poly_inside(p, lk["points"]) and float(lk.get("depth", 1)) > 0.5 and not on_island:
             probs.append("in a lake")
     return probs
 

@@ -1,2586 +1,346 @@
 {
   "name": "Reedmere",
-  "levels": [
-    22,
-    26
-  ],
+  "levels": [22, 26],
   "music": "reedmere",
   "seed": 4411,
   "size": 1024,
   "height_amplitude": 4,
-  "bind_point": [
-    426.2,
-    -0.2
-  ],
+  "bind_point": [426.2, -0.2],
   "flat_radius": 20,
   "trees": 680,
-  "tree_mix": [
-    "jungle_tree",
-    "tree_round",
-    "jungle_tree"
-  ],
+  "tree_mix": ["jungle_tree", "tree_round", "jungle_tree"],
   "groves": 0.5,
   "rocks": 140,
-  "grass_colors": [
-    "#4a6a3a",
-    "#6a7a44"
-  ],
+  "grass_colors": ["#4a6a3a", "#6a7a44"],
   "fog_density": 0.018,
   "fog_color": "#8a9a8c",
   "sun_energy": 0.65,
-  "rain": {
-    "amount": 2200
-  },
-  "fish": {
-    "mud_carp": 3,
-    "monsoon_eel": 2,
-    "lagoon_snapper": 1,
-    "tattered_boot": 1
-  },
+  "rain": {"amount": 2200},
+  "fish": {"mud_carp": 3, "monsoon_eel": 2, "lagoon_snapper": 1, "tattered_boot": 1},
   "clutter": {
-    "grass_a": {
-      "density": 0.4,
-      "patch": 0.5,
-      "sway": 0.2,
-      "range": 55,
-      "tint": "ground",
-      "scale": [
-        0.9,
-        1.5
-      ]
-    },
-    "grass_b": {
-      "density": 0.3,
-      "patch": 0.4,
-      "sway": 0.18,
-      "range": 50,
-      "tint": "ground",
-      "scale": [
-        0.9,
-        1.4
-      ]
-    },
-    "reeds_tall": {
-      "density": 0.02,
-      "patch": 0.8,
-      "sway": 0.12,
-      "range": 80,
-      "scale": [
-        0.8,
-        1.2
-      ]
-    },
-    "fern": {
-      "density": 0.02,
-      "patch": 0.8,
-      "sway": 0.06,
-      "range": 60,
-      "scale": [
-        0.9,
-        1.4
-      ]
-    },
-    "mushrooms": {
-      "density": 0.01,
-      "patch": 0.8,
-      "range": 45,
-      "scale": [
-        0.8,
-        1.3
-      ]
-    },
-    "log_fallen": {
-      "density": 0.0006,
-      "patch": 0.3,
-      "range": 110,
-      "shadow": true,
-      "scale": [
-        0.8,
-        1.1
-      ]
-    }
+    "grass_a": {"density": 0.4, "patch": 0.5, "sway": 0.2, "range": 55, "tint": "ground", "scale": [0.9, 1.5]},
+    "grass_b": {"density": 0.3, "patch": 0.4, "sway": 0.18, "range": 50, "tint": "ground", "scale": [0.9, 1.4]},
+    "reeds_tall": {"density": 0.02, "patch": 0.8, "sway": 0.12, "range": 80, "scale": [0.8, 1.2]},
+    "fern": {"density": 0.02, "patch": 0.8, "sway": 0.06, "range": 60, "scale": [0.9, 1.4]},
+    "mushrooms": {"density": 0.01, "patch": 0.8, "range": 45, "scale": [0.8, 1.3]},
+    "log_fallen": {"density": 0.0006, "patch": 0.3, "range": 110, "shadow": true, "scale": [0.8, 1.1]}
   },
   "lakes": [
     {
       "points": [
-        [
-          -410,
-          -340
-        ],
-        [
-          -300,
-          -400
-        ],
-        [
-          -120,
-          -390
-        ],
-        [
-          40,
-          -410
-        ],
-        [
-          200,
-          -390
-        ],
-        [
-          320,
-          -330
-        ],
-        [
-          336,
-          -160
-        ],
-        [
-          320,
-          0
-        ],
-        [
-          336,
-          160
-        ],
-        [
-          316,
-          320
-        ],
-        [
-          200,
-          396
-        ],
-        [
-          40,
-          410
-        ],
-        [
-          -120,
-          396
-        ],
-        [
-          -300,
-          400
-        ],
-        [
-          -410,
-          320
-        ],
-        [
-          -424,
-          140
-        ],
-        [
-          -416,
-          -80
-        ],
-        [
-          -424,
-          -220
-        ]
+        [-410, -340],
+        [-300, -400],
+        [-120, -390],
+        [40, -410],
+        [200, -390],
+        [320, -330],
+        [336, -160],
+        [320, 0],
+        [336, 160],
+        [316, 320],
+        [200, 396],
+        [40, 410],
+        [-120, 396],
+        [-300, 400],
+        [-410, 320],
+        [-424, 140],
+        [-416, -80],
+        [-424, -220]
       ],
       "depth": 0.35,
       "shelf": 30,
       "bank": 10,
       "islands": [
-        [
-          -264.3,
-          -238.5,
-          36
-        ],
-        [
-          207,
-          -251.4,
-          24
-        ],
-        [
-          -231.6,
-          246.6,
-          32
-        ],
-        [
-          58.5,
-          88.1,
-          14
-        ],
-        [
-          -61.5,
-          -31.9,
-          10
-        ],
-        [
-          140,
-          -40,
-          24
-        ],
-        [
-          -131.6,
-          271.6,
-          12
-        ],
-        [
-          260,
-          80,
-          22
-        ]
+        [-264.3, -238.5, 36],
+        [207, -251.4, 24],
+        [-231.6, 246.6, 32],
+        [58.5, 88.1, 14],
+        [-61.5, -31.9, 10],
+        [140, -40, 24],
+        [-131.6, 271.6, 12],
+        [260, 80, 22],
+        [-170, 10, 24],
+        [200, 250, 16]
       ]
     }
   ],
   "landmarks": [
-    {
-      "type": "prop",
-      "pos": [
-        434.2,
-        -12.2
-      ],
-      "id": "tent",
-      "face": [
-        426.2,
-        -0.2
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        436.2,
-        11.8
-      ],
-      "id": "tent",
-      "face": [
-        426.2,
-        -0.2
-      ]
-    },
-    {
-      "type": "prop",
-      "pos": [
-        416.2,
-        -6.2
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        420.2,
-        15.8
-      ],
-      "id": "drying_rack",
-      "yaw": 20
-    },
-    {
-      "type": "prop",
-      "pos": [
-        406.2,
-        -18.2
-      ],
-      "id": "canoe",
-      "yaw": 80,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        404.2,
-        9.8
-      ],
-      "id": "canoe",
-      "yaw": 100,
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        408.2,
-        -26.2
-      ],
-      "id": "mooring_post"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        406.2,
-        21.8
-      ],
-      "id": "mooring_post"
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        444.2,
-        -6.2
-      ],
-      "yaw": 90,
-      "labels": [
-        "Reedcutters' Rest",
-        "The Weeping Throat"
-      ]
-    },
+    {"type": "prop", "pos": [434.2, -12.2], "id": "tent", "face": [426.2, -0.2]},
+    {"type": "prop", "pos": [436.2, 11.8], "id": "tent", "face": [426.2, -0.2]},
+    {"type": "prop", "pos": [416.2, -6.2], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [420.2, 15.8], "id": "drying_rack", "yaw": 20},
+    {"type": "prop", "pos": [406.2, -18.2], "id": "canoe", "yaw": 80, "collide": "none"},
+    {"type": "prop", "pos": [404.2, 9.8], "id": "canoe", "yaw": 100, "collide": "none"},
+    {"type": "prop", "pos": [408.2, -26.2], "id": "mooring_post"},
+    {"type": "prop", "pos": [406.2, 21.8], "id": "mooring_post"},
+    {"type": "signpost", "pos": [444.2, -6.2], "yaw": 90, "labels": ["Reedcutters' Rest", "The Weeping Throat"]},
     {
       "type": "stilt_city",
-      "pos": [
-        -11.5,
-        18.1
-      ],
+      "pos": [-11.5, 18.1],
       "pieces": [
-        [
-          "stilt_platform_broken",
-          -47.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -47.5,
-          18.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          -47.5,
-          27.1,
-          90
-        ],
-        [
-          "stilt_walkway_broken",
-          -47.5,
-          45.1,
-          90
-        ],
-        [
-          "stilt_walkway_broken",
-          -47.5,
-          63.1,
-          90
-        ],
-        [
-          "stilt_walkway",
-          -38.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -38.5,
-          9.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -38.5,
-          27.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          -38.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -38.5,
-          45.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          -38.5,
-          72.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -29.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          -29.5,
-          9.1,
-          90
-        ],
-        [
-          "stilt_platform",
-          -29.5,
-          18.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -29.5,
-          54.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          -29.5,
-          63.1,
-          90
-        ],
-        [
-          "stilt_platform_broken",
-          -20.5,
-          9.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          -20.5,
-          18.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          -20.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -20.5,
-          45.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -20.5,
-          63.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -11.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -11.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          -11.5,
-          45.1,
-          90
-        ],
-        [
-          "stilt_walkway_broken",
-          -11.5,
-          63.1,
-          90
-        ],
-        [
-          "stilt_walkway_broken",
-          -2.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -2.5,
-          9.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          -2.5,
-          27.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          -2.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -2.5,
-          63.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          -2.5,
-          72.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          6.5,
-          9.1,
-          90
-        ],
-        [
-          "stilt_platform",
-          6.5,
-          18.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          6.5,
-          27.1,
-          90
-        ],
-        [
-          "stilt_platform_broken",
-          6.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          6.5,
-          63.1,
-          90
-        ],
-        [
-          "stilt_platform_broken",
-          6.5,
-          72.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          15.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          15.5,
-          9.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          15.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          15.5,
-          45.1,
-          0
-        ],
-        [
-          "stilt_walkway_broken",
-          15.5,
-          54.1,
-          0
-        ],
-        [
-          "stilt_platform_broken",
-          24.5,
-          0.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          24.5,
-          9.1,
-          90
-        ],
-        [
-          "stilt_platform",
-          24.5,
-          18.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          24.5,
-          36.1,
-          0
-        ],
-        [
-          "stilt_walkway",
-          24.5,
-          63.1,
-          90
-        ],
-        [
-          "stilt_platform",
-          24.5,
-          72.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -39.5,
-          28.1,
-          0
-        ],
-        [
-          "stilt_house",
-          -39.5,
-          28.1,
-          0
-        ],
-        [
-          "stilt_platform",
-          -7.5,
-          58.1,
-          0
-        ],
-        [
-          "stilt_house",
-          -7.5,
-          58.1,
-          180
-        ],
-        [
-          "stilt_platform",
-          10.5,
-          10.1,
-          0
-        ],
-        [
-          "stilt_house",
-          10.5,
-          10.1,
-          270
-        ]
+        ["stilt_platform_broken", -47.5, 0.1, 0],
+        ["stilt_platform", -47.5, 18.1, 0],
+        ["stilt_walkway_broken", -47.5, 27.1, 90],
+        ["stilt_walkway_broken", -47.5, 45.1, 90],
+        ["stilt_walkway_broken", -47.5, 63.1, 90],
+        ["stilt_walkway", -38.5, 0.1, 0],
+        ["stilt_platform_broken", -38.5, 9.1, 0],
+        ["stilt_platform_broken", -38.5, 27.1, 0],
+        ["stilt_walkway", -38.5, 36.1, 0],
+        ["stilt_platform_broken", -38.5, 45.1, 0],
+        ["stilt_walkway", -38.5, 72.1, 0],
+        ["stilt_platform_broken", -29.5, 0.1, 0],
+        ["stilt_walkway_broken", -29.5, 9.1, 90],
+        ["stilt_platform", -29.5, 18.1, 0],
+        ["stilt_platform", -29.5, 54.1, 0],
+        ["stilt_walkway", -29.5, 63.1, 90],
+        ["stilt_platform_broken", -20.5, 9.1, 0],
+        ["stilt_walkway", -20.5, 18.1, 0],
+        ["stilt_walkway_broken", -20.5, 36.1, 0],
+        ["stilt_platform", -20.5, 45.1, 0],
+        ["stilt_platform_broken", -20.5, 63.1, 0],
+        ["stilt_platform", -11.5, 0.1, 0],
+        ["stilt_platform_broken", -11.5, 36.1, 0],
+        ["stilt_walkway_broken", -11.5, 45.1, 90],
+        ["stilt_walkway_broken", -11.5, 63.1, 90],
+        ["stilt_walkway_broken", -2.5, 0.1, 0],
+        ["stilt_platform", -2.5, 9.1, 0],
+        ["stilt_platform_broken", -2.5, 27.1, 0],
+        ["stilt_walkway", -2.5, 36.1, 0],
+        ["stilt_platform", -2.5, 63.1, 0],
+        ["stilt_walkway_broken", -2.5, 72.1, 0],
+        ["stilt_walkway", 6.5, 9.1, 90],
+        ["stilt_platform", 6.5, 18.1, 0],
+        ["stilt_walkway", 6.5, 27.1, 90],
+        ["stilt_platform_broken", 6.5, 36.1, 0],
+        ["stilt_walkway", 6.5, 63.1, 90],
+        ["stilt_platform_broken", 6.5, 72.1, 0],
+        ["stilt_walkway", 15.5, 0.1, 0],
+        ["stilt_platform_broken", 15.5, 9.1, 0],
+        ["stilt_walkway", 15.5, 36.1, 0],
+        ["stilt_platform_broken", 15.5, 45.1, 0],
+        ["stilt_walkway_broken", 15.5, 54.1, 0],
+        ["stilt_platform_broken", 24.5, 0.1, 0],
+        ["stilt_walkway", 24.5, 9.1, 90],
+        ["stilt_platform", 24.5, 18.1, 0],
+        ["stilt_platform", 24.5, 36.1, 0],
+        ["stilt_walkway", 24.5, 63.1, 90],
+        ["stilt_platform", 24.5, 72.1, 0],
+        ["stilt_platform", -39.5, 28.1, 0],
+        ["stilt_house", -39.5, 28.1, 0],
+        ["stilt_platform", -7.5, 58.1, 0],
+        ["stilt_house", -7.5, 58.1, 180],
+        ["stilt_platform", 10.5, 10.1, 0],
+        ["stilt_house", 10.5, 10.1, 270]
       ],
       "deck": 0.9
     },
-    {
-      "type": "prop",
-      "pos": [
-        -151.6,
-        171.6
-      ],
-      "id": "stilt_hut_sunken",
-      "yaw": 20,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        38.5,
-        68.1
-      ],
-      "id": "stilt_hut_sunken",
-      "yaw": -30,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -51.5,
-        -21.9
-      ],
-      "id": "stilt_hut_sunken",
-      "yaw": 60,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        28.5,
-        -31.9
-      ],
-      "id": "stilt_hut_sunken",
-      "yaw": 10,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -111.6,
-        201.6
-      ],
-      "id": "stilt_hut_sunken",
-      "yaw": -50,
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -274.3,
-        -248.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -252.3,
-        -227.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -284.3,
-        -221.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -246.3,
-        -255.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -266.3,
-        -263.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -290.3,
-        -243.5
-      ],
-      "id": "pondkin_hut",
-      "face": [
-        -264.3,
-        -238.5
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -264.3,
-        -238.5
-      ],
-      "id": "pondkin_totem",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -238.3,
-        -241.5
-      ],
-      "id": "pondkin_totem",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -276.3,
-        -211.5
-      ],
-      "id": "pondkin_totem",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -258.3,
-        -235.5
-      ],
-      "id": "campfire",
-      "collide": "none"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        202,
-        -246.4
-      ],
-      "id": "heron_rookery_nest",
-      "yaw": 302.34124221723397,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        214,
-        -260.4
-      ],
-      "id": "heron_rookery_nest",
-      "yaw": 290.80381769884997,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        194,
-        -262.4
-      ],
-      "id": "heron_rookery_nest",
-      "yaw": 67.15620822442868,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        220,
-        -240.4
-      ],
-      "id": "heron_rookery_nest",
-      "yaw": 33.4588487043508,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        206,
-        -234.4
-      ],
-      "id": "heron_rookery_nest",
-      "yaw": 89.0077589289596,
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -237.6,
-        241.6
-      ],
-      "id": "witch_hut",
-      "face": [
-        -231.6,
-        246.6
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -219.6,
-        257.6
-      ],
-      "id": "witch_hut",
-      "face": [
-        -231.6,
-        246.6
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -247.6,
-        261.6
-      ],
-      "id": "witch_hut",
-      "face": [
-        -231.6,
-        246.6
-      ],
-      "collide": "mesh"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -229.6,
-        241.6
-      ],
-      "id": "witch_cauldron",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -211.6,
-        231.6
-      ],
-      "id": "bone_totem",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -251.6,
-        231.6
-      ],
-      "id": "bone_totem",
-      "collide": "trunk"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        162.5,
-        -248.7
-      ],
-      "id": "reeds_tall",
-      "yaw": 270.3319699846003,
-      "collide": "none",
-      "scale": 0.97
-    },
-    {
-      "type": "prop",
-      "pos": [
-        208.8,
-        112.3
-      ],
-      "id": "reeds_tall",
-      "yaw": 234.87988033919297,
-      "collide": "none",
-      "scale": 1.36
-    },
-    {
-      "type": "prop",
-      "pos": [
-        115.3,
-        264.4
-      ],
-      "id": "reeds_tall",
-      "yaw": 175.90634717534186,
-      "collide": "none",
-      "scale": 1.35
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -131.3,
-        305.3
-      ],
-      "id": "reeds_tall",
-      "yaw": 48.97630493740352,
-      "collide": "none",
-      "scale": 1.25
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -253.1,
-        210.4
-      ],
-      "id": "reeds_tall",
-      "yaw": 347.51279223847746,
-      "collide": "none",
-      "scale": 1.08
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -266,
-        -49.2
-      ],
-      "id": "reeds_tall",
-      "yaw": 4.207293656751379,
-      "collide": "none",
-      "scale": 1.18
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -306.8,
-        -281.8
-      ],
-      "id": "reeds_tall",
-      "yaw": 317.4592818028216,
-      "collide": "none",
-      "scale": 1.11
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -265.4,
-        -295.7
-      ],
-      "id": "reeds_tall",
-      "yaw": 222.92972000405217,
-      "collide": "none",
-      "scale": 1.38
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -90.9,
-        293.5
-      ],
-      "id": "reeds_tall",
-      "yaw": 343.9569905549122,
-      "collide": "none",
-      "scale": 1.19
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -125.6,
-        220.5
-      ],
-      "id": "reeds_tall",
-      "yaw": 338.82075619222314,
-      "collide": "none",
-      "scale": 1.33
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -268.5,
-        227.8
-      ],
-      "id": "reeds_tall",
-      "yaw": 236.79864938660927,
-      "collide": "none",
-      "scale": 1.17
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -71.7,
-        -62.3
-      ],
-      "id": "reeds_tall",
-      "yaw": 169.87046839475352,
-      "collide": "none",
-      "scale": 1.36
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -97.6,
-        228.9
-      ],
-      "id": "reeds_tall",
-      "yaw": 320.57932140571205,
-      "collide": "none",
-      "scale": 1.06
-    },
-    {
-      "type": "prop",
-      "pos": [
-        201.4,
-        -295.4
-      ],
-      "id": "reeds_tall",
-      "yaw": 96.46418926374918,
-      "collide": "none",
-      "scale": 1.1
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -11.1,
-        0.1
-      ],
-      "id": "reeds_tall",
-      "yaw": 198.64391349054287,
-      "collide": "none",
-      "scale": 1.18
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -186.6,
-        238.7
-      ],
-      "id": "reeds_tall",
-      "yaw": 290.99990882258084,
-      "collide": "none",
-      "scale": 1.09
-    },
-    {
-      "type": "prop",
-      "pos": [
-        243.2,
-        -214.5
-      ],
-      "id": "reeds_tall",
-      "yaw": 220.10538509084688,
-      "collide": "none",
-      "scale": 0.91
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -0.6,
-        12
-      ],
-      "id": "reeds_tall",
-      "yaw": 250.88711523556884,
-      "collide": "none",
-      "scale": 0.98
-    },
-    {
-      "type": "prop",
-      "pos": [
-        7.3,
-        -15.5
-      ],
-      "id": "reeds_tall",
-      "yaw": 229.54001216150328,
-      "collide": "none",
-      "scale": 1.22
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -145.4,
-        268.7
-      ],
-      "id": "reeds_tall",
-      "yaw": 79.51346749272705,
-      "collide": "none",
-      "scale": 1.33
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -20.4,
-        -80.6
-      ],
-      "id": "reeds_tall",
-      "yaw": 287.58517410077206,
-      "collide": "none",
-      "scale": 1.26
-    },
-    {
-      "type": "prop",
-      "pos": [
-        15.7,
-        29.5
-      ],
-      "id": "reeds_tall",
-      "yaw": 62.80777857815138,
-      "collide": "none",
-      "scale": 1.13
-    },
-    {
-      "type": "prop",
-      "pos": [
-        193.4,
-        -273
-      ],
-      "id": "reeds_tall",
-      "yaw": 214.4554103237067,
-      "collide": "none",
-      "scale": 1.08
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -140.7,
-        253.7
-      ],
-      "id": "reeds_tall",
-      "yaw": 309.7922097545215,
-      "collide": "none",
-      "scale": 0.97
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -197.4,
-        292.2
-      ],
-      "id": "reeds_tall",
-      "yaw": 1.3249580772387048,
-      "collide": "none",
-      "scale": 1.26
-    },
-    {
-      "type": "prop",
-      "pos": [
-        44.3,
-        42.1
-      ],
-      "id": "reeds_tall",
-      "yaw": 228.24528242032153,
-      "collide": "none",
-      "scale": 1.31
-    },
-    {
-      "type": "signpost",
-      "pos": [
-        12,
-        232
-      ],
-      "face": [
-        12,
-        256
-      ],
-      "labels": [
-        "Stormcut Gorge"
-      ]
-    }
+    {"type": "prop", "pos": [-151.6, 171.6], "id": "stilt_hut_sunken", "yaw": 20, "collide": "mesh"},
+    {"type": "prop", "pos": [38.5, 68.1], "id": "stilt_hut_sunken", "yaw": -30, "collide": "mesh"},
+    {"type": "prop", "pos": [-51.5, -21.9], "id": "stilt_hut_sunken", "yaw": 60, "collide": "mesh"},
+    {"type": "prop", "pos": [28.5, -31.9], "id": "stilt_hut_sunken", "yaw": 10, "collide": "mesh"},
+    {"type": "prop", "pos": [-111.6, 201.6], "id": "stilt_hut_sunken", "yaw": -50, "collide": "mesh"},
+    {"type": "prop", "pos": [-274.3, -248.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-252.3, -227.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-284.3, -221.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-246.3, -255.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-266.3, -263.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-290.3, -243.5], "id": "pondkin_hut", "face": [-264.3, -238.5], "collide": "mesh"},
+    {"type": "prop", "pos": [-264.3, -238.5], "id": "pondkin_totem", "collide": "trunk"},
+    {"type": "prop", "pos": [-238.3, -241.5], "id": "pondkin_totem", "collide": "trunk"},
+    {"type": "prop", "pos": [-276.3, -211.5], "id": "pondkin_totem", "collide": "trunk"},
+    {"type": "prop", "pos": [-258.3, -235.5], "id": "campfire", "collide": "none"},
+    {"type": "prop", "pos": [202, -246.4], "id": "heron_rookery_nest", "yaw": 302.34124221723397, "collide": "trunk"},
+    {"type": "prop", "pos": [214, -260.4], "id": "heron_rookery_nest", "yaw": 290.80381769884997, "collide": "trunk"},
+    {"type": "prop", "pos": [194, -262.4], "id": "heron_rookery_nest", "yaw": 67.15620822442868, "collide": "trunk"},
+    {"type": "prop", "pos": [220, -240.4], "id": "heron_rookery_nest", "yaw": 33.4588487043508, "collide": "trunk"},
+    {"type": "prop", "pos": [206, -234.4], "id": "heron_rookery_nest", "yaw": 89.0077589289596, "collide": "trunk"},
+    {"type": "prop", "pos": [-237.6, 241.6], "id": "witch_hut", "face": [-231.6, 246.6], "collide": "mesh"},
+    {"type": "prop", "pos": [-219.6, 257.6], "id": "witch_hut", "face": [-231.6, 246.6], "collide": "mesh"},
+    {"type": "prop", "pos": [-247.6, 261.6], "id": "witch_hut", "face": [-231.6, 246.6], "collide": "mesh"},
+    {"type": "prop", "pos": [-229.6, 241.6], "id": "witch_cauldron", "collide": "box"},
+    {"type": "prop", "pos": [-211.6, 231.6], "id": "bone_totem", "collide": "trunk"},
+    {"type": "prop", "pos": [-251.6, 231.6], "id": "bone_totem", "collide": "trunk"},
+    {"type": "prop", "pos": [162.5, -248.7], "id": "reeds_tall", "yaw": 270.3319699846003, "collide": "none", "scale": 0.97},
+    {"type": "prop", "pos": [208.8, 112.3], "id": "reeds_tall", "yaw": 234.87988033919297, "collide": "none", "scale": 1.36},
+    {"type": "prop", "pos": [115.3, 264.4], "id": "reeds_tall", "yaw": 175.90634717534186, "collide": "none", "scale": 1.35},
+    {"type": "prop", "pos": [-131.3, 305.3], "id": "reeds_tall", "yaw": 48.97630493740352, "collide": "none", "scale": 1.25},
+    {"type": "prop", "pos": [-253.1, 210.4], "id": "reeds_tall", "yaw": 347.51279223847746, "collide": "none", "scale": 1.08},
+    {"type": "prop", "pos": [-266, -49.2], "id": "reeds_tall", "yaw": 4.207293656751379, "collide": "none", "scale": 1.18},
+    {"type": "prop", "pos": [-306.8, -281.8], "id": "reeds_tall", "yaw": 317.4592818028216, "collide": "none", "scale": 1.11},
+    {"type": "prop", "pos": [-265.4, -295.7], "id": "reeds_tall", "yaw": 222.92972000405217, "collide": "none", "scale": 1.38},
+    {"type": "prop", "pos": [-90.9, 293.5], "id": "reeds_tall", "yaw": 343.9569905549122, "collide": "none", "scale": 1.19},
+    {"type": "prop", "pos": [-125.6, 220.5], "id": "reeds_tall", "yaw": 338.82075619222314, "collide": "none", "scale": 1.33},
+    {"type": "prop", "pos": [-268.5, 227.8], "id": "reeds_tall", "yaw": 236.79864938660927, "collide": "none", "scale": 1.17},
+    {"type": "prop", "pos": [-71.7, -62.3], "id": "reeds_tall", "yaw": 169.87046839475352, "collide": "none", "scale": 1.36},
+    {"type": "prop", "pos": [-97.6, 228.9], "id": "reeds_tall", "yaw": 320.57932140571205, "collide": "none", "scale": 1.06},
+    {"type": "prop", "pos": [201.4, -295.4], "id": "reeds_tall", "yaw": 96.46418926374918, "collide": "none", "scale": 1.1},
+    {"type": "prop", "pos": [-11.1, 0.1], "id": "reeds_tall", "yaw": 198.64391349054287, "collide": "none", "scale": 1.18},
+    {"type": "prop", "pos": [-186.6, 238.7], "id": "reeds_tall", "yaw": 290.99990882258084, "collide": "none", "scale": 1.09},
+    {"type": "prop", "pos": [243.2, -214.5], "id": "reeds_tall", "yaw": 220.10538509084688, "collide": "none", "scale": 0.91},
+    {"type": "prop", "pos": [-0.6, 12], "id": "reeds_tall", "yaw": 250.88711523556884, "collide": "none", "scale": 0.98},
+    {"type": "prop", "pos": [7.3, -15.5], "id": "reeds_tall", "yaw": 229.54001216150328, "collide": "none", "scale": 1.22},
+    {"type": "prop", "pos": [-145.4, 268.7], "id": "reeds_tall", "yaw": 79.51346749272705, "collide": "none", "scale": 1.33},
+    {"type": "prop", "pos": [-20.4, -80.6], "id": "reeds_tall", "yaw": 287.58517410077206, "collide": "none", "scale": 1.26},
+    {"type": "prop", "pos": [15.7, 29.5], "id": "reeds_tall", "yaw": 62.80777857815138, "collide": "none", "scale": 1.13},
+    {"type": "prop", "pos": [193.4, -273], "id": "reeds_tall", "yaw": 214.4554103237067, "collide": "none", "scale": 1.08},
+    {"type": "prop", "pos": [-140.7, 253.7], "id": "reeds_tall", "yaw": 309.7922097545215, "collide": "none", "scale": 0.97},
+    {"type": "prop", "pos": [-197.4, 292.2], "id": "reeds_tall", "yaw": 1.3249580772387048, "collide": "none", "scale": 1.26},
+    {"type": "prop", "pos": [44.3, 42.1], "id": "reeds_tall", "yaw": 228.24528242032153, "collide": "none", "scale": 1.31},
+    {"type": "signpost", "pos": [12, 232], "face": [12, 256], "labels": ["Stormcut Gorge"]},
+    {"type": "waystation", "pos": [-170, 10], "face": [-120, 10], "hubs": true},
+    {"type": "prop", "pos": [0, -330], "id": "stilt_hut_sunken", "collide": "box", "yaw": 20, "hubs": true},
+    {"type": "prop", "pos": [18, -320], "id": "stilt_hut_sunken", "collide": "box", "yaw": 200, "hubs": true},
+    {"type": "prop", "pos": [-12, -318], "id": "mooring_post", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [200, 250], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
+    {"type": "prop", "pos": [206, 255], "id": "campfire", "collide": "none", "hubs": true},
+    {"type": "prop", "pos": [250, 290], "id": "mooring_post", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [260, 296], "id": "mooring_post", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "prop", "pos": [240, 308], "id": "canoe", "collide": "box", "yaw": 60, "hubs": true},
+    {"type": "prop", "pos": [266, 312], "id": "drying_rack", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "watchtower", "pos": [260, 80], "face": [160, 80], "hubs": true}
   ],
-  "passes": [
-    [
-      0,
-      -512.0,
-      9
-    ],
-    [
-      0,
-      512.0,
-      9
-    ],
-    [
-      512.0,
-      0,
-      9
-    ]
-  ],
-  "roads": [
-    {
-      "points": [
-        [
-          512,
-          0
-        ],
-        [
-          438.2,
-          -0.2
-        ],
-        [
-          418.2,
-          -0.2
-        ]
-      ],
-      "width": 3.0
-    }
-  ],
+  "passes": [[0, -512.0, 9], [0, 512.0, 9], [512.0, 0, 9]],
+  "roads": [{"points": [[512, 0], [438.2, -0.2], [418.2, -0.2]], "width": 3.0}],
   "zone_lines": [
-    {
-      "pos": [
-        0,
-        -501.0
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "silted_reach",
-      "arrive": [
-        0,
-        359.0
-      ],
-      "arrive_face": [
-        0,
-        319.0
-      ]
-    },
-    {
-      "pos": [
-        0,
-        501.0
-      ],
-      "size": [
-        18,
-        8
-      ],
-      "to": "stormcut_gorge",
-      "arrive": [
-        0,
-        -487.0
-      ],
-      "arrive_face": [
-        0,
-        -447.0
-      ]
-    },
-    {
-      "pos": [
-        501.0,
-        0
-      ],
-      "size": [
-        8,
-        18
-      ],
-      "to": "weeping_throat",
-      "arrive": [
-        -311.0,
-        0
-      ],
-      "arrive_face": [
-        -271.0,
-        0
-      ]
-    }
+    {"pos": [0, -501.0], "size": [18, 8], "to": "silted_reach", "arrive": [0, 359.0], "arrive_face": [0, 319.0]},
+    {"pos": [0, 501.0], "size": [18, 8], "to": "stormcut_gorge", "arrive": [0, -487.0], "arrive_face": [0, -447.0]},
+    {"pos": [501.0, 0], "size": [8, 18], "to": "weeping_throat", "arrive": [-311.0, 0], "arrive_face": [-271.0, 0]}
   ],
   "npcs": [
-    {
-      "id": "reedcutter_pallavi",
-      "pos": [
-        422.2,
-        -8.2
-      ],
-      "face": [
-        416.2,
-        -6.2
-      ]
-    },
-    {
-      "id": "boatwright_kesh",
-      "pos": [
-        412.2,
-        7.8
-      ],
-      "face": [
-        404.2,
-        9.8
-      ]
-    },
-    {
-      "id": "priestess_amrit",
-      "pos": [
-        428.2,
-        5.8
-      ],
-      "face": [
-        416.2,
-        -6.2
-      ]
-    },
-    {
-      "id": "rainhold_reedwatch",
-      "pos": [
-        438.2,
-        -0.2
-      ],
-      "patrol": [
-        [
-          438.2,
-          -0.2
-        ],
-        [
-          424.2,
-          -20.2
-        ],
-        [
-          408.2,
-          -0.2
-        ],
-        [
-          424.2,
-          21.8
-        ],
-        [
-          438.2,
-          -0.2
-        ]
-      ]
-    }
+    {"id": "reedcutter_pallavi", "pos": [422.2, -8.2], "face": [416.2, -6.2]},
+    {"id": "boatwright_kesh", "pos": [412.2, 7.8], "face": [404.2, 9.8]},
+    {"id": "priestess_amrit", "pos": [428.2, 5.8], "face": [416.2, -6.2]},
+    {"id": "rainhold_reedwatch", "pos": [438.2, -0.2], "patrol": [[438.2, -0.2], [424.2, -20.2], [408.2, -0.2], [424.2, 21.8], [438.2, -0.2]]},
+    {"id": "rm_reedwatcher_achebe", "pos": [-166, 13], "face": [-120, 10], "hubs": true},
+    {"id": "rm_sutler_naledi", "pos": [-175, 14], "face": [-120, 10], "hubs": true},
+    {"id": "rm_reedwatcher_achebe_guard", "pos": [-168, 2], "face": [-120, 10], "hubs": true},
+    {"id": "rm_fisher_makena", "pos": [208, 252], "face": [250, 300], "hubs": true}
   ],
   "spawns": [
-    {
-      "pos": [
-        -254.3,
-        -213.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -284.3,
-        -258.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -234.3,
-        -263.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -294.3,
-        -203.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -224.3,
-        -223.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -269.3,
-        -183.5
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -140,
-        -240
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -269.3,
-        -241.5
-      ],
-      "pool": {
-        "pondkin_bloatking": 1
-      },
-      "respawn": 1300,
-      "wander": 4
-    },
-    {
-      "pos": [
-        192,
-        -236.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        222,
-        -266.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        182,
-        -276.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        232,
-        -216.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        162,
-        -226.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        242,
-        -186.4
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        208,
-        -252.4
-      ],
-      "pool": {
-        "old_stilt_legs": 1
-      },
-      "respawn": 1300,
-      "wander": 8
-    },
-    {
-      "pos": [
-        80,
-        -120
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -171.6,
-        161.6
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        200,
-        40
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -131.6,
-        231.6
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        137.7,
-        272.2
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -340,
-        40
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -71.6,
-        281.6
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -200,
-        -40
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -1.5,
-        -101.9
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -61.5,
-        -61.9
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        58.5,
-        38.1
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        240,
-        200
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -111.6,
-        251.6
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -240,
-        120
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        280,
-        -20
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        97.7,
-        252.2
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -26.5,
-        3.1
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        3.5,
-        28.1
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -60,
-        90
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        13.5,
-        53.1
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -6.5,
-        -6.9
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        18.5,
-        8.1
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -80,
-        50
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -91.6,
-        191.6
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        23.5,
-        33.1
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -111.6,
-        181.6
-      ],
-      "pool": {
-        "sunken_villager": 1
-      },
-      "respawn": 90,
-      "wander": 10,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -9.5,
-        20.1
-      ],
-      "pool": {
-        "sunken_headwoman": 1
-      },
-      "respawn": 1300,
-      "wander": 6,
-      "when": "night"
-    },
-    {
-      "pos": [
-        -241.6,
-        236.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -216.6,
-        251.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -251.6,
-        256.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -221.6,
-        221.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -201.6,
-        266.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -241.6,
-        216.6
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -196.6,
-        241.6
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -256.6,
-        271.6
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -231.6,
-        249.6
-      ],
-      "pool": {
-        "mother_marrowroot": 1
-      },
-      "respawn": 1400,
-      "wander": 6
-    },
-    {
-      "pos": [
-        -259.3,
-        -223.5
-      ],
-      "pool": {
-        "pondkin_mudcaller": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -279.3,
-        -253.5
-      ],
-      "pool": {
-        "pondkin_mudcaller": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -244.3,
-        -243.5
-      ],
-      "pool": {
-        "pondkin_mudcaller": 1
-      },
-      "respawn": 90,
-      "wander": 8
-    },
-    {
-      "pos": [
-        416,
-        416
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        416,
-        -416
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        416,
-        128
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -416,
-        -416
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -80,
-        -416
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        416,
-        -240
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -147.6,
-        329.6
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        256,
-        416
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        384,
-        272
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -256,
-        -416
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -416,
-        416
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        80,
-        -416
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        272,
-        -416
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -256,
-        416
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        40,
-        464
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -456,
-        208
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        464,
-        -56
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -456,
-        -248
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -432,
-        -88
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -96,
-        448
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        360,
-        -128
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -456,
-        32
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        328,
-        -312
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        144,
-        408
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -440,
-        312
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        328,
-        72
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        176,
-        -448
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        152,
-        -48
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        304,
-        328
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        336,
-        184
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -168,
-        -456
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        464,
-        40
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -424,
-        120
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        376,
-        -24
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        0,
-        -464
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        440,
-        -328
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        448,
-        -152
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -336,
-        -456
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -336,
-        376
-      ],
-      "pool": {
-        "bog_lurker": 1
-      },
-      "respawn": 95,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -456,
-        -336
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        336,
-        -216
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        440,
-        208
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        -184,
-        456
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -24,
-        408
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        -448,
-        -168
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -344,
-        -376
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        336,
-        408
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        432,
-        336
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    },
-    {
-      "pos": [
-        256,
-        96
-      ],
-      "pool": {
-        "marsh_eel": 1
-      },
-      "respawn": 80,
-      "wander": 14
-    },
-    {
-      "pos": [
-        344,
-        -392
-      ],
-      "pool": {
-        "reedstalker": 1
-      },
-      "respawn": 85,
-      "wander": 16
-    },
-    {
-      "pos": [
-        -320,
-        448
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -144,
-        -392
-      ],
-      "pool": {
-        "pondkin": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -144,
-        400
-      ],
-      "pool": {
-        "sedge_sister": 1
-      },
-      "respawn": 90,
-      "wander": 10
-    },
-    {
-      "pos": [
-        392,
-        56
-      ],
-      "pool": {
-        "bogwing": 1
-      },
-      "respawn": 80,
-      "wander": 18
-    }
+    {"pos": [-254.3, -213.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-284.3, -258.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-234.3, -263.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-294.3, -203.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-224.3, -223.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-269.3, -183.5], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-140, -240], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-269.3, -241.5], "pool": {"pondkin_bloatking": 1}, "respawn": 1300, "wander": 4},
+    {"pos": [192, -236.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [222, -266.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [182, -276.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [232, -216.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [162, -226.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [242, -186.4], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [208, -252.4], "pool": {"old_stilt_legs": 1}, "respawn": 1300, "wander": 8},
+    {"pos": [80, -120], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-171.6, 161.6], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [200, 40], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-131.6, 231.6], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [137.7, 272.2], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-340, 40], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-71.6, 281.6], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-200, -40], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-1.5, -101.9], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-61.5, -61.9], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [58.5, 38.1], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [240, 200], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-111.6, 251.6], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-240, 120], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [280, -20], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [97.7, 252.2], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-26.5, 3.1], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [3.5, 28.1], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-60, 90], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [13.5, 53.1], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-6.5, -6.9], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [18.5, 8.1], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-80, 50], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-91.6, 191.6], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [23.5, 33.1], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-111.6, 181.6], "pool": {"sunken_villager": 1}, "respawn": 90, "wander": 10, "when": "night"},
+    {"pos": [-9.5, 20.1], "pool": {"sunken_headwoman": 1}, "respawn": 1300, "wander": 6, "when": "night"},
+    {"pos": [-241.6, 236.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-216.6, 251.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-251.6, 256.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-221.6, 221.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-201.6, 266.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-241.6, 216.6], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [-196.6, 241.6], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [-256.6, 271.6], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [-231.6, 249.6], "pool": {"mother_marrowroot": 1}, "respawn": 1400, "wander": 6},
+    {"pos": [-259.3, -223.5], "pool": {"pondkin_mudcaller": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-279.3, -253.5], "pool": {"pondkin_mudcaller": 1}, "respawn": 90, "wander": 8},
+    {"pos": [-244.3, -243.5], "pool": {"pondkin_mudcaller": 1}, "respawn": 90, "wander": 8},
+    {"pos": [416, 416], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [416, -416], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [416, 128], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-416, -416], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-80, -416], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [416, -240], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [-147.6, 329.6], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [256, 416], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [384, 272], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-256, -416], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-416, 416], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [80, -416], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [272, -416], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [-256, 416], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [40, 464], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-456, 208], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [464, -56], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-456, -248], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-432, -88], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-96, 448], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [360, -128], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [-456, 32], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [328, -312], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [144, 408], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-440, 312], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [328, 72], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [176, -448], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [152, -48], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [304, 328], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [336, 184], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-168, -456], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [464, 40], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-424, 120], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [376, -24], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [0, -464], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [440, -328], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [448, -152], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [-336, -456], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-336, 376], "pool": {"bog_lurker": 1}, "respawn": 95, "wander": 10},
+    {"pos": [-456, -336], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [336, -216], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [440, 208], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [-184, 456], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-24, 408], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [-448, -168], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-344, -376], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [336, 408], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [432, 336], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [256, 96], "pool": {"marsh_eel": 1}, "respawn": 80, "wander": 14},
+    {"pos": [344, -392], "pool": {"reedstalker": 1}, "respawn": 85, "wander": 16},
+    {"pos": [-320, 448], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-144, -392], "pool": {"pondkin": 1}, "respawn": 90, "wander": 10},
+    {"pos": [-144, 400], "pool": {"sedge_sister": 1}, "respawn": 90, "wander": 10},
+    {"pos": [392, 56], "pool": {"bogwing": 1}, "respawn": 80, "wander": 18},
+    {"pos": [36.3, -318.8], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [13.9, -294.6], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [-19.0, -297.1], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [-37.6, -324.4], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [-27.8, -355.9], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [2.9, -367.9], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [31.4, -351.4], "pool": {"rm_drowned_ringer": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [3, -328], "pool": {"rm_bellwarden": 1}, "respawn": 1500, "wander": 4, "hubs": true},
+    {"pos": [286.3, 311.2], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [263.9, 335.4], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [231.0, 332.9], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [212.4, 305.6], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [222.2, 274.1], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [252.9, 262.1], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [281.4, 278.6], "pool": {"rm_weir_eel": 1}, "respawn": 95, "wander": 12, "hubs": true},
+    {"pos": [253, 302], "pool": {"rm_eel_mother": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

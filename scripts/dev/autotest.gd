@@ -128,6 +128,7 @@ const SECTIONS := [
 	["zone_outlines", "greenmoor"],
 	["named_scaling", "greenmoor"],
 	["hubs_pilot", "thornwood"],
+	["hubs_1024", "the_burn"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8826,15 +8827,32 @@ func _t_spawn_coverage() -> void:
 ## the forward camp's scout takes the hand-in of a quest someone else gave, and
 ## a look at the camp, a hut and each new place and monster.
 func _t_hubs_pilot() -> void:
-	var main := get_parent()
-	var p := World.local_player
-	p.god_mode = true
-	for leg: Array in [["thornwood", "tw", {"tw_hob_woodcutter": ["tw_tusker_tusks", "tw_old_greyback"], "tw_corporal_brannic": ["tw_prayer_beads", "tw_brother_vesk"]},
+	await _hubs_zones([["thornwood", "tw", {"tw_hob_woodcutter": ["tw_tusker_tusks", "tw_old_greyback"], "tw_corporal_brannic": ["tw_prayer_beads", "tw_brother_vesk"]},
 			["tw_tusker_boar", "tw_old_greyback", "tw_forsworn_acolyte", "tw_brother_vesk"], "tw_corporal_brannic", "bloodtusk_tusks"],
 			["the_long_grass", "lg", {"lg_outrider_temperance": ["lg_stone_chips", "lg_ringwarden"], "lg_herdwife_saule": ["lg_jackal_ears", "lg_old_rakemaw"]},
 			["lg_ringstone_sentinel", "lg_ringwarden", "lg_carrion_jackal", "lg_old_rakemaw"], "lg_outrider_temperance", "stalker_pelt_q"],
 			["the_bleach", "bl", {"bl_outrider_kofi": ["bl_mine_tags", "bl_foreman_dask"], "bl_trader_oyelowo": ["bl_crab_claws", "bl_wreck_shell"]},
-			["bl_brine_miner", "bl_foreman_dask", "bl_wreck_crab", "bl_wreck_shell"], "bl_outrider_kofi", "the_salt_wolf"]]:
+			["bl_brine_miner", "bl_foreman_dask", "bl_wreck_crab", "bl_wreck_shell"], "bl_outrider_kofi", "the_salt_wolf"]])
+
+
+## The same for the four other 1024 m zones (hubs.py batch 2).
+func _t_hubs_1024() -> void:
+	await _hubs_zones([["the_burn", "burn", {"burn_ashrunner_beppe": ["burn_kindled_husk_q", "burn_kindled_deacon_q"],
+			"burn_prospector_renske": ["burn_cinder_newt_q", "burn_old_blisterback_q"]},
+			["burn_kindled_husk", "burn_kindled_deacon", "burn_cinder_newt", "burn_old_blisterback"], "burn_ashrunner_beppe", "giants_coals"],
+			["mirror_flats", "mf", {"mf_skiffscout_imara": ["mf_drowned_salter_q", "mf_skiffmaster_dunmore_q"], "mf_glassseeker_wenzel": ["mf_saltglass_sentinel_q", "mf_pillarmother_q"]},
+			["mf_drowned_salter", "mf_skiffmaster_dunmore", "mf_saltglass_sentinel", "mf_pillarmother"], "mf_skiffscout_imara", "nomad_veil_q"],
+			["ivory_field", "if", {"if_pathfinder_anselm": ["if_starving_shade_q", "if_hollow_mahout_q"], "if_bonecarver_ulrike": ["if_marrow_beetle_q", "if_marrow_queen_q"]},
+			["if_starving_shade", "if_hollow_mahout", "if_marrow_beetle", "if_marrow_queen"], "if_pathfinder_anselm", "ivory_shard_q"],
+			["reedmere", "rm", {"rm_reedwatcher_achebe": ["rm_drowned_ringer_q", "rm_bellwarden_q"], "rm_fisher_makena": ["rm_weir_eel_q", "rm_eel_mother_q"]},
+			["rm_drowned_ringer", "rm_bellwarden", "rm_weir_eel", "rm_eel_mother"], "rm_reedwatcher_achebe", "pondkin_fetishes"]])
+
+
+func _hubs_zones(legs: Array) -> void:
+	var main := get_parent()
+	var p := World.local_player
+	p.god_mode = true
+	for leg: Array in legs:
 		while main._changing_zone:
 			await _wait(0.25)
 		if main.zone.zone_id != leg[0]:
