@@ -8449,7 +8449,7 @@ func _t_bridges() -> void:
 func _t_high_terrace_ground() -> void:
 	var main := get_parent()
 	var p := World.local_player
-	for zone_id: String in ["high_terrace", "thornwood", "cinderpass", "sunward_steps"]:
+	for zone_id: String in ["high_terrace", "thornwood", "cinderpass", "sunward_steps", "dewstep"]:
 		while main._changing_zone:
 			await _wait(0.25)
 		if (main.zone as Zone).zone_id != zone_id:
@@ -8487,6 +8487,10 @@ func _t_high_terrace_ground() -> void:
 			print("high_terrace_ground: snow leopards %d, on the snow %d" % [leopards, on_snow])
 			await _zone_views("high_terrace", [[Vector2(0, 150), Vector2(-60, 175), "paddies"], [Vector2(-40, -60), Vector2(-80, -160), "snowfields"],
 					[Vector2(60, -140), Vector2(78, -205), "monastery"], [Vector2(20, 60), Vector2(0, -60), "climb"]])
+		if zone_id == "sunward_steps":
+			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
+		if zone_id == "dewstep":
+			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
 
 
 ## The beginners' calm monsters, levels 1 to 5, in each starting zone.
