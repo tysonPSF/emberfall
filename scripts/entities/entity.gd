@@ -279,6 +279,25 @@ func show_hidden() -> void:
 
 
 ## Visual events from the rules ("attack", "hit", "spawn"). No-op for primitive art.
+## The swing a weapon model makes (models.json "weapons" ids): daggers,
+## rapiers and spears thrust, two-handed and heavy weapons and staves chop
+## overhead, other blades and axes slash; bare hands, bows and wands keep
+## the plain "attack". The off hand always slashes (a left-hand cut).
+static func swing_for(weapon_model: String, off_hand := false) -> String:
+	var w := weapon_model.to_lower()
+	if w == "" or w in ["bow", "wand", "fishing_pole", "torch", "shield_badge", "shield_round", "shield_round_barbarian"]:
+		return "attack"
+	if off_hand:
+		return "slash_off"
+	for k in ["dagger", "rapier", "spear", "trident", "glaive"]:
+		if k in w:
+			return "thrust"
+	for k in ["2handed", "maul", "greathammer", "greatsword", "staff", "club", "slab", "spade", "pick", "titan", "hammer"]:
+		if k in w:
+			return "chop"
+	return "slash"
+
+
 func animate(event: String) -> void:
 	Net.broadcast_anim(self, event)
 	if not (visual is CharacterModel):
@@ -287,6 +306,8 @@ func animate(event: String) -> void:
 	match event:
 		"attack":
 			m.play_once("attack", 1.6)
+		"slash", "slash_off", "thrust", "chop":  # a weapon's own swing (swing_for)
+			m.play_once(event, 1.3)
 		"hit":
 			m.play_once("hit", 1.0, false)
 		"sling":  # a stone: the throw, with empty hands

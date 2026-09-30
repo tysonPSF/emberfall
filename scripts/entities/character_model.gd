@@ -16,7 +16,9 @@ const KAYKIT_ANIMS := {
 	"sit_chair": "Sit_Chair_Idle", "sit_chair_eager": "Sit_Chair_Eager",  # a seated npc (npcs.json "seated": "chair", "seated_after")
 	"kick": "Kick", "bash": "Shield_Bash", "shoot": "Bow_Shoot",  # so are these
 	"swim": "Swim_Forward", "tread": "Swim_Idle",  # and these: swimming, and treading water
+	"slash": "Attack_Slash", "slash_off": "Attack_Slash_Left", "thrust": "Attack_Thrust", "chop": "Attack_Chop",  # and the melee swings (Entity.swing_for)
 }
+const SWINGS: Array[String] = ["slash", "slash_off", "thrust", "chop"]
 
 static var _library: AnimationLibrary
 static var _part_sources: Dictionary = {}  # model path -> an instance to copy body parts from
@@ -627,8 +629,8 @@ func _clip(action: String) -> String:
 ## Plays a non-looping action over the idle (attack swing, flinch, spawn).
 func play_once(action: String, speed := 1.0, interrupt := true) -> void:
 	var c := _clip(action)
-	if c == "" and action in ["kick", "bash"]:
-		c = _clip("attack")  # a rig without the move swings instead
+	if c == "" and (action in ["kick", "bash"] or action in SWINGS):
+		c = _clip("attack")  # a rig without the move (a creature on its own rig) swings its own way instead
 	if _posed_dead or c == "":
 		return
 	if not interrupt and _one_shot_left > 0.0:

@@ -125,6 +125,7 @@ const SECTIONS := [
 	["starter_spawns", "greenmoor"],
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
+	["melee_swings", "greenmoor"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8493,6 +8494,56 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
 		if zone_id == "dewstep":
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
+
+
+## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
+## fighting, with every clip its body plays (the main hand's slash and the
+## off hand's own cut), and a shot of each.
+func _t_melee_swings() -> void:
+	var picks := {}
+	for w: String in ["sword_1handed", "dagger", "axe_2handed", "staff", "axe_1handed", "countess_rapier", "vorlaug_maul", "bow", ""]:
+		picks[w] = Entity.swing_for(w)
+	picks["dagger (off hand)"] = Entity.swing_for("dagger", true)
+	print("melee_swings: %s" % [picks])
+	var p := World.local_player
+	var keep := [p.char_class, p.level, p.equipment.duplicate(), p.skills.duplicate()]
+	p.char_class = "rogue"
+	p.level = 20
+	p.equipment["primary"] = "steel_longsword"
+	p.equipment["secondary"] = "steel_dirk"
+	p.fill_skills()
+	p.skills["dual_wield"] = GameData.skill_cap("rogue", "dual_wield", 20)
+	p.recalc_stats()
+	p.dress()
+	var mob: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and (mob == null or p.distance_to(m) < p.distance_to(mob)):
+			mob = m
+	mob.max_hp = 100000
+	mob.hp = 100000
+	p.global_position = mob.global_position + Vector3(1.6, 0, 0)
+	p.face_toward(mob.global_position)
+	World.request_set_target(p.entity_id, mob.entity_id)
+	World.request_toggle_attack(p.entity_id)
+	var seen := {}
+	var shot := {}
+	var m := p.visual as CharacterModel
+	for k in 600:
+		await get_tree().physics_frame
+		var c := m.anim.current_animation
+		if c != "":
+			seen[c] = int(seen.get(c, 0)) + 1
+			if c.begins_with("Attack_") and not shot.has(c) and m.anim.current_animation_position > 0.25:
+				shot[c] = true
+				await _shot("9swing_" + c)
+	print("melee_swings: a dual-wielding rogue's body played %s" % [seen])
+	World.request_toggle_attack(p.entity_id)
+	p.char_class = keep[0]
+	p.level = keep[1]
+	p.equipment = keep[2]
+	p.skills = keep[3]
+	p.recalc_stats()
+	p.dress()
 
 
 ## The filled-in zones (tools/zones/spawn_fill.py): every day spawn alive a
