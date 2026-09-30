@@ -126,6 +126,7 @@ const SECTIONS := [
 	["item_ladder", "greenmoor"],
 	["spawn_coverage", "greenmoor"],
 	["melee_swings", "greenmoor"],
+	["giant_sizes", "the_bleach"],
 	["bridges", "greenmoor"],
 	["bone_chips", "greenmoor"],
 	["pet_gear", "greenmoor"],
@@ -8494,6 +8495,28 @@ func _t_high_terrace_ground() -> void:
 			await _zone_views("sunward_steps", [[Vector2(-120, 60), Vector2(-160, 110), "mesas"], [Vector2(40, 20), Vector2(108, 88), "shrines"]])
 		if zone_id == "dewstep":
 			await _zone_views("dewstep", [[Vector2(20, 30), Vector2(0, 10), "bridge"], [Vector2(-40, -80), Vector2(-60, -30), "gardens"]])
+
+
+## Giants stand like giants: body height (and so nameplate and click box)
+## for a player and the big monsters, and a bone giant beside the player.
+func _t_giant_sizes() -> void:
+	var p := World.local_player
+	var out := {"player": snappedf(p.body_height, 0.01)}
+	for mid: String in ["bone_giant", "bone_titan", "ember_giant", "cloud_giant", "terrace_colossus", "gnoll_scout"]:
+		var d: Dictionary = GameData.mobs[mid]
+		out[mid] = snappedf(1.85 * float(d.get("scale", 1.0)) * Entity._model_size(str(d.get("model", ""))), 0.01)  # as build_body sizes it
+	print("giant_sizes: body heights %s" % [out])
+	var giant: Mob = null
+	for m in World.get_mobs():
+		if m.mob_id == "bone_giant" and (giant == null or p.distance_to(m) < p.distance_to(giant)):
+			giant = m
+	if giant != null:
+		giant.aggressive = false
+		p.global_position = giant.global_position + Vector3(4, 0, 4)
+		p.face_toward(giant.global_position)
+		p.camera_pivot.rotation.y = 0.6
+		await _wait(0.8)
+		await _shot("9giant_beside")
 
 
 ## Swings by weapon: which one each weapon makes, then a dual-wielding rogue
