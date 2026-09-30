@@ -36,7 +36,7 @@
     {"type": "signpost", "pos": [-13, 397], "yaw": -90, "labels": ["Greenmoor", "Obelisk"]},
     {"type": "signpost", "pos": [28, 152], "yaw": 0, "labels": ["East Road", "Main Road"]},
     {"type": "signpost", "pos": [-12, 52], "yaw": 180, "labels": ["West Road", "Main Road"]},
-    {"type": "bridge", "pos": [7, 212], "face": [11.5, 186]},
+    {"type": "bridge", "pos": [4.2, 212.3], "face": [8.7, 186.3]},
     {"type": "spider_nest", "pos": [-330, -208]},
     {"type": "watchtower", "pos": [-48, -354], "face": [-48, -338]}
   ],
@@ -57,7 +57,7 @@
     {
       "id": "vale_patrol",
       "pos": [-11, 395],
-      "patrol": [[-11, 395], [-7, 379], [-9, 361], [-21, 343], [-23, 333], [0, 240], [7, 212], [12, 184], [16, 160], [0, 40]]
+      "patrol": [[-11, 395], [-7, 379], [-9, 361], [-21, 343], [-23, 333], [0, 240], [4.2, 212.3], [12, 184], [16, 160], [0, 40]]
     }
   ],
   "spawns": [

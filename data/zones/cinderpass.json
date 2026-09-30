@@ -77,7 +77,7 @@
     {"type": "prop", "pos": [56, -83], "id": "ash_boulder_c", "yaw": 225.74172474419356, "collide": "mesh"},
     {"type": "prop", "pos": [-230, -187.5], "id": "ash_boulder_b", "yaw": 127.08382950976318, "collide": "mesh"},
     {"type": "prop", "pos": [212.5, 19.5], "id": "ash_boulder_c", "yaw": 123.01022001873741, "collide": "mesh"},
-    {"type": "bridge", "pos": [-178.5, 7.5], "face": [-119.5, 7.5]}
+    {"type": "bridge", "pos": [-178.8, 7.5], "face": [-119.8, 7.5]}
   ],
   "passes": [[0, 336, 9], [336, 0, 9], [-336, 0, 9], [0, -336, 9]],
   "roads": [

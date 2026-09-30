@@ -119,7 +119,10 @@ def scale(z, f):
     lms = []
     for l in z.get("landmarks", []):
         n = dict(l)
-        n["pos"] = s.point(l["pos"], lm_group.get(id(l)))
+        if l["type"] == "bridge":  # it stands where a road crosses a river, both stretched: it stretches with them
+            n["pos"] = [_r(s.edge_keep(float(l["pos"][0]))), _r(s.edge_keep(float(l["pos"][1])))]
+        else:
+            n["pos"] = s.point(l["pos"], lm_group.get(id(l)))
         if "face" in l:
             n["face"] = s.facing(l["pos"], l["face"], n["pos"])
         if "y_at" in l:

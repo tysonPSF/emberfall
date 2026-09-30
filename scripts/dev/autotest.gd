@@ -1966,26 +1966,29 @@ func _t_river() -> void:
 	var p := World.local_player
 	for m in World.get_mobs():
 		m.set_physics_process(false)  # nobody interrupts the survey
-	p.global_position = main.zone.ground(-1.0, 130.0) + Vector3.UP
+	var bridge: Dictionary = main.zone.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]
+	var b := Vector2(bridge["pos"][0], bridge["pos"][1])
+	var dir := (Vector2(bridge["face"][0], bridge["face"][1]) - b).normalized()  # along the road, north over the river
+	var start := b - dir * 24.0
+	p.global_position = main.zone.ground(start.x, start.y) + Vector3.UP
 	var lowest := INF
-	var dir := (Vector2(8, 80) - Vector2(-4, 150)).normalized()
 	for k in 360:
 		p.velocity = Vector3(dir.x, 0, dir.y) * 6.0 + Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
 		p.move_and_slide()
 		await get_tree().physics_frame
-		if absf(p.global_position.z - 106.0) < 8.0:
+		if Vector2(p.global_position.x, p.global_position.z).distance_to(b) < 8.0:
 			lowest = minf(lowest, p.global_position.y)
-	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
-	print("river: over the bridge from z 130 to %.0f; lowest on the crossing %.2f, water level %.2f" % [p.global_position.z, lowest, level])
-	p.global_position = main.zone.ground(-30.0, 130.0) + Vector3.UP
+	var level: float = main.zone._river_at(main.zone._rivers[0], b.x, b.y)[1]
+	print("river: over the bridge from z %.0f to %.0f; lowest on the crossing %.2f, water level %.2f" % [start.y, p.global_position.z, lowest, level])
+	p.global_position = main.zone.ground(b.x - 33.0, b.y + 24.0) + Vector3.UP
 	var deepest := INF
 	for k in 360:
 		p.velocity = Vector3(0, p.velocity.y - 20.0 * get_physics_process_delta_time(), -6.0)
 		p.move_and_slide()
 		await get_tree().physics_frame
 		deepest = minf(deepest, p.global_position.y)
-	print("river: waded across at x -30 to z %.0f; deepest %.2f (%.2f under the water)" % [p.global_position.z, deepest, level - deepest])
-	for view: Array in [[Vector2(-18, 128), Vector2(3.5, 106), "bridge"], [Vector2(-60, 125), Vector2(-100, 100), "banks"]]:
+	print("river: waded across at x %.0f to z %.0f; deepest %.2f (%.2f under the water)" % [b.x - 33.0, p.global_position.z, deepest, level - deepest])
+	for view: Array in [[b + Vector2(-21.5, 22), b, "bridge"], [b + Vector2(-63.5, 19), b + Vector2(-103.5, -6), "banks"]]:
 		p.global_position = main.zone.ground(view[0].x, view[0].y) + Vector3.UP
 		p.face_toward(main.zone.ground(view[1].x, view[1].y))
 		p.camera_pivot.rotation.y = 0.0
@@ -2288,18 +2291,23 @@ func _t_vale_patrol() -> void:
 	var main := get_parent()
 	var p := World.local_player
 	var harlan: Npc = _npcs()["vale_patrol"]
+	var bridge: Array = main.zone.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]["pos"]
+	var b := Vector2(bridge[0], bridge[1])
 	var lowest_on_bridge := INF
+	var start := harlan.global_position.z
 	var reached := 0.0
-	for k in 110:  # most of a leg, watching him cross the bridge
+	for k in 400:  # down the road and over the bridge
 		await _wait(0.5)
 		var at := harlan.global_position
 		reached = minf(reached, at.z) if reached != 0.0 else at.z
-		if absf(at.z - 106.0) < 6.0:
+		if Vector2(at.x, at.z).distance_to(b) < 6.0:
 			lowest_on_bridge = minf(lowest_on_bridge, at.y)
-	var level: float = main.zone._river_at(main.zone._rivers[0], 3.5, 106.0)[1]
-	print("vale_patrol: Harlan (level %d) walked from z 212 to z %.0f; on the bridge his lowest was %.2f (water %.2f)" % [harlan.level, reached, lowest_on_bridge, level])
+		if at.z < b.y - 20.0:
+			break
+	var level: float = main.zone._river_at(main.zone._rivers[0], b.x, b.y)[1]
+	print("vale_patrol: Harlan (level %d) walked from z %.0f to z %.0f; on the bridge his lowest was %.2f (water %.2f)" % [harlan.level, start, reached, lowest_on_bridge, level])
 	for k in 60:  # off the bridge (its railings would keep him from a wolf in the river)
-		if harlan.global_position.z < 88.0:
+		if harlan.global_position.z < b.y - 18.0:
 			break
 		await _wait(0.5)
 	var wolf := _nearest_mob(harlan, "timber_wolf")
@@ -5666,7 +5674,8 @@ func _t_dewstep_borders() -> void:
 ## ten quests handed in, and a look at each monster and at the tea house.
 func _t_dewstep_life() -> void:
 	var z: Zone = get_parent().zone
-	print("dewstep_life: the terraces climb %.1f m from the paddies to the tea house; there's water to fish by the bridge %s" % [z.height_at(-12, -150) - z.height_at(-20, 90), z.fishable_at(3, 10)])
+	var bridge: Array = z.data["landmarks"].filter(func(l: Dictionary) -> bool: return l["type"] == "bridge")[0]["pos"]
+	print("dewstep_life: there's water to fish by the bridge %s" % z.fishable_at(float(bridge[0]) + 3.0, float(bridge[1])))
 	await _zone_life("dewstep_life", {"headpicker_anjali": ["dewstep_moth_wings", "pilfers_bangle"], "hunter_kaveri": ["jackal_pelts", "cobra_fangs", "amberstripes_fang"],
 			"warden_tashi": ["dustpaw_beads", "rattlejaws_necklace"], "brother_ravi": ["wisp_lights", "widows_lantern"]}, ["hungry_ghost", "lantern_widow"],
 			["lantern_moth", "paddy_rat", "rice_beetle", "temple_monkey", "monkey_troop_king", "jackal", "hooded_cobra", "young_tiger", "amberstripe",
@@ -7532,7 +7541,9 @@ func _t_bleach() -> void:
 	var p := World.local_player
 	var z: Zone = main.zone
 	World.time_override = 11.0
-	print("bleach: salt flat %s, mud %s, open ground %s" % [z.on_bare_patch(0, -20), z.on_bare_patch(-150, 90), z.on_bare_patch(-180, 180)])
+	var patches: Array = z.data["ground_patches"]
+	print("bleach: salt flat %s, mud %s, open ground %s" % [z.on_bare_patch(patches[0]["pos"][0], patches[0]["pos"][1]), z.on_bare_patch(patches[1]["pos"][0], patches[1]["pos"][1]),
+			z.on_bare_patch(-z.half * 0.7, z.half * 0.7)])
 	for view: Array in [[Vector2(0, 228), Vector2(0, 150), "arrival"], [Vector2(40, 195), Vector2(26, 208), "caravan"], [Vector2(20, 40), Vector2(0, -40), "flats"],
 			[Vector2(-15, -95), Vector2(-42, -125), "ribcage"], [Vector2(125, -10), Vector2(155, -40), "raiders"], [Vector2(-130, 70), Vector2(-165, 95), "oasis"],
 			[Vector2(100, -115), Vector2(135, -145), "queen"]]:
