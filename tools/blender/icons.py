@@ -11092,6 +11092,473 @@ JEWELRY_LADDER = [silver_band, engraved_silver_ring, gold_band, jeweled_gold_rin
 				  silver_locket]
 
 
+# ---------------------------------------------------------------- Elephant Grove uniques
+# Rare weapons brought over from Elephant Grove. The Elder Dragon set is one
+# family: ivory fang, claw and bone, bronze-red fittings, grips wrapped in dark
+# green scale and a warm ember glow at the edges and in every gem. The Endless
+# Nightmare pair is black glass seeping violet.
+
+DRAGON_BONE = BONE     # ivory
+DRAGON_BRONZE = CLAY   # bronze-red fittings
+DRAGON_SCALE = PINE    # dark scale-green
+BLACKWOOD = IRON       # the near-black swatch: black wood
+
+
+def _dax(org, rot):
+	"""A weapon's frame: (s along it, w across it in the picture plane, y depth) into the scene."""
+	a = math.radians(rot)
+	dx, dz, nx, nz = math.cos(a), math.sin(a), -math.sin(a), math.cos(a)
+	return lambda s, w=0.0, y=0.0: (org[0] + dx * s + nx * w, y, org[1] + dz * s + nz * w)
+
+
+def _flat2(f, pts):
+	"""(s, w) points into picture-plane (x, z) for _slab."""
+	return [(f(s, w)[0], f(s, w)[2]) for s, w in pts]
+
+
+def _ember(p, f, pts, y, r=0.02, glow=2.6):
+	"""An ember-hot line along (s, w) points at depth y."""
+	_seam(p, [f(s, w, y) for s, w in pts], swatch=EMBER, r=r, glow=glow)
+
+
+def _dragon_gem(p, c, r, glow=2.6):
+	"""A glowing ember gem in a bronze setting, facing the camera."""
+	x, y, z = c
+	p.seg((x, y + r * 0.6, z), (x, y - r * 0.2, z), r * 1.35, r * 1.2, DRAGON_BRONZE, sides=10, grad=(0.2, 0.9))
+	p.blob((r * 2, r * 1.4, r * 2), (x, y - r * 0.4, z), EMBER, segs=(8, 6), grad=(0.0, 0.6), glow=glow)
+
+
+def _dragon_guard(p, f, s, half, r=0.055):
+	"""A bronze crossguard swept back like two small wings, an ember gem at its heart."""
+	for sgn in (1, -1):
+		pts = [f(s + 0.02, 0.0), f(s + 0.04, sgn * half * 0.45), f(s - 0.02, sgn * half * 0.85), f(s - 0.14, sgn * half * 1.05),
+			   f(s - 0.22, sgn * half * 0.98)]
+		_line(p, pts, r, r * 0.2, DRAGON_BRONZE, sides=6, grad=(0.2, 0.9))
+	p.blob((r * 3.2, r * 2.4, r * 3.2), f(s, 0.0), DRAGON_BRONZE, segs=(8, 6), grad=(0.2, 0.9))
+	_dragon_gem(p, f(s, 0.0, -r * 1.1), r * 0.7)
+
+
+def _dragon_grip(p, f, s0, s1, r, pommel=True):
+	"""A grip wrapped in dark green scale between bronze rings, an ember gem held in bronze talons at the end."""
+	p.seg(f(s0, 0.0), f(s1, 0.0), r, r * 1.05, DRAGON_SCALE, sides=8, grad=(0.2, 0.9))
+	n = max(2, int((s1 - s0) / 0.1))
+	for k in range(1, n):                                                                 # overlapping scale rings
+		s = s0 + (s1 - s0) * k / n
+		p.seg(f(s - 0.025, 0.0), f(s + 0.02, 0.0), r * 1.18, r * 1.02, DRAGON_SCALE, sides=8, grad=(0.0, 0.6))
+	for s in (s0, s1):
+		p.seg(f(s - 0.025, 0.0), f(s + 0.025, 0.0), r * 1.3, r * 1.3, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	if not pommel:
+		return
+	c = s0 - r * 1.6
+	p.blob((r * 2.9, r * 2.6, r * 2.9), f(c, 0.0), EMBER, segs=(10, 7), grad=(0.0, 0.6), glow=2.4)
+	for sgn in (1, -1):                                                                   # two talons clutching it
+		_line(p, [f(s0 - 0.01, sgn * r * 0.9), f(c + r * 0.2, sgn * r * 1.7), f(c - r * 0.9, sgn * r * 1.3), f(c - r * 1.4, sgn * r * 0.4)],
+			  r * 0.5, 0.0, DRAGON_BRONZE, sides=5, grad=(0.2, 0.9))
+	_line(p, [f(s0 - 0.01, 0.0, -r * 0.8), f(c, 0.0, -r * 1.55), f(c - r * 1.1, 0.0, -r * 0.9)], r * 0.45, 0.0, DRAGON_BRONZE, sides=5, grad=(0.2, 0.9))
+
+
+def _dragon_haft(p, f, s0, s1, r, swatch=WOOD, grad=(0.5, 1.0), wraps=(), bands=()):
+	"""A haft with dark green scale wraps and bronze bands."""
+	p.seg(f(s0, 0.0), f(s1, 0.0), r, r, swatch, sides=8, grad=grad)
+	for a, b in wraps:
+		_dragon_grip(p, f, a, b, r * 1.12, pommel=False)
+	for s in bands:
+		p.seg(f(s - 0.03, 0.0), f(s + 0.03, 0.0), r * 1.3, r * 1.3, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+
+
+def _fang(p, f, s0, s1, w0, bend=0.1, y=0.04, edge=-1, spine=True):
+	"""An ivory fang for a blade from s0 to its point at s1, w0 wide at the root, bending toward +w;
+	its cutting edge (side `edge`) glows like a coal."""
+	L = s1 - s0
+	def mid(t):
+		return bend * t * t
+	top = [(s0 + L * t, mid(t) + w0 * (1 - t) ** 0.75) for t in (0.0, 0.2, 0.4, 0.6, 0.78, 0.92)]
+	bot = [(s0 + L * t, mid(t) - w0 * (1 - t) ** 0.9) for t in (0.0, 0.2, 0.4, 0.6, 0.78, 0.92)]
+	tip = (s1, mid(1.0))
+	_slab(p, _flat2(f, top + [tip] + list(reversed(bot))), -y, y, DRAGON_BONE, grad=(0.0, 0.65))
+	side = bot if edge < 0 else top
+	_ember(p, f, [(s, w + (0.012 if edge < 0 else -0.012)) for s, w in side[1:]] + [(tip[0] - 0.02, tip[1])], -y - 0.008, r=0.02)
+	_seam(p, [f(s0 + L * t, mid(t) + (0.3 if edge < 0 else -0.3) * w0 * (1 - t), -y - 0.006) for t in (0.08, 0.35, 0.62)],
+		  swatch=STONE_WARM, r=0.012, glow=0.0)                                          # the fang's pale nerve line
+	if spine:                                                                             # a ridge of scale on the back
+		for k in range(4):
+			t = 0.08 + k * 0.14
+			s, w = s0 + L * t, mid(t) - edge * w0 * (1 - t) ** 0.8
+			p.seg(f(s, w, 0.0), f(s + 0.05, w - edge * 0.07, 0.0), 0.035, 0.0, DRAGON_SCALE, sides=4, grad=(0.1, 0.7))
+	p.seg(f(s0 - 0.02, 0.0), f(s0 + 0.07, 0.0), w0 * 1.1, w0 * 1.02, DRAGON_BRONZE, sides=10, grad=(0.2, 0.9))   # a bronze collar round its root
+
+
+def _claw_blade(p, f, sgn, s_root, s_top, reach, drop, thick=0.05):
+	"""A great curved claw set in a haft as an axe blade, on side sgn: its outer curve is the edge."""
+	back = [(s_top, 0.0), (s_top + 0.06, sgn * reach * 0.35), (s_top - 0.02, sgn * reach * 0.7), (s_top - 0.2, sgn * reach * 0.95)]
+	tip = (s_top - drop, sgn * reach * 1.02)
+	inner = [(s_top - drop + 0.3, sgn * reach * 0.74), (s_root + 0.14, sgn * reach * 0.5), (s_root + 0.02, sgn * reach * 0.22), (s_root, 0.0)]
+	_slab(p, _flat2(f, back + [tip] + inner), -thick, thick, DRAGON_BONE, grad=(0.0, 0.65))
+	_ember(p, f, [(s, w - sgn * 0.015) for s, w in back[1:]] + [(tip[0] + 0.03, tip[1] - sgn * 0.02)], -thick - 0.008, r=0.022)
+	for k in range(3):                                                                    # growth ridges across the claw
+		t = 0.25 + k * 0.22
+		a = (s_root + (s_top - s_root) * (1 - t * 0.4), sgn * reach * t)
+		b = (a[0] - 0.12 - 0.1 * t, sgn * reach * (t + 0.1))
+		_seam(p, [f(a[0], a[1], -thick - 0.005), f(b[0], b[1], -thick - 0.005)], swatch=STONE_WARM, r=0.012, glow=0.0)
+
+
+def _dragon_skull(p, g, sz, jaw=1.0, horns=2):
+	"""An ivory dragon's skull. g(u, v, y) maps its own frame into the scene: u out along the snout, v up over its crown."""
+	p.blob((0.5 * sz, 0.46 * sz, 0.5 * sz), g(-0.02 * sz, 0.02 * sz, 0.0), DRAGON_BONE, segs=(12, 9), grad=(0.0, 0.6))   # the crown
+	p.seg(g(0.05 * sz, 0.04 * sz), g(0.62 * sz, 0.06 * sz), 0.2 * sz, 0.1 * sz, DRAGON_BONE, sides=10, grad=(0.0, 0.6))   # the upper jaw
+	p.blob((0.22 * sz, 0.2 * sz, 0.2 * sz), g(0.6 * sz, 0.08 * sz), DRAGON_BONE, segs=(8, 6), grad=(0.0, 0.6))
+	low = (0.54 * sz, (-0.16 - 0.14 * jaw) * sz)
+	p.seg(g(0.0, -0.14 * sz), g(low[0], low[1]), 0.12 * sz, 0.06 * sz, DRAGON_BONE, sides=8, grad=(0.2, 0.8))   # the lower jaw, hanging open
+	p.blob((0.3 * sz, 0.24 * sz, 0.2 * sz), g(0.3 * sz, -0.1 * sz * jaw), EMBER, segs=(8, 6), grad=(0.0, 0.5), glow=2.2)   # fire in its throat
+	for k in range(4):                                                                    # teeth, top and bottom
+		t = 0.2 + k * 0.13
+		u = 0.62 * sz * t / 0.6 + 0.02 * sz
+		p.seg(g(u, -0.03 * sz, -0.06 * sz), g(u + 0.02 * sz, -0.16 * sz, -0.06 * sz), 0.035 * sz, 0.0, CLOTH_WHITE, sides=4, grad=(0.0, 0.4))
+		lu = low[0] * (0.3 + k * 0.2)
+		lv = low[1] * (0.3 + k * 0.2) - 0.14 * sz * (1 - (0.3 + k * 0.2))
+		p.seg(g(lu, lv + 0.03 * sz, -0.05 * sz), g(lu - 0.01 * sz, lv + 0.14 * sz, -0.05 * sz), 0.03 * sz, 0.0, CLOTH_WHITE, sides=4, grad=(0.0, 0.4))
+	p.seg(g(0.02 * sz, 0.2 * sz, -0.16 * sz), g(0.3 * sz, 0.17 * sz, -0.14 * sz), 0.05 * sz, 0.03 * sz, DRAGON_SCALE, sides=5, grad=(0.1, 0.7))   # a scaled brow
+	p.blob((0.13 * sz, 0.07 * sz, 0.1 * sz), g(0.12 * sz, 0.1 * sz, -0.22 * sz), EMBER, segs=(8, 5), grad=(0.0, 0.4), glow=3.0)   # a burning eye
+	p.blob((0.06 * sz, 0.05 * sz, 0.05 * sz), g(0.66 * sz, 0.14 * sz, -0.08 * sz), EMBER, segs=(5, 4), glow=2.6)   # a smoking nostril
+	for hy in ((-0.14, 0.14) if horns == 2 else (0.0,)):                                  # horns swept back over the crown
+		pts = [g(0.0, 0.16 * sz, hy * sz), g(-0.3 * sz, 0.32 * sz, hy * sz * 1.2), g(-0.62 * sz, 0.36 * sz, hy * sz * 1.3), g(-0.86 * sz, 0.26 * sz, hy * sz * 1.3)]
+		_line(p, pts, 0.1 * sz, 0.0, DRAGON_BONE, sides=7, grad=(0.1, 0.8))
+	for k in range(3):                                                                    # a frill of green spines at the back of the head
+		u, v = -0.26 * sz - k * 0.08 * sz, 0.02 * sz - k * 0.13 * sz
+		p.seg(g(u, v, 0.0), g(u - 0.2 * sz, v - 0.02 * sz, 0.0), 0.06 * sz, 0.0, DRAGON_SCALE, sides=4, grad=(0.1, 0.7))
+
+
+def _chain(p, f, pts, r=0.028, link=0.07):
+	"""Bronze chain links along (s, w) points, turning a quarter each link."""
+	for k in range(len(pts) - 1):
+		a, b = Vector(f(*pts[k])), Vector(f(*pts[k + 1]))
+		d = (b - a).normalized()
+		side = Vector((-d.z, 0, d.x)) if k % 2 == 0 else Vector((0, -1, 0))
+		_oval(p, (a + b) / 2, d, side, (b - a).length * 0.62, link, r, DRAGON_BRONZE, n=10)
+
+
+def _spiked_club(p, c, rad, spikes=7, y_front=True):
+	"""A tail's scaled club with ivory spikes all round and embers between its scales."""
+	x, y, z = c
+	p.blob((rad * 2, rad * 1.8, rad * 1.9), c, DRAGON_SCALE, segs=(12, 9), grad=(0.1, 0.8))
+	for k in range(spikes):
+		a = k * math.tau / spikes + 0.3
+		base = (x + math.cos(a) * rad * 0.8, y, z + math.sin(a) * rad * 0.8)
+		tip = (x + math.cos(a) * rad * 1.75, y, z + math.sin(a) * rad * 1.75)
+		p.seg(base, tip, rad * 0.26, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))
+	if y_front:
+		p.seg((x, y - rad * 0.7, z), (x + rad * 0.15, y - rad * 1.6, z + rad * 0.1), rad * 0.26, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))
+	for k in range(3):                                                                    # embers showing between the scales
+		a = k * 2.1 + 1.0
+		p.blob((rad * 0.3, rad * 0.2, rad * 0.3), (x + math.cos(a) * rad * 0.45, y - rad * 0.85, z + math.sin(a) * rad * 0.45), EMBER, segs=(6, 4), glow=2.6)
+
+
+def dragonfang_sword():
+	p = Prop("dragonfang_sword", 2601)
+	f = _dax((-0.55, -0.42), 48)
+	_fang(p, f, 0.34, 1.62, 0.13, bend=0.1)
+	_dragon_guard(p, f, 0.3, 0.34)
+	_dragon_grip(p, f, -0.1, 0.26, 0.055)
+	return p.build()
+
+
+def dragonclaw_axe():
+	p = Prop("dragonclaw_axe", 2603)
+	f = _dax((-0.5, -0.5), 60)
+	_dragon_haft(p, f, -0.05, 1.62, 0.058, wraps=((0.0, 0.42),), bands=(0.8, 1.62))
+	_dragon_grip(p, f, 0.0, 0.42, 0.065)
+	_claw_blade(p, f, -1, 1.06, 1.5, 0.78, 0.72)                                           # one great claw
+	p.seg(f(1.42, 0.02), f(1.48, 0.32), 0.07, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))   # a tooth set in the back
+	p.seg(f(1.02, 0.0), f(1.55, 0.0), 0.095, 0.095, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))   # the bronze socket
+	_dragon_gem(p, f(1.3, 0.0, -0.1), 0.05)
+	p.seg(f(1.55, 0.0), f(1.78, 0.0), 0.06, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))    # a bone spike on top
+	return p.build()
+
+
+def dragontooth_dagger():
+	p = Prop("dragontooth_dagger", 2605)
+	f = _dax((-0.45, -0.4), 50)
+	_fang(p, f, 0.3, 1.25, 0.15, bend=0.14, y=0.05, spine=False)
+	_dragon_guard(p, f, 0.26, 0.24, r=0.05)
+	p.seg(f(-0.18, 0.0), f(0.24, 0.0), 0.058, 0.062, BLACKWOOD, sides=8, grad=(0.0, 0.5))  # bound in black leather
+	for k in range(5):
+		s = -0.14 + k * 0.085
+		p.seg(f(s, -0.05, 0.0), f(s + 0.06, 0.05, 0.0), 0.066, 0.066, STONE_DARK, sides=8, grad=(0.3, 0.9))
+	p.seg(f(-0.22, 0.0), f(-0.16, 0.0), 0.075, 0.075, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	p.blob((0.17, 0.15, 0.17), f(-0.3, 0.0), EMBER, segs=(10, 7), grad=(0.0, 0.6), glow=2.4)   # an ember pommel
+	return p.build()
+
+
+def dragonclaw_fists():
+	p = Prop("dragonclaw_fists", 2607)
+	f = _dax((-0.55, -0.45), 42)
+	p.seg(f(0.0, 0.0), f(0.55, 0.0), 0.2, 0.23, DRAGON_SCALE, sides=10, grad=(0.2, 0.9))   # a scaled gauntlet
+	for k in range(4):                                                                    # its scales, overlapping toward the hand
+		s = 0.06 + k * 0.13
+		p.seg(f(s, 0.0), f(s + 0.07, 0.0), 0.245, 0.215, DRAGON_SCALE, sides=10, grad=(0.0, 0.6))
+	for s in (0.0, 0.55):
+		p.seg(f(s - 0.035, 0.0), f(s + 0.035, 0.0), 0.25, 0.25, DRAGON_BRONZE, sides=10, grad=(0.2, 0.9))
+	p.blob((0.52, 0.4, 0.46), f(0.74, 0.0), DRAGON_SCALE, segs=(12, 8), grad=(0.1, 0.8))   # the fist
+	_dragon_gem(p, f(0.7, 0.03, -0.2), 0.065)                                               # an ember on the back of the hand
+	for w in (-0.15, 0.0, 0.15):                                                          # three ivory claws over the knuckles
+		p.blob((0.15, 0.14, 0.15), f(0.92, w, -0.02), DRAGON_BRONZE, segs=(8, 6), grad=(0.2, 0.9))
+		pts = [f(0.9, w * 1.1, -0.04), f(1.18, w * 1.25 + 0.03, -0.05), f(1.44, w * 1.35 - 0.02, -0.05), f(1.62, w * 1.4 - 0.12, -0.04)]
+		_line(p, pts, 0.07, 0.0, DRAGON_BONE, sides=7, grad=(0.0, 0.65))
+		_seam(p, [f(1.0, w * 1.15 - 0.05, -0.1), f(1.25, w * 1.28 - 0.035, -0.09), f(1.45, w * 1.35 - 0.07, -0.07)], swatch=EMBER, r=0.013, glow=2.4)
+	return p.build()
+
+
+def dragontail_flail():
+	p = Prop("dragontail_flail", 2609)
+	f = _dax((-0.6, -0.6), 52)
+	_dragon_haft(p, f, 0.0, 0.7, 0.062, bands=(0.7,))
+	_dragon_grip(p, f, 0.0, 0.42, 0.068)
+	p.blob((0.17, 0.17, 0.17), f(0.74, 0.0), DRAGON_BRONZE, segs=(8, 6), grad=(0.2, 0.9))
+	pts = [(0.76 + k * 0.13, -0.1 * math.sin(k * 0.5)) for k in range(6)]
+	_chain(p, f, pts, r=0.032, link=0.08)
+	e = pts[-1]
+	c = Vector(f(e[0] + 0.12, e[1] - 0.05))
+	p.seg(f(e[0], e[1]), tuple(c), 0.06, 0.12, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))    # the tail's end, capped in bronze
+	d = (c - Vector(f(e[0], e[1]))).normalized()
+	_spiked_club(p, tuple(c + d * 0.3), 0.26)
+	return p.build()
+
+
+def dragonmaw_mace():
+	p = Prop("dragonmaw_mace", 2611)
+	f = _dax((-0.45, -0.6), 60)
+	_dragon_haft(p, f, 0.0, 1.35, 0.062, bands=(0.8, 1.3))
+	_dragon_grip(p, f, 0.0, 0.42, 0.07)
+	S = 1.6
+	_dragon_skull(p, lambda u, v, y=0.0: f(S + v, -u, y), 0.8)
+	return p.build()
+
+
+def dragonclaw_great_axe():
+	p = Prop("dragonclaw_great_axe", 2613)
+	f = _dax((-0.5, -0.7), 62)
+	_dragon_haft(p, f, -0.2, 2.0, 0.065, swatch=DRAGON_BONE, grad=(0.1, 0.8), wraps=((-0.1, 0.45), (0.75, 1.0)), bands=(0.6, 1.15))   # a haft of dragonbone
+	for k in range(4):                                                                    # its knuckled joints
+		p.blob((0.15, 0.14, 0.15), f(0.55 + k * 0.45 if k else 0.55, 0.0), DRAGON_BONE, segs=(8, 6), grad=(0.0, 0.6))
+	_dragon_grip(p, f, -0.1, 0.45, 0.072)
+	for sgn in (1, -1):                                                                   # two claws back to back
+		_claw_blade(p, f, sgn, 1.26, 1.72, 0.8, 0.62)
+	p.seg(f(1.2, 0.0), f(1.78, 0.0), 0.11, 0.1, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	_dragon_gem(p, f(1.48, 0.0, -0.12), 0.06)
+	p.seg(f(1.78, 0.0), f(2.12, 0.0), 0.075, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))
+	return p.build()
+
+
+def dragontail_great_flail():
+	p = Prop("dragontail_great_flail", 2615)
+	f = _dax((-0.75, -0.8), 58)
+	_dragon_haft(p, f, 0.0, 1.35, 0.065, wraps=((0.0, 0.5),), bands=(0.9, 1.35))
+	_dragon_grip(p, f, 0.0, 0.5, 0.072)
+	p.blob((0.18, 0.18, 0.18), f(1.39, 0.0), DRAGON_BRONZE, segs=(8, 6), grad=(0.2, 0.9))
+	links = [(1.42 + k * 0.12, -0.03 * k) for k in range(4)]
+	_chain(p, f, links, r=0.03, link=0.08)
+	s0, w0 = links[-1]
+	cx, cz = f(s0, w0)[0], f(s0, w0)[2]
+	a0 = math.radians(100)
+	ox, oz = cx + 0.08 - 0.55 * math.cos(a0), cz + 0.05 - 0.55 * math.sin(a0)
+	tail = []                                                                             # the whole tail, arcing over and down to the right
+	for k in range(11):
+		t = k / 10
+		a = math.radians(100 - 170 * t)
+		R = 0.55 - 0.12 * t
+		tail.append((ox + R * math.cos(a), 0.0, oz + R * math.sin(a)))
+	p.seg(f(s0, w0), tail[0], 0.07, 0.1, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	_line(p, tail, 0.15, 0.05, DRAGON_SCALE, sides=10, grad=(0.1, 0.8))
+	for k in range(1, 10):                                                                # scale bands and a row of ivory spines along its back
+		a, b = Vector(tail[k - 1]), Vector(tail[k + 1])
+		d = (b - a).normalized()
+		out = Vector((-d.z, 0, d.x))
+		r = 0.15 - 0.1 * k / 10
+		q = Vector(tail[k])
+		p.seg(tuple(q - d * 0.03), tuple(q + d * 0.02), r * 1.15, r * 1.02, DRAGON_SCALE, sides=10, grad=(0.0, 0.6))
+		if k % 2:
+			p.seg(tuple(q + out * r * 0.7), tuple(q + out * (r + 0.16) - d * 0.05), r * 0.35, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))
+		else:
+			p.blob((r * 0.5, r * 0.3, r * 0.5), tuple(q + Vector((0, -r * 0.95, 0))), EMBER, segs=(6, 4), glow=2.4)
+	end = Vector(tail[-1])
+	d = (end - Vector(tail[-2])).normalized()
+	_spiked_club(p, tuple(end + d * 0.12), 0.16, spikes=6)
+	return p.build()
+
+
+def dragonmaw_great_mace():
+	p = Prop("dragonmaw_great_mace", 2617)
+	f = _dax((-0.45, -0.85), 64)
+	_dragon_haft(p, f, -0.15, 1.75, 0.068, wraps=((-0.1, 0.5),), bands=(0.95, 1.4, 1.72))
+	_dragon_grip(p, f, -0.1, 0.5, 0.075)
+	S = 2.05
+	_dragon_skull(p, lambda u, v, y=0.0: f(S + v, -u, y), 0.95, jaw=1.2)
+	for sgn in (1, -1):                                                                   # the skull lashed on with bronze
+		p.seg(f(1.72, 0.0), f(1.9, sgn * 0.2, -0.05), 0.035, 0.03, DRAGON_BRONZE, sides=5)
+	return p.build()
+
+
+def dragonfang_greatsword():
+	p = Prop("dragonfang_greatsword", 2619)
+	f = _dax((-0.6, -0.62), 52)
+	_fang(p, f, 0.5, 2.2, 0.19, bend=0.14, y=0.05)
+	_dragon_guard(p, f, 0.46, 0.46, r=0.065)
+	_dragon_grip(p, f, -0.1, 0.42, 0.062)
+	return p.build()
+
+
+def dragontongue_spear():
+	p = Prop("dragontongue_spear", 2621)
+	f = _dax((-0.55, -0.8), 56)
+	_dragon_haft(p, f, -0.2, 1.5, 0.058, wraps=((0.3, 0.75),), bands=(-0.2, 1.05, 1.46))
+	_dragon_skull(p, lambda u, v, y=0.0: f(1.62 + u, v, y), 0.5, jaw=0.5, horns=1)           # the socket is a dragon's head
+	s0, dw = 1.9, -0.035                                                                  # the forked tongue coming out of its jaws
+	half = [(s0, 0.055), (s0 + 0.32, 0.065), (s0 + 0.58, 0.13), (s0 + 0.92, 0.25), (s0 + 0.7, 0.07), (s0 + 0.54, 0.0)]
+	tongue = half + [(s, -w) for s, w in reversed(half[:-1])]
+	_slab(p, _flat2(f, [(s, w + dw) for s, w in tongue]), -0.04, 0.04, CRIMSON, grad=(0.2, 0.9))
+	for sgn in (1, -1):
+		_ember(p, f, [(s, sgn * w * 0.9 + dw) for s, w in half[:4]], -0.05, r=0.02)
+	p.seg(f(s0 + 0.04, dw, -0.05), f(s0 + 0.45, dw, -0.05), 0.018, 0.008, FLAME, sides=4, glow=2.0)
+	return p.build()
+
+
+def dragonheart_staff():
+	p = Prop("dragonheart_staff", 2623)
+	f = _dax((-0.35, -0.8), 70)
+	pts = [f(s, 0.03 * math.sin(s * 7.0)) for s in [k * 0.16 for k in range(12)]]        # a crooked staff of black wood
+	_line(p, pts, 0.07, 0.055, BLACKWOOD, sides=8, grad=(0.0, 0.55))
+	for s in (0.45, 1.1):                                                                 # knots
+		p.blob((0.14, 0.13, 0.14), f(s, 0.03 * math.sin(s * 7.0)), BLACKWOOD, segs=(8, 5), grad=(0.0, 0.5))
+	_dragon_grip(p, f, 0.55, 0.95, 0.07, pommel=False)
+	p.seg(f(1.72, 0.0), f(1.82, 0.0), 0.1, 0.1, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	c = f(2.12, 0.0)
+	_heart(p, (c[0], -0.02, c[2]), 0.46, EMBER, glow=1.5, grad=(0.3, 1.0))                    # a heart of dragonstone, still warm
+	p.blob((0.14, 0.06, 0.12), (c[0] - 0.1, -0.24, c[2] + 0.1), FLAME, segs=(6, 4), glow=2.6)
+	_seam(p, [(c[0] + 0.05, -0.25, c[2] + 0.12), (c[0] + 0.1, -0.24, c[2] - 0.02), (c[0] + 0.02, -0.22, c[2] - 0.12)], swatch=FLAME, r=0.014, glow=2.6)   # veins of fire
+	for sgn, lean in ((1, 0.0), (-1, 0.0), (1, 0.13), (-1, -0.13)):                        # black wood grown round it like talons
+		y = -0.14 if lean else 0.1
+		cl = [f(1.8, sgn * 0.05, y * 0.3), f(1.95, sgn * 0.25, y), f(2.18, sgn * 0.3 - lean * 0.4, y), f(2.36, sgn * 0.16 - lean * 0.5, y * 0.7),
+			  f(2.42, sgn * 0.02 - lean * 0.3, y * 0.4)]
+		_line(p, cl, 0.055, 0.0, BLACKWOOD, sides=6, grad=(0.0, 0.55))
+	for k in range(3):                                                                    # sparks rising off it
+		p.blob((0.05, 0.05, 0.05), (c[0] - 0.2 + k * 0.2, -0.2, c[2] + 0.42 + (k % 2) * 0.14), GOLD, segs=(5, 3), glow=2.4)
+	return p.build()
+
+
+def dragoneye_wand():
+	p = Prop("dragoneye_wand", 2625)
+	f = _dax((-0.45, -0.45), 50)
+	_line(p, [f(0.3, 0.0), f(0.8, 0.02), f(1.18, 0.0)], 0.05, 0.04, DRAGON_BONE, sides=8, grad=(0.1, 0.7))   # an ivory wand
+	for s in (0.62, 0.95):
+		p.seg(f(s - 0.025, 0.0), f(s + 0.025, 0.0), 0.058, 0.055, DRAGON_BRONZE, sides=8, grad=(0.2, 0.9))
+	_dragon_grip(p, f, 0.0, 0.3, 0.058)
+	p.seg(f(1.14, 0.0), f(1.28, 0.0), 0.06, 0.12, DRAGON_BRONZE, sides=10, grad=(0.2, 0.9))   # a bronze cup
+	c = Vector(f(1.45, 0.0))
+	p.blob((0.4, 0.4, 0.4), tuple(c), EMBER, segs=(14, 10), grad=(0.0, 0.75), glow=1.6)        # the eye
+	cam = CAM_DIR
+	up = Vector((0, 0, 1))
+	up = (up - cam * up.dot(cam)).normalized()
+	pc = c + cam * 0.2
+	p.blob((0.09, 0.09, 0.32), tuple(pc - cam * 0.02), BLACKWOOD, segs=(8, 8), grad=(0.3, 0.8))   # its slit pupil, looking at you
+	p.blob((0.05, 0.03, 0.05), tuple(c + cam * 0.2 + up * 0.08 + Vector((-0.08, 0, 0))), CLOTH_WHITE, segs=(5, 4), glow=1.5)
+	for k in range(3):                                                                    # three claws holding it, lids of scale
+		a = math.radians(30 + k * 120)
+		base = Vector(f(1.28, 0.09 * math.cos(a), 0.09 * math.sin(a)))
+		out = Vector(f(1.42, 0.3 * math.cos(a), 0.3 * math.sin(a)))
+		tip = Vector(f(1.66, 0.19 * math.cos(a), 0.19 * math.sin(a)))
+		_line(p, [tuple(base), tuple(out), tuple(tip)], 0.04, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))
+	return p.build()
+
+
+def dragonwing_bow():
+	p = Prop("dragonwing_bow", 2627)
+	f = _dax((0.0, 0.6), 50)
+	for sgn in (1, -1):                                                                   # two wing-bones, jointed
+		joints = [(sgn * 0.14, 0.02), (sgn * 0.62, 0.2), (sgn * 1.02, 0.22), (sgn * 1.2, 0.08)]
+		for i, (a, b) in enumerate(zip(joints, joints[1:])):
+			r0 = 0.075 - i * 0.02
+			p.seg(f(*a), f(*b), r0, r0 - 0.012, DRAGON_BONE, sides=8, grad=(0.1, 0.8))
+		for j in joints[1:3]:                                                             # knuckles
+			p.blob((0.13, 0.12, 0.13), f(*j), DRAGON_BONE, segs=(8, 6), grad=(0.0, 0.6))
+		tip = joints[-1]
+		p.seg(f(*tip), f(tip[0] + sgn * 0.14, tip[1] - 0.08), 0.035, 0.0, DRAGON_BONE, sides=6, grad=(0.0, 0.6))   # a claw at the tip
+		spur = [joints[1], (sgn * 0.8, 0.56), (sgn * 1.0, 0.74)]                          # a finger bone off the joint, the wing stretched between
+		_line(p, [f(*q) for q in spur], 0.04, 0.012, DRAGON_BONE, sides=6, grad=(0.1, 0.8))
+		mem = [f(*joints[0], 0.01), f(sgn * 0.34, 0.3, 0.01), f(*spur[2], 0.01), f(sgn * 1.08, 0.42, 0.01), f(*joints[2], 0.01), f(*joints[1], 0.01)]
+		p.poly(mem, [(0, 1, 5), (1, 2, 5), (5, 2, 3), (5, 3, 4)], DRAGON_SCALE, grad=(0.2, 0.9))
+		_seam(p, [f(sgn * 0.3, 0.16, -0.01), f(sgn * 0.64, 0.42, -0.01), f(sgn * 0.94, 0.58, -0.01)], swatch=EMBER, r=0.012, glow=2.0)   # an ember vein in the wing
+	_dragon_grip(p, f, -0.15, 0.15, 0.085, pommel=False)
+	_dragon_gem(p, f(0.0, 0.02, -0.1), 0.055)
+	a, b = f(-1.34, 0.0, 0.02), f(1.34, 0.0, 0.02)
+	p.seg(a, b, 0.014, 0.014, HIDE, sides=4, grad=(0.3, 0.9))                               # dragon sinew for a string
+	return p.build()
+
+
+def dragonbone_arrow():
+	p = Prop("dragonbone_arrow", 2629)
+	for k, ang in enumerate((38, 50, 62)):                                                 # a sheaf of three
+		f = _dax((-0.55, -0.5), ang)
+		y = 0.1 - k * 0.1
+		p.seg(f(0.0, 0.0, y), f(1.2, 0.0, y), 0.03, 0.03, WOOD, sides=6, grad=(0.5, 1.0))     # dark shafts
+		head = [(1.18, 0.07), (1.32, 0.09), (1.52, 0.0), (1.32, -0.09), (1.18, -0.07)]      # tipped with a dragonbone shard
+		_slab(p, _flat2(f, head), y - 0.025, y + 0.025, DRAGON_BONE, grad=(0.0, 0.6))
+		_ember(p, f, [(1.28, 0.07), (1.48, 0.005)], y - 0.035, r=0.012, glow=2.2)
+		p.seg(f(1.14, 0.0, y), f(1.2, 0.0, y), 0.045, 0.045, DRAGON_BRONZE, sides=6)
+		for sgn, sw in ((1, DRAGON_SCALE), (-1, EMBER)):                                    # green scale and ember fletching
+			p.poly([f(0.04, 0.0, y), f(0.3, 0.0, y), f(0.26, sgn * 0.11, y), f(0.04, sgn * 0.1, y)], [(0, 1, 2, 3)], sw, grad=(0.1, 0.8))
+		p.seg(f(-0.03, 0.0, y), f(0.02, 0.0, y), 0.04, 0.04, DRAGON_BRONZE, sides=5)
+	return p.build()
+
+
+def _nightmare_sword(name, seed, org, rot, s0, s1, w0, guard, grip, grip_r):
+	p = Prop(name, seed)
+	f = _dax(org, rot)
+	L = s1 - s0
+	top, bot = [], []
+	for k in range(13):                                                                   # a black blade that wavers like a dream
+		t = k / 13
+		wave = math.sin(t * math.pi * 3.5) * w0 * 0.22 * (1 - t)
+		wid = w0 * (1 - t ** 1.6 * 0.85)
+		top.append((s0 + L * t, wid + wave))
+		bot.append((s0 + L * t, -wid + wave))
+	tip = (s1, 0.0)
+	_slab(p, _flat2(f, top + [tip] + list(reversed(bot))), -0.035, 0.035, OBSIDIAN, grad=(0.0, 0.45))
+	for side in (top, bot):                                                               # its edges seeping violet
+		_seam(p, [f(s, w * 0.93, -0.045) for s, w in side[1:]] + [f(tip[0] - 0.03, 0.0, -0.045)], swatch=VIOLET, r=0.02, glow=2.6)
+	fuller = [f(s0 + L * t, math.sin(t * math.pi * 3.5) * w0 * 0.22 * (1 - t), -0.045) for t in (0.05, 0.2, 0.35, 0.5, 0.62)]
+	_seam(p, fuller, swatch=VIOLET, r=0.014, glow=1.6)
+	_swirl(p, lambda x, z, off=0.0: f(s0 + 0.2 * L + x, z, -0.05 - off), (0.0, 0.0), w0 * 0.55, CLOTH_WHITE, turns=1.3, w=0.016, glow=2.0)   # a sleeper's spiral
+	for sgn in (1, -1):                                                                   # a guard of black tendrils curling into spirals
+		_line(p, [f(s0 - 0.02, 0.0), f(s0 + 0.02, sgn * guard * 0.5), f(s0 - 0.04, sgn * guard * 0.9)], 0.05, 0.035, OBSIDIAN, sides=6, grad=(0.0, 0.5))
+		_swirl(p, lambda x, z, off=0.0: f(s0 - 0.04 + x, sgn * guard * 0.9 + z, 0.0), (-0.07, 0.0), 0.11, OBSIDIAN, turns=1.2, w=0.05, sx=sgn)
+		p.blob((0.07, 0.05, 0.07), f(s0 - 0.12, sgn * guard * 0.9, -0.04), VIOLET, segs=(6, 4), glow=2.4)
+	p.seg(f(s0 - grip, 0.0), f(s0, 0.0), grip_r, grip_r * 1.05, VIOLET, sides=8, grad=(0.6, 1.0))   # a violet-black grip
+	for k in range(4):
+		s = s0 - grip + grip * (k + 0.5) / 4
+		p.seg(f(s - 0.02, -0.03), f(s + 0.02, 0.03), grip_r * 1.15, grip_r * 1.15, OBSIDIAN, sides=8, grad=(0.0, 0.5))
+	c = f(s0 - grip - grip_r * 2.2, 0.0)
+	p.blob((grip_r * 3.6, grip_r * 3.2, grip_r * 3.6), c, VIOLET, segs=(10, 8), grad=(0.0, 0.6), glow=2.4)   # a pommel holding a bad dream
+	p.blob((grip_r * 1.2, grip_r * 0.8, grip_r * 1.8), (c[0], c[1] - grip_r * 1.5, c[2]), OBSIDIAN, segs=(6, 5), grad=(0.0, 0.3))
+	for k, (s, w) in enumerate(((0.5, 1.9), (0.75, -1.8), (0.95, 1.5))):                     # motes drifting off it
+		q = f(s0 + L * s, w0 * w, -0.08)
+		p.blob((0.055, 0.04, 0.055), q, CLOTH_WHITE if k == 1 else VIOLET, segs=(6, 4), glow=2.6)
+	return p.build()
+
+
+def sword_of_the_endless_nightmare():
+	return _nightmare_sword("sword_of_the_endless_nightmare", 2631, (-0.55, -0.42), 48, 0.32, 1.62, 0.13, 0.32, 0.36, 0.055)
+
+
+def greatsword_of_the_endless_nightmare():
+	return _nightmare_sword("greatsword_of_the_endless_nightmare", 2633, (-0.62, -0.7), 52, 0.66, 2.3, 0.24, 0.5, 0.78, 0.064)
+
+
+GROVE_UNIQUES = [dragonfang_sword, dragonclaw_axe, dragontooth_dagger, dragonclaw_fists, dragontail_flail, dragonmaw_mace,
+				 dragonclaw_great_axe, dragontail_great_flail, dragonmaw_great_mace, dragonfang_greatsword, dragontongue_spear,
+				 dragonheart_staff, dragoneye_wand, dragonwing_bow, dragonbone_arrow, sword_of_the_endless_nightmare,
+				 greatsword_of_the_endless_nightmare]
+
+
 SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
 								 vial_of_spring_water, leatherwing_charm, coilback_scale_band, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
@@ -11106,7 +11573,7 @@ SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whisker
 									 sun_scarab, hierophants_mask, dawn_tusk_pendant, chitin_plate, scorpion_stinger, queens_stinger,
 									 bleached_bone, salt_crystal, raider_scarf, raider_warhorn, titans_heart, bone_talisman,
 									 river_trout, mud_carp, lagoon_snapper, monsoon_eel, jungle_catfish, rainbow_koi, tattered_boot, troll_tusk,
-									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER + WEST_MARCH + JEWELRY_LADDER}
+									 frog_skin, croc_hide, croc_tooth, elemental_essence, gorraks_crown, heart_of_the_storm, graveljaws_tooth, tide_trunk_charm] + TRADESKILLS + HIGH_TERRACE_ASHFALL + MONSOON_WEST + HANDS_ARMS + DEWSTEP + FORGEHOLD_BURN + PART3_ZONES + STANDING_SKY + AGNAVAR_HEARTH_SMOKEWOOD + SKY_SUMMIT + BONEYARD + BONEYARD_SUMMIT + BAG_QUESTS + BLACKWATER + WEST_MARCH + JEWELRY_LADDER + GROVE_UNIQUES}
 SMALL.update({"emberforged_greaves": iron_greaves, "steel_greaves": iron_greaves,  # drawn legs beat the body part's boots
 			  "cinderscale_leggings": leather_leggings})
 

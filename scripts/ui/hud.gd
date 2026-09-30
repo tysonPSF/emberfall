@@ -11,7 +11,7 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
 [b]Combat[/b]   Left-click to start attacking your target · Q stops · R fires your bow or sling (pull one mob to you) · the ring around the crosshair fills as your next swing comes up · 1-0 and Ctrl+1-0 (or Shift+1-0) your two hotbars (P opens your spellbook: drag spells and actions onto them; click a slot with an item on the cursor to put it there; right-click or drag a slot off to clear it) · C consider (con colors!) · K skills (they rise as you use them)
 [b]Resting[/b]   X sit / stand. Sitting regenerates much faster; moving stands you up.
-[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click an item for details (or to open a bag)
+[b]Loot[/b]   L or double-click a corpse, then L again to take everything · I inventory (its ? button lists the item controls) · B opens or closes all bags, Esc closes them · right-click (Control-click on a Mac) an item for details or to open a bag
 [b]Talk[/b]   E or double-click to hail · click gold words in replies to ask about them
 [b]Chat[/b]   Enter to type (plain text is /say) · / starts a command · /tell name · /ooc · /shout · /who · /help
 [b]Quests[/b]   J your quest journal: what you're on, what each giver said, what's left, what it pays, Share with group (members who can take it up are offered it) and Abandon
@@ -21,9 +21,9 @@ const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow 
 [b]Dying[/b]   You respawn at the obelisk without your gear. Run back and loot your corpse.
 H or the gear button to hide this."""
 
-const BAG_TIPS := """Click to pick up and put down · Ctrl-click takes one from a stack
+const BAG_TIPS := """Click to pick up and put down · Ctrl-click (Cmd-click on a Mac) takes one from a stack
 Shift-click equips (or sells, banks, offers in a trade)
-Right-click for details, or to open a bag · hover a bag to peek inside
+Right-click (or Control-click on a Mac) for details, or to open a bag · hover a bag to peek inside
 Click the ground to drop what you hold"""
 
 const BUY_BUNDLE := 20  # the shop's "Buy 20" button, for ammunition and other small stackables
@@ -2769,7 +2769,9 @@ func _make_slot(place: String, empty_text: String, size := 44) -> Button:
 		if not (ev is InputEventMouseButton and ev.pressed):
 			return
 		var mb := ev as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
+		# a Mac without a mouse right-clicks with Control+click: that opens a bag here, and Command+click splits
+		var mac_right := OS.get_name() == "macOS" and mb.button_index == MOUSE_BUTTON_LEFT and mb.ctrl_pressed
+		if mb.button_index == MOUSE_BUTTON_LEFT and not mac_right:
 			if mb.ctrl_pressed or mb.meta_pressed:
 				World.request_pick_one(player.entity_id, place)  # split a stack, one at a time
 			elif mb.shift_pressed and player.cursor.is_empty():
@@ -2777,7 +2779,7 @@ func _make_slot(place: String, empty_text: String, size := 44) -> Button:
 			else:
 				World.request_click(player.entity_id, place)
 			b.accept_event()
-		elif mb.button_index == MOUSE_BUTTON_RIGHT:
+		elif mb.button_index == MOUSE_BUTTON_RIGHT or mac_right:
 			var e := World._entry_at(player, place)
 			if e.has("contents") and place.begins_with("g:"):
 				_toggle_bag(int(place.get_slice(":", 1)))
@@ -3694,6 +3696,8 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	var it: Dictionary = GameData.item(item_id)
 	var lines: PackedStringArray = [str(it.get("name", item_id))]
 	var flags := PackedStringArray()
+	if it.get("unique", false):
+		flags.append("UNIQUE")  # an Elephant Grove weapon, made for the level it dropped at
 	if it.get("lore", false):
 		flags.append("LORE ITEM")
 	if it.get("no_drop", false):
@@ -3704,6 +3708,8 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	if float(it.get("weight_reduction", 0.0)) > 0.0:
 		wt += "   Lightens what's inside by %d%%" % roundi(float(it["weight_reduction"]) * 100.0)
 	lines.append(wt)
+	if it.get("unique", false) and it.has("desc"):
+		lines.append(str(it["desc"]))
 	if it.has("slot"):
 		lines.append("Slot: %s" % str(it["slot"]).capitalize())
 	if it.has("dmg") and it.has("delay"):

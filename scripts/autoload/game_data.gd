@@ -129,6 +129,8 @@ func item_name(item_id: String) -> String:
 ## ("iron_dagger@fine"), which renames it and scales its damage, armor, hit
 ## points, mana and value by that tier in data/loot.json.
 func item(item_id: String) -> Dictionary:
+	if item_id.contains("~"):
+		return _scaled_item(item_id)
 	var at := item_id.find("@")
 	if at < 0:
 		return items.get(item_id, {})
@@ -190,7 +192,35 @@ func item_weight(item_id: String) -> float:
 
 
 func base_item(item_id: String) -> String:
-	return item_id.get_slice("@", 0)
+	return item_id.get_slice("@", 0).get_slice("~", 0)
+
+
+var _scaled: Dictionary = {}  # "dragonfang_sword~23" -> its stats, built once
+
+
+## A unique that scales with the level it dropped at ("dragonfang_sword~23":
+## Elephant Grove's rare weapons, off named monsters; loot.json "unique"):
+## each "level_scaled" stat is [base, per level] (so damage, strength, mana
+## grow with the level), "value_scaled" [base, growth] its price, and its
+## recommended level is the level itself.
+func _scaled_item(item_id: String) -> Dictionary:
+	if _scaled.has(item_id):
+		return _scaled[item_id]
+	var base: Dictionary = items.get(base_item(item_id), {})
+	if base.is_empty():
+		return base
+	var lvl := maxi(1, int(item_id.get_slice("~", 1)))
+	var out := base.duplicate()
+	var scaled: Dictionary = base.get("level_scaled", {})
+	for stat: String in scaled:
+		out[stat] = maxi(1, roundi(float(scaled[stat][0]) + float(scaled[stat][1]) * lvl))
+	var v: Array = base.get("value_scaled", [0, 1])
+	out["value"] = roundi(float(v[0]) * pow(float(v[1]), lvl))
+	out["rec_level"] = lvl
+	out.erase("level_scaled")
+	out.erase("value_scaled")
+	_scaled[item_id] = out
+	return out
 
 
 ## The quality tier of an item id, or {} for plain items.
@@ -207,7 +237,9 @@ func gear_tiers(equipped: Dictionary) -> Dictionary:
 	var out := {}
 	for slot: String in equipped:
 		var id := str(equipped[slot])
-		if id.contains("@"):
+		if id.contains("~"):
+			out[slot] = "unique"  # an Elephant Grove unique: its own warm glow
+		elif id.contains("@"):
 			out[slot] = id.get_slice("@", 1)
 	return out
 
@@ -216,6 +248,8 @@ func gear_tiers(equipped: Dictionary) -> Dictionary:
 func tier_finish(tier_id: String) -> Dictionary:
 	if tier_id == "":
 		return {}
+	if tier_id == "unique":
+		return loot.get("unique", {}).get("finish", {})
 	for tier: Dictionary in loot.get("quality", {}).get("tiers", []):
 		if str(tier["id"]) == tier_id:
 			return tier.get("finish", {})
@@ -224,6 +258,8 @@ func tier_finish(tier_id: String) -> Dictionary:
 
 ## Display color for an item's name, by quality.
 func item_color(item_id: String) -> Color:
+	if item_id.contains("~"):
+		return Color.html(str(loot.get("unique", {}).get("color", "#ff9a3c")))
 	var tier := quality_tier(item_id)
 	return Color.html(str(tier.get("color", "#e6e0d2")))
 
