@@ -8092,5 +8092,852 @@
     },
     "title": "Fisher",
     "gender": "female"
+  },
+  "sr_channelwatch_ioana": {
+    "name": "Channelwatch Ioana",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Channelwatch, {name}: between the middle and east channels, as far up the delta as Rainhold keeps a fire. Sione's work, the Headman's, Anh's and Cato's, you can hand in here. And ask me about the [rookery].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "toads": "Delta toads, the size of a dog, crowding the rookery rocks. Four of their glands and I'll pay, every time: the apothecaries in Rainhold want them.",
+      "gulmog": "Gulmog the Bellower, the old bull of the rookery. You'll hear him before you see him. Bring me his throat-sac.",
+      "rookery": "Far north-east, where the channels start, a rock rookery full of [toads]. And the bull, [Gulmog]."
+    },
+    "title": "Reedwatch",
+    "gender": "female"
+  },
+  "sr_sutler_femi": {
+    "name": "Sutler Femi",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Reedwatch",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "sr_channelwatch_ioana_guard": {
+    "name": "a Rainhold Reedwatch",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Reedwatch"
+  },
+  "sr_hut_guard_0": {
+    "name": "a Rainhold Reedwatch",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Reedwatch"
+  },
+  "sr_hut_guard_1": {
+    "name": "a Rainhold Reedwatch",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "rainhold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Reedwatch"
+  },
+  "sr_herbalist_ama": {
+    "name": "Herbalist Ama",
+    "level": 30,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Mind the mangroves, {name}. The roots walk here: [lurkers], and the old one they call [Tanglefoot].",
+      "unknown": "I gather, {name}. Ask Sione.",
+      "lurkers": "The lurkers are the mangroves themselves, walking. Four of their roots and I'll pay you, as often as you bring them: they make the best poultice in the Monsoon.",
+      "tanglefoot": "Tanglefoot is the oldest of them. His heartroot is black as tar. Bring it to me."
+    },
+    "title": "Herbalist",
+    "gender": "female"
+  },
+  "bg_glasswalker_hrafn": {
+    "name": "Glasswalker Hrafn",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Glassfire Camp, {name}: the Forge's only fire on the glass. Solveig's work, Uzma's, Farid's and Captain Ragna's, you can hand it all in here, and save the walk to Forgehold. Ask me about the [borers].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "borers": "West, a Forge watch the glass swallowed whole, men and all. The [borers] are digging them out again, and the [Sable Borer] is the worst.",
+      "sable borer": "The Sable Borer, black as the glass it eats. It dug the watchmen out of the glass to get at them. Bring me its mandible."
+    },
+    "title": "Forgehold Scouts"
+  },
+  "bg_sutler_greta": {
+    "name": "Sutler Greta",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Forgehold Scouts",
+    "merchant": {
+      "sells": [
+        "iron_tipped_arrow",
+        "windcutter_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "bg_glasswalker_hrafn_guard": {
+    "name": "a Forgehold sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Forgehold Scouts"
+  },
+  "bg_hut_guard_0": {
+    "name": "a Forgehold sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Forgehold Scouts"
+  },
+  "bg_hut_guard_1": {
+    "name": "a Forgehold sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Forgehold Scouts"
+  },
+  "bg_glassdiviner_tovi": {
+    "name": "Glass-Diviner Tovi",
+    "level": 30,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "You see the lights, {name}? The garden grows them. [Wisps], and something brighter at the heart: [Prism-Heart].",
+      "unknown": "I read the glass. Hrafn reads the rest.",
+      "wisps": "The wisps are light the glass caught and won't let go. Four of their prisms and I'll pay, every time.",
+      "prism-heart": "Prism-Heart, the brightest of them, at the garden's pool. Bring me its core, and the garden will go dark."
+    },
+    "title": "Glass-Diviner"
+  },
+  "sw_woodrunner_kasia": {
+    "name": "Woodrunner Kasia",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Emberfall Camp, {name}: the woodwardens' fire in the heart of the wood. Sefa's work, Bartek's, Liesl's, Ondine's, hand it in here. And ask me about the [hollow].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "shamblers": "In the north-west hollow the fungus walks. Four of their spore sacs and I'll pay, every time: burned, they keep the moths off.",
+      "rotcap": "The Rotcap is the mother of the hollow, tall as a treant. Bring me its gills.",
+      "hollow": "North-west, a hollow where the fungus grows taller than the trees: [shamblers], and the one they grow from, the [Rotcap]."
+    },
+    "title": "Woodwardens",
+    "gender": "female"
+  },
+  "sw_sutler_piet": {
+    "name": "Sutler Piet",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Woodwardens",
+    "merchant": {
+      "sells": [
+        "iron_tipped_arrow",
+        "windcutter_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "sw_woodrunner_kasia_guard": {
+    "name": "a Smokewood warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Woodwardens"
+  },
+  "sw_hut_guard_0": {
+    "name": "a Smokewood warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Woodwardens"
+  },
+  "sw_hut_guard_1": {
+    "name": "a Smokewood warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Woodwardens"
+  },
+  "sw_hut_guard_2": {
+    "name": "a Smokewood warden",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Woodwardens"
+  },
+  "sw_charcoal_burner_ottokar": {
+    "name": "Charcoal-Burner Ottokar",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "My kilns, {name}. We burned charcoal here for the Forge until the [imps] moved into them. And [Old Bellows].",
+      "unknown": "I burn wood, {name}. Vard sells what I burn.",
+      "imps": "Imps, nesting in my kilns and keeping them hot. Four of their cinders and I'll pay, again and again.",
+      "old bellows": "Old Bellows, the big one. He sleeps in the middle kiln and blows it white-hot. Bring me his horn."
+    },
+    "title": "Charcoal-Burner"
+  },
+  "ss_moorrunner_edric": {
+    "name": "Moorrunner Edric",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Westwatch, {name}: the Moorwatch's fire past the great circle. Aldous's work, Wenna's, Idris's and Agathe's, you can hand it in here. And ask me about the [kite hill].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "harriers": "Harriers took the kite hill when the kite-flyers left it. Four of their flight-feathers and I'll pay, every time: Galehold fletches with them.",
+      "talonmere": "Old Talonmere, the hen of the hill. She took a kite-flyer once, kite and all. Bring me her talon.",
+      "kite hill": "North-east, where Galehold's kite-flyers used to fly. The [harriers] took it, and [Old Talonmere] rules it."
+    },
+    "title": "Moorwatch"
+  },
+  "ss_sutler_brisa": {
+    "name": "Sutler Brisa",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Moorwatch",
+    "merchant": {
+      "sells": [
+        "windcutter_arrow",
+        "iron_tipped_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "ss_moorrunner_edric_guard": {
+    "name": "a Moorwatch ranger",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Moorwatch"
+  },
+  "ss_hut_guard_0": {
+    "name": "a Moorwatch ranger",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Moorwatch"
+  },
+  "ss_hut_guard_1": {
+    "name": "a Moorwatch ranger",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "galehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Moorwatch"
+  },
+  "ss_stonereader_mabyn": {
+    "name": "Stone-Reader Mabyn",
+    "level": 30,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The cairns are waking, {name}. Old kings under the moor, and their [wights] with them. The oldest is the [Cairn-King].",
+      "unknown": "I read the stones. Idris cuts them.",
+      "wights": "The wights of the cairns walk at the ring. Four of their bones, and I'll lay them back, and pay you for every four.",
+      "cairn-king": "The Cairn-King. His torc is the last gold on the moor. Bring it to me, and the cairns will sleep."
+    },
+    "title": "Stone-Reader",
+    "gender": "female"
   }
 }

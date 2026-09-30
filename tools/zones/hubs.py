@@ -681,8 +681,228 @@ def reedmere(z):
     return L, N, S, [camp]
 
 
+# ================================================================ batch 3: the Silted Reach, Blackglass, Smokewood, Stonesail
+
+def _t(rep_name, drop_plural, trophy_phrase, kw_mob, kw_named, rep_ready="Good. That's four.", rep_done="Four fewer out there.",
+       n_ready="That's it. That's the one.", n_done="It's over, then. Thank you.", n_reward="Take this. You've earned it."):
+    return {"rep_name": rep_name, "drop_plural": drop_plural, "trophy_phrase": trophy_phrase, "rep_ready": rep_ready, "rep_done": rep_done,
+            "n_ready": n_ready, "n_done": n_done, "n_reward": n_reward, "kw_mob": kw_mob, "kw_named": kw_named}
+
+
+def silted_reach(z):
+    F = "rainhold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "sr_channelwatch_ioana", "Channelwatch Ioana", "Reedwatch", "ranger_class",
+        "The Channelwatch, {name}: between the middle and east channels, as far up the delta as Rainhold keeps a fire. Sione's work, the Headman's, Anh's and Cato's, you can hand in here. And ask me about the [rookery].",
+        "sr_sutler_femi", "Sutler Femi", ["crude_arrow", "iron_tipped_arrow", "sling_stone", "loaf_of_bread", "roast_meat", "water_flask"],
+        "a Rainhold Reedwatch", "Reedwatch", ["whisker_barbel_q", "river_kings_pearl_crown_q", "mud_charm_q", "shell_mask_q", "serpent_scale_q",
+        "coilmothers_fang_q", "smugglers_token_q", "blackwaters_ledger_q"], {}, gender="female", at=[40, -160], face=[40, -60])
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "sr", "a Rainhold Reedwatch", "Reedwatch", [(1, 120, 1), (2, 90, -1)])
+    L += hL
+    N += hN
+    dia = place(z, F, {"at": [290, -290], "giver": "sr_channelwatch_ioana",
+        "props": [("mud_dam", 0, 14, 20, "box"), ("crag_rock", -16, -10, 0, "box"), ("crag_rock", 18, -14, 90, "box")],
+        "mob": {"id": "sr_delta_toad", "name": "a delta toad", "base": "delta_serpent", "level": (24, 26), "model": "mire_toad",
+                "drop": ("sr_croaker_gland", "Croaker Gland", 12, "wallow_toad_skin"), "extra": {"verb": ["slam", "slams"], "scale": 1.4}},
+        "named": {"id": "sr_gulmog", "name": "Gulmog the Bellower", "base": "delta_serpent", "level": (29, 29), "model": "mire_toad",
+                  "trophy": ("sr_gulmogs_throat_sac", "Gulmog's Throat-Sac", "mire_toad_skin"), "extra": {"verb": ["slam", "slams"], "scale": 2.3}},
+        "reward": ("sr_channelwatch_gloves", {"name": "Channelwatch Gloves", "slot": "hands", "ac": 11, "agi": 5, "sta": 4, "hp": 30, "value": 10000, "rec_level": 27,
+                   "no_drop": True, "lore": True, "wear": "leather_gloves", "icon": "serpentscale_gloves"}),
+        "keywords": ("toads", "gulmog"), "xp": (4500, 500, 10000, 1200), "faction": {F: 8},
+        "text": _t("Croaker Glands", "croaker glands", "Gulmog's throat-sac",
+                   "Delta toads, the size of a dog, crowding the rookery rocks. Four of their glands and I'll pay, every time: the apothecaries in Rainhold want them.",
+                   "Gulmog the Bellower, the old bull of the rookery. You'll hear him before you see him. Bring me his throat-sac.",
+                   rep_ready="Glands! Mind, they're slippery.", rep_done="Four quieter rocks.", n_ready="His throat-sac. The rookery can hear itself think.", n_done="No more bellowing on the channels.",
+                   n_reward="Channelwatch gloves. They grip wet rope.")}, L, N, S)
+    bw.NPCS["sr_channelwatch_ioana"]["dialogue"].update(dia)
+    bw.NPCS["sr_channelwatch_ioana"]["dialogue"]["rookery"] = "Far north-east, where the channels start, a rock rookery full of [toads]. And the bull, [Gulmog]."
+    mg = [-290, 40]
+    ama = camp_npc("sr_herbalist_ama", "Herbalist Ama", F, "mage", {
+        "hail": "Mind the mangroves, {name}. The roots walk here: [lurkers], and the old one they call [Tanglefoot].",
+        "unknown": "I gather, {name}. Ask Sione."}, "Herbalist", [mg[0] + 60, mg[1] + 50], mg, L, N, gender="female")
+    dia = place(z, F, {"at": mg, "giver": ama,
+        "props": [("sunken_barge", 0, 16, 60, "box"), ("rowboat", -14, -12, 200, "box")],
+        "mob": {"id": "sr_mangrove_lurker", "name": "a mangrove lurker", "base": "whiskerfolk", "level": (25, 27), "model": "bog_lurker",
+                "drop": ("sr_mangrove_root", "Walking Mangrove Root", 12, "ember_heartwood"), "extra": {"verb": ["lash", "lashes"], "faction": "wildlife", "social": False}},
+        "named": {"id": "sr_old_tanglefoot", "name": "Old Tanglefoot", "base": "whiskerfolk", "level": (29, 29), "model": "bog_lurker",
+                  "trophy": ("sr_tanglefoots_heartroot", "Old Tanglefoot's Heartroot", "ember_heartwood"), "extra": {"verb": ["lash", "lashes"], "faction": "wildlife", "scale": 1.8}},
+        "reward": ("sr_mangrove_circlet", {"name": "Mangrove Circlet", "slot": "head", "ac": 12, "wis": 6, "int": 6, "hp": 30, "mana": 50, "value": 10000, "rec_level": 28,
+                   "no_drop": True, "lore": True, "wear": "cloth_cap", "icon": "pearl_crown_of_the_river"}),
+        "keywords": ("lurkers", "tanglefoot"), "xp": (4500, 500, 10000, 1200), "faction": {F: 8},
+        "text": _t("Mangrove Roots", "walking mangrove roots", "Old Tanglefoot's heartroot",
+                   "The lurkers are the mangroves themselves, walking. Four of their roots and I'll pay you, as often as you bring them: they make the best poultice in the Monsoon.",
+                   "Tanglefoot is the oldest of them. His heartroot is black as tar. Bring it to me.",
+                   rep_ready="Roots. Still twitching.", rep_done="Four more poultices.", n_ready="His heartroot. It's gone still.", n_done="The mangroves are only trees again.",
+                   n_reward="Woven from the first roots I ever cut. It keeps your head clear.")}, L, N, S)
+    bw.NPCS[ama]["dialogue"].update(dia)
+    L.append(lm("watchtower", [-230, 240], face=[-150, 200]))
+    return L, N, S, [camp] + huts
+
+
+def blackglass(z):
+    F = "forgehold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "bg_glasswalker_hrafn", "Glasswalker Hrafn", "Forgehold Scouts", "ranger_class",
+        "Glassfire Camp, {name}: the Forge's only fire on the glass. Solveig's work, Uzma's, Farid's and Captain Ragna's, you can hand it all in here, and save the walk to Forgehold. Ask me about the [borers].",
+        "bg_sutler_greta", "Sutler Greta", ["iron_tipped_arrow", "windcutter_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Forgehold sentry", "Forgehold Scouts", ["drake_scales", "glass_cores", "colossus_heart", "vitrax_eye", "glass_silk", "shardmothers_crown",
+        "glassbound_insignia", "aldrics_banner"], {}, at=[-40, 40], face=[40, 80])
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "bg", "a Forgehold sentry", "Forgehold Scouts", [(0, 200, 1), (0, 520, -1)])
+    L += hL
+    N += hN
+    tomb = [-330, -20]
+    dia = place(z, F, {"at": tomb, "giver": "bg_glasswalker_hrafn",
+        "props": [("glass_entombed", 0, 0, 30, "box"), ("glass_entombed", 16, 10, 200, "box"), ("broken_pillar", -14, 12, 80, "mesh"), ("glass_shards", 10, -16, 0, "none")],
+        "mob": {"id": "bg_obsidian_borer", "name": "an obsidian borer", "base": "glass_spider", "level": (32, 34), "model": "fire_beetle",
+                "drop": ("bg_borer_carapace", "Obsidian Borer Carapace", 20, "obsidian_scale"), "extra": {"verb": ["bite", "bites"], "scale": 1.5, "color": "#2a2a33"}},
+        "named": {"id": "bg_sable_borer", "name": "the Sable Borer", "base": "glass_spider", "level": (36, 36), "model": "fire_beetle",
+                  "trophy": ("bg_sable_mandible", "The Sable Borer's Mandible", "chitin_plate"), "extra": {"verb": ["bite", "bites"], "scale": 2.6, "color": "#1a1a22"}},
+        "reward": ("bg_glassfire_leggings", {"name": "Glassfire Leggings", "slot": "legs", "ac": 20, "sta": 6, "agi": 5, "hp": 50, "value": 21000, "rec_level": 34,
+                   "no_drop": True, "lore": True, "wear": "leather_leggings", "icon": "obsidian_scale_leggings"}),
+        "keywords": ("borers", "sable borer"), "xp": (6200, 760, 15000, 2100), "faction": {F: 8},
+        "text": _t("Borer Carapaces", "obsidian borer carapaces", "the Sable Borer's mandible",
+                   "Beetles that eat into the glass, around the entombed watch in the west. Four of their carapaces and the Forge pays, every time.",
+                   "The Sable Borer, black as the glass it eats. It dug the watchmen out of the glass to get at them. Bring me its mandible.",
+                   rep_ready="Carapaces. Sharp as the glass.", rep_done="Four borers the watch won't hear.", n_ready="Its mandible. The watch can lie still.", n_done="The glass keeps its dead now.",
+                   n_reward="Leggings cut from its shell. Nothing on the glass will cut through them.")}, L, N, S)
+    bw.NPCS["bg_glasswalker_hrafn"]["dialogue"].update(dia)
+    bw.NPCS["bg_glasswalker_hrafn"]["dialogue"]["borers"] = "West, a Forge watch the glass swallowed whole, men and all. The [borers] are digging them out again, and the [Sable Borer] is the worst."
+    gd = [300, 120]
+    tovi = camp_npc("bg_glassdiviner_tovi", "Glass-Diviner Tovi", F, "mage", {
+        "hail": "You see the lights, {name}? The garden grows them. [Wisps], and something brighter at the heart: [Prism-Heart].",
+        "unknown": "I read the glass. Hrafn reads the rest."}, "Glass-Diviner", [gd[0] - 60, gd[1] + 50], gd, L, N)
+    dia = place(z, F, {"at": gd, "giver": tovi,
+        "props": [("glass_pool", 0, 0, 0, "none"), ("obsidian_spire", 18, -10, 40, "box"), ("obsidian_spire", -16, 14, 140, "box"), ("glass_shards", -10, -18, 0, "none")],
+        "mob": {"id": "bg_glass_wisp", "name": "a glass wisp", "base": "glass_golem", "level": (32, 34), "model": "mirage_wisp",
+                "drop": ("bg_wisp_prism", "Wisp Prism", 20, "glass_core"), "extra": {"verb": ["sear", "sears"]}},
+        "named": {"id": "bg_prism_heart", "name": "Prism-Heart", "base": "glass_golem", "level": (36, 36), "model": "mirage_wisp",
+                  "trophy": ("bg_prism_hearts_core", "Prism-Heart's Core", "salt_crystal"), "extra": {"verb": ["sear", "sears"], "scale": 1.8}},
+        "reward": ("bg_diviners_lens", {"name": "Diviner's Lens", "slot": "neck", "ac": 7, "int": 7, "wis": 7, "mana": 70, "hp": 40, "value": 21000, "rec_level": 35,
+                   "no_drop": True, "lore": True, "icon": "glasswrights_lenses"}),
+        "keywords": ("wisps", "prism-heart"), "xp": (6200, 760, 15000, 2100), "faction": {F: 8},
+        "text": _t("Wisp Prisms", "wisp prisms", "Prism-Heart's core",
+                   "The wisps are light the glass caught and won't let go. Four of their prisms and I'll pay, every time.",
+                   "Prism-Heart, the brightest of them, at the garden's pool. Bring me its core, and the garden will go dark.",
+                   rep_ready="Prisms! Hold one to the sun.", rep_done="Four lights put out.", n_ready="Its core. Still warm.", n_done="The garden's dark. Good.",
+                   n_reward="Ground from a prism. You'll see the glass differently now.")}, L, N, S)
+    bw.NPCS[tovi]["dialogue"].update(dia)
+    L.append(lm("watchtower", [200, 240], face=[120, 200]))
+    return L, N, S, [camp] + huts
+
+
+def smokewood(z):
+    F = "forgehold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, 0, 480, -1, "sw_woodrunner_kasia", "Woodrunner Kasia", "Woodwardens", "ranger_class",
+        "Emberfall Camp, {name}: the woodwardens' fire in the heart of the wood. Sefa's work, Bartek's, Liesl's, Ondine's, hand it in here. And ask me about the [hollow].",
+        "sw_sutler_piet", "Sutler Piet", ["iron_tipped_arrow", "windcutter_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Smokewood warden", "Woodwardens", ["ember_heartwood_q", "emberhearts_heart_q", "smoke_pelt_q", "ashen_antler_q", "soot_mask_fragment_q",
+        "kolts_antlered_mask_q", "fire_moth_dust_q", "moth_queens_wing_q"], {}, gender="female")
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "sw", "a Smokewood warden", "Woodwardens", [(0, 200, 1), (1, 150, 1), (2, 150, -1)])
+    L += hL
+    N += hN
+    fh = [-200, -280]
+    dia = place(z, F, {"at": fh, "giver": "sw_woodrunner_kasia",
+        "props": [("giant_fungus", 0, 0, 0, "box"), ("giant_fungus", 16, 12, 90, "box"), ("giant_fungus", -18, 8, 200, "box"), ("glowing_roots", 6, -16, 0, "none")],
+        "mob": {"id": "sw_spore_shambler", "name": "a spore-shambler", "base": "walking_fungus", "level": (33, 35), "model": "walking_fungus",
+                "drop": ("sw_spore_sac", "Spore Sac", 24, "glowcap"), "extra": {"verb": ["slam", "slams"]}},
+        "named": {"id": "sw_rotcap", "name": "the Rotcap", "base": "walking_fungus", "level": (38, 38), "model": "walking_fungus",
+                  "trophy": ("sw_rotcaps_gills", "The Rotcap's Gills", "glowcap"), "extra": {"verb": ["slam", "slams"], "scale": 2.2}},
+        "reward": ("sw_emberfall_hood", {"name": "Emberfall Hood", "slot": "head", "ac": 13, "int": 8, "wis": 8, "mana": 80, "hp": 40, "value": 23000, "rec_level": 37,
+                   "no_drop": True, "lore": True, "wear": "cloth_cap", "icon": "sootveil_hood"}),
+        "keywords": ("shamblers", "rotcap"), "xp": (8775, 975, 19500, 2340), "faction": {F: 8},
+        "text": _t("Spore Sacs", "spore sacs", "the Rotcap's gills",
+                   "In the north-west hollow the fungus walks. Four of their spore sacs and I'll pay, every time: burned, they keep the moths off.",
+                   "The Rotcap is the mother of the hollow, tall as a treant. Bring me its gills.",
+                   rep_ready="Sacs. Don't squeeze them.", rep_done="Four fewer shambling about.", n_ready="Its gills. The hollow will wither.", n_done="The moths will have to go elsewhere.",
+                   n_reward="The hood I wear in the hollow. The spores can't touch you in it.")}, L, N, S)
+    bw.NPCS["sw_woodrunner_kasia"]["dialogue"].update(dia)
+    bw.NPCS["sw_woodrunner_kasia"]["dialogue"]["hollow"] = "North-west, a hollow where the fungus grows taller than the trees: [shamblers], and the one they grow from, the [Rotcap]."
+    kc = [260, -250]
+    ottokar = camp_npc("sw_charcoal_burner_ottokar", "Charcoal-Burner Ottokar", F, "barbarian", {
+        "hail": "My kilns, {name}. We burned charcoal here for the Forge until the [imps] moved into them. And [Old Bellows].",
+        "unknown": "I burn wood, {name}. Vard sells what I burn."}, "Charcoal-Burner", [kc[0] - 60, kc[1] + 50], kc, L, N, weapon="axe_1handed")
+    dia = place(z, F, {"at": kc, "giver": ottokar,
+        "props": [("charcoal_kiln", 0, 0, 0, "box"), ("charcoal_kiln", 18, 10, 60, "box"), ("charcoal_kiln", -16, 12, 200, "box"), ("ember_treant_stump", 10, -18, 0, "box")],
+        "mob": {"id": "sw_kiln_imp", "name": "a kiln imp", "base": "fire_moth", "level": (34, 36), "model": "fire_imp",
+                "drop": ("sw_kiln_cinder", "Kiln Cinder", 24, "giants_coal"), "extra": {"verb": ["claw", "claws"], "shape": "humanoid"}},
+        "named": {"id": "sw_old_bellows", "name": "Old Bellows", "base": "fire_moth", "level": (38, 38), "model": "imp_lord",
+                  "trophy": ("sw_bellows_horn", "Old Bellows's Horn", "imp_horn"), "extra": {"verb": ["claw", "claws"], "shape": "humanoid"}},
+        "reward": ("sw_kilnkeepers_gloves", {"name": "Kilnkeeper's Gloves", "slot": "hands", "ac": 14, "str": 6, "sta": 5, "hp": 45, "value": 23000, "rec_level": 37,
+                   "no_drop": True, "lore": True, "wear": "leather_gloves", "icon": "smokehide_gloves"}),
+        "keywords": ("imps", "old bellows"), "xp": (8775, 975, 19500, 2340), "faction": {F: 8},
+        "text": _t("Kiln Cinders", "kiln cinders", "Old Bellows's horn",
+                   "Imps, nesting in my kilns and keeping them hot. Four of their cinders and I'll pay, again and again.",
+                   "Old Bellows, the big one. He sleeps in the middle kiln and blows it white-hot. Bring me his horn.",
+                   rep_ready="Cinders. Still glowing.", rep_done="Four fewer in my kilns.", n_ready="His horn. The kiln's cooling already.", n_done="We'll burn charcoal again by the first frost.",
+                   n_reward="My kiln gloves. They've held hotter things than him.")}, L, N, S)
+    bw.NPCS[ottokar]["dialogue"].update(dia)
+    L.append(lm("watchtower", [200, 220], face=[120, 180]))
+    return L, N, S, [camp] + huts
+
+
+def stonesail(z):
+    F = "galehold"
+    L, N, S = [], [], []
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "ss_moorrunner_edric", "Moorrunner Edric", "Moorwatch", "ranger_class",
+        "The Westwatch, {name}: the Moorwatch's fire past the great circle. Aldous's work, Wenna's, Idris's and Agathe's, you can hand it in here. And ask me about the [kite hill].",
+        "ss_sutler_brisa", "Sutler Brisa", ["windcutter_arrow", "iron_tipped_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "a Moorwatch ranger", "Moorwatch", ["singing_stone_chip_q", "orlas_tuning_stone_q", "moor_hide_q", "skathes_barbed_tail_q", "rune_shard_q",
+        "thrums_heartstone_q", "hags_hair_knot_q", "mirewhistles_ladle_q"], {}, at=[-100, 40], face=[0, 0])
+    L += cL
+    N += cN
+    hL, hN, huts = huts_on(z, F, "ss", "a Moorwatch ranger", "Moorwatch", [(0, 180, 1), (1, 120, -1)])
+    L += hL
+    N += hN
+    kh = [240, -280]
+    dia = place(z, F, {"at": kh, "giver": "ss_moorrunner_edric",
+        "props": [("kite_pole", 0, 0, 0, "box"), ("kite_pole", 14, 10, 0, "box"), ("banner_pole", -12, 12, 0, "box"), ("crag_rock", 16, -14, 30, "box")],
+        "mob": {"id": "ss_moor_harrier", "name": "a moor harrier", "base": "moor_wolf", "level": (37, 39), "model": "giant_eagle",
+                "drop": ("ss_harrier_feather", "Harrier Flight-Feather", 28, "firebird_feather"), "extra": {"verb": ["rake", "rakes"], "scale": 0.8}},
+        "named": {"id": "ss_old_talonmere", "name": "Old Talonmere", "base": "moor_wolf", "level": (42, 42), "model": "giant_eagle",
+                  "trophy": ("ss_talonmeres_talon", "Old Talonmere's Talon", "firebird_feather"), "extra": {"verb": ["rake", "rakes"], "scale": 1.4}},
+        "reward": ("ss_westwatch_cloak", {"name": "Westwatch Cloak", "slot": "arms", "ac": 15, "sta": 7, "agi": 6, "hp": 60, "value": 26000, "rec_level": 41,
+                   "no_drop": True, "lore": True, "wear": "leather_sleeves", "icon": "moorhide_cloak"}),
+        "keywords": ("harriers", "talonmere"), "xp": (10350, 1150, 23000, 2760), "faction": {F: 8},
+        "text": _t("Harrier Feathers", "harrier flight-feathers", "Old Talonmere's talon",
+                   "Harriers took the kite hill when the kite-flyers left it. Four of their flight-feathers and I'll pay, every time: Galehold fletches with them.",
+                   "Old Talonmere, the hen of the hill. She took a kite-flyer once, kite and all. Bring me her talon.",
+                   rep_ready="Feathers. Long ones.", rep_done="Four fewer over the hill.", n_ready="Her talon. The kites can fly again.", n_done="Galehold's flyers will be back by spring.",
+                   n_reward="A Westwatch cloak. It's kept the moor wind off better riders than me.")}, L, N, S)
+    bw.NPCS["ss_moorrunner_edric"]["dialogue"].update(dia)
+    bw.NPCS["ss_moorrunner_edric"]["dialogue"]["kite hill"] = "North-east, where Galehold's kite-flyers used to fly. The [harriers] took it, and [Old Talonmere] rules it."
+    cn = [-330, -40]
+    mabyn = camp_npc("ss_stonereader_mabyn", "Stone-Reader Mabyn", F, "mage", {
+        "hail": "The cairns are waking, {name}. Old kings under the moor, and their [wights] with them. The oldest is the [Cairn-King].",
+        "unknown": "I read the stones. Idris cuts them."}, "Stone-Reader", [cn[0] + 60, cn[1] + 50], cn, L, N, gender="female")
+    L += ring_of("rune_menhir", cn, 18, 5)
+    dia = place(z, F, {"at": cn, "giver": mabyn,
+        "mob": {"id": "ss_cairn_wight", "name": "a cairn wight", "base": "stone_singer", "level": (38, 40), "model": "barrow_wight",
+                "drop": ("ss_cairn_bone", "Cairn Bone", 28, "bleached_bone"), "extra": {"verb": ["strike", "strikes"], "faction": "undead"}},
+        "named": {"id": "ss_cairn_king", "name": "the Cairn-King", "base": "stone_singer", "level": (42, 42), "model": "barrow_lord",
+                  "trophy": ("ss_cairn_kings_torc", "The Cairn-King's Torc", "bone_charm"), "extra": {"verb": ["strike", "strikes"], "faction": "undead"}},
+        "reward": ("ss_stonereaders_torque", {"name": "Stone-Reader's Torque", "slot": "neck", "ac": 9, "int": 8, "wis": 8, "mana": 80, "hp": 50, "value": 26000, "rec_level": 41,
+                   "no_drop": True, "lore": True, "icon": "singers_torque"}),
+        "keywords": ("wights", "cairn-king"), "xp": (10350, 1150, 23000, 2760), "faction": {F: 8},
+        "text": _t("Cairn Bones", "cairn bones", "the Cairn-King's torc",
+                   "The wights of the cairns walk at the ring. Four of their bones, and I'll lay them back, and pay you for every four.",
+                   "The Cairn-King. His torc is the last gold on the moor. Bring it to me, and the cairns will sleep.",
+                   rep_ready="Bones. I'll lay them back tonight.", rep_done="Four wights at rest.", n_ready="His torc. Heavy with years.", n_done="The cairns are quiet.",
+                   n_reward="A reader's torque. The stones speak louder to whoever wears it.")}, L, N, S)
+    bw.NPCS[mabyn]["dialogue"].update(dia)
+    L.append(lm("watchtower", [200, 220], face=[120, 180]))
+    return L, N, S, [camp] + huts
+
+
 ZONES = {"thornwood": thornwood, "the_long_grass": long_grass, "the_bleach": bleach,
-         "the_burn": the_burn, "mirror_flats": mirror_flats, "ivory_field": ivory_field, "reedmere": reedmere}
+         "the_burn": the_burn, "mirror_flats": mirror_flats, "ivory_field": ivory_field, "reedmere": reedmere,
+         "silted_reach": silted_reach, "blackglass": blackglass, "smokewood": smokewood, "stonesail": stonesail}
 
 
 def check_spot(zid, z, edges, p, what):

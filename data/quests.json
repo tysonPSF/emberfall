@@ -739,7 +739,10 @@
     "first_complete_text": "Leggings of their scales, as I promised.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "cindermaws_heart": {
     "name": "The Heart of Cindermaw",
@@ -1485,7 +1488,10 @@
     "first_complete_text": "My lenses. You'll see better than I do.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "colossus_heart": {
     "name": "The Colossus's Heart",
@@ -1505,7 +1511,10 @@
     "first_complete_text": "I set a piece of it in a pendant for you.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "vitrax_eye": {
     "name": "The Wyrm's Eye",
@@ -1525,7 +1534,10 @@
     "first_complete_text": "Set in a ring. Don't stare into it.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "glass_silk": {
     "name": "Glass Spider Silk",
@@ -1546,7 +1558,10 @@
     "first_complete_text": "Gloves woven from it.",
     "faction": {
       "forgehold": 6
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "shardmothers_crown": {
     "name": "The Shardmother's Crown",
@@ -1566,7 +1581,10 @@
     "first_complete_text": "I made a blade of her fang and one shard. It still bites.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "glassbound_insignia": {
     "name": "Glassbound Insignia",
@@ -1587,7 +1605,10 @@
     "first_complete_text": "Greaves from our armory.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "aldrics_banner": {
     "name": "Aldric's Banner",
@@ -1607,7 +1628,10 @@
     "first_complete_text": "His blade. He'd want it used.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "bg_glasswalker_hrafn"
+    ]
   },
   "stonebrow_tusk_q": {
     "name": "Stonebrow Tusks",
@@ -1985,7 +2009,10 @@
     "faction": {
       "rainhold": 8,
       "whiskerfolk": -10
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "river_kings_pearl_crown_q": {
     "name": "The River King's Pearl Crown",
@@ -2006,7 +2033,10 @@
     "faction": {
       "rainhold": 30,
       "whiskerfolk": -30
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "mud_charm_q": {
     "name": "Mud Charms",
@@ -2028,7 +2058,10 @@
     "faction": {
       "rainhold": 8,
       "mudfolk": -10
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "shell_mask_q": {
     "name": "Gloop's Shell Mask",
@@ -2049,7 +2082,10 @@
     "faction": {
       "rainhold": 30,
       "mudfolk": -30
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "serpent_scale_q": {
     "name": "Delta Serpent Scales",
@@ -2070,7 +2106,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "rainhold": 8
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "coilmothers_fang_q": {
     "name": "Coilmother's Fang",
@@ -2090,7 +2129,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "rainhold": 30
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "smugglers_token_q": {
     "name": "Smuggler's Tokens",
@@ -2111,7 +2153,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "rainhold": 8
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "blackwaters_ledger_q": {
     "name": "Blackwater's Ledger",
@@ -2131,7 +2176,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "rainhold": 30
-    }
+    },
+    "also_taken_by": [
+      "sr_channelwatch_ioana"
+    ]
   },
   "reaver_armring_q": {
     "name": "Reaver Arm-rings",
@@ -2848,7 +2896,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "emberhearts_heart_q": {
     "name": "Old Emberheart's Heart",
@@ -2868,7 +2919,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "smoke_pelt_q": {
     "name": "Smoke Pelts",
@@ -2889,7 +2943,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "ashen_antler_q": {
     "name": "The Ashen Stag's Antler",
@@ -2909,7 +2966,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "soot_mask_fragment_q": {
     "name": "Soot-mask Fragments",
@@ -2931,7 +2991,10 @@
     "faction": {
       "forgehold": 8,
       "sootmask": -10
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "kolts_antlered_mask_q": {
     "name": "Kolt's Antlered Mask",
@@ -2952,7 +3015,10 @@
     "faction": {
       "forgehold": 30,
       "sootmask": -30
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "fire_moth_dust_q": {
     "name": "Pinches Of Fire Moth Dust",
@@ -2973,7 +3039,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "forgehold": 8
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "moth_queens_wing_q": {
     "name": "The Moth Queen's Wing",
@@ -2993,7 +3062,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "forgehold": 30
-    }
+    },
+    "also_taken_by": [
+      "sw_woodrunner_kasia"
+    ]
   },
   "singing_stone_chip_q": {
     "name": "Singing Stone Chips",
@@ -3015,7 +3087,10 @@
     "faction": {
       "galehold": 8,
       "stone_singers": -10
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "orlas_tuning_stone_q": {
     "name": "Orla's Tuning Stone",
@@ -3036,7 +3111,10 @@
     "faction": {
       "galehold": 30,
       "stone_singers": -30
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "moor_hide_q": {
     "name": "Moor Beast Hides",
@@ -3057,7 +3135,10 @@
     "first_complete_text": "And this, as I promised.",
     "faction": {
       "galehold": 8
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "skathes_barbed_tail_q": {
     "name": "Skathe's Barbed Tail",
@@ -3077,7 +3158,10 @@
     "first_complete_text": "Take this. You've earned it.",
     "faction": {
       "galehold": 30
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "rune_shard_q": {
     "name": "Rune Shards",
@@ -3099,7 +3183,10 @@
     "faction": {
       "galehold": 8,
       "moor_stones": -10
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "thrums_heartstone_q": {
     "name": "Old Thrum's Heartstone",
@@ -3120,7 +3207,10 @@
     "faction": {
       "galehold": 30,
       "moor_stones": -30
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "hags_hair_knot_q": {
     "name": "Hag's Hair-knots",
@@ -3142,7 +3232,10 @@
     "faction": {
       "galehold": 8,
       "bog_hags": -10
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "mirewhistles_ladle_q": {
     "name": "Granny Mirewhistle's Ladle",
@@ -3163,7 +3256,10 @@
     "faction": {
       "galehold": 30,
       "bog_hags": -30
-    }
+    },
+    "also_taken_by": [
+      "ss_moorrunner_edric"
+    ]
   },
   "tempest_mote_q": {
     "name": "Tempest Motes",
@@ -5767,5 +5863,317 @@
     "first_reward_item": "rm_weirkeepers_ring",
     "first_complete_text": "My mother's ring. She kept this weir before me.",
     "start_keyword": "eel-mother"
+  },
+  "sr_delta_toad_q": {
+    "name": "Croaker Glands",
+    "giver": "sr_channelwatch_ioana",
+    "wants": {
+      "sr_croaker_gland": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Croaker Glands. Bring Channelwatch Ioana four croaker glands.",
+    "ready_text": "Glands! Mind, they're slippery.",
+    "complete_text": "Four quieter rocks.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "toads",
+    "repeatable": true
+  },
+  "sr_gulmog_q": {
+    "name": "Gulmog the Bellower",
+    "giver": "sr_channelwatch_ioana",
+    "wants": {
+      "sr_gulmogs_throat_sac": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "accept_text": "You have taken on a task: Gulmog the Bellower. Bring Channelwatch Ioana Gulmog's throat-sac.",
+    "ready_text": "His throat-sac. The rookery can hear itself think.",
+    "complete_text": "No more bellowing on the channels.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "sr_channelwatch_gloves",
+    "first_complete_text": "Channelwatch gloves. They grip wet rope.",
+    "start_keyword": "gulmog"
+  },
+  "sr_mangrove_lurker_q": {
+    "name": "Mangrove Roots",
+    "giver": "sr_herbalist_ama",
+    "wants": {
+      "sr_mangrove_root": 4
+    },
+    "reward": {
+      "xp": 4500,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Mangrove Roots. Bring Herbalist Ama four walking mangrove roots.",
+    "ready_text": "Roots. Still twitching.",
+    "complete_text": "Four more poultices.",
+    "faction": {
+      "rainhold": 8
+    },
+    "start_keyword": "lurkers",
+    "repeatable": true
+  },
+  "sr_old_tanglefoot_q": {
+    "name": "Old Tanglefoot",
+    "giver": "sr_herbalist_ama",
+    "wants": {
+      "sr_tanglefoots_heartroot": 1
+    },
+    "reward": {
+      "xp": 10000,
+      "coin": 1200
+    },
+    "accept_text": "You have taken on a task: Old Tanglefoot. Bring Herbalist Ama Old Tanglefoot's heartroot.",
+    "ready_text": "His heartroot. It's gone still.",
+    "complete_text": "The mangroves are only trees again.",
+    "faction": {
+      "rainhold": 24
+    },
+    "first_reward_item": "sr_mangrove_circlet",
+    "first_complete_text": "Woven from the first roots I ever cut. It keeps your head clear.",
+    "start_keyword": "tanglefoot"
+  },
+  "bg_obsidian_borer_q": {
+    "name": "Borer Carapaces",
+    "giver": "bg_glasswalker_hrafn",
+    "wants": {
+      "bg_borer_carapace": 4
+    },
+    "reward": {
+      "xp": 6200,
+      "coin": 760
+    },
+    "accept_text": "You have taken on a task: Borer Carapaces. Bring Glasswalker Hrafn four obsidian borer carapaces.",
+    "ready_text": "Carapaces. Sharp as the glass.",
+    "complete_text": "Four borers the watch won't hear.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "borers",
+    "repeatable": true
+  },
+  "bg_sable_borer_q": {
+    "name": "The Sable Borer",
+    "giver": "bg_glasswalker_hrafn",
+    "wants": {
+      "bg_sable_mandible": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "accept_text": "You have taken on a task: The Sable Borer. Bring Glasswalker Hrafn the Sable Borer's mandible.",
+    "ready_text": "Its mandible. The watch can lie still.",
+    "complete_text": "The glass keeps its dead now.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "bg_glassfire_leggings",
+    "first_complete_text": "Leggings cut from its shell. Nothing on the glass will cut through them.",
+    "start_keyword": "sable borer"
+  },
+  "bg_glass_wisp_q": {
+    "name": "Wisp Prisms",
+    "giver": "bg_glassdiviner_tovi",
+    "wants": {
+      "bg_wisp_prism": 4
+    },
+    "reward": {
+      "xp": 6200,
+      "coin": 760
+    },
+    "accept_text": "You have taken on a task: Wisp Prisms. Bring Glass-Diviner Tovi four wisp prisms.",
+    "ready_text": "Prisms! Hold one to the sun.",
+    "complete_text": "Four lights put out.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "wisps",
+    "repeatable": true
+  },
+  "bg_prism_heart_q": {
+    "name": "Prism-Heart",
+    "giver": "bg_glassdiviner_tovi",
+    "wants": {
+      "bg_prism_hearts_core": 1
+    },
+    "reward": {
+      "xp": 15000,
+      "coin": 2100
+    },
+    "accept_text": "You have taken on a task: Prism-Heart. Bring Glass-Diviner Tovi Prism-Heart's core.",
+    "ready_text": "Its core. Still warm.",
+    "complete_text": "The garden's dark. Good.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "bg_diviners_lens",
+    "first_complete_text": "Ground from a prism. You'll see the glass differently now.",
+    "start_keyword": "prism-heart"
+  },
+  "sw_spore_shambler_q": {
+    "name": "Spore Sacs",
+    "giver": "sw_woodrunner_kasia",
+    "wants": {
+      "sw_spore_sac": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "accept_text": "You have taken on a task: Spore Sacs. Bring Woodrunner Kasia four spore sacs.",
+    "ready_text": "Sacs. Don't squeeze them.",
+    "complete_text": "Four fewer shambling about.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "shamblers",
+    "repeatable": true
+  },
+  "sw_rotcap_q": {
+    "name": "The Rotcap",
+    "giver": "sw_woodrunner_kasia",
+    "wants": {
+      "sw_rotcaps_gills": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "accept_text": "You have taken on a task: The Rotcap. Bring Woodrunner Kasia the Rotcap's gills.",
+    "ready_text": "Its gills. The hollow will wither.",
+    "complete_text": "The moths will have to go elsewhere.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "sw_emberfall_hood",
+    "first_complete_text": "The hood I wear in the hollow. The spores can't touch you in it.",
+    "start_keyword": "rotcap"
+  },
+  "sw_kiln_imp_q": {
+    "name": "Kiln Cinders",
+    "giver": "sw_charcoal_burner_ottokar",
+    "wants": {
+      "sw_kiln_cinder": 4
+    },
+    "reward": {
+      "xp": 8775,
+      "coin": 975
+    },
+    "accept_text": "You have taken on a task: Kiln Cinders. Bring Charcoal-Burner Ottokar four kiln cinders.",
+    "ready_text": "Cinders. Still glowing.",
+    "complete_text": "Four fewer in my kilns.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "imps",
+    "repeatable": true
+  },
+  "sw_old_bellows_q": {
+    "name": "Old Bellows",
+    "giver": "sw_charcoal_burner_ottokar",
+    "wants": {
+      "sw_bellows_horn": 1
+    },
+    "reward": {
+      "xp": 19500,
+      "coin": 2340
+    },
+    "accept_text": "You have taken on a task: Old Bellows. Bring Charcoal-Burner Ottokar Old Bellows's horn.",
+    "ready_text": "His horn. The kiln's cooling already.",
+    "complete_text": "We'll burn charcoal again by the first frost.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "sw_kilnkeepers_gloves",
+    "first_complete_text": "My kiln gloves. They've held hotter things than him.",
+    "start_keyword": "old bellows"
+  },
+  "ss_moor_harrier_q": {
+    "name": "Harrier Feathers",
+    "giver": "ss_moorrunner_edric",
+    "wants": {
+      "ss_harrier_feather": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "accept_text": "You have taken on a task: Harrier Feathers. Bring Moorrunner Edric four harrier flight-feathers.",
+    "ready_text": "Feathers. Long ones.",
+    "complete_text": "Four fewer over the hill.",
+    "faction": {
+      "galehold": 8
+    },
+    "start_keyword": "harriers",
+    "repeatable": true
+  },
+  "ss_old_talonmere_q": {
+    "name": "Old Talonmere",
+    "giver": "ss_moorrunner_edric",
+    "wants": {
+      "ss_talonmeres_talon": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "accept_text": "You have taken on a task: Old Talonmere. Bring Moorrunner Edric Old Talonmere's talon.",
+    "ready_text": "Her talon. The kites can fly again.",
+    "complete_text": "Galehold's flyers will be back by spring.",
+    "faction": {
+      "galehold": 24
+    },
+    "first_reward_item": "ss_westwatch_cloak",
+    "first_complete_text": "A Westwatch cloak. It's kept the moor wind off better riders than me.",
+    "start_keyword": "talonmere"
+  },
+  "ss_cairn_wight_q": {
+    "name": "Cairn Bones",
+    "giver": "ss_stonereader_mabyn",
+    "wants": {
+      "ss_cairn_bone": 4
+    },
+    "reward": {
+      "xp": 10350,
+      "coin": 1150
+    },
+    "accept_text": "You have taken on a task: Cairn Bones. Bring Stone-Reader Mabyn four cairn bones.",
+    "ready_text": "Bones. I'll lay them back tonight.",
+    "complete_text": "Four wights at rest.",
+    "faction": {
+      "galehold": 8
+    },
+    "start_keyword": "wights",
+    "repeatable": true
+  },
+  "ss_cairn_king_q": {
+    "name": "The Cairn-King",
+    "giver": "ss_stonereader_mabyn",
+    "wants": {
+      "ss_cairn_kings_torc": 1
+    },
+    "reward": {
+      "xp": 23000,
+      "coin": 2760
+    },
+    "accept_text": "You have taken on a task: The Cairn-King. Bring Stone-Reader Mabyn the Cairn-King's torc.",
+    "ready_text": "His torc. Heavy with years.",
+    "complete_text": "The cairns are quiet.",
+    "faction": {
+      "galehold": 24
+    },
+    "first_reward_item": "ss_stonereaders_torque",
+    "first_complete_text": "A reader's torque. The stones speak louder to whoever wears it.",
+    "start_keyword": "cairn-king"
   }
 }

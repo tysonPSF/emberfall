@@ -129,6 +129,7 @@ const SECTIONS := [
 	["named_scaling", "greenmoor"],
 	["hubs_pilot", "thornwood"],
 	["hubs_1024", "the_burn"],
+	["hubs_768a", "silted_reach"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8846,6 +8847,18 @@ func _t_hubs_1024() -> void:
 			["if_starving_shade", "if_hollow_mahout", "if_marrow_beetle", "if_marrow_queen"], "if_pathfinder_anselm", "ivory_shard_q"],
 			["reedmere", "rm", {"rm_reedwatcher_achebe": ["rm_drowned_ringer_q", "rm_bellwarden_q"], "rm_fisher_makena": ["rm_weir_eel_q", "rm_eel_mother_q"]},
 			["rm_drowned_ringer", "rm_bellwarden", "rm_weir_eel", "rm_eel_mother"], "rm_reedwatcher_achebe", "pondkin_fetishes"]])
+
+
+## And the first four 768 m zones (hubs.py batch 3).
+func _t_hubs_768a() -> void:
+	await _hubs_zones([["silted_reach", "sr", {"sr_channelwatch_ioana": ["sr_delta_toad_q", "sr_gulmog_q"], "sr_herbalist_ama": ["sr_mangrove_lurker_q", "sr_old_tanglefoot_q"]},
+			["sr_delta_toad", "sr_gulmog", "sr_mangrove_lurker", "sr_old_tanglefoot"], "sr_channelwatch_ioana", "whisker_barbel_q"],
+			["blackglass", "bg", {"bg_glasswalker_hrafn": ["bg_obsidian_borer_q", "bg_sable_borer_q"], "bg_glassdiviner_tovi": ["bg_glass_wisp_q", "bg_prism_heart_q"]},
+			["bg_obsidian_borer", "bg_sable_borer", "bg_glass_wisp", "bg_prism_heart"], "bg_glasswalker_hrafn", "drake_scales"],
+			["smokewood", "sw", {"sw_woodrunner_kasia": ["sw_spore_shambler_q", "sw_rotcap_q"], "sw_charcoal_burner_ottokar": ["sw_kiln_imp_q", "sw_old_bellows_q"]},
+			["sw_spore_shambler", "sw_rotcap", "sw_kiln_imp", "sw_old_bellows"], "sw_woodrunner_kasia", "smoke_pelt_q"],
+			["stonesail", "ss", {"ss_moorrunner_edric": ["ss_moor_harrier_q", "ss_old_talonmere_q"], "ss_stonereader_mabyn": ["ss_cairn_wight_q", "ss_cairn_king_q"]},
+			["ss_moor_harrier", "ss_old_talonmere", "ss_cairn_wight", "ss_cairn_king"], "ss_moorrunner_edric", "moor_hide_q"]])
 
 
 func _hubs_zones(legs: Array) -> void:
