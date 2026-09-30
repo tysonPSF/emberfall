@@ -8835,6 +8835,9 @@ func _t_zone_outlines() -> void:
 		var d := GameData.load_zone(id)
 		var z := Zone.new()
 		z.half = float(d.get("size", 384)) * 0.5
+		var ext: Array = d.get("extent", [z.half * 2.0, z.half * 2.0])
+		z.half_x = float(ext[0]) * 0.5
+		z.half_z = float(ext[1]) * 0.5
 		z._outline = outlines[id]
 		var pts: Array = [[Vector2(d.get("bind_point", [0, 0])[0], d.get("bind_point", [0, 0])[1]), "bind point"]]
 		for n: Dictionary in d.get("npcs", []):
@@ -8845,7 +8848,7 @@ func _t_zone_outlines() -> void:
 			pts.append([at, "arrival"])
 		for pt: Array in pts:
 			var now := z.edge_depth(pt[0].x, pt[0].y)
-			var square := maxf(absf(pt[0].x), absf(pt[0].y)) - (z.half - 28.0)  # a pass's signpost, a city's wall stood in the ring already
+			var square := maxf(absf(pt[0].x) - (z.half_x - 28.0), absf(pt[0].y) - (z.half_z - 28.0))  # a pass's signpost, a city's wall stood in the ring already
 			if now > -8.0 and now > square + 0.5:
 				buried += 1
 				print("zone_outlines:   %s: %s at %s is under a ridge (%.1f)" % [id, pt[1], pt[0], now])
@@ -8853,7 +8856,7 @@ func _t_zone_outlines() -> void:
 	print("zone_outlines: %d outlined zones, %d things under a ridge" % [outlines.size(), buried])
 	var hud: Hud = main.hud
 	World.time_override = 12.0
-	for zone_id: String in ["greenmoor", "thornwood", "harrowfield", "the_long_grass", "stonesail"]:
+	for zone_id: String in ["greenmoor", "thornwood", "harrowfield", "the_long_grass", "stonesail", "stormcut_gorge"]:
 		while main._changing_zone:
 			await _wait(0.25)
 		var started := Time.get_ticks_msec()
@@ -8890,14 +8893,17 @@ func _t_zone_outlines() -> void:
 		var lowest := 999.0
 		var along := -z.half + 4.0
 		while along < z.half - 4.0:
-			for side: Array in [[Vector2(along, 0), Vector2(0, -1)], [Vector2(along, 0), Vector2(0, 1)], [Vector2(0, along), Vector2(1, 0)], [Vector2(0, along), Vector2(-1, 0)]]:
+			for side: Array in [[Vector2(along, 0), Vector2(0, -1), z.half_x, z.half_z], [Vector2(along, 0), Vector2(0, 1), z.half_x, z.half_z],
+					[Vector2(0, along), Vector2(1, 0), z.half_z, z.half_x], [Vector2(0, along), Vector2(-1, 0), z.half_z, z.half_x]]:
+				if absf(along) > float(side[2]) - 4.0:  # past the end of a shorter side
+					continue
 				var out: Vector2 = side[1]
-				var at: Vector2 = side[0] + out * (z.half - 1.0)
+				var at: Vector2 = side[0] + out * (float(side[3]) - 1.0)
 				var walked := 0
-				while z.edge_depth(at.x, at.y) > 0.0 and walked < int(z.half):  # in to the foot (a corner's other side may hold it all the way)
+				while z.edge_depth(at.x, at.y) > 0.0 and walked < int(side[3]):  # in to the foot (a corner's other side may hold it all the way)
 					at -= out
 					walked += 1
-				if walked >= int(z.half) or z._pass_factor(at.x, at.y) < 1.0:
+				if walked >= int(side[3]) or z._pass_factor(at.x, at.y) < 1.0:
 					continue
 				var up := Vector2(z.edge_depth(at.x + 0.5, at.y) - z.edge_depth(at.x - 0.5, at.y), z.edge_depth(at.x, at.y + 0.5) - z.edge_depth(at.x, at.y - 0.5)).normalized()  # into the mountains, the steepest way
 				var worst := 99.0
@@ -8935,7 +8941,8 @@ func _t_zone_outlines() -> void:
 			await _wait(1.2)
 			await _shot("9outline_%s_%s" % [zone_id, "north" if dir.y < 0 else "east"])
 	# the range between Greenmoor and Thornwood from both sides of the pass
-	for view: Array in [["greenmoor", Vector2(-40, -120), Vector2(-40, -400)], ["thornwood", Vector2(40, 400), Vector2(40, 900)]]:
+	for view: Array in [["greenmoor", Vector2(-40, -120), Vector2(-40, -400)], ["thornwood", Vector2(40, 400), Vector2(40, 900)],
+			["stormcut_gorge", Vector2(60, 330), Vector2(20, -400)], ["stormcut_gorge", Vector2(-20, -300), Vector2(20, 400)]]:
 		while main._changing_zone:
 			await _wait(0.25)
 		World.zone_change.emit(p, view[0], view[1], view[2])
@@ -8951,7 +8958,7 @@ func _t_zone_outlines() -> void:
 		p.zoom = 9.0
 		p.pitch = -0.1
 		await _wait(1.5)
-		await _shot("9outline_border_%s" % view[0])
+		await _shot("9outline_border_%s_%d" % [view[0], int(view[1].y)])
 	World.time_override = -1.0
 
 

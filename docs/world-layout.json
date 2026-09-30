@@ -434,7 +434,7 @@
     18,
     22
    ],
-   "size": 448,
+   "size": 1024,
    "cell": [
     -2,
     1
@@ -442,7 +442,11 @@
    "kind": "water",
    "built": true,
    "existing": true,
-   "reached": "foot"
+   "reached": "foot",
+   "extent": [
+    448,
+    1024
+   ]
   },
   {
    "id": "cinderpass",

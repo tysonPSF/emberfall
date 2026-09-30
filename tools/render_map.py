@@ -24,8 +24,11 @@ def hexa(c, a):
     r, g, b = (int(c[i:i+2], 16) / 255 for i in (0, 2, 4))
     return (r, g, b, a)
 
-def side(z):
-    return 0.30 + 0.52 * (z['size'] - 224) / (512 - 224)
+def side(z, axis=None):
+    """A zone's box side in cells, from its size in meters (224 m -> 0.30, 1024 m -> 0.86);
+    axis 0 or 1 gives its east-west or north-south side for a zone longer one way."""
+    m = z['size'] if axis is None else z.get('extent', [z['size']] * 2)[axis]
+    return 0.30 + 0.56 * max(0.0, (m - 224) / (1024 - 224)) ** 0.7
 
 def at(z):
     return tuple(z['cell']) if z['cell'] else BERTH[z['id']]
@@ -39,8 +42,9 @@ def at(z):
 for l in LINKS:
     a, b = ZONES[l['a']], ZONES[l['b']]
     x1, y1 = at(a); x2, y2 = at(b)
-    ha, hb = side(a) / 2, side(b) / 2
-    if x1 == x2:                               # a north-south border
+    ns = x1 == x2
+    ha, hb = side(a, 1 if ns else 0) / 2, side(b, 1 if ns else 0) / 2
+    if ns:                                     # a north-south border
         lo, hi = (y1 + ha, y2 - hb) if y2 > y1 else (y1 - ha, y2 + hb)
         xs, ys = [x1, x2], [lo, hi]
     else:                                      # east-west
@@ -58,7 +62,8 @@ for z in ZONES.values():
     off = z['cell'] is None
     acc = AREAS[z['area']]['accent']
     s = side(z)                                          # real metres, scaled
-    ax.add_patch(FancyBboxPatch((gx - s / 2, gy - s / 2), s, s,
+    sx, sy = side(z, 0), side(z, 1)                      # a canyon is long and narrow
+    ax.add_patch(FancyBboxPatch((gx - sx / 2, gy - sy / 2), sx, sy,
                  boxstyle='round,pad=0.018,rounding_size=0.05',
                  linewidth=2.4 if z['existing'] else 1.2,
                  linestyle=(0, (4, 3)) if off else 'solid',
@@ -66,8 +71,8 @@ for z in ZONES.values():
                  facecolor=hexa(acc, 0.20 if not z['existing'] else 0.34), zorder=2))
     lo, hi = z['levels']
     band = 'sanctuary' if z['kind'] == 'sanctuary' else ('city' if z['kind'] == 'city' else f'{lo}–{hi}')
-    tight = s < 0.42                                  # a city is too small to label inside
-    ty = gy - s / 2 - 0.085 if tight else gy + 0.075
+    tight = min(sx, sy) < 0.42                        # a city is too small to label inside
+    ty = gy - sy / 2 - 0.085 if tight else gy + 0.075
     ax.text(gx, ty, z['name'], ha='center', va='center', color=INK,
             fontsize=9.6, fontweight='bold', zorder=3)
     ax.text(gx, ty - 0.115 if tight else gy - 0.085, band, ha='center', va='center',

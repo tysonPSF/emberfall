@@ -243,14 +243,8 @@ def stormcut_gorge():
         if yaw != 180:  # a cliff behind the side falls to spill off (the south one has the mountains)
             back = -1 if yaw == 90 else 1
             L.append(prop("mesa", [pos[0] + back * 13, pos[1]], collide="mesh", yaw=(pos[1] * 7) % 360))
-    # the canyon walls: a line of mesas (20 m across, 11 high) down both sides and across the south, crags in the gaps,
-    # open where the roads come through (west and east at z 0) and where the falls spill
-    for side in (-1, 1):
-        for z in range(-190, 200, 34):
-            if abs(z) < 34 or (side == -1 and abs(z + 70) < 20) or (side == 1 and abs(z - 110) < 20):
-                continue
-            x = side * (186 + (z * 7) % 9)
-            L.append(prop("mesa" if (z // 34) % 2 == 0 else "crag_rock", [x, z], collide="mesh", yaw=(z * 37) % 360))
+    # the canyon walls down both sides are laid by gorge_walls once the gorge has its full length;
+    # a line of mesas and crags across the south here
     for x in range(-150, 170, 36):
         if abs(x - 40) < 22:
             continue  # the south falls
@@ -380,6 +374,22 @@ def factions():
     open(path, "w").write(t2)
 
 
+def gorge_walls(z):
+    """The canyon walls: a line of mesas (20 m across, 11 high) down both sides, crags in the gaps,
+    the whole length of the gorge (laid after it's stretched, so they stand as close as ever),
+    open where the roads come through (west and east at z 0) and where the side falls spill."""
+    hz = z.get("extent", [z["size"]] * 2)[1] / 2
+    falls = [(l["pos"][0], l["pos"][1]) for l in z["landmarks"] if l.get("id") == "waterfall" and abs(l["pos"][0]) > 150]
+    out = []
+    for side in (-1, 1):
+        for zz in range(-int(hz - 34), int(hz - 24), 34):
+            if abs(zz) < 34 or any(fx * side > 0 and abs(zz - fz) < 20 for fx, fz in falls):
+                continue
+            x = side * (186 + (zz * 7) % 9)
+            out.append(prop("mesa" if (zz // 34) % 2 == 0 else "crag_rock", [x, zz], collide="mesh", yaw=(zz * 37) % 360))
+    return [l for l in out if l]
+
+
 AUTHORED = {"broken_march": 448, "stormcut_gorge": 448}  # drawn at these sizes; a bigger layout size stretches them (blackwater.AUTHORED)
 
 
@@ -389,7 +399,9 @@ def main():
     zones = {"broken_march": broken_march(), "stormcut_gorge": stormcut_gorge()}
     import spawn_fill  # the empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
     import scale_zone
-    scale_zone.grow(zones, AUTHORED, {zid: bw.ZONES[zid]["size"] for zid in zones})
+    scale_zone.grow(zones, AUTHORED, {zid: bw.layout_size(zid) for zid in zones})
+    zones["stormcut_gorge"]["landmarks"] += gorge_walls(zones["stormcut_gorge"])
+    bw.BUILDING.difference_update(AUTHORED)  # stretched now: anything written from here on (Reedmere's pass) sees their real size
     known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **bw.MOBS)
     for zid, z in zones.items():
         z["spawns"] += spawn_fill.fill(z, known, zid)

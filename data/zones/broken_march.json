@@ -77,11 +77,11 @@
       ],
       "to": "stormcut_gorge",
       "arrive": [
-        -199.0,
+        -199,
         0
       ],
       "arrive_face": [
-        -159.0,
+        -159,
         0
       ]
     },

@@ -85,18 +85,27 @@ AUTHORED = {"murkhold": 224, "the_wallow": 384, "duskwood": 384, "duskhold": 224
 BUILDING = set()  # the zones this run writes: their borders are drawn at their authored size
 
 
-def half(zid):
-    return (AUTHORED[zid] if zid in BUILDING else ZONES[zid]["size"]) / 2
+def half(zid, edge="north"):
+    """Half the zone across from `edge`: north and south edges lie half its north-south extent out."""
+    if zid in BUILDING:
+        return AUTHORED[zid] / 2
+    ext = ZONES[zid].get("extent", [ZONES[zid]["size"]] * 2)
+    return ext[1 if edge in ("north", "south") else 0] / 2
+
+
+def layout_size(zid):
+    """The layout's size for zid: [east-west, north-south] for a zone longer one way."""
+    return ZONES[zid].get("extent", ZONES[zid]["size"])
 
 
 def edge_pass(zid, edge, k=0):
-    h = half(zid)
+    h = half(zid, edge)
     return {"north": [k, -h, 9], "south": [k, h, 9], "east": [h, k, 9], "west": [-h, k, 9]}[edge]
 
 
 def arrive_in(zid, edge, k=0):
     """Where you appear coming into zid through its `edge`, and where you face."""
-    h = half(zid)
+    h = half(zid, edge)
     city = ZONES[zid]["kind"] == "city"
     depth = CITY_DEPTH.get(zid, {}).get(edge, 66) if city else 25
     inward = {"north": (0, 1), "south": (0, -1), "east": (-1, 0), "west": (1, 0)}[edge]
@@ -107,7 +116,7 @@ def arrive_in(zid, edge, k=0):
 
 
 def zone_line(zid, edge, to, to_edge, k=0):
-    h = half(zid)
+    h = half(zid, edge)
     inset = CITY_INSET if ZONES[zid]["kind"] == "city" else 11
     pos = {"north": [k, -(h - inset)], "south": [k, h - inset], "east": [h - inset, k], "west": [-(h - inset), k]}[edge]
     size = [18, 8] if edge in ("north", "south") else [8, 18]
@@ -928,7 +937,8 @@ def main():
     import spawn_fill  # the wilderness's empty ground gets monsters like its neighbors' (tools/zones/spawn_fill.py)
     known = dict(json.load(open(f"{ROOT}/data/mobs.json")), **MOBS)
     import scale_zone
-    scale_zone.grow(zones, AUTHORED, {zid: ZONES[zid]["size"] for zid in zones})
+    scale_zone.grow(zones, AUTHORED, {zid: layout_size(zid) for zid in zones})
+    BUILDING.difference_update(zones)  # stretched now: anything written from here on (Rainhold's gate) sees their real size
     for zid in ("the_wallow", "duskwood", "the_rotfen"):
         zones[zid]["spawns"] += spawn_fill.fill(zones[zid], known, zid)
     for zid, z in zones.items():

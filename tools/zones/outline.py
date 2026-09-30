@@ -102,46 +102,66 @@ def keep_clear(z, arrivals):
     return pts
 
 
-def _limits(z, half, arrivals):
+def halves(z):
+    """Half a zone east to west and north to south: its "extent" [x, z], else its square size."""
+    size = float(z.get("size", 384))
+    ext = z.get("extent", [size, size])
+    return float(ext[0]) * 0.5, float(ext[1]) * 0.5
+
+
+def side_geometry(hx, hz):
+    """Each side's half length (along it) and the distance of its foot from the middle."""
+    return {"n": (hx, hz - FOOT), "s": (hx, hz - FOOT), "e": (hz, hx - FOOT), "w": (hz, hx - FOOT)}
+
+
+def side_of(x, y, hx, hz):
+    """Which side a point on the edge (a pass, a zone line) is on, and where along it: the nearer side (Zone.is_north_south)."""
+    if hz - abs(y) <= hx - abs(x):
+        return ("s" if y > 0 else "n"), x
+    return ("e" if x > 0 else "w"), y
+
+
+def _count(side_half):
+    return int(round(2 * side_half / STEP)) + 1
+
+
+def _limits(z, hx, hz, arrivals):
     """The deepest each side's inset may go at each sample, from what's placed."""
-    base = half - FOOT
-    count = int(round(2 * half / STEP)) + 1
-    lim = {s: [base * 0.45] * count for s in SIDES}
+    geo = side_geometry(hx, hz)
+    lim = {s: [geo[s][1] * 0.45] * _count(geo[s][0]) for s in SIDES}
     for (x, y, r) in keep_clear(z, arrivals):
         r += CLEAR
         # how far in from each side's foot line the point stands
-        room = {"n": base + y, "s": base - y, "e": base - x, "w": base + x}
+        room = {"n": geo["n"][1] + y, "s": geo["s"][1] - y, "e": geo["e"][1] - x, "w": geo["w"][1] + x}
         along = {"n": x, "s": x, "e": y, "w": y}
         for s in SIDES:
-            if room[s] - r > base * 0.45:
+            if room[s] - r > geo[s][1] * 0.45:
                 continue
             cap = max(0.0, room[s] - r)
-            lo = int(math.floor((along[s] - r + half) / STEP))
-            hi = int(math.ceil((along[s] + r + half) / STEP))
-            for i in range(max(0, lo), min(count, hi + 1)):
+            lo = int(math.floor((along[s] - r + geo[s][0]) / STEP))
+            hi = int(math.ceil((along[s] + r + geo[s][0]) / STEP))
+            for i in range(max(0, lo), min(len(lim[s]), hi + 1)):
                 lim[s][i] = min(lim[s][i], cap)
     for ps in z.get("passes", []):
-        px, py = float(ps[0]), float(ps[1])
         width = float(ps[2]) if len(ps) > 2 else 9.0
-        if abs(py) >= abs(px):
-            s, at = ("s" if py > 0 else "n"), px
-        else:
-            s, at = ("e" if px > 0 else "w"), py
-        for i in range(count):
-            if abs(-half + i * STEP - at) < width + 14 + PASS_CLEAR:
+        s, at = side_of(float(ps[0]), float(ps[1]), hx, hz)
+        for i in range(len(lim[s])):
+            if abs(-geo[s][0] + i * STEP - at) < width + 14 + PASS_CLEAR:
                 lim[s][i] = 0.0
     return lim
 
 
-def _raw(zid, half, city, lim):
+def _raw(zid, hx, hz, city, lim):
     """The shape a side takes: ridges where there's room for them (lim), a wobble, rounded corners."""
     rng = random.Random(zid)
-    scale = min(1.0, max(0.45, half / 256.0)) * (0.55 if city else 1.0)
-    count = int(round(2 * half / STEP)) + 1
+    scale = min(1.0, max(0.45, min(hx, hz) / 256.0)) * (0.55 if city else 1.0)  # a narrow canyon keeps its ridges small
+    geo = side_geometry(hx, hz)
     corner = {c: rng.uniform(34, 80) * scale for c in ("ne", "nw", "se", "sw")}
     ends = {"n": ("nw", "ne"), "s": ("sw", "se"), "e": ("ne", "se"), "w": ("nw", "sw")}
     raw = {}
     for s in SIDES:
+        half = geo[s][0]
+        count = _count(half)
         prof = [0.0] * count
         ph = [rng.uniform(0, math.tau) for _ in range(3)]
         wob = rng.uniform(6, 16) * scale
@@ -189,9 +209,9 @@ def _soft_min(a, b, k):
 
 
 def outline(zid, z, arrivals, city):
-    half = float(z.get("size", 384)) * 0.5
-    lim = _limits(z, half, arrivals)
-    raw = _raw(zid, half, city, lim)
+    hx, hz = halves(z)
+    lim = _limits(z, hx, hz, arrivals)
+    raw = _raw(zid, hx, hz, city, lim)
     out = {"step": STEP}
     for s in SIDES:
         # a ridge held back by something rounds off before it rather than being cut flat
@@ -207,16 +227,15 @@ def outline(zid, z, arrivals, city):
 
 
 def open_share(z, o):
-    """The share of the old square's open ground still open under outline o."""
-    half = float(z.get("size", 384)) * 0.5
-    base = half - FOOT
+    """The share of the old rectangle's open ground still open under outline o."""
+    hx, hz = halves(z)
     inside = total = 0
-    x = -base
-    while x <= base:
-        y = -base
-        while y <= base:
+    x = -(hx - FOOT)
+    while x <= hx - FOOT:
+        y = -(hz - FOOT)
+        while y <= hz - FOOT:
             total += 1
-            if edge_depth(o, half, x, y) <= 0:
+            if edge_depth(o, (hx, hz), x, y) <= 0:
                 inside += 1
             y += 4
         x += 4
@@ -231,13 +250,15 @@ def _inset(prof, step, half, along):
 
 
 def edge_depth(o, half, x, y):
-    """How far (x, y) stands past the mountains' foot (negative: open ground). Zone.edge_depth in Python."""
-    base = half - FOOT
+    """How far (x, y) stands past the mountains' foot (negative: open ground). Zone.edge_depth in Python.
+    half is the zone's half size, or (half east-west, half north-south) for a rectangle."""
+    hx, hz = half if isinstance(half, (tuple, list)) else (half, half)
+    bx, bz = hx - FOOT, hz - FOOT
     if not o:
-        return max(abs(x), abs(y)) - base
+        return max(abs(x) - bx, abs(y) - bz)
     st = o["step"]
-    return max(-y - base + _inset(o["n"], st, half, x), y - base + _inset(o["s"], st, half, x),
-               x - base + _inset(o["e"], st, half, y), -x - base + _inset(o["w"], st, half, y))
+    return max(-y - bz + _inset(o["n"], st, hx, x), y - bz + _inset(o["s"], st, hx, x),
+               x - bx + _inset(o["e"], st, hz, y), -x - bx + _inset(o["w"], st, hz, y))
 
 
 def load():
@@ -270,9 +291,10 @@ def mountain_line(key, u):
     return crest, peak
 
 
-def skylines(zid, z, half, links):
+def skylines(zid, z, links):
     """Each side's crest and peak, sampled like the insets: shared with the zone across a border."""
-    count = int(round(2 * half / STEP)) + 1
+    hx, hz = halves(z)
+    geo = side_geometry(hx, hz)
     out = {}
     for s in SIDES:
         key, k = f"{zid}:{s}", 0.0
@@ -280,11 +302,11 @@ def skylines(zid, z, half, links):
             other = links[s]
             key = "|".join(sorted((zid, other)))
             for ps in z.get("passes", []):
-                px, py = float(ps[0]), float(ps[1])
-                side = ("s" if py > 0 else "n") if abs(py) >= abs(px) else ("e" if px > 0 else "w")
+                side, at = side_of(float(ps[0]), float(ps[1]), hx, hz)
                 if side == s:
-                    k = px if s in ("n", "s") else py
-        vals = [mountain_line(key, -half + i * STEP - k) for i in range(count)]
+                    k = at
+        half = geo[s][0]
+        vals = [mountain_line(key, -half + i * STEP - k) for i in range(_count(half))]
         out["c" + s] = [round(v[0], 2) for v in vals]
         out["p" + s] = [round(v[1], 1) for v in vals]
     return out
@@ -312,7 +334,7 @@ def main():
             continue
         city = layout.get(zid, {}).get("kind") == "city"
         o = outline(zid, z, arrivals.get(zid, []), city)
-        o.update(skylines(zid, z, float(z.get("size", 384)) * 0.5, links.get(zid, {})))
+        o.update(skylines(zid, z, links.get(zid, {})))
         result[zid] = o
         deep = max(max(o[s]) for s in SIDES)
         print(f"{zid:20s} {int(z.get('size', 384)):4d} m  deepest ridge {deep:5.1f} m  open ground kept {open_share(z, o) * 100:5.1f}%")

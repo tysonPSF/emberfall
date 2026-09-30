@@ -33,7 +33,7 @@ OUT = _outdir()
 # light area's `Dawnhold` was an outpost and is renamed `Dawnwatch` here so the
 # suffix keeps meaning one thing.
 #
-# id, display name, area, level band, size in metres, grid cell (gx east+, gy north+)
+# id, display name, area, level band, size in metres (or (east-west, north-south) for a zone longer one way), grid cell (gx east+, gy north+)
 ZONES = [
     # ---- THE EMBERLANDS - the start, no deity. Everything already built lives here.
     ('emberhold',       'Emberhold',          'emberlands', (1, 1),   224, (0, 0), 'city'),
@@ -75,7 +75,7 @@ ZONES = [
     ('rainhold',        'Rainhold',           'monsoon',    (20, 30), 224, (-1, 1), 'city'),
     # West of Rainhold (2026-09-29): the rain country's edge, between the city,
     # Reedmere and the Broken March.
-    ('stormcut_gorge',  'Stormcut Gorge',     'monsoon',    (18, 22), 448, (-2, 1), 'water'),
+    ('stormcut_gorge',  'Stormcut Gorge',     'monsoon',    (18, 22), (448, 1024), (-2, 1), 'water'),
 
     # ---- THE ASHFALL - Agnavar, the Ember-Tusked. Due north of home.
     ('cinderpass',      'Cinderpass',         'ashfall',    (26, 30), 672, (0, 3), 'burn'),
@@ -200,10 +200,12 @@ def build():
     for z in ZONES:
         zid, name, area, band, size, cell, kind = z
         rec = {'id': zid, 'name': name, 'area': area, 'levels': list(band),
-               'size': size, 'cell': list(cell) if cell else None, 'kind': kind,
+               'size': max(size) if isinstance(size, tuple) else size, 'cell': list(cell) if cell else None, 'kind': kind,
                'built': zid in BUILT,
                'existing': zid in EXISTING,
                'reached': 'teleport' if zid in TELEPORT_ONLY else ('door' if zid in DOORS else 'foot')}
+        if isinstance(size, tuple):
+            rec['extent'] = list(size)            # [east-west, north-south]; 'size' is the longer
         if zid in DOORS:
             rec['door_in'] = DOORS[zid]           # the zone whose door leads here
         by_id[zid] = rec
