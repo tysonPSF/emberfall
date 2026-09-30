@@ -39,10 +39,45 @@ P = 250.0                      # pixels per grid cell
 MARGIN = 300.0
 RIGHT_PAD = 520.0              # sea enough on the east for the cartouche
 BOTTOM_PAD = 90.0
-BERTH = {'the_grove': (-3.3, 0.55)}     # off-grid zones get a display berth
+# The Grove's island. It has been moved twice by other people's building: out
+# of (-3.3, 0.55) when the Blackwater was raised in that corner, and out of the
+# south-west when the Blackwater moved two cells further west and Duskwood
+# landed beside it. It now sits alone in the southern sea. The one thing it
+# must never be is joined to the continent: no road reaches it.
+BERTH = {'the_grove': (-1.0, -1.35)}
+
+# A zone reached through a door in another zone - Duskhold, down a cave in
+# Duskwood - is not a place on the map, it is a place inside one. It gets no
+# land and no coast of its own; it is drawn as a hold standing on its host.
+DOORED = {z['id']: z['door_in'] for z in W['zones'] if z.get('door_in')}
+for _zid, _host in DOORED.items():
+    _hc = ZONES[_host]['cell']
+    BERTH[_zid] = (_hc[0] + 0.26, _hc[1] - 0.20)
 
 def at(z):
     return tuple(z['cell']) if z['cell'] else BERTH[z['id']]
+
+def on_map(z):
+    """Does this zone put land on the plate? A doored zone does not."""
+    return z['id'] not in DOORED
+
+# Two cells side by side with no border between them: the layout seals those on
+# purpose (the Wallow's newcomers would meet Reedmere at 22-26, and Duskwood's
+# dark elves would walk into Emberhold, whose guards kill them on sight). The
+# wall is drawn there with no notch in it.
+def _sealed_pairs():
+    linked = {frozenset((l['a'], l['b'])) for l in LINKS}
+    grid = [z for z in ZONES.values() if z['cell']]
+    out = []
+    for i, a in enumerate(grid):
+        for b in grid[i + 1:]:
+            if abs(a['cell'][0] - b['cell'][0]) + abs(a['cell'][1] - b['cell'][1]) != 1:
+                continue
+            if frozenset((a['id'], b['id'])) not in linked:
+                out.append((a, b))
+    return out
+
+SEALED = _sealed_pairs()
 
 gxs = [at(z)[0] for z in ZONES.values()]
 gys = [at(z)[1] for z in ZONES.values()]
@@ -88,15 +123,39 @@ def warp(x, y):
     return ox, oy
 
 # ------------------------------------------------------------- the landmass
+def key(s_):
+    """A stable hash. Python's built-in one is salted per process, so using it
+    to seed a glyph means two renders of the same world come out different -
+    the map cannot be reproduced and a diff of the PNG says nothing. Every seed
+    on this plate comes from the data, not from the run."""
+    h = 2166136261
+    for ch in s_.encode():
+        h = ((h ^ ch) * 16777619) & 0xFFFFFFFF
+    return h
+
+def zone_r(z):
+    """A zone's blob radius from its size in meters, and (east-west, north-south)
+    radii for one longer one way (Stormcut Gorge's canyon), else both the same."""
+    # Normalised on 768 m, the median zone since the world was grown in tiers.
+    # Left on 512 the whole continent inflated: every blob overlapped its
+    # neighbours half again as much as before and the coast lost its lobes.
+    # The exponent is a shade steeper so the new tiers (576 / 672 / 768 / 1024)
+    # actually read apart.
+    r = 0.70 * P * (z['size'] / 768.0) ** 0.34
+    ex, ez = z.get('extent', [z['size']] * 2)
+    return r, (r * (ex / z['size']) ** 0.5, r * (ez / z['size']) ** 0.5)
+
+
 def blob(cx, cy, r, seed, n=220):
-    """An irregular closed shape: a circle with a few low harmonics on it."""
+    """An irregular closed shape: a circle with a few low harmonics on it (r may be (rx, ry))."""
+    rx, ry = r if isinstance(r, tuple) else (r, r)
     g = np.random.default_rng(seed)
     th = np.linspace(0, 2 * np.pi, n, endpoint=False)
     rad = np.ones(n)
     for k, a in ((2, .16), (3, .13), (5, .085), (7, .05), (11, .03)):
         rad += a * np.sin(k * th + g.uniform(0, 6.283))
     rad = rad / rad.mean()
-    return cx + r * rad * np.cos(th), cy + r * rad * np.sin(th)
+    return cx + rx * rad * np.cos(th), cy + ry * rad * np.sin(th)
 
 def rasterise():
     """Union of zone blobs and the necks between them, as a float mask."""
@@ -105,6 +164,8 @@ def rasterise():
     im = Image.new('L', (Wpx // SS, Hpx // SS), 0)
     d = ImageDraw.Draw(im)
     for i, z in enumerate(ZONES.values()):
+        if not on_map(z):
+            continue
         gx, gy = at(z)
         cx, cy = to_px(gx, gy)
         # Big enough that neighbours OVERLAP. The first cut used 0.47P and the
@@ -112,8 +173,8 @@ def rasterise():
         # every group of four zones left a hole and the map read as lace.
         # The zone walls are mountains in this engine, not water, so the land
         # is solid and the structure is drawn on top of it.
-        r = 0.70 * P * (z['size'] / 512.0) ** 0.30
-        bx, by = blob(cx, cy, r, 900 + i * 7)
+        r, rxy = zone_r(z)
+        bx, by = blob(cx, cy, rxy, 900 + i * 7)
         d.polygon(list(zip(bx / SS, by / SS)), fill=255)
     # the necks: a zone line is an isthmus, so the land pinches between zones
     for l in LINKS:
@@ -261,6 +322,7 @@ PEN = {
     'ashfall':     (160, 54, 26),
     'standingsky': (78, 94, 106),
     'boneyard':    (86, 62, 124),
+    'blackwater':  (56, 74, 40),           # bog green: no god, and it shows
 }
 
 def lerp(a, b, t):
@@ -421,7 +483,7 @@ def dewstep_terrain(d, z):
     Everything is offset from the zone centre in units of its own radius, so
     it follows the blob and the warp like the rest of the map."""
     cx, cy = to_px(*at(z))
-    r = 0.70 * P * (z['size'] / 512.0) ** 0.30
+    r = zone_r(z)[0]
     g = seeded(31337)
 
     def put(fn, ox, oy, *a):
@@ -461,11 +523,11 @@ def scatter(d, z):
     """Fill a zone with its own terrain, inside its blob and on land."""
     gx, gy = at(z)
     cx, cy = to_px(gx, gy)
-    r = 0.70 * P * (z['size'] / 512.0) ** 0.30
+    r = zone_r(z)[0]
     what, sub = FILLERS.get(z['kind'], ('tuft', None))
     if what is None:
         return
-    g = seeded(hash(z['id']) % 99991)
+    g = seeded(key(z['id']) % 99991)
     n = int((r / P) ** 2 * (70 if what == 'tree' else 46))
     placed = []
     for i in range(n * 3):
@@ -480,7 +542,7 @@ def scatter(d, z):
                for qx, qy in placed):
             continue
         placed.append((wx, wy))
-        sd = 5000 + i * 13 + (hash(z['id']) % 1000)
+        sd = 5000 + i * 13 + (key(z['id']) % 1000)
         if what == 'tree':
             tree(d, wx, wy, g.uniform(13, 19), sd, sub)
         elif what == 'tuft':
@@ -572,7 +634,7 @@ def crest(d, x, y, r, area):
                 outline=INK + (255,), width=int(1.6*S), fill=(228, 210, 170, 255))
     d.rectangle([((x-r+4)*S, (y-r+4)*S), ((x+r-4)*S, (y+r-4)*S)],
                 outline=INK_SOFT + (180,), width=int(0.8*S))
-    g = seeded(hash(area) % 9999)
+    g = seeded(key(area) % 9999)
     if area == 'dawnstair':                      # a rising sun over a line
         d.arc([((x-r*0.62)*S, (y-r*0.35)*S), ((x+r*0.62)*S, (y+r*0.9)*S)],
               180, 360, fill=c + (255,), width=int(1.6*S))
@@ -598,44 +660,57 @@ def crest(d, x, y, r, area):
         stroke(d, [(x-r*0.55, y-r*0.35), (x-r*0.1, y+r*0.3), (x+r*0.55, y+r*0.5)], c, 1.8)
         stroke(d, [(x-r*0.55, y-r*0.35), (x-r*0.25, y-r*0.05)], c, 1.0)
 
-def legend(d):
-    """A cartouche in the open sea, north-east, beside Barrowhold.
+def span(area):
+    """The levels a realm actually covers, read off its zones."""
+    zs = [z for z in ZONES.values() if z['area'] == area and z['cell']]
+    return min(z['levels'][0] for z in zs), max(z['levels'][1] for z in zs)
 
-    It lived in a right-hand gutter first and ran off the plate; it then sat in
-    the water south-east of Lanternhold, which is where Dewstep now is. The
-    only water left that covers no land and no label is the north-east corner,
-    so the plate carries a little more sea on that side and the cartouche sits
-    in it. The rows are pitched a shade tighter than they were so the panel
-    clears Forgehold's northern cape - the contents are unchanged.
+def legend(d):
+    """A cartouche in the open sea, south-east.
+
+    It has moved twice. It sat below Lanternhold until Dewstep was built there,
+    then in the north-east beside Barrowhold; the Blackwater made the plate
+    taller and opened the water south-east of the Emberlands again, which is
+    where a cartouche belongs and where there is finally room for seven realms.
     """
-    w, h = 470, 520
+    w, h = 470, 580
     x = Wpx - w - 80
-    y = 88
+    y = Hpx - h - 75
     d.rectangle([(x * S, y * S), ((x + w) * S, (y + h) * S)],
                 fill=(231, 214, 176, 224), outline=INK + (255,), width=int(2.2 * S))
     d.rectangle([((x + 9) * S, (y + 9) * S), ((x + w - 9) * S, (y + h - 9) * S)],
                 outline=INK_SOFT + (165,), width=int(0.9 * S))
-    halo_text(d, (x + w / 2, y + 38), 'THE SIX', 'caps', 21, INK, 'mm', 4)
-    halo_text(d, (x + w / 2, y + 62), 'and the realms they keep', 'label', 16,
+    halo_text(d, (x + w / 2, y + 40), 'THE SEVEN', 'caps', 21, INK, 'mm', 4)
+    halo_text(d, (x + w / 2, y + 66), 'five gods, and two realms without one', 'label', 16,
               INK_SOFT, 'mm')
-    stroke(d, [(x + 60, y + 78), (x + w - 60, y + 78)], INK_SOFT, 0.9, 190)
-    ry = y + 96
+    stroke(d, [(x + 60, y + 82), (x + w - 60, y + 82)], INK_SOFT, 0.9, 190)
+    ry = y + 100
     for area in ('dawnstair', 'monsoon', 'ashfall', 'standingsky', 'boneyard'):
         name, title_ = DEITY[area]
-        crest(d, x + 52, ry + 22, 25, area)
+        crest(d, x + 52, ry + 23, 23, area)
         text(d, (x + 94, ry + 9), name, 'bold', 18, PEN[area], 'lm')
         text(d, (x + 94, ry + 29), title_, 'label', 15, INK_SOFT, 'lm')
-        text(d, (x + 94, ry + 48), AREAS[area]['name'], 'label', 15,
+        lo, hi = span(area)
+        text(d, (x + 94, ry + 48), f"{AREAS[area]['name']}  ·  {lo}–{hi}", 'label', 15,
              lerp(PEN[area], INK_SOFT, .45), 'lm')
-        ry += 64
+        ry += 62
     stroke(d, [(x + 60, ry + 2), (x + w - 60, ry + 2)], INK_SOFT, 0.9, 190)
-    text(d, (x + 94, ry + 22), 'The Emberlands', 'bold', 18, PEN['emberlands'], 'lm')
-    text(d, (x + 94, ry + 41), 'no god claims it', 'label', 15, INK_SOFT, 'lm')
+    for k, (area, note) in enumerate((('emberlands', 'no god claims it'),
+                                      ('blackwater', 'and no god wants it'))):
+        lo, hi = span(area)
+        text(d, (x + 94, ry + 24 + k * 44), AREAS[area]['name'], 'bold', 18, PEN[area], 'lm')
+        text(d, (x + 94, ry + 43 + k * 44), f'{note}  ·  {lo}–{hi}', 'label', 15,
+             INK_SOFT, 'lm')
+    ry += 88
     n = sum(1 for z in ZONES.values() if z.get('built') and z['cell'])
-    d.ellipse([((x + 44) * S, (ry + 63) * S), ((x + 62) * S, (ry + 81) * S)],
+    d.ellipse([((x + 44) * S, (ry + 15) * S), ((x + 62) * S, (ry + 33) * S)],
               fill=PEN['emberlands'] + (70,), outline=INK_SOFT + (140,), width=int(0.8 * S))
-    text(d, (x + 94, ry + 72), f'coloured ground: built, {n} of '
+    text(d, (x + 94, ry + 24), f'colored ground: built, {n} of '
          f'{sum(1 for z in ZONES.values() if z["cell"])}', 'label', 15, INK_SOFT, 'lm')
+    for k in range(4):                            # a sample of the level line
+        x0 = x + 40 + k * 12
+        stroke(d, [(x0, ry + 48), (x0 + 8, ry + 48)], INK_SOFT, 1.0, 170)
+    text(d, (x + 94, ry + 48), 'level lines: 10, 20, 30, 40', 'label', 15, INK_SOFT, 'lm')
 
 def compass(d, x, y, r):
     """A plain rose. North is up, which is worth stating on a map whose engine
@@ -673,7 +748,7 @@ def title(d):
     halo_text(d, (x + 150, y + 40), 'EMBERFALL', 'caps', 52, INK, 'mm', 8)
     stroke(d, [(x + 10, y + 76), (x + 290, y + 76)], INK, 1.4)
     stroke(d, [(x + 40, y + 82), (x + 260, y + 82)], INK_SOFT, 0.8, 180)
-    halo_text(d, (x + 150, y + 104), 'the six realms and their zones',
+    halo_text(d, (x + 150, y + 104), 'the seven realms and their zones',
               'label', 19, INK_SOFT, 'mm')
 
 # ================================================================ assemble
@@ -711,12 +786,12 @@ def build():
     dw = ImageDraw.Draw(wash)
     any_built = False
     for i, z in enumerate(ZONES.values()):
-        if not z.get('built') or not z['cell']:
+        if not z.get('built') or not z['cell'] or not on_map(z):
             continue
         any_built = True
         cx, cy = to_px(*at(z))
-        r = 0.70 * P * (z['size'] / 512.0) ** 0.30
-        bx, by = blob(cx, cy, r * 0.97, 900 + list(ZONES).index(z['id']) * 7)
+        r, rxy = zone_r(z)
+        bx, by = blob(cx, cy, (rxy[0] * 0.97, rxy[1] * 0.97), 900 + list(ZONES).index(z['id']) * 7)
         wx, wy = warp(bx, by)
         poly(dw, wx, wy, fill=PEN[z["area"]] + (40,))
     if any_built:
@@ -734,6 +809,8 @@ def build():
         d = ImageDraw.Draw(img, 'RGBA')
 
     for z in ZONES.values():                   # terrain, over the wash
+        if not on_map(z):
+            continue
         (dewstep_terrain if z['id'] == 'dewstep' else scatter)(d, z)
 
     for i, l in enumerate(LINKS):              # the walls, and the notch in each
@@ -741,6 +818,9 @@ def build():
         if not (a['cell'] and b['cell']):
             continue
         ridge(d, at(a), at(b), l['cross_area'], 0.0, 100 + i)
+
+    for i, (a, b) in enumerate(SEALED):        # walls with no way through
+        ridge(d, at(a), at(b), a['area'] != b['area'], 9.0, 400 + i)
 
     for i, l in enumerate(LINKS):              # trails through the passes
         a, b = ZONES[l['a']], ZONES[l['b']]
@@ -764,7 +844,12 @@ def build():
         dy = 34 if z['id'] in spots else 0
         halo_text(d, (wx, wy + dy), z['name'], 'bold' if big else 'label',
                   20 if big else 19, col, 'mm')
-        if z['kind'] not in ('city', 'sanctuary'):
+        if z['id'] in DOORED:
+            # Duskhold is not beside Duskwood, it is under it, down a cave.
+            # Without saying so the map claims a road runs between them.
+            halo_text(d, (wx, wy + dy + 19), f'under {ZONES[DOORED[z["id"]]]["name"]}',
+                      'label', 14, lerp(col, (120, 100, 78), .30), 'mm')
+        elif z['kind'] not in ('city', 'sanctuary'):
             lo, hi = z['levels']
             halo_text(d, (wx, wy + dy + 20), f'{lo}–{hi}', 'serif', 14,
                       lerp(col, (120, 100, 78), .45), 'mm')
@@ -772,7 +857,12 @@ def build():
     # the realm names, big and faint, under the zone labels
     # A realm whose middle falls on a city's name takes a spot of its own: the
     # Ashfall's middle landed on Forgehold once the city moved to [1, 5].
-    LABEL_AT = {'ashfall': (0.0, 3.92)}
+    # The Blackwater is only two cells wide and its name landed across
+    # Murkhold and the Wallow; it sits over its two southern zones instead.
+    # A spot is pinned here only where the realm's own middle falls on a
+    # name. The Blackwater's pin moved with it when the realm shifted two
+    # cells west; it sits in the gap between its two rows of zones.
+    LABEL_AT = {'ashfall': (0.0, 3.92), 'blackwater': (-3.8, 0.12)}
     for key, meta in AREAS.items():
         cs = [at(z) for z in ZONES.values() if z['area'] == key and z['cell']]
         mx = sum(c[0] for c in cs) / len(cs)
@@ -795,7 +885,7 @@ def build():
               INK_SOFT, 'mm')
 
     legend(d)
-    compass(d, MARGIN - 120, Hpx - MARGIN - 470, 46)
+    compass(d, MARGIN + 700, Hpx - MARGIN + 30, 46)
     title(d)
     frame(d)
     return img
