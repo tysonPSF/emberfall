@@ -14,7 +14,9 @@ var data: Dictionary = {}
 var _terrace_wall := Color(0, 0, 0, 0)  # the terraces' face color, read once
 var zone_name := ""
 var size := 384.0
-var half := 192.0
+var half := 192.0  # half the terrain's side: the longer extent's
+var half_x := 192.0  # half the zone east to west (a canyon may be narrower than it is long: "extent")
+var half_z := 192.0  # half the zone north to south
 var amp := 10.0
 var flat_radius := 26.0
 var bind_point := Vector3.ZERO
@@ -52,6 +54,9 @@ func load_zone(id: String) -> void:
 	zone_name = data.get("name", id)
 	size = float(data.get("size", 384))
 	half = size * 0.5
+	var ext: Array = data.get("extent", [size, size])  # [east-west, north-south]; the terrain is a square the longer one across
+	half_x = float(ext[0]) * 0.5
+	half_z = float(ext[1]) * 0.5
 	amp = float(data.get("height_amplitude", 10))
 	flat_radius = float(data.get("flat_radius", 26))
 	var zone_seed := int(data.get("seed", 1))
@@ -335,17 +340,17 @@ func height_at(x: float, z: float) -> float:
 ## the same range; the highest side wins, which keeps the corners seamless.
 const MOUNTAIN_BAND := 14.0
 func mountain_height(x: float, z: float) -> float:
-	var base := half - 28.0
 	var rough := 1.0 + 0.25 * _noise.get_noise_2d(x * 0.8 + 911.0, z * 0.8 - 317.0)
 	if _outline.is_empty() or not _outline.has("cn"):
-		var d := maxf(absf(x), absf(z)) - base
+		var d := maxf(absf(x) - (half_x - 28.0), absf(z) - (half_z - 28.0))
 		return _mountain(d, 1.0, 0.0, rough)
 	var st := float(_outline["step"])
 	var best := 0.0
-	for side: Array in [["n", -z, x], ["s", z, x], ["e", x, z], ["w", -x, z]]:
-		var d: float = side[1] - base + _inset(_outline[side[0]], st, side[2])
+	# [side, how far out toward it, where along it, half the side's length, its foot]
+	for side: Array in [["n", -z, x, half_x, half_z - 28.0], ["s", z, x, half_x, half_z - 28.0], ["e", x, z, half_z, half_x - 28.0], ["w", -x, z, half_z, half_x - 28.0]]:
+		var d: float = side[1] - side[4] + _inset(_outline[side[0]], st, side[2], side[3])
 		if d > 0.0:
-			best = maxf(best, _mountain(d, _inset(_outline["c" + side[0]], st, side[2]), _inset(_outline["p" + side[0]], st, side[2]), rough))
+			best = maxf(best, _mountain(d, _inset(_outline["c" + side[0]], st, side[2], side[3]), _inset(_outline["p" + side[0]], st, side[2], side[3]), rough))
 	return best
 
 
@@ -361,18 +366,26 @@ func _mountain(d: float, crest: float, peak: float, rough: float) -> float:
 ## outline (tools/zones/outline.py: ridges, rounded corners), so a zone isn't
 ## a box. tools/zones/outline.py edge_depth is the same in Python.
 func edge_depth(x: float, z: float) -> float:
-	var base := half - 28.0
+	var bx := half_x - 28.0
+	var bz := half_z - 28.0
 	if _outline.is_empty():
-		return maxf(absf(x), absf(z)) - base
+		return maxf(absf(x) - bx, absf(z) - bz)
 	var st := float(_outline["step"])
-	return maxf(maxf(-z - base + _inset(_outline["n"], st, x), z - base + _inset(_outline["s"], st, x)),
-			maxf(x - base + _inset(_outline["e"], st, z), -x - base + _inset(_outline["w"], st, z)))
+	return maxf(maxf(-z - bz + _inset(_outline["n"], st, x, half_x), z - bz + _inset(_outline["s"], st, x, half_x)),
+			maxf(x - bx + _inset(_outline["e"], st, z, half_z), -x - bx + _inset(_outline["w"], st, z, half_z)))
 
 
-func _inset(prof: Array, st: float, along: float) -> float:
-	var f := (along + half) / st
+## A side's profile at `along` meters along it (sampled every `st` from -side_half).
+func _inset(prof: Array, st: float, along: float, side_half: float) -> float:
+	var f := (along + side_half) / st
 	var i := clampi(floori(f), 0, prof.size() - 2)
 	return lerpf(float(prof[i]), float(prof[i + 1]), clampf(f - i, 0.0, 1.0))
+
+
+## Whether a point on the zone's edge (a pass, a zone line) is on its north or
+## south side rather than east or west: the side it stands nearer.
+func is_north_south(x: float, z: float) -> bool:
+	return half_z - absf(z) <= half_x - absf(x)
 
 
 ## 0 inside a mountain pass, 1 where the ring of mountains stands. A pass on
@@ -380,14 +393,16 @@ func _inset(prof: Array, st: float, along: float) -> float:
 func _pass_factor(x: float, z: float) -> float:
 	var f := 1.0
 	for ps: Array in _passes:
-		var north_south: bool = absf(ps[1]) >= absf(ps[0])
+		var north_south := is_north_south(ps[0], ps[1])
 		# only on the pass's own edge: a south pass must not open the north
 		# mountains at the same x (that gap led off the world)
 		var own_edge: bool = z * float(ps[1]) > 0.0 if north_south else x * float(ps[0]) > 0.0
 		if not own_edge:
 			continue
 		var across := absf(x - ps[0]) if north_south else absf(z - ps[1])
-		f = minf(f, smoothstep(ps[2], ps[2] + 14.0, across))
+		# and only up to the zone's edge: a narrow zone's terrain runs on past it, and the pass mustn't lead out there
+		var beyond := absf(z) - half_z if north_south else absf(x) - half_x
+		f = minf(f, maxf(smoothstep(ps[2], ps[2] + 14.0, across), smoothstep(0.0, 6.0, beyond)))
 	return f
 
 
@@ -2743,7 +2758,7 @@ func _off_the_ridge(at: Vector2, wander: float) -> Vector2:
 
 func _open_spot() -> Vector2:
 	for attempt in 30:
-		var xz := Vector2(_rng.randf_range(-half + 30.0, half - 30.0), _rng.randf_range(-half + 30.0, half - 30.0))
+		var xz := Vector2(_rng.randf_range(-half_x + 30.0, half_x - 30.0), _rng.randf_range(-half_z + 30.0, half_z - 30.0))
 		if edge_depth(xz.x, xz.y) > -2.0 or xz.distance_to(_bind_xz) < flat_radius + 6.0 or xz.length() < _clear_radius or road_distance(xz.x, xz.y) < 3.0 \
 				or river_distance(xz.x, xz.y) < 3.0 or lake_distance(xz.x, xz.y) < 4.0 or in_field(xz.x, xz.y, 4.0):
 			continue
@@ -2754,7 +2769,7 @@ func _open_spot() -> Vector2:
 				break
 		if clear:
 			return xz
-	return Vector2(half - 35.0, half - 35.0)
+	return Vector2(half_x - 35.0, half_z - 35.0)
 
 
 ## Places a prop from data/models.json "props". `collide` is "box" (the model's

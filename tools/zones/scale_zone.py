@@ -33,11 +33,19 @@ def reach(lm):
     return 22.0 * float(lm.get("size", 1.0)) if lm["type"] not in NEVER_GROUP else 0.0
 
 
+def halves(z):
+    """Half a zone east to west and north to south: its "extent" [x, z], else its square size."""
+    size = float(z.get("size", 384))
+    ext = z.get("extent", [size, size])
+    return float(ext[0]) * 0.5, float(ext[1]) * 0.5
+
+
 class Scaler:
     def __init__(self, z, f):
-        self.f = f
-        self.half = float(z.get("size", 384)) * 0.5
-        self.new_half = self.half * f
+        """f stretches both ways, or (east-west, north-south) for a zone growing longer one way."""
+        self.fx, self.fz = (float(f[0]), float(f[1])) if isinstance(f, (tuple, list)) else (float(f), float(f))
+        self.hx, self.hz = halves(z)
+        self.new_hx, self.new_hz = self.hx * self.fx, self.hz * self.fz
         lms = [l for l in z.get("landmarks", []) if l["type"] not in NEVER_GROUP]
         # settlements: landmarks linked when their grounds come within LINK m
         group = list(range(len(lms)))
@@ -64,20 +72,24 @@ class Scaler:
                     best = (d, g)
         return None if best is None else best[1]
 
-    def edge_keep(self, v):
-        """One coordinate stretched, or kept at its distance from a side it's near."""
-        if abs(v) > self.half - EDGE:
-            return math.copysign(self.new_half - (self.half - abs(v)), v)
-        return v * self.f
+    def edge_keep(self, v, axis):
+        """One coordinate (axis 0 east-west, 1 north-south) stretched, or kept at its distance from a side it's near."""
+        half, new_half, f = (self.hx, self.new_hx, self.fx) if axis == 0 else (self.hz, self.new_hz, self.fz)
+        if abs(v) > half - EDGE:
+            return math.copysign(new_half - (half - abs(v)), v)
+        return v * f
+
+    def stretch(self, p):
+        return [_r(self.edge_keep(float(p[0]), 0)), _r(self.edge_keep(float(p[1]), 1))]
 
     def near_edge(self, p):
-        return max(abs(float(p[0])), abs(float(p[1]))) > self.half - EDGE
+        return abs(float(p[0])) > self.hx - EDGE or abs(float(p[1])) > self.hz - EDGE
 
     def border(self, p):
         """A border's own point (a zone line in a pass, an arrival): it keeps its place on
         its pass, never moving with a settlement that happens to stand by the pass."""
         if self.near_edge(p):
-            return [_r(self.edge_keep(float(p[0]))), _r(self.edge_keep(float(p[1])))]
+            return self.stretch(p)
         return self.point(p)  # a door inside the zone (a cave) goes with what it's in
 
     def point(self, p, g=None):
@@ -87,8 +99,8 @@ class Scaler:
             g = self.settlement_of((x, y))
         if g is not None:
             cx, cy = self.centers[g]
-            return [_r(x + cx * (self.f - 1)), _r(y + cy * (self.f - 1))]
-        return [_r(self.edge_keep(x)), _r(self.edge_keep(y))]
+            return [_r(x + cx * (self.fx - 1)), _r(y + cy * (self.fz - 1))]
+        return self.stretch((x, y))
 
     def facing(self, p, face, new_p):
         """A point something faces: the same offset from where it now stands."""
@@ -103,13 +115,19 @@ def _r(v):
 def scale(z, f):
     s = Scaler(z, f)
     out = dict(z)
-    out["size"] = _r(float(z.get("size", 384)) * f)
-    area = f * f
+    w, d = _r(s.new_hx * 2), _r(s.new_hz * 2)
+    out["size"] = max(w, d)  # the terrain is a square the longer way across
+    if w != d:
+        out["extent"] = [w, d]
+    else:
+        out.pop("extent", None)
+    area = s.fx * s.fz
+    grow_r = math.sqrt(area)  # a round thing (an island, a salt pan) grows by the mean
     for key in ("trees", "rocks"):
         if key in z:
             out[key] = int(round(z[key] * area))
     if "grid" in z:
-        out["grid"] = int(round(z["grid"] * f))
+        out["grid"] = int(round(z["grid"] * max(s.fx, s.fz)))
     if "bind_point" in z:
         out["bind_point"] = s.point(z["bind_point"])
     lm_group = {}
@@ -120,7 +138,7 @@ def scale(z, f):
     for l in z.get("landmarks", []):
         n = dict(l)
         if l["type"] == "bridge":  # it stands where a road crosses a river, both stretched: it stretches with them
-            n["pos"] = [_r(s.edge_keep(float(l["pos"][0]))), _r(s.edge_keep(float(l["pos"][1])))]
+            n["pos"] = s.stretch(l["pos"])
         else:
             n["pos"] = s.point(l["pos"], lm_group.get(id(l)))
         if "face" in l:
@@ -156,33 +174,34 @@ def scale(z, f):
                 m = dict(e)
                 m["pos"] = s.point(e["pos"])
                 if key == "ground_patches" and s.settlement_of(e["pos"]) is None:
-                    m["radius"] = _r(float(e["radius"]) * f)  # a salt pan or a mud flat is land: it grows with it
+                    m["radius"] = _r(float(e["radius"]) * grow_r)  # a salt pan or a mud flat is land: it grows with it
                 if "face" in e:
                     m["face"] = s.facing(e["pos"], e["face"], m["pos"])
                 items.append(m)
             out[key] = items
     if "roads" in z:
         out["roads"] = [dict(r, points=[s.point(p) for p in r["points"]]) for r in z["roads"]]
-    stretch = lambda p: [_r(s.edge_keep(float(p[0]))), _r(s.edge_keep(float(p[1])))]
+    stretch = s.stretch
     if "rivers" in z:
         out["rivers"] = [dict(r, points=[stretch(p) for p in r["points"]]) for r in z["rivers"]]
     if "lakes" in z:
         def island(i):  # grows with the lake, unless a settlement stands on it
             if s.settlement_of((i[0], i[1])) is not None:
                 return s.point((i[0], i[1])) + [i[2]]
-            return [_r(i[0] * f), _r(i[1] * f), _r(i[2] * f)]
+            return [_r(i[0] * s.fx), _r(i[1] * s.fz), _r(i[2] * grow_r)]
         out["lakes"] = [dict(l, points=[stretch(p) for p in l["points"]], **({"islands": [island(i) for i in l["islands"]]} if "islands" in l else {}))
                         for l in z["lakes"]]
     if "passes" in z:
-        out["passes"] = [[_r(s.edge_keep(float(p[0]))), _r(s.edge_keep(float(p[1])))] + list(p[2:]) for p in z["passes"]]
+        out["passes"] = [s.stretch(p) + list(p[2:]) for p in z["passes"]]
     if "zone_lines" in z:
         out["zone_lines"] = [dict(zl, pos=s.border(zl["pos"]), **({"refused_to": s.point(zl["refused_to"])} if "refused_to" in zl else {}))
                              for zl in z["zone_lines"]]  # a cave's door, and where a guard turns you back from it, go with its cave
     if "terraces" in z:
         t = dict(z["terraces"])
+        along = s.fz if t.get("toward", "east") in ("north", "south") else s.fx
         for key in ("start", "end"):
             if key in t:
-                t[key] = _r(float(t[key]) * f)
+                t[key] = _r(float(t[key]) * along)
         out["terraces"] = t
     return out, s
 
@@ -191,8 +210,9 @@ def grow(zones, authored, sizes):
     """For a generator: zones ({id: data} built at `authored` sizes) scaled to `sizes`
     in place, and the arrivals between them moved to match."""
     for zid in list(zones):
-        f = float(sizes[zid]) / float(authored[zid])
-        if abs(f - 1.0) < 1e-6:
+        want = sizes[zid] if isinstance(sizes[zid], (tuple, list)) else (sizes[zid], sizes[zid])
+        f = (float(want[0]) / float(authored[zid]), float(want[1]) / float(authored[zid]))
+        if abs(f[0] - 1.0) < 1e-6 and abs(f[1] - 1.0) < 1e-6:
             continue
         zones[zid], sc = scale(zones[zid], f)
         for oid, oz in zones.items():
@@ -227,7 +247,8 @@ def dumps(v, ind=0):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     write = "--write" in sys.argv
-    zid, f = args[0], float(args[1])
+    zid = args[0]
+    f = tuple(float(v) for v in args[1].split(",")) if "," in args[1] else float(args[1])  # "1,2": twice as long north to south
     if zid in GENERATED:
         sys.exit(f"{zid} is written by {GENERATED[zid]}: set its size in tools/world_layout.py and rerun that generator (it scales what it writes)")
     path = f"{ROOT}/data/zones/{zid}.json"
@@ -236,7 +257,7 @@ def main():
     print(f"{zid}: {int(z['size'])} m -> {out['size']} m, trees {z.get('trees')} -> {out.get('trees')}")
     for g, members in s.settlements.items():
         c = s.centers[g]
-        print(f"  settlement at ({c[0]:.0f}, {c[1]:.0f}) -> ({c[0] * f:.0f}, {c[1] * f:.0f}): " + ", ".join(m["type"] for m in members))
+        print(f"  settlement at ({c[0]:.0f}, {c[1]:.0f}) -> ({c[0] * s.fx:.0f}, {c[1] * s.fz:.0f}): " + ", ".join(m["type"] for m in members))
     touched = []
     for other in sorted(glob.glob(f"{ROOT}/data/zones/*.json")):
         if other == path:
@@ -267,8 +288,9 @@ def main():
         open(other, "w").write(text)
     lay = f"{ROOT}/tools/world_layout.py"
     t = open(lay).read()
-    pat = re.compile(r"""(\('%s',\s*(?:'[^']*'|"[^"]*"),\s*'[^']*',\s*\([^)]*\),\s*)(\d+)""" % re.escape(zid))  # a name with an apostrophe is in double quotes
-    t2, n = pat.subn(lambda mt: mt.group(1) + str(int(out["size"])), t, count=1)
+    pat = re.compile(r"""(\('%s',\s*(?:'[^']*'|"[^"]*"),\s*'[^']*',\s*\([^)]*\),\s*)(\d+|\(\d+,\s*\d+\))""" % re.escape(zid))  # a name with an apostrophe is in double quotes
+    size = "(%d, %d)" % tuple(out["extent"]) if "extent" in out else str(int(out["size"]))
+    t2, n = pat.subn(lambda mt: mt.group(1) + size, t, count=1)
     if n == 1:
         open(lay, "w").write(t2)
     print(f"wrote {zid} and {len(touched)} neighbor(s); layout size {'updated' if n == 1 else 'NOT found'}")

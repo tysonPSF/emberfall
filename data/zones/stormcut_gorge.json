@@ -6,14 +6,14 @@
   ],
   "music": "stormcut_gorge",
   "seed": 7371,
-  "size": 448,
+  "size": 1024,
   "bind_point": [
     140,
-    44
+    81.3
   ],
   "height_amplitude": 4.5,
   "flat_radius": 22,
-  "trees": 150,
+  "trees": 343,
   "tree_mix": [
     "jungle_tree",
     "pine_a",
@@ -21,7 +21,7 @@
     "pine_b"
   ],
   "groves": 0.45,
-  "rocks": 80,
+  "rocks": 183,
   "grass_colors": [
     "#3e5a3a",
     "#4a6a40"
@@ -35,16 +35,16 @@
   "passes": [
     [
       0,
-      -224.0,
+      -512,
       9
     ],
     [
-      224.0,
+      224,
       0,
       9
     ],
     [
-      -224.0,
+      -224,
       0,
       9
     ]
@@ -53,7 +53,7 @@
     {
       "pos": [
         0,
-        -213.0
+        -501
       ],
       "size": [
         18,
@@ -71,7 +71,7 @@
     },
     {
       "pos": [
-        213.0,
+        213,
         0
       ],
       "size": [
@@ -90,7 +90,7 @@
     },
     {
       "pos": [
-        -213.0,
+        -213,
         0
       ],
       "size": [
@@ -113,99 +113,99 @@
       "points": [
         [
           40,
-          196
+          484
         ],
         [
-          36.0,
-          177.0
+          36,
+          404.6
         ],
         [
-          32.0,
-          158.0
+          32,
+          361.1
         ],
         [
-          28.0,
-          139.0
+          28,
+          317.7
         ],
         [
-          24.0,
-          120.0
+          24,
+          274.3
         ],
         [
-          18.0,
-          104.0
+          18,
+          237.7
         ],
         [
-          12.0,
-          88.0
+          12,
+          201.1
         ],
         [
-          6.0,
-          72.0
+          6,
+          164.6
         ],
         [
-          0.0,
-          56.0
+          0,
+          128
         ],
         [
-          -6.0,
-          40.0
+          -6,
+          91.4
         ],
         [
           -4.8,
-          24.0
+          54.9
         ],
         [
           -3.6,
-          8.0
+          18.3
         ],
         [
           -2.4,
-          -8.0
+          -18.3
         ],
         [
           -1.2,
-          -24.0
+          -54.9
         ],
         [
-          0.0,
-          -40.0
+          0,
+          -91.4
         ],
         [
-          -8.0,
-          -56.0
+          -8,
+          -128
         ],
         [
-          -16.0,
-          -72.0
+          -16,
+          -164.6
         ],
         [
-          -24.0,
-          -88.0
+          -24,
+          -201.1
         ],
         [
-          -32.0,
-          -104.0
+          -32,
+          -237.7
         ],
         [
-          -40.0,
-          -120.0
+          -40,
+          -274.3
         ],
         [
-          -45.0,
-          -136.5
+          -45,
+          -312
         ],
         [
-          -50.0,
-          -153.0
+          -50,
+          -349.7
         ],
         [
-          -55.0,
-          -169.5
+          -55,
+          -387.4
         ],
         [
-          -60.0,
-          -186.0
+          -60,
+          -474
         ]
       ],
       "width": 10,
@@ -223,7 +223,7 @@
         ],
         [
           -120,
-          6
+          13.7
         ],
         [
           -5,
@@ -231,11 +231,11 @@
         ],
         [
           60,
-          10
+          22.9
         ],
         [
           140,
-          24
+          61.3
         ],
         [
           224,
@@ -248,19 +248,19 @@
       "points": [
         [
           60,
-          10
+          22.9
         ],
         [
           40,
-          -80
+          -182.9
         ],
         [
           20,
-          -160
+          -365.7
         ],
         [
           12,
-          -224
+          -512
         ]
       ],
       "width": 3.0
@@ -299,25 +299,25 @@
       "type": "outpost",
       "pos": [
         140,
-        24
+        61.3
       ]
     },
     {
       "type": "camp",
       "pos": [
         126,
-        34
+        71.3
       ]
     },
     {
       "type": "signpost",
       "pos": [
         202,
-        8
+        18.3
       ],
       "face": [
         224,
-        8
+        18.3
       ],
       "labels": [
         "Rainhold"
@@ -327,11 +327,11 @@
       "type": "signpost",
       "pos": [
         -202,
-        -8
+        -18.3
       ],
       "face": [
         -224,
-        -8
+        -18.3
       ],
       "labels": [
         "The Broken March"
@@ -341,11 +341,11 @@
       "type": "signpost",
       "pos": [
         12,
-        -202
+        -490
       ],
       "face": [
         12,
-        -224
+        -512
       ],
       "labels": [
         "Reedmere"
@@ -366,7 +366,7 @@
       "type": "prop",
       "pos": [
         40,
-        206
+        464.2
       ],
       "id": "waterfall",
       "yaw": 180,
@@ -376,7 +376,7 @@
       "type": "prop",
       "pos": [
         40,
-        206
+        464.2
       ],
       "id": "waterfall_water",
       "yaw": 180,
@@ -386,7 +386,7 @@
       "type": "prop",
       "pos": [
         -196,
-        -70
+        -160
       ],
       "id": "waterfall",
       "yaw": 90,
@@ -396,7 +396,7 @@
       "type": "prop",
       "pos": [
         -196,
-        -70
+        -160
       ],
       "id": "waterfall_water",
       "yaw": 90,
@@ -406,7 +406,7 @@
       "type": "prop",
       "pos": [
         -209,
-        -70
+        -160
       ],
       "id": "mesa",
       "collide": "mesh",
@@ -416,7 +416,7 @@
       "type": "prop",
       "pos": [
         198,
-        110
+        251.4
       ],
       "id": "waterfall",
       "yaw": -90,
@@ -426,7 +426,7 @@
       "type": "prop",
       "pos": [
         198,
-        110
+        251.4
       ],
       "id": "waterfall_water",
       "yaw": -90,
@@ -436,7 +436,7 @@
       "type": "prop",
       "pos": [
         211,
-        110
+        251.4
       ],
       "id": "mesa",
       "collide": "mesh",
@@ -445,178 +445,8 @@
     {
       "type": "prop",
       "pos": [
-        -188,
-        -190
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 170
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -192,
-        -156
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 348
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -187,
-        -122
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 166
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -189,
-        48
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 336
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -193,
-        82
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 154
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -188,
-        116
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 332
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -192,
-        150
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 150
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -187,
-        184
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 328
-    },
-    {
-      "type": "prop",
-      "pos": [
-        188,
-        -190
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 170
-    },
-    {
-      "type": "prop",
-      "pos": [
-        192,
-        -156
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 348
-    },
-    {
-      "type": "prop",
-      "pos": [
-        187,
-        -122
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 166
-    },
-    {
-      "type": "prop",
-      "pos": [
-        191,
-        -88
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 344
-    },
-    {
-      "type": "prop",
-      "pos": [
-        186,
-        -54
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 162
-    },
-    {
-      "type": "prop",
-      "pos": [
-        189,
-        48
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 336
-    },
-    {
-      "type": "prop",
-      "pos": [
-        193,
-        82
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 154
-    },
-    {
-      "type": "prop",
-      "pos": [
-        192,
-        150
-      ],
-      "id": "mesa",
-      "collide": "mesh",
-      "yaw": 150
-    },
-    {
-      "type": "prop",
-      "pos": [
-        187,
-        184
-      ],
-      "id": "crag_rock",
-      "collide": "mesh",
-      "yaw": 328
-    },
-    {
-      "type": "prop",
-      "pos": [
         -150,
-        198
+        456.2
       ],
       "id": "crag_rock",
       "collide": "mesh",
@@ -626,7 +456,7 @@
       "type": "prop",
       "pos": [
         -114,
-        202
+        460.2
       ],
       "id": "mesa",
       "collide": "mesh",
@@ -636,7 +466,7 @@
       "type": "prop",
       "pos": [
         -78,
-        198
+        456.2
       ],
       "id": "crag_rock",
       "collide": "mesh",
@@ -646,7 +476,7 @@
       "type": "prop",
       "pos": [
         -42,
-        202
+        460.2
       ],
       "id": "mesa",
       "collide": "mesh",
@@ -656,7 +486,7 @@
       "type": "prop",
       "pos": [
         -6,
-        198
+        456.2
       ],
       "id": "crag_rock",
       "collide": "mesh",
@@ -666,7 +496,7 @@
       "type": "prop",
       "pos": [
         66,
-        198
+        456.2
       ],
       "id": "crag_rock",
       "collide": "mesh",
@@ -676,7 +506,7 @@
       "type": "prop",
       "pos": [
         102,
-        202
+        460.2
       ],
       "id": "mesa",
       "collide": "mesh",
@@ -686,7 +516,7 @@
       "type": "prop",
       "pos": [
         138,
-        198
+        456.2
       ],
       "id": "crag_rock",
       "collide": "mesh",
@@ -696,7 +526,7 @@
       "type": "prop",
       "pos": [
         110,
-        -120
+        -293.6
       ],
       "id": "crag_rock",
       "collide": "mesh"
@@ -705,7 +535,7 @@
       "type": "prop",
       "pos": [
         140,
-        -140
+        -313.6
       ],
       "id": "crag_rock",
       "collide": "mesh"
@@ -714,7 +544,7 @@
       "type": "prop",
       "pos": [
         125,
-        -170
+        -343.6
       ],
       "id": "crag_rock",
       "collide": "mesh"
@@ -723,7 +553,7 @@
       "type": "prop",
       "pos": [
         160,
-        -110
+        -283.6
       ],
       "id": "crag_rock",
       "collide": "mesh"
@@ -732,49 +562,559 @@
       "type": "prop",
       "pos": [
         -110,
-        90
+        208.9
       ],
       "id": "troll_hut",
       "collide": "mesh",
       "face": [
         -115,
-        95
+        213.9
       ]
     },
     {
       "type": "prop",
       "pos": [
         -135,
-        70
+        188.9
       ],
       "id": "troll_hut",
       "collide": "mesh",
       "face": [
         -115,
-        95
+        213.9
       ]
     },
     {
       "type": "prop",
       "pos": [
         -95,
-        115
+        233.9
       ],
       "id": "troll_hut",
       "collide": "mesh",
       "face": [
         -115,
-        95
+        213.9
       ]
     },
     {
       "type": "prop",
       "pos": [
         -115,
-        95
+        213.9
       ],
       "id": "campfire",
       "collide": "none"
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -188,
+        -478
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 314
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        -444
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 132
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -187,
+        -410
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 310
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -191,
+        -376
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 128
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -186,
+        -342
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 306
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -190,
+        -308
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 124
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -194,
+        -274
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 302
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -189,
+        -240
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 120
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -193,
+        -206
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 298
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        -138
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 294
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -187,
+        -104
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 112
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -191,
+        -70
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 290
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -186,
+        -36
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 108
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -189,
+        66
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 282
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -193,
+        100
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 100
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -188,
+        134
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 278
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        168
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 96
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -187,
+        202
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 274
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -191,
+        236
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 92
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -186,
+        270
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 270
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -190,
+        304
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 88
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -194,
+        338
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 266
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -189,
+        372
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 84
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -193,
+        406
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 262
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -188,
+        440
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 80
+    },
+    {
+      "type": "prop",
+      "pos": [
+        -192,
+        474
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 258
+    },
+    {
+      "type": "prop",
+      "pos": [
+        188,
+        -478
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 314
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        -444
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 132
+    },
+    {
+      "type": "prop",
+      "pos": [
+        187,
+        -410
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 310
+    },
+    {
+      "type": "prop",
+      "pos": [
+        191,
+        -376
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 128
+    },
+    {
+      "type": "prop",
+      "pos": [
+        186,
+        -342
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 306
+    },
+    {
+      "type": "prop",
+      "pos": [
+        190,
+        -308
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 124
+    },
+    {
+      "type": "prop",
+      "pos": [
+        194,
+        -274
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 302
+    },
+    {
+      "type": "prop",
+      "pos": [
+        189,
+        -240
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 120
+    },
+    {
+      "type": "prop",
+      "pos": [
+        193,
+        -206
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 298
+    },
+    {
+      "type": "prop",
+      "pos": [
+        188,
+        -172
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 116
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        -138
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 294
+    },
+    {
+      "type": "prop",
+      "pos": [
+        187,
+        -104
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 112
+    },
+    {
+      "type": "prop",
+      "pos": [
+        191,
+        -70
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 290
+    },
+    {
+      "type": "prop",
+      "pos": [
+        186,
+        -36
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 108
+    },
+    {
+      "type": "prop",
+      "pos": [
+        189,
+        66
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 282
+    },
+    {
+      "type": "prop",
+      "pos": [
+        193,
+        100
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 100
+    },
+    {
+      "type": "prop",
+      "pos": [
+        188,
+        134
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 278
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        168
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 96
+    },
+    {
+      "type": "prop",
+      "pos": [
+        187,
+        202
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 274
+    },
+    {
+      "type": "prop",
+      "pos": [
+        190,
+        304
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 88
+    },
+    {
+      "type": "prop",
+      "pos": [
+        194,
+        338
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 266
+    },
+    {
+      "type": "prop",
+      "pos": [
+        189,
+        372
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 84
+    },
+    {
+      "type": "prop",
+      "pos": [
+        193,
+        406
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 262
+    },
+    {
+      "type": "prop",
+      "pos": [
+        188,
+        440
+      ],
+      "id": "mesa",
+      "collide": "mesh",
+      "yaw": 80
+    },
+    {
+      "type": "prop",
+      "pos": [
+        192,
+        474
+      ],
+      "id": "crag_rock",
+      "collide": "mesh",
+      "yaw": 258
     }
   ],
   "npcs": [
@@ -782,22 +1122,22 @@
       "id": "ropewarden_mbeki",
       "pos": [
         132,
-        36
+        73.3
       ],
       "face": [
         132,
-        56
+        93.3
       ]
     },
     {
       "id": "tidepriestess_lirien",
       "pos": [
         146,
-        40
+        77.3
       ],
       "face": [
         146,
-        60
+        97.3
       ]
     }
   ],
@@ -805,7 +1145,7 @@
     {
       "pos": [
         60,
-        60
+        137.1
       ],
       "pool": {
         "canyon_adder": 1
@@ -816,7 +1156,7 @@
     {
       "pos": [
         90,
-        -40
+        -91.4
       ],
       "pool": {
         "canyon_adder": 1
@@ -827,7 +1167,7 @@
     {
       "pos": [
         -60,
-        20
+        45.7
       ],
       "pool": {
         "canyon_adder": 1
@@ -838,7 +1178,7 @@
     {
       "pos": [
         40,
-        -90
+        -205.7
       ],
       "pool": {
         "canyon_adder": 1
@@ -849,7 +1189,7 @@
     {
       "pos": [
         70,
-        150
+        342.9
       ],
       "pool": {
         "canyon_adder": 1
@@ -860,7 +1200,7 @@
     {
       "pos": [
         -30,
-        -160
+        -365.7
       ],
       "pool": {
         "canyon_adder": 1
@@ -871,7 +1211,7 @@
     {
       "pos": [
         24,
-        110
+        251.4
       ],
       "pool": {
         "gorge_croc": 1
@@ -882,7 +1222,7 @@
     {
       "pos": [
         -2,
-        60
+        137.1
       ],
       "pool": {
         "gorge_croc": 1
@@ -893,7 +1233,7 @@
     {
       "pos": [
         -10,
-        -60
+        -137.1
       ],
       "pool": {
         "gorge_croc": 1
@@ -904,7 +1244,7 @@
     {
       "pos": [
         -40,
-        -110
+        -251.4
       ],
       "pool": {
         "gorge_croc": 1
@@ -915,7 +1255,7 @@
     {
       "pos": [
         -55,
-        -170
+        -388.6
       ],
       "pool": {
         "gorge_croc": 1
@@ -926,7 +1266,7 @@
     {
       "pos": [
         14,
-        150
+        342.9
       ],
       "pool": {
         "gorge_croc": 1
@@ -937,7 +1277,7 @@
     {
       "pos": [
         -110,
-        80
+        198.9
       ],
       "pool": {
         "stonefist_troll": 2,
@@ -949,7 +1289,7 @@
     {
       "pos": [
         -130,
-        100
+        218.9
       ],
       "pool": {
         "stonefist_troll": 2,
@@ -961,7 +1301,7 @@
     {
       "pos": [
         -100,
-        120
+        238.9
       ],
       "pool": {
         "stonefist_troll": 2,
@@ -973,7 +1313,7 @@
     {
       "pos": [
         -140,
-        60
+        178.9
       ],
       "pool": {
         "stonefist_troll": 2,
@@ -985,7 +1325,7 @@
     {
       "pos": [
         -90,
-        90
+        208.9
       ],
       "pool": {
         "stonefist_troll": 2,
@@ -997,7 +1337,7 @@
     {
       "pos": [
         115,
-        -110
+        -283.6
       ],
       "pool": {
         "gorge_griffon": 1
@@ -1008,7 +1348,7 @@
     {
       "pos": [
         145,
-        -130
+        -303.6
       ],
       "pool": {
         "gorge_griffon": 1
@@ -1019,7 +1359,7 @@
     {
       "pos": [
         120,
-        -160
+        -333.6
       ],
       "pool": {
         "gorge_griffon": 1
@@ -1030,7 +1370,7 @@
     {
       "pos": [
         160,
-        -100
+        -273.6
       ],
       "pool": {
         "gorge_griffon": 1
@@ -1041,7 +1381,7 @@
     {
       "pos": [
         95,
-        -140
+        -313.6
       ],
       "pool": {
         "gorge_griffon": 1
@@ -1052,7 +1392,7 @@
     {
       "pos": [
         40,
-        180
+        438.2
       ],
       "pool": {
         "falls_spirit": 1
@@ -1063,7 +1403,7 @@
     {
       "pos": [
         20,
-        170
+        388.6
       ],
       "pool": {
         "falls_spirit": 1
@@ -1074,7 +1414,7 @@
     {
       "pos": [
         60,
-        170
+        428.2
       ],
       "pool": {
         "falls_spirit": 1
@@ -1085,7 +1425,7 @@
     {
       "pos": [
         -180,
-        -70
+        -160
       ],
       "pool": {
         "falls_spirit": 1
@@ -1096,7 +1436,7 @@
     {
       "pos": [
         180,
-        110
+        251.4
       ],
       "pool": {
         "falls_spirit": 1
@@ -1107,7 +1447,7 @@
     {
       "pos": [
         0,
-        130
+        297.1
       ],
       "pool": {
         "falls_spirit": 1
@@ -1119,7 +1459,7 @@
     {
       "pos": [
         30,
-        140
+        320
       ],
       "pool": {
         "falls_spirit": 1
@@ -1131,7 +1471,7 @@
     {
       "pos": [
         -118,
-        96
+        214.9
       ],
       "pool": {
         "chief_grukk": 1
@@ -1142,7 +1482,7 @@
     {
       "pos": [
         135,
-        -150
+        -323.6
       ],
       "pool": {
         "stormcrest": 1
@@ -1153,7 +1493,7 @@
     {
       "pos": [
         40,
-        188
+        446.2
       ],
       "pool": {
         "voice_of_the_falls": 1
@@ -1163,8 +1503,8 @@
     },
     {
       "pos": [
-        -168,
-        -176
+        -176,
+        464
       ],
       "pool": {
         "falls_spirit": 1
@@ -1175,7 +1515,7 @@
     {
       "pos": [
         176,
-        -8
+        32
       ],
       "pool": {
         "canyon_adder": 1
@@ -1186,93 +1526,430 @@
     {
       "pos": [
         -176,
-        176
-      ],
-      "pool": {
-        "stonefist_troll": 2,
-        "stonefist_shaman": 1
-      },
-      "respawn": 110,
-      "wander": 8
-    },
-    {
-      "pos": [
-        -104,
-        -48
+        -304
       ],
       "pool": {
         "falls_spirit": 1
       },
       "respawn": 120,
       "wander": 10
-    },
-    {
-      "pos": [
-        144,
-        176
-      ],
-      "pool": {
-        "falls_spirit": 1
-      },
-      "respawn": 120,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -120,
-        -120
-      ],
-      "pool": {
-        "falls_spirit": 1
-      },
-      "respawn": 120,
-      "wander": 10
-    },
-    {
-      "pos": [
-        -56,
-        176
-      ],
-      "pool": {
-        "stonefist_troll": 2,
-        "stonefist_shaman": 1
-      },
-      "respawn": 110,
-      "wander": 8
     },
     {
       "pos": [
         -176,
-        0
+        -464
       ],
       "pool": {
-        "stonefist_troll": 2,
-        "stonefist_shaman": 1
+        "gorge_croc": 1
       },
-      "respawn": 110,
-      "wander": 8
+      "respawn": 100,
+      "wander": 10
     },
     {
       "pos": [
-        32,
-        -8
-      ],
-      "pool": {
-        "canyon_adder": 1
-      },
-      "respawn": 80,
-      "wander": 12
-    },
-    {
-      "pos": [
-        40,
-        -176
+        176,
+        -464
       ],
       "pool": {
         "gorge_griffon": 1
       },
       "respawn": 120,
       "wander": 14
+    },
+    {
+      "pos": [
+        -176,
+        -24
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        48,
+        -464
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -176,
+        336
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        176,
+        464
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        56,
+        24
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        176,
+        -160
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -88,
+        400
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        168,
+        144
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -176,
+        80
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        176,
+        360
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -72,
+        -56
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        176,
+        -64
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -96,
+        -184
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -144,
+        -384
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        104,
+        216
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        16,
+        -48
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -88,
+        -464
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -72,
+        320
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -96,
+        -312
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        56,
+        -384
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -40,
+        464
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        120
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        16,
+        -304
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -136,
+        -96
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -160,
+        -232
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        120,
+        -208
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        120,
+        -16
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        128,
+        -408
+      ],
+      "pool": {
+        "gorge_griffon": 1
+      },
+      "respawn": 120,
+      "wander": 14
+    },
+    {
+      "pos": [
+        120,
+        288
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -112,
+        0
+      ],
+      "pool": {
+        "canyon_adder": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        128,
+        408
+      ],
+      "pool": {
+        "falls_spirit": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -24,
+        200
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -160,
+        400
+      ],
+      "pool": {
+        "stonefist_troll": 2,
+        "stonefist_shaman": 1
+      },
+      "respawn": 110,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -24,
+        -448
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        8,
+        72
+      ],
+      "pool": {
+        "gorge_croc": 1
+      },
+      "respawn": 100,
+      "wander": 10
     }
+  ],
+  "extent": [
+    448,
+    1024
   ]
 }

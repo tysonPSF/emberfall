@@ -75,14 +75,14 @@ def fill(z, mobs, zid=""):
     npcs = [n["pos"] for n in z.get("npcs", [])] + ([z["bind_point"]] if z.get("bind_point") else [])
     npcs += [l["pos"] for l in z.get("landmarks", []) if l["type"] in ("camp", "outpost", "waystation", "hearth_plaza", "market",
                                                                      "stilt_village", "stilt_city")]
-    half = z.get("size", 512) / 2 - EDGE
+    hx, hz = outline.halves(z)
     edges = outline.load().get(zid)
     grid = []
-    x = -half
-    while x <= half:
-        y = -half
-        while y <= half:
-            if outline.edge_depth(edges, z.get("size", 512) / 2, x, y) <= -(EDGE - outline.FOOT) and not _blocked(z, (x, y), npcs):
+    x = -(hx - EDGE)
+    while x <= hx - EDGE:
+        y = -(hz - EDGE)
+        while y <= hz - EDGE:
+            if outline.edge_depth(edges, (hx, hz), x, y) <= -(EDGE - outline.FOOT) and not _blocked(z, (x, y), npcs):
                 grid.append((x, y))
             y += STEP
         x += STEP

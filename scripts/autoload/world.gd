@@ -2591,7 +2591,7 @@ func request_stuck(player_id: int) -> void:
 			spots.append(Vector2(pt[0], pt[1]))
 	var best := spots[0]
 	for s: Vector2 in spots:
-		if absf(s.x) < z.size * 0.5 - 20.0 and absf(s.y) < z.size * 0.5 - 20.0 and s.distance_to(here) < best.distance_to(here) and z.swim_level(s.x, s.y) == -INF:
+		if absf(s.x) < z.half_x - 20.0 and absf(s.y) < z.half_z - 20.0 and s.distance_to(here) < best.distance_to(here) and z.swim_level(s.x, s.y) == -INF:
 			best = s
 	p.global_position = Vector3(best.x, z.surface_at(best.x, best.y) + 0.5, best.y)
 	p.velocity = Vector3.ZERO
