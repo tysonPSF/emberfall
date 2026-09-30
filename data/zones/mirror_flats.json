@@ -937,6 +937,105 @@
       },
       "respawn": 1200,
       "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "mirror_image": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        -96
+      ],
+      "pool": {
+        "mirage_wisp": 1
+      },
+      "respawn": 80,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -96
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -208
+      ],
+      "pool": {
+        "sky_ray": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        80,
+        208
+      ],
+      "pool": {
+        "salt_crab": 1
+      },
+      "respawn": 90,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -72,
+        208
+      ],
+      "pool": {
+        "duneskiff_nomad": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

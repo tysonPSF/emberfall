@@ -849,6 +849,193 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        72,
+        136
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        56
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -8,
+        -192
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        112,
+        48
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        8,
+        72
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        120,
+        208
+      ],
+      "pool": {
+        "relic_scavenger": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        160,
+        128
+      ],
+      "pool": {
+        "godwar_revenant": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        208,
+        -24
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        -120,
+        -8
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -208,
+        -32
+      ],
+      "pool": {
+        "petrified_warrior": 1
+      },
+      "respawn": 120,
+      "wander": 4
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        128,
+        -16
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
+    },
+    {
+      "pos": [
+        56,
+        -208
+      ],
+      "pool": {
+        "divine_construct": 1
+      },
+      "respawn": 120,
+      "wander": 8
     }
   ]
 }

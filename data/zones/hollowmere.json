@@ -538,6 +538,9 @@
     }
   ],
   "spawns": [
+    {"pos": [176, -88], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-176, -64], "pool": {"mire_toad": 2, "bog_leech": 1}, "respawn": 60, "wander": 12},
+    {"pos": [176, -176], "pool": {"mire_toad": 2, "snapping_turtle": 1}, "respawn": 60, "wander": 14},
     {
       "pos": [
         -60,

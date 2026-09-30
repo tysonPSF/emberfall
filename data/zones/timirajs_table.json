@@ -858,6 +858,215 @@
       },
       "respawn": 3600,
       "wander": 2
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        208,
+        -72
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -80
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        128,
+        -136
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        -128,
+        -144
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        16,
+        112
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        128,
+        -24
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        56,
+        208
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -128,
+        -48
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        96,
+        -208
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        -208
+      ],
+      "pool": {
+        "uninvited_courtier": 1
+      },
+      "respawn": 180,
+      "wander": 4
+    },
+    {
+      "pos": [
+        64,
+        48
+      ],
+      "pool": {
+        "honored_dead": 1
+      },
+      "respawn": 110,
+      "wander": 6
+    },
+    {
+      "pos": [
+        -208,
+        136
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        -8
+      ],
+      "pool": {
+        "unlit_hound": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        192,
+        -8
+      ],
+      "pool": {
+        "star_giant": 1
+      },
+      "respawn": 120,
+      "wander": 10
     }
   ]
 }

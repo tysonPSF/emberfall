@@ -1178,6 +1178,193 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        -64
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        136,
+        -136
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -24,
+        208
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        112
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        16
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        120,
+        -40
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        88,
+        -208
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        -8
+      ],
+      "pool": {
+        "menhir": 1
+      },
+      "respawn": 110,
+      "wander": 4
+    },
+    {
+      "pos": [
+        136,
+        200
+      ],
+      "pool": {
+        "moor_wolf": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -136
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -48,
+        128
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "moor_wyvern": 1
+      },
+      "respawn": 110,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -88,
+        -72
+      ],
+      "pool": {
+        "stone_singer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -88,
+        64
+      ],
+      "pool": {
+        "bog_hag": 1
+      },
+      "respawn": 100,
+      "wander": 10
     }
   ]
 }

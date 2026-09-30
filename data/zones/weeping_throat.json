@@ -797,6 +797,7 @@
   ],
   "npcs": [],
   "spawns": [
+    {"pos": [176, -176], "pool": {"river_troll": 1}, "respawn": 90, "wander": 16},
     {
       "pos": [
         150,

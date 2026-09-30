@@ -1532,6 +1532,17 @@
       },
       "respawn": 900,
       "wander": 4
+    },
+    {
+      "pos": [
+        144,
+        -24
+      ],
+      "pool": {
+        "dustpaw_raider": 1
+      },
+      "respawn": 70,
+      "wander": 10
     }
   ]
 }

@@ -1175,6 +1175,138 @@
       "respawn": 1200,
       "wander": 6,
       "when": "night"
+    },
+    {
+      "pos": [
+        -120,
+        176
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -56,
+        64
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -8,
+        176
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -176,
+        88
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        64,
+        -40
+      ],
+      "pool": {
+        "snow_spirit": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -48,
+        -56
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        176,
+        176
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -96,
+        8
+      ],
+      "pool": {
+        "roc": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -64,
+        136
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        0,
+        104
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        176,
+        -8
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        64,
+        176
+      ],
+      "pool": {
+        "stonebrow_ogre": 1
+      },
+      "respawn": 100,
+      "wander": 12
     }
   ]
 }

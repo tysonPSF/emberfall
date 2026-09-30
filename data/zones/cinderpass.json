@@ -1447,6 +1447,28 @@
       "respawn": 1400,
       "wander": 12,
       "when": "night"
+    },
+    {
+      "pos": [
+        0,
+        24
+      ],
+      "pool": {
+        "ember_cultist": 1
+      },
+      "respawn": 90,
+      "wander": 14
+    },
+    {
+      "pos": [
+        176,
+        160
+      ],
+      "pool": {
+        "charred_dead": 1
+      },
+      "respawn": 85,
+      "wander": 12
     }
   ]
 }

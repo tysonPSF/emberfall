@@ -561,6 +561,7 @@
     }
   ],
   "spawns": [
+    {"pos": [-32, 40], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {
       "pos": [
         -20,

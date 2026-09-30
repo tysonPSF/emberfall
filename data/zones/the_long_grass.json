@@ -918,6 +918,193 @@
       "respawn": 1500,
       "wander": 6,
       "when": "night"
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "dirkhorn": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        8,
+        -160
+      ],
+      "pool": {
+        "hoofborn_rider": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -208,
+        -48
+      ],
+      "pool": {
+        "barrow_wight": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        88
+      ],
+      "pool": {
+        "dirkhorn": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        104,
+        208
+      ],
+      "pool": {
+        "dirkhorn": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "barrow_wight": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -128,
+        -8
+      ],
+      "pool": {
+        "grass_stalker": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -72,
+        -208
+      ],
+      "pool": {
+        "barrow_wight": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "hoofborn_rider": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        88,
+        -208
+      ],
+      "pool": {
+        "hoofborn_archer": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        24,
+        200
+      ],
+      "pool": {
+        "grass_howler": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        152,
+        144
+      ],
+      "pool": {
+        "dirkhorn": 1
+      },
+      "respawn": 100,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        -128
+      ],
+      "pool": {
+        "barrow_wight": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -24,
+        -88
+      ],
+      "pool": {
+        "barrow_wight": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "grass_stalker": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -208,
+        48
+      ],
+      "pool": {
+        "grass_stalker": 1
+      },
+      "respawn": 100,
+      "wander": 16
+    },
+    {
+      "pos": [
+        192,
+        24
+      ],
+      "pool": {
+        "hoofborn_rider": 1
+      },
+      "respawn": 100,
+      "wander": 14
     }
   ]
 }

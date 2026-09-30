@@ -1987,6 +1987,160 @@
       },
       "respawn": 90,
       "wander": 8
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        208,
+        64
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -40,
+        -208
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        208,
+        -120
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -56,
+        208
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        128,
+        208
+      ],
+      "pool": {
+        "marsh_eel": 1
+      },
+      "respawn": 80,
+      "wander": 14
+    },
+    {
+      "pos": [
+        192,
+        136
+      ],
+      "pool": {
+        "bogwing": 1
+      },
+      "respawn": 80,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -128,
+        -208
+      ],
+      "pool": {
+        "pondkin": 1
+      },
+      "respawn": 90,
+      "wander": 10
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "bog_lurker": 1
+      },
+      "respawn": 95,
+      "wander": 10
+    },
+    {
+      "pos": [
+        40,
+        -208
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        136,
+        -208
+      ],
+      "pool": {
+        "reedstalker": 1
+      },
+      "respawn": 85,
+      "wander": 16
+    },
+    {
+      "pos": [
+        -128,
+        208
+      ],
+      "pool": {
+        "sedge_sister": 1
+      },
+      "respawn": 90,
+      "wander": 10
     }
   ]
 }

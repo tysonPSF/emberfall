@@ -689,6 +689,21 @@
     }
   ],
   "spawns": [
+    {"pos": [-208, -176], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-208, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [208, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-112, -208], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-208, -80], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-32, 208], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [40, -208], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [208, 120], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [208, -208], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [208, -120], "pool": {"giant_scorpion": 1}, "respawn": 90, "wander": 6},
+    {"pos": [-88, 40], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-40, -200], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
+    {"pos": [-208, 136], "pool": {"salt_basilisk": 1}, "respawn": 90, "wander": 18},
+    {"pos": [-208, 48], "pool": {"giant_scorpion": 1}, "respawn": 80, "wander": 16},
+    {"pos": [-128, -144], "pool": {"bone_giant": 1}, "respawn": 120, "wander": 6},
     {
       "pos": [
         -60,

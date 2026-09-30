@@ -1054,6 +1054,226 @@
       },
       "respawn": 1500,
       "wander": 6
+    },
+    {
+      "pos": [
+        -208,
+        208
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        208
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -56,
+        192
+      ],
+      "pool": {
+        "tempest_elemental": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        80,
+        168
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        208,
+        -208
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        -208
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -144,
+        112
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        208,
+        104
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        112,
+        -208
+      ],
+      "pool": {
+        "cloud_giant": 1
+      },
+      "respawn": 120,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -208,
+        56
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -128,
+        -200
+      ],
+      "pool": {
+        "cloud_giant": 1
+      },
+      "respawn": 120,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -64,
+        112
+      ],
+      "pool": {
+        "tempest_elemental": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        -136,
+        192
+      ],
+      "pool": {
+        "tempest_elemental": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        64,
+        96
+      ],
+      "pool": {
+        "tempest_elemental": 1
+      },
+      "respawn": 100,
+      "wander": 14
+    },
+    {
+      "pos": [
+        136,
+        120
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -200,
+        -136
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        136,
+        208
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
+    },
+    {
+      "pos": [
+        -208,
+        136
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        -120,
+        48
+      ],
+      "pool": {
+        "sky_pirate": 1
+      },
+      "respawn": 100,
+      "wander": 12
+    },
+    {
+      "pos": [
+        160,
+        -160
+      ],
+      "pool": {
+        "sky_serpent": 1
+      },
+      "respawn": 110,
+      "wander": 18
     }
   ]
 }

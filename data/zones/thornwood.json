@@ -515,6 +515,10 @@
     }
   ],
   "spawns": [
+    {"pos": [168, -208], "pool": {"dire_wolf": 1}, "respawn": 60, "wander": 14},
+    {"pos": [-208, 88], "pool": {"timber_wolf": 3, "thornback_spiderling": 2}, "respawn": 50, "wander": 10},
+    {"pos": [-208, 208], "pool": {"timber_wolf": 3, "thornback_spiderling": 2}, "respawn": 50, "wander": 10},
+    {"pos": [80, -208], "pool": {"skeleton_knight": 1}, "respawn": 90, "wander": 5},
     {
       "pos": [
         60,

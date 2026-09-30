@@ -22,6 +22,14 @@ And don't lean on the stepped `terraces` design for new zones: High
 Terrace lost its steps (their risers were walls, and too many zones
 shared the look). *Tyson 2026-09-29.*
 
+## A zone's whole map should have monsters
+
+Run `python3 tools/zones/spawn_fill.py` after building or changing a zone:
+it reports ground more than ~65 m from any spawn and `--write` fills it
+with the nearest ordinary spawn's monsters (a generator calls `fill()`).
+High Terrace and most 30-50 zones had a third to half of their ground
+empty and felt deserted. *Tyson 2026-09-29.*
+
 ## Gear must get better with the zone
 
 A reward or a drop from a harder zone must beat one from an easier one.
