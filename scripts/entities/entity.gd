@@ -322,15 +322,34 @@ func animate(event: String) -> void:
 			m.play_once(event)
 
 
+## How much bigger than a person a model is drawn (models.json "scale" over
+## its rig's usual one: KayKit bodies are drawn at 0.75, our own creatures at
+## 1): a giant at 1.8 stands twice as tall, so its nameplate rides over its
+## head and its click box fills it. Never below 1, so small creatures stay as
+## easy to click as they were.
+static func _model_size(model_id: String) -> float:
+	var raw: Variant = GameData.models["characters"].get(model_id, {})
+	if raw is String:  # an alias for another model's entry
+		raw = GameData.models["characters"].get(str(raw), {})
+	if not (raw is Dictionary) or not (raw as Dictionary).has("scale"):
+		return 1.0
+	var spec: Dictionary = raw
+	if not spec.has("scale"):
+		return 1.0
+	var usual := 1.0 if str(spec.get("rig", "")) == "own" else CharacterModel.KAYKIT_SCALE
+	return maxf(1.0, float(spec["scale"]) / usual)
+
+
 func build_body(shape: String, color: Color, body_scale: float, model_id := "", weapon_id := "", extra: Dictionary = {}) -> void:
 	look = {"shape": shape, "color": color.to_html(), "scale": body_scale, "model": model_id, "weapon": weapon_id}
 	look.merge(extra, true)  # race, gender, hair: an NPC of a race looks it (npcs.json "race")
 	if worn_gear != null:
 		look["gear"] = worn_gear
 	var is_beetle := shape == "beetle"
-	body_height = (0.95 if is_beetle else 1.85) * body_scale
+	var size := body_scale * _model_size(model_id)
+	body_height = (0.95 if is_beetle else 1.85) * size
 	var capsule := CapsuleShape3D.new()
-	capsule.radius = (0.55 if is_beetle else 0.38) * body_scale
+	capsule.radius = (0.55 if is_beetle else 0.38) * size
 	capsule.height = maxf(body_height, capsule.radius * 2.0)
 	var col := CollisionShape3D.new()
 	col.shape = capsule
