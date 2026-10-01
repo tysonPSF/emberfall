@@ -132,6 +132,7 @@ const SECTIONS := [
 	["hubs_768a", "silted_reach"],
 	["hubs_768b", "hollow_air"],
 	["hubs_small", "greenmoor"],
+	["arrow_flight", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8824,6 +8825,48 @@ func _t_spawn_coverage() -> void:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
 	World.time_override = -1.0
+
+
+## An arrow flies head first along its path, not standing up: its head
+## (the model's +z, turned by Projectile.launch) points where it's going.
+func _t_arrow_flight() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	p.global_position = z.ground(40, 40) + Vector3.UP
+	p.face_toward(Vector3(40, 0, 10))
+	var d: Dictionary = (GameData.mobs["gnoll_scout"] as Dictionary).duplicate(true)
+	d.erase("gear")
+	var mob := Mob.new()
+	mob.setup("gnoll_scout", d, null)
+	mob.aggressive = false
+	mob.position = z.ground(40, 10) + Vector3.UP * 0.2
+	z.add_child(mob)
+	mob.set_physics_process(false)
+	await _wait(0.5)
+	Projectile.launch(p, mob, "arrow")
+	await _wait(0.3)
+	var arrow: Projectile = null
+	for c in z.get_children():
+		if c is Projectile:
+			arrow = c
+	if arrow == null:
+		print("arrow_flight: no arrow in the air")
+	else:
+		var model := arrow.get_child(0) as Node3D
+		var head := model.global_basis.z.normalized()  # the model's head end
+		var going := (mob.global_position + Vector3.UP * 0.7 - arrow.global_position).normalized()
+		print("arrow_flight: head along the flight %.2f (1 = straight at it), head up %.2f (0 = level)" % [head.dot(going), head.y])
+		p.global_position = z.ground(55, 25) + Vector3.UP
+		p.face_toward(arrow.global_position)
+		p.camera_pivot.rotation.y = 0.0
+		p.zoom = 4.0
+		p.pitch = 0.0
+		for k in 3:
+			Projectile.launch(mob, p, "arrow")
+		await _wait(0.12)
+		await _shot("9arrow_flight")
+	mob.queue_free()
 
 
 ## The grown zones' forward camps, guard huts and places (tools/zones/hubs.py):

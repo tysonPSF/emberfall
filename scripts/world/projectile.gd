@@ -25,7 +25,7 @@ static func launch(from: Entity, to: Entity, kind: String) -> void:
 	var path := str(GameData.models.get("projectiles", {}).get(kind, ""))
 	if path != "":
 		var model: Node3D = (load(path) as PackedScene).instantiate()
-		model.rotation_degrees.x = -90.0  # the arrow model points up; fly it nose first
+		model.rotation_degrees.y = 180.0  # the arrow model lies along z, head at +z; look_at aims -z, so turn it to fly head first
 		model.scale = Vector3.ONE * 0.75
 		p.add_child(model)
 	else:

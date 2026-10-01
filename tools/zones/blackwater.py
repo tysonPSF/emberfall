@@ -236,7 +236,7 @@ item("scout_captains_ring", "Scout-Captain's Ring", slot="ring", ac=1, int=2, wi
 item("fenwalker_boots", "Fenwalker Boots", slot="feet", ac=6, sta=2, agi=2, value=1500, rec_level=13, no_drop=True, lore=True, wear="leather_boots")
 item("sisskas_scaled_belt", "Sisska's Scaled Belt", slot="waist", ac=6, str=3, sta=2, hp=20, value=2200, rec_level=16, no_drop=True, lore=True)
 item("gristlewort_amulet", "Gristlewort's Amulet", slot="neck", ac=2, int=3, wis=3, mana=30, value=2200, rec_level=17, no_drop=True, lore=True)
-item("mudjaw_tooth_club", "Mudjaw-Tooth Club", slot="primary", dmg=14, delay=3.0, verb=["crush", "crushes"], model="axe_1handed",
+item("mudjaw_tooth_club", "Mudjaw-Tooth Club", slot="primary", dmg=14, delay=3.0, verb=["crush", "crushes"], model="stonebrow_club",
      skill="1h_blunt", str=3, sta=2, value=3000, rec_level=17, no_drop=True, lore=True)
 
 # ---------------------------------------------------------------- npcs

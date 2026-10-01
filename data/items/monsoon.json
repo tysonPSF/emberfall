@@ -371,7 +371,7 @@
       "bash",
       "bashes"
     ],
-    "model": "axe_2handed",
+    "model": "stonebrow_club",
     "skill": "2h_blunt",
     "str": 2,
     "value": 900,
@@ -386,7 +386,7 @@
       "crush",
       "crushes"
     ],
-    "model": "axe_2handed",
+    "model": "court_maul",
     "skill": "2h_blunt",
     "str": 6,
     "sta": 4,
