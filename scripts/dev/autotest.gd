@@ -147,6 +147,7 @@ const SECTIONS := [
 	["social_chat", "greenmoor"],
 	["cinderpass_hubs", "cinderpass"],
 	["lava_bridges", "cinderpass"],
+	["guard_strength", "emberhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10197,6 +10198,40 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## Guards are an elite of their level (cap + 20): their damage, health and
+## armor come off the monster curve carried past the cap, so one cuts down an
+## ordinary monster of any zone in seconds, not minutes.
+func _t_guard_strength() -> void:
+	var z: Zone = get_parent().zone
+	var guard: Npc = null
+	for c in z.get_children():
+		if c is Npc and not (c as Npc).guard.is_empty():
+			guard = c
+			break
+	print("guard_strength: %s level %d, %d-%d every %.1f s, %d hp, ac %d" % [guard.display_name, guard.level, guard.dmg_min, guard.dmg_max,
+			guard.attack_delay, guard.max_hp, guard.ac])
+	var rows := []
+	for id in ["dire_wolf", "magma_golem", "ivory_colossus"]:
+		var d: Dictionary = (GameData.mobs[id] as Dictionary).duplicate(true)
+		var m := Mob.new()
+		m.setup(id, d, null)
+		m.aggressive = false
+		z.add_child(m)
+		m.global_position = guard.global_position + guard.global_basis.z * -2.0 + Vector3.UP * 0.3
+		await _wait(0.2)
+		guard.fight(m)
+		var t := 0.0
+		while is_instance_valid(m) and not m.dead and t < 120.0:
+			await get_tree().physics_frame
+			t += 1.0 / 60.0
+		rows.append("%s (level %d, %d hp) in %.0f s" % [id, m.level if is_instance_valid(m) else 0, m.max_hp if is_instance_valid(m) else 0, t])
+		guard.auto_attack = false
+		guard.target = null
+		guard.hp = guard.max_hp
+		await _wait(1.0)
+	print("guard_strength: killed %s" % [rows])
 
 
 ## Cinderpass's bridges are stone and you can cross them unburned (only

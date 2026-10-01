@@ -80,6 +80,14 @@ func setup(id: String, name_override := "") -> void:
 	dmg_min = int(dmg[0])
 	dmg_max = int(dmg[1])
 	attack_delay = float(combat.get("delay", 2.5))
+	if not guard.is_empty():  # a guard hits, lasts and turns blows like an elite of its level, whatever npcs.json typed long ago
+		var dps := GameData.typical_beyond("dps", level) * float(World.cfg("guard_damage_mult", 3.0))
+		var avg := dps * attack_delay
+		dmg_min = maxi(dmg_min, roundi(avg * 0.7))
+		dmg_max = maxi(dmg_max, roundi(avg * 1.3))
+		max_hp = maxi(max_hp, roundi(GameData.typical_beyond("hp", level) * float(World.cfg("guard_health_mult", 10.0))))
+		hp = max_hp
+		ac = maxi(ac, roundi(level * 2.4))
 	attack_verb = combat.get("verb", ["slash", "slashes"])
 
 

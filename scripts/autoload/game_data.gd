@@ -335,6 +335,18 @@ func typical_dps(level: int) -> float:
 	return _typical_dps[clampi(level, 1, 70)]
 
 
+## typical_hp / typical_dps carried past the levels any monster reaches (the
+## cap), growing as they do from ten levels below it to the cap: what a guard
+## twenty levels over the cap would be (Npc.setup). kind: "hp" or "dps".
+func typical_beyond(kind: String, level: int) -> float:
+	var top := int(config.get("max_level", 50))
+	var at := func(l: int) -> float: return typical_hp(l) if kind == "hp" else typical_dps(l)
+	if level <= top:
+		return at.call(level)
+	var r := pow(float(at.call(top)) / maxf(float(at.call(top - 10)), 0.001), 0.1)
+	return float(at.call(top)) * pow(r, level - top)
+
+
 ## Merges every .json file in a folder, so content can be split by topic (and
 ## by author) without merge conflicts. An id defined twice is an error.
 func _load_dir(dir: String) -> Dictionary:
