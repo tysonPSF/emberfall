@@ -496,6 +496,24 @@ func _make_remote_player(_peer: int, save: Dictionary) -> Player:
 	return p
 
 
+## Offline: the corpses `owner` left in zones other than `here` (kept in
+## _corpses_by_zone until you go back), taken out to be laid somewhere else
+## (World.summon_corpses).
+func take_saved_corpses(owner: String, here: String) -> Array:
+	var out: Array = []
+	for zone_id: String in _corpses_by_zone.keys():
+		if zone_id == here:
+			continue
+		var keep: Array = []
+		for d: Dictionary in _corpses_by_zone[zone_id]:
+			if str(d.get("owner", "")).to_lower() == owner.to_lower():
+				out.append(d)
+			else:
+				keep.append(d)
+		_corpses_by_zone[zone_id] = keep
+	return out
+
+
 func _server_save_of(p: Player) -> Dictionary:
 	var z := World.zone_of(p)
 	var d := p.to_save()

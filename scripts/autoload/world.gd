@@ -658,6 +658,50 @@ static func hit_sound(e: Entity, hand := "primary") -> String:
 	return "hit_claw" if spec is Dictionary and str((spec as Dictionary).get("rig", "")) == "own" else "hit_blunt"
 
 
+## An admin's /summoncorpse: every corpse of `owner_name` (else the admin's
+## own), in whatever zone it lies, laid at the admin's feet, a step apart,
+## with what's on it and its time left, for its owner to come and loot. On a
+## server the owner must be online: a corpse's place is also kept in its
+## owner's save, and an offline owner's next login would raise it again where
+## it fell. Offline, corpses left in other zones come too (main keeps them).
+func summon_corpses(admin: Player, owner_name: String) -> int:
+	var who := owner_name if owner_name != "" else admin.display_name
+	var owner := _online(who)
+	if Net.mode == "server" and owner == null:
+		say(admin, "%s isn't online. A corpse can only be moved while its owner is in the world (their save remembers where it lies)." % who.capitalize(), C_WARN)
+		return 0
+	if owner != null:
+		who = owner.display_name
+	var here := zone_of(admin)
+	if here == null:
+		return 0
+	var found: Array = []
+	for obj: Variant in objects.values():
+		if obj is Corpse and is_instance_valid(obj) and (obj as Corpse).owner_name.to_lower() == who.to_lower():
+			found.append(obj)
+	var moved: Array = []
+	for c: Corpse in found:
+		var d := c.to_save()
+		moved.append(d)
+		remove_corpse(c)
+	var main := get_tree().current_scene
+	if main != null and main.has_method("take_saved_corpses"):
+		moved.append_array(main.call("take_saved_corpses", who, here.zone_id))  # offline: the ones left in other zones
+	var fwd := -admin.global_basis.z
+	for i in moved.size():
+		var at := admin.global_position + Vector3(fwd.x, 0, fwd.z).normalized() * 1.5 + Vector3(fwd.z, 0, -fwd.x).normalized() * (i - (moved.size() - 1) * 0.5) * 1.2
+		at.y = here.surface_at(at.x, at.z)
+		(moved[i] as Dictionary)["position"] = [at.x, at.y, at.z]
+	here.restore_corpses(moved)
+	if moved.is_empty():
+		say(admin, "%s has no corpse lying anywhere." % who, C_SYSTEM)
+	else:
+		say(admin, "%d corpse%s of %s brought to you." % [moved.size(), "" if moved.size() == 1 else "s", who], C_SYSTEM)
+		if owner != null and owner != admin:
+			say(owner, "Your corpse has been brought to %s in %s." % [admin.display_name, here.zone_name], C_SYSTEM)
+	return moved.size()
+
+
 ## The weapon an entity swings: a player's primary, or what a mob spawned holding.
 static func weapon_item(e: Entity) -> Dictionary:
 	if e is Player:
@@ -4157,6 +4201,11 @@ func request_chat(player_id: int, text: String) -> void:
 				else:
 					_leave_for_elsewhere(p)
 					zone_change.emit(p, found, Vector2.INF, Vector2.INF)
+		"/summoncorpse":  # admin only: /summoncorpse <name> brings every corpse of theirs to your feet
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				summon_corpses(p, rest.strip_edges())
 		"/god":  # testing and admin only: walk the world unhurt and unnoticed
 			if not Net.is_admin(p):
 				say(p, "That command is not available.", C_WARN)

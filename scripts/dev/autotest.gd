@@ -141,6 +141,7 @@ const SECTIONS := [
 	["salt_islands", "mirror_flats"],
 	["quest_areas", "thornwood"],
 	["combat_audio", "greenmoor"],
+	["summon_corpse", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8852,6 +8853,40 @@ func _t_flats_views() -> void:
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
+
+
+## /summoncorpse: an admin brings a player's corpses to their feet, from far
+## off in this zone and (offline) from another zone's saved ones, with what's
+## on them; someone else's stay where they lie.
+func _t_summon_corpse() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	p.global_position = z.ground(10, 10) + Vector3.UP
+	var far := z.ground(150, -120)
+	z.restore_corpses([{"owner": p.display_name, "look": {}, "entries": [{"item": "iron_dagger"}], "coin": 120, "decay_left": 3000.0, "position": [far.x, far.y, far.z]},
+			{"owner": "Somebody", "look": {}, "entries": [], "coin": 5, "decay_left": 3000.0, "position": [far.x + 2, far.y, far.z]}])
+	main._corpses_by_zone["thornwood"] = [{"owner": p.display_name, "look": {}, "entries": [{"item": "wolf_pelt"}], "coin": 0, "decay_left": 3000.0, "position": [0, 0, 0]}]
+	await _wait(0.3)
+	var n := World.summon_corpses(p, "")
+	await _wait(0.3)
+	var near := 0
+	var items := []
+	var stranger_stayed := false
+	for c in z.get_children():
+		if c is Corpse:
+			var cc := c as Corpse
+			if cc.owner_name == p.display_name and cc.global_position.distance_to(p.global_position) < 4.0:
+				near += 1
+				for e: Dictionary in cc.entries:
+					items.append(e["item"])
+			if cc.owner_name == "Somebody" and cc.global_position.distance_to(far) < 3.0:
+				stranger_stayed = true
+	print("summon_corpse: moved %d, %d at your feet holding %s, the other zone's left %d, a stranger's stayed %s" % [n, near, items,
+			(main._corpses_by_zone.get("thornwood", []) as Array).size(), stranger_stayed])
+	for c in z.get_children():
+		if c is Corpse and (c as Corpse).owner_name != "":
+			World.remove_corpse(c)
 
 
 ## The fight you can hear (Sfx, Music): a monster's challenge, swings and
