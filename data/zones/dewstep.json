@@ -107,13 +107,13 @@
     {"type": "prop", "pos": [-214.7, 229], "id": "boulder_b", "collide": "box"},
     {"type": "prop", "pos": [-232.7, 209], "id": "boulder_c", "collide": "box"},
     {"type": "prop", "pos": [-34.4, 92.1], "id": "pilgrim_shelter", "face": [-18.4, 90.1], "collide": "box"},
+    {"type": "signpost", "pos": [-266.0, 10], "face": [-288.0, 10], "labels": ["The Tuskway"]},
     {"type": "outpost", "pos": [-32.4, -136.3], "hubs": true},
     {"type": "prop", "pos": [196, -78], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
     {"type": "prop", "pos": [202, -73], "id": "campfire", "collide": "none", "hubs": true},
     {"type": "prop", "pos": [188, -6], "id": "stone_lantern", "collide": "box", "yaw": 0, "hubs": true},
     {"type": "prop", "pos": [202, -30], "id": "stone_lantern", "collide": "box", "yaw": 0, "hubs": true},
-    {"type": "prop", "pos": [176, -28], "id": "shrine_broken", "collide": "box", "yaw": 90, "hubs": true},
-    {"type": "signpost", "pos": [-266.0, 10], "face": [-288.0, 10], "labels": ["The Tuskway"]}
+    {"type": "prop", "pos": [176, -28], "id": "shrine_broken", "collide": "box", "yaw": 90, "hubs": true}
   ],
   "npcs": [
     {"id": "headpicker_anjali", "pos": [-32.4, -163.9], "face": [-16.4, -167.9]},

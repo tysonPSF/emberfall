@@ -53,14 +53,14 @@
     {"type": "ruins", "pos": [177, -168]},
     {"type": "signpost", "pos": [-225, 12], "yaw": 180, "labels": ["Harrow's Rest", "Greenmoor"]},
     {"type": "signpost", "pos": [45, -84], "yaw": 90, "labels": ["Hollowmere", "Harrow's Rest"]},
+    {"type": "signpost", "pos": [266.0, 10], "face": [288.0, 10], "labels": ["The Tuskway"]},
     {"type": "outpost", "pos": [-137.1, -4.7], "hubs": true},
     {"type": "prop", "pos": [0.0, -179.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
     {"type": "prop", "pos": [6.0, -174.0], "id": "campfire", "collide": "none", "hubs": true},
     {"type": "ruins", "pos": [44, -212], "hubs": true},
     {"type": "prop", "pos": [44, -198], "id": "scarecrow_post", "collide": "box", "yaw": 0, "hubs": true},
     {"type": "prop", "pos": [58, -222], "id": "hay_bale", "collide": "box", "yaw": 0, "hubs": true},
-    {"type": "prop", "pos": [28, -224], "id": "scarecrow_post", "collide": "box", "yaw": 90, "hubs": true},
-    {"type": "signpost", "pos": [266.0, 10], "face": [288.0, 10], "labels": ["The Tuskway"]}
+    {"type": "prop", "pos": [28, -224], "id": "scarecrow_post", "collide": "box", "yaw": 90, "hubs": true}
   ],
   "passes": [[-288, 0, 9], [0, -288, 9], [288.0, 0, 9]],
   "roads": [

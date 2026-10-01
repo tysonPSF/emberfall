@@ -1179,8 +1179,32 @@ def pick_base(z, level):
     return min(sorted(ids), key=lambda m: abs(sum(MOBS_NOW[m]["level"]) / 2 - level))
 
 
-def zone_xp(z):
-    """What the zone's own quests pay: (a repeatable one's xp, coin; a named one's xp, coin), medians."""
+PINNED_XP = {  # place mob id -> (repeatable xp, coin, named xp, coin): what zone_xp gave when each was written, kept so a rerun can't drift
+    "gm_grain_weevil": (80, 50, 90, 20),
+    "hf_field_crow": (220, 40, 560, 120),
+    "hm_marsh_gnats": (700, 120, 1500, 300),
+    "ds_bamboo_viper": (260, 36, 1400, 180),
+    "su_dust_scarab": (3200, 300, 7500, 1000),
+    "wt_rain_panther": (7000, 600, 16000, 2000),
+    "cp_ash_beetle": (4200, 500, 9000, 1200),
+    "wb_crag_lizard": (7200, 800, 16000, 1920),
+    "wl_bog_crawdad": (120, 40, 150, 30),
+    "dk_duskwing": (140, 50, 90, 20),
+    "rf_bloated_dead": (700, 120, 1900, 450),
+    "bm_cairn_raven": (1000, 180, 2800, 650),
+    "cp_slag_hound": (4200, 500, 9000, 1200),
+}
+
+
+def zone_xp(z, key=None):
+    """What the zone's own quests pay: (a repeatable one's xp, coin; a named one's xp, coin), medians.
+    A place already written keeps the value it got then (PINNED_XP, by its mob id `key`): the medians
+    move whenever anyone adds a quest that touches the zone (Nick's line wanting Dewstep's moth wings
+    took Jade-Eye from 1400 xp to 120 on a rerun), and a reward shouldn't change under the players."""
+    if key in PINNED_XP:
+        return tuple(PINNED_XP[key])
+    if key:
+        print("  NEW place %s: zone_xp worked out its reward; pin it in PINNED_XP" % key)
     here = {n["id"] for n in z.get("npcs", [])}
     drops = {l["item"] for s in z["spawns"] for m in s["pool"] for l in MOBS_NOW.get(m, {}).get("loot", [])}
     qs = [q for q in QUESTS_NOW.values() if (q.get("giver") in here or set(q.get("wants", {})) & drops) and q.get("reward", {}).get("xp")]
@@ -1222,7 +1246,7 @@ def light_zone(z, F, spec, hut=None):
     spec["mob"]["level"] = (lv - 1, lv + 1)
     spec["named"]["level"] = (lv + 3, lv + 3)
     spec["giver"] = giver
-    spec["xp"] = spec.get("xp") or zone_xp(z)
+    spec["xp"] = spec.get("xp") or zone_xp(z, spec["mob"]["id"])
     spec["faction"] = spec.get("faction") or {F: 8}
     dia = place(z, F, spec, L, N, S)
     bw.NPCS[giver]["dialogue"].update(dia)
@@ -1394,7 +1418,7 @@ def cinderpass(z):
         "named": {"id": "cp_old_clinkerjaw", "name": "Old Clinkerjaw", "base": pick_base(z, 29), "level": (32, 32), "model": "firehound",
                   "trophy": ("cp_clinkerjaws_tooth", "Old Clinkerjaw's Molten Tooth", "phoenix_ember"), "extra": {"verb": ["bite", "bites"], "scale": 1.8, "color": "#3a2e28"}},
         "reward": ("cp_smeltermans_belt", reward_for(31, "waist", "Smelterman's Belt", "thunderstone_girdle", ("sta", "str"))),
-        "keywords": ("hounds", "clinkerjaw"), "xp": zone_xp(z), "faction": {F: 8},
+        "keywords": ("hounds", "clinkerjaw"), "xp": zone_xp(z, "cp_slag_hound"), "faction": {F: 8},
         "text": _named_lines(_t("Slag Hound Fangs", "slag hound fangs", "Old Clinkerjaw's molten tooth",
                    "Slag hounds, lean and smoking, denned in the old smelter west of here. Four of their fangs and the Forge pays, every time.",
                    "Old Clinkerjaw leads them, half slag himself. The smelter's crew never got out. Bring me the molten tooth out of his jaw."),
