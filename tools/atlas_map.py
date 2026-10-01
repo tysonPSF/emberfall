@@ -187,6 +187,12 @@ def rasterise():
     # lake is something we place on purpose, not a gap in the arithmetic
     m = ndimage.binary_fill_holes(m > 0.5).astype(float)
     m = ndimage.gaussian_filter(m, 4.0)
+    # ...and again after the blur. Softening the edge can pinch a narrow inlet
+    # shut and leave the water behind it stranded as a hole, which marching
+    # squares then draws a coastline around: a lake nobody asked for, sitting
+    # in the middle of a realm.
+    pocket = ndimage.binary_fill_holes(m > 0.5) & (m <= 0.5)
+    m[pocket] = 1.0
     return m, SS
 
 MASK, MSS = rasterise()
