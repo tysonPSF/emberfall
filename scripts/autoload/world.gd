@@ -451,6 +451,8 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 		var avoided := _try_avoid(t as Player, e)
 		if avoided != "":
 			_avoid_msg(e, t as Player, avoided)
+			if avoided != "dodge":
+				t.animate("sfx:" + avoided)  # wood on a shield, steel on steel
 			return
 	var p := e as Player
 	var skill := ""
@@ -474,11 +476,14 @@ func _swing(e: Entity, t: Entity, hand: String) -> void:
 	var dmg := randi_range(lo, hi) if randf() < chance else 0
 	if dmg > 0 and p != null:
 		dmg = maxi(1, dmg + roundi(dmg * 0.3 * (skill_frac(p, skill) - _neutral())))
+	var crit := false
 	if dmg > 0 and randf() < crit_chance(e, "melee"):
 		dmg = roundi(dmg * float(cfg("crit_melee_mult", 2.0)))
 		_crit_msg(e, "melee", dmg)
+		crit = true
 	_combat_msg(e, t, e.attack_verb if hand == "primary" else p.off_verb, dmg)
 	if dmg > 0:
+		t.animate("sfx:%s%s" % [hit_sound(e, hand), "!" if crit else ""])  # the blow, by what landed it (Sfx)
 		damage(t, dmg, e)
 		if hand == "primary":
 			_try_proc(e, t)
@@ -636,6 +641,21 @@ func _avoid_msg(a: Entity, p: Player, how: String) -> void:
 	say(p, "%s tries to %s YOU, but YOU %s!" % [cap(a.display_name), a.attack_verb[0], how], C_MISS)
 	if a is Player:
 		say(a, "You try to %s %s, but %s %ss!" % [a.attack_verb[0], p.display_name, p.display_name, how], C_MISS)
+
+
+## The sound of e's blow landing: by its weapon's skill (an edge, a point, a
+## weight), else a creature's claws and teeth or a person's fists.
+static func hit_sound(e: Entity, hand := "primary") -> String:
+	var item := weapon_item(e) if hand == "primary" or not (e is Player) else GameData.item(str((e as Player).equipment.get("secondary", "")))
+	var skill := str(item.get("skill", ""))
+	if skill.contains("slashing"):
+		return "hit_slash"
+	if skill == "piercing":
+		return "hit_pierce"
+	if skill.contains("blunt"):
+		return "hit_blunt"
+	var spec: Variant = GameData.models["characters"].get(str(e.look.get("model", "")), {})
+	return "hit_claw" if spec is Dictionary and str((spec as Dictionary).get("rig", "")) == "own" else "hit_blunt"
 
 
 ## The weapon an entity swings: a player's primary, or what a mob spawned holding.
@@ -1358,6 +1378,8 @@ func kill(d: Entity, killer: Entity) -> void:
 	if d is Pet:
 		_kill_pet(d as Pet)
 		return
+	if not (d is Player):
+		d.animate("sfx:death")  # its last cry, before it's a corpse (a player's comes with its fall: CharacterModel.pose_dead)
 	d.dead = true
 	d.hp = 0
 	d.dots.clear()
@@ -1698,6 +1720,7 @@ func _ranged_shot(p: Player, t: Entity, mult: float) -> bool:
 			var lodged: Dictionary = t.get_meta("lodged_ammo", {})  # stays in the mob; found on its corpse
 			lodged[ammo_id] = int(lodged.get(ammo_id, 0)) + 1
 			t.set_meta("lodged_ammo", lodged)
+		t.animate("sfx:hit_arrow@%d" % roundi(p.distance_to(t)))  # the thunk, when the arrow gets there (Sfx)
 		damage(t, dmg, p)
 	else:
 		t.add_hate(p, 1.0)  # a miss still gets its attention

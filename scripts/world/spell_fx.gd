@@ -48,6 +48,7 @@ static func update_cast(e: Entity) -> void:
 		var spell: Dictionary = GameData.spells.get(str(e.cast.get("spell", "")), {})
 		var fx: Dictionary = spell.get("fx", {})
 		var color := Color.html(str(fx.get("color", DEFAULTS.get(str(spell.get("type", "")), ["", "#d8c4ff"])[1])))
+		Sfx.cast_changed(e, true)  # and its hum
 		glow = Node3D.new()
 		glow.name = "CastGlow"
 		glow.position = Vector3(0, 1.0, -0.3)
@@ -72,6 +73,7 @@ static func update_cast(e: Entity) -> void:
 		glow.add_child(motes)
 	elif not casting and glow != null:
 		glow.queue_free()
+		Sfx.cast_changed(e, false)
 
 
 func _build(kind: String, color: Color, target: Entity) -> void:

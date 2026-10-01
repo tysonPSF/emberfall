@@ -304,6 +304,9 @@ static func swing_for(weapon_model: String, off_hand := false, skill := "") -> S
 
 func animate(event: String) -> void:
 	Net.broadcast_anim(self, event)
+	Sfx.on_anim(self, event)  # its sound, wherever it's drawn
+	if event.begins_with("sfx:"):
+		return  # a sound only (the rules' "sfx:hit_slash", "sfx:aggro"...)
 	if not (visual is CharacterModel):
 		return
 	var m := visual as CharacterModel

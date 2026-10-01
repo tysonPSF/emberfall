@@ -16,6 +16,7 @@ Controls="*res://scripts/autoload/controls.gd"
 World="*res://scripts/autoload/world.gd"
 Net="*res://scripts/autoload/net.gd"
 Music="*res://scripts/autoload/music.gd"
+Sfx="*res://scripts/autoload/sfx.gd"
 
 [display]
 
