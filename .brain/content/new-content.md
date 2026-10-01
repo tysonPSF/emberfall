@@ -30,6 +30,17 @@ with the nearest ordinary spawn's monsters (a generator calls `fill()`).
 High Terrace and most 30-50 zones had a third to half of their ground
 empty and felt deserted. *Tyson 2026-09-29.*
 
+## A quest boss in a cave that doesn't respawn needs `"always_up"`
+
+A named monster that drops an item a quest wants gets a rare spawn spot
+(a placeholder most of the time, the named 20%). In a `"no_respawn"` zone
+(the Wellspring, the Gloamvein) nothing comes back, so four runs in five
+the boss would never be there and the quest could not be finished, with
+no error; the autotest hides it (`SpawnPoint.always_rare`). Give the
+boss's spawn entry `"always_up": true`. *Found 2026-10-01 building the
+Gloamvein: the Blightmother had been caught by it since rare spawns
+went in on 2026-09-30.*
+
 ## Gear must get better with the zone
 
 A reward or a drop from a harder zone must beat one from an easier one.

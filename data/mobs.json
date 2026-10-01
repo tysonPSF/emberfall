@@ -15160,6 +15160,87 @@
     "boss_music": "blightmother",
     "proc": {"spell": "blight_venom", "chance": 0.15, "text": "%s's fangs pump %s into you!"}
   },
+  "pale_mothling": {
+    "name": "a pale mothling",
+    "level": [3, 5],
+    "hp_base": 16, "hp_per_level": 9, "dmg_min": 2, "dmg_max": 5, "attack_delay": 2.4, "ac": 6, "speed": 6.4,
+    "aggressive": true, "aggro_radius": 8, "social": false, "flees": false, "faction": "lamp_brood",
+    "verb": ["buffet", "buffets"], "shape": "humanoid", "color": "#e8e0f4", "scale": 1.1, "coin": [0, 0],
+    "loot": [{"item": "moth_wing", "chance": 0.3}],
+    "model": "lantern_moth"
+  },
+  "crystal_borer": {
+    "name": "a crystal borer",
+    "level": [4, 6],
+    "hp_base": 20, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.8, "ac": 9, "speed": 5.0,
+    "aggressive": true, "aggro_radius": 8, "social": false, "flees": false, "faction": "crystal_borers",
+    "verb": ["bite", "bites"], "shape": "beetle", "color": "#7a5ab0", "scale": 1.1, "coin": [0, 0],
+    "loot": [],
+    "model": "fire_beetle"
+  },
+  "gloam_shade": {
+    "name": "a gloam shade",
+    "level": [5, 6],
+    "hp_base": 22, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.6, "ac": 9, "speed": 6.0,
+    "aggressive": true, "aggro_radius": 9, "social": false, "flees": false, "faction": "undead",
+    "verb": ["touch", "touches"], "shape": "humanoid", "color": "#707060", "scale": 0.8, "coin": [0, 0],
+    "loot": [{"item": "shade_dust", "chance": 0.4}],
+    "model": "shade"
+  },
+  "glutton_broodling": {
+    "name": "a Lamp-Glutton broodling",
+    "level": [5, 6],
+    "hp_base": 24, "hp_per_level": 10, "dmg_min": 2, "dmg_max": 6, "attack_delay": 2.3, "ac": 10, "speed": 6.6,
+    "aggressive": true, "aggro_radius": 10, "social": true, "flees": false, "faction": "lamp_brood",
+    "verb": ["buffet", "buffets"], "shape": "humanoid", "color": "#f4f0ff", "scale": 1.4, "coin": [0, 0],
+    "loot": [{"item": "moth_wing", "chance": 0.4}],
+    "model": "lantern_moth",
+    "proc": {"spell": "glutton_dust", "chance": 0.08, "text": "%s's wings shed %s!"}
+  },
+  "moth_silk_veil": {
+    "name": "a veil of moth silk",
+    "level": [1, 1],
+    "hp_base": 12, "hp_per_level": 0, "hp_regen": 0, "dmg_min": 0, "dmg_max": 0, "attack_delay": 99, "ac": 0, "speed": 0,
+    "aggressive": false, "aggro_radius": 0, "social": false, "flees": false, "faction": "webs",
+    "verb": ["tangle", "tangles"], "shape": "prop:cobweb", "color": "#dddddd", "scale": 1.6, "coin": [0, 0],
+    "loot": [],
+    "inert": true,
+    "block": [9.0, 5.0]
+  },
+  "hollow_tender": {
+    "name": "the Hollow Tender",
+    "level": [7, 7],
+    "hp_base": 130, "hp_per_level": 0, "dmg_min": 3, "dmg_max": 9, "attack_delay": 2.6, "ac": 14, "speed": 5.4,
+    "aggressive": true, "aggro_radius": 12, "social": false, "flees": false, "faction": "undead",
+    "verb": ["hit", "hits"], "xp_bonus": 2.0, "shape": "skeleton", "color": "#e0dccb", "scale": 1.1, "coin": [20, 70],
+    "loot": [{"item": "hollow_tenders_rod", "chance": 0.6}, {"item": "bone_chips", "chance": 1.0}],
+    "model": "skeleton_mage",
+    "weapon": "wand",
+    "named": true,
+    "spawn_anim": "Spawn_Ground"
+  },
+  "glimmerwing": {
+    "name": "Glimmerwing",
+    "level": [7, 7],
+    "hp_base": 120, "hp_per_level": 0, "dmg_min": 3, "dmg_max": 9, "attack_delay": 2.2, "ac": 14, "speed": 7.0,
+    "aggressive": true, "aggro_radius": 12, "social": false, "flees": false, "faction": "lamp_brood",
+    "verb": ["buffet", "buffets"], "xp_bonus": 2.0, "shape": "humanoid", "color": "#d8c8ff", "scale": 1.9, "coin": [20, 60],
+    "loot": [{"item": "glimmerdust_pendant", "chance": 0.6}, {"item": "moth_wing", "chance": 1.0}],
+    "model": "lantern_moth",
+    "named": true
+  },
+  "lamp_glutton": {
+    "name": "the Lamp-Glutton",
+    "level": [8, 8],
+    "hp_base": 260, "hp_per_level": 0, "hp_regen": 2, "dmg_min": 4, "dmg_max": 10, "attack_delay": 2.6, "ac": 18, "speed": 6.0,
+    "aggressive": true, "aggro_radius": 18, "social": true, "flees": false, "faction": "lamp_brood",
+    "verb": ["batter", "batters"], "xp_bonus": 3.0, "shape": "humanoid", "color": "#f8f4ff", "scale": 2.4, "coin": [80, 220],
+    "loot": [{"item": "stolen_light", "chance": 1.0}, {"item": "painted_lantern", "chance": 1.0}, {"item": "lampglutton_sash", "chance": 0.35}, {"item": "moth_wing", "chance": 1.0, "count": [2, 4]}],
+    "model": "moth_giant",
+    "named": true,
+    "boss_music": "blightmother",
+    "proc": {"spell": "glutton_dust", "chance": 0.15, "text": "%s beats her wings and %s fills the air!"}
+  },
   "march_wolf": {
     "name": "a march wolf",
     "level": [

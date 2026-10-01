@@ -853,6 +853,10 @@ func _dress_cave() -> void:
 			light.omni_range = float(l.get("range", 14.0))
 			light.position = at + Vector3.UP * float(l.get("height", 3.0))
 			add_child(light)
+	var growth: Dictionary = data.get("cave_growth", {})  # what glows along the walls ({prop, color, energy}): sour fungus, or the Gloamvein's pale glowcaps
+	var growth_prop := str(growth.get("prop", "sour_fungus"))
+	var growth_color := Color.html(str(growth.get("color", "#9ed966")))
+	var growth_energy := float(growth.get("energy", 1.1))
 	var since_light := 0.0
 	for spot: Array in tunnel.walk(3.0):
 		var c: Vector2 = spot[0]
@@ -881,11 +885,11 @@ func _dress_cave() -> void:
 			for k in rng.randi_range(2, 4):
 				var bit := at + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.0, 1.2)
 				if tunnel.inside(bit.x, bit.y, -0.8):
-					_prop("sour_fungus", ground(bit.x, bit.y), rng.randf() * TAU, rng.randf_range(0.8, 1.6), "none")
+					_prop(growth_prop, ground(bit.x, bit.y), rng.randf() * TAU, rng.randf_range(0.8, 1.6), "none")
 			if draws:
 				var glow := OmniLight3D.new()
-				glow.light_color = Color(0.62, 0.85, 0.4)
-				glow.light_energy = 1.1
+				glow.light_color = growth_color
+				glow.light_energy = growth_energy
 				glow.omni_range = 9.0
 				glow.distance_fade_enabled = true
 				glow.distance_fade_begin = 45.0

@@ -2174,7 +2174,7 @@ func _journal_page(quest_id: String) -> String:
 		pays.append("%d experience%s" % [roundi(xp), " (less now: you've done it before)" if again else ""])
 	if int(reward.get("coin", 0)) > 0:
 		pays.append(World.format_coin(int(reward["coin"])))
-	var item_id := str(q.get("first_reward_item", ""))
+	var item_id := World.quest_reward_item(q, player.char_class)
 	if item_id != "" and times == 0:
 		pays.append(GameData.item_name(item_id))
 	for fac: String in q.get("faction", {}):

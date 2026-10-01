@@ -936,7 +936,7 @@ func _check_companion(p: Player) -> void:
 	if c != null and c.dead:
 		p.companion_back_at = Time.get_ticks_msec() + 60000
 		p.companion_id = -1
-		say(p, "%s is down! He'll be back on his feet in a minute." % c.display_name, C_WARN)
+		say(p, "%s is down! %s'll be back on %s feet in a minute." % ([c.display_name] + (["She", "her"] if str(c.data.get("gender", "")) == "female" else ["He", "his"])), C_WARN)
 		return
 	if c != null and zone_of(c) == z:
 		return
@@ -5022,7 +5022,7 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	if int(reward.get("coin", 0)) > 0:
 		p.coin += int(reward["coin"])
 		say(p, "You receive %s." % format_coin(int(reward["coin"])), C_LOOT)
-	var item_id := str(q.get("first_reward_item", ""))
+	var item_id := quest_reward_item(q, p.char_class)
 	if state["completions"] == 1 and item_id != "" and can_receive(p, item_id):
 		_npc_say(p, npc, str(q.get("first_complete_text", "Take this as well.")))
 		if not p.pack.add_entry(Pack.entry(item_id)):
@@ -5051,6 +5051,16 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	else:
 		then.call()
 	p.quests_changed.emit()
+
+
+## A quest's first-time item ("first_reward_item"): one item, or {class: item}
+## when each class gets its own (Naevys hands a sentinel's weapon to suit you;
+## "default" is for a class not listed).
+func quest_reward_item(q: Dictionary, char_class: String) -> String:
+	var item: Variant = q.get("first_reward_item", "")
+	if item is Dictionary:
+		return str((item as Dictionary).get(char_class, (item as Dictionary).get("default", "")))
+	return str(item)
 
 
 ## A copy of `npc` ("npc": its npcs.json id) that only p sees gets up where it

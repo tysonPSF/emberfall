@@ -38,6 +38,7 @@ Everything below is conditional. Don't read it speculatively.
 | Edit `data/*.json` with a script (Python, `json.dump`) | [data/editing-json.md](data/editing-json.md) — 20 files don't survive a dump; you'd rewrite the whole file |
 | Make a city a starting city, or change a race's `"home"` | [content/new-content.md](content/new-content.md) — it needs its own bag quest |
 | Build or change a zone, or plan its terrain | [content/new-content.md](content/new-content.md) — ~20 calm level 1-5 monsters in a beginner zone; run `spawn_fill.py` so the whole map has monsters; avoid the stepped terraces |
+| Put a quest's boss in a cave whose monsters don't respawn | [content/new-content.md](content/new-content.md) — its spawn needs `"always_up"`, or it's a placeholder four runs in five |
 | Add items, quest rewards, or a mob's gear | [content/new-content.md](content/new-content.md) — run `tools/item_curve.py`; gear must beat easier zones' |
 | Name or restyle a god, or use Merrick | [content/new-content.md](content/new-content.md) — they're shared with Elephant Grove |
 | Name anything new (monster, spell, item, place) | [conventions.md](conventions.md) — our own theme, no EverQuest proper nouns |

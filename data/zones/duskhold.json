@@ -48,6 +48,31 @@
         282,
         180
       ]
+    },
+    {
+      "pos": [
+        -73.7,
+        62.9
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "to": "gloamvein",
+      "arrive": [
+        128,
+        20
+      ],
+      "arrive_face": [
+        100,
+        30
+      ],
+      "requires_started": "dimming_line_deep",
+      "refused_by": "dusk_naevys",
+      "refused_to": [
+        -60.4,
+        51.5
+      ]
     }
   ],
   "water": {
@@ -337,40 +362,15 @@
       "collide": "box"
     },
     {
-      "type": "prop",
+      "type": "cave",
       "pos": [
-        -28.3,
-        -28.3
+        -68,
+        58
       ],
-      "id": "glow_crystal",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -38.6,
-        -10.4
-      ],
-      "id": "glow_crystal",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -38.6,
-        10.4
-      ],
-      "id": "glow_crystal",
-      "collide": "box"
-    },
-    {
-      "type": "prop",
-      "pos": [
-        -28.3,
-        28.3
-      ],
-      "id": "glow_crystal",
-      "collide": "box"
+      "face": [
+        0,
+        0
+      ]
     },
     {
       "type": "prop",
@@ -1079,6 +1079,72 @@
       "pos": [
         10.3,
         28.2
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dusk_naevys",
+      "pos": [
+        -59,
+        56.2
+      ],
+      "face": [
+        -40,
+        36
+      ]
+    },
+    {
+      "id": "dusk_naevys_shrine",
+      "pos": [
+        4,
+        -9
+      ],
+      "face": [
+        7,
+        -4
+      ]
+    },
+    {
+      "id": "dusk_dim_crystal",
+      "pos": [
+        -28.3,
+        -28.3
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dusk_dim_crystal",
+      "pos": [
+        -38.6,
+        -10.4
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dusk_dim_crystal",
+      "pos": [
+        -38.6,
+        10.4
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dusk_dim_crystal",
+      "pos": [
+        -28.3,
+        28.3
       ],
       "face": [
         0,

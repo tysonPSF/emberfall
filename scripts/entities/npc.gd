@@ -240,9 +240,10 @@ func _update_prop() -> void:
 		glow = OmniLight3D.new()
 		glow.name = "Glow"
 		glow.light_color = Color.html(str(data["light_after"]))
-		glow.light_energy = 2.5
-		glow.omni_range = 26.0
-		glow.position = Vector3(0, 4.0, 0)
+		var light_size: Array = data.get("light_size", [2.5, 26.0, 4.0])  # [energy, range, height]: a city lamp is smaller than the spring crystal
+		glow.light_energy = float(light_size[0])
+		glow.omni_range = float(light_size[1])
+		glow.position = Vector3(0, float(light_size[2]), 0)
 		add_child(glow)
 	elif not lit and glow != null:
 		glow.queue_free()
