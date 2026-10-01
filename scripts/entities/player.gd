@@ -101,6 +101,7 @@ var service_npc_id := -1  # merchant or banker whose window is open
 var service := ""  # "shop" or "bank" while service_npc_id is set
 var bank: Array = []  # BANK_SLOTS entries ({} when empty); bags keep their contents
 var bank_coin := 0
+var guild_bank: Dictionary = {}  # a client's copy of its guild's bank, from World.guild_bank_view (the rules keep the real one in GuildStore)
 var factions: Dictionary = {}  # faction id -> standing, once it moves off the default
 var hostile_npcs: Dictionary = {}  # npc entity ids this player chose to fight
 var attack_confirm_id := -1  # npc awaiting a second Q before attacking

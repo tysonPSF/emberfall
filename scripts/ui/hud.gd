@@ -103,9 +103,18 @@ var _chat_channel := ""  # "" is say; else "/g", "/sh", "/ooc", "/t Name" or "/r
 var _channel_label: Label
 var _log_lines := 0
 var _log_panel: PanelContainer
-var _group_log_panel: PanelContainer  # group chat, its own window while you're in a group
-var _group_log: RichTextLabel
-var _group_log_lines := 0
+var _group_log_panel: PanelContainer  # the chat window: tells, group and guild (_build_group_log)
+var _social_tab := "all"
+var _social_logs: Dictionary = {}  # tab -> RichTextLabel
+var _social_lines: Dictionary = {}  # tab -> line count
+var _social_unread: Dictionary = {}  # tab -> lines come in since you looked
+var _social_buttons: Dictionary = {}  # tab -> Button
+var _social_input: LineEdit
+var _social_to: LineEdit
+var _social_hint: Label
+var _social_closed := false  # you closed it: it stays shut until Y or a tell
+var _social_seen_tell := false
+var _tell_from_re := RegEx.create_from_string("^(\\S+) tells you,")
 var _keyword_re := RegEx.create_from_string("\\[([^\\]]+)\\]")
 
 var _trade_panel: PanelContainer
@@ -134,6 +143,15 @@ var _shop_scroll: ScrollContainer
 var _bank_box: VBoxContainer
 var _bank_grid: GridContainer
 var _bank_coin_label: Label
+var _bank_tabs: HBoxContainer  # Yours / Guild, when you're in a guild
+var _bank_tab_mine: Button
+var _bank_tab_guild: Button
+var _bank_guild_tab := false
+var _gbank_box: VBoxContainer
+var _gbank_grid: GridContainer
+var _gbank_coin_label: Label
+var _gbank_take: Button
+var _gbank_log: RichTextLabel
 var _service_npc: Npc
 
 var _quest_panel: PanelContainer
@@ -298,6 +316,11 @@ func _ready() -> void:
 	World.player_died.connect(_on_player_died)
 	World.service_opened.connect(_on_service_opened)
 	World.service_changed.connect(_refresh_service)
+	World.guild_bank_view.connect(func(view: Dictionary) -> void:
+		player.guild_bank = view
+		if view.is_empty():
+			_bank_guild_tab = false
+		_refresh_service())
 	World.service_closed.connect(func() -> void:
 		_service_panel.visible = false
 		_service_npc = null
@@ -1025,9 +1048,17 @@ func _build_log() -> void:
 	_build_group_log()
 
 
-## Group chat's own window, beside the main one: shown only while you're in a
-## group, so what your group says doesn't scroll away under the fight. The
-## lines still show in the main window too. The button talks to the group.
+## The chat window (Y): tells, group and guild talk in tabs of their own
+## (All has the three together), so they don't scroll away under the fight.
+## Each tab counts what came in while you were looking elsewhere. Its input
+## line talks on the open tab: a tell to the name in To: (filled with whoever
+## last told you something), the group, the guild. It shows itself while
+## you're in a group or a guild, or when a tell arrives, until you close it.
+## The same lines show in the main chat too, unless Settings says not
+## (Controls.social_in_main).
+const SOCIAL_TABS := ["all", "tell", "group", "guild"]
+const SOCIAL_NAMES := {"all": "All", "tell": "Tells", "group": "Group", "guild": "Guild"}
+
 func _build_group_log() -> void:
 	_group_log_panel = UIKit.panel()
 	UIKit.place(_group_log_panel, Vector2(0, 1), Vector2(530, -12))
@@ -1036,27 +1067,148 @@ func _build_group_log() -> void:
 	v.add_theme_constant_override("separation", 4)
 	_group_log_panel.add_child(v)
 	var head := HBoxContainer.new()
-	var title := UIKit.label("Group & Tells", 13, World.C_CHAT_GROUP)
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	head.add_child(title)
-	var talk := UIKit.button("Talk (/g)", Vector2(84, 24))
-	talk.add_theme_font_size_override("font_size", 11)
-	talk.focus_mode = Control.FOCUS_NONE
-	talk.tooltip_text = "Chat to your group: plain lines go to /g until you switch (/s for say)."
-	talk.pressed.connect(func() -> void:
-		_set_channel("/g")
-		_open_chat(""))
-	head.add_child(talk)
+	head.add_theme_constant_override("separation", 3)
+	for tab: String in SOCIAL_TABS:
+		var b := UIKit.button(SOCIAL_NAMES[tab], Vector2(0, 22))
+		b.add_theme_font_size_override("font_size", 11)
+		b.focus_mode = Control.FOCUS_NONE
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.add_theme_color_override("font_color", _social_color(tab))
+		var t := tab
+		b.pressed.connect(func() -> void: _show_social_tab(t))
+		head.add_child(b)
+		_social_buttons[tab] = b
+	var close := UIKit.button("x", Vector2(22, 22))
+	close.focus_mode = Control.FOCUS_NONE
+	close.tooltip_text = "Close the chat window (Y opens it again)."
+	close.pressed.connect(func() -> void:
+		_social_closed = true
+		_group_log_panel.visible = false)
+	head.add_child(close)
 	v.add_child(head)
-	_group_log = RichTextLabel.new()
-	_group_log.custom_minimum_size = Vector2(340, 150)
-	_group_log.scroll_following = true
-	_group_log.selection_enabled = false
-	_group_log.add_theme_font_size_override("normal_font_size", 13)
-	_group_log.meta_underlined = false
-	_group_log.meta_clicked.connect(_on_log_keyword)
-	v.add_child(_group_log)
+	for tab: String in SOCIAL_TABS:
+		var log := RichTextLabel.new()
+		log.custom_minimum_size = Vector2(326, 150)
+		log.scroll_following = true
+		log.selection_enabled = false
+		log.add_theme_font_size_override("normal_font_size", 13)
+		log.meta_underlined = false
+		log.meta_clicked.connect(_on_log_keyword)
+		log.visible = tab == _social_tab
+		v.add_child(log)
+		_social_logs[tab] = log
+		_social_lines[tab] = 0
+		_social_unread[tab] = 0
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_social_to = LineEdit.new()
+	_social_to.placeholder_text = "To"
+	_social_to.custom_minimum_size.x = 80
+	_social_to.add_theme_font_size_override("font_size", 12)
+	row.add_child(_social_to)
+	_social_input = LineEdit.new()
+	_social_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_social_input.max_length = World.CHAT_MAX
+	_social_input.add_theme_font_size_override("font_size", 12)
+	_social_input.text_submitted.connect(_send_social)
+	_social_input.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev.is_action_pressed("cancel"):
+			_social_input.clear()
+			_social_input.release_focus()
+			_social_input.accept_event())
+	row.add_child(_social_input)
+	v.add_child(row)
+	_social_hint = UIKit.label("Pick Tells, Group or Guild to talk there.", 11, UIKit.DIM)
+	v.add_child(_social_hint)
 	_group_log_panel.visible = false
+	_show_social_tab("all")
+
+
+func _social_color(tab: String) -> Color:
+	return {"tell": World.C_CHAT_TELL, "group": World.C_CHAT_GROUP, "guild": World.C_CHAT_GUILD}.get(tab, UIKit.TEXT)
+
+
+## Which tab a chat line belongs in, by its color: "" for none (the main chat only).
+func _social_tab_of(color: Color) -> String:
+	if color == World.C_CHAT_TELL:
+		return "tell"
+	if color == World.C_CHAT_GROUP:
+		return "group"
+	if color == World.C_CHAT_GUILD:
+		return "guild"
+	return ""
+
+
+func _show_social_tab(tab: String) -> void:
+	_social_tab = tab
+	_social_unread[tab] = 0
+	if tab == "all":
+		for t: String in SOCIAL_TABS:
+			_social_unread[t] = 0
+	for t: String in SOCIAL_TABS:
+		(_social_logs[t] as RichTextLabel).visible = t == tab
+		var n := int(_social_unread[t])
+		var b: Button = _social_buttons[t]
+		b.text = SOCIAL_NAMES[t] + (" (%d)" % n if n > 0 else "")
+		UIKit.frame(b, t == tab)
+	_social_to.visible = tab == "tell"
+	_social_input.visible = tab != "all"
+	_social_hint.visible = tab == "all"
+	_social_input.placeholder_text = {"tell": "Enter to send a tell", "group": "Enter to talk to your group", "guild": "Enter to talk to your guild"}.get(tab, "")
+
+
+## A line into the chat window: its own tab and All, counted as unread where you're not looking.
+func _social_line(tab: String, text: String, color: Color) -> void:
+	for t: String in [tab, "all"]:
+		_social_lines[t] = _write_line(_social_logs[t], int(_social_lines[t]), text, color)
+		if t != _social_tab and not (_social_tab == "all" and t == tab):
+			_social_unread[t] = int(_social_unread[t]) + 1
+	if tab == "tell":
+		var m := _tell_from_re.search(text)
+		if m != null:
+			_social_to.text = m.get_string(1)  # a reply goes back to whoever told you last
+			_social_closed = false  # a tell brings the window back
+		_social_seen_tell = true
+	_show_social_tab(_social_tab)
+	_update_social_window()
+
+
+func _send_social(t: String) -> void:
+	var text := t.strip_edges()
+	if text == "":
+		_social_input.release_focus()
+		return
+	var line := ""
+	match _social_tab:
+		"tell":
+			var to := _social_to.text.strip_edges()
+			if to == "":
+				add_log("Who to? Put a name in To: first.", World.C_WARN)
+				return
+			line = "/tell %s %s" % [to, text]
+		"group":
+			line = "/g " + text
+		"guild":
+			line = "/gu " + text
+	if line != "":
+		World.request_chat(player.entity_id, line)
+	_social_input.clear()
+	_social_input.release_focus()
+
+
+## Shown while you're in a group or a guild, or once a tell has come, unless you closed it.
+func _update_social_window() -> void:
+	if _group_log_panel == null or player == null:
+		return
+	var wanted := not player.group.is_empty() or player.guild_name != "" or _social_seen_tell
+	_group_log_panel.visible = wanted and not _social_closed
+
+
+func _toggle_social() -> void:
+	_social_closed = _group_log_panel.visible
+	_group_log_panel.visible = not _group_log_panel.visible
+	if _group_log_panel.visible and _social_tab != "all":
+		_social_input.grab_focus.call_deferred()
 
 
 ## Chat channels stick, as in EQ's chat windows: using /g (or /sh, /ooc,
@@ -1127,7 +1279,7 @@ func _build_group_window() -> void:
 func _update_group() -> void:
 	var others := player.group.filter(func(m: Dictionary) -> bool: return int(m["id"]) != player.entity_id)
 	_group_panel.visible = not player.group.is_empty()
-	_group_log_panel.visible = not player.group.is_empty()
+	_update_social_window()
 	var shape := str(player.group.map(func(m: Dictionary) -> String: return "%s:%s" % [m["id"], m["leader"]]))
 	if shape != _group_shape:
 		_group_shape = shape
@@ -2379,6 +2531,8 @@ func _build_service_window() -> void:
 	_service_title = UIKit.label("", 15, UIKit.GOLD)
 	v.add_child(_service_title)
 	_service_hint = UIKit.label("", 12, UIKit.DIM)
+	_service_hint.autowrap_mode = TextServer.AUTOWRAP_WORD  # a long hint (the guild bank's) wraps rather than widening the window
+	_service_hint.custom_minimum_size.x = 330
 	v.add_child(_service_hint)
 	_train_tabs = HBoxContainer.new()
 	_train_tabs.add_theme_constant_override("separation", 6)
@@ -2407,6 +2561,23 @@ func _build_service_window() -> void:
 	_sell_cursor.pressed.connect(func() -> void: World.request_sell(player.entity_id, "cursor"))
 	v.add_child(_sell_cursor)
 	_sell_cursor.visible = false
+	_bank_tabs = HBoxContainer.new()
+	_bank_tabs.add_theme_constant_override("separation", 6)
+	_bank_tab_mine = UIKit.button("Your bank", Vector2(0, 26))
+	_bank_tab_mine.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bank_tab_mine.pressed.connect(func() -> void:
+		_bank_guild_tab = false
+		_refresh_service())
+	_bank_tabs.add_child(_bank_tab_mine)
+	_bank_tab_guild = UIKit.button("Guild bank", Vector2(0, 26))
+	_bank_tab_guild.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bank_tab_guild.pressed.connect(func() -> void:
+		_bank_guild_tab = true
+		_refresh_service())
+	_bank_tabs.add_child(_bank_tab_guild)
+	_bank_tabs.visible = false
+	v.add_child(_bank_tabs)
+	_build_guild_bank_box(v)
 	_bank_box = VBoxContainer.new()
 	v.add_child(_bank_box)
 	_bank_grid = GridContainer.new()
@@ -2430,6 +2601,59 @@ func _build_service_window() -> void:
 	_service_panel.visible = false
 
 
+## The guild bank's side of the bank window: its 40 slots ("gk:<n>"), its
+## coin, and the last deposits and withdrawals.
+func _build_guild_bank_box(v: VBoxContainer) -> void:
+	_gbank_box = VBoxContainer.new()
+	_gbank_box.add_theme_constant_override("separation", 4)
+	v.add_child(_gbank_box)
+	_gbank_grid = GridContainer.new()
+	_gbank_grid.columns = 8
+	_gbank_box.add_child(_gbank_grid)
+	_gbank_coin_label = UIKit.label("", 13, UIKit.GOLD)
+	_gbank_box.add_child(_gbank_coin_label)
+	var coin_row := HBoxContainer.new()
+	var put := UIKit.button("Put in all coin")
+	put.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	put.pressed.connect(func() -> void: World.request_guild_bank_coin(player.entity_id, player.coin))
+	_gbank_take = UIKit.button("Take all coin")
+	_gbank_take.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_gbank_take.pressed.connect(func() -> void: World.request_guild_bank_coin(player.entity_id, -int(player.guild_bank.get("bank_coin", 0))))
+	coin_row.add_child(put)
+	coin_row.add_child(_gbank_take)
+	_gbank_box.add_child(coin_row)
+	_gbank_box.add_child(UIKit.label("Recent", 12, UIKit.DIM))
+	_gbank_log = RichTextLabel.new()
+	_gbank_log.custom_minimum_size = Vector2(330, 90)
+	_gbank_log.scroll_following = true
+	_gbank_log.add_theme_font_size_override("normal_font_size", 11)
+	_gbank_box.add_child(_gbank_log)
+	_gbank_box.visible = false
+
+
+func _refresh_guild_bank() -> void:
+	var view := player.guild_bank
+	if _gbank_grid.get_child_count() == 0:
+		for i in GuildStore.BANK_SLOTS:
+			_gbank_grid.add_child(_make_slot("gk:%d" % i, "", 38))
+	var can := bool(view.get("can_withdraw", false))
+	_gbank_coin_label.text = "In the guild bank: %s" % _coin_text(int(view.get("bank_coin", 0)))
+	_gbank_take.disabled = not can
+	_gbank_take.tooltip_text = "" if can else "Only officers and the leader can take coin out."
+	_service_hint.text = "%s's bank. Everyone can put things in (click a slot with an item held, or shift-click it in your bags)%s." % [view.get("name", "Your guild"),
+			"; click a slot to take it out" if can else "; officers and the leader take things out"]
+	_gbank_log.clear()
+	var now := int(Time.get_unix_time_from_system())
+	var lines: Array = view.get("bank_log", [])
+	for i in range(lines.size() - 1, -1, -1):  # newest first
+		var l: Dictionary = lines[i]
+		var ago := now - int(l.get("at", now))
+		var when := "just now" if ago < 60 else ("%d min ago" % (ago / 60) if ago < 3600 else ("%d h ago" % (ago / 3600) if ago < 86400 else "%d d ago" % (ago / 86400)))
+		_gbank_log.append_text("[color=#d8d8d0]%s[/color] %s  [color=#8a8a84]%s[/color]\n" % [l.get("who", "?"), l.get("what", ""), when])
+	if lines.is_empty():
+		_gbank_log.append_text("[color=#8a8a84]Nothing yet.[/color]")
+
+
 func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_npc = npc
 	var titles := {"shop": npc.display_name, "bank": "%s  -  Hearthbank" % npc.display_name,
@@ -2441,6 +2665,9 @@ func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_hint.text = hints[kind]
 	_shop_scroll.visible = kind != "bank"
 	_bank_box.visible = kind == "bank"
+	_bank_guild_tab = false
+	_bank_tabs.visible = false
+	_gbank_box.visible = false
 	_train_tabs.visible = kind == "guild"
 	_train_known_tab = false  # open on what's left to learn
 	_service_panel.visible = true
@@ -2519,6 +2746,17 @@ func _refresh_service() -> void:
 			row.add_child(bundle)
 			_shop_list.add_child(row)
 	else:
+		var in_guild := not player.guild_bank.is_empty()
+		_bank_tabs.visible = in_guild
+		_bank_guild_tab = _bank_guild_tab and in_guild
+		UIKit.frame(_bank_tab_mine, not _bank_guild_tab)
+		UIKit.frame(_bank_tab_guild, _bank_guild_tab)
+		_bank_box.visible = not _bank_guild_tab
+		_gbank_box.visible = _bank_guild_tab
+		if _bank_guild_tab:
+			_refresh_guild_bank()
+		else:
+			_service_hint.text = "Click items in your bags to deposit them; click a bank slot to take it back."
 		if _bank_grid.get_child_count() == 0:
 			for i in player.bank.size():
 				_bank_grid.add_child(_make_slot("k:%d" % i, ""))
@@ -2852,6 +3090,8 @@ func _quick_action(place: String) -> void:
 		World.request_unequip(id, place.get_slice(":", 1))
 	elif kind == "k":
 		World.request_bank_withdraw(id, int(place.get_slice(":", 1)))
+	elif kind == "gk":
+		World.request_guild_bank_withdraw(id, int(place.get_slice(":", 1)))
 	elif kind == "t":
 		World.request_click(id, place)
 	elif World.trading(player):
@@ -2862,6 +3102,8 @@ func _quick_action(place: String) -> void:
 		World.request_click(id, place)
 	elif player.service == "shop":
 		World.request_sell(id, place)
+	elif player.service == "bank" and _bank_guild_tab:
+		World.request_guild_bank_deposit(id, place)
 	elif player.service == "bank":
 		World.request_bank_deposit(id, place)
 	else:
@@ -3051,6 +3293,13 @@ func _refresh_settings() -> void:
 	_settings_rows.add_child(note)
 	_settings_rows.add_child(_music_row("[ ]   Music"))
 	_settings_rows.add_child(_music_row("[ ]   Sounds", true))
+	var social := CheckBox.new()
+	social.text = "Tells, group and guild in the main chat too (they always show in the chat window, Y)"
+	social.button_pressed = Controls.social_in_main
+	social.focus_mode = Control.FOCUS_NONE
+	social.add_theme_font_size_override("font_size", 12)
+	social.toggled.connect(func(on: bool) -> void: Controls.set_social_in_main(on))
+	_settings_rows.add_child(social)
 	var reset := UIKit.button("Reset window positions", Vector2(0, 30))
 	reset.tooltip_text = "Puts every window you've dragged back where it started."
 	reset.pressed.connect(func() -> void: UIKit.reset_windows(root))
@@ -3503,9 +3752,12 @@ func _has_ammo(kind: String) -> bool:
 ## Appends a chat line. [Bracketed] words become gold links; clicking one says
 ## that keyword to your target, like typing it in EverQuest.
 func add_log(text: String, color: Color) -> void:
+	var tab := _social_tab_of(color)
+	if tab != "" and not _social_logs.is_empty():  # tells, group and guild: their own window too
+		_social_line(tab, text, color)
+		if not Controls.social_in_main:
+			return
 	_log_lines = _write_line(_log, _log_lines, text, color)
-	if (color == World.C_CHAT_GROUP or color == World.C_CHAT_TELL) and _group_log != null:  # group chat and tells also get their own window
-		_group_log_lines = _write_line(_group_log, _group_log_lines, text, color)
 
 
 ## Writes one line into a chat window, links and all; returns its new line count.
@@ -3883,6 +4135,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("guild"):
 		_toggle_guild()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("chat_window"):
+		_toggle_social()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("journal"):
 		_toggle_journal()
