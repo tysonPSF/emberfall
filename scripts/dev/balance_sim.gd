@@ -387,7 +387,7 @@ func _summarize(row: Dictionary) -> void:
 	row["pet_deaths"] = int(sum.call("pet_died"))
 	var lvl := int(row["level"])
 	var per_kill := float(World.cfg("xp_base", 10)) + lvl * lvl * float(World.cfg("xp_per_mob_level_sq", 5))
-	var to_level := float(World.cfg("xp_per_level_sq", 100)) * lvl * lvl
+	var to_level := float(Player.xp_for(lvl))
 	row["kills_per_level"] = to_level / per_kill
 	# a death costs a tenth of a level and a run back (call it five minutes)
 	var death_rate := float(row["deaths"]) / n

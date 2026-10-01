@@ -45,6 +45,8 @@
   "elders_blessing": {"xp_pct": 15, "until_level": 15},
   "xp_rate": 1.0,
   "xp_per_level_sq": 100,
+  "xp_curve_from": 10,
+  "xp_curve_growth": 0.0667,
   "xp_base": 10,
   "xp_per_mob_level_sq": 5,
   "death_xp_loss": 0.1,

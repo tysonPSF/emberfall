@@ -610,7 +610,17 @@ func encumbrance_speed() -> float:
 
 
 func xp_to_next() -> int:
-	return int(float(World.cfg("xp_per_level_sq", 100)) * level * level)
+	return xp_for(level)
+
+
+## Experience to go from `lv` to the next level: xp_per_level_sq x level^2,
+## which a level's monsters (5 x their level^2 each) pay back in about the same
+## twenty kills at every level, so past `xp_curve_from` (10) each level also
+## asks `xp_curve_growth` (1/15) more again per level beyond it: about 2x the
+## kills by 25, 3.7x by 50, leveling slowing as you climb (2026-10-01).
+static func xp_for(lv: int) -> int:
+	var grow := 1.0 + maxf(0.0, lv - float(World.cfg("xp_curve_from", 10))) * float(World.cfg("xp_curve_growth", 0.0667))
+	return int(float(World.cfg("xp_per_level_sq", 100)) * lv * lv * grow)
 
 
 ## Blessing of the Elders: every character is born with it and keeps it until
