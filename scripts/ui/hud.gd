@@ -213,6 +213,8 @@ var _track_radius := 0.0
 var _track_refresh := 0.0
 var _compass: Compass
 var _map: MapWindow
+var _inside_timer := 0.0
+var _inside_was := ""  # the tracker lines whose circle you're in (_inside_key)
 var _pet_name: Label
 var _pet_bar: ProgressBar
 var _pet_text: Label
@@ -3205,6 +3207,13 @@ func _process(delta: float) -> void:
 			World.request_guild(player.entity_id, "view")
 	_banner_time -= delta
 	_banner.modulate.a = clampf(_banner_time, 0.0, 1.0)
+	_inside_timer -= delta
+	if _inside_timer <= 0.0 and player != null:
+		_inside_timer = 1.0
+		var key := _inside_key()
+		if key != _inside_was:
+			_inside_was = key
+			_refresh_quests()
 	if player == null:
 		_crosshair.visible = false
 		return
@@ -3550,7 +3559,9 @@ func _refresh_quests() -> void:
 		for item_id: String in q["wants"]:
 			var need := int(q["wants"][item_id])
 			var done := int(have[item_id]) >= need
-			lines.append("[url=item:%s:%s][color=#%s]  %s  %d/%d[/color][/url]" % [quest_id, item_id, "8fe08f" if done else "d8d8d0", GameData.item_name(item_id), have[item_id], need])
+			var here := not done and QuestHints.inside(player, quest_id, item_id, _zone_id())  # in its circle on the map: gold
+			lines.append("[url=item:%s:%s][color=#%s]  %s  %d/%d%s[/color][/url]" % [quest_id, item_id, "8fe08f" if done else ("e8c060" if here else "d8d8d0"),
+					GameData.item_name(item_id), have[item_id], need, "  (here)" if here else ""])
 		if World.quest_items_ready(player, quest_id):
 			var takers: Array = [str(q["giver"])] + Array(q.get("also_taken_by", []))
 			lines.append("[color=#8fe08f]  Trade them to %s (G)[/color]" % " or ".join(takers.map(func(id: String) -> String: return str(GameData.npcs.get(id, {}).get("name", id)))))
@@ -3558,8 +3569,26 @@ func _refresh_quests() -> void:
 	_quest_panel.visible = not lines.is_empty()
 
 
-## A click on the quest tracker: an item says where it's found, a quest's
-## name where its giver stands. Written to your own chat only.
+func _zone_id() -> String:
+	var z := World.zone_of(player) if player != null else null
+	return z.zone_id if z != null else ""
+
+
+## Which tracker lines are in their circle now, so the tracker is redrawn
+## only when you walk into or out of one.
+func _inside_key() -> String:
+	var key := ""
+	for quest_id: String in player.quests:
+		if player.quests[quest_id].get("active", false) and GameData.quests.has(quest_id):
+			for item_id: String in GameData.quests[quest_id]["wants"]:
+				if QuestHints.inside(player, quest_id, item_id, _zone_id()):
+					key += quest_id + item_id + ","
+	return key
+
+
+## A click on the quest tracker: an item says where it's found (and opens the
+## map on its circle when there's one here), a quest's name where its giver
+## stands. Written to your own chat only.
 func _on_quest_hint(meta: Variant) -> void:
 	var parts := str(meta).split(":")
 	var z := World.zone_of(player)
@@ -3571,6 +3600,8 @@ func _on_quest_hint(meta: Variant) -> void:
 		lines = [QuestHints.giver_hint(parts[1], here, player.global_position)]
 	for line in lines:
 		add_log(line, World.C_XP)
+	if parts[0] == "item" and parts.size() == 3:
+		_map.focus_area(parts[1], parts[2])
 
 
 func _on_loot_opened(c: Corpse) -> void:

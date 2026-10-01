@@ -138,6 +138,7 @@ const SECTIONS := [
 	["squawkzilla", "mirror_flats"],
 	["rare_spawns", "thornwood"],
 	["salt_islands", "mirror_flats"],
+	["quest_areas", "thornwood"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8849,6 +8850,59 @@ func _t_flats_views() -> void:
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
+
+
+## Where a quest's monsters are: the hint names a rare spawn's placeholder,
+## a click on the tracker opens the map on a loose circle round the spot (it
+## really holds it), the tracker line goes gold inside it; and across every
+## zone, every named that carries a quest item gets a circle that holds its spot.
+func _t_quest_areas() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	World._accept_quest(p, "grolthars_necklace")
+	var hint := "\n".join(QuestHints.item_hint("grolthars_necklace", "grolthars_tusk_necklace", z.zone_id, p.global_position))
+	print("quest_areas: hint: %s" % hint)
+	var spot := Vector2.ZERO
+	for e: Dictionary in z.data["spawns"]:
+		if (e["pool"] as Dictionary).has("grolthar"):
+			spot = Vector2(e["pos"][0], e["pos"][1])
+	var a: Dictionary = QuestHints.areas("grolthars_necklace", "grolthars_tusk_necklace")[0]
+	print("quest_areas: circle %s, %.0f m across, %.0f m from his spot (holds it %s)" % [a["label"], float(a["radius"]) * 2.0,
+			spot.distance_to(a["center"]), spot.distance_to(a["center"]) < float(a["radius"])])
+	p.global_position = Vector3(0, z.height_at(0, 0) + 1.0, 0)
+	main.hud._on_quest_hint("item:grolthars_necklace:grolthars_tusk_necklace")
+	await _wait(1.5)
+	print("quest_areas: map open %s on the circle %s" % [main.hud._map.visible, main.hud._map._area_focus >= 0])
+	await _shot("9zw_quest_area_map")
+	main.hud._map.visible = false
+	var c: Vector2 = a["center"]
+	p.global_position = Vector3(c.x, z.surface_at(c.x, c.y) + 1.0, c.y)
+	await _wait(2.5)
+	print("quest_areas: tracker inside the circle: %s" % main.hud._quest_label.text.contains("(here)"))
+	await _shot("9zw_quest_area_tracker")
+	# every named quest-item carrier in the world: a circle holding its spot
+	var missing := []
+	var with_ph := 0
+	var total := 0
+	for zone_id: String in QuestHints.zones():
+		var zd: Dictionary = QuestHints.zones()[zone_id]
+		for e: Dictionary in zd.get("spawns", []):
+			for mob_id: String in (e["pool"] as Dictionary):
+				if not GameData.is_quest_boss(mob_id):
+					continue
+				var pos := Vector2(e["pos"][0], e["pos"][1])
+				for qid: String in GameData.quests:
+					for item_id: String in GameData.quests[qid]["wants"]:
+						if not (GameData.mobs[mob_id].get("loot", []) as Array).any(func(l: Dictionary) -> bool: return str(l.get("item", "")) == item_id):
+							continue
+						total += 1
+						if not QuestHints.areas(qid, item_id).any(func(ar: Dictionary) -> bool: return ar["zone"] == zone_id and pos.distance_to(ar["center"]) < float(ar["radius"])):
+							missing.append("%s/%s" % [zone_id, mob_id])
+				if not SpawnPoint.rare_spot(zd["spawns"], e).is_empty():
+					with_ph += 1
+	print("quest_areas: %d named quest drops, %d without a circle holding the spot %s; %d rare spots" % [total, missing.size(), missing.slice(0, 5), with_ph])
+	World.request_quest_abandon(p.entity_id, "grolthars_necklace")
 
 
 ## Mirror Flats' salt-crust islands are solid ("hull"): you walk up the rim

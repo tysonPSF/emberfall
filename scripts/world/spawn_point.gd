@@ -68,6 +68,46 @@ func on_mob_died() -> void:
 	_timer = INF if respawn_time < 0.0 else respawn_time * randf_range(0.85, 1.15)  # < 0: never, until the zone is built again
 
 
+## Whether a zone's spawn entry is a quest boss's rare spot, and if so
+## {named, pool (its placeholder), alone (the named had the spot to itself)};
+## empty when it isn't. The placeholder is the monsters of the nearest
+## ordinary spawn up at the same time of day (or the rest of its pool, where
+## the named was weighted into its camp's, as Grolthar's), unless the entry
+## names its own "placeholder" {mob: weight}. Group bosses ("min_players")
+## and finales ("always_up") stand always. The rules (Zone._make_rare) and
+## the quest hints (QuestHints) both read it, so they never disagree.
+static func rare_spot(spawns: Array, entry: Dictionary) -> Dictionary:
+	var pool: Dictionary = entry["pool"]
+	var bosses := pool.keys().filter(func(id: String) -> bool: return GameData.is_quest_boss(id))
+	if bosses.size() != 1 or entry.get("always_up", false):
+		return {}
+	var named := str(bosses[0])
+	var m: Dictionary = GameData.mobs[named]
+	if m.has("min_players") or m.get("always_up", false):
+		return {}
+	var ph: Dictionary = entry.get("placeholder", {})
+	var alone := pool.size() == 1
+	if ph.is_empty() and not alone:
+		ph = pool.duplicate()
+		ph.erase(named)
+	if ph.is_empty():
+		var at := Vector2(float(entry["pos"][0]), float(entry["pos"][1]))
+		var best := INF
+		for other: Dictionary in spawns:
+			var opool: Dictionary = other["pool"]
+			if opool.keys().any(func(id: String) -> bool: return not GameData.mobs.has(id) or bool(GameData.mobs[id].get("named", false))):
+				continue
+			var d := at.distance_to(Vector2(float(other["pos"][0]), float(other["pos"][1])))
+			if str(other.get("when", "")) != str(entry.get("when", "")):
+				d += 1000.0  # a day spawn only stands in for a night named when nothing else will
+			if d < best:
+				best = d
+				ph = opool
+	if ph.is_empty():
+		return {}
+	return {"named": named, "pool": ph, "alone": alone}
+
+
 func _pick() -> String:
 	var total := 0.0
 	for w: float in pool.values():

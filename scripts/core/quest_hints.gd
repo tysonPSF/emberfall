@@ -55,7 +55,7 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 		var common: Array[String] = []
 		var common_at: Array[Vector2] = []
 		var common_night := true
-		var named: Dictionary = {}  # mob id -> [positions, night only]
+		var named: Dictionary = {}  # mob id -> [positions, night only, its rare spot's placeholder pool or {}]
 		for s: Dictionary in z.get("spawns", []):
 			var pos := Vector2(float(s["pos"][0]), float(s["pos"][1]))
 			var night := str(s.get("when", "")) == "night"
@@ -63,9 +63,12 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 				if mob_id not in droppers:
 					continue
 				if GameData.mobs[mob_id].get("named", false):
-					var n: Array = named.get(mob_id, [[], true])
+					var n: Array = named.get(mob_id, [[], true, {}])
 					(n[0] as Array).append(pos)
 					n[1] = bool(n[1]) and night
+					var rare := SpawnPoint.rare_spot(z.get("spawns", []), s)
+					if not rare.is_empty():
+						n[2] = rare["pool"]
 					named[mob_id] = n
 				else:
 					if mob_id not in common:
@@ -75,12 +78,21 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 		var zone_name := str(z.get("name", zone_id.capitalize()))
 		if not common.is_empty():
 			var who := _list(common.map(func(m: String) -> String: return _plural(str(GameData.mobs[m]["name"]))))
-			out.append("%s: %s drop them in %s, %s%s." % [name, who, zone_name, _region(z, common_at, zone_id == here, at),
-					" (only at night)" if common_night else ""])
+			out.append("%s: %s drop them in %s, %s%s.%s" % [name, who, zone_name, _region(z, common_at, zone_id == here, at),
+					" (only at night)" if common_night else "",
+					" Circled on your map (M)." if zone_id == here and areas(quest_id, item_id).any(func(a: Dictionary) -> bool: return a["zone"] == zone_id) else ""])
 		for mob_id: String in named:
 			var n: Array = named[mob_id]
-			out.append("%s: %s carries %s in %s, %s%s." % [name, GameData.mobs[mob_id]["name"], "one" if common.is_empty() else "them too",
-					zone_name, _region(z, n[0], zone_id == here, at), " (only at night)" if n[1] else ""])
+			var who := str(GameData.mobs[mob_id]["name"])
+			var line := "%s: %s carries %s in %s, %s%s." % [name, who, "one" if common.is_empty() else "them too",
+					zone_name, _region(z, n[0], zone_id == here, at), " (only at night)" if n[1] else ""]
+			var ph: Dictionary = n[2]
+			if not ph.is_empty():  # a rare spawn: say what stands in its place, so nobody thinks it's gone
+				var holders := _list(ph.keys().map(func(m: String) -> String: return _plural(str(GameData.mobs[m]["name"]))))
+				line += " Not always there: %s hold the spot. Keep clearing them, and sooner or later the one you want shows up." % holders
+			if zone_id == here:
+				line += " Its haunt is circled on your map (M)."
+			out.append(line)
 		var fish: Dictionary = z.get("fish", {})
 		if fish.has(item_id):
 			out.append("%s: fished from the water in %s (a fishing pole and bait)." % [name, zone_name])
@@ -102,6 +114,98 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 	if out.is_empty():
 		out.append("%s: nobody seems to know where these come from." % name)
 	return out
+
+
+## Rough circles on a zone's map where `item_id` for `quest_id` is to be had
+## from monsters: one round each named that carries it, one round the
+## ordinary ones that drop it (none when they're all over the zone). Each is
+## {zone, center, radius, label, quest, item}, deliberately loose: at least
+## 60 m across the spots' spread, its middle nudged off them by up to a third
+## of that (the same nudge every time), so it says where to look, not where
+## it stands.
+static func areas(quest_id: String, item_id: String) -> Array:
+	var key := quest_id + ":" + item_id
+	if _areas.has(key):
+		return _areas[key]
+	var out: Array = []
+	var droppers: Array[String] = []
+	for mob_id: String in GameData.mobs:
+		for l: Dictionary in GameData.mobs[mob_id].get("loot", []):
+			if str(l.get("item", "")) == item_id:
+				droppers.append(mob_id)
+				break
+	for zone_id: String in zones():
+		var z: Dictionary = zones()[zone_id]
+		var groups: Dictionary = {}  # mob id (a named) or "" (the ordinary ones) -> positions
+		for s: Dictionary in z.get("spawns", []):
+			var pos := Vector2(float(s["pos"][0]), float(s["pos"][1]))
+			for mob_id: String in (s.get("pool", {}) as Dictionary):
+				if mob_id in droppers:
+					var g := mob_id if GameData.mobs[mob_id].get("named", false) else ""
+					var list: Array = groups.get(g, [])
+					list.append(pos)
+					groups[g] = list
+		var size := float(z.get("size", 384.0))
+		for g: String in groups:
+			var spots: Array = groups[g]
+			var c := Vector2.ZERO
+			for p: Vector2 in spots:
+				c += p
+			c /= spots.size()
+			var spread := 0.0
+			for p: Vector2 in spots:
+				spread = maxf(spread, p.distance_to(c))
+			if g == "" and spots.size() > 2 and spread > size * 0.4:
+				continue  # all over the zone: no circle would help
+			var radius := clampf(spread + 35.0, 60.0, 160.0)
+			var rng := RandomNumberGenerator.new()
+			rng.seed = hash(key + zone_id + g)
+			var nudge := Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.15, 0.33) * radius
+			var label := ""
+			if g != "":
+				label = _cap(str(GameData.mobs[g]["name"])) + "'s haunt"
+			else:
+				var names: Array = []
+				for s: Dictionary in z.get("spawns", []):
+					for mob_id: String in (s.get("pool", {}) as Dictionary):
+						if mob_id in droppers and not GameData.mobs[mob_id].get("named", false) and _plural(str(GameData.mobs[mob_id]["name"])) not in names:
+							names.append(_plural(str(GameData.mobs[mob_id]["name"])))
+				label = _cap(_list(names.slice(0, 2)))
+			out.append({"zone": zone_id, "center": c + nudge, "radius": radius, "label": label, "quest": quest_id, "item": item_id})
+	_areas[key] = out
+	return out
+
+
+static var _areas: Dictionary = {}  # "quest:item" -> areas(), worked out once (the data doesn't change)
+
+
+## The areas for every item still wanted on p's active quests in `zone_id`.
+static func open_areas(p: Player, zone_id: String) -> Array:
+	var out: Array = []
+	for quest_id: String in p.quests:
+		if not p.quests[quest_id].get("active", false) or not GameData.quests.has(quest_id):
+			continue
+		var have := World.quest_progress(p, quest_id)
+		var wants: Dictionary = GameData.quests[quest_id]["wants"]
+		for item_id: String in wants:
+			if int(have[item_id]) >= int(wants[item_id]):
+				continue
+			for a: Dictionary in areas(quest_id, item_id):
+				if a["zone"] == zone_id:
+					out.append(a)
+	return out
+
+
+## Whether p stands inside one of the areas for this quest's item, here.
+static func inside(p: Player, quest_id: String, item_id: String, zone_id: String) -> bool:
+	for a: Dictionary in areas(quest_id, item_id):
+		if a["zone"] == zone_id and Vector2(p.global_position.x, p.global_position.z).distance_to(a["center"]) <= float(a["radius"]):
+			return true
+	return false
+
+
+static func _cap(t: String) -> String:
+	return t.left(1).to_upper() + t.substr(1)
 
 
 ## Where a quest's giver stands, for handing it in; or, if someone in the

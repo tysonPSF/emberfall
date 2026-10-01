@@ -2743,47 +2743,17 @@ func _build_spawns() -> void:
 		add_child(sp)
 
 
-## A quest boss's spot becomes a rare spawn (SpawnPoint.rare): it puts up a
-## placeholder, the monsters of the nearest ordinary spawn (one up at the same
-## time of day, if there is one; a spot that already mixed its named into a
-## pool keeps the rest), and now and then the named instead; a lone named's
-## spot comes back `rare_respawn_div` (5) times as fast, so on average the
-## named is up about as often as before, but you work for it. A spawn's
-## "placeholder" ({mob: weight}) picks its own; group bosses ("min_players")
-## and finales ("always_up" in mobs.json) stand there always.
+## A quest boss's spot becomes a rare spawn (SpawnPoint.rare, worked out by
+## SpawnPoint.rare_spot): it puts up a placeholder and now and then the named
+## instead; a lone named's spot comes back `rare_respawn_div` (5) times as
+## fast, so on average the named is up about as often as before, but you work for it.
 func _make_rare(sp: SpawnPoint, entry: Dictionary) -> void:
-	var pool: Dictionary = entry["pool"]
-	var bosses := pool.keys().filter(func(id: String) -> bool: return GameData.is_quest_boss(id))
-	if bosses.size() != 1 or entry.get("always_up", false):
+	var r := SpawnPoint.rare_spot(data.get("spawns", []), entry)
+	if r.is_empty():
 		return
-	var named := str(bosses[0])
-	var m: Dictionary = GameData.mobs[named]
-	if m.has("min_players") or m.get("always_up", false):
-		return
-	var ph: Dictionary = entry.get("placeholder", {})
-	var alone := pool.size() == 1
-	if ph.is_empty() and not alone:  # the old way, the named weighted into its camp's pool (Grolthar among his raiders): the rest stand in
-		ph = pool.duplicate()
-		ph.erase(named)
-		alone = false
-	if ph.is_empty():
-		var at := Vector2(float(entry["pos"][0]), float(entry["pos"][1]))
-		var best := INF
-		for other: Dictionary in data.get("spawns", []):
-			var opool: Dictionary = other["pool"]
-			if opool.keys().any(func(id: String) -> bool: return not GameData.mobs.has(id) or bool(GameData.mobs[id].get("named", false))):
-				continue
-			var d := at.distance_to(Vector2(float(other["pos"][0]), float(other["pos"][1])))
-			if str(other.get("when", "")) != str(entry.get("when", "")):
-				d += 1000.0  # a day spawn only stands in for a night named when nothing else will
-			if d < best:
-				best = d
-				ph = opool
-	if ph.is_empty():
-		return
-	sp.rare = named
-	sp.pool = ph
-	if sp.respawn_time > 0.0 and alone:  # (a mixed pool's spot already comes back at its camp's pace)
+	sp.rare = str(r["named"])
+	sp.pool = r["pool"]
+	if sp.respawn_time > 0.0 and r["alone"]:  # (a mixed pool's spot already comes back at its camp's pace)
 		sp.respawn_time = maxf(60.0, sp.respawn_time / float(World.cfg("rare_respawn_div", 5.0)))
 
 

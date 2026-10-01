@@ -5,7 +5,9 @@ extends PanelContainer
 ## as brown lines, the mountain ring darkened. On it: you (an arrow), your
 ## group and pet, the zone's exits, its landmarks, and town services
 ## (guildmasters, merchants, bankers, quest givers, crafting stations), with a
-## legend beside it. Fog covers what this character hasn't walked near;
+## legend beside it, and loose circles where your quests' monsters are to be
+## found (QuestHints.areas: drawn over the fog, as if you'd been told where to
+## look; a click on a quest item in the tracker opens the map on its circle). Fog covers what this character hasn't walked near;
 ## explored ground is remembered per character on this computer.
 ##
 ## The painting is made the first time you open the map in a zone, a few rows
@@ -44,6 +46,11 @@ var _reveal_timer := 0.0
 var _center := Vector2.ZERO  # the world point in the middle of the view
 var _span := 384.0  # meters across the view (the wheel zooms, a drag pans)
 var _dragging := false
+var _areas: Array = []  # QuestHints.open_areas for this zone: where your quests' monsters are, roughly
+var _area_focus := -1  # the circle a tracker click asked for
+var _area_check := 0.0
+static var show_areas := true  # the legend's Show / Hide, for this session
+const AREA_INK := Color(0.62, 0.16, 0.08)
 
 
 func _init() -> void:
@@ -117,7 +124,9 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	position = ((get_parent() as Control).size - size) * 0.5  # always in the middle of the screen
-	if z != _zone:
+	_area_check -= delta
+	if z != _zone or _area_check <= 0.0:
+		_area_check = 1.0  # a quest item looted while the map is open takes its circle away
 		_prepare()
 	if _texture == null and _painted.has(z.zone_id):
 		_texture = _painted[z.zone_id]
@@ -143,6 +152,37 @@ func _prepare() -> void:
 		_span = (z.size - 50.0) * (0.55 if city else 1.0)  # the land inside the mountains; a town closer in
 		if city:
 			_center = Vector2(player.global_position.x, player.global_position.z)
+	var areas := QuestHints.open_areas(player, z.zone_id)
+	if areas != _areas:  # quests taken up or finished since: the circles and the legend follow
+		_areas = areas
+		_area_focus = -1
+		_build_marks(z)
+	_canvas.queue_redraw()
+
+
+## Opens the map on the circle for this quest's item, if there's one in this
+## zone (a tracker click); false when there isn't.
+func focus_area(quest_id: String, item_id: String) -> bool:
+	if player == null or World.zone_of(player) == null:
+		return false
+	visible = true
+	_prepare()
+	for i in _areas.size():
+		var a: Dictionary = _areas[i]
+		if a["quest"] == quest_id and a["item"] == item_id:
+			_show_area(i)
+			return true
+	visible = false
+	return false
+
+
+func _show_area(i: int) -> void:
+	var a: Dictionary = _areas[i]
+	_area_focus = i
+	show_areas = true
+	_center = a["center"]
+	_span = clampf(float(a["radius"]) * 4.0, 160.0, _zone.size)
+	_build_marks(_zone)
 	_canvas.queue_redraw()
 
 
@@ -285,8 +325,38 @@ func _build_marks(z: Zone) -> void:
 			_highlight = idx if _highlight != idx else -1
 			_canvas.queue_redraw())
 		_legend.add_child(b)
-	if _marks.is_empty():
+	if _marks.is_empty() and _areas.is_empty():
 		_legend.add_child(UIKit.label("Nothing marked here yet.", 12, UIKit.DIM))
+	if _areas.is_empty():
+		return
+	var head := HBoxContainer.new()
+	var h := UIKit.label("Quest areas", 12, UIKit.DIM)
+	h.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(h)
+	var toggle := Button.new()
+	toggle.flat = true
+	toggle.focus_mode = Control.FOCUS_NONE
+	toggle.text = "Hide" if show_areas else "Show"
+	toggle.add_theme_font_size_override("font_size", 11)
+	toggle.pressed.connect(func() -> void:
+		show_areas = not show_areas
+		_build_marks(_zone)
+		_canvas.queue_redraw())
+	head.add_child(toggle)
+	_legend.add_child(head)
+	for i in _areas.size():
+		var a: Dictionary = _areas[i]
+		var b := Button.new()
+		b.flat = true
+		b.focus_mode = Control.FOCUS_NONE
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.text = "o  %s" % a["label"]
+		b.tooltip_text = "%s: %s" % [GameData.quests[a["quest"]]["name"], GameData.item_name(str(a["item"]))]
+		b.add_theme_font_size_override("font_size", 12)
+		b.add_theme_color_override("font_color", AREA_INK.lightened(0.45) if i != _area_focus else AREA_INK.lightened(0.7))
+		var idx := i
+		b.pressed.connect(func() -> void: _show_area(idx))
+		_legend.add_child(b)
 
 
 static func _glyph(kind: String) -> String:
@@ -413,6 +483,8 @@ func _draw_map() -> void:
 		_canvas.draw_string(font, Vector2(0, VIEW - 14), "Charting the land...", HORIZONTAL_ALIGNMENT_CENTER, VIEW, 12, Color(INK, 0.6))
 	_draw_shapes()
 	_draw_zone_texture(_fog_tex())  # soft clouds over what you haven't seen
+	if show_areas:
+		_draw_areas(font)
 	# a thin gold frame and a compass rose in the corner
 	_canvas.draw_rect(rect.grow(-1), Color(0.75, 0.6, 0.32, 0.9), false, 1.5)
 	var rose := Vector2(VIEW - 34, 34)
@@ -476,6 +548,29 @@ func _draw_map() -> void:
 	var arrow := PackedVector2Array([me + dir * 11.0, me - dir * 7.0 + side * 7.0, me - dir * 3.0, me - dir * 7.0 - side * 7.0])
 	_canvas.draw_colored_polygon(arrow, Color(0.75, 0.12, 0.08))
 	_canvas.draw_polyline(arrow + PackedVector2Array([arrow[0]]), Color(PARCHMENT, 0.9), 1.5)
+
+
+## Your quests' circles: a faint wash and a dashed red-ink ring, its name on
+## top; the one a tracker click asked for drawn bolder.
+func _draw_areas(font: Font) -> void:
+	var k := VIEW / _span
+	for i in _areas.size():
+		var a: Dictionary = _areas[i]
+		var c := _to_view(a["center"])
+		var r := float(a["radius"]) * k
+		var bold := i == _area_focus
+		_canvas.draw_circle(c, r, Color(AREA_INK, 0.13 if bold else 0.08))
+		var dashes := 36
+		for d in dashes:
+			var t0 := TAU * d / dashes
+			_canvas.draw_arc(c, r, t0, t0 + TAU / dashes * 0.6, 4, Color(AREA_INK, 0.85 if bold else 0.6), 2.6 if bold else 1.8, true)
+		var label: String = a["label"]
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+		var at := c + Vector2(-w * 0.5, -r - 5)
+		at.x = clampf(at.x, 6, VIEW - w - 6)
+		at.y = clampf(at.y, 16, VIEW - 6)
+		_canvas.draw_string_outline(font, at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 4, Color(1, 0.97, 0.9, 0.85))
+		_canvas.draw_string(font, at, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, AREA_INK)
 
 
 ## Water, roads and decks as smooth shapes from the zone's own data, so their
