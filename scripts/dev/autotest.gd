@@ -143,6 +143,8 @@ const SECTIONS := [
 	["combat_audio", "greenmoor"],
 	["summon_corpse", "greenmoor"],
 	["evil_kin", "greenmoor"],
+	["guild_bank", "emberhold"],
+	["social_chat", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -2052,7 +2054,7 @@ func _t_groupchat() -> void:
 	World.log_message.emit("A black bear claws YOU for 9 points of damage.", World.C_HIT_YOU)
 	World.log_message.emit("You tell your party, '{item:silkfangs_fang} dropped, anyone want it?'", World.C_CHAT_GROUP)
 	World.log_message.emit("You say, 'hello'", World.C_CHAT_SAY)
-	print("groupchat: grouped -> window shown %s; it holds %d lines: %s" % [hud._group_log_panel.visible, hud._group_log_lines, hud._group_log.get_parsed_text().replace("\n", " | ")])
+	print("groupchat: grouped -> window shown %s; it holds %d lines: %s" % [hud._group_log_panel.visible, int(hud._social_lines["all"]), (hud._social_logs["all"] as RichTextLabel).get_parsed_text().replace("\n", " | ")])
 	var talk: Button = hud._group_log_panel.find_children("*", "Button", true, false)[0]
 	talk.pressed.emit()
 	print("groupchat: Talk button -> channel '%s', typing %s" % [hud._chat_channel, hud.is_typing()])
@@ -5376,15 +5378,15 @@ func _t_races() -> void:
 ## and system lines stay in the main chat.
 func _t_group_window() -> void:
 	var hud: Node = get_parent().hud
-	var before: int = hud._group_log_lines
+	var before: int = int(hud._social_lines["all"])
 	for pair: Array in [["You begin to use your homeward stone.", World.C_SPELL], ["You feel yourself pulled back to your bind point.", World.C_SPELL],
 			["You hit a gnoll pup for 5 points of damage.", World.C_YOU_HIT], ["You have entered Emberhold.", World.C_SYSTEM], ["The rally's fire fades.", World.C_SPELL]]:
 		hud.add_log(pair[0], pair[1])
-	var after_other: int = hud._group_log_lines
+	var after_other: int = int(hud._social_lines["all"])
 	hud.add_log("Jewy tells the group, 'sweeet'", World.C_CHAT_GROUP)
 	hud.add_log("Jewy tells you, 'meet at the bank'", World.C_CHAT_TELL)
 	hud.add_log("You told Jewy, 'on my way'", World.C_CHAT_TELL)
-	print("group_window: 5 spell/combat/system lines -> %d in the window; a group line and two tells -> %d" % [after_other - before, hud._group_log_lines - after_other])
+	print("group_window: 5 spell/combat/system lines -> %d in the window; a group line and two tells -> %d" % [after_other - before, int(hud._social_lines["all"]) - after_other])
 	hud._group_panel.visible = true
 	await _wait(0.3)
 	await _shot("9zz_group_window")
@@ -9970,6 +9972,118 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## The guild bank at a city banker: the leader puts items and coin in and
+## takes them out; a member may put in but not take out (nor swap); NO DROP
+## stays out; everything is logged and saved with the guild; the Guild tab
+## shows 40 slots; a guild with things in its bank can't be disbanded.
+func _t_guild_bank() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://guilds_autotest.json"))
+	World._guild_store = null
+	var gs := World.guilds()
+	gs.found("Vault Keepers", World._roster_line(p))
+	World._set_guild_tag(p)
+	var key := gs.key_of(p.display_name)
+	var banker: Npc = _npcs()["banker_odile"]
+	_stand_by(p, banker)
+	World.request_interact(p.entity_id)
+	await _wait(0.3)
+	var hud = main.hud
+	hud._bank_guild_tab = true
+	hud._refresh_service()
+	var tab_shown: bool = hud._bank_tabs.visible and hud._gbank_box.visible
+	var slots: int = hud._gbank_grid.get_child_count()
+	# the leader: in by the cursor, in by shift-click, coin in, then one out
+	p.pack.add("iron_dagger")
+	p.pack.add("bone_chips", 5)
+	p.cursor = Pack.entry("iron_dagger")
+	p.pack.remove("iron_dagger", 1)
+	World.request_click(p.entity_id, "gk:0")
+	var chips_at := ""
+	for i in p.pack.slots.size():
+		if str((p.pack.slots[i] as Dictionary).get("item", "")) == "bone_chips":
+			chips_at = "g:%d" % i
+	World.request_guild_bank_deposit(p.entity_id, chips_at)
+	p.coin = 1000
+	World.request_guild_bank_coin(p.entity_id, 600)
+	var g := gs.bank_of(key)
+	var after_in := [str(g["bank"][0].get("item", "")), str(g["bank"][1].get("item", "")), int(g["bank_coin"]), p.coin]
+	World.request_guild_bank_withdraw(p.entity_id, 1)
+	var leader_took := p.pack.count("bone_chips") == 5 and (g["bank"][1] as Dictionary).is_empty()
+	# a member: may put in, not take out
+	gs.set_rank(p.display_name, "member")
+	World.request_guild_bank_withdraw(p.entity_id, 0)
+	World.request_click(p.entity_id, "gk:0")
+	var member_kept_out := p.cursor.is_empty() and str(g["bank"][0].get("item", "")) == "iron_dagger"
+	World.request_guild_bank_coin(p.entity_id, -100)
+	var coin_stayed := int(g["bank_coin"]) == 600
+	p.cursor = Pack.entry("bone_chips", 2)
+	p.pack.remove("bone_chips", 2)
+	World.request_click(p.entity_id, "gk:0")  # a taken slot: no swap for a member
+	var no_swap := str(g["bank"][0].get("item", "")) == "iron_dagger" and str(p.cursor.get("item", "")) == "bone_chips"
+	World.request_click(p.entity_id, "gk:5")  # an empty one: fine
+	var member_put := str(g["bank"][5].get("item", "")) == "bone_chips"
+	p.cursor = Pack.entry("abbots_seal")
+	World.request_click(p.entity_id, "gk:6")
+	var no_drop_out := (g["bank"][6] as Dictionary).is_empty()
+	p.cursor = {}
+	await _wait(0.3)
+	await _shot("9zw_guild_bank")
+	gs.set_rank(p.display_name, "leader")
+	var saved: Variant = JSON.parse_string(FileAccess.get_file_as_string("user://guilds_autotest.json"))
+	var on_disk := str((saved as Dictionary).get(key, {}).get("bank", [{}])[0].get("item", ""))
+	World.request_guild(p.entity_id, "disband")
+	World.request_guild(p.entity_id, "disband")
+	var still := gs.guilds.has(key)
+	print("guild_bank: Guild tab %s with %d slots; leader put in %s" % [tab_shown, slots, after_in])
+	print("guild_bank: leader took one out %s; a member kept from taking %s, from coin %s, from swapping %s, may put in %s; NO DROP kept out %s" % [leader_took,
+			member_kept_out, coin_stayed, no_swap, member_put, no_drop_out])
+	print("guild_bank: saved to disk %s; %d log lines, newest: %s; disband refused while it holds things %s" % [on_disk, (g["bank_log"] as Array).size(),
+			(g["bank_log"] as Array).back(), still])
+	World.request_service_close(p.entity_id)
+	gs.disband(key)
+	World._set_guild_tag(p)
+
+
+## The chat window: tells, group and guild lines in their tabs and in All,
+## unread counts on the others, a tell fills To:, the main chat leaves them
+## out when Settings says, and the guild tab talks to the guild.
+func _t_social_chat() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud = main.hud
+	hud._show_social_tab("group")
+	hud.add_log("Ilvara tells you, 'meet me at the bridge'", World.C_CHAT_TELL)
+	hud.add_log("Brannoc tells the guild, 'raid at dusk'", World.C_CHAT_GUILD)
+	hud.add_log("Corran tells the group, 'pull'", World.C_CHAT_GROUP)
+	var unread: Dictionary = hud._social_unread.duplicate()
+	var to: String = hud._social_to.text
+	var shown: bool = hud._group_log_panel.visible
+	var keep_main: bool = Controls.social_in_main
+	Controls.social_in_main = false
+	var main_before: String = hud._log.get_parsed_text()
+	hud.add_log("Ilvara tells you, 'hurry'", World.C_CHAT_TELL)
+	var main_clean: bool = hud._log.get_parsed_text() == main_before
+	Controls.social_in_main = keep_main
+	hud._show_social_tab("tell")
+	var tells: String = (hud._social_logs["tell"] as RichTextLabel).get_parsed_text().replace("\n", " | ")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://guilds_autotest.json"))
+	World._guild_store = null
+	World.guilds().found("Chatty Folk", World._roster_line(p))
+	World._set_guild_tag(p)
+	hud._show_social_tab("guild")
+	hud._send_social("hello, guild")
+	await _wait(0.2)
+	var guild_log: String = (hud._social_logs["guild"] as RichTextLabel).get_parsed_text()
+	print("social_chat: unread while on Group %s; To: %s; window shown %s; main chat left out when asked %s" % [unread, to, shown, main_clean])
+	print("social_chat: tells tab: %s" % tells)
+	print("social_chat: talked in the guild tab -> %s" % ("You say to your guild, 'hello, guild'" in guild_log))
+	await _shot("9zw_social_chat")
+	World.guilds().disband(World.guilds().key_of(p.display_name))
+	World._set_guild_tag(p)
 
 
 ## The evil races among their own: a fresh dark elf, troll and ogre, of every

@@ -7,8 +7,13 @@ extends RefCounted
 ## class, last zone, when last seen) and the gods they've earned, so the
 ## Grove can share them with guildmates who aren't online (World.grove_sees).
 ## Ranks: "leader" (one), "officer", "member".
+## The guild bank lives with the guild: "bank" (BANK_SLOTS entries, {} for an
+## empty slot, bags with their contents), "bank_coin" and "bank_log" (the
+## last BANK_LOG deposits and withdrawals: {at, who, what}).
 
 const RANKS := ["member", "officer", "leader"]  # lowest first: a rank's index is its power
+const BANK_SLOTS := 40
+const BANK_LOG := 100
 
 var path := ""
 var guilds: Dictionary = {}
@@ -105,6 +110,43 @@ func touch(char_name: String, fields: Dictionary) -> void:
 		if line.get(k) != fields[k]:
 			line[k] = fields[k]
 			_dirty = true
+
+
+## The guild's bank (its dictionary, with "bank", "bank_coin" and "bank_log"
+## made if it had none); {} for no guild.
+func bank_of(key: String) -> Dictionary:
+	if not guilds.has(key):
+		return {}
+	var g: Dictionary = guilds[key]
+	if not g.has("bank"):
+		g["bank"] = []
+	var slots: Array = g["bank"]
+	while slots.size() < BANK_SLOTS:
+		slots.append({})
+	for i in slots.size():  # JSON brings counts back as floats
+		if not (slots[i] as Dictionary).is_empty():
+			slots[i]["count"] = int(slots[i].get("count", 1))
+	g["bank_coin"] = int(g.get("bank_coin", 0))
+	if not g.has("bank_log"):
+		g["bank_log"] = []
+	return g
+
+
+func bank_empty(key: String) -> bool:
+	var g := bank_of(key)
+	return g.is_empty() or (int(g["bank_coin"]) <= 0 and (g["bank"] as Array).all(func(e: Dictionary) -> bool: return e.is_empty()))
+
+
+## A line in the bank's log, then saved at once: what's in the bank is never left to a later save.
+func bank_note(key: String, who: String, what: String) -> void:
+	var g := bank_of(key)
+	if g.is_empty():
+		return
+	var log: Array = g["bank_log"]
+	log.append({"at": int(Time.get_unix_time_from_system()), "who": who, "what": what})
+	while log.size() > BANK_LOG:
+		log.remove_at(0)
+	save()
 
 
 func save_if_dirty() -> void:

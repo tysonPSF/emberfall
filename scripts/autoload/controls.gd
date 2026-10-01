@@ -55,6 +55,7 @@ const BINDINGS := {
 	"spellbook": [KEY_P],
 	"friends": [KEY_F],
 	"guild": [KEY_U],
+	"chat_window": [KEY_Y],
 	"journal": [KEY_J],
 }
 
@@ -79,6 +80,8 @@ var mouse_look := true
 var music_volume := 0.25
 ## Sound effects' loudness, 0..1 (0 is off). Saved per machine.
 var sfx_volume := 0.7
+## Tells, group and guild lines in the main chat as well as the chat window (Y). Saved per machine.
+var social_in_main := true
 
 ## Hotbars locked: no dragging slots around or off by accident. Saved per machine.
 var hotbar_locked := false
@@ -109,6 +112,11 @@ func set_music_volume(v: float) -> void:
 	Music.apply_volume()
 
 
+func set_social_in_main(on: bool) -> void:
+	social_in_main = on
+	_save_setting("social_in_main", on)
+
+
 func set_sfx_volume(v: float) -> void:
 	sfx_volume = clampf(snappedf(v, 0.05), 0.0, 1.0)
 	_save_setting("sfx_volume", sfx_volume)
@@ -137,6 +145,7 @@ func _load_settings() -> void:
 		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
 		music_volume = clampf(float((parsed as Dictionary).get("music_volume", 0.25)), 0.0, 1.0)
 		sfx_volume = clampf(float((parsed as Dictionary).get("sfx_volume", 0.7)), 0.0, 1.0)
+		social_in_main = bool((parsed as Dictionary).get("social_in_main", true))
 		hotbar_locked = bool((parsed as Dictionary).get("hotbar_locked", false))
 		var wp: Variant = (parsed as Dictionary).get("window_positions", {})
 		window_positions = wp if wp is Dictionary else {}

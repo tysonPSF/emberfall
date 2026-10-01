@@ -29,6 +29,7 @@ signal group_invited(from_name: String)  # "" closes the invite window
 signal quest_offered(from_name: String, quest_id: String)  # a groupmate shared a quest; "" closes the window
 signal friends_view(list: Array)  # your friends: [{name, online, level, class, zone}]
 signal guild_view(view: Dictionary)  # your guild's roster and message of the day ({} for none)
+signal guild_bank_view(view: Dictionary)  # your guild's bank, while you have a bank open ({} for no guild): {name, bank, bank_coin, bank_log, can_withdraw}
 signal shot_fired(from: Entity, to: Entity, projectile: String)
 signal spell_fx(caster: Entity, target: Entity, spell_id: String)  # a spell landed: for its look (SpellFx)  # a ranged attack, for the flight effect
 
@@ -2236,6 +2237,9 @@ func request_guild(player_id: int, action: String, arg: String = "") -> void:
 			if rank == "leader" and (g["members"] as Dictionary).size() > 1:
 				say(p, "Hand the guild to someone first (/guildleader <name>), or disband it.", C_WARN)
 				return
+			if (g["members"] as Dictionary).size() == 1 and not gs.bank_empty(key):
+				say(p, "You're the last of %s: empty the guild bank first, or it goes with the guild." % g["name"], C_WARN)
+				return
 			gs.leave(p.display_name)
 			say(p, "You leave %s." % g["name"], C_CHAT_GUILD)
 			_guild_news(key, "%s has left the guild." % p.display_name)
@@ -2299,6 +2303,9 @@ func request_guild(player_id: int, action: String, arg: String = "") -> void:
 				say(p, "This will end %s for everyone. Say /guilddisband again within 15 seconds to do it." % g["name"], C_WARN)
 				return
 			p.remove_meta("disband_at")
+			if not gs.bank_empty(key):
+				say(p, "Empty the guild bank first: what's in it would be lost with the guild.", C_WARN)
+				return
 			var members: Array = (g["members"] as Dictionary).values().map(func(l: Dictionary) -> String: return str(l["name"]))
 			_guild_news(key, "%s has disbanded the guild." % p.display_name)
 			gs.disband(key)
@@ -3564,6 +3571,9 @@ func request_click(player_id: int, place: String) -> void:
 	if p == null or p.dead:
 		return
 	var kind := place.get_slice(":", 0)
+	if kind == "gk":
+		_click_guild_bank(p, place)
+		return
 	var here := _entry_at(p, place)
 	if kind == "pt" or kind == "k" and _service_npc(p, "bank") == null or kind == "t" and not trading(p) or kind == "c" and p.station_kind == "":
 		return
@@ -3726,6 +3736,9 @@ func _entry_at(p: Player, place: String) -> Dictionary:
 			return p.partner_offer[int(arg)] if int(arg) >= 0 and int(arg) < p.partner_offer.size() else {}
 		"c":
 			return p.station_items[int(arg)] if int(arg) >= 0 and int(arg) < p.station_items.size() else {}
+		"gk":  # the guild bank: the guild's own where the rules run, the copy sent with the view on a client
+			var slots: Array = guild_bank(p).get("bank", [])
+			return slots[int(arg)] if int(arg) >= 0 and int(arg) < slots.size() else {}
 	return {}
 
 
@@ -5218,6 +5231,8 @@ func request_interact(player_id: int) -> void:
 	p.service = "shop" if npc.data.has("merchant") else ("guild" if npc.data.has("guildmaster") else "bank")
 	npc.greet(p)
 	_ui(p, &"service_opened", [npc, p.service])
+	if p.service == "bank":
+		_send_guild_bank(p)  # the Guild tab, for a member
 
 
 func request_service_close(player_id: int) -> void:
@@ -5406,6 +5421,180 @@ func request_bank_coin(player_id: int, amount: int) -> void:
 	say(p, "You %s %s." % ["deposit" if moved > 0 else "withdraw", format_coin(absi(moved))], C_LOOT)
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
+
+
+# --- the guild bank -------------------------------------------------------------
+# A guild's shared bank, at any city banker (a Guild tab beside your own):
+# every member may put items and coin in; officers and the leader may take
+# them out. Places "gk:<n>". Everything that goes in or out is logged.
+
+## p's guild bank where the rules run (the guild's dictionary: bank,
+## bank_coin, bank_log), or on a client the copy last sent (p.guild_bank);
+## {} without a guild.
+func guild_bank(p: Player) -> Dictionary:
+	if not Net.is_authority():
+		return p.guild_bank
+	var key := guilds().key_of(p.display_name)
+	return guilds().bank_of(key) if key != "" else {}
+
+
+## Officers and the leader take things out; members only put things in.
+func guild_bank_withdraws(p: Player) -> bool:
+	return GuildStore.power(guilds().rank_of(p.display_name)) >= GuildStore.power("officer")
+
+
+## What's in an entry, for the log: "3 bone chips", "a Tovin's Trail Pack (holding 4)".
+func entry_text(e: Dictionary) -> String:
+	var name := GameData.item_name(str(e["item"]))
+	if int(e.get("count", 1)) > 1:
+		return "%d %s" % [int(e["count"]), plural(name)]
+	var inside := (e.get("contents", []) as Array).filter(func(x: Dictionary) -> bool: return not x.is_empty()).size()
+	return "%s %s%s" % ["an" if name.left(1).to_lower() in ["a", "e", "i", "o", "u"] else "a", name, " (holding %d)" % inside if inside > 0 else ""]
+
+
+## Whether an entry may go in the guild bank: nothing NO DROP, in a bag or out.
+func _guild_bankable(p: Player, e: Dictionary) -> bool:
+	for x: Dictionary in [e] + (e.get("contents", []) as Array):
+		if not x.is_empty() and GameData.item(str(x["item"])).get("no_drop", false):
+			say(p, "You can't leave %s in the guild bank: it is NO DROP." % GameData.item_name(str(x["item"])), C_WARN)
+			return false
+	return true
+
+
+## The cursor on a guild bank slot: take what's there (officers), put down
+## what's held (anyone, in an empty slot or onto the same stack), or swap
+## (officers: a swap takes something out).
+func _click_guild_bank(p: Player, place: String) -> void:
+	var g := guild_bank(p)
+	if g.is_empty() or _service_npc(p, "bank") == null:
+		return
+	var slots: Array = g["bank"]
+	var i := int(place.get_slice(":", 1))
+	if i < 0 or i >= slots.size():
+		return
+	var here: Dictionary = slots[i]
+	var officer := guild_bank_withdraws(p)
+	var key := guilds().key_of(p.display_name)
+	if p.cursor.is_empty():
+		if here.is_empty():
+			return
+		if not officer:
+			say(p, "Only officers and the leader can take things out of the guild bank.", C_WARN)
+			return
+		p.cursor = here
+		slots[i] = {}
+		guilds().bank_note(key, p.display_name, "took " + entry_text(here))
+	else:
+		var held := p.cursor
+		if not _guild_bankable(p, held):
+			return
+		var stack := Pack.stack_of(str(held["item"]))
+		if not here.is_empty() and here["item"] == held["item"] and stack > 1 and not held.has("contents"):
+			var n := mini(int(held["count"]), stack - int(here["count"]))
+			if n <= 0:
+				return
+			here["count"] = int(here["count"]) + n
+			held["count"] = int(held["count"]) - n
+			p.cursor = held if int(held["count"]) > 0 else {}
+			guilds().bank_note(key, p.display_name, "put in " + entry_text(Pack.entry(str(held["item"]), n)))
+		elif here.is_empty():
+			slots[i] = held
+			p.cursor = {}
+			guilds().bank_note(key, p.display_name, "put in " + entry_text(held))
+		elif not officer:
+			say(p, "That slot is taken: put it in an empty one.", C_WARN)
+			return
+		else:
+			slots[i] = held
+			p.cursor = here
+			guilds().bank_note(key, p.display_name, "put in %s and took %s" % [entry_text(held), entry_text(here)])
+	_guild_bank_changed(p)
+
+
+## Shift-click from the pack: into the first empty guild bank slot.
+func request_guild_bank_deposit(player_id: int, place: String) -> void:
+	if _remote(&"request_guild_bank_deposit", [player_id, place]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or _service_npc(p, "bank") == null:
+		return
+	var g := guild_bank(p)
+	var e := p.pack.get_at(place)
+	if g.is_empty() or e.is_empty() or not _guild_bankable(p, e):
+		return
+	var free := (g["bank"] as Array).find({})
+	if free < 0:
+		say(p, "The guild bank is full.", C_WARN)
+		return
+	g["bank"][free] = e
+	p.pack.set_at(place, {})
+	guilds().bank_note(guilds().key_of(p.display_name), p.display_name, "put in " + entry_text(e))
+	_guild_bank_changed(p)
+
+
+## Shift-click on a guild bank slot: into your pack (officers and the leader).
+func request_guild_bank_withdraw(player_id: int, index: int) -> void:
+	if _remote(&"request_guild_bank_withdraw", [player_id, index]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or _service_npc(p, "bank") == null:
+		return
+	var g := guild_bank(p)
+	if g.is_empty() or index < 0 or index >= (g["bank"] as Array).size() or (g["bank"][index] as Dictionary).is_empty():
+		return
+	if not guild_bank_withdraws(p):
+		say(p, "Only officers and the leader can take things out of the guild bank.", C_WARN)
+		return
+	var e: Dictionary = g["bank"][index]
+	if not p.pack.add_entry(e):
+		say(p, "Your inventory is full.", C_WARN)
+		return
+	g["bank"][index] = {}
+	guilds().bank_note(guilds().key_of(p.display_name), p.display_name, "took " + entry_text(e))
+	_guild_bank_changed(p)
+
+
+## Coin in (anyone: positive) or out (officers and the leader: negative).
+func request_guild_bank_coin(player_id: int, amount: int) -> void:
+	if _remote(&"request_guild_bank_coin", [player_id, amount]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or _service_npc(p, "bank") == null:
+		return
+	var g := guild_bank(p)
+	if g.is_empty():
+		return
+	if amount < 0 and not guild_bank_withdraws(p):
+		say(p, "Only officers and the leader can take coin out of the guild bank.", C_WARN)
+		return
+	var moved := clampi(amount, -int(g["bank_coin"]), p.coin)
+	if moved == 0:
+		return
+	p.coin -= moved
+	g["bank_coin"] = int(g["bank_coin"]) + moved
+	guilds().bank_note(guilds().key_of(p.display_name), p.display_name, ("put in " if moved > 0 else "took ") + format_coin(absi(moved)))
+	say(p, "You %s %s %s the guild bank." % ["put" if moved > 0 else "take", format_coin(absi(moved)), "in" if moved > 0 else "from"], C_LOOT)
+	_guild_bank_changed(p)
+
+
+## After any change: the mover's bags, and the bank as every member at a banker sees it now.
+func _guild_bank_changed(p: Player) -> void:
+	p.inventory_changed.emit()
+	var key := guilds().key_of(p.display_name)
+	for q in get_players():
+		if q.service == "bank" and guilds().key_of(q.display_name) == key:
+			_send_guild_bank(q)
+
+
+## Sends p their guild's bank (with a bank open), or {} when they have none.
+func _send_guild_bank(p: Player) -> void:
+	var g := guild_bank(p)
+	var view := {}
+	if not g.is_empty():
+		var log: Array = g["bank_log"]
+		view = {"name": str(g["name"]), "bank": (g["bank"] as Array).duplicate(true), "bank_coin": int(g["bank_coin"]),
+				"bank_log": log.slice(maxi(0, log.size() - 30)), "can_withdraw": guild_bank_withdraws(p)}
+	_ui(p, &"guild_bank_view", [view])
 
 
 # --- guildmasters -----------------------------------------------------------

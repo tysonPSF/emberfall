@@ -55,6 +55,9 @@ func _run() -> void:
 		elif "--swing" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 1, "race": "human", "stats": {"sta": 10},
 					"zone": "greenmoor", "position": [0, 2, 20]})
+		elif "--guildbank" in OS.get_cmdline_user_args():  # beside Emberhold's registrar and banker
+			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
+					"zone": "emberhold", "position": [5.0 if who == "Alpha" else 3.5, 2, 28], "inventory": ["iron_dagger"] if who == "Alpha" else ["gnoll_fang"]})
 		elif "--guild" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 12, "coin": 20000, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "emberhold", "position": [8.0 if who == "Alpha" else 4.0, 2, 28]})
@@ -135,6 +138,8 @@ func _run() -> void:
 		await _grove_test(p)
 	elif "--emotes" in OS.get_cmdline_user_args():
 		await _emote_test(p)
+	elif "--guildbank" in OS.get_cmdline_user_args():
+		await _guild_bank_test(p)
 	elif "--guild" in OS.get_cmdline_user_args():
 		await _guild_test(p)
 	elif "--share" in OS.get_cmdline_user_args():
@@ -643,6 +648,101 @@ func _guild_test(p: Player) -> void:
 				other._guild_label.text if other._guild_label != null else "nothing", heard.filter(func(t: String) -> bool: return "guild" in t or "Welcome" in t)])
 		await _shot("guild_tag")
 		get_tree().quit()  # logs off: Alpha's friend alert
+
+
+## The guild bank and the chat window online: Alpha founds a guild and
+## Bravo joins; both open the bank at Banker Odile. Alpha (the leader) puts
+## a dagger and coin in, and Bravo sees them arrive; Bravo (a member) can't
+## take the dagger out but puts a fang in, and Alpha sees it. Then a tell and
+## guild talk land in each one's chat window tabs.
+func _guild_bank_test(p: Player) -> void:
+	var other: Player = null
+	for k in 60:
+		for q in World.get_players():
+			if q != p:
+				other = q
+		if other != null:
+			break
+		await _wait(0.25)
+	if other == null:
+		print("[%s] guildbank: nobody else here" % who)
+		return
+	var hud = get_parent().hud
+	var heard: Array = []
+	World.log_message.connect(func(t: String, _c: Color) -> void: heard.append(t))
+	var banker: Npc = null
+	var registrar: Npc = null
+	for obj: Node3D in World.objects.values():
+		if obj is Npc and (obj as Npc).npc_id == "banker_odile":
+			banker = obj
+		if obj is Npc and (obj as Npc).npc_id == "guild_registrar_emberhold":
+			registrar = obj
+	var open_bank := func() -> void:
+		World.request_set_target(p.entity_id, banker.entity_id)
+		await _wait(0.4)
+		World.request_interact(p.entity_id)
+		await _wait(1.0)
+	if who == "Alpha":
+		World.request_set_target(p.entity_id, registrar.entity_id)
+		await _wait(0.4)
+		World.request_chat(p.entity_id, "/guildcreate Vault Company")
+		await _wait(1.0)
+		World.request_chat(p.entity_id, "/guildinvite Bravo")
+		for k in 40:
+			if heard.any(func(t: String) -> bool: return "has joined the guild" in t):
+				break
+			await _wait(0.25)
+		await open_bank.call()
+		print("[Alpha] guildbank: bank open %s, Guild tab %s" % [p.service, not p.guild_bank.is_empty()])
+		var at := ""
+		for place: String in p.pack.places():
+			if p.pack.get_at(place).get("item", "") == "iron_dagger":
+				at = place
+		World.request_click(p.entity_id, at)
+		await _wait(0.5)
+		World.request_click(p.entity_id, "gk:0")
+		World.request_guild_bank_coin(p.entity_id, 5000)
+		await _wait(6.0)  # Bravo tries to take it, then puts a fang in
+		var bank: Array = p.guild_bank.get("bank", [])
+		print("[Alpha] guildbank: I see slot 0 %s, slot 1 %s, coin %d; log %s" % [bank[0].get("item", "-") if bank.size() > 0 else "?",
+				bank[1].get("item", "-") if bank.size() > 1 else "?", int(p.guild_bank.get("bank_coin", 0)),
+				(p.guild_bank.get("bank_log", []) as Array).map(func(l: Dictionary) -> String: return "%s %s" % [l["who"], l["what"]])])
+		World.request_chat(p.entity_id, "/gu Bank's stocked.")
+		await _wait(3.0)
+		var tells: String = (hud._social_logs["tell"] as RichTextLabel).get_parsed_text()
+		print("[Alpha] guildbank: tells tab has Bravo's %s; To: %s" % ["Bravo tells you, 'thanks'" in tells, hud._social_to.text])
+		await _shot("guildbank_alpha")
+		await _wait(4.0)
+	else:
+		await _wait(2.0)
+		World.request_chat(p.entity_id, "/guildaccept")
+		await _wait(1.0)
+		await open_bank.call()
+		var before: Array = (p.guild_bank.get("bank", []) as Array).duplicate(true)
+		for k in 40:  # until Alpha's dagger shows up here, without Bravo touching anything
+			if str((p.guild_bank.get("bank", [{}]) as Array)[0].get("item", "")) == "iron_dagger":
+				break
+			await _wait(0.25)
+		var arrived := str((p.guild_bank.get("bank", [{}]) as Array)[0].get("item", ""))
+		print("[Bravo] guildbank: rank %s; slot 0 was %s, now %s (live); coin %d; may take out %s" % [p.guild_rank, before[0].get("item", "-") if before.size() > 0 else "?",
+				arrived, int(p.guild_bank.get("bank_coin", 0)), p.guild_bank.get("can_withdraw")])
+		World.request_click(p.entity_id, "gk:0")  # a member: refused
+		await _wait(1.0)
+		var refused := heard.any(func(t: String) -> bool: return "Only officers and the leader" in t) and p.cursor.is_empty()
+		var at := ""
+		for place: String in p.pack.places():
+			if p.pack.get_at(place).get("item", "") == "gnoll_fang":
+				at = place
+		World.request_guild_bank_deposit(p.entity_id, at)
+		await _wait(1.0)
+		print("[Bravo] guildbank: taking out refused %s; put a fang in -> slot 1 %s" % [refused, (p.guild_bank.get("bank", [{}, {}]) as Array)[1].get("item", "-")])
+		World.request_chat(p.entity_id, "/tell Alpha thanks")
+		await _wait(5.0)
+		var guild_tab: String = (hud._social_logs["guild"] as RichTextLabel).get_parsed_text()
+		print("[Bravo] guildbank: guild tab has Alpha's line %s; window shown %s" % ["Alpha tells the guild, 'Bank's stocked.'" in guild_tab, hud._group_log_panel.visible])
+		await _shot("guildbank_bravo")
+		await _wait(2.0)
+		get_tree().quit()
 
 
 ## Emotes online: Alpha waves at Bravo; Bravo reads the line and sees
