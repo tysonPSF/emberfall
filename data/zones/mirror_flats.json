@@ -121,12 +121,12 @@
     {"pos": [0, -501], "size": [18, 8], "to": "agnavars_hearth", "arrive": [0, 295], "arrive_face": [0, 255]}
   ],
   "landmarks": [
-    {"type": "prop", "pos": [-10, -116], "id": "salt_crust_island", "collide": "none"},
-    {"type": "prop", "pos": [80, -166], "id": "salt_crust_island", "collide": "none"},
-    {"type": "prop", "pos": [-180, -200], "id": "salt_crust_island", "collide": "none"},
-    {"type": "prop", "pos": [220, 160], "id": "salt_crust_island", "collide": "none"},
-    {"type": "prop", "pos": [40, 120], "id": "salt_crust_island", "collide": "none"},
-    {"type": "prop", "pos": [-120, 80], "id": "salt_crust_island", "collide": "none"},
+    {"type": "prop", "pos": [-10, -116], "id": "salt_crust_island", "collide": "hull"},
+    {"type": "prop", "pos": [80, -166], "id": "salt_crust_island", "collide": "hull"},
+    {"type": "prop", "pos": [-180, -200], "id": "salt_crust_island", "collide": "hull"},
+    {"type": "prop", "pos": [220, 160], "id": "salt_crust_island", "collide": "hull"},
+    {"type": "prop", "pos": [40, 120], "id": "salt_crust_island", "collide": "hull"},
+    {"type": "prop", "pos": [-120, 80], "id": "salt_crust_island", "collide": "hull"},
     {"type": "prop", "pos": [0, -166], "id": "salt_pillar", "collide": "box"},
     {"type": "prop", "pos": [100, -136], "id": "salt_pillar", "collide": "box"},
     {"type": "prop", "pos": [-220, -80], "id": "salt_pillar", "collide": "box"},

@@ -137,6 +137,7 @@ const SECTIONS := [
 	["flats_views", "mirror_flats"],
 	["squawkzilla", "mirror_flats"],
 	["rare_spawns", "thornwood"],
+	["salt_islands", "mirror_flats"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8848,6 +8849,28 @@ func _t_flats_views() -> void:
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
+
+
+## Mirror Flats' salt-crust islands are solid ("hull"): you walk up the rim
+## onto the plates and across, not through them, and nothing catches your feet.
+func _t_salt_islands() -> void:
+	var z: Zone = get_parent().zone
+	var p := World.local_player
+	var c := Vector2(40, 120)
+	var ground := z.height_at(c.x, c.y)
+	p.global_position = Vector3(c.x - 12.0, z.surface_at(c.x - 12.0, c.y) + 0.5, c.y)
+	p.velocity = Vector3.ZERO
+	var top := -INF
+	for k in 360:  # 6 s east at 4 m/s: 24 m, right over it
+		p.velocity = Vector3(4.0, p.velocity.y - 20.0 * get_physics_process_delta_time(), 0)
+		p.move_and_slide()
+		if absf(p.global_position.x - c.x) < 3.0:
+			top = maxf(top, p.global_position.y - ground)
+		if k == 170:
+			p.face_toward(p.global_position + Vector3(1, 0, 0))
+			await _shot("9zw_salt_island")
+		await get_tree().physics_frame
+	print("salt_islands: stood %.2f m over the flats on top (the plates are 0.37-0.41), crossed to %.1f m past (want 12)" % [top, p.global_position.x - c.x])
 
 
 ## A quest boss's spot is a rare spawn: a placeholder from its camp, the named

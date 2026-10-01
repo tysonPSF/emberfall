@@ -2818,8 +2818,10 @@ func _open_spot() -> Vector2:
 
 
 ## Places a prop from data/models.json "props". `collide` is "box" (the model's
-## bounds), "mesh" (exact triangles, for walls with doors), "trunk" (a thin post
-## for trees) or "none".
+## bounds), "mesh" (exact triangles, for walls with doors), "hull" (a smooth
+## shell round all of it: low ground you walk up onto, the salt-crust islands,
+## whose plates' little edges would catch your feet as a mesh), "trunk" (a
+## thin post for trees) or "none".
 func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box") -> Node3D:
 	var spec: Dictionary = GameData.models["props"][id]
 	if not _prop_scenes.has(id):
@@ -2847,6 +2849,13 @@ func _prop(id: String, pos: Vector3, yaw := 0.0, scale_ := 1.0, collide := "box"
 			var tri := ConcavePolygonShape3D.new()
 			tri.set_faces(scaled)
 			cs.shape = tri
+		elif collide == "hull":
+			var hull := ConvexPolygonShape3D.new()
+			var pts := PackedVector3Array()
+			for f in _prop_faces(id, model):
+				pts.append(f * s)
+			hull.points = pts
+			cs.shape = hull
 		elif collide == "trunk":
 			var cyl := CylinderShape3D.new()
 			cyl.radius = 0.3 * s
