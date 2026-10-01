@@ -283,7 +283,7 @@ func show_hidden() -> void:
 ## rapiers and spears thrust, two-handed and heavy weapons and staves chop
 ## overhead, other blades and axes slash; bare hands, bows and wands keep
 ## the plain "attack". The off hand always slashes (a left-hand cut).
-static func swing_for(weapon_model: String, off_hand := false) -> String:
+static func swing_for(weapon_model: String, off_hand := false, skill := "") -> String:
 	var w := weapon_model.to_lower()
 	if w == "" or w in ["bow", "wand", "fishing_pole", "torch", "shield_badge", "shield_round", "shield_round_barbarian"]:
 		return "attack"
@@ -292,7 +292,11 @@ static func swing_for(weapon_model: String, off_hand := false) -> String:
 	for k in ["dagger", "rapier", "spear", "trident", "glaive"]:
 		if k in w:
 			return "thrust"
-	for k in ["2handed", "maul", "greathammer", "greatsword", "staff", "club", "slab", "spade", "pick", "titan", "hammer"]:
+	if skill.begins_with("1h"):
+		return "slash"  # a one-handed weapon swings one-armed, whatever its model looks like
+	# the two-armed chop only for long hafts both hands can hold; a club, a pick or a hammer
+	# head on a short handle sits in one hand, so it swings one-armed even when it's heavy
+	for k in ["2handed", "maul", "greathammer", "greatsword", "staff", "slab", "spade", "titan"]:
 		if k in w:
 			return "chop"
 	return "slash"

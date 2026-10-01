@@ -8744,6 +8744,9 @@ func _t_melee_swings() -> void:
 	for w: String in ["sword_1handed", "dagger", "axe_2handed", "staff", "axe_1handed", "countess_rapier", "vorlaug_maul", "bow", ""]:
 		picks[w] = Entity.swing_for(w)
 	picks["dagger (off hand)"] = Entity.swing_for("dagger", true)
+	for w: String in ["stonebrow_club", "ember_hammer", "court_maul", "miners_pick"]:  # a club or a short hammer swings one-armed; a maul with both
+		picks[w] = Entity.swing_for(w)
+	picks["court_maul (one-handed)"] = Entity.swing_for("court_maul", false, "1h_blunt")
 	print("melee_swings: %s" % [picks])
 	var p := World.local_player
 	var keep := [p.char_class, p.level, p.equipment.duplicate(), p.skills.duplicate()]
