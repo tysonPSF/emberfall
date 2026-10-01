@@ -65,9 +65,10 @@ def score(v):
 # ---- 1. rewards against the curve
 origin = {}
 for qid, q in quests.items():
-    it = q.get("first_reward_item")
-    if it and zone_level(npc_zone.get(q["giver"], "")):
-        origin.setdefault(it, (zone_level(npc_zone[q["giver"]]), "quest " + qid))
+    given = q.get("first_reward_item")
+    for it in (set(given.values()) if isinstance(given, dict) else [given]):  # {class: item} when each class gets its own
+        if it and zone_level(npc_zone.get(q["giver"], "")):
+            origin.setdefault(it, (zone_level(npc_zone[q["giver"]]), "quest " + qid))
 for mid, m in mobs.items():
     if not m.get("named"):
         continue

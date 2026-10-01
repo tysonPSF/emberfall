@@ -177,7 +177,7 @@ EXISTING = BUILT
 # Zones with no cell: not on the grid, not walkable to, reached another way.
 TELEPORT_ONLY = {'the_grove'}
 # Dungeons under a zone, entered by a cave's zone line: off the grid like the interiors.
-DUNGEONS = {'wellspring'}
+DUNGEONS = {'wellspring', 'gloamvein'}
 # The passes CLAUDE.md reserved for future zones ("a future zone replaces one
 # with a zone line"). This is NOT a list of passes still closed: the check below
 # only makes sure the layout gives each of them a neighbour. Thornwood's east

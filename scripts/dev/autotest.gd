@@ -259,6 +259,7 @@ const SECTIONS := [
 	["corran", "greenmoor"],
 	["corran_support", "greenmoor"],
 	["corran_boss", "wellspring"],
+	["dimming_line", "greenmoor"],
 ]
 
 var shots_dir := ""
@@ -3772,6 +3773,226 @@ func _t_wellspring_quest() -> void:
 	p.pitch = -0.35
 	await _wait(1.0)
 	await _shot("9zx_pond_clean")
+	World.time_override = -1.0
+
+
+## Naevys's line in Duskhold, played through as a dark elf cleric: four of the
+## city's crystals are dark and she turns you back from the crack in the southwest
+## wall; five moth wings start her talking and she comes down the Gloamvein
+## with you; the Lamp-Glutton drops the stolen light and the lantern; the light
+## wakes the Heartcrystal (a shard for you, and the cave's and the city's
+## crystals lit for you); the lantern sends her walking off to the shrine
+## island, where the shard earns the weapon for your class.
+func _t_dimming_line() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var steps := ["dimming_line_wings", "dimming_line_deep", "dimming_line_lantern", "dimming_line_shard"]
+	var keep := [p.race, p.char_class, p.level, p.factions.duplicate(), p.alignment_mods.duplicate(), p.deity]
+	p.race = "dark_elf"  # Duskhold's guards attack a human on sight
+	p.deity = "dark"  # a god who takes dark elves, or the "Choose a new god" window covers every picture
+	p.char_class = "cleric"
+	p.level = 50  # gray to everything on the way and in the cave, so the test isn't a fight
+	p.factions = {}
+	p.alignment_mods = {}
+	World.apply_alignment(p)
+	p.recalc_stats()
+	p.hp = p.max_hp
+	for q: String in steps:
+		p.quests.erase(q)
+	World.time_override = 12.0
+	await _ensure_zone("duskhold")
+	if main.zone.zone_id != "duskhold":
+		print("dimming_line: FAIL never reached Duskhold (in %s)" % main.zone.zone_id)
+		World.time_override = -1.0
+		return
+	await _wait(1.0)
+	var lamps := func() -> Array:
+		var out := []
+		for obj: Node3D in World.objects.values():
+			if obj is Npc and (obj as Npc).npc_id == "dusk_dim_crystal" and World.zone_of(obj) == main.zone:
+				out.append(str((obj as Npc).look.get("shape")).trim_prefix("prop:"))
+		return out
+	var naevys: Npc = _npcs().get("dusk_naevys")
+	if naevys == null:
+		print("dimming_line: FAIL no Naevys in Duskhold")
+		World.time_override = -1.0
+		return
+	print("dimming_line: Naevys at her post seen=%s; on the island seen=%s; crystals %s" % [World.sees(p, naevys), World.quest_shows(p, GameData.npcs["dusk_naevys_shrine"]), lamps.call()])
+	p.global_position = main.zone.ground(-50, 44) + Vector3.UP
+	p.face_toward(main.zone.ground(-68, 58))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 9.0
+	p.pitch = -0.25
+	await _wait(0.8)
+	await _shot("9zw_crack_and_naevys")
+	p.global_position = main.zone.ground(-52, 14) + Vector3.UP
+	p.face_toward(main.zone.ground(-36, 0))
+	await _wait(0.6)
+	await _shot("9zw_crystals_dark")
+	# turned back at the crack
+	var line := -1
+	for i in (main.zone.data["zone_lines"] as Array).size():
+		if str(main.zone.data["zone_lines"][i]["to"]) == "gloamvein":
+			line = i
+	var zl: Dictionary = main.zone.data["zone_lines"][line]
+	p.global_position = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1])) + Vector3.UP * 0.3
+	World.request_zone_line(p.entity_id, line)
+	await _wait(1.0)
+	print("dimming_line: before the quest -> still in %s, put back at %s" % [main.zone.zone_id, Vector2(p.global_position.x, p.global_position.z)])
+	# step 1: the wings
+	_stand_by(p, naevys)
+	World.request_say(p.entity_id, "vein")
+	print("dimming_line: 'vein' before the wings -> step 2 %s" % p.quests.get("dimming_line_deep", {}))
+	World.request_hail(p.entity_id)
+	for word: String in ["crystals", "moths", "wings"]:
+		World.request_say(p.entity_id, word)
+	await _wait(0.5)
+	print("dimming_line: after 'wings' -> step 1 %s; gloomwing moths drop %s" % [p.quests.get("dimming_line_wings", {}), GameData.mobs["gloomwing_moth"]["loot"]])
+	p.pack.add("moth_wing", 5)
+	await _hand_in(p, naevys, ["moth_wing"])
+	for k in 60:
+		if p.quests.get("dimming_line_deep", {}).get("active", false):
+			break
+		await _wait(1.0)
+	print("dimming_line: story told -> step 1 %s; step 2 %s" % [p.quests.get("dimming_line_wings", {}), p.quests.get("dimming_line_deep", {})])
+	# down the Gloamvein with her: on foot, from where she turned you back, so the crack is somewhere you can walk to
+	var mouth: Vector3 = main.zone.ground(-68, 58)
+	var door: Vector3 = main.zone.ground(float(zl["pos"][0]), float(zl["pos"][1]))
+	p.global_position = main.zone.ground(float(zl["refused_to"][0]), float(zl["refused_to"][1])) + Vector3.UP * 0.3
+	print("dimming_line: ground at the cave mouth %.2f, 10 m in front %.2f, at its zone line %.2f; the mountains start %.1f m behind the line" % [mouth.y, p.global_position.y - 0.3, door.y, -main.zone.edge_depth(door.x, door.z)])
+	var paces := 0
+	while paces < 600 and main.zone.zone_id == "duskhold" and main.zone.zone_line_at(p.global_position) != line:
+		var to := Vector3(door.x - p.global_position.x, 0, door.z - p.global_position.z)
+		p.velocity = to.normalized() * 5.0 + Vector3.DOWN * 4.0
+		p.move_and_slide()
+		paces += 1
+		await get_tree().physics_frame
+	print("dimming_line: walked to the crack in %d steps: on its zone line %s" % [paces, main.zone.zone_id != "duskhold" or main.zone.zone_line_at(p.global_position) == line])
+	if main.zone.zone_id == "duskhold":
+		World.request_zone_line(p.entity_id, line)
+	for k in 40:
+		await _wait(0.5)
+		if main.zone != null and main.zone.zone_id == "gloamvein" and World.get_object(p.companion_id) != null:
+			break
+	if main.zone.zone_id != "gloamvein" or main.zone.tunnel == null:
+		print("dimming_line: FAIL not in the Gloamvein (in %s)" % main.zone.zone_id)
+		World.time_override = -1.0
+		return
+	var escort := World.get_object(p.companion_id) as Npc
+	print("dimming_line: in the Gloamvein at %s (in the passage %s); companion %s level %s" % [p.global_position, main.zone.tunnel.inside(p.global_position.x, p.global_position.z, 1.0),
+			escort.display_name if escort != null else "none", escort.level if escort != null else 0])
+	var counts := {}
+	for m in World.get_mobs():
+		counts[m.mob_id] = int(counts.get(m.mob_id, 0)) + 1
+	print("dimming_line: monsters %s; crystals %s" % [counts, lamps.call()])
+	for spawn: Dictionary in main.zone.data["spawns"]:  # every monster, chest and crystal stands in a passage, not in the rock
+		if not main.zone.tunnel.inside(float(spawn["pos"][0]), float(spawn["pos"][1]), 0.5):
+			print("dimming_line: FAIL spawn %s at %s is in the rock" % [spawn["pool"].keys(), spawn["pos"]])
+	for spot: Dictionary in (main.zone.data["npcs"] as Array) + (main.zone.data["chests"] as Array):
+		if not main.zone.tunnel.inside(float(spot["pos"][0]), float(spot["pos"][1]), 0.5):
+			print("dimming_line: FAIL %s at %s is in the rock" % [spot.get("id", spot.get("name")), spot["pos"]])
+	for k in 60:  # the cave's navigation is baked on another thread
+		if main.zone.nav_ready:
+			break
+		await _wait(0.5)
+	await _wait(0.5)
+	var route := NavigationServer3D.map_get_path(main.zone.get_world_3d().navigation_map, main.zone.ground(128, 20), main.zone.ground(-66, 116), true)
+	var walked := 0.0
+	for i in range(1, route.size()):
+		walked += route[i - 1].distance_to(route[i])
+	print("dimming_line: path entrance -> the Heartcrystal's chamber: %d points, %.0f m, ends %.1f m from it" % [route.size(), walked,
+			route[route.size() - 1].distance_to(main.zone.ground(-66, 116)) if not route.is_empty() else -1.0])
+	p.face_toward(main.zone.ground(100, 30))
+	p.camera_pivot.rotation.y = 0.0
+	p.zoom = 6.0
+	p.pitch = -0.15
+	await _wait(0.8)
+	await _shot("9zw_gloamvein_entrance")
+	# the Lamp-Glutton
+	var boss := _nearest_mob(p, "lamp_glutton")
+	if boss == null:
+		print("dimming_line: FAIL no Lamp-Glutton")
+		World.time_override = -1.0
+		return
+	p.global_position = main.zone.ground(-64, 116) + Vector3.UP * 0.5
+	p.face_toward(boss.global_position)
+	p.zoom = 7.0
+	p.pitch = -0.2
+	await _wait(0.8)
+	print("dimming_line: the Lamp-Glutton level %d, %d hp, scale %.1f; fight music would be '%s'" % [boss.level, boss.max_hp, boss.body_scale, Music._boss_track(p)])
+	await _shot("9zw_lamp_glutton")
+	var fell := boss.global_position
+	World.damage(boss, 99999, p)
+	await _wait(0.5)
+	for c: Node in main.zone.get_children():
+		if c is Corpse and (c as Corpse).global_position.distance_to(fell) < 2.0:
+			p.global_position = fell + Vector3(1.5, 0.5, 0)
+			World.request_loot_all(p.entity_id, (c as Corpse).object_id)
+	await _wait(0.3)
+	print("dimming_line: looted stolen light %d, lantern %d" % [p.pack.count("stolen_light"), p.pack.count("painted_lantern")])
+	# the Heartcrystal
+	var heart: Npc = _npcs().get("heartcrystal")
+	p.global_position = main.zone.ground(heart.global_position.x + 6.0, heart.global_position.z - 5.0) + Vector3.UP * 0.5
+	p.face_toward(heart.global_position)
+	World.request_set_target(p.entity_id, heart.entity_id)
+	await _wait(0.6)
+	print("dimming_line: Heartcrystal before: %s" % heart.look.get("shape"))
+	await _shot("9zw_heartcrystal_cocooned")
+	await _hand_in(p, heart, ["stolen_light"])
+	await _wait(1.6)
+	print("dimming_line: Heartcrystal after: %s; shard %d; cave crystals %s; step 2 %s" % [heart.look.get("shape"), p.pack.count("heartcrystal_shard"), lamps.call(), p.quests.get("dimming_line_deep")])
+	await _shot("9zw_heartcrystal_lit")
+	for k in 30:
+		if p.quests.has("dimming_line_lantern"):
+			break
+		await _wait(1.0)
+	await _wait(1.5)
+	print("dimming_line: step 3 %s; companion still here %s" % [p.quests.get("dimming_line_lantern"), World.get_object(p.companion_id) != null])
+	# back up in Duskhold: the lamps are lit
+	await _ensure_zone("duskhold")
+	await _wait(1.5)
+	print("dimming_line: back in %s at %s; crystals %s" % [main.zone.zone_id, Vector2(p.global_position.x, p.global_position.z), lamps.call()])
+	p.global_position = main.zone.ground(-52, 14) + Vector3.UP
+	p.face_toward(main.zone.ground(-36, 0))
+	p.zoom = 9.0
+	await _wait(0.8)
+	await _shot("9zw_crystals_lit")
+	naevys = _npcs().get("dusk_naevys")
+	_stand_by(p, naevys)
+	await _hand_in(p, naevys, ["painted_lantern"])
+	for k in 60:
+		if p.quests.has("dimming_line_shard"):
+			break
+		await _wait(1.0)
+	await _wait(1.2)
+	var walker: Npc = _npcs().get("dusk_naevys_walker")
+	var shrine: Npc = _npcs().get("dusk_naevys_shrine")
+	print("dimming_line: step 4 %s; Naevys at her post seen %s; walker %s; on the island seen %s" % [p.quests.get("dimming_line_shard"), World.sees(p, naevys), walker != null, World.sees(p, shrine)])
+	await _shot("9zw_naevys_leaves")
+	# the shrine island
+	p.global_position = shrine.global_position + Vector3(-2.5, 0.5, -3.0)  # north of her, clear of the idol and the Lamp-Keeper
+	p.face_toward(shrine.global_position)
+	World.request_set_target(p.entity_id, shrine.entity_id)
+	p.zoom = 6.0
+	await _wait(0.8)
+	await _shot("9zw_naevys_island")
+	await _hand_in(p, shrine, ["heartcrystal_shard"])
+	await _wait(2.0)
+	print("dimming_line: step 4 %s; a cleric's reward: mace %d (blade %d, wand %d)" % [p.quests.get("dimming_line_shard"), p.pack.count("deepwatch_mace"), p.pack.count("deepwatch_blade"), p.pack.count("deepwatch_wand")])
+	print("dimming_line: rewards by class %s" % [["warrior", "cleric", "rogue", "wizard", "magician", "necromancer"].map(func(c: String) -> String: return "%s: %s" % [c, GameData.item_name(World.quest_reward_item(GameData.quests["dimming_line_shard"], c))])])
+	await _wait(30.0)  # her piece to the Lamp-Keeper
+	print("dimming_line: hailing Naevys after the quest:")
+	World.request_hail(p.entity_id)
+	World.request_say(p.entity_id, "lantern")
+	await _wait(0.5)
+	p.race = keep[0]
+	p.char_class = keep[1]
+	p.level = keep[2]
+	p.factions = keep[3]
+	p.alignment_mods = keep[4]
+	p.deity = keep[5]
+	World.apply_alignment(p)
+	p.recalc_stats()
 	World.time_override = -1.0
 
 

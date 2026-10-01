@@ -414,6 +414,10 @@ static func make_visual(look_: Dictionary) -> Node3D:
 		var prop: Node3D = (load(str(spec["path"])) as PackedScene).instantiate()
 		prop.scale = Vector3.ONE * float(spec.get("scale", 1.0))
 		root.add_child(prop)
+		if spec.has("dim"):  # the same stone with its glow gone (Duskhold's dead crystals): this share of its color, no light of its own
+			_recolor(prop, Color(1, 1, 1) * float(spec["dim"]), false)
+		elif spec.has("tint"):  # the same stone in another color (the Heartcrystal: the spring crystal in Duskhold's violet)
+			_recolor(prop, Color.html(str(spec["tint"])), true)
 		var lid := prop.find_child("chest_lid", true, false) as Node3D
 		if lid != null and look_.get("open", false):  # an opened chest: the lid thrown back on its hinge
 			lid.rotation.x = -1.9
@@ -437,6 +441,25 @@ static func make_visual(look_: Dictionary) -> Node3D:
 	root.scale = Vector3.ONE * body_scale
 	use_entity_layer(root)
 	return root
+
+
+## Multiplies the color of every mesh under `node` by `by`, its glow too, or
+## puts the glow out (a models.json prop's "dim" and "tint").
+static func _recolor(node: Node, by: Color, glows: bool) -> void:
+	if node is MeshInstance3D:
+		var mesh := node as MeshInstance3D
+		for i in mesh.get_surface_override_material_count():
+			var mat := mesh.get_active_material(i)
+			if mat is BaseMaterial3D:
+				var dull := mat.duplicate() as BaseMaterial3D
+				dull.albedo_color = Color(dull.albedo_color.r * by.r, dull.albedo_color.g * by.g, dull.albedo_color.b * by.b, dull.albedo_color.a)
+				if glows:
+					dull.emission = Color(dull.emission.r * by.r, dull.emission.g * by.g, dull.emission.b * by.b)
+				else:
+					dull.emission_enabled = false
+				mesh.set_surface_override_material(i, dull)
+	for c in node.get_children():
+		_recolor(c, by, glows)
 
 
 ## Moves every mesh under `node` to the entity render layer, so ground decals

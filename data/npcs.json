@@ -392,6 +392,153 @@
     },
     "faction": "emberhold"
   },
+  "dusk_naevys": {
+    "name": "Naevys",
+    "title": "stripped of rank",
+    "level": 20,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "race": "dark_elf",
+    "gender": "female",
+    "dialogue": {
+      "hail": "Eyes front, {name}. Or stare; everyone else does. Naevys. Gate-captain, once. Now I guard a crack in a wall, because I told the truth about the [crystals].",
+      "crystals": "Count them along the west shore. Four dark, and they were lit the day you were born. The tenders say crystals grow old. Crystals don't grow old. I stood this wall at night and I watched what came out of the crack behind me: [moths]. Pale ones, fat with light.",
+      "moths": "They land on a crystal and it dims under them like a candle under a cup. I reported it. The Lamp-Keeper called it blasphemy: the Lamp-Eater's children are holy, and a sentinel who speaks against them is not. So here I stand. But moths fly, {name}, and they've been getting out into the wood above. Bring me their [wings] and I'll show you what I saw.",
+      "wings": "Five wings from the gloomwing moths, up in Duskwood. Out the gate and up the tunnel. Leave the rats and the spiderlings be; it's the moths I want. Bring them here, to me. I'm not permitted to leave this post.",
+      "unknown": "I have a wall to watch, {name}. Ask me about the [crystals] or leave me to it."
+    },
+    "dialogue_after": {
+      "dimming_line_wings": {
+        "hail": "Well, {name}? The [vein] is behind me and the lamps aren't getting any brighter. In you go. I'll be at your back.",
+        "vein": "The Gloamvein. Old crystal workings under the southwest wall, sealed in my grandmother's day. Find what's drinking the [Heartcrystal] and end it.",
+        "heartcrystal": "The mother of every lamp in Duskhold. If there's any light left in it, something is sitting on it.",
+        "wings": "Keep the rest. I've seen what I needed to see.",
+        "crystals": "Still dark. They'll stay dark until we've been down the [vein].",
+        "unknown": "Later. The [vein] first."
+      },
+      "dimming_line_deep": {
+        "hail": "You saw it. I saw it. A moth the size of a cart, {name}, sitting on the Heartcrystal like a hen on an egg. Now show me what else was in that nest. The [lantern].",
+        "lantern": "The thing you pulled out of her nest. Put it in my hand, {name}.",
+        "crystals": "Lit. Every one of them. Go and look, and then come back and tell me I imagined it.",
+        "unknown": "The [lantern], {name}."
+      }
+    },
+    "refuse_entry": "Stop there, {name}. That crack is sealed by order of the Lamp-Keeper, and I'm the fool they posted to keep it sealed. Nobody goes in. If you want to know why I'm standing here, ask me about the [crystals].",
+    "until_started": "dimming_line_shard",
+    "faction": "duskhold"
+  },
+  "dusk_naevys_escort": {
+    "name": "Naevys",
+    "title": "stripped of rank",
+    "level": 6,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "race": "dark_elf",
+    "gender": "female",
+    "companion_levels": {
+      "cleric": 8,
+      "shaman": 7,
+      "wizard": 7,
+      "magician": 7,
+      "necromancer": 7,
+      "ranger": 6,
+      "rogue": 6,
+      "warrior": 5
+    },
+    "fixed": true,
+    "companion_join": "Behind you, {name}. You lead; I guard. Sit when you need to, and I'll hold until you're ready. I've had a great deal of practice at standing still.",
+    "farewell": "It's lit. Look at it, {name}. Every lamp in the city is waking up over our heads. I'll see you at the wall. Bring whatever was in that nest.",
+    "dialogue": {
+      "hail": "I'm with you, {name}. Lead on.",
+      "unknown": "Eyes open, {name}. I'm at your back."
+    },
+    "faction": "duskhold"
+  },
+  "dusk_naevys_walker": {
+    "name": "Naevys",
+    "title": "stripped of rank",
+    "level": 20,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "race": "dark_elf",
+    "gender": "female",
+    "fixed": true,
+    "dialogue": {
+      "hail": "The shrine island, {name}. Bring the shard.",
+      "unknown": "Not now. The island."
+    },
+    "faction": "duskhold"
+  },
+  "dusk_naevys_shrine": {
+    "name": "Naevys",
+    "title": "the Deepwatch",
+    "level": 20,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "race": "dark_elf",
+    "gender": "female",
+    "dialogue": {
+      "hail": "There you are. Stand here, where she can see us both. The shard, {name}.",
+      "unknown": "The shard first, {name}."
+    },
+    "dialogue_after": {
+      "dimming_line_shard": {
+        "hail": "{name}. The lamps are holding; I count them every night. And I'm still asking who carried a [lantern] down a sealed vein.",
+        "lantern": "Shrine glass, moth-musk, and a wick trimmed by someone who knew how. Not a child's prank. When I have a name, I'll want someone I trust at my back. Get stronger, {name}, and stay in Duskhold's good graces.",
+        "deepwatch": "It isn't a rank. Nobody gave it to me. It's what I call standing where I can see.",
+        "unknown": "I'm watching the candles, {name}. Old habits."
+      }
+    },
+    "after_started": "dimming_line_shard",
+    "faction": "duskhold"
+  },
+  "heartcrystal": {
+    "name": "the Heartcrystal",
+    "level": 1,
+    "prop": "heartcrystal_cocooned",
+    "prop_after": {
+      "dimming_line_deep": "heartcrystal"
+    },
+    "light_after": "#b070ff",
+    "size": [2.4, 6.0],
+    "sacred": true,
+    "fixed": true,
+    "narrates": true,
+    "dialogue": {
+      "hail": "The crystal is wound in pale silk, layer on layer, a cocoon as tall as a house. Deep inside it a violet light flutters, weak as a moth at a window. Whatever is drinking it has not gone far.",
+      "unknown": "The crystal gives no answer."
+    },
+    "dialogue_after": {
+      "dimming_line_deep": {
+        "hail": "The Heartcrystal burns steady and violet. Far above, you can almost feel the city's lamps answering it."
+      }
+    },
+    "faction": "duskhold"
+  },
+  "dusk_dim_crystal": {
+    "name": "a glow crystal",
+    "level": 1,
+    "prop": "glow_crystal_dark",
+    "prop_after": {
+      "dimming_line_deep": "glow_crystal"
+    },
+    "light_after": "#a860ff",
+    "light_size": [1.2, 9.0, 1.2],
+    "size": [0.7, 2.2],
+    "sacred": true,
+    "fixed": true,
+    "narrates": true,
+    "dialogue": {
+      "hail": "The crystal is cold and gray, like a coal the day after the fire. A pale dust clings to it.",
+      "unknown": "The crystal gives no answer."
+    },
+    "dialogue_after": {
+      "dimming_line_deep": {
+        "hail": "The crystal burns violet again, warm under your hand."
+      }
+    },
+    "faction": "duskhold"
+  },
   "gm_brask": {
     "name": "Sergeant Brask",
     "title": "Warrior Guildmaster",

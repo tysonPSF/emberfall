@@ -110,7 +110,7 @@
     {"pos": [70, -88], "pool": {"blight_broodling": 1}, "respawn": 300, "wander": 2},
     {"pos": [74, -103], "pool": {"cave_spider": 1}, "respawn": 300, "wander": 2},
     {"pos": [71, -111], "pool": {"thick_web": 1}, "respawn": 600, "wander": 0, "face": [74, -104]},
-    {"pos": [30, -116], "pool": {"blightmother": 1}, "respawn": 1200, "wander": 0},
+    {"pos": [30, -116], "pool": {"blightmother": 1}, "respawn": 1200, "wander": 0, "always_up": true},
     {"pos": [25, -123], "pool": {"blight_broodling": 1}, "respawn": 600, "wander": 1}
   ]
 }

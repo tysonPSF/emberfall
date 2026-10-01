@@ -99,7 +99,8 @@ static func item_hint(quest_id: String, item_id: String, here: String, at: Vecto
 	# handed out by an earlier quest
 	for other_id: String in GameData.quests:
 		var o: Dictionary = GameData.quests[other_id]
-		if str(o.get("first_reward_item", "")) == item_id:
+		var given: Variant = o.get("first_reward_item", "")
+		if (given is Dictionary and item_id in (given as Dictionary).values()) or (given is String and given == item_id):
 			out.append("%s: %s gives it for finishing %s." % [name, _npc_name(str(o["giver"])), o["name"]])
 	# sold, or made
 	for npc_id: String in GameData.npcs:

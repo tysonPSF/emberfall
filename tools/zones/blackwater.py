@@ -844,6 +844,23 @@ def rainhold():
     open(path, "a").write("\n")
 
 
+def naevys_line(z):
+    """Naevys's quest line in Duskhold (dimming_line_* in quests.json; its npcs,
+    monsters, items and the Gloamvein are hand-written, not this generator's):
+    the four glow crystals on the lake's west shore become crystals that are
+    dark until you've woken the Heartcrystal, and the crack in the southwest wall (inside the mountains' foot at 84 m, tunnel and all)
+    leads down to the Gloamvein, with Naevys posted at it."""
+    dark = [[-28.3, -28.3], [-38.6, -10.4], [-38.6, 10.4], [-28.3, 28.3]]
+    near = lambda a, b: abs(a[0] - b[0]) < 0.2 and abs(a[1] - b[1]) < 0.2
+    z["landmarks"] = [l for l in z["landmarks"] if not (l.get("id") == "glow_crystal" and any(near(l["pos"], d) for d in dark))]
+    z["landmarks"].append({"type": "cave", "pos": [-68, 58], "face": [0, 0]})
+    z["zone_lines"].append({"pos": [-73.7, 62.9], "size": [5, 5], "to": "gloamvein", "arrive": [128, 20], "arrive_face": [100, 30],
+                            "requires_started": "dimming_line_deep", "refused_by": "dusk_naevys", "refused_to": [-60.4, 51.5]})
+    z["npcs"] += [{"id": "dusk_naevys", "pos": [-59, 56.2], "face": [-40, 36]},
+                  {"id": "dusk_naevys_shrine", "pos": [4, -9], "face": [7, -4]}]
+    z["npcs"] += [{"id": "dusk_dim_crystal", "pos": d, "face": [0, 0]} for d in dark]
+
+
 # ================================================================ write
 
 def merge(path, new, owned_prefix=None):
@@ -939,6 +956,7 @@ def main():
     import scale_zone
     scale_zone.grow(zones, AUTHORED, {zid: layout_size(zid) for zid in zones})
     BUILDING.difference_update(zones)  # stretched now: anything written from here on (Rainhold's gate) sees their real size
+    naevys_line(zones["duskhold"])
     for zid in ("the_wallow", "duskwood", "the_rotfen"):
         zones[zid]["spawns"] += spawn_fill.fill(zones[zid], known, zid)
     for zid, z in zones.items():

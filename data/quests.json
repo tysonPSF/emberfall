@@ -5184,6 +5184,129 @@
       "emberhold": 15
     }
   },
+  "dimming_line_wings": {
+    "name": "What the Moths Carry (1)",
+    "giver": "dusk_naevys",
+    "start_keyword": "wings",
+    "wants": {
+      "moth_wing": 5
+    },
+    "reward": {
+      "xp": 60,
+      "coin": 15
+    },
+    "accept_text": "You have taken on a task: What the Moths Carry. Bring Naevys five wings from the gloomwing moths of Duskwood.",
+    "ready_text": "That's moth-dust on your hands, {name}. You have them. Give them here.",
+    "complete_text": [
+      "Hold one up to the dark. There. See it? That shimmer on the scales, violet, like the lamps. That is not moonlight, {name}. That is ours.",
+      "Five moths, half a league from here, and every one of them dusted with Duskhold's light. They've been feeding below and flying out through the wood.",
+      "I said so. I said so to the Lamp-Keeper's face, and she had my rank for it.",
+      "The crack behind me runs down into the old crystal workings: the Gloamvein. The Heartcrystal is down there, the one every lamp in the city was cut from. If something is drinking that, Duskhold goes dark one lamp at a time.",
+      "My orders are to stand at this wall. They say nothing about which side of it.",
+      "I'm going down, {name}, and you're coming with me. You lead; I'll keep them off you. Walk into the crack when you're ready and I'll be at your back."
+    ],
+    "next": "dimming_line_deep",
+    "hints": {
+      "moth_wing": "the gloomwing moths of Duskwood carry them: out Duskhold's gate and up the tunnel, among the trees round the cave mouth."
+    },
+    "faction": {
+      "duskhold": 5
+    }
+  },
+  "dimming_line_deep": {
+    "name": "The Dark Below (2)",
+    "giver": "heartcrystal",
+    "starter": "dusk_naevys",
+    "start_keyword": "vein",
+    "requires_quest": "dimming_line_wings",
+    "wants": {
+      "stolen_light": 1
+    },
+    "reward": {
+      "xp": 150
+    },
+    "first_reward_item": "heartcrystal_shard",
+    "accept_text": "You have taken on a task: The Dark Below. Go down into the Gloamvein with Naevys, through the crack in Duskhold's southwest wall; find what is drinking the Heartcrystal's light, and give the light back.",
+    "ready_text": "The Heartcrystal's light stirs under its silk as you come near. The knot of stolen light in your pack grows warm and pulls toward it.",
+    "complete_text": [
+      "You press the knot of stolen light to the silk. It sinks through like water into sand.",
+      "The Heartcrystal drinks. Violet fire climbs through it from root to tip; the cocoon blackens, splits and slides to the floor.",
+      "One by one, back along the vein, the dead crystals catch. Somewhere far above you, Duskhold's lamps are waking."
+    ],
+    "first_complete_text": "A sliver cracks from the Heartcrystal and drops, glowing, into your hand.",
+    "next": "dimming_line_lantern",
+    "hints": {
+      "stolen_light": "the Lamp-Glutton carries it, in the Heartcrystal's chamber at the very end of the Gloamvein (the crack in Duskhold's southwest wall)."
+    },
+    "faction": {
+      "duskhold": 10
+    }
+  },
+  "dimming_line_lantern": {
+    "name": "A Lamp Left Burning (3)",
+    "giver": "dusk_naevys",
+    "start_keyword": "lantern",
+    "requires_quest": "dimming_line_deep",
+    "wants": {
+      "painted_lantern": 1
+    },
+    "reward": {
+      "xp": 100,
+      "coin": 30
+    },
+    "accept_text": "You have taken on a task: A Lamp Left Burning. Bring Naevys, at her post by the crack in Duskhold's southwest wall, the lantern from the Lamp-Glutton's nest.",
+    "ready_text": "You're carrying something out of that nest, {name}. I can smell it from here. Show me.",
+    "complete_text": [
+      "A lantern. In her nest.",
+      "Smell that glass. Sweet. That's moth-musk: the keepers paint it on the shrine candles to bring the little ones in. Somebody painted a lamp with it, carried it down a sealed vein, and left it burning beside the Heartcrystal.",
+      "Moths don't light lanterns, {name}. She didn't find her way down there. She was called.",
+      "And this is shrine glass. Half the pilgrims in Duskhold carry one like it. It could be anyone's. That's the trouble with it.",
+      "I'm done standing at a wall. The lamps are lit and the whole city can see it; let them tell me I imagined that.",
+      "Meet me on the shrine island, by the Lamp-Eater's idol. Bring the shard the Heartcrystal gave you. I want the Lamp-Keeper to look at it while I look at her."
+    ],
+    "exit_scene": {"npc": "dusk_naevys_walker", "to": [-50, 38]},
+    "next": "dimming_line_shard",
+    "hints": {
+      "painted_lantern": "it lies in the Lamp-Glutton's nest, at the very end of the Gloamvein; she drops it."
+    },
+    "faction": {
+      "duskhold": 5
+    }
+  },
+  "dimming_line_shard": {
+    "name": "Light for the Lamp-Keeper (4)",
+    "giver": "dusk_naevys_shrine",
+    "wants": {
+      "heartcrystal_shard": 1
+    },
+    "reward": {
+      "xp": 250,
+      "coin": 100
+    },
+    "first_reward_item": {
+      "warrior": "deepwatch_blade",
+      "ranger": "deepwatch_blade",
+      "rogue": "deepwatch_dirk",
+      "cleric": "deepwatch_mace",
+      "shaman": "deepwatch_mace",
+      "wizard": "deepwatch_wand",
+      "magician": "deepwatch_wand",
+      "necromancer": "deepwatch_wand"
+    },
+    "accept_text": "You have taken on a task: Light for the Lamp-Keeper. Meet Naevys on Duskhold's shrine island, by the Lamp-Eater's idol, and give her the Heartcrystal shard.",
+    "ready_text": "Good. Don't hide it, {name}. Hold it where the Lamp-Keeper can see.",
+    "complete_text": [
+      "There. Now she's seen it. And before I say my piece to her, {name}: something of yours.",
+      "Now. Lamp-Keeper. That is a sliver of the Heartcrystal, and it is burning. It wasn't, a day ago. Your goddess's child was sitting on it, drinking this city dark, exactly as I reported.",
+      "...Nothing to say. No. I didn't think there would be.",
+      "They won't give me my rank back, {name}. That would mean writing down that I was right. But nobody has ordered me back to the wall, either, and I notice the armory door was left open.",
+      "So I'll stand where I please. Here, mostly. Somebody in this city trimmed that lantern's wick, and I intend to be looking at them when they light the next one."
+    ],
+    "first_complete_text": "You went into the dark for a city that hadn't asked you to. A sentinel is owed her kit for that. I drew it from the armory myself.",
+    "faction": {
+      "duskhold": 15
+    }
+  },
   "march_pelts": {
     "name": "Wolves of the March",
     "giver": "marchwarden_hale",
