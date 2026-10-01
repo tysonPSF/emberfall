@@ -1522,6 +1522,9 @@ MOVES = {
     "high_terrace": [  # the Terrace Colossus's sun shrine sat 80 m from the monastery; the Ghost at its gate
         {"from": (76.8, -239.7), "radius": 30, "to": (280, -40), "what": "the Terrace Colossus's sun shrine and golems"},
         {"from": (-81.2, -194.7), "radius": 3, "to": (-300, -60), "what": "the Ghost of the Terraces"},
+        # the Abbot and a monk stood inside the hall, whose only door is shut: out into the courtyard before its steps
+        {"from": (-1.2, -240.7), "radius": 2, "to": (-1.2, -224.0), "what": "Abbot Varun, out of his shut hall", "spawns_only": True, "clear": False},
+        {"from": (-1.2, -249.7), "radius": 2, "to": (-14.0, -219.0), "what": "the monk shut in behind him", "spawns_only": True, "clear": False},
     ],
 }
 
@@ -1535,7 +1538,7 @@ def move_places():
             fx, fy = mv["from"]
             dx, dy = mv["to"][0] - fx, mv["to"][1] - fy
             near = lambda e: math.dist(e["pos"], (fx, fy)) <= mv["radius"]
-            lms = [l for l in z["landmarks"] if near(l) and l["type"] not in ("signpost", "rockslide", "bridge")]
+            lms = [] if mv.get("spawns_only") else [l for l in z["landmarks"] if near(l) and l["type"] not in ("signpost", "rockslide", "bridge")]
             sps = [s for s in z["spawns"] if near(s)]
             if not lms and not sps:
                 continue
@@ -1544,7 +1547,8 @@ def move_places():
                 e["pos"] = [round(e["pos"][0] + dx, 1), round(e["pos"][1] + dy, 1)]
                 if "face" in e:
                     e["face"] = [round(e["face"][0] + dx, 1), round(e["face"][1] + dy, 1)]
-            z["spawns"] = [s for s in z["spawns"] if s in sps or math.dist(s["pos"], mv["to"]) > 40]
+            if mv.get("clear", True):
+                z["spawns"] = [s for s in z["spawns"] if s in sps or math.dist(s["pos"], mv["to"]) > 40]
             changed = True
         if changed and not CHECK:
             open(path, "w").write(scale_zone.dumps(z) + "\n")

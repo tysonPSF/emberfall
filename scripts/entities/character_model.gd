@@ -347,7 +347,7 @@ func set_worn(worn: Dictionary) -> void:
 			_:
 				_worn[slot] = [gear_id, [], [], ""]
 		for node: Node in _worn[slot][1]:
-			_finish(node, str(_tiers.get(slot, "")))
+			_finish(node, str(_tiers.get(slot, "")), 0.5)
 	_show_covered()
 
 
@@ -480,7 +480,7 @@ func set_tiers(tiers: Dictionary) -> void:
 		_finish(_held[bone][1], str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
 	for slot: String in _worn:
 		for node: Node in _worn[slot][1]:
-			_finish(node, str(_tiers.get(slot, "")))
+			_finish(node, str(_tiers.get(slot, "")), 0.5)  # a suit of plate is all metal: half the wash, or the whole body turns the tier's color
 
 
 const HAND_SLOTS := {"handslot.r": "primary", "handslot.l": "secondary"}
@@ -488,7 +488,7 @@ const HAND_SLOTS := {"handslot.r": "primary", "handslot.l": "secondary"}
 
 ## Gives every mesh under a node its tier's finish, or its own materials back.
 ## The originals are remembered on each mesh, so finishes never stack up.
-func _finish(node: Node, tier_id: String) -> void:
+func _finish(node: Node, tier_id: String, wash := 1.0) -> void:
 	if node == null or not is_instance_valid(node):
 		return
 	var f := GameData.tier_finish(tier_id)
@@ -501,15 +501,44 @@ func _finish(node: Node, tier_id: String) -> void:
 			for i in mi.get_surface_override_material_count():
 				mi.set_surface_override_material(i, null)
 			continue
+		var on_metal := tier_id != "unique"  # a quality shows on the metal only; a unique weapon wears its finish all over
 		if own != null:
-			mi.material_override = _finished(own, f)
+			mi.material_override = _finished(own, f, on_metal, wash)
 			continue
 		for i in mi.get_surface_override_material_count():
 			var base := mi.mesh.surface_get_material(i) if mi.mesh != null else null
-			mi.set_surface_override_material(i, _finished(base, f))
+			mi.set_surface_override_material(i, _finished(base, f, on_metal, wash))
 
 
-static func _finished(base: Material, f: Dictionary) -> Material:
+const TIER_FINISH_SHADER := preload("res://scripts/world/tier_finish.gdshader")
+
+
+## A finish on the metal only: the blade, the spikes, the plate take the tier's
+## tint, sheen, rim and glow, and wood, leather and cloth stay as they were
+## (scripts/world/tier_finish.gdshader tells metal by its gray).
+static func _finished_on_metal(base: Material, f: Dictionary, wash := 1.0) -> Material:
+	var b := base as BaseMaterial3D
+	var m := ShaderMaterial.new()
+	m.shader = TIER_FINISH_SHADER
+	m.set_shader_parameter("albedo_color", b.albedo_color if b != null else Color.WHITE)
+	m.set_shader_parameter("has_tex", b != null and b.albedo_texture != null)
+	if b != null and b.albedo_texture != null:
+		m.set_shader_parameter("albedo_tex", b.albedo_texture)
+	m.set_shader_parameter("use_vertex", b != null and b.vertex_color_use_as_albedo)
+	m.set_shader_parameter("rough_base", b.roughness if b != null else 1.0)
+	m.set_shader_parameter("tint", Color.html(str(f.get("tint", "#ffffff"))))
+	m.set_shader_parameter("metal_f", float(f.get("metallic", 0.0)))
+	m.set_shader_parameter("rough_f", float(f.get("roughness", -1.0)))
+	m.set_shader_parameter("rim_f", float(f.get("rim", 0.0)))
+	m.set_shader_parameter("glow", Color.html(str(f.get("glow", "#000000"))))
+	m.set_shader_parameter("glow_energy", float(f.get("glow_energy", 0.2)) if f.has("glow") else 0.0)
+	m.set_shader_parameter("wash", wash)
+	return m
+
+
+static func _finished(base: Material, f: Dictionary, on_metal := false, wash := 1.0) -> Material:
+	if on_metal and (base == null or base is BaseMaterial3D):
+		return _finished_on_metal(base, f, wash)
 	var m := base.duplicate() as BaseMaterial3D if base is BaseMaterial3D else StandardMaterial3D.new()
 	if f.has("tint"):
 		m.albedo_color *= Color.html(str(f["tint"]))
