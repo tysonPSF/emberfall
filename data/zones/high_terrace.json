@@ -12,8 +12,8 @@
   "groves": 0.55,
   "rocks": 248,
   "grass_colors": ["#6f8a48", "#8aa05a"],
-  "fog_density": 0.009,
-  "fog_color": "#e4e8ec",
+  "fog_density": 0.005,
+  "fog_color": "#b8c6d6",
   "sun_energy": 1.05,
   "clutter": {
     "grass_a": {"density": 0.34, "patch": 0.55, "sway": 0.18, "range": 55, "tint": "ground", "scale": [0.8, 1.3]},

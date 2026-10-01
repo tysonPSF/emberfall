@@ -133,6 +133,7 @@ const SECTIONS := [
 	["hubs_768b", "hollow_air"],
 	["hubs_small", "greenmoor"],
 	["arrow_flight", "greenmoor"],
+	["terrace_views", "high_terrace"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8827,6 +8828,14 @@ func _t_spawn_coverage() -> void:
 			if m.spawn_point != null and Vector2(at.x, at.z).distance_to(Vector2(m.spawn_point.global_position.x, m.spawn_point.global_position.z)) > 40.0:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
+	World.time_override = -1.0
+
+
+## High Terrace from the pilgrims' road toward the monastery, by day: how far the haze lets you see.
+func _t_terrace_views() -> void:
+	World.time_override = 13.0
+	await _wait(1.0)
+	await _zone_views("high_terrace", [[Vector2(-10, -90), Vector2(-1, -240), "monastery"], [Vector2(40, 60), Vector2(280, -40), "east"]])
 	World.time_override = -1.0
 
 
