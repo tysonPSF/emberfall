@@ -276,6 +276,8 @@ func add_hate(src: Entity, amount: float) -> void:
 	hate[src.entity_id] = float(hate.get(src.entity_id, 0.0)) + amount
 	if state != State.COMBAT and state != State.FLEE:
 		state = State.COMBAT
+	if was_calm:
+		animate("sfx:aggro")  # its challenge, as it comes for you
 	if was_calm and social:
 		World.call_for_help(self, src)
 

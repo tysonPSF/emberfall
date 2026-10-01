@@ -4,14 +4,17 @@ extends Node
 ## screen has its own, and moving between them crossfades. When a monster has
 ## you on its hate list (Player.threatened, set by the server) the combat
 ## theme fades in over the zone's, which fades out and waits; a few calm
-## seconds after the last threat is gone they trade back. The tracks are
-## composed by tools/audio/music.py.
+## seconds after the last threat is gone they trade back. A fight starting
+## also plays the combat sting once (war drums and a brass chord, "combat_sting",
+## not looped), at most every STING_GAP seconds, so you hear the moment it
+## begins. The tracks are composed by tools/audio/music.py.
 ##
 ## Buses: "MusicZone" and "MusicCombat" both feed "Music", whose volume is
 ## Controls.music_volume. A dedicated server plays nothing.
 
 const FADE := 2.0  # between zone themes
-const COMBAT_IN := 1.2
+const COMBAT_IN := 0.35  # in fast: the fight starts now, not over a second
+const STING_GAP := 12.0  # seconds: a fight that flares up again right away doesn't sting twice
 const COMBAT_OUT := 3.0
 const CALM_SECONDS := 4.0  # out of danger this long before the zone theme returns
 
@@ -26,6 +29,8 @@ var _mix := 0.0  # 0 = zone theme, 1 = combat theme
 var _combat_stream: AudioStreamOggVorbis
 var _combat_track := "combat"  # or a boss's own theme (_boss_track)
 var _boss_check := 0.0
+var _sting: AudioStreamPlayer
+var _sting_at := -1000.0
 
 
 func _ready() -> void:
@@ -43,6 +48,14 @@ func _ready() -> void:
 	_combat.bus = "MusicCombat"
 	add_child(_combat)
 	_combat_stream = _load("combat")  # ready ahead of the first fight, so it starts on the instant
+	_sting = AudioStreamPlayer.new()
+	_sting.bus = "Music"  # over both themes, not faded with them
+	_sting.volume_db = -2.0
+	add_child(_sting)
+	var sting_path := "res://assets/music/combat_sting.ogg"
+	if ResourceLoader.exists(sting_path):
+		_sting.stream = (load(sting_path) as AudioStreamOggVorbis).duplicate()
+		(_sting.stream as AudioStreamOggVorbis).loop = false
 	apply_volume()
 
 
@@ -147,6 +160,10 @@ func _boss_track(p: Player) -> String:
 ## The zone theme keeps playing underneath, so it picks up where it was.
 func _set_combat(on: bool) -> void:
 	_in_combat = on
+	var now := Time.get_ticks_msec() / 1000.0
+	if on and _sting.stream != null and now - _sting_at > STING_GAP and "--server" not in OS.get_cmdline_user_args():
+		_sting_at = now
+		_sting.play()
 	if on and not _combat.playing:
 		if _combat_stream == null:
 			return

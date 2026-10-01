@@ -35,6 +35,7 @@ MODES = {
 	"phrygian_dominant": [0, 1, 4, 5, 7, 8, 10],  # the desert's raised third over a flat second
 	"phrygian": [0, 1, 3, 5, 7, 8, 10],  # minor with a flat second: the fire god's darker color
 	"lydian": [0, 2, 4, 6, 7, 9, 11],  # major with a raised fourth: bright, floating, unresolved
+	"harmonic_minor": [0, 2, 3, 5, 7, 8, 11],  # minor with a raised seventh: a major V that pulls hard home, the fight's edge
 }
 
 
@@ -134,6 +135,54 @@ def horn(f, dur, vel=0.6):
 			break
 		out += (1.0 / k ** 1.3) * np.sin(k * phase) * (bright if k > 2 else 1.0)
 	return out * _env(len(t), 0.05, 0.2) * vel * 0.2
+
+
+def brass(f, dur, vel=0.6):
+	"""Battle brass: a bright, buzzing section (two players a hair apart)
+	whose upper partials open in the first few hundredths of a second, so
+	every note bites."""
+	t = _t(dur + 0.25)
+	open_ = np.clip(t / 0.035, 0, 1) * (0.85 + 0.15 * np.exp(-t * 6))  # the blat at the front, then a held tone
+	out = np.zeros_like(t)
+	for det in (-0.0025, 0.0025):
+		vib = 1.0 + 0.0035 * np.sin(2 * np.pi * 5.5 * t + det * 1000) * np.clip((t - 0.25) / 0.3, 0, 1)
+		phase = 2 * np.pi * f * (1 + det) * np.cumsum(vib) / SR
+		for k in range(1, 15):
+			if f * k > SR / 2.2:
+				break
+			out += (1.0 / k) * np.sin(k * phase) * (open_ ** (0.5 + 0.12 * k))
+	return out * _env(len(t), 0.012, 0.12) * vel * 0.17
+
+
+def strings_stacc(f, dur, vel=0.6):
+	"""Low strings dug in hard and let go: a saw-bright bow stroke that dies fast, for an ostinato."""
+	t = _t(dur + 0.15)
+	out = np.zeros_like(t)
+	for det in (-0.004, 0.0, 0.004):
+		for k in range(1, 12):
+			if f * k > SR / 2.2:
+				break
+			out += (1.0 / k) * np.sin(2 * np.pi * f * (1 + det) * k * t + det * 700) * np.exp(-t * k * 1.2)
+	return out * np.exp(-t * 9) * _env(len(t), 0.004, 0.06) * vel * 0.1
+
+
+def taiko(vel=0.6, rng=None):
+	"""A great war drum: a deep body that drops in pitch, a skin slap, a long boom."""
+	t = _t(1.3)
+	f = 44 + 34 * np.exp(-t * 13)
+	body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 3.4)
+	noise = (rng or np.random.default_rng(8)).standard_normal(len(t))
+	slap = np.convolve(noise, np.ones(20) / 20, mode="same") * np.exp(-t * 35) * 0.8
+	return (body + slap) * _env(len(t), 0.001, 0.2) * vel * 0.85
+
+
+def cymbal(vel=0.4, rng=None, dur=2.4, swell=False):
+	"""A crash (or, swelling, a roll that rises into the downbeat): bright noise that shimmers off."""
+	t = _t(dur)
+	noise = (rng or np.random.default_rng(9)).standard_normal(len(t))
+	hiss = noise - np.convolve(noise, np.ones(4) / 4, mode="same")
+	env = np.clip(t / dur, 0, 1) ** 2.2 if swell else np.exp(-t * 2.2)
+	return hiss * env * _env(len(t), 0.002, 0.3) * vel * 0.16
 
 
 def bell(f, dur, vel=0.4):
@@ -252,12 +301,18 @@ TRACKS = {
 		"melody": "flute", "arp": "lute", "arp_pattern": [0, 2, 1], "pad": False, "bass": True,
 		"drum": [0, 2], "drum_sections": ["A", "B"], "reverb": 1.6, "sparse": 0.0,
 	},
-	"combat": {
-		"key": (64, "aeolian"), "bpm": 132, "beats": 4, "seed": 41,
-		"sections": {"A": [0, 5, 6, 0], "B": [3, 0, 5, 4], "C": [0, 5, 3, 4]},
+	"combat": {  # drums and brass: nothing like the zone themes, so you hear the fight start
+		"key": (57, "harmonic_minor"), "bpm": 152, "beats": 4, "seed": 43,
+		"sections": {"A": [0, 5, 3, 4], "B": [5, 3, 0, 4], "C": [0, 3, 5, 4]},
 		"form": ["A", "A", "B", "A", "C"],
-		"melody": "horn", "arp": "lute", "arp_pattern": [0, 1, 2, 1, 0, 1, 2, 3], "pad": True, "bass": True, "bass_eighths": True,
-		"drum": [0, 1, 1.5, 2, 3, 3.5], "drum_sections": ["A", "B", "C"], "reverb": 1.4, "sparse": 0.0,
+		"melody": "brass", "melody_double": "brass", "melody_double_octave": -1, "arp": "lute", "arp_pattern": None,
+		"pad": False, "bass": True, "bass_eighths": True,
+		"ostinato": [0, 0, 7, 0, 12, 0, 7, 0, 0, 0, 7, 0, 12, 7, 3, 0], "ostinato_gain": 1.3,
+		"stabs": [0, 1.5, 3], "stab_sections": ["A", "B", "C"], "stab_gain": 0.7,
+		"taiko": [0, 0.75, 1.5, 2, 3, 3.5], "taiko_sections": ["A", "B", "C"], "taiko_gain": 0.42,
+		"drum": [], "drum_sections": ["A", "B", "C"],
+		"snare": [1, 3, 3.75], "snare_sections": ["A", "B", "C"], "snare_gain": 0.9, "rolls": True, "cymbals": True,
+		"reverb": 1.3, "sparse": 0.0,
 	},
 	"thornwood": {
 		"key": (52, "aeolian"), "bpm": 60, "beats": 3, "seed": 71,
@@ -609,6 +664,8 @@ def _voice(name, f, dur, vel, rng):
 	"""One melody note on the named instrument."""
 	if name == "horn":
 		return horn(f, dur, vel)
+	if name == "brass":
+		return brass(f, dur, vel)
 	if name == "bell":
 		return bell(f, dur, vel * 1.6)
 	if name == "lute":
@@ -675,8 +732,29 @@ def render(name, spec):
 					put(bass(midi_hz(m), beat * 0.45, 0.5 if k % 2 == 0 else 0.38), tb + k * beat / 2)
 			elif spec["bass"]:
 				put(bass(midi_hz(key.note(ch, -2)), beats * beat * 0.9, 0.55), tb)
-			pattern = spec["arp_pattern"]
-			step = beats * beat / len(pattern)
+			if spec.get("ostinato"):  # low strings driving sixteenths under everything: root, fifth, octave
+				osc = spec["ostinato"]
+				step16 = beats * beat / len(osc)
+				for k, off in enumerate(osc):
+					if off is None:
+						continue
+					m = key.note(ch, -2) + off
+					put(strings_stacc(midi_hz(m), step16 * 0.9, 0.6 if k % 4 == 0 else 0.42), tb + k * step16 + rng.normal(0, 0.002),
+						pan=-0.25, gain=spec.get("ostinato_gain", 1.0))
+			if spec.get("stabs") and sec in spec.get("stab_sections", spec["drum_sections"]):  # the brass punching the chord
+				for d in spec["stabs"]:
+					for m, pan in zip([key.note(x, 0) for x in key.chord(ch)], (-0.3, 0.0, 0.3)):
+						put(brass(midi_hz(m), beat * 0.22, 0.55), tb + d * beat + rng.normal(0, 0.003), pan=pan, gain=spec.get("stab_gain", 1.0))
+			if spec.get("taiko") and sec in spec.get("taiko_sections", spec["drum_sections"]):
+				for d in spec["taiko"]:
+					put(taiko(0.75 if d == 0 else 0.5, rng), tb + d * beat, pan=0.0, gain=spec.get("taiko_gain", 1.0))
+			if spec.get("rolls") and b == len(chords) - 1:  # a snare roll into the next section
+				for k in range(16):
+					put(snare(0.18 + 0.45 * k / 15, rng), tb + (beats - 2) * beat + k * beat / 8, pan=-0.1, gain=spec.get("snare_gain", 1.0))
+			if spec.get("cymbals") and b == 0:
+				put(cymbal(0.55, rng), tb, pan=0.3)
+			pattern = spec.get("arp_pattern") or []
+			step = beats * beat / max(1, len(pattern))
 			ao = spec.get("arp_octave", -1)
 			tones = [key.note(d, ao) for d in key.chord(ch)] + [key.note(ch + 7, ao), key.note(ch + 9, ao)]
 			for k, idx in enumerate(pattern):
@@ -790,6 +868,45 @@ def render(name, spec):
 	return np.stack([L * scale, R * scale], axis=1), length
 
 
+def render_sting():
+	"""The moment a fight starts: two war drums, a crash, and the brass on the
+	minor chord, swelling and cut off, about two and a half seconds; heard once
+	over the combat theme as it comes in."""
+	rng = np.random.default_rng(57)
+	length = 2.6
+	n = int((length + 2.0) * SR)
+	L, R = np.zeros(n), np.zeros(n)
+
+	def put(sig, at, pan=0.0, gain=1.0):
+		i = int(at * SR)
+		j = min(n, i + len(sig))
+		L[i:j] += sig[:j - i] * gain * math.cos((pan + 1) * math.pi / 4)
+		R[i:j] += sig[:j - i] * gain * math.sin((pan + 1) * math.pi / 4)
+
+	put(taiko(0.9, rng), 0.0, gain=0.55)
+	put(taiko(0.7, rng), 0.11, pan=0.2, gain=0.55)
+	put(taiko(1.0, rng), 0.42, gain=0.55)
+	put(cymbal(0.8, rng, 2.4), 0.42, pan=0.25)
+	for m, pan in ((45, 0.0), (57, -0.3), (60, 0.1), (64, 0.3), (69, -0.1)):  # A minor, spread over two octaves
+		put(brass(midi_hz(m), 1.3, 0.65), 0.42, pan=pan)
+	for k in range(8):  # low strings digging in under it
+		put(strings_stacc(midi_hz(33 + (12 if k % 4 == 2 else 0)), 0.1, 0.7), 0.42 + k * 0.1, pan=-0.2)
+	for chan, seed in ((L, 111), (R, 222)):
+		ir_t = _t(1.3)
+		noise = np.random.default_rng(seed).standard_normal(len(ir_t))
+		ir = np.convolve(noise, np.ones(6) / 6, mode="same") * np.exp(-ir_t * 6.9 / 1.3)
+		ir /= np.sqrt(np.sum(ir ** 2))
+		size = 1 << int(math.ceil(math.log2(len(chan) + len(ir))))
+		chan[:] = chan * 0.8 + np.fft.irfft(np.fft.rfft(chan, size) * np.fft.rfft(ir, size), size)[: len(chan)] * 0.35
+	end = int((length + 1.2) * SR)
+	L, R = L[:end], R[:end]
+	fade = int(0.8 * SR)
+	for chan in (L, R):
+		chan[-fade:] *= np.linspace(1, 0, fade)
+	peak = max(np.abs(L).max(), np.abs(R).max(), 1e-9)
+	return np.stack([L, R], axis=1) * (0.85 / peak), length + 1.2
+
+
 def write_wav(path, stereo):
 	data = (np.clip(stereo, -1, 1) * 32767).astype("<i2")
 	with wave.open(path, "wb") as w:
@@ -830,10 +947,10 @@ def main():
 	only = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
 	keep_wav = "--wav" in argv
 	os.makedirs(out, exist_ok=True)
-	for name, spec in TRACKS.items():
+	for name, spec in list(TRACKS.items()) + [("combat_sting", None)]:
 		if only and name not in only:
 			continue
-		stereo, seconds = render(name, spec)
+		stereo, seconds = render_sting() if spec is None else render(name, spec)
 		wav = os.path.abspath(os.path.join(out, name + ".wav"))
 		write_wav(wav, stereo)
 		encode_ogg(wav, os.path.abspath(os.path.join(out, name + ".ogg")), seconds)

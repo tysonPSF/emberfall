@@ -697,6 +697,8 @@ func play_emote(clip: String) -> void:
 
 ## Falls over and stays down (corpses).
 func pose_dead(instant := false) -> void:
+	if not instant and not _posed_dead and get_parent() is Player:
+		Sfx.voice(get_parent() as Entity, "death")  # a player's last cry, as they fall (a monster's: World.kill's "sfx:death")
 	_posed_dead = true
 	var death := _clip("death")
 	if not instant and death != "":

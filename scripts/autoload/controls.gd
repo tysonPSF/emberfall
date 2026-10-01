@@ -77,6 +77,8 @@ var mouse_look := true
 
 ## Music loudness, 0..1 (0 is off). Saved per machine.
 var music_volume := 0.25
+## Sound effects' loudness, 0..1 (0 is off). Saved per machine.
+var sfx_volume := 0.7
 
 ## Hotbars locked: no dragging slots around or off by accident. Saved per machine.
 var hotbar_locked := false
@@ -107,6 +109,12 @@ func set_music_volume(v: float) -> void:
 	Music.apply_volume()
 
 
+func set_sfx_volume(v: float) -> void:
+	sfx_volume = clampf(snappedf(v, 0.05), 0.0, 1.0)
+	_save_setting("sfx_volume", sfx_volume)
+	Sfx.apply_volume()
+
+
 ## settings.json is shared (main keeps the server, account and mode there too),
 ## so a change rewrites one key and keeps the rest.
 func _save_setting(key: String, value: Variant) -> void:
@@ -128,6 +136,7 @@ func _load_settings() -> void:
 	if typeof(parsed) == TYPE_DICTIONARY:
 		mouse_look = bool((parsed as Dictionary).get("mouse_look", true))
 		music_volume = clampf(float((parsed as Dictionary).get("music_volume", 0.25)), 0.0, 1.0)
+		sfx_volume = clampf(float((parsed as Dictionary).get("sfx_volume", 0.7)), 0.0, 1.0)
 		hotbar_locked = bool((parsed as Dictionary).get("hotbar_locked", false))
 		var wp: Variant = (parsed as Dictionary).get("window_positions", {})
 		window_positions = wp if wp is Dictionary else {}

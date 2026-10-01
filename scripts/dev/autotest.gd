@@ -139,6 +139,7 @@ const SECTIONS := [
 	["rare_spawns", "thornwood"],
 	["salt_islands", "mirror_flats"],
 	["quest_areas", "thornwood"],
+	["combat_audio", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8850,6 +8851,104 @@ func _t_flats_views() -> void:
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
+
+
+## The fight you can hear (Sfx, Music): a monster's challenge, swings and
+## hits by weapon, what a body rings like, a death cry, the cast hum, spells
+## landing, a bow's twang and the arrow's thunk on arrival, the level-up
+## fanfare, the combat sting; every voice has its three cries, and every
+## monster in the game gets a voice (the spread is printed).
+func _t_combat_audio() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	Sfx.heard.clear()
+	p.global_position = z.ground(40, 40) + Vector3.UP
+	var mobs := {}
+	for id: String in ["gnoll_scout", "decaying_skeleton"]:
+		var d: Dictionary = (GameData.mobs[id] as Dictionary).duplicate(true)
+		d.erase("gear")
+		var m := Mob.new()
+		m.setup(id, d, null)
+		m.aggressive = false
+		m.position = z.ground(40, 37 - mobs.size() * 3) + Vector3.UP * 0.2
+		z.add_child(m)
+		m.set_physics_process(false)
+		mobs[id] = m
+	await _wait(0.3)
+	var gnoll: Mob = mobs["gnoll_scout"]
+	var bones: Mob = mobs["decaying_skeleton"]
+	gnoll.add_hate(p, 1.0)
+	bones.add_hate(p, 1.0)
+	await _wait(0.1)
+	var after_aggro := Sfx.heard.duplicate()
+	p.animate("slash")
+	gnoll.animate("sfx:hit_slash")
+	bones.animate("sfx:hit_blunt!")
+	await _wait(0.1)
+	var after_hits := Sfx.heard.duplicate()
+	p.cast = {"spell": "minor_healing" if GameData.spells.has("minor_healing") else GameData.spells.keys()[0]}
+	SpellFx.update_cast(p)
+	var humming := Sfx._casts.has(p)
+	p.cast = {}
+	SpellFx.update_cast(p)
+	var heal_id := ""
+	var nuke_id := ""
+	for sid: String in GameData.spells:
+		var kind := str(GameData.spells[sid].get("fx", {}).get("kind", ""))
+		if kind == "heal" and heal_id == "":
+			heal_id = sid
+		if kind == "burst" and nuke_id == "":
+			nuke_id = sid
+	World.spell_fx.emit(p, p, heal_id)
+	World.spell_fx.emit(p, gnoll, nuke_id)
+	p.animate("shoot:bow_basic")
+	gnoll.animate("sfx:hit_arrow@19")
+	var before_arrow := Sfx.heard.count("hit_arrow")
+	await _wait(0.8)
+	var arrow_late := before_arrow == 0 and Sfx.heard.count("hit_arrow") == 1
+	World.kill(gnoll, p)
+	await _wait(0.3)
+	p.level += 1
+	await _wait(0.2)
+	p.level -= 1
+	Music._sting_at = -1000.0
+	Music._set_combat(true)
+	var stung := Music._sting.playing
+	Music._set_combat(false)
+	print("combat_audio: aggro %s" % [after_aggro])
+	print("combat_audio: hits %s" % [after_hits.slice(after_aggro.size())])
+	print("combat_audio: all heard %s" % [Sfx.heard])
+	print("combat_audio: cast hum %s, arrow thunk late %s, sting %s" % [humming, arrow_late, stung])
+	var missing := []
+	for v in ["humanoid", "beast", "small", "bug", "undead", "big", "stone", "slime", "bird", "player"]:
+		for w in ["hurt", "death"] + ([] if v == "player" else ["aggro"]):
+			if not Sfx.has_sound("%s_%s" % [v, w]):
+				missing.append("%s_%s" % [v, w])
+	for snd in ["swing", "swing_light", "swing_heavy", "swing_claw", "hit_slash", "hit_pierce", "hit_blunt", "hit_claw", "hit_arrow", "crit",
+			"mat_bone", "mat_stone", "mat_metal", "block", "parry", "bow_release", "sling", "cast_loop", "level_up"]:
+		if not Sfx.has_sound(snd):
+			missing.append(snd)
+	print("combat_audio: sounds missing %s" % [missing])
+	var spread := {}
+	var samples := {}
+	for id: String in GameData.mobs:
+		var fake := Mob.new()
+		fake.mob_id = id
+		fake.look = {"model": str(GameData.mobs[id].get("model", ""))}
+		var v := Sfx.voice_of(fake)
+		spread[v] = int(spread.get(v, 0)) + 1
+		if (samples.get(v, []) as Array).size() < 6:
+			var l: Array = samples.get(v, [])
+			l.append(id)
+			samples[v] = l
+		fake.free()
+	print("combat_audio: voices %s" % [spread])
+	for v: String in samples:
+		print("combat_audio:   %s e.g. %s" % [v, samples[v]])
+	for m in mobs.values():
+		if is_instance_valid(m):
+			(m as Node).queue_free()
 
 
 ## Where a quest's monsters are: the hint names a rare spawn's placeholder,

@@ -3050,36 +3050,42 @@ func _refresh_settings() -> void:
 	note.custom_minimum_size.x = 410
 	_settings_rows.add_child(note)
 	_settings_rows.add_child(_music_row("[ ]   Music"))
+	_settings_rows.add_child(_music_row("[ ]   Sounds", true))
 	var reset := UIKit.button("Reset window positions", Vector2(0, 30))
 	reset.tooltip_text = "Puts every window you've dragged back where it started."
 	reset.pressed.connect(func() -> void: UIKit.reset_windows(root))
 	_settings_rows.add_child(reset)
 
 
-## A music volume slider with its label: in Settings and the Esc menu.
-func _music_row(caption: String) -> HBoxContainer:
+## A volume slider with its label, the music's or the sound effects': in
+## Settings and the Esc menu.
+func _music_row(caption: String, sfx := false) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
-	var label := UIKit.label("%s:   %s" % [caption, _volume_text()], 14, UIKit.TEXT)
+	var label := UIKit.label("%s:   %s" % [caption, _volume_text(sfx)], 14, UIKit.TEXT)
 	label.custom_minimum_size.x = 150
 	row.add_child(label)
 	var slider := HSlider.new()
 	slider.min_value = 0.0
 	slider.max_value = 1.0
 	slider.step = 0.05
-	slider.value = Controls.music_volume
+	slider.value = Controls.sfx_volume if sfx else Controls.music_volume
 	slider.custom_minimum_size.x = 120
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slider.focus_mode = Control.FOCUS_NONE
 	slider.value_changed.connect(func(v: float) -> void:
-		Controls.set_music_volume(v)
-		label.text = "%s:   %s" % [caption, _volume_text()])
+		if sfx:
+			Controls.set_sfx_volume(v)
+		else:
+			Controls.set_music_volume(v)
+		label.text = "%s:   %s" % [caption, _volume_text(sfx)])
 	row.add_child(slider)
 	return row
 
 
-func _volume_text() -> String:
-	return "Off" if Controls.music_volume <= 0.001 else "%d%%" % roundi(Controls.music_volume * 100)
+func _volume_text(sfx := false) -> String:
+	var v := Controls.sfx_volume if sfx else Controls.music_volume
+	return "Off" if v <= 0.001 else "%d%%" % roundi(v * 100)
 
 
 func _toggle_mouse_look() -> void:
@@ -3109,7 +3115,8 @@ func _build_menu() -> void:
 		if _menu_panel.visible:
 			for c in music_slot.get_children():
 				c.queue_free()
-			music_slot.add_child(_music_row("Music")))
+			music_slot.add_child(_music_row("Music"))
+			music_slot.add_child(_music_row("Sounds", true)))
 	var camp := UIKit.button("Camp  (log out)", Vector2(0, 38))
 	camp.pressed.connect(func() -> void:
 		_menu_panel.visible = false
