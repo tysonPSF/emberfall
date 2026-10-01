@@ -477,7 +477,7 @@ func set_tiers(tiers: Dictionary) -> void:
 		return
 	_tiers = tiers.duplicate()
 	for bone: String in _held:
-		_finish(_held[bone][1], str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
+		_finish(_held[bone][1], str(_tiers.get(HAND_SLOTS.get(bone, ""), "")), 1.0, HILT_REACH)
 	for slot: String in _worn:
 		for node: Node in _worn[slot][1]:
 			_finish(node, str(_tiers.get(slot, "")), 0.5)  # a suit of plate is all metal: half the wash, or the whole body turns the tier's color
@@ -488,7 +488,10 @@ const HAND_SLOTS := {"handslot.r": "primary", "handslot.l": "secondary"}
 
 ## Gives every mesh under a node its tier's finish, or its own materials back.
 ## The originals are remembered on each mesh, so finishes never stack up.
-func _finish(node: Node, tier_id: String, wash := 1.0) -> void:
+const HILT_REACH := 0.4  # a held weapon's finish starts this far from the hand: the hilt stays as made
+
+
+func _finish(node: Node, tier_id: String, wash := 1.0, reach := 0.0) -> void:
 	if node == null or not is_instance_valid(node):
 		return
 	var f := GameData.tier_finish(tier_id)
@@ -502,12 +505,24 @@ func _finish(node: Node, tier_id: String, wash := 1.0) -> void:
 				mi.set_surface_override_material(i, null)
 			continue
 		var on_metal := tier_id != "unique"  # a quality shows on the metal only; a unique weapon wears its finish all over
+		var to_root := _to_root(mi, node)
 		if own != null:
-			mi.material_override = _finished(own, f, on_metal, wash)
+			mi.material_override = _finished(own, f, on_metal, wash, reach, to_root)
 			continue
 		for i in mi.get_surface_override_material_count():
 			var base := mi.mesh.surface_get_material(i) if mi.mesh != null else null
-			mi.set_surface_override_material(i, _finished(base, f, on_metal, wash))
+			mi.set_surface_override_material(i, _finished(base, f, on_metal, wash, reach, to_root))
+
+
+## A mesh's transform in the space of the node it was finished from (a held
+## weapon's root, which sits in the hand), walked up the parents.
+static func _to_root(mi: Node3D, root: Node) -> Transform3D:
+	var xf := Transform3D.IDENTITY
+	var n: Node = mi
+	while n != null and n != root and n is Node3D:
+		xf = (n as Node3D).transform * xf
+		n = n.get_parent()
+	return xf
 
 
 const TIER_FINISH_SHADER := preload("res://scripts/world/tier_finish.gdshader")
@@ -516,7 +531,7 @@ const TIER_FINISH_SHADER := preload("res://scripts/world/tier_finish.gdshader")
 ## A finish on the metal only: the blade, the spikes, the plate take the tier's
 ## tint, sheen, rim and glow, and wood, leather and cloth stay as they were
 ## (scripts/world/tier_finish.gdshader tells metal by its gray).
-static func _finished_on_metal(base: Material, f: Dictionary, wash := 1.0) -> Material:
+static func _finished_on_metal(base: Material, f: Dictionary, wash := 1.0, reach := 0.0, to_root := Transform3D.IDENTITY) -> Material:
 	var b := base as BaseMaterial3D
 	var m := ShaderMaterial.new()
 	m.shader = TIER_FINISH_SHADER
@@ -533,12 +548,14 @@ static func _finished_on_metal(base: Material, f: Dictionary, wash := 1.0) -> Ma
 	m.set_shader_parameter("glow", Color.html(str(f.get("glow", "#000000"))))
 	m.set_shader_parameter("glow_energy", float(f.get("glow_energy", 0.2)) if f.has("glow") else 0.0)
 	m.set_shader_parameter("wash", wash)
+	m.set_shader_parameter("reach", reach)
+	m.set_shader_parameter("to_root", Projection(to_root))
 	return m
 
 
-static func _finished(base: Material, f: Dictionary, on_metal := false, wash := 1.0) -> Material:
+static func _finished(base: Material, f: Dictionary, on_metal := false, wash := 1.0, reach := 0.0, to_root := Transform3D.IDENTITY) -> Material:
 	if on_metal and (base == null or base is BaseMaterial3D):
-		return _finished_on_metal(base, f, wash)
+		return _finished_on_metal(base, f, wash, reach, to_root)
 	var m := base.duplicate() as BaseMaterial3D if base is BaseMaterial3D else StandardMaterial3D.new()
 	if f.has("tint"):
 		m.albedo_color *= Color.html(str(f["tint"]))
@@ -607,7 +624,7 @@ func _hold(bone: String, model_id: String) -> void:
 	slot.add_child(held)
 	Entity.use_entity_layer(slot)
 	_held[bone] = [model_id, slot]
-	_finish(slot, str(_tiers.get(HAND_SLOTS.get(bone, ""), "")))
+	_finish(slot, str(_tiers.get(HAND_SLOTS.get(bone, ""), "")), 1.0, HILT_REACH)
 
 
 ## For a ranged shot: hides what the hands hold and, for a bow, puts it in the
