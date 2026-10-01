@@ -142,6 +142,7 @@ const SECTIONS := [
 	["quest_areas", "thornwood"],
 	["combat_audio", "greenmoor"],
 	["summon_corpse", "greenmoor"],
+	["evil_kin", "greenmoor"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -9965,6 +9966,35 @@ func _t_alignment() -> void:
 	p.race = "high_elf"
 	World.apply_alignment(p)
 	show.call("changed race to high elf")
+	p.race = keep[0]
+	p.char_class = keep[1]
+	p.factions = keep[2]
+	p.alignment_mods = keep[3]
+
+
+## The evil races among their own: a fresh dark elf, troll and ogre, of every
+## class each may be, stand with Murkhold and Duskhold alike, so neither
+## city's guards attack them and neither city's people turn them away.
+func _t_evil_kin() -> void:
+	var p := World.local_player
+	var keep := [p.race, p.char_class, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	var bad := []
+	var rows := []
+	for race in ["dark_elf", "troll", "ogre"]:
+		for cls: String in GameData.races[race].get("classes", []):
+			p.factions = {}
+			p.alignment_mods = {}
+			p.race = race
+			p.char_class = cls
+			World.apply_alignment(p)
+			var line := "%s %s: Murkhold %d, Duskhold %d" % [race, cls, World.standing(p, "murkhold"), World.standing(p, "duskhold")]
+			for city in ["murkhold", "duskhold"]:
+				if World.city_hostile(p, city) or World.npc_kos(p, city) or World.standing(p, city) < World.REFUSE_BELOW:
+					bad.append("%s %s in %s" % [race, cls, city])
+			rows.append(line)
+	for r: String in rows:
+		print("evil_kin:   " + r)
+	print("evil_kin: turned away or attacked by their own side: %s" % [bad])
 	p.race = keep[0]
 	p.char_class = keep[1]
 	p.factions = keep[2]
