@@ -1180,7 +1180,7 @@ def pick_base(z, level):
 
 
 PINNED_XP = {  # place mob id -> (repeatable xp, coin, named xp, coin): what zone_xp gave when each was written, kept so a rerun can't drift
-    "gm_grain_weevil": (80, 50, 90, 20),
+    "gm_grain_weevil": (80, 50, 220, 60),  # the named raised 2026-10-01: it paid no more than the repeatable
     "hf_field_crow": (220, 40, 560, 120),
     "hm_marsh_gnats": (700, 120, 1500, 300),
     "ds_bamboo_viper": (260, 36, 1400, 180),
@@ -1188,8 +1188,8 @@ PINNED_XP = {  # place mob id -> (repeatable xp, coin, named xp, coin): what zon
     "wt_rain_panther": (7000, 600, 16000, 2000),
     "cp_ash_beetle": (4200, 500, 9000, 1200),
     "wb_crag_lizard": (7200, 800, 16000, 1920),
-    "wl_bog_crawdad": (120, 40, 150, 30),
-    "dk_duskwing": (140, 50, 90, 20),
+    "wl_bog_crawdad": (120, 40, 300, 80),  # (likewise)
+    "dk_duskwing": (140, 50, 360, 90),  # (likewise)
     "rf_bloated_dead": (700, 120, 1900, 450),
     "bm_cairn_raven": (1000, 180, 2800, 650),
     "cp_slag_hound": (4200, 500, 9000, 1200),

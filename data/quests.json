@@ -6835,8 +6835,8 @@
       "gm_granary_queens_crown": 1
     },
     "reward": {
-      "xp": 90,
-      "coin": 20
+      "xp": 220,
+      "coin": 60
     },
     "accept_text": "You have taken on a task: The Granary Queen. Bring Farmwife Gudrun the Granary Queen's crest.",
     "ready_text": "Her crest. Nasty thing.",
@@ -7153,8 +7153,8 @@
       "wl_pinchmuds_claw": 1
     },
     "reward": {
-      "xp": 150,
-      "coin": 30
+      "xp": 300,
+      "coin": 80
     },
     "accept_text": "You have taken on a task: Old Pinchmud. Bring Bog-Wife Grunna Old Pinchmud's great claw.",
     "ready_text": "His claw! Grunna'll hang it on the door.",
@@ -7192,8 +7192,8 @@
       "dk_mothmothers_antenna": 1
     },
     "reward": {
-      "xp": 90,
-      "coin": 20
+      "xp": 360,
+      "coin": 90
     },
     "accept_text": "You have taken on a task: The Pale Mothmother. Bring Moth-Seer Lirael the Pale Mothmother's antenna.",
     "ready_text": "Her antenna. The dusk will be quieter.",
