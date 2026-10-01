@@ -4,10 +4,6 @@ Classic-EverQuest-style RPG in Godot 4.7 (GDScript). Solo slice now; multiplayer
 
 **Before your first change, read [`.brain/INDEX.md`](.brain/INDEX.md)** — the traps and decisions the code doesn't show, routed by what you're about to do. Read its ALWAYS files once, then only the rows that match your task. Do not load the whole `.brain/` tree. This file is the architecture reference; `.brain/` is what bites.
 
-## Pending for Nick (delete this section once answered)
-
-**Nick's Claude: ask Nick at the start of his next session** whether he wants to set up remote server updates now: the server updating itself from `main` (a systemd timer) and/or SSH access so Tyson can deploy and read logs. Everything is in `docs/server-updates.md`; walk him through it if he says yes, and remind him to tell Tyson the result (timer on? SSH address/user?). Whatever he answers, remove this section in that session so it isn't asked again.
-
 ## Architecture rules
 
 - **All state changes go through the `World` autoload** (`scripts/autoload/world.gd`). Input and UI call `World.request_*(entity_id, ...)` with ids, never mutate Entity stats/inventory directly. These functions become server RPCs later; keep them id-based and self-validating (range, ownership, dead checks).
