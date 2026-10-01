@@ -44,6 +44,7 @@ ZONES = [
     # out of a sanctuary's back door, which was the only lethal border on the map.
     ('the_grove',       'The Grove',          'emberlands', (1, 1),   256, None,    'sanctuary'),
     ('harrowfield',     'Harrowfield',        'emberlands', (3, 9),   576, (1, 1), 'field'),
+    ('the_tuskway',     'The Tuskway',        'emberlands', (9, 14),  672, (2, 1), 'wild'),  # 2026-10-01: the pilgrims' road, Dewstep's way out (and Harrowfield's to Sunward Steps)
     ('thornwood',       'Thornwood Vale',     'emberlands', (6, 14),  1024, (0, 2), 'wood'),
     ('hollowmere',      'Hollowmere',         'emberlands', (10, 15), 672, (1, 2), 'water'),
 

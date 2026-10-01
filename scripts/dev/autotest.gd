@@ -146,6 +146,8 @@ const SECTIONS := [
 	["guild_bank", "emberhold"],
 	["social_chat", "greenmoor"],
 	["cinderpass_hubs", "cinderpass"],
+	["tuskway_borders", "harrowfield"],
+	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -9973,6 +9975,45 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## The Tuskway's three borders, every one both ways, chained: in from
+## Harrowfield, out to Dewstep and back, up to Sunward Steps and back, home to Harrowfield.
+func _t_tuskway_borders() -> void:
+	for leg: Array in [["harrowfield", Vector2(200, 0), Vector2(1, 0), "the_tuskway"], ["the_tuskway", Vector2(250, 4), Vector2(1, 0), "dewstep"],
+			["dewstep", Vector2(-200, 0), Vector2(-1, 0), "the_tuskway"], ["the_tuskway", Vector2(0, -250), Vector2(0, -1), "sunward_steps"],
+			["sunward_steps", Vector2(0, 250), Vector2(0, 1), "the_tuskway"], ["the_tuskway", Vector2(-250, 0), Vector2(-1, 0), "harrowfield"]]:
+		if not await _walk_border("tuskway_borders", leg[0], leg[1], leg[2], leg[3]):
+			return
+
+
+## The Tuskway's life: its monsters by day and night, each giver's quests
+## handed in (the far ones at the Dawnward Watch too), a look at each
+## monster, and the Caravanserai, the Watch, the Fallen Tusk, the Ochre Hand
+## and the tigers' bamboo.
+func _t_tuskway_life() -> void:
+	await _zone_life("tuskway_life", {"tw_keeper_anvesha": ["tw_offerings", "tw_jackal_hides"], "tw_warden_tarun": ["tw_ochre_tokens", "tw_rhaz"],
+			"tw_brother_kesav": ["tw_beads", "tw_abbess"], "tw_huntress_devi": ["tw_tiger_pelts", "tw_saffronclaw"],
+			"tw_herbalist_ila": ["tw_cobra_fangs", "tw_beetle_shells"]},
+			["tw_pilgrim_shade", "tw_lost_abbess"],
+			["tw_bamboo_monkey", "tw_red_jackal", "tw_road_beetle", "tw_king_cobra", "tw_striped_tiger", "tw_ochre_cutthroat", "tw_pilgrim_shade",
+			"tw_saffronclaw", "tw_rhaz_ochrehand", "tw_lost_abbess"])
+	# the Dawnward Watch takes the north end's hand-ins
+	var p := World.local_player
+	var meera: Npc = _npcs()["tw_scout_meera"]
+	var before := int(p.quests.get("tw_tiger_pelts", {}).get("completions", 0))
+	for i in p.pack.slots.size():
+		p.pack.slots[i] = {}
+	p.pack.add("tw_striped_pelt", 4)
+	_stand_by(p, meera)
+	await _hand_in(p, meera, ["tw_striped_pelt"])
+	await _wait(0.3)
+	print("tuskway_life: Scout Meera took four pelts: completions %d -> %d" % [before, int(p.quests.get("tw_tiger_pelts", {}).get("completions", 0))])
+	World.time_override = 12.0
+	await _zone_views("tuskway", [[Vector2(10, 90), Vector2(10, 40), "caravanserai"], [Vector2(-10, -190), Vector2(-50, -230), "watch"],
+			[Vector2(140, -110), Vector2(170, -150), "fallen_tusk"], [Vector2(-130, 130), Vector2(-170, 170), "ochre_hand"],
+			[Vector2(-150, -130), Vector2(-200, -160), "bamboo"], [Vector2(-200, 10), Vector2(-60, 36), "road"]])
+	World.time_override = -1.0
 
 
 ## Cinderpass's north road: Ventwatch takes the zone's hand-ins (Brenna's,

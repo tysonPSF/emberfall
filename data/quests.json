@@ -7198,5 +7198,229 @@
     "first_reward_item": "cp_smeltermans_belt",
     "first_complete_text": "The smelterman's belt. It was his, and it's yours now.",
     "start_keyword": "clinkerjaw"
+  },
+  "tw_offerings": {
+    "name": "Stolen Offerings",
+    "giver": "tw_keeper_anvesha",
+    "wants": {
+      "tw_stolen_offering": 4
+    },
+    "reward": {
+      "xp": 560,
+      "coin": 90
+    },
+    "accept_text": "You have taken on a task: Stolen Offerings. Bring Keeper Anvesha four stolen pilgrim's offerings.",
+    "ready_text": "Offerings! The statues will have them back.",
+    "complete_text": "Four offerings home.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_pilgrims_sandals",
+    "first_complete_text": "Pilgrim's sandals. The road's kinder in them.",
+    "start_keyword": "monkeys",
+    "repeatable": true
+  },
+  "tw_jackal_hides": {
+    "name": "Hides for the Shelters",
+    "giver": "tw_keeper_anvesha",
+    "wants": {
+      "tw_red_jackal_hide": 4
+    },
+    "reward": {
+      "xp": 600,
+      "coin": 100
+    },
+    "accept_text": "You have taken on a task: Hides for the Shelters. Bring Keeper Anvesha four red-earth jackal hides.",
+    "ready_text": "Hides. Good and thick.",
+    "complete_text": "That's another roof patched.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_roadwardens_belt",
+    "first_complete_text": "A roadwarden's belt. We give them to friends of the road.",
+    "start_keyword": "jackals",
+    "repeatable": true
+  },
+  "tw_ochre_tokens": {
+    "name": "The Ochre Hand",
+    "giver": "tw_warden_tarun",
+    "wants": {
+      "tw_ochre_token": 3
+    },
+    "reward": {
+      "xp": 800,
+      "coin": 140
+    },
+    "accept_text": "You have taken on a task: The Ochre Hand. Bring Roadwarden Tarun three Ochre Hand tokens.",
+    "ready_text": "Tokens. Good.",
+    "complete_text": "Three bandits who won't rob pilgrims again.",
+    "faction": {
+      "dawn_pilgrims": 15,
+      "ochre_hand": -10
+    },
+    "first_reward_item": "tw_ochre_cloak",
+    "first_complete_text": "Wear their road's cloak, and let them see it.",
+    "start_keyword": "ochre hand",
+    "repeatable": true
+  },
+  "tw_rhaz": {
+    "name": "Captain Rhaz Ochrehand",
+    "giver": "tw_warden_tarun",
+    "wants": {
+      "tw_rhaz_seal": 1
+    },
+    "reward": {
+      "xp": 2000,
+      "coin": 400
+    },
+    "accept_text": "You have taken on a task: Captain Rhaz Ochrehand. Bring Roadwarden Tarun Captain Rhaz's ochre seal.",
+    "ready_text": "His seal!",
+    "complete_text": "The Ochre Hand's broken. The road's ours.",
+    "faction": {
+      "dawn_pilgrims": 30,
+      "ochre_hand": -30
+    },
+    "first_reward_item": "tw_rhaz_saber",
+    "first_complete_text": "His saber. It's robbed its last pilgrim.",
+    "start_keyword": "rhaz"
+  },
+  "tw_beads": {
+    "name": "Restless Pilgrims",
+    "giver": "tw_brother_kesav",
+    "wants": {
+      "tw_prayer_bead": 3
+    },
+    "reward": {
+      "xp": 700,
+      "coin": 110
+    },
+    "accept_text": "You have taken on a task: Restless Pilgrims. Bring Brother Kesav three pilgrim's prayer beads.",
+    "ready_text": "Their beads. Let me bless them.",
+    "complete_text": "Three pilgrims who can go on now.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_bead_necklace",
+    "first_complete_text": "Wear the first of them. It remembers its prayers.",
+    "start_keyword": "restless",
+    "repeatable": true,
+    "also_taken_by": [
+      "tw_scout_meera"
+    ]
+  },
+  "tw_abbess": {
+    "name": "The Lost Abbess",
+    "giver": "tw_brother_kesav",
+    "wants": {
+      "tw_abbess_wheel": 1
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 420
+    },
+    "accept_text": "You have taken on a task: The Lost Abbess. Bring Brother Kesav the Lost Abbess's prayer wheel.",
+    "ready_text": "Her wheel. It's stopped turning.",
+    "complete_text": "She rests. The Fallen Tusk is quiet.",
+    "faction": {
+      "dawn_pilgrims": 30
+    },
+    "first_reward_item": "tw_abbess_ring",
+    "first_complete_text": "Her ring. She'd want it on the road.",
+    "start_keyword": "abbess",
+    "also_taken_by": [
+      "tw_scout_meera"
+    ]
+  },
+  "tw_tiger_pelts": {
+    "name": "Striped Pelts",
+    "giver": "tw_huntress_devi",
+    "wants": {
+      "tw_striped_pelt": 4
+    },
+    "reward": {
+      "xp": 760,
+      "coin": 130
+    },
+    "accept_text": "You have taken on a task: Striped Pelts. Bring Huntress Devi four striped tiger pelts.",
+    "ready_text": "Pelts! Clean work.",
+    "complete_text": "Four fewer in the bamboo.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_tigerhide_sleeves",
+    "first_complete_text": "Tigerhide sleeves. I made them from the first ones.",
+    "start_keyword": "tigers",
+    "repeatable": true,
+    "also_taken_by": [
+      "tw_scout_meera"
+    ]
+  },
+  "tw_saffronclaw": {
+    "name": "Saffronclaw",
+    "giver": "tw_huntress_devi",
+    "wants": {
+      "tw_saffronclaws_pelt": 1
+    },
+    "reward": {
+      "xp": 2200,
+      "coin": 420
+    },
+    "accept_text": "You have taken on a task: Saffronclaw. Bring Huntress Devi Saffronclaw's pelt.",
+    "ready_text": "Saffronclaw's pelt. Gold as they said.",
+    "complete_text": "The old queen's gone. The bamboo's ours.",
+    "faction": {
+      "dawn_pilgrims": 30
+    },
+    "first_reward_item": "tw_saffron_mantle",
+    "first_complete_text": "A saffron mantle. Wear her colors.",
+    "start_keyword": "saffronclaw",
+    "also_taken_by": [
+      "tw_scout_meera"
+    ]
+  },
+  "tw_cobra_fangs": {
+    "name": "Antivenom",
+    "giver": "tw_herbalist_ila",
+    "wants": {
+      "tw_king_cobra_fang": 4
+    },
+    "reward": {
+      "xp": 700,
+      "coin": 110
+    },
+    "accept_text": "You have taken on a task: Antivenom. Bring Herbalist Ila four king cobra fangs.",
+    "ready_text": "Fangs. Careful how you hold them.",
+    "complete_text": "Enough antivenom for a month of pilgrims.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_snake_charmers_gloves",
+    "first_complete_text": "A snake-charmer's gloves. Nothing bites through them.",
+    "start_keyword": "fangs",
+    "repeatable": true,
+    "also_taken_by": [
+      "tw_scout_meera"
+    ]
+  },
+  "tw_beetle_shells": {
+    "name": "Lamp-Black",
+    "giver": "tw_herbalist_ila",
+    "wants": {
+      "tw_road_beetle_shell": 4
+    },
+    "reward": {
+      "xp": 620,
+      "coin": 100
+    },
+    "accept_text": "You have taken on a task: Lamp-Black. Bring Herbalist Ila four road beetle shells.",
+    "ready_text": "Shells! The shrines' lamps will thank you.",
+    "complete_text": "Four shells' worth of lamp-black.",
+    "faction": {
+      "dawn_pilgrims": 10
+    },
+    "first_reward_item": "tw_beetle_shell_cap",
+    "first_complete_text": "A cap from the biggest of them. Harder than it looks.",
+    "start_keyword": "shells",
+    "repeatable": true
   }
 }

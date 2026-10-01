@@ -20,7 +20,7 @@ the only one today.
 
 | Area | Deity | City | Zones | Levels | Where |
 | --- | --- | --- | --- | --- | --- |
-| **The Emberlands** | — *the start* | Emberhold | 6 | 1–15 | south, home |
+| **The Emberlands** | — *the start* | Emberhold | 7 | 1–15 | south, home (the Tuskway, 9–14, joined later) |
 | **The Dawnstair** | light | Lanternhold | 7 | 1–24 | east, climbing (Dewstep, its beginner ground, 1–10) |
 | **The Long Monsoon** | water | Rainhold | 6 | 20–30 | west, and rising water |
 | **The Ashfall** | fire | Forgehold | 6 | 26–38 | due north of home |
@@ -123,6 +123,17 @@ Lanternhold, `[3, 1]`: the bottom of the Dawnstair, terraced tea gardens under
 the city walls. It touches **only** Lanternhold, so no wilderness border drops a
 newcomer anywhere deep; they leave through the city toward Sunward Steps. The
 Dawnstair is the one area with seven zones, and `world_layout.py` allows it.
+
+## The Tuskway, added later still (2026-10-01)
+
+Leaving Dewstep at 10 through Lanternhold put a character straight into Sunward
+Steps at 14, with Hollowmere (10–15) on its far side: a four-level gap with only
+a zone that was too hard for them in it. The Tuskway, 9–14, takes the empty cell
+`[2, 1]` between Harrowfield and Dewstep, under Sunward Steps: an old pilgrim
+road with a border on three sides (west Harrowfield, east Dewstep, north Sunward
+Steps), so both starting cities' beginners walk on into it and up to Sunward
+Steps at 14. The Dawnstair already had seven zones, so it belongs to the
+Emberlands (now six), the road out of Emberhold's country toward the Dawn-Tusk.
 
 ## The Grove is off the grid
 

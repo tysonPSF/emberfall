@@ -157,6 +157,24 @@
    "reached": "foot"
   },
   {
+   "id": "the_tuskway",
+   "name": "The Tuskway",
+   "area": "emberlands",
+   "levels": [
+    9,
+    14
+   ],
+   "size": 672,
+   "cell": [
+    2,
+    1
+   ],
+   "kind": "wild",
+   "built": false,
+   "existing": false,
+   "reached": "foot"
+  },
+  {
    "id": "thornwood",
    "name": "Thornwood Vale",
    "area": "emberlands",
@@ -916,6 +934,13 @@
    "cross_area": false
   },
   {
+   "a": "harrowfield",
+   "a_edge": "east",
+   "b": "the_tuskway",
+   "b_edge": "west",
+   "cross_area": false
+  },
+  {
    "a": "thornwood",
    "a_edge": "west",
    "b": "weeping_throat",
@@ -942,6 +967,13 @@
    "b": "the_bleach",
    "b_edge": "south",
    "cross_area": false
+  },
+  {
+   "a": "sunward_steps",
+   "a_edge": "south",
+   "b": "the_tuskway",
+   "b_edge": "north",
+   "cross_area": true
   },
   {
    "a": "high_terrace",
@@ -1005,6 +1037,13 @@
    "b": "lanternhold",
    "b_edge": "south",
    "cross_area": false
+  },
+  {
+   "a": "dewstep",
+   "a_edge": "west",
+   "b": "the_tuskway",
+   "b_edge": "east",
+   "cross_area": true
   },
   {
    "a": "reedmere",

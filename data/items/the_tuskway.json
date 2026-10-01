@@ -1,0 +1,202 @@
+{
+  "tw_stolen_offering": {
+    "name": "Stolen Pilgrim's Offering",
+    "value": 8,
+    "stack": 20
+  },
+  "tw_red_jackal_hide": {
+    "name": "Red-Earth Jackal Hide",
+    "value": 9,
+    "stack": 20,
+    "icon": "jackal_pelt"
+  },
+  "tw_road_beetle_shell": {
+    "name": "Road Beetle Shell",
+    "value": 10,
+    "stack": 20,
+    "icon": "rice_beetle_shell"
+  },
+  "tw_king_cobra_fang": {
+    "name": "King Cobra Fang",
+    "value": 12,
+    "stack": 20,
+    "icon": "cobra_fang"
+  },
+  "tw_striped_pelt": {
+    "name": "Striped Tiger Pelt",
+    "value": 14,
+    "stack": 20,
+    "icon": "tiger_pelt"
+  },
+  "tw_ochre_token": {
+    "name": "Ochre Hand Token",
+    "value": 14,
+    "stack": 20,
+    "icon": "highwayman_token"
+  },
+  "tw_prayer_bead": {
+    "name": "Pilgrim's Prayer Bead",
+    "value": 12,
+    "stack": 20,
+    "icon": "bone_chips"
+  },
+  "tw_saffronclaws_pelt": {
+    "name": "Saffronclaw's Pelt",
+    "value": 60,
+    "lore": true,
+    "icon": "tiger_pelt"
+  },
+  "tw_rhaz_seal": {
+    "name": "Captain Rhaz's Ochre Seal",
+    "value": 60,
+    "lore": true,
+    "icon": "corvels_signet"
+  },
+  "tw_abbess_wheel": {
+    "name": "The Lost Abbess's Prayer Wheel",
+    "value": 60,
+    "lore": true
+  },
+  "tw_pilgrims_sandals": {
+    "name": "Pilgrim's Sandals",
+    "slot": "feet",
+    "ac": 4,
+    "agi": 3,
+    "sta": 2,
+    "hp": 15,
+    "value": 1200,
+    "rec_level": 10,
+    "no_drop": true,
+    "lore": true,
+    "wear": "sandals"
+  },
+  "tw_roadwardens_belt": {
+    "name": "Roadwarden's Belt",
+    "slot": "waist",
+    "ac": 4,
+    "str": 3,
+    "sta": 2,
+    "hp": 16,
+    "value": 1452,
+    "rec_level": 11,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_belt"
+  },
+  "tw_ochre_cloak": {
+    "name": "Cloak of the Ochre Road",
+    "slot": "arms",
+    "ac": 5,
+    "agi": 3,
+    "sta": 3,
+    "hp": 17,
+    "value": 1728,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "tw_rhaz_saber": {
+    "name": "Rhaz's Curved Saber",
+    "slot": "primary",
+    "dmg": 10,
+    "delay": 2.6,
+    "verb": [
+      "slash",
+      "slashes"
+    ],
+    "model": "sword_1handed",
+    "skill": "1h_slashing",
+    "str": 2,
+    "agi": 2,
+    "hp": 12,
+    "value": 2600,
+    "rec_level": 14,
+    "no_drop": true,
+    "lore": true,
+    "classes": [
+      "warrior",
+      "rogue",
+      "ranger",
+      "shaman"
+    ]
+  },
+  "tw_bead_necklace": {
+    "name": "Pilgrim's Bead Necklace",
+    "slot": "neck",
+    "ac": 3,
+    "wis": 3,
+    "int": 3,
+    "hp": 17,
+    "value": 1728,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true,
+    "mana": 20
+  },
+  "tw_abbess_ring": {
+    "name": "The Abbess's Ring",
+    "slot": "ring",
+    "ac": 3,
+    "wis": 3,
+    "int": 3,
+    "hp": 19,
+    "value": 2352,
+    "rec_level": 14,
+    "no_drop": true,
+    "lore": true,
+    "mana": 25
+  },
+  "tw_tigerhide_sleeves": {
+    "name": "Tigerhide Sleeves",
+    "slot": "arms",
+    "ac": 5,
+    "str": 3,
+    "agi": 3,
+    "hp": 17,
+    "value": 1728,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_sleeves"
+  },
+  "tw_saffron_mantle": {
+    "name": "Saffron Mantle",
+    "slot": "chest",
+    "ac": 12,
+    "agi": 4,
+    "sta": 4,
+    "hp": 27,
+    "value": 2352,
+    "rec_level": 14,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_tunic"
+  },
+  "tw_snake_charmers_gloves": {
+    "name": "Snake-Charmer's Gloves",
+    "slot": "hands",
+    "ac": 5,
+    "agi": 3,
+    "wis": 3,
+    "hp": 17,
+    "value": 1728,
+    "rec_level": 12,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_gloves"
+  },
+  "tw_beetle_shell_cap": {
+    "name": "Beetle-Shell Cap",
+    "slot": "head",
+    "ac": 6,
+    "sta": 4,
+    "str": 3,
+    "hp": 22,
+    "value": 1452,
+    "rec_level": 11,
+    "no_drop": true,
+    "lore": true,
+    "wear": "leather_cap"
+  }
+}

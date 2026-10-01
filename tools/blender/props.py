@@ -15669,7 +15669,93 @@ def dusk_tree_b():
 	return p.build()
 
 
+
+# ---------------------------------------------------------------- the Tuskway (2026-10-01)
+
+def _bamboo_clump(name, seed, culm, top_leaf, n, height):
+	"""A clump of bamboo: `n` segmented culms rising from one root mass, each
+	leaning a little outward and drooping at the tip, ringed at every node,
+	with sprays of narrow leaves at the upper nodes. Use it in a zone's
+	tree_mix (trunk collider: the clump is slim at the ground)."""
+	p = Prop(name, seed)
+	p.rock((1.1, 1.1, 0.35), (0, 0, -0.05), WOOD, grad=(0.1, 0.7), jitter=0.08)   # the root mass
+	for k in range(n):
+		a = k * math.tau / n + p.rng.uniform(-0.3, 0.3)
+		r0 = p.rng.uniform(0.15, 0.45)
+		lean = p.rng.uniform(0.06, 0.16)
+		h = height * p.rng.uniform(0.7, 1.05)
+		thick = p.rng.uniform(0.07, 0.1)
+		nodes = 7
+		prev = (math.cos(a) * r0, math.sin(a) * r0, 0.0)
+		for i in range(1, nodes + 1):
+			t = i / nodes
+			droop = (t ** 3) * h * 0.18   # the tip bows over
+			cur = (math.cos(a) * (r0 + h * lean * t + droop), math.sin(a) * (r0 + h * lean * t + droop), h * t - droop * 0.4)
+			r = thick * (1.0 - 0.55 * t)
+			p.seg(prev, cur, r, r * 0.95, culm, sides=6, grad=(0.25, 0.85))
+			if i < nodes:
+				p.seg((cur[0], cur[1], cur[2] - 0.03), (cur[0], cur[1], cur[2] + 0.03), r * 1.25, r * 1.25, culm, sides=6, grad=(0.6, 0.7))   # the node ring
+			if i >= nodes - 3:   # leaf sprays at the upper nodes
+				for j in range(3):
+					b = a + p.rng.uniform(-1.2, 1.2)
+					L = p.rng.uniform(0.6, 1.0)
+					tip = (cur[0] + math.cos(b) * L, cur[1] + math.sin(b) * L, cur[2] - p.rng.uniform(0.15, 0.4))
+					p.seg(cur, tip, 0.11, 0.0, top_leaf, sides=3, grad=(0.0, 0.7))
+			prev = cur
+	return p.build(bevel=0.01)
+
+
+def bamboo_clump():
+	"""Green bamboo, about 8 m: a dozen culms in a clump."""
+	return _bamboo_clump("bamboo_clump", 1301, LEAF, LEAF, 12, 8.0)
+
+
+def bamboo_clump_b():
+	"""Old golden bamboo, about 6.5 m: fewer, thicker-looking culms gone gold-brown."""
+	return _bamboo_clump("bamboo_clump_b", 1302, BAMBOO, LEAF, 9, 6.5)
+
+
+def fallen_elephant_statue():
+	"""The Fallen Tusk: a great statue of the Dawn-Tusk (twice the road's
+	standing ones) toppled off its plinth and lying on its side, about 12 m
+	long and 4 m high: the cracked plinth tipped up behind it, the body on its
+	flank with its legs out toward -X, the head broken off and lying apart with
+	one tusk snapped, the sun disc it held half buried, rubble all round.
+	Collide it as a mesh: you can climb onto its flank."""
+	p = Prop("fallen_elephant_statue", 1303)
+	# the plinth, tipped and cracked
+	p.box((4.4, 5.4, 1.5), (0.8, 6.4, 0.5), STONE_WARM, rot=(14, 0, 4), grad=(0.1, 0.9))
+	p.box((4.8, 0.9, 0.4), (0.8, 3.4, 0.2), STONE_LIGHT, rot=(0, 0, 3), grad=(0.1, 0.7))
+	# the body on its side: its back toward +X, its belly and legs toward -X
+	p.blob((4.6, 7.4, 5.0), (0.4, 0.6, 2.3), STONE_LIGHT, rot=(0, 90, 0), segs=(14, 10), grad=(0.05, 0.8), jitter=0.05)
+	for y in (-1.6, 3.2):
+		for z in (0.8, 2.6):
+			p.seg((-1.6, y, z), (-3.8, y + 0.2, z + 0.1), 0.75, 0.8, STONE_LIGHT, sides=8, grad=(0.2, 0.9))   # the legs, sticking out sideways
+	p.seg((0.6, 4.4, 2.2), (1.4, 6.4, 1.2), 0.3, 0.15, STONE_LIGHT, sides=6)   # the tail
+	# the head, broken off and rolled away toward -Y
+	p.blob((3.4, 3.2, 3.2), (-1.4, -4.6, 1.5), STONE_LIGHT, rot=(0, 70, 20), segs=(12, 8), grad=(0.05, 0.8), jitter=0.04)
+	p.blob((0.4, 2.2, 2.4), (-0.2, -4.0, 2.4), STONE_WARM, rot=(0, 60, 15), segs=(8, 6), grad=(0.1, 0.8))   # an ear
+	pts = [(-2.6, -5.2, 0.9), (-3.4, -6.4, 0.5), (-3.8, -7.6, 0.3), (-3.6, -8.8, 0.25)]   # the trunk along the ground
+	for i, (a, b) in enumerate(zip(pts, pts[1:])):
+		p.seg(a, b, 0.6 - i * 0.12, 0.5 - i * 0.12, STONE_LIGHT, sides=8, grad=(0.1, 0.8))
+	p.seg((-2.2, -5.6, 1.6), (-2.8, -7.2, 2.0), 0.26, 0.1, BONE, sides=6)   # the whole tusk
+	p.seg((-0.8, -5.4, 0.5), (-1.0, -5.9, 0.5), 0.26, 0.24, BONE, sides=6)   # the snapped one's stump
+	p.seg((2.6, -6.6, 0.2), (3.6, -8.0, 0.25), 0.25, 0.1, BONE, sides=6)   # and its point, lying off
+	# the sun disc, half sunk in the ground
+	p.seg((-4.4, -2.2, 0.9), (-4.6, -2.0, 0.9), 1.5, 1.5, GOLD, sides=18, glow=0.15)
+	# rubble
+	for k in range(14):
+		a = p.rng.uniform(0, math.tau)
+		d = p.rng.uniform(3.5, 7.5)
+		sz = p.rng.uniform(0.35, 0.9)
+		p.rock((sz, sz * 0.8, sz * 0.6), (math.cos(a) * d, math.sin(a) * d * 1.2, 0.1), STONE_LIGHT if k % 3 else STONE_WARM, grad=(0.05, 0.8), jitter=0.06)
+	return p.build(bevel=0.04)
+
+
 PROPS = {
+	"bamboo_clump": bamboo_clump,
+	"bamboo_clump_b": bamboo_clump_b,
+	"fallen_elephant_statue": fallen_elephant_statue,
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
 	"tree_round": tree_round,
