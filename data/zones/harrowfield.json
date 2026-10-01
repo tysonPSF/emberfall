@@ -59,16 +59,18 @@
     {"type": "ruins", "pos": [44, -212], "hubs": true},
     {"type": "prop", "pos": [44, -198], "id": "scarecrow_post", "collide": "box", "yaw": 0, "hubs": true},
     {"type": "prop", "pos": [58, -222], "id": "hay_bale", "collide": "box", "yaw": 0, "hubs": true},
-    {"type": "prop", "pos": [28, -224], "id": "scarecrow_post", "collide": "box", "yaw": 90, "hubs": true}
+    {"type": "prop", "pos": [28, -224], "id": "scarecrow_post", "collide": "box", "yaw": 90, "hubs": true},
+    {"type": "signpost", "pos": [266.0, 10], "face": [288.0, 10], "labels": ["The Tuskway"]}
   ],
-  "passes": [[-288, 0, 9], [0, -288, 9]],
+  "passes": [[-288, 0, 9], [0, -288, 9], [288.0, 0, 9]],
   "roads": [
     {"points": [[-288, 0], [-225, 3], [-165, 9], [-60, 18], [34, 29.5], [64, 33.5]], "width": 3.2},
     {"points": [[64, 33.5], [60, -6.5], [39, -90], [18, -180], [0, -288]], "width": 3.0}
   ],
   "zone_lines": [
     {"pos": [-277, 0], "size": [8, 18], "to": "greenmoor", "arrive": [263, 0], "arrive_face": [223, 0]},
-    {"pos": [0, -277], "size": [18, 8], "to": "hollowmere", "arrive": [0, 311], "arrive_face": [0, 271]}
+    {"pos": [0, -277], "size": [18, 8], "to": "hollowmere", "arrive": [0, 311], "arrive_face": [0, 271]},
+    {"pos": [277.0, 0], "size": [8, 18], "to": "the_tuskway", "arrive": [-311.0, 0], "arrive_face": [-271.0, 0]}
   ],
   "npcs": [
     {"id": "farmer_oswin", "pos": [57, 30.5], "face": [64, 33.5]},
@@ -79,6 +81,7 @@
     {"id": "hf_crofter_ewan", "pos": [8.0, -177.0], "face": [44, -212], "hubs": true}
   ],
   "spawns": [
+    {"pos": [240, -32], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [144, -232], "pool": {"tusked_boar": 1}, "respawn": 60, "wander": 12},
     {"pos": [8, -136], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},
     {"pos": [24, 224], "pool": {"wild_boar": 1}, "respawn": 50, "wander": 12},

@@ -650,6 +650,14 @@ TRACKS = {
 		"drone": 0.4, "drum": [0, 0.5, 1.5, 2, 2.5, 3.5], "drum_sections": ["A", "B", "C"], "drum_low": 0.7,
 		"snare": [1, 3, 3.5], "snare_sections": ["B", "C"], "snare_gain": 0.7, "reverb": 2.2, "sparse": 0.0,
 	},
+	"the_tuskway": {  # 2026-10-01: the pilgrims' road, a walking song: flute over a lute and a drone, an easy drum, temple bells
+		"key": (60, "mixolydian"), "bpm": 80, "beats": 4, "seed": 419,
+		"sections": {"A": [0, 6, 3, 0], "B": [3, 4, 6, 0], "C": [5, 3, 4, 4]},
+		"form": ["A", "B", "A", "C"],
+		"melody": "flute", "arp": "lute", "arp_pattern": [0, 2, 1, 2, 0, 2, 1, 3], "pad": False, "bass": True,
+		"drone": 0.35, "drum": [0, 1.5, 2.5], "drum_sections": ["B", "C"], "drum_low": 0.85, "drum_gain": 0.7,
+		"reverb": 2.8, "sparse": 0.2, "bells": 0.3, "bell_octave": 1,
+	},
 	"greenmoor": {
 		"key": (57, "dorian"), "bpm": 68, "beats": 4, "seed": 23,
 		"sections": {"A": [0, 3, 0, 6], "B": [3, 6, 0, 4], "C": [2, 3, 0, 0]},

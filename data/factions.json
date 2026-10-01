@@ -697,5 +697,14 @@
       "stonefist_trolls": -10,
       "rainhold": 2
     }
+  },
+  "ochre_hand": {
+    "name": "The Ochre Hand",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "ochre_hand": -10,
+      "dawn_pilgrims": 3
+    }
   }
 }

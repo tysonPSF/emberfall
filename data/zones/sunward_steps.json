@@ -58,9 +58,10 @@
     {"type": "prop", "pos": [-66.0, 176.0], "id": "campfire", "collide": "none", "hubs": true},
     {"type": "prop", "pos": [-116, 204], "id": "well", "collide": "box", "yaw": 0, "hubs": true},
     {"type": "prop", "pos": [-102, 214], "id": "broken_pillar", "collide": "mesh", "yaw": 30, "hubs": true},
-    {"type": "prop", "pos": [-128, 192], "id": "broken_pillar", "collide": "mesh", "yaw": 120, "hubs": true}
+    {"type": "prop", "pos": [-128, 192], "id": "broken_pillar", "collide": "mesh", "yaw": 120, "hubs": true},
+    {"type": "signpost", "pos": [10, 314.0], "face": [10, 336.0], "labels": ["The Tuskway"]}
   ],
-  "passes": [[-336, 0, 9], [0, -336, 9], [336, 0, 9]],
+  "passes": [[-336, 0, 9], [0, -336, 9], [336, 0, 9], [0, 336.0, 9]],
   "roads": [
     {"points": [[-336, 0], [-260.8, -3.3], [-180, -6], [-90, -12], [0, -3], [90, -12], [180, -9], [262.5, -15], [336, 0]], "width": 3.4},
     {"points": [[90, -12], [71.5, -126], [30, -240], [0, -336]], "width": 3.0}
@@ -68,7 +69,8 @@
   "zone_lines": [
     {"pos": [-325, 0], "size": [8, 18], "to": "hollowmere", "arrive": [311, 0], "arrive_face": [271, 0]},
     {"pos": [325, 0], "size": [8, 18], "to": "lanternhold", "arrive": [-46, 0], "arrive_face": [0, 0]},
-    {"pos": [0, -325], "size": [18, 8], "to": "the_bleach", "arrive": [0, 487], "arrive_face": [0, 447]}
+    {"pos": [0, -325], "size": [18, 8], "to": "the_bleach", "arrive": [0, 487], "arrive_face": [0, 447]},
+    {"pos": [0, 325.0], "size": [18, 8], "to": "the_tuskway", "arrive": [0, -311.0], "arrive_face": [0, -271.0]}
   ],
   "npcs": [
     {"id": "pilgrim_mother", "pos": [-258.8, -19.3], "face": [-266.8, -25.3]},
@@ -78,6 +80,7 @@
     {"id": "su_water_seeker_anil", "pos": [-64.0, 173.0], "face": [-116, 204], "hubs": true}
   ],
   "spawns": [
+    {"pos": [-216, 280], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-88, -16], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-288, 48], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},
     {"pos": [-200, 0], "pool": {"mountain_ram": 1}, "respawn": 70, "wander": 14},

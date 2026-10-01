@@ -10772,5 +10772,286 @@
       ]
     },
     "title": "Forgehold Scouts"
+  },
+  "tw_keeper_anvesha": {
+    "name": "Keeper Anvesha",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "Welcome to the Old Caravanserai, {name}. A hundred years of pilgrims slept under this roof on the way to the Dawn-Tusk's shrines. We've opened it again, and the road's trouble came to the door: [monkeys] and [jackals].",
+      "monkeys": "Bamboo monkeys. They snatch the offerings pilgrims leave at the statues. Four back and I'll pay you, every time.",
+      "jackals": "The red-earth jackals hunt the road's ends. Four hides and I'll pay; we patch the shelters with them.",
+      "unknown": "Ask Brother Kesav about the shrines, Huntress Devi about the bamboo, or the Warden about the bandits."
+    },
+    "title": "Keeper of the Caravanserai",
+    "gender": "female"
+  },
+  "tw_brother_kesav": {
+    "name": "Brother Kesav",
+    "level": 32,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The Dawn-Tusk watches this road, {name}, in every stone elephant along it. North-east lies the greatest of them, the [Fallen Tusk], and those who died waiting by it.",
+      "fallen tusk": "It fell in an earthquake, and the pilgrims sheltering under it with it. At night the [restless] walk there still.",
+      "restless": "Restless pilgrims, at their prayers forever. Their prayer beads hold them here. Bring me three and I'll pay, every time, and see the beads blessed.",
+      "abbess": "The Lost Abbess led them. Her prayer wheel still turns in the dark at the Fallen Tusk. Bring it to me and let her rest.",
+      "unknown": "Ask Keeper Anvesha. I only keep the prayers."
+    },
+    "title": "Priest of the Dawn-Tusk"
+  },
+  "tw_huntress_devi": {
+    "name": "Huntress Devi",
+    "level": 32,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The bamboo north-west is tiger country, {name}. Striped [tigers], and the old queen, [Saffronclaw].",
+      "tigers": "Four striped pelts and I'll pay, every time. The pilgrims' road is safer with fewer of them.",
+      "saffronclaw": "Saffronclaw. Gold as saffron, old as the road's trouble. She's taken three of my hounds. Bring me her pelt.",
+      "unknown": "Ask the Keeper. I watch the bamboo."
+    },
+    "title": "Huntress",
+    "gender": "female"
+  },
+  "tw_herbalist_ila": {
+    "name": "Herbalist Ila",
+    "level": 28,
+    "model": "rogue",
+    "weapon": "dagger",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "Remedies and road supplies, {name}. Press G to trade. And I'm short of [fangs] and [shells].",
+      "fangs": "King cobra fangs, for antivenom. The cobras nest in the groves. Four and I'll pay, every time.",
+      "shells": "Road beetle shells: ground fine they make lamp-black for the shrines. Four and I'll pay, every time.",
+      "unknown": "Buying or selling?"
+    },
+    "title": "Herbalist",
+    "gender": "female",
+    "merchant": {
+      "sells": [
+        "draught_of_homecoming",
+        "bone_chips",
+        "bag_of_flour",
+        "jar_of_spices",
+        "vial_of_water",
+        "tanning_salts",
+        "spool_of_thread",
+        "bundle_of_herbs",
+        "small_brick_of_ore",
+        "large_brick_of_ore",
+        "water_flask",
+        "bundle_of_shafts",
+        "smithy_hammer",
+        "sewing_kit",
+        "mortar_and_pestle",
+        "hearthside_cookbook",
+        "tailors_pattern_book",
+        "alchemists_notes",
+        "smiths_handbook",
+        "fishing_pole",
+        "fishing_bait",
+        "loaf_of_bread",
+        "crude_arrow",
+        "sling_stone"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "tw_warden_tarun": {
+    "name": "Roadwarden Tarun",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The [Ochre Hand] took this road when the pilgrims stopped coming, {name}. We mean to take it back.",
+      "ochre hand": "Bandits. They camp south-west with their wagons and rob anyone walking to the shrines. Three of their tokens and I'll pay, every time. And their captain, [Rhaz].",
+      "rhaz": "Captain Rhaz Ochrehand. He wears an ochre seal stamped on every pilgrim he's robbed. Bring it to me.",
+      "unknown": "Ask the Keeper."
+    },
+    "title": "Roadwarden"
+  },
+  "tw_caravanserai_guard": {
+    "name": "a Caravanserai warden",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The road's open again, {name}, as long as we hold it.",
+      "unknown": "Ask at the Caravanserai."
+    },
+    "title": "Dawn Pilgrims",
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For the Dawn-Tusk!"
+      ],
+      "hunt_shouts": [
+        "Not on this road!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "tw_scout_meera": {
+    "name": "Scout Meera",
+    "level": 32,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "Dawnward Watch, {name}: the last fire before Sunward Steps. The Caravanserai's work up this end, you can hand in here: Devi's tigers, Kesav's beads, Ila's fangs.",
+      "unknown": "Ask at the Caravanserai, south down the road."
+    },
+    "title": "Dawn Pilgrims' Scout",
+    "gender": "female"
+  },
+  "tw_sutler_omkar": {
+    "name": "Sutler Omkar",
+    "level": 25,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "Arrows, food, water, {name}. Press G.",
+      "unknown": "Buying or not?"
+    },
+    "title": "Sutler",
+    "merchant": {
+      "sells": [
+        "crude_arrow",
+        "sling_stone",
+        "loaf_of_bread",
+        "water_flask",
+        "draught_of_homecoming",
+        "fishing_bait"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "tw_watch_sentry": {
+    "name": "a Dawnward sentry",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The road's open again, {name}, as long as we hold it.",
+      "unknown": "Ask at the Caravanserai."
+    },
+    "title": "Dawn Pilgrims",
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For the Dawn-Tusk!"
+      ],
+      "hunt_shouts": [
+        "Not on this road!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
+  },
+  "tw_hut_guard": {
+    "name": "a road sentry",
+    "level": 35,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "dawn_pilgrims",
+    "race": "human",
+    "dialogue": {
+      "hail": "The road's open again, {name}, as long as we hold it.",
+      "unknown": "Ask at the Caravanserai."
+    },
+    "title": "Dawn Pilgrims",
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold, {name}!",
+        "For the Dawn-Tusk!"
+      ],
+      "hunt_shouts": [
+        "Not on this road!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 3200,
+      "hp_regen": 50,
+      "ac": 95,
+      "dmg": [
+        18,
+        34
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    }
   }
 }
