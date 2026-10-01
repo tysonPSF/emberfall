@@ -1876,7 +1876,7 @@
     },
     "first_reward_item": "mirrorglass_gloves",
     "repeatable": true,
-    "accept_text": "You have taken on a task: Mirror Shards. Bring Mirror-Scholar Anouk 4 mirror shards.",
+    "accept_text": "You have taken on a task: Mirror Shards. Bring Mirror-Scholar Queenie 4 mirror shards.",
     "ready_text": "Let's have them, {name}.",
     "complete_text": "Here's your pay.",
     "first_complete_text": "And this, as I promised.",
@@ -1899,7 +1899,7 @@
       "coin": 912
     },
     "first_reward_item": "mask_of_the_reflection",
-    "accept_text": "You have taken on a task: The Reflection's Cracked Face. Bring Mirror-Scholar Anouk the Reflection's Cracked Face.",
+    "accept_text": "You have taken on a task: The Reflection's Cracked Face. Bring Mirror-Scholar Queenie the Reflection's Cracked Face.",
     "ready_text": "Is that it? Give it here, {name}.",
     "complete_text": "Well done. They'll speak of this.",
     "first_complete_text": "Take this. You've earned it.",

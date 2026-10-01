@@ -205,6 +205,7 @@
   "npcs": [
     {"id": "caravan_guide_rahel", "pos": [0, 396.2], "face": [8, 409.2]},
     {"id": "mirror_scholar_anouk", "pos": [18, 398.2], "face": [8, 409.2]},
+    {"id": "squawkzilla", "pos": [25.5, 394.5], "face": [18, 398.2]},
     {"id": "saltcutter_bram", "pos": [32, 400.2], "face": [8, 409.2]},
     {"id": "birdwatcher_kiri", "pos": [-12, 414.2], "face": [8, 409.2]},
     {"id": "trader_hesper", "pos": [38, 410.2], "face": [8, 409.2]},

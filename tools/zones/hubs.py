@@ -521,7 +521,7 @@ def mirror_flats(z):
     F = "salt_traders"
     L, N, S = [], [], []
     cL, cN, camp = forward_camp(z, F, None, 0, 0, "mf_skiffscout_imara", "Skiff-Scout Imara", "Salt Traders", "ranger_class",
-        "Glasswater Camp, {name}: the traders' last fire before the glass. Rahel's work, Anouk's, Bram's, Kiri's, you can hand it all in to me. And ask me about the [skiff].",
+        "Glasswater Camp, {name}: the traders' last fire before the glass. Rahel's work, Queenie's, Bram's, Kiri's, you can hand it all in to me. And ask me about the [skiff].",
         "mf_sutler_ilka", "Sutler Ilka", ["crude_arrow", "iron_tipped_arrow", "sling_stone", "loaf_of_bread", "roast_meat", "water_flask"],
         "a caravan guard", "Salt Traders", ["nomad_veil_q", "asras_salt_crown_q", "mirror_shard_q", "cracked_mirror_face_q", "salt_crab_claw_q",
         "saltclaws_pearl_q", "wader_plume_q", "sky_ray_spine_q"], {}, gender="female", at=[-60, -60], face=[0, 0])

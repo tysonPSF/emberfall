@@ -2930,9 +2930,13 @@
     "title": "Salt Traders"
   },
   "mirror_scholar_anouk": {
-    "name": "Mirror-Scholar Anouk",
+    "name": "Mirror-Scholar Queenie",
     "level": 40,
     "model": "mage",
+    "hair": [
+      "",
+      "brown"
+    ],
     "weapon": "staff",
     "faction": "salt_traders",
     "dialogue": {
@@ -2944,6 +2948,31 @@
       "face": "The Reflection's cracked face, {name}."
     },
     "title": "Scholar of Reflections"
+  },
+  "squawkzilla": {
+    "name": "Squawkzilla",
+    "level": 40,
+    "model": "giant_gull",
+    "faction": "salt_traders",
+    "guild": "Queenie's Demise",
+    "name_height": 2.8,
+    "pester": {
+      "npc": "mirror_scholar_anouk",
+      "radius": 3.5,
+      "speed": 4.5,
+      "lines": [
+        "{gull} dives at {mark}'s hat and comes away with a thread of it.",
+        "{mark} swats at {gull} with her staff. \"Off! OFF, you feathered menace!\"",
+        "{gull} screams at {mark}, wings spread wide. SQUAWK!",
+        "{gull} snatches a crust from {mark}'s satchel and gulps it down.",
+        "{mark} mutters, \"One day, bird. One day.\"",
+        "{gull} lands on {mark}'s notes, stares at her, and squawks."
+      ]
+    },
+    "dialogue": {
+      "hail": "SQUAWK! The gull glares at you with one furious yellow eye, then the other, and snaps at the air beside Queenie's ear.",
+      "unknown": "SQUAWK!"
+    }
   },
   "saltcutter_bram": {
     "name": "Saltcutter Bram",
@@ -7549,7 +7578,7 @@
     "faction": "salt_traders",
     "race": "human",
     "dialogue": {
-      "hail": "Glasswater Camp, {name}: the traders' last fire before the glass. Rahel's work, Anouk's, Bram's, Kiri's, you can hand it all in to me. And ask me about the [skiff].",
+      "hail": "Glasswater Camp, {name}: the traders' last fire before the glass. Rahel's work, Queenie's, Bram's, Kiri's, you can hand it all in to me. And ask me about the [skiff].",
       "unknown": "Ask back at camp. I only watch the far end.",
       "salters": "A skiff went down in the far north-east, crew and all, and the salt kept them. They wander still. Their lockets, four at a time, and I'll pay.",
       "dunmore": "Skiffmaster Dunmore. He still walks his deck. Bring me his logbook.",

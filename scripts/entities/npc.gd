@@ -48,6 +48,12 @@ var _sight_check := 0.0
 var _mark: Label3D  # a floating "!" (a quest for you) or "?" (one ready to hand in), over the name
 var _mark_check := 0.0
 var _mark_time := 0.0
+var _pester_mark: Npc  # "pester": the npc it harries (Squawkzilla round Queenie)
+var _pester_angle := 0.0
+var _pester_turn := 1.0  # which way round it's going
+var _pester_dive := 0.0  # seconds left of a dive at its mark
+var _pester_next := 4.0  # till the next dive
+var _pester_line := 8.0  # till it next says something to those nearby
 
 
 func setup(id: String, name_override := "") -> void:
@@ -83,26 +89,30 @@ func _ready() -> void:
 		body_scale = float(GameData.races.get(str(data["race"]), {}).get("scale", 1.0))
 	if data.has("gender"):
 		extra["gender"] = str(data["gender"])
+	if data.has("hair"):  # [style, color] as a player's, "" keeps the body's own head: Queenie's brown
+		extra["hair"] = data["hair"]
 	var body := "prop:" + str(data["prop"]) if data.has("prop") else "humanoid"  # a thing, not a person: the spring crystal
 	build_body(body, Color.WHITE, body_scale, str(data.get("model", "")), str(data.get("weapon", "")), extra)
 	if Net.dedicated:
 		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name
 	nameplate.modulate = NAME_COLOR
-	if data.has("title"):  # EQ-style second line: <Warrior Guildmaster>
+	if data.has("title") or data.has("guild"):  # EQ-style second line: <Warrior Guildmaster>, or a guild tag like a player's
 		var title := Label3D.new()
 		title.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		title.fixed_size = true
 		title.pixel_size = nameplate.pixel_size
 		title.font_size = 24
 		title.outline_size = 6
-		title.text = "<%s>" % data["title"]
-		title.modulate = Color(0.78, 0.82, 0.9)
+		title.text = "<%s>" % data.get("guild", data.get("title"))
+		title.modulate = Color(0.6, 1.0, 0.75) if data.has("guild") else Color(0.78, 0.82, 0.9)  # guild green, as Player.show_guild_tag
 		title.offset = Vector2(0, -30)  # screen pixels below the name, at any distance
 		title.visibility_range_end = nameplate.visibility_range_end
 		nameplate.add_child(title)
 	if data.has("size"):  # giants (the Grove's gods): a pick shape and nameplate to match the model
 		_resize(float(data["size"][0]), float(data["size"][1]))
+	elif data.has("name_height"):  # a creature whose wings would hide its name
+		nameplate.position.y = float(data["name_height"])
 	if not Net.dedicated and npc_id in World.quest_mark_npcs():
 		_mark = Label3D.new()
 		_mark.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -293,6 +303,8 @@ func _physics_process(delta: float) -> void:
 		move = _think(delta)
 	if not patrol.is_empty() and not auto_attack:
 		speed = float(guard.get("walk_speed", 2.0))
+	if data.has("pester") and not auto_attack:
+		speed = float(data["pester"].get("speed", 4.5)) * (1.6 if _pester_dive > 0.0 else 1.0)
 	if walk_to != Vector3.INF and not dead:  # on its way out: walks to the door and is gone
 		if _flat(global_position, walk_to) < 0.9:
 			queue_free()
@@ -323,6 +335,8 @@ func _think(delta: float) -> Vector3:
 			return Vector3.ZERO
 		face_toward(t.global_position)
 		return nav_dir(t.global_position, delta) if distance_to(t) > World.melee_range() * 0.7 else Vector3.ZERO
+	if data.has("pester"):
+		return _pester(delta)
 	_scan_timer -= delta
 	if not patrol.is_empty():
 		if _scan_timer <= 0.0:
@@ -444,6 +458,61 @@ func _companion_foe(lead: Player) -> Mob:
 		if m.hate.has(lead.entity_id) or m.hate.has(entity_id):
 			return m
 	return null
+
+
+## "pester" ({npc, radius, speed, lines}): it runs rings round another npc,
+## the way it likes, now and then diving in to peck at them (they flinch and
+## turn on it), and every so often one of its "lines" goes out to everyone
+## within earshot ({gull} and {mark} are their names). Quiet while you talk
+## to it; a fight comes first.
+func _pester(delta: float) -> Vector3:
+	var spec: Dictionary = data["pester"]
+	if _pester_mark == null or not is_instance_valid(_pester_mark):
+		_pester_mark = null
+		var z := World.zone_of(self)
+		for c in (z.get_children() if z != null else []):
+			if c is Npc and (c as Npc).npc_id == str(spec["npc"]):
+				_pester_mark = c
+		if _pester_mark == null:
+			return nav_dir(_post, delta) if _flat(global_position, _post) > 0.8 else Vector3.ZERO
+	if _face_timer > 0.0:
+		return Vector3.ZERO
+	var m := _pester_mark
+	var to_me := Vector3(global_position.x - m.global_position.x, 0, global_position.z - m.global_position.z)
+	_pester_line -= delta
+	if _pester_dive > 0.0:  # in at them
+		_pester_dive -= delta
+		if to_me.length() < 1.4 or _pester_dive <= 0.0:
+			_pester_dive = 0.0
+			face_toward(m.global_position)
+			animate("attack")
+			m.face_toward(global_position)
+			m.animate("hit")
+			m._face_timer = 2.5  # glares after it a moment, then back to her work
+			_pester_angle = atan2(to_me.z, to_me.x)
+			if randf() < 0.3:
+				_pester_turn = -_pester_turn
+			if _pester_line <= 0.0:
+				_pester_line = randf_range(18.0, 32.0)
+				var lines: Array = spec.get("lines", [])
+				if not lines.is_empty():
+					var text := str(lines.pick_random()).replace("{gull}", display_name).replace("{mark}", m.display_name.get_slice(" ", m.display_name.get_slice_count(" ") - 1))
+					for q in World.get_players():
+						if q.distance_to(self) <= World.SAY_RANGE:
+							World.say(q, text, World.C_EMOTE)
+			return Vector3.ZERO
+		return nav_dir(m.global_position, delta)
+	_pester_next -= delta
+	if _pester_next <= 0.0:
+		_pester_next = randf_range(5.0, 10.0)
+		_pester_dive = 2.0
+	var r := float(spec.get("radius", 3.5))
+	_pester_angle += delta * _pester_turn * float(spec.get("speed", 4.5)) * 0.7 / r
+	var reach := r * (1.0 + 0.3 * sin(_pester_angle * 2.3))  # loops wide and tight
+	var spot := m.global_position + Vector3(cos(_pester_angle), 0, sin(_pester_angle)) * reach
+	if _flat(global_position, spot) < 0.4:
+		return Vector3.ZERO
+	return nav_dir(spot, delta)
 
 
 ## Next step along the patrol: on to the next waypoint, turning back at either

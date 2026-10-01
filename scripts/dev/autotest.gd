@@ -135,6 +135,7 @@ const SECTIONS := [
 	["arrow_flight", "greenmoor"],
 	["terrace_views", "high_terrace"],
 	["flats_views", "mirror_flats"],
+	["squawkzilla", "mirror_flats"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8845,6 +8846,52 @@ func _t_flats_views() -> void:
 	await _wait(1.0)
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
+	World.time_override = -1.0
+
+
+## Squawkzilla, the angry gull, stands by Mirror-Scholar Queenie (once Anouk)
+## with a guild tag on his nameplate, and Queenie's hair is brown.
+func _t_squawkzilla() -> void:
+	World.time_override = 11.0
+	var z: Zone = get_parent().zone
+	await _wait(1.0)
+	var gull: Npc = null
+	var queenie: Npc = null
+	for c in z.get_children():
+		if c is Npc and (c as Npc).npc_id == "squawkzilla":
+			gull = c
+		elif c is Npc and (c as Npc).npc_id == "mirror_scholar_anouk":
+			queenie = c
+	var tag := ""
+	if gull != null:
+		for l in gull.nameplate.get_children():
+			if l is Label3D:
+				tag = (l as Label3D).text
+	print("squawkzilla: gull %s, tag %s, %.1f m from %s, her hair %s" % [gull != null, tag, gull.distance_to(queenie) if gull and queenie else -1.0,
+			queenie.display_name if queenie else "?", str(queenie.look.get("hair")) if queenie else "?"])
+	await _zone_views("mirror_flats", [[Vector2(24, 386), Vector2(18, 398), "squawkzilla"]])
+	# he runs rings round her and dives in now and then
+	var swept := 0.0
+	var nearest := 99.0
+	var farthest := 0.0
+	var last := 0.0
+	var first := true
+	for i in 150:
+		await _wait(0.1)
+		if gull == null or queenie == null:
+			break
+		var off := gull.global_position - queenie.global_position
+		var a := atan2(off.z, off.x)
+		if not first:
+			swept += absf(wrapf(a - last, -PI, PI))
+		first = false
+		last = a
+		var d := Vector2(off.x, off.z).length()
+		nearest = minf(nearest, d)
+		farthest = maxf(farthest, d)
+		if i == 40 or i == 100:
+			await _shot("9zw_squawkzilla_%d" % i)
+	print("squawkzilla: circled %.1f turns in 15 s, %.1f to %.1f m from her" % [swept / TAU, nearest, farthest])
 	World.time_override = -1.0
 
 
