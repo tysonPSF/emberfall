@@ -120,6 +120,7 @@ const SECTIONS := [
 	["evil_gods", "greenmoor"],
 	["dusk_gods", "greenmoor"],
 	["login_home", "rainhold"],
+	["login_tavern", "emberhold"],
 	["quest_marks", "greenmoor"],
 	["high_terrace_ground", "high_terrace"],
 	["starter_spawns", "greenmoor"],
@@ -9638,6 +9639,47 @@ func _t_login_home() -> void:
 	await login.call("a dark elf in Emberhold, bound there", "dark_elf", "emberhold", Vector2(0, 10), "emberhold", "duskhold")
 	await login.call("a troll visiting Rainhold, already moved", "troll", "rainhold", Vector2(0, 40), "murkhold", "murkhold")
 	await login.call("a human in Emberhold", "human", "emberhold", Vector2(0, 10), "emberhold", "emberhold")
+	p.race = keep[0]
+	p.deity = keep[1]
+	p.bind_zone = keep[2]
+	p.home_seen = keep[3]
+	p.factions = keep[4]
+	p.alignment_mods = keep[5]
+
+
+## Logging in inside a city's room (the Ember and Anvil) counts as being in
+## that city: an evil character left in the tavern from before alignment goes
+## home instead of walking out into the guards; a human stays at the bar.
+func _t_login_tavern() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := [p.race, p.deity, p.bind_zone, p.home_seen, p.factions.duplicate(), p.alignment_mods.duplicate()]
+	print("login_tavern: the tavern is part of %s, the crypt of %s, Duskhold of %s" % [World.city_of("emberhold_tavern"), World.city_of("emberhold_crypt"), World.city_of("duskhold")])
+	for row: Array in [["a dark elf in the tavern, first login since the move", "dark_elf", "", ""], ["a human in the tavern", "human", "emberhold", "emberhold"]]:
+		while main._changing_zone or p.dead:  # login_home can leave the tester slain by a guard: the dead aren't sent home
+			await _wait(0.25)
+		while main._changing_zone:
+			await _wait(0.25)
+		World.zone_change.emit(p, "emberhold_tavern", Vector2(0, 0), Vector2.ZERO)
+		for k in 80:
+			if (main.zone as Zone).zone_id == "emberhold_tavern" and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+		p.race = row[1]
+		p.deity = "dark"
+		p.bind_zone = row[2]
+		p.home_seen = row[3]
+		p.factions = {}
+		p.alignment_mods = {}
+		World.player_entered(p)
+		await _wait(1.5)
+		for k in 40:
+			if not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(0.5)
+		print("login_tavern: %s -> in %s, bound in %s" % [row[0], (main.zone as Zone).zone_id, World.bind_zone_of(p)])
 	p.race = keep[0]
 	p.deity = keep[1]
 	p.bind_zone = keep[2]
