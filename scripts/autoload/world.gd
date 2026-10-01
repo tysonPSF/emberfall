@@ -5459,7 +5459,8 @@ func _follow_home(p: Player) -> String:
 ## moved (see _follow_home) and who logged out in the old home, or anyone in
 ## a city whose guards would cut them down (an evil character who logged out
 ## in Emberhold before alignment), goes to their bind city, and a bind in a
-## hostile city moves to their race's home first.
+## hostile city moves to their race's home first. A room inside a city (the
+## tavern, the crypt) counts as that city: its only way out is past the guards.
 func _keep_off_hostile_ground(p: Player, came_from: String) -> void:
 	var z := zone_of(p)
 	if z == null:
@@ -5468,15 +5469,30 @@ func _keep_off_hostile_ground(p: Player, came_from: String) -> void:
 	if home != "" and bind_zone_of(p) != home and city_hostile(p, bind_zone_of(p)):
 		p.bind_zone = home
 		say(p, "Your soul is bound in %s now, among your own people." % GameData.load_zone(home).get("name", home), C_SYSTEM)
-	var hostile := city_hostile(p, z.zone_id)
-	if not hostile and (came_from == "" or z.zone_id != came_from):
+	var city := city_of(z.zone_id)
+	var hostile := city_hostile(p, city)
+	if not hostile and (came_from == "" or city != came_from):
 		return
 	var dest := str(GameData.load_zone(bind_zone_of(p)).get("name", bind_zone_of(p)))
-	say(p, ("The guards of %s would cut you down on sight. You make your way home to %s." % [z.zone_name, dest]) if hostile
+	say(p, ("The guards of %s would cut you down on sight. You make your way home to %s." % [GameData.load_zone(city).get("name", city), dest]) if hostile
 			else "You make your way home to %s." % dest, C_SYSTEM)
 	get_tree().create_timer(1.0).timeout.connect(func() -> void:  # once the world has finished taking them in
 		if is_instance_valid(p) and not p.dead and zone_of(p) == z:
 			_go_home(p))
+
+
+## The city a place belongs to: a room off the grid with no bindstone of its
+## own (an `"interior"` like the Ember and Anvil) is part of the city its door
+## opens onto; anywhere else is itself.
+func city_of(zone_id: String) -> String:
+	var zd := GameData.load_zone(zone_id)
+	if zd.get("bindstone", false) or not zd.get("interior", false):
+		return zone_id
+	for line: Dictionary in zd.get("zone_lines", []):
+		var to := str(line.get("to", ""))
+		if GameData.load_zone(to).get("bindstone", false):
+			return to
+	return zone_id
 
 
 ## Whether a city's guards attack this player on sight (from the zone's data,
