@@ -78,6 +78,7 @@
     {"type": "prop", "pos": [-230, -187.5], "id": "ash_boulder_b", "yaw": 127.08382950976318, "collide": "mesh"},
     {"type": "prop", "pos": [212.5, 19.5], "id": "ash_boulder_c", "yaw": 123.01022001873741, "collide": "mesh"},
     {"type": "bridge", "pos": [-178.8, 7.5], "face": [-119.8, 7.5]},
+    {"type": "bridge", "pos": [286.1, 12.7], "face": [310.9, 6.3]},
     {"type": "outpost", "pos": [21.8, 117.5], "hubs": true},
     {"type": "prop", "pos": [-16.0, 11.0], "id": "tent", "collide": "box", "yaw": 45, "hubs": true},
     {"type": "prop", "pos": [-10.0, 16.0], "id": "campfire", "collide": "none", "hubs": true},

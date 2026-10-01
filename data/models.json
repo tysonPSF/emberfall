@@ -3384,6 +3384,9 @@
     "bridge_wood": {
       "path": "res://assets/props/bridge_wood.glb"
     },
+    "bridge_stone": {
+      "path": "res://assets/props/bridge_stone.glb"
+    },
     "cobweb": {
       "path": "res://assets/props/cobweb.glb"
     },

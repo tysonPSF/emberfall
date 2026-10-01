@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 27  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank), so old clients are turned away
+const PROTOCOL := 28  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge), so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0

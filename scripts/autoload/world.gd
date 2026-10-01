@@ -3285,8 +3285,8 @@ static func behind(attacker: Entity, target: Entity) -> bool:
 ## Standing in a lava channel burns: 6% of your health a second, and it says so.
 func _check_lava(p: Player, delta: float) -> void:
 	var z := zone_of(p)
-	if p.dead or z == null or not z.data.has("rivers") or not z.lava_at(p.global_position.x, p.global_position.z) \
-			or p.global_position.y > z.surface_at(p.global_position.x, p.global_position.z) + 2.5:
+	var level := z.lava_level(p.global_position.x, p.global_position.z) if z != null and z.data.has("rivers") else NAN
+	if p.dead or is_nan(level) or p.global_position.y > level + 0.25:  # in it, not over it: a bridge or a jump clears it
 		p.set_meta("lava_burn", 0.0)
 		return
 	var t := float(p.get_meta("lava_burn", 0.0)) - delta

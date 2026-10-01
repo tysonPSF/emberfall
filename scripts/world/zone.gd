@@ -612,10 +612,18 @@ func fishable_at(x: float, z: float) -> bool:
 
 ## Whether a point is in a lava channel ("lava": true on a river): it burns.
 func lava_at(x: float, z: float) -> bool:
+	return not is_nan(lava_level(x, z))
+
+
+## The lava's surface at a point, or NAN where there's none: what burns is
+## being in it, not being over it (a bridge, a ledge: World._check_lava).
+func lava_level(x: float, z: float) -> float:
 	for river: Dictionary in _rivers:
-		if river["lava"] and float(_river_at(river, x, z)[0]) < float(river["width"]) * 0.5 - 0.3:
-			return true
-	return false
+		if river["lava"]:
+			var r := _river_at(river, x, z)
+			if float(r[0]) < float(river["width"]) * 0.5 - 0.3:
+				return float(r[1])
+	return NAN
 
 
 ## Distance from a point to the nearest road's centerline, minus its half width.
@@ -2220,11 +2228,13 @@ func _build_cabin(p: Vector3, yaw: float) -> void:
 ## ground under it is the channel), running along the landmark's facing.
 func _build_bridge(at: Vector2, yaw: float) -> void:
 	var y := height_at(at.x, at.y)
+	var lava := false
 	for river: Dictionary in _rivers:
 		var r := _river_at(river, at.x, at.y)
 		if float(r[0]) < float(river["width"]) * 0.5 + 6.0:
 			y = float(r[1]) + 0.35
-	_prop("bridge_wood", Vector3(at.x, y, at.y), yaw, 1.0, "mesh")
+			lava = lava or bool(river["lava"])
+	_prop("bridge_stone" if lava else "bridge_wood", Vector3(at.x, y, at.y), yaw, 1.0, "mesh")  # over lava, no timber would last
 
 
 ## A river's water: a ribbon along its course at the water level, flowing
@@ -2266,6 +2276,24 @@ func _build_river(river: Dictionary) -> void:
 		for q: Array in [[l0, Vector2(0, v0)], [r0, Vector2(1, v0)], [l1, Vector2(0, v1)], [r0, Vector2(1, v0)], [r1, Vector2(1, v1)], [l1, Vector2(0, v1)]]:
 			st.set_uv(q[1])
 			st.add_vertex(q[0])
+	# round ends: a half disc past each end, so a river (lava most of all) doesn't stop in a square edge
+	for end in [[0, 1, -1.0], [edges.size() - 1, edges.size() - 2, 1.0]]:
+		var e: Array = edges[end[0]]
+		var c := ((e[0] as Vector3) + (e[1] as Vector3)) * 0.5
+		var out := Vector3(c.x - (samples[end[1]][0] as Vector2).x, 0, c.z - (samples[end[1]][0] as Vector2).y).normalized()
+		var side := ((e[0] as Vector3) - c)
+		var v: float = e[2]
+		var steps := 10
+		for k in steps:
+			var a0 := PI * k / steps
+			var a1 := PI * (k + 1) / steps
+			var p0 := c + side * cos(a0) + out * half_w * sin(a0)
+			var p1 := c + side * cos(a1) + out * half_w * sin(a1)
+			var tri := [[c, Vector2(0.5, v)], [p1, Vector2(0.5 + 0.5 * cos(a1), v + float(end[2]) * half_w * sin(a1))],
+					[p0, Vector2(0.5 + 0.5 * cos(a0), v + float(end[2]) * half_w * sin(a0))]]
+			for q: Array in tri + [tri[0], tri[2], tri[1]]:  # both windings: seen from above whichever end it is
+				st.set_uv(q[1])
+				st.add_vertex(q[0])
 	var water := MeshInstance3D.new()
 	water.mesh = st.commit()
 	var mat := ShaderMaterial.new()

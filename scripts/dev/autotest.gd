@@ -146,6 +146,7 @@ const SECTIONS := [
 	["guild_bank", "emberhold"],
 	["social_chat", "greenmoor"],
 	["cinderpass_hubs", "cinderpass"],
+	["lava_bridges", "cinderpass"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -9973,6 +9974,44 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## Cinderpass's bridges are stone and you can cross them unburned (only
+## standing in the lava burns), the east road has one now, and the lava
+## rivers end round, not square.
+func _t_lava_bridges() -> void:
+	World.time_override = 12.0
+	var main := get_parent()
+	var p := World.local_player
+	var z: Zone = main.zone
+	await _wait(0.5)
+	var bridges := []
+	for c in z.get_children():
+		if c is StaticBody3D:
+			for m in c.get_children():
+				if m is Node3D and str(m.scene_file_path).contains("bridge_"):
+					bridges.append([str(m.scene_file_path).get_file().get_basename(), Vector2(c.position.x, c.position.z).round()])
+	var burns := func(at: Vector3, seconds: float) -> int:
+		p.global_position = at
+		p.velocity = Vector3.ZERO
+		p.hp = p.max_hp
+		var before := p.hp
+		for k in int(seconds * 60):
+			World._check_lava(p, 1.0 / 60.0)
+			await get_tree().physics_frame
+		return before - p.hp
+	var on_bridge: int = await burns.call(Vector3(-178.8, z.lava_level(-178.8, 7.5) + 1.3, 7.5), 3.0)
+	var on_east: int = await burns.call(Vector3(286.1, z.lava_level(286.1, 12.7) + 1.3, 12.7), 3.0)
+	var at := Vector2(-200, -60)  # on the western river, away from the bridge
+	var r: Array = z._river_at(z._rivers[0], at.x, at.y)
+	var pts: Array[Vector2] = z._rivers[0]["points"]
+	var mid := pts[1].lerp(pts[2], 0.5)
+	var in_lava: int = await burns.call(Vector3(mid.x, z.lava_level(mid.x, mid.y) - 0.5, mid.y), 3.0)
+	print("lava_bridges: bridges %s; on the west bridge burned %d, on the east bridge %d, standing in the lava %d" % [bridges, on_bridge, on_east, in_lava])
+	p.hp = p.max_hp
+	await _zone_views("cinderpass_lava", [[Vector2(-178.8, 40), Vector2(-178.8, 7.5), "west_bridge"], [Vector2(286, 45), Vector2(286.1, 12.7), "east_bridge"],
+			[Vector2(pts[-1].x + 20, pts[-1].y + 30), pts[-1], "river_end"]])
+	World.time_override = -1.0
 
 
 ## Cinderpass's north road: Ventwatch takes the zone's hand-ins (Brenna's,

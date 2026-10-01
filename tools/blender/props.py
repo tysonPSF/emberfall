@@ -1072,6 +1072,46 @@ def bridge_wood():
 	return p.build(bevel=0.03)
 
 
+def bridge_stone():
+	"""A stone bridge for a road over lava (no timber would last): the same
+	span and arch as bridge_wood (22 m, rising 1.3 m, built along Y, origin at
+	the middle of the span at bank height), its deck of stone slabs between low
+	parapet walls, an arch under the middle where the lava runs, solid spandrels
+	either side, and abutments on the banks."""
+	p = Prop("bridge_stone", 132)
+	half_len, half_w, rise = 11.0, 2.3, 1.3
+
+	def deck_z(y):
+		return rise * (1.0 - (y / half_len) ** 2)
+
+	def arch_z(y):  # the underside: an arch over the middle 13 m, the ground beyond
+		return -2.6 + 2.2 * max(0.0, 1.0 - (y / 6.5) ** 2) if abs(y) < 6.5 else -2.6
+
+	n = 22
+	for k in range(n):
+		y0 = -half_len + k * 2 * half_len / n
+		y1 = -half_len + (k + 1) * 2 * half_len / n
+		ym = (y0 + y1) / 2
+		tilt = math.degrees(math.atan2(deck_z(y1) - deck_z(y0), y1 - y0))
+		p.box((half_w * 2, (y1 - y0) * 0.96, 0.3), (0, ym, deck_z(ym) - 0.15), STONE_LIGHT if k % 2 else STONE_WARM, rot=(tilt, 0, 0), grad=(0.1, 0.85))   # the slabs
+		for x in (-half_w + 0.2, half_w - 0.2):   # the parapets, block by block
+			p.box((0.4, (y1 - y0) * 0.98, 0.75), (x, ym, deck_z(ym) + 0.37), STONE_WARM if k % 2 else STONE_LIGHT, rot=(tilt, 0, 0), grad=(0.1, 0.8))
+		bottom = arch_z(ym)
+		top = deck_z(ym) - 0.3
+		if top - bottom > 0.2:   # the spandrel, down to the arch (or the ground at the ends)
+			p.box((half_w * 2 - 0.2, (y1 - y0) * 0.99, top - bottom), (0, ym, (top + bottom) / 2), STONE_DARK, rot=(tilt * 0.5, 0, 0), grad=(0.1, 0.7))
+	for k in range(13):   # the arch ring's voussoirs, a shade lighter, along both faces
+		y = -6.5 + k * 13 / 12
+		for x in (-half_w + 0.05, half_w - 0.05):
+			p.box((0.25, 0.9, 0.5), (x, y, arch_z(y) + 0.1), STONE_LIGHT, grad=(0.1, 0.8))
+	for s in (-1, 1):   # abutments where it meets the banks, and end posts on the parapets
+		y = s * (half_len - 0.6)
+		p.box((half_w * 2 + 1.0, 1.8, 1.6), (0, y, -0.6), STONE_LIGHT, grad=(0.1, 0.8))
+		for x in (-half_w + 0.2, half_w - 0.2):
+			p.box((0.6, 0.6, 1.2), (x, s * (half_len - 0.4), deck_z(s * (half_len - 0.4)) + 0.6), STONE_DARK, grad=(0.1, 0.8))
+	return p.build(bevel=0.04)
+
+
 def cobweb():
 	"""A spider's web hung upright, 3.2 m across: spokes, a spiral, and anchor
 	lines down to the ground so it doesn't float. Faces -Y."""
@@ -15670,6 +15710,7 @@ def dusk_tree_b():
 
 
 PROPS = {
+	"bridge_stone": bridge_stone,
 	"pine_a": lambda: pine("pine_a", 1, [(1.9, 2.4), (1.5, 2.1), (1.05, 1.8), (0.6, 1.4)]),
 	"pine_b": lambda: pine("pine_b", 2, [(1.6, 2.2), (1.15, 1.9), (0.7, 1.6)]),
 	"tree_round": tree_round,
