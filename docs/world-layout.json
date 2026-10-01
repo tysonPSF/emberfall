@@ -39,6 +39,7 @@
   "the_grove",
   "the_long_grass",
   "the_rotfen",
+  "the_tuskway",
   "the_unlit",
   "the_wallow",
   "thornwood",
@@ -171,8 +172,8 @@
     1
    ],
    "kind": "wild",
-   "built": false,
-   "existing": false,
+   "built": true,
+   "existing": true,
    "reached": "foot"
   },
   {
