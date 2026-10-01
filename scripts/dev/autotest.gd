@@ -134,6 +134,7 @@ const SECTIONS := [
 	["hubs_small", "greenmoor"],
 	["arrow_flight", "greenmoor"],
 	["terrace_views", "high_terrace"],
+	["flats_views", "mirror_flats"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8828,6 +8829,22 @@ func _t_spawn_coverage() -> void:
 			if m.spawn_point != null and Vector2(at.x, at.z).distance_to(Vector2(m.spawn_point.global_position.x, m.spawn_point.global_position.z)) > 40.0:
 				strayed += 1
 		print("spawn_coverage: %s: %d day spawns, %d monsters up; under the ground %d, in lava %d, swimming %d, strayed %d" % [zone_id, day, mobs.size(), under, hot, wet, strayed])
+	World.time_override = -1.0
+
+
+## Mirror Flats' shore and water by day: the shoreline, the camp at the
+## entry, Glasswater Camp on its island, the Duneskiff camp on the west shore.
+func _t_flats_views() -> void:
+	World.time_override = 11.0
+	var z: Zone = get_parent().zone
+	var wet := 0
+	for n: Dictionary in z.data["npcs"]:
+		if z.swim_level(n["pos"][0], n["pos"][1]) > z.height_at(n["pos"][0], n["pos"][1]) + 0.05:
+			wet += 1
+	print("flats_views: npcs standing in water %d of %d" % [wet, z.data["npcs"].size()])
+	await _wait(1.0)
+	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
+			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
 
 
