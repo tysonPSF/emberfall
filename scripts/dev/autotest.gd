@@ -9253,12 +9253,28 @@ func _t_quest_marks() -> void:
 		holt._update_mark(0.016)
 		return holt._mark.text if holt._mark.visible else "(none)"
 	p.quests.clear()
-	print("quest_marks: fresh -> '%s'" % mark.call())
+	print("quest_marks: fresh -> '%s' (gray %s)" % [mark.call(), holt._mark_more])
 	_stand_by(p, holt)
 	p.global_position += Vector3(0, 0, 4)
 	p.face_toward(holt.global_position)
 	await _wait(0.6)
 	await _shot("9quest_mark_bang")
+	# one of an npc's two quests taken, the other still to ask for: the "!" goes gray, and a hail names the word
+	var gudrun: Npc = _npcs()["gm_farmwife_gudrun"]
+	var hers: Array = World._quests_of_npc("gm_farmwife_gudrun")
+	World._accept_quest(p, hers[0])
+	gudrun._mark_check = 0.0
+	gudrun._update_mark(0.016)
+	print("quest_marks: one of Gudrun's %d taken -> '%s' (gray %s)" % [hers.size(), gudrun._mark.text if gudrun._mark.visible else "(none)", gudrun._mark_more])
+	var heard: Array[String] = []
+	var listen := func(t: String, _c: Color) -> void: heard.append(t)
+	World.log_message.connect(listen)
+	_stand_by(p, gudrun)
+	World.request_say(p.entity_id, "hail")
+	await _wait(0.3)
+	World.log_message.disconnect(listen)
+	print("quest_marks: hailed her -> %s" % [heard.filter(func(t: String) -> bool: return "There's more" in t)])
+	_stand_by(p, holt)
 	for quest_id: String in World._quests_of_npc("warden_holt"):
 		if str(GameData.quests[quest_id].get("start_keyword", "")) != "":
 			World._accept_quest(p, quest_id)

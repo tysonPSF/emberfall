@@ -2428,19 +2428,33 @@ func quest_shows(p: Player, npc_data: Dictionary) -> bool:
 ## up now (asked by its keyword, or a quest line's step p dropped), "?" when p
 ## carries everything for one of theirs, else "". Worked out on the client from
 ## p's own quests and standings (World.quest_mark_for is the npc's side).
+## A hand-in waiting ("?") comes before a quest still to take ("!").
 func quest_mark(p: Player, npc_id: String) -> String:
 	if p == null:
 		return ""
 	var ready := false
 	for quest_id: String in _quests_of_npc(npc_id):
 		var q: Dictionary = GameData.quests[quest_id]
+		if p.quests.get(quest_id, {}).get("active", false) and takes_hand_in(q, npc_id) and quest_items_ready(p, quest_id):
+			ready = true
+	if ready:
+		return "?"
+	var faction := str(GameData.npcs.get(npc_id, {}).get("faction", ""))
+	if GameData.factions.has(faction) and standing(p, faction) < REFUSE_BELOW:
+		return ""  # they won't talk to you at all
+	return "!" if not open_quests(p, npc_id).is_empty() else ""
+
+
+## The quests npc_id would give p now: theirs to give (not just to take in),
+## not taken up yet or done, by their keyword or as a quest line's step p dropped,
+## the step before done.
+func open_quests(p: Player, npc_id: String) -> Array:
+	var out: Array = []
+	for quest_id: String in _quests_of_npc(npc_id):
+		var q: Dictionary = GameData.quests[quest_id]
 		var state: Dictionary = p.quests.get(quest_id, {})
-		if state.get("active", false):
-			if takes_hand_in(q, npc_id) and quest_items_ready(p, quest_id):
-				ready = true
-			continue
-		if int(state.get("completions", 0)) > 0:
-			continue  # done (a repeatable one too: no mark for doing it again)
+		if state.get("active", false) or int(state.get("completions", 0)) > 0:
+			continue  # on it, or done (a repeatable one too: no mark for doing it again)
 		if str(q.get("giver", "")) != npc_id and str(q.get("starter", "")) != npc_id:
 			continue  # only takes its hand-in (a forward camp's scout): the "?", never the "!"
 		var keyword := str(q.get("start_keyword", ""))
@@ -2451,11 +2465,21 @@ func quest_mark(p: Player, npc_id: String) -> String:
 			before = _quest_before(quest_id)
 		if before != "" and not quest_done(p, before):
 			continue
-		var faction := str(GameData.npcs.get(npc_id, {}).get("faction", ""))
-		if GameData.factions.has(faction) and standing(p, faction) < REFUSE_BELOW:
-			return ""  # they won't talk to you at all
-		return "!"
-	return "?" if ready else ""
+		out.append(quest_id)
+	return out
+
+
+## Whether an npc's "!" is for more of their work: p is on, or has done, one of
+## their quests already. Drawn gray, so it doesn't look like nothing was taken.
+func quest_mark_more(p: Player, npc_id: String) -> bool:
+	if p == null:
+		return false
+	for quest_id: String in _quests_of_npc(npc_id):
+		var q: Dictionary = GameData.quests[quest_id]
+		if (str(q.get("giver", "")) == npc_id or str(q.get("starter", "")) == npc_id) and p.quests.has(quest_id) \
+				and (p.quests[quest_id].get("active", false) or int(p.quests[quest_id].get("completions", 0)) > 0):
+			return true
+	return false
 
 
 var _npc_quests: Dictionary = {}  # npc id -> the quests they give or start (built once)
@@ -4316,6 +4340,15 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 			_accept_quest(p, quest_id)
 	if key == "hail":
 		_offer_dropped_steps(p, npc)
+		# on one of their quests already, with another still to ask for: say which word starts it
+		if quest_mark_more(p, npc.npc_id):
+			var words: Array = []
+			for quest_id: String in open_quests(p, npc.npc_id):
+				var kw := str(GameData.quests[quest_id].get("start_keyword", ""))
+				if kw != "" and not kw in words:
+					words.append(kw)
+			if not words.is_empty():
+				_npc_say(p, npc, "There's more, {name}: ask me about %s." % " or ".join(words.map(func(w: String) -> String: return "[%s]" % w)))
 	if key == "bind" and npc.data.get("binds", false):
 		_bind(p, zone_of(npc))  # the priest binds you where you stand talking; /bind needs the stone itself
 	if key == "return" and npc.data.get("grove_return", false):

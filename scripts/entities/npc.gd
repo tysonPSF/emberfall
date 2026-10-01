@@ -167,6 +167,9 @@ func _update_sight() -> void:
 
 ## The floating quest mark: checked twice a second against your quests, and
 ## bobbing and glowing gently while it shows.
+var _mark_more := false
+
+
 func _update_mark(delta: float) -> void:
 	_mark_check -= delta
 	if _mark_check <= 0.0:
@@ -174,12 +177,16 @@ func _update_mark(delta: float) -> void:
 		var m := World.quest_mark(World.local_player, npc_id) if not dead else ""
 		_mark.text = m
 		_mark.visible = m != ""
+		_mark_more = m == "!" and World.quest_mark_more(World.local_player, npc_id)  # more of their work: gray
 	if not _mark.visible:
 		return
 	_mark_time += delta
 	_mark.offset.y = 70.0 + sin(_mark_time * 2.4) * 8.0  # floating
 	var glow := 0.85 + 0.15 * sin(_mark_time * 3.1)
-	_mark.modulate = Color(1.0, 0.86, 0.22) * (1.25 * glow) if _mark.text == "!" else Color(1.0, 0.95, 0.6) * (1.1 * glow)
+	if _mark_more:
+		_mark.modulate = Color(0.72, 0.72, 0.74) * (0.95 + 0.05 * glow)  # gray, and barely breathing: you've taken something here
+	else:
+		_mark.modulate = Color(1.0, 0.86, 0.22) * (1.25 * glow) if _mark.text == "!" else Color(1.0, 0.95, 0.6) * (1.1 * glow)
 	_mark.modulate.a = 1.0
 	_mark.outline_modulate.a = 0.22 + 0.2 * glow  # the halo breathes with it
 
