@@ -83,7 +83,13 @@
     {"type": "prop", "pos": [-10.0, 16.0], "id": "campfire", "collide": "none", "hubs": true},
     {"type": "prop", "pos": [28, 44], "id": "caravan_wagon", "collide": "box", "yaw": 70, "hubs": true},
     {"type": "prop", "pos": [42, 54], "id": "rubble_large", "collide": "box", "yaw": 30, "hubs": true},
-    {"type": "prop", "pos": [16, 34], "id": "smoldering_stump", "collide": "box", "yaw": 0, "hubs": true}
+    {"type": "prop", "pos": [16, 34], "id": "smoldering_stump", "collide": "box", "yaw": 0, "hubs": true},
+    {"type": "waystation", "pos": [-30, -215], "face": [6, -215], "hubs": true},
+    {"type": "ruins", "pos": [-130, -150], "hubs": true},
+    {"type": "prop", "pos": [-118, -158], "id": "giant_anvil", "collide": "box", "yaw": 30, "hubs": true},
+    {"type": "prop", "pos": [-146, -138], "id": "rubble_large", "collide": "box", "yaw": 80, "hubs": true},
+    {"type": "prop", "pos": [-112, -136], "id": "broken_pillar", "collide": "mesh", "yaw": 10, "hubs": true},
+    {"type": "prop", "pos": [-140, -168], "id": "smoldering_stump", "collide": "box", "yaw": 0, "hubs": true}
   ],
   "passes": [[0, 336, 9], [336, 0, 9], [-336, 0, 9], [0, -336, 9]],
   "roads": [
@@ -102,7 +108,10 @@
     {"id": "smith_tovar", "pos": [51.4, 251.5], "face": [55.4, 247.5]},
     {"id": "forgehold_scout", "pos": [21.4, 287.5], "patrol": [[21.4, 287.5], [11.4, 247.5], [37.4, 237.5], [53.4, 287.5], [21.4, 287.5]]},
     {"id": "cp_hut_guard_0", "pos": [13.9, 119.1], "face": [6.1, 120.7], "hubs": true},
-    {"id": "cp_carter_hodd", "pos": [-8.0, 13.0], "face": [28, 44], "hubs": true}
+    {"id": "cp_carter_hodd", "pos": [-8.0, 13.0], "face": [28, 44], "hubs": true},
+    {"id": "cp_ventrunner_odalys", "pos": [-26, -212], "face": [6, -215], "hubs": true},
+    {"id": "cp_sutler_hadley", "pos": [-35, -211], "face": [6, -215], "hubs": true},
+    {"id": "cp_ventrunner_odalys_guard", "pos": [-28, -223], "face": [6, -215], "hubs": true}
   ],
   "spawns": [
     {"pos": [-288, 40], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
@@ -139,11 +148,9 @@
     {"pos": [-225, 120], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
     {"pos": [-150, 60], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
     {"pos": [-222.5, -37.5], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
-    {"pos": [-142.5, -150], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
     {"pos": [255, -15], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
     {"pos": [210, -120], "pool": {"lava_salamander": 1}, "respawn": 80, "wander": 12},
     {"pos": [-242.5, -97.5], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
-    {"pos": [-105, -135], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
     {"pos": [-230, -217.5], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
     {"pos": [-80, -241.7], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
     {"pos": [-180, -165], "pool": {"ash_drake": 1}, "respawn": 85, "wander": 16},
@@ -162,7 +169,6 @@
     {"pos": [150, 165], "pool": {"ember_cultist": 1}, "respawn": 90, "wander": 14},
     {"pos": [81.7, -225], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
     {"pos": [121.7, -255], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
-    {"pos": [-40, -231.7], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
     {"pos": [161.7, -235], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
     {"pos": [15, -302], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
     {"pos": [86, -143], "pool": {"magma_golem": 1}, "respawn": 95, "wander": 12},
@@ -186,6 +192,14 @@
     {"pos": [0.2, 18.1], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
     {"pos": [30.9, 6.1], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
     {"pos": [59.4, 22.6], "pool": {"cp_ash_beetle": 1}, "respawn": 85, "wander": 12, "hubs": true},
-    {"pos": [31, 46], "pool": {"cp_cinderback": 1}, "respawn": 1500, "wander": 4, "hubs": true}
+    {"pos": [31, 46], "pool": {"cp_cinderback": 1}, "respawn": 1500, "wander": 4, "hubs": true},
+    {"pos": [-93.7, -138.8], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-116.1, -114.6], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-149.0, -117.1], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-167.6, -144.4], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-157.8, -175.9], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-127.1, -187.9], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-98.6, -171.4], "pool": {"cp_slag_hound": 1}, "respawn": 85, "wander": 12, "hubs": true},
+    {"pos": [-127, -148], "pool": {"cp_old_clinkerjaw": 1}, "respawn": 1500, "wander": 4, "hubs": true}
   ]
 }

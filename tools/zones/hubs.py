@@ -1360,7 +1360,7 @@ def weeping_throat(z):
 
 def cinderpass(z):
     F = "forgehold"
-    return light_zone(z, F, {"prefix": "cp", "at": [28, 44], "level": 28, "respawn": 85,
+    L, N, S, spots = light_zone(z, F, {"prefix": "cp", "at": [28, 44], "level": 28, "respawn": 85,
         "props": [_p("caravan_wagon", 0, 0, 70), _p("rubble_large", 14, 10, 30), _p("smoldering_stump", -12, -10)],
         "npc": {"id": "cp_carter_hodd", "name": "Carter Hodd", "model": "barbarian", "title": "Forgehold Carter", "level": 30, "weapon": "axe_1handed",
                 "dialogue": {"hail": "My cart, {name}, under the ash. Ore for the Forge, and the [beetles] have nested in it. [Cinderback] too, the big one.",
@@ -1377,6 +1377,32 @@ def cinderpass(z):
                    "Carapaces. Hot still.", "Four fewer in my cart.", "The gland. Careful, it's still burning.", "I can dig my ore out.",
                    "Carter's gloves. For hot ore.")},
         hut=("an Ashwatch sentry", "Forgehold Scouts", (0, 200, 1)))
+    # the north road, 2026-10-01: a forward camp between Cindermaw and Pyrrhus, so the far end's hand-ins
+    # aren't a 500 m walk back to the outpost, and an abandoned smelter to find west of it
+    cL, cN, camp = forward_camp(z, F, None, 0, 0, "cp_ventrunner_odalys", "Ventrunner Odalys", "Forgehold Scouts", "ranger_class",
+        "Ventwatch, {name}: the scouts' fire at the top of the pass. Brenna's work, Tovar's, Carter Hodd's, you can hand it all in here and save the walk south. Ask me about the [smelter].",
+        "cp_sutler_hadley", "Sutler Hadley", ["iron_tipped_arrow", "windcutter_arrow", "sling_stone", "hunters_pie", "roast_meat", "water_flask"],
+        "an Ashwatch sentry", "Forgehold Scouts", ["ember_sigils", "ashkars_brand", "cindermaws_heart", "cp_ash_beetle_q", "cp_cinderback_q"], {},
+        at=[-30, -215], face=[6, -215], gender="female")
+    L += cL
+    N += cN
+    smelter = [-130, -150]
+    dia = place(z, F, {"at": smelter, "landmark": ("ruins", {}), "giver": "cp_ventrunner_odalys", "count": 7, "respawn": 85,
+        "props": [_p("giant_anvil", 12, -8, 30), _p("rubble_large", -16, 12, 80), _p("broken_pillar", 18, 14, 10, "mesh"), _p("smoldering_stump", -10, -18)],
+        "mob": {"id": "cp_slag_hound", "name": "a slag hound", "base": pick_base(z, 29), "level": (28, 30), "model": "firehound",
+                "drop": ("cp_slag_fang", "Slag Hound Fang", 14, "gnoll_fang"), "extra": {"verb": ["bite", "bites"], "color": "#5a4a40"}},
+        "named": {"id": "cp_old_clinkerjaw", "name": "Old Clinkerjaw", "base": pick_base(z, 29), "level": (32, 32), "model": "firehound",
+                  "trophy": ("cp_clinkerjaws_tooth", "Old Clinkerjaw's Molten Tooth", "phoenix_ember"), "extra": {"verb": ["bite", "bites"], "scale": 1.8, "color": "#3a2e28"}},
+        "reward": ("cp_smeltermans_belt", reward_for(31, "waist", "Smelterman's Belt", "thunderstone_girdle", ("sta", "str"))),
+        "keywords": ("hounds", "clinkerjaw"), "xp": zone_xp(z), "faction": {F: 8},
+        "text": _named_lines(_t("Slag Hound Fangs", "slag hound fangs", "Old Clinkerjaw's molten tooth",
+                   "Slag hounds, lean and smoking, denned in the old smelter west of here. Four of their fangs and the Forge pays, every time.",
+                   "Old Clinkerjaw leads them, half slag himself. The smelter's crew never got out. Bring me the molten tooth out of his jaw."),
+                   "Fangs. Still hot from the slag.", "Four fewer at the smelter.", "His tooth. It's glowing.", "The smelter's quiet. The Forge might fire it again.",
+                   "The smelterman's belt. It was his, and it's yours now.")}, L, N, S)
+    bw.NPCS["cp_ventrunner_odalys"]["dialogue"].update(dia)
+    bw.NPCS["cp_ventrunner_odalys"]["dialogue"]["smelter"] = "West, toward the lava. The Forge ran a smelter there before the ash came. [Slag hounds] den in it now, and [Old Clinkerjaw] with them."
+    return L, N, S, spots + [camp, smelter]
 
 
 def windbreak(z):

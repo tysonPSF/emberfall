@@ -1044,6 +1044,31 @@
     "icon": "smokehide_gloves",
     "wear": "leather_gloves"
   },
+  "cp_slag_fang": {
+    "name": "Slag Hound Fang",
+    "value": 14,
+    "stack": 20,
+    "icon": "gnoll_fang"
+  },
+  "cp_clinkerjaws_tooth": {
+    "name": "Old Clinkerjaw's Molten Tooth",
+    "value": 70,
+    "lore": true,
+    "icon": "phoenix_ember"
+  },
+  "cp_smeltermans_belt": {
+    "name": "Smelterman's Belt",
+    "slot": "waist",
+    "ac": 10,
+    "sta": 6,
+    "str": 5,
+    "hp": 38,
+    "value": 11532,
+    "rec_level": 31,
+    "no_drop": true,
+    "lore": true,
+    "icon": "thunderstone_girdle"
+  },
   "wb_crag_scale": {
     "name": "Crag Lizard Scale",
     "value": 26,

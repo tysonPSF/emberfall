@@ -19690,5 +19690,95 @@
     "model": "bone_vulture",
     "named": true,
     "xp_bonus": 3.0
+  },
+  "cp_slag_hound": {
+    "name": "a slag hound",
+    "level": [
+      28,
+      30
+    ],
+    "hp_base": 160,
+    "hp_per_level": 24,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.8,
+    "ac": 46,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "skeleton",
+    "color": "#5a4a40",
+    "scale": 1.0,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cp_slag_fang",
+        "chance": 0.55
+      }
+    ],
+    "model": "firehound",
+    "proc": {
+      "spell": "ash_chill",
+      "chance": 0.16,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "cp_old_clinkerjaw": {
+    "name": "Old Clinkerjaw",
+    "level": [
+      32,
+      32
+    ],
+    "hp_base": 160,
+    "hp_per_level": 24,
+    "dmg_min": 20,
+    "dmg_max": 36,
+    "attack_delay": 2.8,
+    "ac": 46,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 15,
+    "social": true,
+    "flees": false,
+    "faction": "undead",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "skeleton",
+    "color": "#3a2e28",
+    "scale": 1.8,
+    "coin": [
+      0,
+      0
+    ],
+    "loot": [
+      {
+        "item": "cp_clinkerjaws_tooth",
+        "chance": 1.0
+      },
+      {
+        "item": "cp_slag_fang",
+        "chance": 1.0
+      }
+    ],
+    "model": "firehound",
+    "proc": {
+      "spell": "ash_chill",
+      "chance": 0.16,
+      "text": "%s's touch carries %s!"
+    },
+    "named": true,
+    "xp_bonus": 3.0
   }
 }

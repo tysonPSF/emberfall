@@ -10683,5 +10683,94 @@
       "grimquill": "Grimquill, the old king of them, sits on the beacon's top. Bring me his beak, and I'll light it again."
     },
     "title": "of the Last Beacon"
+  },
+  "cp_ventrunner_odalys": {
+    "name": "Ventrunner Odalys",
+    "level": 35,
+    "model": "ranger_class",
+    "weapon": "bow",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Ventwatch, {name}: the scouts' fire at the top of the pass. Brenna's work, Tovar's, Carter Hodd's, you can hand it all in here and save the walk south. Ask me about the [smelter].",
+      "unknown": "Ask back at camp. I only watch the far end.",
+      "hounds": "Slag hounds, lean and smoking, denned in the old smelter west of here. Four of their fangs and the Forge pays, every time.",
+      "clinkerjaw": "Old Clinkerjaw leads them, half slag himself. The smelter's crew never got out. Bring me the molten tooth out of his jaw.",
+      "smelter": "West, toward the lava. The Forge ran a smelter there before the ash came. [Slag hounds] den in it now, and [Old Clinkerjaw] with them."
+    },
+    "title": "Forgehold Scouts",
+    "gender": "female"
+  },
+  "cp_sutler_hadley": {
+    "name": "Sutler Hadley",
+    "level": 30,
+    "model": "barbarian",
+    "weapon": "axe_1handed",
+    "faction": "forgehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Food, water and arrows, {name}, and not a coin more than it cost to haul them out here. Press G.",
+      "unknown": "Ask the scout. I only count the stores."
+    },
+    "title": "Forgehold Scouts",
+    "merchant": {
+      "sells": [
+        "iron_tipped_arrow",
+        "windcutter_arrow",
+        "sling_stone",
+        "hunters_pie",
+        "roast_meat",
+        "water_flask"
+      ],
+      "buy_rate": 0.5
+    }
+  },
+  "cp_ventrunner_odalys_guard": {
+    "name": "an Ashwatch sentry",
+    "level": 40,
+    "model": "knight",
+    "weapon": "sword_1handed",
+    "faction": "forgehold",
+    "dialogue": {
+      "hail": "The road's watched from here, {name}. Anything chasing you, bring it past me.",
+      "unknown": "I just keep the road."
+    },
+    "guard": {
+      "radius": 22,
+      "leash": 34,
+      "speed": 6.4,
+      "walk_speed": 1.9,
+      "patrol_pause": 6,
+      "assist_standing": 0,
+      "hunt_radius": 18,
+      "hunt_aggressive_only": true,
+      "shouts": [
+        "Hold on, {name}! I'm coming!",
+        "Behind me, {name}!"
+      ],
+      "hunt_shouts": [
+        "Not on my road!",
+        "Back into the wilds!"
+      ],
+      "shouts_player": [
+        "Halt, {name}!",
+        "You'll answer for that, {name}!"
+      ]
+    },
+    "combat": {
+      "hp": 4000,
+      "hp_regen": 60,
+      "ac": 110,
+      "dmg": [
+        22,
+        40
+      ],
+      "delay": 2.4,
+      "verb": [
+        "slash",
+        "slashes"
+      ]
+    },
+    "title": "Forgehold Scouts"
   }
 }

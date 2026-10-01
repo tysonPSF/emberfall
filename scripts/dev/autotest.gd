@@ -145,6 +145,7 @@ const SECTIONS := [
 	["evil_kin", "greenmoor"],
 	["guild_bank", "emberhold"],
 	["social_chat", "greenmoor"],
+	["cinderpass_hubs", "cinderpass"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -9972,6 +9973,39 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## Cinderpass's north road: Ventwatch takes the zone's hand-ins (Brenna's,
+## Tovar's, Carter Hodd's and its own), its people stand clear of lava, and
+## the abandoned smelter to the west has its slag hounds and Old Clinkerjaw.
+func _t_cinderpass_hubs() -> void:
+	World.time_override = 12.0
+	var z: Zone = get_parent().zone
+	await _wait(1.0)
+	var npcs := _npcs()
+	var odalys: Npc = npcs.get("cp_ventrunner_odalys")
+	var takes := []
+	for qid in ["ember_sigils", "ashkars_brand", "cindermaws_heart", "cp_ash_beetle_q", "cp_cinderback_q", "cp_slag_hound_q", "cp_old_clinkerjaw_q"]:
+		if odalys != null and World.takes_hand_in(GameData.quests[qid], odalys.npc_id):
+			takes.append(qid)
+	var burning := []
+	for id in ["cp_ventrunner_odalys", "cp_sutler_hadley", "cp_ventrunner_odalys_guard"]:
+		var n: Npc = npcs.get(id)
+		if n == null or z.lava_at(n.global_position.x, n.global_position.z):
+			burning.append(id)
+	var hounds := 0
+	var clinker := 0
+	for sp in z.get_children():
+		if sp is SpawnPoint:
+			if (sp as SpawnPoint).pool.has("cp_slag_hound"):
+				hounds += 1
+			if (sp as SpawnPoint).pool.has("cp_old_clinkerjaw") or (sp as SpawnPoint).rare == "cp_old_clinkerjaw":
+				clinker += 1
+	var walk := Vector2(odalys.global_position.x, odalys.global_position.z).distance_to(Vector2(-117, -308)) if odalys != null else -1.0
+	print("cinderpass_hubs: Odalys takes %d of 7 %s; on lava or missing %s; smelter: %d hound spots, Clinkerjaw %d; Ventwatch to Cindermaw %.0f m (the outpost was ~590)" % [
+			takes.size(), takes, burning, hounds, clinker, walk])
+	await _zone_views("cinderpass", [[Vector2(-30, -195), Vector2(-30, -215), "ventwatch"], [Vector2(-100, -130), Vector2(-130, -150), "smelter"]])
+	World.time_override = -1.0
 
 
 ## The guild bank at a city banker: the leader puts items and coin in and

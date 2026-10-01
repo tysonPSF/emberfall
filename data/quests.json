@@ -711,7 +711,10 @@
     "faction": {
       "forgehold": 10,
       "ember_cult": -10
-    }
+    },
+    "also_taken_by": [
+      "cp_ventrunner_odalys"
+    ]
   },
   "ashkars_brand": {
     "name": "The Pyromancer's Brand",
@@ -733,7 +736,10 @@
       "forgehold": 30,
       "emberhold": 10,
       "ember_cult": -30
-    }
+    },
+    "also_taken_by": [
+      "cp_ventrunner_odalys"
+    ]
   },
   "drake_scales": {
     "name": "Obsidian Drake Scales",
@@ -777,7 +783,10 @@
     "first_complete_text": "And a cloak of its kin's scales for you. Fire won't bite through it.",
     "faction": {
       "forgehold": 25
-    }
+    },
+    "also_taken_by": [
+      "cp_ventrunner_odalys"
+    ]
   },
   "pondkin_fetishes": {
     "name": "Fetishes of the Pondkin",
@@ -6928,7 +6937,10 @@
       "forgehold": 8
     },
     "start_keyword": "beetles",
-    "repeatable": true
+    "repeatable": true,
+    "also_taken_by": [
+      "cp_ventrunner_odalys"
+    ]
   },
   "cp_cinderback_q": {
     "name": "Cinderback",
@@ -6948,7 +6960,10 @@
     },
     "first_reward_item": "cp_carters_gloves",
     "first_complete_text": "Carter's gloves. For hot ore.",
-    "start_keyword": "cinderback"
+    "start_keyword": "cinderback",
+    "also_taken_by": [
+      "cp_ventrunner_odalys"
+    ]
   },
   "wb_crag_lizard_q": {
     "name": "Crag Lizard Scales",
@@ -7144,5 +7159,44 @@
     "first_reward_item": "bm_beacon_keepers_boots",
     "first_complete_text": "A keeper's boots. For the climb to the top.",
     "start_keyword": "grimquill"
+  },
+  "cp_slag_hound_q": {
+    "name": "Slag Hound Fangs",
+    "giver": "cp_ventrunner_odalys",
+    "wants": {
+      "cp_slag_fang": 4
+    },
+    "reward": {
+      "xp": 4200,
+      "coin": 500
+    },
+    "accept_text": "You have taken on a task: Slag Hound Fangs. Bring Ventrunner Odalys four slag hound fangs.",
+    "ready_text": "Fangs. Still hot from the slag.",
+    "complete_text": "Four fewer at the smelter.",
+    "faction": {
+      "forgehold": 8
+    },
+    "start_keyword": "hounds",
+    "repeatable": true
+  },
+  "cp_old_clinkerjaw_q": {
+    "name": "Old Clinkerjaw",
+    "giver": "cp_ventrunner_odalys",
+    "wants": {
+      "cp_clinkerjaws_tooth": 1
+    },
+    "reward": {
+      "xp": 9000,
+      "coin": 1200
+    },
+    "accept_text": "You have taken on a task: Old Clinkerjaw. Bring Ventrunner Odalys Old Clinkerjaw's molten tooth.",
+    "ready_text": "His tooth. It's glowing.",
+    "complete_text": "The smelter's quiet. The Forge might fire it again.",
+    "faction": {
+      "forgehold": 24
+    },
+    "first_reward_item": "cp_smeltermans_belt",
+    "first_complete_text": "The smelterman's belt. It was his, and it's yours now.",
+    "start_keyword": "clinkerjaw"
   }
 }
