@@ -2,6 +2,15 @@ class_name SpawnPoint
 extends Node3D
 ## Keeps one mob alive at this spot, picking from a weighted pool and
 ## respawning it a while after it dies.
+##
+## A quest boss's spot is a rare spawn, EverQuest style (Zone._build_spawns
+## sets `rare`): mostly it puts up a placeholder (the `pool`, an ordinary
+## monster of the camp around it), and each time it comes back there's a
+## `rare_chance` the named comes instead; after `rare_pity` placeholders in a
+## row the next is always the named.
+
+## Tests (the autotest) keep the named always up, so older checks find them where they stand.
+static var always_rare := "--autotest" in OS.get_cmdline_user_args()
 
 var zone: Zone
 var pool: Dictionary = {}  # mob_id -> weight
@@ -11,6 +20,8 @@ var when := ""  # "night" or "day": only up then (zone data "when"); at the turn
 var mob: Mob = null
 var yaw := NAN  # which way what spawns here faces (zone data "face": a web across a passage); else any way
 var _timer := 0.0
+var rare := ""  # the named this spot may put up instead of its placeholder; "" for an ordinary spot
+var rare_misses := 0  # placeholders in a row since the named last came
 
 
 func _ready() -> void:
@@ -38,6 +49,13 @@ func _process(delta: float) -> void:
 
 func spawn() -> void:
 	var mob_id := _pick()
+	if rare != "":
+		var chance := float(World.cfg("rare_chance", 0.2))
+		if always_rare or rare_misses >= int(World.cfg("rare_pity", 8)) or randf() < chance:
+			mob_id = rare
+			rare_misses = 0
+		else:
+			rare_misses += 1
 	mob = Mob.new()
 	mob.setup(mob_id, GameData.mobs[mob_id], self)
 	mob.position = position + Vector3.UP * 0.3

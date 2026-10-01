@@ -136,6 +136,7 @@ const SECTIONS := [
 	["terrace_views", "high_terrace"],
 	["flats_views", "mirror_flats"],
 	["squawkzilla", "mirror_flats"],
+	["rare_spawns", "thornwood"],
 	["melee_swings", "greenmoor"],
 	["plate_looks", "greenmoor"],
 	["caster_stats", "greenmoor"],
@@ -8663,7 +8664,7 @@ func _t_boss_camp_respawn() -> void:
 	var z: Zone = get_parent().zone
 	var boss_at := Vector3.INF
 	for sp: Node in z.get_children():
-		if sp is SpawnPoint and (sp as SpawnPoint).pool.has("grolthar"):
+		if sp is SpawnPoint and ((sp as SpawnPoint).pool.has("grolthar") or (sp as SpawnPoint).rare == "grolthar"):
 			boss_at = (sp as SpawnPoint).position
 	var rows := PackedStringArray()
 	var far_ok := true
@@ -8673,8 +8674,8 @@ func _t_boss_camp_respawn() -> void:
 		for c: Node in z.get_children():
 			if c is SpawnPoint and (c as SpawnPoint).pool == entry["pool"] and is_equal_approx((c as SpawnPoint).position.x, float(entry["pos"][0])) and is_equal_approx((c as SpawnPoint).position.z, float(entry["pos"][1])):
 				sp = c
-		if sp == null:
-			continue
+		if sp == null or sp.rare != "":
+			continue  # a rare spawn's spot (SpawnPoint.rare) keeps its own, quicker time
 		var d := Vector2(sp.position.x - boss_at.x, sp.position.z - boss_at.z).length()
 		if d <= 28.0 and not sp.pool.has("grolthar"):
 			rows.append("%s %.0f -> %.0f" % [",".join(sp.pool.keys()), float(entry.get("respawn", 60)), sp.respawn_time])
@@ -8847,6 +8848,59 @@ func _t_flats_views() -> void:
 	await _zone_views("mirror_flats", [[Vector2(10, 330), Vector2(0, 0), "from_entry"], [Vector2(-20, -20), Vector2(-60, -60), "glasswater"],
 			[Vector2(-200, 260), Vector2(-294, 198), "duneskiff"], [Vector2(330, 60), Vector2(200, -100), "east_shore"]])
 	World.time_override = -1.0
+
+
+## A quest boss's spot is a rare spawn: a placeholder from its camp, the named
+## one time in five (never more than 8 placeholders running), coming back five
+## times as fast; group bosses and finales stand always.
+func _t_rare_spawns() -> void:
+	var z: Zone = get_parent().zone
+	var sp: SpawnPoint = null
+	var rares := 0
+	for c in z.get_children():
+		if c is SpawnPoint and (c as SpawnPoint).rare != "":
+			rares += 1
+			print("rare_spawns:   %s <- %s every %.0f s" % [(c as SpawnPoint).rare, (c as SpawnPoint).pool, (c as SpawnPoint).respawn_time])
+			if (c as SpawnPoint).rare == "grolthar":
+				sp = c
+	if sp == null:
+		print("rare_spawns: FAIL no rare spot for Grolthar")
+		return
+	var entry_respawn := 0.0
+	for e: Dictionary in z.data["spawns"]:
+		if (e["pool"] as Dictionary).has("grolthar"):
+			entry_respawn = float(e.get("respawn", 60))
+	SpawnPoint.always_rare = false
+	var named := 0
+	var streak := 0
+	var worst := 0
+	var placeholders := {}
+	for i in 1000:
+		if sp.mob != null and is_instance_valid(sp.mob):
+			sp.mob.free()
+		sp.mob = null
+		sp.spawn()
+		if sp.mob.mob_id == "grolthar":
+			named += 1
+			streak = 0
+		else:
+			placeholders[sp.mob.mob_id] = true
+			streak += 1
+			worst = maxi(worst, streak)
+	SpawnPoint.always_rare = true
+	sp.mob.free()
+	sp.mob = null
+	sp.spawn()  # Grolthar back where the other checks look for him
+	print("rare_spawns: %d rare spots in Thornwood; Grolthar's placeholders %s, respawn %.0f -> %.0f s" % [rares, placeholders.keys(), entry_respawn, sp.respawn_time])
+	print("rare_spawns: named %.0f%% of 1000 spawns, at most %d placeholders in a row" % [named / 10.0, worst])
+	var always := []
+	for f in ["vayukeths_step", "timirajs_table"]:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/zones/%s.json" % f))
+		for e: Dictionary in d["spawns"]:
+			for id: String in e["pool"]:
+				if id in ["fallen_breath", "morcant_the_uninvited"] or GameData.mobs[id].has("min_players"):
+					always.append(id)
+	print("rare_spawns: always up: %s (always_up %s, min_players %s)" % [always, GameData.mobs["fallen_breath"].get("always_up", false), always.any(func(id: String) -> bool: return GameData.mobs[id].has("min_players"))])
 
 
 ## Squawkzilla, the angry gull, stands by Mirror-Scholar Queenie (once Anouk)
