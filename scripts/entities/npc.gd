@@ -54,6 +54,8 @@ var _pester_turn := 1.0  # which way round it's going
 var _pester_dive := 0.0  # seconds left of a dive at its mark
 var _pester_next := 4.0  # till the next dive
 var _pester_line := 8.0  # till it next says something to those nearby
+var _perch_left := 0.0  # landed for this long ("sitting": a creature's sit clips are its landing)
+var _perch_next := 25.0  # till it next lands
 
 
 func setup(id: String, name_override := "") -> void:
@@ -259,6 +261,9 @@ func greet(who: Entity) -> void:
 func _process(delta: float) -> void:
 	if _mark != null:
 		_update_mark(delta)
+	if data.has("pester") and data.has("name_height"):  # landed, the name comes down with it
+		var h := float(data["name_height"]) * (0.6 if sitting else 1.0)
+		nameplate.position.y = move_toward(nameplate.position.y, h, delta * 2.0)
 	if (grove_deity != "" or quest_gated or data.has("prop_after")) and World.local_player != null:
 		_sight_check -= delta
 		if _sight_check <= 0.0:
@@ -303,6 +308,8 @@ func _physics_process(delta: float) -> void:
 		move = _think(delta)
 	if not patrol.is_empty() and not auto_attack:
 		speed = float(guard.get("walk_speed", 2.0))
+	if data.has("pester") and auto_attack:
+		sitting = false  # up off the ground to fight
 	if data.has("pester") and not auto_attack:
 		speed = float(data["pester"].get("speed", 4.5)) * (1.6 if _pester_dive > 0.0 else 1.0)
 	if walk_to != Vector3.INF and not dead:  # on its way out: walks to the door and is gone
@@ -462,7 +469,8 @@ func _companion_foe(lead: Player) -> Mob:
 
 ## "pester" ({npc, radius, speed, lines}): it runs rings round another npc,
 ## the way it likes, now and then diving in to peck at them (they flinch and
-## turn on it), and every so often one of its "lines" goes out to everyone
+## turn on it), landing beside them every half minute or so (and whenever
+## someone talks to it: its "sit" clips are the landing), and every so often one of its "lines" goes out to everyone
 ## within earshot ({gull} and {mark} are their names). Quiet while you talk
 ## to it; a fight comes first.
 func _pester(delta: float) -> Vector3:
@@ -475,9 +483,23 @@ func _pester(delta: float) -> Vector3:
 				_pester_mark = c
 		if _pester_mark == null:
 			return nav_dir(_post, delta) if _flat(global_position, _post) > 0.8 else Vector3.ZERO
-	if _face_timer > 0.0:
+	if _face_timer > 0.0:  # someone's talking to it: it lands, and stays down a moment after
+		_perch_left = maxf(_perch_left, 2.0)
+		sitting = true
 		return Vector3.ZERO
 	var m := _pester_mark
+	if _perch_left > 0.0:  # landed: glaring about, till it takes off again
+		_perch_left -= delta
+		if _perch_left <= 0.0:
+			sitting = false
+			_perch_next = randf_range(25.0, 45.0)
+		return Vector3.ZERO
+	_perch_next -= delta
+	if _perch_next <= 0.0 and _pester_dive <= 0.0:
+		_perch_left = randf_range(6.0, 12.0)
+		sitting = true
+		face_toward(m.global_position)
+		return Vector3.ZERO
 	var to_me := Vector3(global_position.x - m.global_position.x, 0, global_position.z - m.global_position.z)
 	_pester_line -= delta
 	if _pester_dive > 0.0:  # in at them

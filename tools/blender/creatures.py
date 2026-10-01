@@ -16233,12 +16233,43 @@ def build_giant_gull():
 					  "wing_l": {"rot": (0, 30 * flap * wave(t, 3) - 58 * g, 0)}, "wing_r": {"rot": (0, -30 * flap * wave(t, 3) - 66 * g, 0)},
 					  "tip_l": {"rot": (0, -14 * g, 0)}, "tip_r": {"rot": (0, -8 * g, 0)}, "tail": {"rot": (10 * g, 0, 20 * g)}})
 
+	DROP = H - 0.5   # down onto its feet: the body hangs this far above them in flight
+
+	def perched(head_yaw=0.0, bob=0.0, fold=1.0):
+		return {"root": {"loc": (0, 0, -DROP * fold + bob)}, "body": {"rot": (8 * fold, 0, 0)},
+				"legs": {"rot": (-20 + 52 * fold, 0, 0)}, "tail": {"rot": (-6 * fold, 0, 0)},
+				"head": {"rot": (0, 0, head_yaw)},
+				"wing_l": {"rot": (0, 8 * fold, 80 * fold)}, "wing_r": {"rot": (0, -8 * fold, -80 * fold)},   # folded back along its sides
+				"tip_l": {"rot": (0, 0, 24 * fold)}, "tip_r": {"rot": (0, 0, -24 * fold)}}   # the black tips crossed over the tail
+
+	def sit(t):   # landed (Squawkzilla, now and then): stands, glares one way and the other, ruffles once
+		yaw = seq(t, [(0, 0), (0.15, 34), (0.4, 34), (0.5, -30), (0.75, -30), (0.85, 0)])
+		ruffle = seq(t, [(0.86, 0), (0.9, 1), (0.95, 0)])
+		return merge(perched(yaw, 0.01 * wave(t, 3)), {"neck": {"rot": (-6 * ruffle, 0, 0)},
+					 "wing_l": {"rot": (0, 10 * ruffle, 0)}, "wing_r": {"rot": (0, -10 * ruffle, 0)}, "tail": {"rot": (0, 0, 8 * wave(t, 8) * ruffle)}})
+
+	def sit_down(t):   # wings flared, it drops, its feet come down, and it folds up
+		k = seq(t, [(0, 0), (0.7, 1)])
+		fold = seq(t, [(0.6, 0), (1, 1)])
+		flap = (1 - fold) * (34 * wave(t, 3) + 20)
+		pose = perched(0.0, 0.08 * math.sin(math.pi * k), 1.0)
+		pose["root"]["loc"] = (0, 0, -DROP * k + 0.08 * math.sin(math.pi * k))
+		pose["body"]["rot"] = (8 * k - 10 * (1 - k), 0, 0)
+		pose["legs"]["rot"] = (-20 + 52 * k, 0, 0)
+		pose["wing_l"]["rot"] = (0, flap + 8 * fold, 80 * fold)
+		pose["wing_r"]["rot"] = (0, -flap - 8 * fold, -80 * fold)
+		pose["tip_l"]["rot"] = (0, flap * 0.5, 24 * fold)
+		pose["tip_r"]["rot"] = (0, -flap * 0.5, -24 * fold)
+		return pose
+
 	clip(arm, "idle", 2.4, idle, True)
 	clip(arm, "walk", 1.0, walk, True)
 	clip(arm, "run", 0.6, run, True)
 	clip(arm, "attack", 0.8, attack, False)
 	clip(arm, "hit", 0.4, hit, False)
 	clip(arm, "death", 1.3, death, False)
+	clip(arm, "sit_down", 1.0, sit_down, False)
+	clip(arm, "sit", 4.0, sit, True)
 	return arm
 
 

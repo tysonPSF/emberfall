@@ -8892,6 +8892,18 @@ func _t_squawkzilla() -> void:
 		if i == 40 or i == 100:
 			await _shot("9zw_squawkzilla_%d" % i)
 	print("squawkzilla: circled %.1f turns in 15 s, %.1f to %.1f m from her" % [swept / TAU, nearest, farthest])
+	# he lands now and then, and when hailed
+	gull._perch_next = 0.0
+	await _wait(1.5)
+	var landed := gull.sitting
+	var still := gull.velocity.length() < 0.1
+	await _shot("9zw_squawkzilla_landed")
+	gull._perch_left = 0.5
+	await _wait(1.0)
+	var flew := not gull.sitting
+	gull.greet(World.local_player)
+	await _wait(0.5)
+	print("squawkzilla: landed %s (still %s), took off %s, lands when hailed %s" % [landed, still, flew, gull.sitting])
 	World.time_override = -1.0
 
 
