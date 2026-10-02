@@ -153,6 +153,7 @@ const SECTIONS := [
 	["pathcallers", "emberhold"],
 	["look_controls", "greenmoor"],
 	["forge_weapons", "greenmoor"],
+	["map_zoom", "thornwood"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10868,3 +10869,36 @@ func _t_forge_weapons() -> void:
 	await _shot("9zz_forge_staff")
 	print("forge_weapons: %d weapons, all on their own models and swings %s %s, all load %s %s; the arrow flies as %s; worn: %s" % [want.size(),
 			wrong.is_empty(), wrong, unloaded.is_empty(), unloaded, arrow.get_file(), p.look.get("weapon", "")])
+
+
+## The map zooms back out after a quest click closes it in: its buttons, the
+## zoom keys, a trackpad's scroll and pinch, and "Whole zone".
+func _t_map_zoom() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var map = main.hud._map
+	map.visible = true
+	map._prepare()
+	var whole: float = map._zone.size - 50.0  # the land inside the mountains
+	map._span = 160.0  # as a quest click leaves it
+	map._zoom(1.25, map._canvas.size * 0.5)
+	var button_out: float = map._span
+	var key := InputEventAction.new()
+	key.action = "zoom_out"
+	key.pressed = true
+	map._input(key)
+	var key_out: float = map._span
+	var pan := InputEventPanGesture.new()
+	pan.delta = Vector2(0, 2)
+	map._canvas_input(pan)
+	var pan_out: float = map._span
+	var pinch := InputEventMagnifyGesture.new()
+	pinch.factor = 1.5
+	map._canvas_input(pinch)
+	var pinch_in: float = map._span
+	map._whole_view()
+	var back: float = map._span
+	await _shot("9zz_map_whole")
+	map.visible = false
+	print("map_zoom: from 160 m the - button %.0f, the - key %.0f, a trackpad scroll %.0f, a pinch in %.0f; Whole zone back to %.0f (the zone %.0f) %s" % [button_out,
+			key_out, pan_out, pinch_in, back, whole, is_equal_approx(back, whole)])

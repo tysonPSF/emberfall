@@ -72,6 +72,17 @@ func _init() -> void:
 	_title = UIKit.label("", 17, UIKit.GOLD)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(_title)
+	for z: Array in [["-", 1.25, "Zoom out (wheel, pinch, or the - key)"], ["+", 0.8, "Zoom in (wheel, pinch, or the = key)"]]:
+		var zb := UIKit.button(z[0], Vector2(24, 22))
+		zb.tooltip_text = z[2]
+		var f: float = z[1]
+		zb.pressed.connect(func() -> void: _zoom(f, _canvas.size * 0.5))
+		head.add_child(zb)
+	var whole := UIKit.button("Whole zone", Vector2(0, 22))
+	whole.add_theme_font_size_override("font_size", 12)
+	whole.tooltip_text = "Back out to the whole zone"
+	whole.pressed.connect(_whole_view)
+	head.add_child(whole)
 	var close := UIKit.button("x", Vector2(24, 22))
 	close.pressed.connect(func() -> void: visible = false)
 	head.add_child(close)
@@ -147,11 +158,7 @@ func _prepare() -> void:
 		_load_fog(z.zone_id)
 		_fog_dirty = true
 		_build_marks(z)
-		_center = Vector2.ZERO
-		var city := str(z.zone_id).ends_with("hold")
-		_span = (z.size - 50.0) * (0.55 if city else 1.0)  # the land inside the mountains; a town closer in
-		if city:
-			_center = Vector2(player.global_position.x, player.global_position.z)
+		_whole_view()
 	var areas := QuestHints.open_areas(player, z.zone_id)
 	if areas != _areas:  # quests taken up or finished since: the circles and the legend follow
 		_areas = areas
@@ -174,6 +181,37 @@ func focus_area(quest_id: String, item_id: String) -> bool:
 			return true
 	visible = false
 	return false
+
+
+## The whole zone in view: the land inside the mountains, a town closer in round you.
+func _whole_view() -> void:
+	if _zone == null:
+		return
+	var city := str(_zone.zone_id).ends_with("hold")
+	_span = (_zone.size - 50.0) * (0.55 if city else 1.0)
+	_center = Vector2(player.global_position.x, player.global_position.z) if city and player != null else Vector2.ZERO
+	_area_focus = -1
+	_build_marks(_zone)
+	_canvas.queue_redraw()
+
+
+## Zooms by factor (under 1 closer in) keeping the point at `at` (canvas pixels) where it is.
+func _zoom(factor: float, at: Vector2) -> void:
+	if _zone == null:
+		return
+	var before := _to_world(at)
+	_span = clampf(_span * factor, 60.0, _zone.size)
+	_center += before - _to_world(at)
+	_canvas.queue_redraw()
+
+
+## The zoom keys zoom the map while it's open, not the camera behind it.
+func _input(ev: InputEvent) -> void:
+	if not visible or _zone == null or get_viewport().gui_get_focus_owner() is LineEdit:  # typing = or - in the chat
+		return
+	if ev.is_action_pressed("zoom_in", true) or ev.is_action_pressed("zoom_out", true):
+		_zoom(0.8 if ev.is_action_pressed("zoom_in", true) else 1.25, _canvas.size * 0.5)
+		get_viewport().set_input_as_handled()
 
 
 func _show_area(i: int) -> void:
@@ -619,16 +657,23 @@ func _canvas_input(ev: InputEvent) -> void:
 	if ev is InputEventMouseButton and (ev as InputEventMouseButton).pressed:
 		var mb := ev as InputEventMouseButton
 		if mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:  # zoom toward the mouse
-			var before := _to_world(mb.position)
-			_span = clampf(_span * (0.8 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.25), 60.0, _zone.size)
-			_center += before - _to_world(mb.position)
-			_canvas.queue_redraw()
+			_zoom(0.8 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.25, mb.position)
 			_canvas.accept_event()
 			return
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			_dragging = true
 	if ev is InputEventMouseButton and not (ev as InputEventMouseButton).pressed and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 		_dragging = false
+	if ev is InputEventMagnifyGesture:  # a trackpad pinch
+		_zoom(1.0 / maxf((ev as InputEventMagnifyGesture).factor, 0.01), (ev as InputEventMagnifyGesture).position)
+		_canvas.accept_event()
+		return
+	if ev is InputEventPanGesture:  # a trackpad's two-finger scroll, as a wheel would
+		var dy := (ev as InputEventPanGesture).delta.y
+		if absf(dy) > 0.01:
+			_zoom(pow(1.25, clampf(dy, -2.0, 2.0) * 0.5), (ev as InputEventPanGesture).position)
+		_canvas.accept_event()
+		return
 	if ev is InputEventMouseMotion and _dragging:  # drag to pan
 		_center -= (ev as InputEventMouseMotion).relative * _span / VIEW
 		_canvas.queue_redraw()
