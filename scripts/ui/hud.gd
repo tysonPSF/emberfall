@@ -150,7 +150,7 @@ var _bank_guild_tab := false
 var _gbank_box: VBoxContainer
 var _gbank_grid: GridContainer
 var _gbank_coin_label: Label
-var _gbank_take: Button
+var _gbank_take: HBoxContainer  # the guild bank's Take out buttons
 var _gbank_log: RichTextLabel
 var _service_npc: Npc
 
@@ -2587,20 +2587,71 @@ func _build_service_window() -> void:
 	_bank_box.add_child(_bank_grid)
 	_bank_coin_label = UIKit.label("", 13, UIKit.GOLD)
 	_bank_box.add_child(_bank_coin_label)
-	var coin_row := HBoxContainer.new()
-	var dep := UIKit.button("Deposit all coin")
-	dep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	dep.pressed.connect(func() -> void: World.request_bank_coin(player.entity_id, player.coin))
-	var wd := UIKit.button("Withdraw all coin")
-	wd.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	wd.pressed.connect(func() -> void: World.request_bank_coin(player.entity_id, -player.bank_coin))
-	coin_row.add_child(dep)
-	coin_row.add_child(wd)
-	_bank_box.add_child(coin_row)
+	_coin_mover(_bank_box, func(amount: int) -> void: World.request_bank_coin(player.entity_id, amount),
+			func() -> int: return player.coin, func() -> int: return player.bank_coin, "Deposit", "Withdraw")
 	var done := UIKit.button("Done")
 	done.pressed.connect(func() -> void: World.request_service_close(player.entity_id))
 	v.add_child(done)
 	_service_panel.visible = false
+
+
+## Coin in and out of a bank: platinum, gold, silver and copper boxes for an
+## amount, buttons to move that much in or out, and to move all of it. move
+## takes the copper to move (out is negative); held and banked say how much
+## there is each side. Returns the row of "out" buttons (the guild's turns
+## them off for a plain member).
+func _coin_mover(box: VBoxContainer, move: Callable, held: Callable, banked: Callable, in_word: String, out_word: String) -> HBoxContainer:
+	var amounts := HBoxContainer.new()
+	amounts.add_theme_constant_override("separation", 4)
+	box.add_child(amounts)
+	var boxes: Array[SpinBox] = []
+	for k in 4:
+		var b := SpinBox.new()
+		b.min_value = 0
+		b.max_value = 99999 if k == 0 else 9
+		b.suffix = ["pp", "gp", "sp", "cp"][k]
+		b.custom_minimum_size.x = 60
+		b.tooltip_text = "How much to move: platinum, gold, silver, copper"
+		boxes.append(b)
+		amounts.add_child(b)
+	var amount := func() -> int:
+		return int(boxes[0].value) * 1000 + int(boxes[1].value) * 100 + int(boxes[2].value) * 10 + int(boxes[3].value)
+	var clear := func() -> void:
+		for b: SpinBox in boxes:
+			b.value = 0
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	box.add_child(row)
+	var outs := HBoxContainer.new()
+	outs.add_theme_constant_override("separation", 4)
+	outs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for spec: Array in [[in_word, 1, false], ["%s all" % in_word, 1, true]]:
+		var b := UIKit.button(spec[0], Vector2(0, 26))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.add_theme_font_size_override("font_size", 12)
+		var all: bool = spec[2]
+		b.tooltip_text = "Put all your coin in" if all else "Put the amount above in"
+		b.pressed.connect(func() -> void:
+			var n: int = held.call() if all else mini(amount.call(), held.call())
+			if n > 0:
+				move.call(n)
+			clear.call())
+		row.add_child(b)
+	row.add_child(outs)
+	for spec: Array in [[out_word, false], ["%s all" % out_word, true]]:
+		var b := UIKit.button(spec[0], Vector2(0, 26))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.add_theme_font_size_override("font_size", 12)
+		var all: bool = spec[1]
+		b.tooltip_text = "Take all the coin out" if all else "Take the amount above out"
+		b.set_meta("tip", b.tooltip_text)
+		b.pressed.connect(func() -> void:
+			var n: int = banked.call() if all else mini(amount.call(), banked.call())
+			if n > 0:
+				move.call(-n)
+			clear.call())
+		outs.add_child(b)
+	return outs
 
 
 ## The guild bank's side of the bank window: its 40 slots ("gk:<n>"), its
@@ -2614,16 +2665,8 @@ func _build_guild_bank_box(v: VBoxContainer) -> void:
 	_gbank_box.add_child(_gbank_grid)
 	_gbank_coin_label = UIKit.label("", 13, UIKit.GOLD)
 	_gbank_box.add_child(_gbank_coin_label)
-	var coin_row := HBoxContainer.new()
-	var put := UIKit.button("Put in all coin")
-	put.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	put.pressed.connect(func() -> void: World.request_guild_bank_coin(player.entity_id, player.coin))
-	_gbank_take = UIKit.button("Take all coin")
-	_gbank_take.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_gbank_take.pressed.connect(func() -> void: World.request_guild_bank_coin(player.entity_id, -int(player.guild_bank.get("bank_coin", 0))))
-	coin_row.add_child(put)
-	coin_row.add_child(_gbank_take)
-	_gbank_box.add_child(coin_row)
+	_gbank_take = _coin_mover(_gbank_box, func(amount: int) -> void: World.request_guild_bank_coin(player.entity_id, amount),
+			func() -> int: return player.coin, func() -> int: return int(player.guild_bank.get("bank_coin", 0)), "Put in", "Take out")
 	_gbank_box.add_child(UIKit.label("Recent", 12, UIKit.DIM))
 	_gbank_log = RichTextLabel.new()
 	_gbank_log.custom_minimum_size = Vector2(330, 90)
@@ -2640,8 +2683,9 @@ func _refresh_guild_bank() -> void:
 			_gbank_grid.add_child(_make_slot("gk:%d" % i, "", 38))
 	var can := bool(view.get("can_withdraw", false))
 	_gbank_coin_label.text = "In the guild bank: %s" % _coin_text(int(view.get("bank_coin", 0)))
-	_gbank_take.disabled = not can
-	_gbank_take.tooltip_text = "" if can else "Only officers and the leader can take coin out."
+	for b: Button in _gbank_take.get_children():
+		b.disabled = not can
+		b.tooltip_text = str(b.get_meta("tip")) if can else "Only officers and the leader can take coin out."
 	_service_hint.text = "%s's bank. Everyone can put things in (click a slot with an item held, or shift-click it in your bags)%s." % [view.get("name", "Your guild"),
 			"; click a slot to take it out" if can else "; officers and the leader take things out"]
 	_gbank_log.clear()

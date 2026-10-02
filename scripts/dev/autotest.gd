@@ -157,6 +157,7 @@ const SECTIONS := [
 	["living_roots", "greenmoor"],
 	["blow_verbs", "greenmoor"],
 	["repeat_quests", "greenmoor"],
+	["bank_coin_amounts", "emberhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11075,3 +11076,38 @@ func _t_repeat_quests() -> void:
 
 func main_hud() -> Node:
 	return get_parent().hud
+
+
+## Both banks move as much coin as you type (platinum, gold, silver, copper),
+## never more than there is, or all of it.
+func _t_bank_coin_amounts() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud = main.hud
+	var banker: Npc = _npcs()["banker_odile"]
+	_stand_by(p, banker)
+	World.request_interact(p.entity_id)
+	await _wait(0.3)
+	p.coin = 5000
+	p.bank_coin = 0
+	var amounts: HBoxContainer = hud._bank_box.get_child(hud._bank_box.get_child_count() - 2)
+	var buttons: HBoxContainer = hud._bank_box.get_child(hud._bank_box.get_child_count() - 1)
+	var boxes := amounts.get_children()
+	(boxes[0] as SpinBox).value = 1  # 1 platinum, 2 gold, 3 copper: 1203
+	(boxes[1] as SpinBox).value = 2
+	(boxes[3] as SpinBox).value = 3
+	(buttons.get_child(0) as Button).pressed.emit()  # Deposit
+	var after_in := [p.coin, p.bank_coin, (boxes[0] as SpinBox).value]
+	(boxes[1] as SpinBox).value = 5
+	var outs: HBoxContainer = buttons.get_child(2)
+	(outs.get_child(0) as Button).pressed.emit()  # Withdraw 500
+	var after_out := [p.coin, p.bank_coin]
+	(boxes[0] as SpinBox).value = 9  # more than is banked: only what's there
+	(outs.get_child(0) as Button).pressed.emit()
+	var capped := [p.coin, p.bank_coin]
+	(buttons.get_child(1) as Button).pressed.emit()  # Deposit all
+	var all_in := [p.coin, p.bank_coin]
+	await _shot("9zz_bank_coin")
+	World.request_service_close(p.entity_id)
+	print("bank_coin_amounts: typed 1pp 2gp 3cp, Deposit -> pack %d bank %d (boxes cleared %s); Withdraw 5gp -> %s; Withdraw 9pp with less banked -> %s; Deposit all -> %s" % [
+			after_in[0], after_in[1], after_in[2] == 0, after_out, capped, all_in])
