@@ -158,6 +158,7 @@ const SECTIONS := [
 	["blow_verbs", "greenmoor"],
 	["repeat_quests", "greenmoor"],
 	["bank_coin_amounts", "emberhold"],
+	["compare_slots", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11105,9 +11106,43 @@ func _t_bank_coin_amounts() -> void:
 	(boxes[0] as SpinBox).value = 9  # more than is banked: only what's there
 	(outs.get_child(0) as Button).pressed.emit()
 	var capped := [p.coin, p.bank_coin]
+	(boxes[1] as SpinBox).get_line_edit().grab_focus()
+	(boxes[1] as SpinBox).get_line_edit().text = "3"  # typed, never entered
+	(buttons.get_child(0) as Button).pressed.emit()
+	var typed := [p.coin, p.bank_coin]
 	(buttons.get_child(1) as Button).pressed.emit()  # Deposit all
 	var all_in := [p.coin, p.bank_coin]
 	await _shot("9zz_bank_coin")
 	World.request_service_close(p.entity_id)
-	print("bank_coin_amounts: typed 1pp 2gp 3cp, Deposit -> pack %d bank %d (boxes cleared %s); Withdraw 5gp -> %s; Withdraw 9pp with less banked -> %s; Deposit all -> %s" % [
-			after_in[0], after_in[1], after_in[2] == 0, after_out, capped, all_in])
+	print("bank_coin_amounts: typed 1pp 2gp 3cp, Deposit -> pack %d bank %d (boxes cleared %s); Withdraw 5gp -> %s; Withdraw 9pp with less banked -> %s; typed 3 gold without Enter, Deposit -> %s; Deposit all -> %s" % [
+			after_in[0], after_in[1], after_in[2] == 0, after_out, capped, typed, all_in])
+
+
+## Gear with two places to go compares against both: a ring against each ring,
+## a one-handed weapon against the main hand and (dual wielding) the off hand.
+func _t_compare_slots() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var hud = main.hud
+	var keep := [p.char_class, p.level, p.equipment.duplicate()]
+	p.equipment["ring1"] = "copper_band"
+	p.equipment["ring2"] = "tarnished_ring"
+	var ring_lines: Array = hud._compare_lines("tarnished_ring@fine", false)
+	p.equipment.erase("ring2")
+	var one_ring: Array = hud._compare_lines("tarnished_ring@fine", false)
+	p.char_class = "warrior"
+	p.level = 20
+	p.equipment["primary"] = "rusty_short_sword"
+	p.equipment["secondary"] = "iron_dagger"
+	var dual: Array = hud._compare_lines("roots_shortsword~20", false)
+	p.char_class = "wizard"
+	var single: Array = hud._compare_lines("roots_shortsword~20", false)
+	p.char_class = keep[0]
+	p.level = keep[1]
+	p.equipment = keep[2]
+	p.recalc_stats()
+	var heads := func(lines: Array) -> Array: return lines.filter(func(l: String) -> bool: return l.begins_with("Compared"))
+	print("compare_slots: a ring with two worn -> %s" % [ring_lines.filter(func(l: String) -> bool: return l != "")])
+	print("compare_slots: one ring slot empty -> %s" % [heads.call(one_ring)])
+	print("compare_slots: a warrior dual wielding, a new shortsword -> %s" % [dual.filter(func(l: String) -> bool: return l != "")])
+	print("compare_slots: a wizard (no dual wield) -> %s" % [heads.call(single)])

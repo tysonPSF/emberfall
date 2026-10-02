@@ -1674,7 +1674,11 @@ func _build_trade_window() -> void:
 	var row := HBoxContainer.new()
 	_trade_give = UIKit.button("Give")
 	_trade_give.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_trade_give.pressed.connect(func() -> void: World.request_trade_give(player.entity_id))
+	_trade_give.pressed.connect(func() -> void:
+		for box: SpinBox in _trade_coin_boxes:
+			if box.get_line_edit().has_focus():
+				box.apply()  # coin being typed but not yet entered goes in first (its change is sent before the Trade)
+		World.request_trade_give(player.entity_id))
 	var cancel := UIKit.button("Cancel")
 	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cancel.pressed.connect(func() -> void: World.request_trade_cancel(player.entity_id))
@@ -2615,6 +2619,9 @@ func _coin_mover(box: VBoxContainer, move: Callable, held: Callable, banked: Cal
 		boxes.append(b)
 		amounts.add_child(b)
 	var amount := func() -> int:
+		for b: SpinBox in boxes:
+			if b.get_line_edit().has_focus():
+				b.apply()  # what's being typed but not yet entered (the buttons don't take the focus, so it's never committed)
 		return int(boxes[0].value) * 1000 + int(boxes[1].value) * 100 + int(boxes[2].value) * 10 + int(boxes[3].value)
 	var clear := func() -> void:
 		for b: SpinBox in boxes:
@@ -4183,50 +4190,58 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 const COMPARE_STATS := ["dmg", "delay", "ac", "hp", "mana", "str", "sta", "agi", "wis", "int", "haste", "hp_regen", "mana_regen"]
 
 
-## An item against what you wear in its slot: [what it's compared with,
-## [[change text, better?], ...]], or [] when there's nothing to compare (not
-## wearable, or it's what you're wearing). Rings compare with an empty ring
-## slot if you have one, else your first ring.
-func _comparison(item_id: String) -> Array:
+## An item against what you wear in each slot it could go in: [[what it's
+## compared with, [[change text, better?], ...]], ...]; [] when there's nothing
+## to compare (not wearable, or it's what you're wearing). A ring against each
+## ring (or an empty ring slot); a one-handed weapon against the main hand and,
+## if you can dual wield, the off hand, at the damage an off hand deals.
+func _comparisons(item_id: String) -> Array:
 	var it := GameData.item(item_id)
 	var slot := str(it.get("slot", ""))
 	if slot == "" or player == null or item_id in player.equipment.values():
 		return []
 	var slots: Array = World.SLOT_FITS.get(slot, [slot])
-	var worn_id := ""
+	if slot == "primary" and World.offhand_weapon(item_id) and World.skill_cap(player, "dual_wield") > 0:
+		slots = ["primary", "secondary"]
+	var out: Array = []
 	for sl: String in slots:
-		if not player.equipment.has(sl):
-			worn_id = ""
-			break
-		if worn_id == "":
-			worn_id = str(player.equipment[sl])
-	var worn := GameData.item(worn_id) if worn_id != "" else {}
-	var rows: Array = []
-	for stat: String in COMPARE_STATS:
-		var a := float(it.get(stat, 0))
-		var b := float(worn.get(stat, 0))
-		if stat == "delay" and (a == 0.0 or b == 0.0):
-			continue  # delay only means something weapon to weapon
-		var d := a - b
-		if absf(d) < 0.001:
-			continue
-		var text := "Delay %+.1fs" % d if stat == "delay" else "%s %+d%s" % [ATTR_NAMES.get(stat, stat.to_upper()), roundi(d), "%" if stat == "haste" else ""]
-		rows.append([text, d < 0.0 if stat == "delay" else d > 0.0])  # a shorter delay swings faster
-	var what := "your " + str(worn["name"]) if worn_id != "" else "an empty %s slot" % _slot_label(str(slots[0])).to_lower()
-	return [what, rows]
+		var worn_id := str(player.equipment.get(sl, ""))
+		var worn := GameData.item(worn_id) if worn_id != "" else {}
+		var off := sl == "secondary" and slot == "primary"  # this weapon in the off hand
+		var rows: Array = []
+		for stat: String in COMPARE_STATS:
+			var a := float(it.get(stat, 0))
+			var b := float(worn.get(stat, 0))
+			if stat == "delay" and (a == 0.0 or b == 0.0):
+				continue  # delay only means something weapon to weapon
+			if stat == "dmg" and off:
+				a *= World.OFFHAND_DAMAGE  # the off hand hits for less, whatever it holds
+				if str(worn.get("slot", "")) == "primary":
+					b *= World.OFFHAND_DAMAGE
+			var d := a - b
+			if absf(d) < 0.001 or (stat == "dmg" and absf(d) < 0.5):
+				continue
+			var text := "Delay %+.1fs" % d if stat == "delay" else "%s %+d%s" % [ATTR_NAMES.get(stat, stat.to_upper()), roundi(d), "%" if stat == "haste" else ""]
+			rows.append([text, d < 0.0 if stat == "delay" else d > 0.0])  # a shorter delay swings faster
+		var where := ""
+		if slots.size() > 1:
+			where = " (%s)" % {"primary": "main hand", "secondary": "off hand", "ring1": "ring 1", "ring2": "ring 2"}.get(sl, sl)
+		var what := ("your " + str(worn["name"]) if worn_id != "" else "an empty %s slot" % _slot_label(sl).to_lower()) + where
+		out.append([what, rows])
+	return out
 
 
-## The comparison as tooltip lines (plain) or item-window text (gains green,
-## losses red).
+## The comparisons as tooltip lines (plain) or item-window text (gains green,
+## losses red): one line for each slot it could go in.
 func _compare_lines(item_id: String, colored := false) -> PackedStringArray:
-	var c := _comparison(item_id)
-	if c.is_empty():
-		return PackedStringArray()
-	var parts := PackedStringArray()
-	for row: Array in c[1]:
-		parts.append(("[color=#%s]%s[/color]" % ["8fe08f" if row[1] else "f07a6a", row[0]]) if colored else str(row[0]))
-	var head := ("[color=#%s]Compared to %s:[/color]" % [UIKit.GOLD.to_html(false), c[0]]) if colored else "Compared to %s:" % c[0]
-	return PackedStringArray(["", head, "  " + ("   ".join(parts) if not parts.is_empty() else "no change")])
+	var out := PackedStringArray()
+	for c: Array in _comparisons(item_id):
+		var parts := PackedStringArray()
+		for row: Array in c[1]:
+			parts.append(("[color=#%s]%s[/color]" % ["8fe08f" if row[1] else "f07a6a", row[0]]) if colored else str(row[0]))
+		var head := ("[color=#%s]Compared to %s:[/color]" % [UIKit.GOLD.to_html(false), c[0]]) if colored else "Compared to %s:" % c[0]
+		out.append_array(PackedStringArray(["", head, "  " + ("   ".join(parts) if not parts.is_empty() else "no change")]))
+	return out
 
 
 func _unhandled_input(event: InputEvent) -> void:
