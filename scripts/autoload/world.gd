@@ -4404,6 +4404,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	for quest_id: String in later:
 		if quest_done(p, quest_id):
 			lines.merge(later[quest_id], true)
+	key = _heard_as(npc, lines, key)
 	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
@@ -4441,6 +4442,28 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	var bless: Dictionary = npc.data.get("blesses", {})
 	if not bless.is_empty() and key == str(bless.get("keyword", "blessing")):
 		_shrine_blessing(p, npc, bless)
+
+
+## What an npc makes of what you said: the word itself when they know it, else
+## the longest word they do know said whole inside it, so a link or a phrase
+## names its keyword ("[Slag hounds]" is "hounds", "Old Frostjaw" is
+## "frostjaw", "tell me about the smelter" is "smelter"). Known words: their
+## dialogue's, their quests' start words, bind, return and their blessing's.
+func _heard_as(npc: Npc, lines: Dictionary, key: String) -> String:
+	var known: Array = lines.keys().filter(func(k: String) -> bool: return k != "unknown")
+	for q: Dictionary in GameData.quests.values():
+		if (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and q.has("start_keyword"):
+			known.append(str(q["start_keyword"]))
+	known.append_array(["bind", "return", str(npc.data.get("blesses", {}).get("keyword", "blessing"))])
+	if key in known:
+		return key
+	var words := " " + key.replace(",", " ").replace(".", " ").replace("?", " ").replace("!", " ").replace("'", " ") + " "
+	var best := ""
+	for k: Variant in known:
+		var w := str(k).to_lower()
+		if w != "" and w != "hail" and words.contains(" " + w + " ") and w.length() > best.length():
+			best = w
+	return best if best != "" else key
 
 
 ## A shrine's priest blesses followers of their god ("blesses" in npcs.json:

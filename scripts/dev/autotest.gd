@@ -148,6 +148,7 @@ const SECTIONS := [
 	["cinderpass_hubs", "cinderpass"],
 	["lava_bridges", "cinderpass"],
 	["guard_strength", "emberhold"],
+	["talk_phrases", "cinderpass"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10198,6 +10199,22 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## A link or a phrase finds the npc's keyword inside it: Odalys's
+## "[Slag hounds]" starts her hounds quest, "[Old Clinkerjaw]" her Clinkerjaw one.
+func _t_talk_phrases() -> void:
+	var p := World.local_player
+	await _wait(0.5)
+	var odalys: Npc = _npcs()["cp_ventrunner_odalys"]
+	for q in ["cp_slag_hound_q", "cp_old_clinkerjaw_q"]:
+		p.quests.erase(q)
+	_stand_by(p, odalys)
+	World.request_say(p.entity_id, "Slag hounds")
+	World.request_say(p.entity_id, "Old Clinkerjaw")
+	await _wait(0.3)
+	print("talk_phrases: 'Slag hounds' -> hounds quest %s; 'Old Clinkerjaw' -> Clinkerjaw quest %s" % [
+			p.quests.get("cp_slag_hound_q", {}).get("active", false), p.quests.get("cp_old_clinkerjaw_q", {}).get("active", false)])
 
 
 ## Guards are an elite of their level (cap + 20): their damage, health and
