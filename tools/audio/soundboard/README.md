@@ -29,3 +29,14 @@ Still to do once picked: move the chosen takes into `sfx.py`'s SOUNDS, and have
 lands (`World.spell_fx`), picking the element from the spell's name and fx
 color (lightning/storm/shock, frost/ice/water, fire/flame/ember, wind/gale,
 shadow/death/soul, light/heal, stone/earth, poison/venom/nature).
+
+## Last Breaths: the creature deaths
+
+A second board (2026-10-01), `last_breaths.html`, published at
+https://claude.ai/artifact/4dsRcCGsnRKEqhRjGNJNZd: every `<voice>_death_<n>.wav`
+in `assets/sfx/` (served beside it as `sounds/<id>.wav`), with how many monsters
+use each voice, Keep / Change and a note per voice, and a table of about 44
+monsters whose names miss `data/sfx.json`'s word lists and so die in the wrong
+voice (mostly the humanoid fallback), each with a suggested voice. Tyson's marks
+save in its database, document `deaths/board` ({verdicts, notes, moves, general}).
+Moves become words (or a mob's own `"voice"`) in `data/sfx.json` / mobs.json.

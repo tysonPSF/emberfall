@@ -1,0 +1,215 @@
+<title>Emberfall Last Breaths</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{
+  --ground:#e4e6e3; --surface:#f3f4f1; --ink:#1d2321; --muted:#5b6561; --line:#c9cec9;
+  --blood:#8c2f2a; --keep:#2f6b4a; --keep-bg:#dcebe1; --change:#a4561b; --change-bg:#f4e2cf; --wave:#8a948f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --ground:#141716; --surface:#1c201f; --ink:#e5e8e5; --muted:#9aa49f; --line:#303735;
+  --blood:#d4645b; --keep:#7cc49b; --keep-bg:#1f3328; --change:#e39a5b; --change-bg:#3a2a1b; --wave:#5d6763;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --ground:#141716; --surface:#1c201f; --ink:#e5e8e5; --muted:#9aa49f; --line:#303735;
+  --blood:#d4645b; --keep:#7cc49b; --keep-bg:#1f3328; --change:#e39a5b; --change-bg:#3a2a1b; --wave:#5d6763;}
+body{background:var(--ground);color:var(--ink);font:16px/1.5 "Source Sans 3",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:32px 72px;display:flex;flex-direction:column;gap:40px}
+header{display:flex;flex-direction:column;gap:10px;max-width:68ch}
+h1{font:400 clamp(32px,5.5vw,48px)/1.05 "IM Fell English SC",Georgia,serif;margin:0;text-wrap:balance}
+h2{font:400 28px/1.15 "IM Fell English SC",Georgia,serif;margin:0;text-wrap:balance}
+p{margin:0}
+.lede{color:var(--muted)}
+.status{font:400 13px/1.4 "JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+.status.ok{color:var(--keep)}
+.tally{display:flex;flex-wrap:wrap;gap:8px 18px;font:400 13px/1.4 "JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+.tally b{color:var(--ink);font-weight:400}
+.section-head{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card.keep{border-color:var(--keep)} .card.change{border-color:var(--change)}
+.card-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.voice{font:400 24px/1 "IM Fell English SC",Georgia,serif}
+.count{font:400 12px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.desc{color:var(--muted);font-size:15px}
+.takes{display:flex;flex-direction:column;gap:8px}
+.take{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.play{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--blood);background:transparent;color:var(--blood);cursor:pointer;display:grid;place-items:center}
+.play:hover{background:color-mix(in srgb,var(--blood) 12%,transparent)}
+.play svg{width:16px;height:16px;fill:currentColor}
+canvas{width:100%;height:34px;display:block}
+.dur{font:400 12px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--muted);font-variant-numeric:tabular-nums}
+.game{align-self:flex-start;font:600 13px/1 "Source Sans 3",sans-serif;padding:8px 12px;border-radius:999px;border:1px solid var(--blood);color:var(--blood);background:transparent;cursor:pointer}
+.who{font-size:14px;color:var(--muted)}
+.who strong{color:var(--ink);font-weight:600}
+.verdict{display:flex;gap:6px}
+.chip{font:600 14px/1 "Source Sans 3",sans-serif;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"].k{background:var(--keep-bg);border-color:var(--keep);color:var(--keep)}
+.chip[aria-pressed="true"].c{background:var(--change-bg);border-color:var(--change);color:var(--change)}
+input[type=text],textarea,select{font:15px/1.4 "Source Sans 3",sans-serif;color:var(--ink);background:var(--ground);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical}
+.play:focus-visible,.chip:focus-visible,.game:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--blood);outline-offset:2px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 12px/1.2 "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.what{color:var(--muted)}
+td.now{font:400 13px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+td select{width:auto;min-width:130px}
+.mini{width:30px;height:30px}
+.mini svg{width:12px;height:12px}
+.cell-play{display:flex;gap:6px;align-items:center}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<div class="wrap">
+<header>
+  <h1>Last Breaths</h1>
+  <p class="lede">Every sound a creature makes when it dies in Emberfall today, grouped the way the game picks them: each monster has a voice, and each voice has one or two death sounds. The game plays one at random, nudged a little higher or lower in pitch each time; <em>Play like the game</em> does the same. Mark each one Keep or Change and say what bothers you. Your marks save as you go.</p>
+  <p class="status" id="status">Loading…</p>
+  <div class="tally" id="tally"></div>
+</header>
+<section style="display:flex;flex-direction:column;gap:16px">
+  <div class="section-head"><h2>The death sounds</h2><p class="lede">Ordered by how many monsters use each one.</p></div>
+  <div class="cards" id="cards"></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:16px">
+  <div class="section-head"><h2>In the wrong voice?</h2><p class="lede">These monsters are matched by words in their names, and these slipped through: most fall back to the humanoid grunt (a tiger dying like a man). I've suggested a voice for each; change any you disagree with, or pick <em>leave as is</em>. Play hears the suggested voice.</p></div>
+  <div class="table-wrap"><table><thead><tr><th>Monster</th><th>What it is</th><th>Now</th><th>Should die as</th><th></th></tr></thead><tbody id="suspects"></tbody></table></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+  <div class="section-head"><h2>Anything else</h2></div>
+  <label for="general" class="lede">General thoughts on how deaths should sound (a body hitting the ground, quieter cries, more variety…):</label>
+  <textarea id="general"></textarea>
+</section>
+</div>
+<script>
+const DATA = {"cards": [{"voice": "humanoid", "count": 148, "examples": ["a thick web", "a Hearth scout", "a restless pilgrim", "a Stonefist mudcaller", "a whiskerfolk brute", "a firehound", "a stone-singer", "an uninvited courtier"], "named": ["Rhagg the Scout Captain", "Captain Wren Blackwater", "the Living Forgeheart", "Morcant the Uninvited"], "desc": "The default: anyone the word lists don't catch. Two grunts, slowed to 0.85x and 0.8x.", "takes": [{"id": "humanoid_death_1", "seconds": 0.61}, {"id": "humanoid_death_2", "seconds": 0.81}]}, {"voice": "undead", "count": 66, "examples": ["a decaying skeleton", "a forsworn acolyte", "a brine-drowned miner", "a mirror image", "a charred corpse", "a smoke spirit", "a fog wraith", "an honored dead"], "named": ["Magus Rotfinger", "Foreman Dask", "Headwoman Ishani the Sunken", "the Pale Keeper"], "desc": "Skeletons, ghosts, wraiths, the drowned and spirits. A growl at 0.85x over a little stone rattle.", "takes": [{"id": "undead_death_1", "seconds": 1.18}]}, {"voice": "small", "count": 57, "examples": ["a large rat", "a wallow toad", "a bamboo viper", "a plague rat", "a canyon adder", "a delta toad", "a crag lizard", "a well-wisp"], "named": ["Coilback", "Old Pinchmud", "Gulmog the Bellower", "Old Bellows"], "desc": "Rats, snakes, toads, jackals, crabs, wisps. Two short creature squeaks.", "takes": [{"id": "small_death_1", "seconds": 0.45}, {"id": "small_death_2", "seconds": 0.29}]}, {"voice": "beast", "count": 56, "examples": ["a wild boar", "a young tiger", "a march wolf", "a rain panther", "a sea serpent", "a grass howler", "a fog-hound", "a hound of the Unlit"], "named": ["Old Bristleback", "Old Frostjaw", "Cindermaw", "Ashfang, Hound of the Last Charge"], "desc": "Wolves, cats, boars, drakes, crocodiles. A roar slowed to 0.8x, and a monster growl at 0.85x.", "takes": [{"id": "beast_death_1", "seconds": 0.98}, {"id": "beast_death_2", "seconds": 0.63}]}, {"voice": "bug", "count": 45, "examples": ["a veil of moth silk", "a duskwood spiderling", "a grain weevil", "a Blightmother broodling", "a thornback spider", "a giant scorpion", "a glass spider", "a giant moon moth"], "named": ["Glimmerwing", "the Silkmother Vyss", "the Eel-Mother", "the Great Moon Moth"], "desc": "Spiders, beetles, moths, swarms. One chitter at 0.85x.", "takes": [{"id": "bug_death_1", "seconds": 0.35}]}, {"voice": "stone", "count": 33, "examples": ["a stone guardian", "a salt-glass sentinel", "a fire elemental", "an obsidian drake", "a greater fire elemental", "a tempest elemental", "a temple guardian", "a divine construct"], "named": ["the Dawn Colossus", "the Weeping Storm", "the Cairn-King", "the Godforged Engine"], "desc": "Golems, gargoyles, guardians, elementals. Stones tumbling over a mining thud.", "takes": [{"id": "stone_death_1", "seconds": 0.85}]}, {"voice": "bird", "count": 26, "examples": ["a field crow", "a harpy", "a gorge griffon", "a roc", "a giant gull", "a giant eagle", "a moor harrier", "a bone vulture"], "named": ["Old Blackwing", "Stormcrest", "the Great Sky Ray", "Old Stormbarb"], "desc": "Birds, harpies, griffons, rocs. One scream, pitched up to 1.2x.", "takes": [{"id": "bird_death_1", "seconds": 0.68}]}, {"voice": "big", "count": 18, "examples": ["a feral fen troll", "a mountain yak", "a river troll", "a river hippo", "an ember giant", "an ember treant", "a cloud giant", "a star-giant"], "named": ["Chief Grukk Stonefist", "Gorrak Mudtooth", "Thane Korrok Emberhand", "Queen Brannagh of the Ember Court"], "desc": "Giants, trolls, ogres, yaks, hippos. One creature death cry at 0.9x.", "takes": [{"id": "big_death_1", "seconds": 0.74}]}, {"voice": "slime", "count": 11, "examples": ["a swamp leech", "a bog leech", "a rotfen lurker", "a spirit of the falls", "a water elemental", "a bog lurker", "a mudfolk digger", "a mangrove lurker"], "named": ["the Voice of the Falls", "Mud-Shaman Gloop", "Old Tanglefoot"], "desc": "Leeches, lurkers, mudfolk, water spirits. One wet squelch at 0.8x.", "takes": [{"id": "slime_death_1", "seconds": 0.56}]}, {"voice": "player", "count": 0, "examples": ["you", "other players"], "named": [], "desc": "When you or another player dies: a grunt at 0.8x and a soft body thud.", "takes": [{"id": "player_death_1", "seconds": 0.69}]}], "suspects": [{"id": "amberstripe", "name": "Amberstripe", "what": "tigress", "now": "humanoid", "suggest": "beast"}, {"id": "tw_saffronclaw", "name": "Saffronclaw", "what": "tigress", "now": "humanoid", "suggest": "beast"}, {"id": "tawnyjaw", "name": "Tawnyjaw the Man-Eater", "what": "grass stalker", "now": "humanoid", "suggest": "beast"}, {"id": "firehound_alpha", "name": "Ashmaw the Alpha", "what": "firehound", "now": "humanoid", "suggest": "beast"}, {"id": "firehound", "name": "firehound", "what": "", "now": "humanoid", "suggest": "beast"}, {"id": "cp_old_clinkerjaw", "name": "Old Clinkerjaw", "what": "slag hound", "now": "humanoid", "suggest": "beast"}, {"id": "whitemaw", "name": "Old Whitemaw", "what": "fog-hound", "now": "humanoid", "suggest": "beast"}, {"id": "nightjaw", "name": "Nightjaw, First Hound of Timiraj", "what": "hound", "now": "humanoid", "suggest": "beast"}, {"id": "starveil", "name": "Starveil the Stalker", "what": "night-stalker", "now": "humanoid", "suggest": "beast"}, {"id": "mountain_ram", "name": "mountain ram", "what": "", "now": "humanoid", "suggest": "beast"}, {"id": "skathe", "name": "Skathe the Moor-Wyrm", "what": "wyvern", "now": "humanoid", "suggest": "beast"}, {"id": "thunderwing", "name": "Thunderwing the Elder Drake", "what": "drake", "now": "humanoid", "suggest": "beast"}, {"id": "gorgemaw", "name": "Gorgemaw the Carrion King", "what": "marrow jackal", "now": "humanoid", "suggest": "small"}, {"id": "lg_old_rakemaw", "name": "Old Rakemaw", "what": "jackal", "now": "humanoid", "suggest": "small"}, {"id": "old_saltclaw", "name": "Old Saltclaw", "what": "salt crab", "now": "humanoid", "suggest": "small"}, {"id": "bl_wreck_shell", "name": "the Wreck-Shell", "what": "crab", "now": "humanoid", "suggest": "small"}, {"id": "old_chitterjaw", "name": "Old Chitterjaw", "what": "crab", "now": "humanoid", "suggest": "small"}, {"id": "phoenix", "name": "Pyrelle the Undying", "what": "firebird", "now": "humanoid", "suggest": "bird"}, {"id": "sunhawk", "name": "sunhawk", "what": "", "now": "humanoid", "suggest": "bird"}, {"id": "bogwing", "name": "bogwing", "what": "", "now": "humanoid", "suggest": "bird"}, {"id": "glass_brood_queen", "name": "the Shardmother", "what": "glass spider queen", "now": "humanoid", "suggest": "bug"}, {"id": "thick_web", "name": "thick web", "what": "a web, not a creature", "now": "humanoid", "suggest": "bug"}, {"id": "astrael", "name": "Astrael the Star-Giant", "what": "giant", "now": "humanoid", "suggest": "big"}, {"id": "vorlaug", "name": "Vorlaug the Thunder-Titan", "what": "titan", "now": "humanoid", "suggest": "big"}, {"id": "cloudlord_hauvar", "name": "Cloudlord Hauvar", "what": "cloud giant", "now": "humanoid", "suggest": "big"}, {"id": "old_stackstone", "name": "Old Stackstone", "what": "stone giant", "now": "humanoid", "suggest": "big"}, {"id": "old_emberheart", "name": "Old Emberheart", "what": "ember treant", "now": "humanoid", "suggest": "big"}, {"id": "deep_horror", "name": "the Horror Below", "what": "sea horror", "now": "humanoid", "suggest": "big"}, {"id": "grimwatch", "name": "Grimwatch, the Last Gargoyle", "what": "gargoyle", "now": "humanoid", "suggest": "stone"}, {"id": "old_thrum", "name": "Old Thrum, the Humming Stone", "what": "menhir", "now": "humanoid", "suggest": "stone"}, {"id": "lg_ringwarden", "name": "the Ringwarden", "what": "standing stone", "now": "humanoid", "suggest": "stone"}, {"id": "living_forgeheart", "name": "the Living Forgeheart", "what": "living magma", "now": "humanoid", "suggest": "stone"}, {"id": "old_ossuary", "name": "the Walking Ossuary", "what": "ivory colossus", "now": "humanoid", "suggest": "stone"}, {"id": "herd_grandmother", "name": "the Grandmother of Herds", "what": "ghost elephant", "now": "humanoid", "suggest": "undead"}, {"id": "storm_eye", "name": "the Storm-Eye", "what": "gale spirit", "now": "humanoid", "suggest": "undead"}, {"id": "tempest_lord", "name": "the Tempest Lord", "what": "storm spirit", "now": "humanoid", "suggest": "undead"}, {"id": "the_hollow_wind", "name": "the Hollow Wind", "what": "tempest spirit", "now": "humanoid", "suggest": "undead"}, {"id": "dust_devil", "name": "dust devil", "what": "sky spirit", "now": "humanoid", "suggest": "undead"}, {"id": "walking_fungus", "name": "walking fungus", "what": "", "now": "humanoid", "suggest": "slime"}, {"id": "sw_spore_shambler", "name": "spore-shambler", "what": "walking fungus", "now": "humanoid", "suggest": "slime"}, {"id": "sw_rotcap", "name": "the Rotcap", "what": "walking fungus", "now": "humanoid", "suggest": "slime"}, {"id": "mother_gristlewort", "name": "Mother Gristlewort", "what": "bog hag", "now": "bug", "suggest": "humanoid"}, {"id": "mother_marrowroot", "name": "Mother Marrowroot", "what": "sedge hag", "now": "bug", "suggest": "humanoid"}, {"id": "chief_rattlejaw", "name": "Chief Rattlejaw", "what": "Dustpaw jackal-folk chief (his raiders are humanoid)", "now": "small", "suggest": "humanoid"}], "voices": ["humanoid", "undead", "small", "beast", "bug", "stone", "bird", "big", "slime"]};
+const NAMES = {humanoid:"Humanoid",undead:"Undead",small:"Small creature",beast:"Beast",bug:"Bug",stone:"Stone",bird:"Bird",big:"Big",slime:"Slime",player:"Player"};
+const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+const STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
+let state = {verdicts:{}, notes:{}, moves:{}, general:""};
+let docRef = null, writing = Promise.resolve(), saveTimer = null;
+const audio = new Audio(); audio.preservesPitch = false; audio.mozPreservesPitch = false; audio.webkitPreservesPitch = false;
+let playingBtn = null;
+const statusEl = document.getElementById("status");
+function setStatus(t, ok){ statusEl.textContent = t; statusEl.classList.toggle("ok", !!ok); }
+for (const s of DATA.suspects) state.moves[s.id] = s.suggest;
+
+function play(id, btn, rate){
+  if (playingBtn === btn && !audio.paused){ audio.pause(); btn.innerHTML = PLAY; playingBtn = null; return; }
+  if (playingBtn) playingBtn.innerHTML = PLAY;
+  audio.src = "sounds/" + id + ".wav"; audio.playbackRate = rate || 1; audio.currentTime = 0;
+  audio.play().catch(() => setStatus("The browser blocked the sound. Click again."));
+  btn.innerHTML = STOP; playingBtn = btn;
+}
+audio.addEventListener("ended", () => { if (playingBtn){ playingBtn.innerHTML = PLAY; playingBtn = null; } });
+
+let actx = null;
+async function drawWave(id, canvas){
+  try{
+    actx = actx || new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+    const buf = await actx.decodeAudioData(await (await fetch("sounds/" + id + ".wav")).arrayBuffer());
+    const d = buf.getChannelData(0), w = canvas.clientWidth || 240, h = canvas.clientHeight || 34, dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const g = canvas.getContext("2d"); g.scale(dpr, dpr);
+    g.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--wave").trim();
+    const step = Math.max(1, Math.floor(d.length / w));
+    for (let x = 0; x < w; x++){ let m = 0; for (let i = x * step; i < (x + 1) * step && i < d.length; i++) m = Math.max(m, Math.abs(d[i]));
+      const bh = Math.max(1, m * (h - 2)); g.fillRect(x, (h - bh) / 2, 1, bh); }
+  }catch(e){}
+}
+
+function el(tag, attrs, html){ const e = document.createElement(tag); for (const k in attrs||{}) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function renderCards(){
+  const root = document.getElementById("cards"); root.innerHTML = "";
+  for (const c of DATA.cards){
+    const v = state.verdicts[c.voice] || "";
+    const card = el("article", {class: "card" + (v ? " " + v : "")});
+    const who = c.voice === "player" ? "<strong>Players</strong>" :
+      "<strong>" + c.examples.map(esc).join(", ") + "</strong>" + (c.named.length ? "; named: " + c.named.map(esc).join(", ") : "") + (c.count > c.examples.length + c.named.length ? ", and more" : "");
+    card.innerHTML = '<div class="card-top"><span class="voice">' + NAMES[c.voice] + '</span><span class="count">' + (c.voice === "player" ? "players" : c.count + " monsters") + '</span></div>' +
+      '<p class="desc">' + esc(c.desc) + '</p>';
+    const takes = el("div", {class: "takes"});
+    c.takes.forEach((t, i) => {
+      const row = el("div", {class: "take"});
+      const b = el("button", {class: "play", type: "button", "aria-label": "Play " + NAMES[c.voice] + " death " + (i + 1)}, PLAY);
+      b.onclick = () => play(t.id, b, 1);
+      const cv = el("canvas", {"aria-hidden": "true"});
+      row.append(b, cv, el("span", {class: "dur"}, (c.takes.length > 1 ? (i + 1) + " · " : "") + t.seconds.toFixed(2) + " s"));
+      takes.append(row); requestAnimationFrame(() => drawWave(t.id, cv));
+    });
+    card.append(takes);
+    const g = el("button", {class: "game", type: "button"}, "Play like the game");
+    g.onclick = () => { const t = c.takes[Math.floor(Math.random() * c.takes.length)]; play(t.id, g, 0.94 + Math.random() * 0.12); };
+    card.append(g);
+    card.append(el("p", {class: "who"}, "Used by " + who));
+    const vd = el("div", {class: "verdict"});
+    for (const [key, label, cls] of [["keep", "Keep", "k"], ["change", "Change", "c"]]){
+      const ch = el("button", {class: "chip " + cls, type: "button", "aria-pressed": String(v === key)}, label);
+      ch.onclick = () => { state.verdicts[c.voice] = v === key ? undefined : key; if (!state.verdicts[c.voice]) delete state.verdicts[c.voice]; renderCards(); save(); };
+      vd.append(ch);
+    }
+    card.append(vd);
+    const note = el("input", {type: "text", id: "note-" + c.voice, placeholder: "What's wrong with it, or what it should sound like", "aria-label": "Note on " + NAMES[c.voice]});
+    note.value = state.notes[c.voice] || "";
+    note.oninput = () => { state.notes[c.voice] = note.value; if (!note.value) delete state.notes[c.voice]; saveSoon(); };
+    card.append(note);
+    root.append(card);
+  }
+  const keep = Object.values(state.verdicts).filter(x => x === "keep").length, change = Object.values(state.verdicts).filter(x => x === "change").length;
+  document.getElementById("tally").innerHTML = "<span><b>" + DATA.cards.length + "</b> voices</span><span><b>" + keep + "</b> keep</span><span><b>" + change + "</b> change</span><span><b>" + (DATA.cards.length - keep - change) + "</b> not marked</span>";
+}
+// "Play like the game" keeps its label (the stop icon would replace it)
+const _play = play;
+function resetGame(){ document.querySelectorAll(".game").forEach(b => { if (b !== playingBtn) b.textContent = "Play like the game"; }); }
+play = function(id, btn, rate){ _play(id, btn, rate); resetGame(); if (btn.classList.contains("game")) btn.textContent = playingBtn === btn ? "Stop" : "Play like the game"; };
+audio.addEventListener("ended", () => document.querySelectorAll(".game").forEach(b => b.textContent = "Play like the game"));
+
+function renderSuspects(){
+  const tb = document.getElementById("suspects"); tb.innerHTML = "";
+  for (const s of DATA.suspects){
+    const tr = el("tr");
+    const opts = ['<option value="">leave as is</option>'].concat(DATA.voices.map(v => '<option value="' + v + '"' + (state.moves[s.id] === v ? " selected" : "") + ">" + NAMES[v] + "</option>")).join("");
+    tr.innerHTML = "<td>" + esc(s.name) + "</td><td class=what>" + esc(s.what) + "</td><td class=now>" + s.now + "</td><td><select aria-label='Voice for " + esc(s.name) + "'>" + opts + "</select></td><td><div class=cell-play></div></td>";
+    const sel = tr.querySelector("select");
+    if (!state.moves[s.id]) sel.value = "";
+    sel.onchange = () => { state.moves[s.id] = sel.value; save(); };
+    const b = el("button", {class: "play mini", type: "button", "aria-label": "Hear " + s.name + "'s new voice"}, PLAY);
+    b.onclick = () => { const v = sel.value || s.now; const c = DATA.cards.find(x => x.voice === v); if (c) play(c.takes[0].id, b, 1); };
+    tr.querySelector(".cell-play").append(b);
+    tb.append(tr);
+  }
+}
+const general = document.getElementById("general");
+general.oninput = () => { state.general = general.value; saveSoon(); };
+
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 800); }
+function save(){
+  if (!docRef){ setStatus("Saving isn't available here: tell Claude your picks in chat."); return; }
+  const body = {verdicts: state.verdicts, notes: state.notes, moves: state.moves, general: state.general, updated: new Date().toISOString()};
+  writing = writing.then(() => docRef.set(body)).then(() => setStatus("Saved.", true))
+    .catch(e => setStatus("Couldn't save (" + (e && e.code || "error") + "). Tell Claude your picks in chat."));
+}
+
+renderCards(); renderSuspects();
+setStatus("Ready.");
+(async () => {
+  const db = window.claude ? await window.claude.use("db") : null;
+  if (!db){ setStatus("Saving isn't available here: tell Claude your picks in chat."); return; }
+  docRef = db.doc("deaths/board");
+  let first = true;
+  docRef.onSnapshot(snap => {
+    if (snap.exists){
+      const d = snap.data();
+      state.verdicts = {...(d.verdicts || {})}; state.notes = {...(d.notes || {})};
+      if (d.moves) state.moves = {...state.moves, ...d.moves};
+      state.general = d.general || "";
+      if (document.activeElement !== general) general.value = state.general;
+      if (first || !document.activeElement || document.activeElement.tagName !== "INPUT"){ renderCards(); renderSuspects(); }
+      setStatus("Saved marks loaded.", true);
+    } else setStatus("Ready. Nothing marked yet.", true);
+    first = false;
+  }, () => setStatus("Lost the connection to saved marks. Reload the page."));
+})();
+</script>
