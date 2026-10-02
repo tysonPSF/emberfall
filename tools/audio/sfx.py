@@ -35,6 +35,7 @@ PACKS = {
 	"KRPG": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
 	"RPG": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
 	"CRE": "https://opengameart.org/sites/default/files/80-CC0-creature-SFX_0.zip",
+	"WAT": "https://opengameart.org/sites/default/files/water-splash-slime-sfx.zip",
 }
 
 
@@ -191,6 +192,200 @@ def fanfare():
 		i = int(0.4 * SR)
 		out[i:i + len(b)] += b[:n - i]
 	return out
+
+
+# ---------------------------------------------------------------- the temple's instruments (spells, 2026-10-01)
+# Magic sounds like the music: singing bowls, gongs, temple bells, chimes and the conch,
+# with an element's texture under them. Pure ringing tones are what additive synthesis does well.
+
+def _t(dur):
+	return np.arange(int(dur * SR)) / SR
+
+
+def bowl(f, dur=3.0, rubbed=True, bright=1.0, seed=1):
+	"""A singing bowl: four inharmonic partials, each a pair a hair apart so they beat slowly.
+	Rubbed, it swells in and sings with the rub's slow wobble; struck, it rings and dies."""
+	rng = np.random.default_rng(seed)
+	t = _t(dur)
+	out = np.zeros_like(t)
+	for ratio, amp, beat in ((1.0, 1.0, 0.7), (2.71, 0.55 * bright, 1.3), (5.15, 0.28 * bright, 2.1), (8.17, 0.12 * bright, 3.0)):
+		ph = rng.uniform(0, math.tau, 2)
+		out += amp * (np.sin(2 * np.pi * f * ratio * t + ph[0]) + np.sin(2 * np.pi * (f * ratio + beat) * t + ph[1])) * 0.5
+	if rubbed:
+		env = np.clip(t / 0.7, 0, 1) ** 1.5 * (1.0 + 0.07 * np.sin(2 * np.pi * 2.6 * t))  # a gentle rub, not a wobble
+		env *= np.clip((dur - t) / 0.4, 0, 1)
+	else:
+		env = np.exp(-t * 0.9) * np.clip(t / 0.004, 0, 1)
+	return out * env
+
+
+def gong(f=90.0, dur=3.5, seed=2):
+	"""A temple gong: many inharmonic partials blooming after the strike (the high ones swell,
+	then everything dies slowly), a slight upward pitch glide, a soft thump at the strike."""
+	rng = np.random.default_rng(seed)
+	t = _t(dur)
+	out = np.zeros_like(t)
+	glide = 1.0 + 0.02 * (1 - np.exp(-t * 3))
+	for ratio in (1.0, 1.48, 1.98, 2.44, 2.9, 3.6, 4.2, 5.4, 6.3, 7.1):
+		amp = rng.uniform(0.3, 1.0) / ratio ** 0.6
+		bloom = (1 - np.exp(-t * (2 + ratio))) * np.exp(-t * (0.6 + 0.25 * ratio))
+		out += amp * np.sin(2 * np.pi * f * ratio * np.cumsum(glide) / SR + rng.uniform(0, math.tau)) * (0.4 + 0.6 * bloom)
+	thump = np.sin(2 * np.pi * f * 0.5 * t) * np.exp(-t * 9) * 0.8
+	return (out + thump) * np.exp(-t * 0.5) * np.clip(t / 0.003, 0, 1)
+
+
+def temple_bell(f=440.0, dur=3.0, vel=1.0):
+	"""A cast bell, its partials as a real one's (hum, prime, tierce, quint, nominal, and above), each dying at its own rate."""
+	t = _t(dur)
+	out = np.zeros_like(t)
+	for ratio, amp, decay in ((0.5, 0.6, 0.6), (1.0, 1.0, 1.0), (1.19, 0.45, 1.6), (1.5, 0.35, 1.9), (2.0, 0.5, 2.4), (2.52, 0.2, 3.4), (3.0, 0.15, 4.2), (4.1, 0.08, 6.0)):
+		out += amp * np.sin(2 * np.pi * f * ratio * t) * np.exp(-t * decay)
+	return out * np.clip(t / 0.002, 0, 1) * vel
+
+
+def wind_chimes(n=9, dur=2.6, seed=3, low=84):
+	"""Small high bells in a cascade, falling over each other as the wind catches them."""
+	rng = np.random.default_rng(seed)
+	out = np.zeros(int(dur * SR))
+	scale = [0, 2, 4, 7, 9, 12, 14, 16]
+	at = 0.0
+	for k in range(n):
+		m = low + scale[int(rng.integers(len(scale)))]
+		b = temple_bell(music.midi_hz(m), 1.4, 0.35 + 0.3 * rng.random())
+		i = int(at * SR)
+		out[i:i + len(b)] += b[:len(out) - i]
+		at += rng.uniform(0.05, 0.16)
+	return out
+
+
+def conch(f=233.0, dur=1.8, seed=4):
+	"""A conch horn blown: a breathy horn tone that bends up into its note, swells and fades."""
+	rng = np.random.default_rng(seed)
+	t = _t(dur)
+	bend = 1.0 - 0.06 * np.exp(-t * 6)
+	vib = 1.0 + 0.004 * np.sin(2 * np.pi * 5 * t) * np.clip((t - 0.4) / 0.3, 0, 1)
+	phase = 2 * np.pi * f * np.cumsum(bend * vib) / SR
+	tone = np.sin(phase) + 0.5 * np.sin(2 * phase) + 0.25 * np.sin(3 * phase) + 0.12 * np.sin(4 * phase)
+	breath = lowpass(rng.standard_normal(len(t)), 1800.0) * 0.25
+	env = np.clip(t / 0.25, 0, 1) * np.clip((dur - t) / 0.6, 0, 1)
+	return (tone + breath) * env
+
+
+def breath(dur=3.0, seed=5, lo=400.0, hi=2200.0):
+	"""Moving air: noise in a slowly wandering band."""
+	rng = np.random.default_rng(seed)
+	n = int(dur * SR)
+	t = np.arange(n) / SR
+	band = lo + (hi - lo) * (0.5 + 0.5 * np.sin(2 * np.pi * t / dur * 2 + 1.0))
+	noise = rng.standard_normal(n)
+	return (lowpass(noise, band) - lowpass(noise, band * 0.4)) * (0.6 + 0.4 * np.sin(2 * np.pi * t / dur * 3))
+
+
+def whisper(dur=3.0, seed=6):
+	"""A dark murmur: bright hiss shaped into syllable-like puffs."""
+	rng = np.random.default_rng(seed)
+	n = int(dur * SR)
+	t = np.arange(n) / SR
+	noise = rng.standard_normal(n)
+	hiss = noise - lowpass(noise, 2500.0)
+	puffs = np.clip(np.sin(2 * np.pi * t * 3.7 + np.sin(2 * np.pi * t * 0.9) * 2), 0, 1) ** 2
+	return hiss * puffs * 0.6
+
+
+def droplets(dur=3.0, n=10, seed=7):
+	"""Water dripping: short upward sine chirps (a drop's plink), scattered."""
+	rng = np.random.default_rng(seed)
+	out = np.zeros(int(dur * SR))
+	for k in range(n):
+		f0 = rng.uniform(600, 1400)
+		d = 0.09
+		t = _t(d)
+		f = f0 * (1 + 2.2 * t / d)
+		plink = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 45)
+		i = int(rng.uniform(0, dur - d) * SR)
+		out[i:i + len(plink)] += plink * rng.uniform(0.4, 1.0)
+	return out
+
+
+def zaps(dur=3.0, n=9, seed=9):
+	"""Lightning's touch: sharp electric snaps, bright noise bursts with a short buzz, scattered."""
+	rng = np.random.default_rng(seed)
+	out = np.zeros(int(dur * SR))
+	for k in range(n):
+		d = rng.uniform(0.03, 0.08)
+		t = _t(d)
+		noise = rng.standard_normal(len(t))
+		snap = (noise - lowpass(noise, 3000.0)) * np.exp(-t * 60)
+		buzz = np.sign(np.sin(2 * np.pi * rng.uniform(90, 140) * t)) * np.exp(-t * 40) * 0.25
+		i = int(rng.uniform(0, dur - d) * SR)
+		out[i:i + len(t)] += (snap + buzz) * rng.uniform(0.4, 1.0)
+	return out
+
+
+def rumble(dur=3.0, seed=10):
+	"""Earth's touch: a low grinding rumble, slowly moving."""
+	rng = np.random.default_rng(seed)
+	n = int(dur * SR)
+	t = np.arange(n) / SR
+	noise = lowpass(rng.standard_normal(n), 140.0)
+	return noise * (0.7 + 0.3 * np.sin(2 * np.pi * t / dur * 2)) * 4.0
+
+
+def bubbles(dur=3.0, n=14, seed=11):
+	"""Poison's touch: soft low bubbles rising, each a short downward-then-up blip."""
+	rng = np.random.default_rng(seed)
+	out = np.zeros(int(dur * SR))
+	for k in range(n):
+		d = rng.uniform(0.05, 0.12)
+		t = _t(d)
+		f0 = rng.uniform(180, 420)
+		f = f0 * (1 + 1.5 * (t / d) ** 2)
+		blip = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / d) ** 2
+		i = int(rng.uniform(0, dur - d) * SR)
+		out[i:i + len(t)] += blip * rng.uniform(0.4, 1.0)
+	return out
+
+
+def channel_air(dur=3.4, seed=12):
+	"""A channel: gathering air, a soft band of noise slowly rising, with a faint high shimmer of sines."""
+	rng = np.random.default_rng(seed)
+	t = _t(dur)
+	air = breath(dur, seed, 600.0, 2400.0) * 0.6
+	shimmer = sum(np.sin(2 * np.pi * f * t + rng.uniform(0, 6.3)) * (0.5 + 0.5 * np.sin(2 * np.pi * t * r + k)) for k, (f, r) in enumerate(((1760, 0.6), (2217, 0.9), (2637, 0.7))))
+	return air + shimmer * 0.05
+
+
+def channel_warm(dur=3.4):
+	"""A channel: a warm low swell, a soft open fifth that breathes in and out, no beating."""
+	t = _t(dur)
+	out = np.zeros_like(t)
+	for f, a in ((130.8, 1.0), (196.0, 0.6), (261.6, 0.35), (392.0, 0.15)):
+		out += a * np.sin(2 * np.pi * f * t)
+	return out * (0.75 + 0.25 * np.sin(2 * np.pi * t * 0.6))
+
+
+def channel_glass(dur=3.4, seed=13):
+	"""A channel: glassy high tones turning slowly, each fading in and out in its own time."""
+	rng = np.random.default_rng(seed)
+	t = _t(dur)
+	out = np.zeros_like(t)
+	for k, m in enumerate((79, 83, 86, 91)):
+		out += np.sin(2 * np.pi * music.midi_hz(m) * t) * (0.5 + 0.5 * np.sin(2 * np.pi * t * (0.35 + 0.15 * k) + rng.uniform(0, 6.3))) ** 2
+	return out
+
+
+def frame_drum(vel=0.7, seed=8):
+	return music.drum(vel, np.random.default_rng(seed), 0.8)
+
+
+def loopable(x, fade=0.4):
+	"""Folds the last `fade` seconds over the start, so it loops without a seam."""
+	k = int(fade * SR)
+	head, tail = x[:k].copy(), x[-k:]
+	w = np.linspace(0, 1, k)
+	x = x[:-k].copy()
+	x[:k] = head * w + tail * (1 - w)
+	return x
 
 
 SYNTHS = {
