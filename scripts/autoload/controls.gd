@@ -99,6 +99,16 @@ func set_window_position(key: String, pos: Vector2) -> void:
 	_save_setting("window_positions", window_positions)
 
 
+## Text windows resized by their corner grip: key -> [width, height] of the
+## text area. Saved per machine.
+var window_sizes: Dictionary = {}
+
+
+func set_window_size(key: String, size: Vector2) -> void:
+	window_sizes[key] = [roundi(size.x), roundi(size.y)]
+	_save_setting("window_sizes", window_sizes)
+
+
 func set_hotbar_locked(on: bool) -> void:
 	hotbar_locked = on
 	_save_setting("hotbar_locked", on)
@@ -152,6 +162,8 @@ func _load_settings() -> void:
 		hotbar_locked = bool((parsed as Dictionary).get("hotbar_locked", false))
 		var wp: Variant = (parsed as Dictionary).get("window_positions", {})
 		window_positions = wp if wp is Dictionary else {}
+		var ws: Variant = (parsed as Dictionary).get("window_sizes", {})
+		window_sizes = ws if ws is Dictionary else {}
 
 
 func _ready() -> void:

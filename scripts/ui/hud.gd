@@ -1845,6 +1845,8 @@ func _make_draggable() -> void:
 			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"],
 			[_friends_panel, "friends"], [_guild_panel, "guild"], [_journal_panel, "journal"], [_cast_panel, "cast"]]:
 		UIKit.draggable(pair[0], pair[1])
+	UIKit.resizable(_log_panel, "chat", [_log])  # the text windows: a corner grip sizes them
+	UIKit.resizable(_group_log_panel, "tells", _social_logs.values())
 
 
 ## The one change of race: races the class allows, with what each is and its

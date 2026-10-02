@@ -122,6 +122,62 @@ static func draggable(c: Control, key: String) -> void:
 		(func() -> void: _move_to(c, Vector2(float(saved[0]), float(saved[1])))).call_deferred()
 
 
+## A grip in a window's top-right corner that resizes it: dragging it up and
+## right makes the text area bigger (every one of `areas`, e.g. a chat's tabs,
+## takes the same size), down and left smaller, the window's bottom-left
+## corner staying put. The size is kept per machine (Controls.window_sizes[key])
+## and Reset window positions puts it back. Call after draggable().
+static func resizable(c: Control, key: String, areas: Array, smallest := Vector2(220, 70)) -> void:
+	var home: Vector2 = (areas[0] as Control).custom_minimum_size
+	c.set_meta("size_key", key)
+	c.set_meta("size_home", home)
+	c.set_meta("size_areas", areas)
+	var grip := Control.new()
+	grip.top_level = true  # outside the panel's layout: it rides the corner
+	grip.custom_minimum_size = Vector2(16, 16)
+	grip.size = Vector2(16, 16)
+	grip.mouse_default_cursor_shape = Control.CURSOR_BDIAGSIZE
+	grip.tooltip_text = "Drag to resize."
+	grip.mouse_filter = Control.MOUSE_FILTER_STOP
+	c.add_child(grip)
+	grip.draw.connect(func() -> void:
+		for k in 3:  # three diagonal strokes, a resize corner
+			var o := 4.0 + k * 4.0
+			grip.draw_line(Vector2(o, 1), Vector2(15, 16 - o), Color(0.85, 0.75, 0.5, 0.75), 1.5))
+	var follow := func() -> void:
+		grip.global_position = c.global_position + Vector2(c.size.x - 17, 1)
+	c.item_rect_changed.connect(follow)
+	c.visibility_changed.connect(follow)
+	var grab := [null]  # [mouse at the start, area size at the start, the window's bottom-left corner]
+	grip.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+			if ev.pressed:
+				grab[0] = [(ev as InputEventMouseButton).global_position, (areas[0] as Control).custom_minimum_size, c.global_position + Vector2(0, c.size.y)]
+			elif grab[0] != null:
+				grab[0] = null
+				Controls.set_window_size(key, (areas[0] as Control).custom_minimum_size)
+				if c.has_meta("drag_key"):
+					Controls.set_window_position(str(c.get_meta("drag_key")), c.global_position)
+			grip.accept_event()
+		elif ev is InputEventMouseMotion and grab[0] != null:
+			var d: Vector2 = (ev as InputEventMouseMotion).global_position - grab[0][0]
+			var screen := c.get_viewport_rect().size
+			var want: Vector2 = (grab[0][1] + Vector2(d.x, -d.y)).clamp(smallest, screen * 0.85)
+			_size_areas(c, want)
+			c.size = Vector2.ZERO  # shrink to fit the new size, then put the bottom-left corner back
+			(func() -> void: _move_to(c, Vector2(grab[0][2].x, grab[0][2].y - c.size.y)) if grab[0] != null else null).call_deferred()
+			grip.accept_event())
+	var saved: Variant = Controls.window_sizes.get(key)
+	if saved is Array and (saved as Array).size() == 2:
+		_size_areas(c, Vector2(float(saved[0]), float(saved[1])))
+	follow.call_deferred()
+
+
+static func _size_areas(c: Control, s: Vector2) -> void:
+	for a: Control in c.get_meta("size_areas", []):
+		a.custom_minimum_size = s
+
+
 ## Whether a draggable window has been moved from where it started (its
 ## layout code leaves it alone then).
 static func moved(c: Control) -> bool:
@@ -145,6 +201,12 @@ static func reset_windows(root: Node) -> void:
 			c.grow_vertical = h[9]
 	Controls.window_positions = {}
 	Controls._save_setting("window_positions", {})
+	for c: Node in root.find_children("*", "Control", true, false):  # and every resized one back to its size
+		if c.has_meta("size_home"):
+			_size_areas(c, c.get_meta("size_home"))
+			(c as Control).size = Vector2.ZERO
+	Controls.window_sizes = {}
+	Controls._save_setting("window_sizes", {})
 
 
 ## Pins a control's top-left corner at `at` (screen pixels), inside the screen.

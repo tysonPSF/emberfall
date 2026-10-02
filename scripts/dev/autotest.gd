@@ -163,6 +163,7 @@ const SECTIONS := [
 	["room_floors", "emberhold"],
 	["cast_bar_move", "greenmoor"],
 	["bind_sitting", "greenmoor"],
+	["chat_resize", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11287,3 +11288,45 @@ func _t_bind_sitting() -> void:
 	p.recalc_stats()
 	p.hp = p.max_hp
 	print("bind_sitting: sat down, Bind Wound -> casting %s still sitting %s; done -> healed %d (with resting), still sitting %s" % [casting, sat_casting, healed, still])
+
+
+## The text windows resize by their corner grip: bigger up and right, the
+## bottom-left corner held; the size is kept; Reset puts it back.
+func _t_chat_resize() -> void:
+	var hud = get_parent().hud
+	var panel: Control = hud._log_panel
+	var keep_sizes: Dictionary = Controls.window_sizes.duplicate()
+	var keep_pos: Dictionary = Controls.window_positions.duplicate()
+	await _wait(0.3)
+	var grip: Control = null
+	for c in panel.get_children():
+		if c is Control and (c as Control).top_level:
+			grip = c
+	var before: Vector2 = hud._log.custom_minimum_size
+	var corner := panel.global_position + Vector2(0, panel.size.y)
+	var at := grip.global_position + Vector2(8, 8)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.global_position = at
+	grip.gui_input.emit(press)
+	var move := InputEventMouseMotion.new()
+	move.global_position = at + Vector2(140, -90)  # up and to the right: bigger
+	grip.gui_input.emit(move)
+	await _wait(0.2)
+	press.pressed = false
+	grip.gui_input.emit(press)
+	await _wait(0.2)
+	var after: Vector2 = hud._log.custom_minimum_size
+	var corner_after := panel.global_position + Vector2(0, panel.size.y)
+	var saved: Variant = Controls.window_sizes.get("chat")
+	await _shot("9zz_chat_resized")
+	UIKit.reset_windows(hud.root)
+	await _wait(0.2)
+	var reset: Vector2 = hud._log.custom_minimum_size
+	Controls.window_sizes = keep_sizes  # the test leaves your own settings as they were
+	Controls._save_setting("window_sizes", keep_sizes)
+	Controls.window_positions = keep_pos
+	Controls._save_setting("window_positions", keep_pos)
+	print("chat_resize: text area %s -> %s (saved %s), bottom-left corner %s -> %s; reset -> %s; grip on the chat window too %s" % [before, after, saved,
+			corner, corner_after, reset, hud._group_log_panel.get_children().any(func(c: Node) -> bool: return c is Control and (c as Control).top_level)])
