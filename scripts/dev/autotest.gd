@@ -156,6 +156,7 @@ const SECTIONS := [
 	["map_zoom", "thornwood"],
 	["living_roots", "greenmoor"],
 	["blow_verbs", "greenmoor"],
+	["repeat_quests", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11025,3 +11026,52 @@ func _t_blow_verbs() -> void:
 	p.equipment.erase("primary")
 	p.recalc_stats()
 	print("blow_verbs: Mighty Blow with %s" % [said])
+
+
+## A repeatable quest leaves the log once done; its giver floats a blue "!"
+## (a blue "?" while you carry another set) and still takes more; older saves
+## that kept a finished one in the log are tidied once.
+func _t_repeat_quests() -> void:
+	var p := World.local_player
+	var holt: Npc = _npcs()["warden_holt"]
+	var keep := p.quests.duplicate(true)
+	var mark := func() -> String:
+		holt._mark_check = 0.0
+		holt._update_mark(0.016)
+		return (holt._mark.text + (" blue" if holt._mark_repeat else "")) if holt._mark.visible else "(none)"
+	p.quests.clear()
+	for quest_id: String in World._quests_of_npc("warden_holt"):  # everything else of his done, so his mark is the bounty's alone
+		if quest_id != "fang_bounty":
+			p.quests[quest_id] = {"active": false, "completions": 1}
+	_stand_by(p, holt)
+	World._accept_quest(p, "fang_bounty")
+	var logged: bool = "fang_bounty" in main_hud()._journal_quests(false)
+	p.pack.add_entry(Pack.entry("gnoll_fang", 4))
+	var ready_in_log: String = mark.call()
+	await _hand_in(p, holt, ["gnoll_fang"])
+	var st: Dictionary = p.quests.get("fang_bounty", {})
+	var after := [int(st.get("completions", 0)), st.get("active", false), "fang_bounty" in main_hud()._journal_quests(false), "fang_bounty" in main_hud()._journal_quests(true)]
+	var done_mark: String = mark.call()
+	p.global_position += Vector3(0, 0, 4)
+	p.face_toward(holt.global_position)
+	await _wait(0.6)
+	await _shot("9zz_repeat_blue")
+	_stand_by(p, holt)
+	p.pack.add_entry(Pack.entry("gnoll_fang", 4))
+	var again_mark: String = mark.call()
+	var waiting: bool = World._hand_in_waiting(p, holt)
+	await _hand_in(p, holt, ["gnoll_fang"])
+	var twice := int(p.quests["fang_bounty"].get("completions", 0))
+	# an older save: done twice and still in the log
+	p.quests["fang_bounty"]["active"] = true
+	p.given.erase("repeatables_out_of_log")
+	World._tidy_repeatables(p)
+	var tidied: bool = not p.quests["fang_bounty"]["active"]
+	p.quests = keep
+	print("repeat_quests: taken -> in the log %s, carrying the fangs '%s'; handed in -> done %d, active %s, in the log %s, in Completed %s; mark '%s'" % [logged,
+			ready_in_log, after[0], after[1], after[2], after[3], done_mark])
+	print("repeat_quests: four more fangs -> mark '%s', G trades %s; handed in out of the log -> done %d; an old save tidied %s" % [again_mark, waiting, twice, tidied])
+
+
+func main_hud() -> Node:
+	return get_parent().hud

@@ -1999,6 +1999,18 @@ func _gifts(p: Player) -> void:
 			p.inventory_changed.emit()
 
 
+## Once per character: a repeatable quest done before they left the log stayed
+## in it for good; take those out (hand-ins still work, with the blue mark).
+func _tidy_repeatables(p: Player) -> void:
+	if "repeatables_out_of_log" in p.given:
+		return
+	p.given.append("repeatables_out_of_log")
+	for quest_id: String in p.quests:
+		if GameData.quests.get(quest_id, {}).get("repeatable", false) and int(p.quests[quest_id].get("completions", 0)) > 0:
+			p.quests[quest_id]["active"] = false
+	p.quests_changed.emit()
+
+
 ## The zone a player is bound to: their bindstone city, or the starting city.
 func bind_zone_of(p: Player) -> String:
 	if p.bind_zone != "" and FileAccess.file_exists("res://data/zones/%s.json" % p.bind_zone):
@@ -2073,6 +2085,7 @@ func player_entered(p: Player) -> void:
 	_keep_off_hostile_ground(p, came_from)
 	_check_deity(p)
 	_gifts(p)
+	_tidy_repeatables(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
 	if not g.is_empty():
@@ -2510,17 +2523,30 @@ func quest_shows(p: Player, npc_data: Dictionary) -> bool:
 func quest_mark(p: Player, npc_id: String) -> String:
 	if p == null:
 		return ""
-	var ready := false
+	var ready := ""
 	for quest_id: String in _quests_of_npc(npc_id):
 		var q: Dictionary = GameData.quests[quest_id]
-		if p.quests.get(quest_id, {}).get("active", false) and takes_hand_in(q, npc_id) and quest_items_ready(p, quest_id):
-			ready = true
-	if ready:
-		return "?"
+		if quest_turnable(p, quest_id) and takes_hand_in(q, npc_id) and quest_items_ready(p, quest_id):
+			ready = "?" if p.quests[quest_id].get("active", false) or ready == "?" else "?r"
+	if ready != "":
+		return ready
 	var faction := str(GameData.npcs.get(npc_id, {}).get("faction", ""))
 	if GameData.factions.has(faction) and standing(p, faction) < REFUSE_BELOW:
 		return ""  # they won't talk to you at all
-	return "!" if not open_quests(p, npc_id).is_empty() else ""
+	if not open_quests(p, npc_id).is_empty():
+		return "!"
+	for quest_id: String in _quests_of_npc(npc_id):  # a repeatable you've done, theirs to give again
+		var q: Dictionary = GameData.quests[quest_id]
+		if q.get("repeatable", false) and quest_done(p, quest_id) and (str(q.get("giver", "")) == npc_id or str(q.get("starter", "")) == npc_id):
+			return "!r"
+	return ""
+
+
+## Whether p can hand a quest in now: it's in their log, or it's a repeatable
+## they've done (done, it leaves the log, but its giver still takes more).
+func quest_turnable(p: Player, quest_id: String) -> bool:
+	var state: Dictionary = p.quests.get(quest_id, {})
+	return state.get("active", false) or (bool(GameData.quests.get(quest_id, {}).get("repeatable", false)) and int(state.get("completions", 0)) > 0)
 
 
 ## The quests npc_id would give p now: theirs to give (not just to take in),
@@ -4443,7 +4469,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if key == "hail":
 		for quest_id: String in p.quests:
 			var q: Dictionary = GameData.quests.get(quest_id, {})
-			if takes_hand_in(q, npc.npc_id) and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+			if takes_hand_in(q, npc.npc_id) and quest_turnable(p, quest_id) and quest_items_ready(p, quest_id):
 				_npc_say(p, npc, str(q.get("ready_text", "Hand those over, {name}.")) if q.get("giver") == npc.npc_id else "You've done %s's work for %s? I can take that for them, {name}." % [QuestHints._npc_name(str(q["giver"])), q["name"]])
 				say(p, "(Press G to open a trade with %s.)" % npc.display_name, C_SYSTEM)
 	for quest_id: String in GameData.quests:
@@ -4711,7 +4737,7 @@ func takes_hand_in(q: Dictionary, npc_id: String) -> bool:
 func _hand_in_waiting(p: Player, npc: Npc) -> bool:
 	for quest_id: String in p.quests:
 		var q: Dictionary = GameData.quests.get(quest_id, {})
-		if takes_hand_in(q, npc.npc_id) and p.quests[quest_id].get("active", false) and quest_items_ready(p, quest_id):
+		if takes_hand_in(q, npc.npc_id) and quest_turnable(p, quest_id) and quest_items_ready(p, quest_id):
 			return true
 	return false
 
@@ -4817,7 +4843,7 @@ func request_trade_give(player_id: int) -> void:
 		say(p, "%s has no use for %s and hands %s back." % [npc.display_name, ", ".join(names), "it" if left.size() == 1 else "them"], C_SYSTEM)
 		for quest_id: String in p.quests:  # meant for someone else's quest: say whose
 			var q: Dictionary = GameData.quests.get(quest_id, {})
-			if p.quests[quest_id].get("active", false) and not takes_hand_in(q, npc.npc_id) \
+			if quest_turnable(p, quest_id) and not takes_hand_in(q, npc.npc_id) \
 					and left.any(func(id: String) -> bool: return (q["wants"] as Dictionary).has(id)):
 				say(p, "(%s: these are for %s.)" % [q["name"], GameData.npcs[q["giver"]]["name"]], C_XP)
 		_return_to_pack(p, left.map(func(id: String) -> Dictionary: return Pack.entry(id)))
@@ -5073,7 +5099,7 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 	var q: Dictionary = GameData.quests[quest_id]
 	var state: Dictionary = p.quests.get(quest_id, {})
 	state["completions"] = int(state.get("completions", 0)) + 1
-	state["active"] = bool(q.get("repeatable", false))
+	state["active"] = false  # done: out of the log; a repeatable's giver takes more any time (its blue mark)
 	p.quests[quest_id] = state
 	if q.has("complete_anim"):  # the giver reacts (Merrick jolting up in his chair), for everyone watching
 		npc.animate(str(q["complete_anim"]))

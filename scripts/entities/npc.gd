@@ -188,6 +188,7 @@ func _update_sight() -> void:
 ## The floating quest mark: checked twice a second against your quests, and
 ## bobbing and glowing gently while it shows.
 var _mark_more := false
+var _mark_repeat := false  # the mark is for a repeatable quest you have done
 
 
 func _update_mark(delta: float) -> void:
@@ -195,20 +196,24 @@ func _update_mark(delta: float) -> void:
 	if _mark_check <= 0.0:
 		_mark_check = 0.5
 		var m := World.quest_mark(World.local_player, npc_id) if not dead else ""
-		_mark.text = m
+		_mark.text = m.left(1)
 		_mark.visible = m != ""
+		_mark_repeat = m.ends_with("r")  # a repeatable you've done: blue, "!" to do it again, "?" when you carry it all
 		_mark_more = m == "!" and World.quest_mark_more(World.local_player, npc_id)  # more of their work: gray
 	if not _mark.visible:
 		return
 	_mark_time += delta
 	_mark.offset.y = 70.0 + sin(_mark_time * 2.4) * 8.0  # floating
 	var glow := 0.85 + 0.15 * sin(_mark_time * 3.1)
-	if _mark_more:
+	if _mark_repeat:
+		_mark.modulate = Color(0.4, 0.72, 1.0) * ((1.15 if _mark.text == "?" else 0.95) * glow)  # blue: again, any time
+	elif _mark_more:
 		_mark.modulate = Color(0.72, 0.72, 0.74) * (0.95 + 0.05 * glow)  # gray, and barely breathing: you've taken something here
 	else:
 		_mark.modulate = Color(1.0, 0.86, 0.22) * (1.25 * glow) if _mark.text == "!" else Color(1.0, 0.95, 0.6) * (1.1 * glow)
 	_mark.modulate.a = 1.0
-	_mark.outline_modulate.a = 0.22 + 0.2 * glow  # the halo breathes with it
+	var halo := Color(0.3, 0.6, 1.0) if _mark_repeat else (Color(0.6, 0.6, 0.62) if _mark_more else Color(1.0, 0.72, 0.1))  # its halo in its own color
+	_mark.outline_modulate = Color(halo, 0.22 + 0.2 * glow)  # and breathing with it
 
 
 ## How a seated npc sits for whoever is watching: "seated_after" {quest: action}

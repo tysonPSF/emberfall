@@ -927,7 +927,7 @@ func _quest_wants(item_id: String) -> Array:
 		return out
 	for quest_id: String in player.quests:
 		var q: Dictionary = GameData.quests.get(quest_id, {})
-		if not player.quests[quest_id].get("active", false) or not (q.get("wants", {}) as Dictionary).has(item_id):
+		if not World.quest_turnable(player, quest_id) or not (q.get("wants", {}) as Dictionary).has(item_id):
 			continue
 		var need := int(q["wants"][item_id])
 		var have := int(World.quest_progress(player, quest_id).get(item_id, 0))
@@ -2306,7 +2306,7 @@ func _journal_page(quest_id: String) -> String:
 		task = task.substr(task.find(". ") + 2)
 	lines.append("[b]Task[/b]  %s" % task.replace("[", "(").replace("]", ")"))
 	lines.append("")
-	if st.get("active", false):
+	if World.quest_turnable(player, quest_id):  # in your log, or a repeatable done that its giver takes again
 		var have := World.quest_progress(player, quest_id)
 		lines.append("[b]Bring[/b]")
 		var wants: Dictionary = q["wants"]
@@ -2335,7 +2335,8 @@ func _journal_page(quest_id: String) -> String:
 			pays.append("the goodwill of %s" % World.faction_name(fac))
 	lines.append("[b]Reward[/b]  %s" % ", ".join(pays) if not pays.is_empty() else "[b]Reward[/b]  none")
 	if q.get("repeatable", false):
-		lines.append("[color=#9a968e]Repeatable.%s[/color]" % (" Done %d time%s." % [times, "" if times == 1 else "s"] if times > 0 else ""))
+		lines.append("[color=#9a968e]Repeatable.%s[/color]" % (" Done %d time%s. Bring the same again to %s any time; a blue mark floats over them." % [times,
+				"" if times == 1 else "s", giver.get("name", "its giver")] if times > 0 else ""))
 	elif times > 0:
 		lines.append("[color=#9a968e]Completed.[/color]")
 	if q.has("next"):
