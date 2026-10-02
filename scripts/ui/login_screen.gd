@@ -185,8 +185,12 @@ func _on_characters(list: Array) -> void:
 			_say("Entering the world as %s..." % c["name"])
 			Net.enter_world(str(c["name"])))
 		row.add_child(b)
-		var del := UIKit.button("Delete", Vector2(80, 42))
-		del.add_theme_color_override("font_color", Color(1, 0.55, 0.45))
+		var del := UIKit.button("", Vector2(42, 42))
+		del.icon = GameData.icon("action_delete")
+		del.expand_icon = true
+		del.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		del.add_theme_constant_override("icon_max_width", 30)
+		del.add_theme_color_override("icon_hover_color", Color(1, 0.6, 0.5))  # it reddens under the mouse
 		del.tooltip_text = "Delete %s from this server" % c["name"]
 		del.pressed.connect(_ask_delete.bind(str(c["name"])))
 		row.add_child(del)

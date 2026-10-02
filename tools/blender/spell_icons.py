@@ -1283,6 +1283,19 @@ def action_journal():
 	return p.build()
 
 
+def action_delete():
+	p = Prop("action_delete", 367)
+	p.seg((0, 0, 0.02), (0, 0, 0.82), 0.3, 0.37, STONE_LIGHT, sides=12)            # a tin rubbish bin, wider at the top
+	for k in range(5):                                                              # its ribs
+		a = math.radians(-60 + 30 * k)
+		p.box((0.05, 0.05, 0.7), (0.34 * math.sin(a), -0.34 * math.cos(a), 0.43), STONE_DARK, rot=(0, 0, math.degrees(a)))
+	p.seg((0, 0, 0.84), (0, 0, 0.92), 0.42, 0.42, STONE_DARK, sides=12)            # the lid, lifted a little
+	p.seg((-0.12, 0, 0.98), (0.12, 0, 0.98), 0.04, 0.04, STONE_DARK, sides=6)      # its handle
+	for x in (-0.12, 0.12):
+		p.seg((x, 0, 0.92), (x, 0, 0.98), 0.03, 0.03, STONE_DARK, sides=6)
+	return p.build()
+
+
 def action_guild():
 	p = Prop("action_guild", 359)
 	p.seg((-0.35, 0, 0.0), (-0.35, 0, 1.1), 0.05, 0.05, WOOD, sides=6)             # a banner on its pole
@@ -5398,7 +5411,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 								  tagars_insects, winters_roar, spirit_of_the_wolf, chant_of_the_pack, winters_grasp, turgurs_insects, kraggs_mending, ancestral_ward, homeward] + NEW_SPELLS + MONSOON_WEST + LEVEL_35 + LEVEL_40 + MAGE_BOLTS + LEVEL_45 + LEVEL_50 + BONEYARD_SUMMIT + BLACKWATER + DUSK}
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
-								   action_friends, action_guild, action_journal]}
+								   action_friends, action_guild, action_journal, action_delete]}
 
 
 def main():
