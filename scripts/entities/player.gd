@@ -127,6 +127,12 @@ var camera: Camera3D
 var zoom := 6.0
 var _zoom_before_first_person := 6.0
 var pitch := -0.3
+const PITCH_REST := -0.3  # End puts the view back here
+const PITCH_MIN := -1.3
+const PITCH_MAX := 0.9
+const LOOK_SPEED := 1.6  # radians a second, Page Up / Page Down held
+var _right_drag := false  # the right button held without mouselook: dragging looks around
+var _drag_from := Vector2.ZERO
 ## Local player: where the body stood after the last two physics steps. The
 ## body moves 60 times a second, but a 120 Hz screen draws twice per step, so
 ## the model and camera are drawn part way between the two (_smooth_motion).
@@ -799,6 +805,10 @@ func _process(delta: float) -> void:
 		_idle = 0.0
 		World.request_afk(entity_id, true)
 	_update_mouse_look()
+	if not _hud_typing():
+		var look := Input.get_axis("look_down", "look_up")
+		if look != 0.0:
+			pitch = clampf(pitch + look * LOOK_SPEED * delta, PITCH_MIN, PITCH_MAX)
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, zoom, minf(1.0, delta * 10.0))
 	camera_pivot.rotation.x = pitch
 	visual.visible = not dead and zoom > 0.6
@@ -830,6 +840,35 @@ func _input(event: InputEvent) -> void:
 	if afk and ((event is InputEventKey and event.pressed and not event.echo) or (event is InputEventMouseButton and event.pressed)) \
 			and not get_viewport().gui_get_focus_owner() is LineEdit:
 		World.request_afk(entity_id, false)
+	# a right drag that began on the world goes on over the HUD, and lets go anywhere
+	if _right_drag:
+		if event is InputEventMouseMotion:
+			var mm := event as InputEventMouseMotion
+			rotate_y(-mm.relative.x * MOUSE_SENS)
+			pitch = clampf(pitch - mm.relative.y * MOUSE_SENS, PITCH_MIN, PITCH_MAX)
+			get_viewport().set_input_as_handled()
+		elif event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT \
+				and not (event as InputEventMouseButton).pressed:
+			_end_right_drag()
+			get_viewport().set_input_as_handled()
+
+
+## Without mouselook, holding the right button on the world turns you and tilts
+## the view while the cursor is held still, as most games do; it comes back where it was.
+func _start_right_drag(at: Vector2) -> void:
+	_right_drag = true
+	_drag_from = at
+	if not _autotest:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _end_right_drag() -> void:
+	if not _right_drag:
+		return
+	_right_drag = false
+	if not _autotest and not mouse_looking:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		Input.warp_mouse(_drag_from)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -847,6 +886,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			MOUSE_BUTTON_RIGHT:
 				if mb.pressed and mouse_looking:
 					_crosshair_target()
+				elif mb.pressed and not dead:
+					_start_right_drag(mb.position)
 			MOUSE_BUTTON_LEFT:
 				if mb.pressed:
 					if mouse_looking and cursor.is_empty():
@@ -857,7 +898,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and mouse_looking:
 		var mm := event as InputEventMouseMotion
 		rotate_y(-mm.relative.x * MOUSE_SENS)
-		pitch = clampf(pitch - mm.relative.y * MOUSE_SENS, -1.3, 0.9)
+		pitch = clampf(pitch - mm.relative.y * MOUSE_SENS, PITCH_MIN, PITCH_MAX)
 		return
 
 	if event.is_action_pressed("auto_attack"):
@@ -880,6 +921,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		zoom = maxf(0.0, zoom - 1.0)
 	elif event.is_action_pressed("zoom_out", true):
 		zoom = minf(MAX_ZOOM, zoom + 1.0)
+	elif event.is_action_pressed("look_center"):
+		pitch = PITCH_REST
 	elif event.is_action_pressed("first_person"):  # straight into your eyes, and back out to where you were
 		if zoom > 0.0:
 			_zoom_before_first_person = zoom
@@ -972,6 +1015,8 @@ func _update_mouse_look() -> void:
 	if want == mouse_looking:
 		return
 	mouse_looking = want
+	if want:
+		_right_drag = false  # mouselook took the mouse over
 	if _autotest:
 		return
 	if want:

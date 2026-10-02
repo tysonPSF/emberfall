@@ -5,7 +5,7 @@ extends CanvasLayer
 ## through World.request_*, the same as keyboard input.
 
 const HELP_TEXT := """[b]Movement[/b]   W/S forward/back · A/D strafe · Arrow keys turn · Space jump · hold Shift to run (watch the green bar - it comes back when you ease off)
-[b]Camera[/b]   Move the mouse to look · Wheel or - / = (Page Up / Down) to zoom (all the way in = first person) · Home: first person and back · M the zone map (fog lifts as you explore) · Ctrl+M mouse controls on or off
+[b]Camera[/b]   Move the mouse to look (mouse controls off: hold the right button and drag) · Page Up / Down look up and down, End levels the view · Wheel or - / = to zoom (all the way in = first person) · Home: first person and back · M the zone map (fog lifts as you explore) · Ctrl+M mouse controls on or off
 [b]Cursor[/b]   Hold Alt for the mouse pointer; it also returns whenever a window is open
 [b]Targeting[/b]   Right-click what's under the crosshair · Tab nearest enemy · T cycles townsfolk and corpses · F1 self · Esc clear / interrupt cast
 [b]No mouse?[/b]   Press O for settings and turn Mouse controls off: the cursor stays out and A/D turn. Tab and T target everything without one.
@@ -240,6 +240,7 @@ var _station_title: Label
 var _doll_view: SubViewport
 var _doll_stage: Node3D
 var _doll_key := ""
+var _doll_drag := false  # the left button held on the portrait: dragging turns it
 var _cursor_icon: TextureRect
 var _cursor_count: Label
 var _sell_cursor: Button
@@ -2885,6 +2886,8 @@ func _build_inventory() -> void:
 	var view_box := SubViewportContainer.new()
 	view_box.stretch = true
 	view_box.custom_minimum_size = Vector2(140, 236)
+	view_box.tooltip_text = "Drag to turn. Double-click to face front."
+	view_box.gui_input.connect(_on_doll_input.bind(view_box))
 	row.add_child(view_box)
 	_doll_view = SubViewport.new()
 	_doll_view.own_world_3d = true
@@ -3213,6 +3216,20 @@ func _layout_bags() -> void:
 		panel.position = Vector2(maxf(x, 12.0), maxf(bottom - size.y, 12.0))
 		row_height = maxf(row_height, size.y)
 		x -= 6.0
+
+
+## Drag the portrait to turn your character round, as at character creation;
+## a double-click faces it front again. The turn stays while the body is rebuilt.
+func _on_doll_input(event: InputEvent, box: Control) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		var mb := event as InputEventMouseButton
+		_doll_drag = mb.pressed
+		if mb.double_click:
+			_doll_stage.rotation.y = 0.0
+		box.accept_event()  # a drag here turns the doll, not the window
+	elif event is InputEventMouseMotion and _doll_drag:
+		_doll_stage.rotation.y += (event as InputEventMouseMotion).relative.x * 0.012
+		box.accept_event()
 
 
 ## The paper doll's character: rebuilt when what you wear changes.

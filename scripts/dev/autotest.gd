@@ -151,6 +151,7 @@ const SECTIONS := [
 	["talk_phrases", "cinderpass"],
 	["food_tooltips", "greenmoor"],
 	["pathcallers", "emberhold"],
+	["look_controls", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10768,3 +10769,67 @@ func _t_pathcallers() -> void:
 	print("pathcallers: Pathcaller Ndidi stands at height %.2f over water at %.2f" % [ndidi.global_position.y, (main.zone as Zone).water_level(ndidi.global_position.x, ndidi.global_position.z)])
 	await _shot("9zx_pathcaller_rainhold")
 	p.level = old_level
+
+
+## Looking without mouselook: Page Up / Page Down tilt the view, End levels it,
+## a right drag turns and tilts; and the inventory portrait turns when dragged.
+func _t_look_controls() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var was_mouse := Controls.mouse_look
+	Controls.mouse_look = false
+	await _wait(0.2)
+	p.pitch = Player.PITCH_REST
+	Input.action_press("look_up")
+	await _wait(0.4)
+	Input.action_release("look_up")
+	var up := p.pitch
+	Input.action_press("look_down")
+	await _wait(0.8)
+	Input.action_release("look_down")
+	var down := p.pitch
+	var center := InputEventAction.new()
+	center.action = "look_center"
+	center.pressed = true
+	p._unhandled_input(center)
+	var leveled := is_equal_approx(p.pitch, Player.PITCH_REST)
+	var yaw := p.rotation.y
+	p._start_right_drag(Vector2(400, 300))
+	var mm := InputEventMouseMotion.new()
+	mm.relative = Vector2(60, -40)
+	p._input(mm)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_RIGHT
+	release.pressed = false
+	p._input(release)
+	var dragged := not is_equal_approx(p.rotation.y, yaw) and p.pitch > Player.PITCH_REST and not p._right_drag
+	p.pitch = Player.PITCH_REST
+	var hud = main.hud
+	hud._inv_panel.visible = true
+	hud._refresh_inventory()
+	await _wait(0.5)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	var box: Control = hud._doll_view.get_parent()
+	hud._on_doll_input(press, box)
+	var turn := InputEventMouseMotion.new()
+	turn.relative = Vector2(130, 0)
+	hud._on_doll_input(turn, box)
+	var turned: float = hud._doll_stage.rotation.y
+	await _shot("9zy_doll_turned")
+	press.pressed = false
+	hud._on_doll_input(press, box)
+	var double := InputEventMouseButton.new()
+	double.button_index = MOUSE_BUTTON_LEFT
+	double.pressed = true
+	double.double_click = true
+	hud._on_doll_input(double, box)
+	var faced: float = hud._doll_stage.rotation.y
+	double.pressed = false
+	hud._on_doll_input(double, box)
+	hud._inv_panel.visible = false
+	Controls.mouse_look = was_mouse
+	print("look_controls: Page Up raised the view %s (%.2f), Page Down lowered it %s (%.2f), End leveled it %s; a right drag turned and tilted %s" % [up > Player.PITCH_REST,
+			up, down < up, down, leveled, dragged])
+	print("look_controls: the portrait turned %.2f rad when dragged, a double-click faced it front %s" % [turned, is_zero_approx(faced)])

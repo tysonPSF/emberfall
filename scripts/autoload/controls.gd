@@ -30,8 +30,11 @@ const BINDINGS := {
 	"settings_music_up": [KEY_BRACKETRIGHT],
 	"consider": [KEY_C],
 	"sit": [KEY_X],
-	"zoom_in": [KEY_EQUAL, KEY_PAGEUP],  # the mouse wheel does it too
-	"zoom_out": [KEY_MINUS, KEY_PAGEDOWN],
+	"zoom_in": [KEY_EQUAL],  # the mouse wheel does it too
+	"zoom_out": [KEY_MINUS],
+	"look_up": [KEY_PAGEUP],  # as in EQ; with the mouse, hold the right button and drag
+	"look_down": [KEY_PAGEDOWN],
+	"look_center": [KEY_END],
 	"first_person": [KEY_HOME],
 	"loot": [KEY_L],
 	"hail": [KEY_E],

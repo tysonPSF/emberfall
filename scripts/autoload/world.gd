@@ -4221,6 +4221,24 @@ func request_chat(player_id: int, text: String) -> void:
 				say(p, "That command is not available.", C_WARN)
 			else:
 				summon_corpses(p, rest.strip_edges())
+		"/giveitem":  # admin only: /giveitem <item id> [count]; a level-scaled unique comes made for your level
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				var words := rest.strip_edges().split(" ", false)
+				var item_id := str(words[0]) if words.size() > 0 else ""
+				var count := maxi(1, int(words[1])) if words.size() > 1 else 1
+				if not GameData.items.has(GameData.base_item(item_id)):
+					say(p, "No item called '%s'. Use its id, like dragonfang_sword." % item_id, C_WARN)
+				else:
+					if GameData.items[GameData.base_item(item_id)].has("level_scaled") and not "~" in item_id:
+						item_id += "~%d" % p.level
+					count = mini(count, p.pack.room_for(item_id))
+					if count <= 0:
+						say(p, "You have no room for that.", C_WARN)
+					else:
+						p.pack.add(item_id, count)
+						say(p, "You make %d %s." % [count, GameData.item_name(item_id)], C_LOOT)
 		"/god":  # testing and admin only: walk the world unhurt and unnoticed
 			if not Net.is_admin(p):
 				say(p, "That command is not available.", C_WARN)
