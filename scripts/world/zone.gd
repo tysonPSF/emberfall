@@ -820,6 +820,7 @@ func _build_terrain() -> void:
 	st.set_material(mat)
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = st.commit()
+	mesh_instance.visible = not bool(data.get("hide_ground", false))  # a room with its own floor (the crypt): the ground under it would flicker through
 	add_child(mesh_instance)
 
 	# Physics heightmap: 1 unit spacing, so scale uniformly by the cell size.

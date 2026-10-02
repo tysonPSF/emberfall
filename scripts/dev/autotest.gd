@@ -160,6 +160,7 @@ const SECTIONS := [
 	["bank_coin_amounts", "emberhold"],
 	["compare_slots", "greenmoor"],
 	["city_banks", "emberhold"],
+	["room_floors", "emberhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11214,3 +11215,26 @@ func _t_city_banks() -> void:
 		print("city_banks: %s - banker at %s, the bank opened across the counter %s (%.1f m away)" % [zone_id, at, opened,
 				p.global_position.distance_to(banker.global_position)])
 	p.god_mode = false
+
+
+## A room with its own floor (the crypt) doesn't draw the ground under it, which
+## flickered through the tiles; its walking surface is unchanged.
+func _t_room_floors() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	World.zone_change.emit(p, "emberhold_crypt", Vector2(0, 2), Vector2(0, -4))  # inside, clear of the stair
+	for k in 80:
+		if (main.zone as Zone).zone_id == "emberhold_crypt" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(1.0)
+	var z := main.zone as Zone
+	var ground_drawn := false
+	for c in z.get_children():
+		if c is MeshInstance3D and (c as MeshInstance3D).mesh != null and c.visible and (c as MeshInstance3D).get_aabb().size.x > z.size * 0.9:
+			ground_drawn = true
+	p.pitch = -0.6
+	p.zoom = 4.0
+	await _wait(0.8)
+	await _shot("9zz_crypt_floor")
+	print("room_floors: the crypt's ground drawn %s; standing at %.2f" % [ground_drawn, p.global_position.y])

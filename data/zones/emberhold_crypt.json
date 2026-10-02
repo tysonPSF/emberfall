@@ -1,6 +1,7 @@
 {
   "name": "The Crypt",
   "interior": true,
+  "hide_ground": true,
   "seed": 91,
   "size": 200,
   "height_amplitude": 0,
