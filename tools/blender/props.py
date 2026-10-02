@@ -15792,7 +15792,181 @@ def fallen_elephant_statue():
 	return p.build(bevel=0.04)
 
 
+# ---- the city banks: one hall in each city, walked into through a pillared
+# front with no door. The banker keeps a counter at the back under a vault door,
+# the guild registrar a desk to one side, the Pathcaller stands by the doors;
+# guards flank the front outside. 12 x 9 m (Rainhold's 13 x 8, on its deck),
+# facing -Y, its floor top at the origin. Each city's in its own stone and
+# trim, with a touch of its own. Collide them as meshes.
+
+BANK_STYLES = {
+	"emberhold": {"wall": STONE_LIGHT, "dark": STONE_DARK, "trim": GOLD, "roof": CLAY, "roof_kind": "gable", "column": STONE_LIGHT, "lamp": FLAME, "floor": STONE_DARK},
+	"lanternhold": {"wall": STONE_WARM, "dark": STONE_DARK, "trim": CLOTH_RED, "roof": TEAL, "roof_kind": "sweep", "column": CLOTH_RED, "lamp": FLAG_YELLOW, "floor": STONE_LIGHT},
+	"rainhold": {"wall": WOOD, "dark": WOOD_GRAY, "trim": BAMBOO, "roof": BAMBOO, "roof_kind": "thatch", "column": WOOD, "lamp": FLAME, "floor": WOOD_GRAY},
+	"forgehold": {"wall": STONE_DARK, "dark": IRON, "trim": COPPER, "roof": IRON, "roof_kind": "flat", "column": STONE_DARK, "lamp": EMBER, "floor": IRON},
+	"galehold": {"wall": CLOTH_WHITE, "dark": STONE_LIGHT, "trim": RUNE, "roof": RUNE, "roof_kind": "gable", "column": CLOTH_WHITE, "lamp": FLAG_YELLOW, "floor": STONE_LIGHT},
+	"barrowhold": {"wall": STONE_DARK, "dark": IRON, "trim": SILVER, "roof": IRON, "roof_kind": "steep", "column": STONE_DARK, "lamp": VIOLET, "floor": IRON},
+	"murkhold": {"wall": CLAY, "dark": WOOD_GRAY, "trim": BONE, "roof": HIDE, "roof_kind": "hide", "column": WOOD_GRAY, "lamp": SLIME, "floor": WOOD_GRAY},
+	"duskhold": {"wall": STONE_DARK, "dark": IRON, "trim": PETAL_PURPLE, "roof": STONE_DARK, "roof_kind": "dome", "column": STONE_DARK, "lamp": PETAL_PURPLE, "floor": IRON},
+}
+
+
+def _bank(name, city):
+	st = BANK_STYLES[city]
+	p = Prop(name, 2200 + len(city))
+	W, D, H = (13.0, 8.0, 4.2) if city == "rainhold" else (12.0, 9.0, 4.8)
+	hw, hd = W / 2, D / 2
+	T = 0.5                                                                        # wall thickness
+	p.box((W + 0.4, D + 0.4, 0.06), (0, 0, -0.03), st["floor"], grad=(0.3, 0.9))  # the floor, flush with the ground
+	p.box((W, T, H), (0, hd - T / 2, H / 2), st["wall"], grad=(0.25, 0.85))       # back wall
+	for s in (1, -1):
+		p.box((T, D, H), (s * (hw - T / 2), 0, H / 2), st["wall"], grad=(0.25, 0.85))      # side walls
+		p.box((1.6, T, H), (s * (hw - 0.8), -hd + T / 2, H / 2), st["wall"], grad=(0.25, 0.85))  # the front's solid ends
+		p.box((T + 0.12, D + 0.2, 0.3), (s * (hw - T / 2), 0, 0.15), st["dark"], grad=(0.2, 0.9))  # plinth course
+	p.box((W + 0.3, D + 0.3, 0.45), (0, 0, H + 0.22), st["trim"], grad=(0.1, 0.7))  # cornice all round
+	p.box((W - 3.2, T, 0.9), (0, -hd + T / 2, H - 0.45), st["wall"], grad=(0.25, 0.85))  # the lintel over the opening
+	# the front: four columns across a wide open doorway
+	for x in (-3.3, -1.1, 1.1, 3.3):
+		if city == "rainhold":
+			p.seg((x, -hd - 0.1, 0), (x, -hd - 0.1, H), 0.2, 0.18, st["column"], sides=8, grad=(0.2, 0.9))
+		else:
+			p.box((0.75, 0.75, 0.3), (x, -hd - 0.15, 0.15), st["dark"], grad=(0.2, 0.9))   # base
+			p.seg((x, -hd - 0.15, 0.3), (x, -hd - 0.15, H - 0.25), 0.27, 0.23, st["column"], sides=12, grad=(0.15, 0.85))
+			p.box((0.75, 0.75, 0.25), (x, -hd - 0.15, H - 0.12), st["trim"], grad=(0.1, 0.7))  # capital
+	# inside: the counter across the back with its grille, the banker behind it
+	cy = hd - 2.4
+	p.box((W - 4.0, 0.8, 1.05), (0, cy, 0.52), st["dark"], grad=(0.2, 0.9))
+	p.box((W - 3.8, 1.0, 0.1), (0, cy, 1.1), st["trim"], grad=(0.1, 0.7))         # its top
+	for k in range(9):                                                              # the grille
+		x = -(W - 4.6) / 2 + (W - 4.6) * k / 8
+		p.seg((x, cy + 0.2, 1.15), (x, cy + 0.2, 2.0), 0.025, 0.025, IRON, sides=5)
+	p.box((W - 4.4, 0.06, 0.08), (0, cy + 0.2, 2.0), IRON)
+	for x in (-1.6, 1.6):                                                           # two windows through it
+		p.box((1.1, 0.07, 0.08), (x, cy + 0.2, 1.55), IRON)
+	# the vault door in the back wall: a great round door, its wheel and bolts
+	vz = 2.1
+	p.seg((0, hd - T - 0.02, vz), (0, hd - T - 0.2, vz), 1.25, 1.25, IRON, sides=20, grad=(0.2, 0.6))
+	p.seg((0, hd - T - 0.2, vz), (0, hd - T - 0.3, vz), 1.0, 1.0, st["trim"], sides=20, grad=(0.1, 0.6))
+	for k in range(8):
+		a = math.pi * 2 * k / 8
+		p.seg((0, hd - T - 0.3, vz), (0.75 * math.cos(a), hd - T - 0.34, vz + 0.75 * math.sin(a)), 0.05, 0.05, IRON, sides=5)
+		p.blob((0.14, 0.1, 0.14), (1.12 * math.cos(a), hd - T - 0.22, vz + 1.12 * math.sin(a)), st["trim"], segs=(6, 4))
+	p.seg((0, hd - T - 0.3, vz), (0, hd - T - 0.45, vz), 0.18, 0.18, st["trim"], sides=10)
+	# coin chests either side behind the counter, a glint of gold in them
+	for s in (1, -1):
+		p.box((1.0, 0.65, 0.6), (s * (hw - 1.4), hd - 1.2, 0.3), WOOD, grad=(0.2, 0.9))
+		p.box((1.05, 0.7, 0.08), (s * (hw - 1.4), hd - 1.2, 0.62), IRON)
+		p.box((0.8, 0.45, 0.06), (s * (hw - 1.4), hd - 1.2, 0.68), GOLD, glow=0.4)
+	# the registrar's desk on the left (-X), a ledger open on it
+	p.box((1.8, 0.9, 0.85), (-hw + 1.6, -0.6, 0.42), WOOD, grad=(0.2, 0.9))
+	p.box((0.6, 0.4, 0.06), (-hw + 1.6, -0.6, 0.88), CLOTH_WHITE)
+	p.seg((-hw + 2.1, -0.4, 0.9), (-hw + 2.15, -0.35, 1.15), 0.01, 0.006, CLOTH_WHITE, sides=4)  # a quill
+	# lamps on the walls inside, and one either side of the doors outside
+	for at in ((-hw + T + 0.15, 1.5, 3.0), (hw - T - 0.15, 1.5, 3.0), (-2.2, hd - T - 0.15, 3.3), (2.2, hd - T - 0.15, 3.3)):
+		p.box((0.22, 0.22, 0.35), at, st["lamp"], glow=1.6)
+	for s in (1, -1):
+		p.seg((s * 4.9, -hd - 0.3, 2.6), (s * 4.9, -hd - 0.75, 2.6), 0.04, 0.04, IRON, sides=4)
+		p.box((0.26, 0.26, 0.4), (s * 4.9, -hd - 0.8, 2.45), st["lamp"], glow=1.6)
+	# a sign over the doors: a gold coin on the lintel
+	p.seg((0, -hd - 0.02, H - 0.45), (0, -hd - 0.14, H - 0.45), 0.42, 0.42, GOLD, sides=16, glow=0.3)
+	p.seg((0, -hd - 0.14, H - 0.45), (0, -hd - 0.18, H - 0.45), 0.3, 0.3, st["trim"], sides=16)
+	_bank_roof(p, st, W, D, H + 0.45)
+	_bank_touch(p, city, st, W, D, H)
+	return p.build(bevel=0.05)
+
+
+def _bank_roof(p, st, W, D, z0):
+	kind = st["roof_kind"]
+	if kind in ("gable", "steep", "thatch"):
+		h = 3.4 if kind == "steep" else (2.8 if kind == "thatch" else 2.2)
+		half = D / 2 + 0.5
+		slope = math.hypot(half, h)
+		ang = math.atan2(h, half)
+		for s in (1, -1):   # two planes, ridge along X (across the front), so the gable ends face the sides
+			down = Vector((0, math.cos(ang) * s, -math.sin(ang)))
+			base = Vector((0, 0, z0 + h))
+			p.box((W + 0.9, slope + 0.2, 0.25 if kind == "thatch" else 0.16), base + down * slope / 2, st["roof"], rot=(-math.degrees(ang) * s, 0, 0), grad=(0.0, 0.8))
+		for x in (-W / 2 - 0.05, W / 2 + 0.05):   # the gable ends
+			t = 0.2
+			tri = [(-half + 0.4, z0), (half - 0.4, z0), (0, z0 + h - 0.15)]
+			verts = [(x - t / 2, y, z) for y, z in tri] + [(x + t / 2, y, z) for y, z in tri]
+			p.poly(verts, [(0, 2, 1), (3, 4, 5), (0, 1, 4, 3), (1, 2, 5, 4), (2, 0, 3, 5)], st["wall"], grad=(0.2, 0.8))
+		p.seg((-W / 2 - 0.5, 0, z0 + h + 0.1), (W / 2 + 0.5, 0, z0 + h + 0.1), 0.14, 0.14, st["trim"], sides=6)   # the ridge
+	elif kind == "sweep":   # Lanternhold: a low hipped roof whose eaves sweep up at the corners
+		p.box((W + 1.6, D + 1.6, 0.18), (0, 0, z0 + 0.1), st["roof"], grad=(0.1, 0.8))
+		p.box((W - 1.0, D - 1.0, 1.0), (0, 0, z0 + 0.7), st["roof"], grad=(0.1, 0.8))
+		p.box((W - 3.0, D - 3.0, 0.5), (0, 0, z0 + 1.4), st["roof"], grad=(0.1, 0.8))
+		p.box((W - 2.6, 0.2, 0.2), (0, 0, z0 + 1.75), st["trim"])
+		for sx in (1, -1):
+			for sy in (1, -1):
+				p.seg((sx * (W / 2 + 0.6), sy * (D / 2 + 0.6), z0 + 0.15), (sx * (W / 2 + 1.1), sy * (D / 2 + 1.1), z0 + 0.75), 0.12, 0.05, st["roof"], sides=6)
+	elif kind == "flat":    # Forgehold: a flat roof behind a stepped parapet
+		p.box((W + 0.3, D + 0.3, 0.3), (0, 0, z0 + 0.15), st["roof"])
+		for x in range(-5, 6, 2):
+			p.box((1.0, 0.5, 0.6), (x * 1.0, -D / 2 - 0.1, z0 + 0.6), st["dark"])
+		p.box((W * 0.5, D * 0.5, 1.2), (0, 0.8, z0 + 0.9), st["wall"], grad=(0.2, 0.9))   # a raised clerestory block
+	elif kind == "hide":    # Murkhold: hides lashed over a ridge pole, bones holding them down
+		h = 2.6
+		half = D / 2 + 0.7
+		slope = math.hypot(half, h)
+		ang = math.atan2(h, half)
+		for s in (1, -1):
+			down = Vector((0, math.cos(ang) * s, -math.sin(ang)))
+			p.box((W + 1.2, slope + 0.4, 0.2), Vector((0, 0, z0 + h)) + down * slope / 2, st["roof"], rot=(-math.degrees(ang) * s, 0, 0), grad=(0.1, 0.9))
+		p.seg((-W / 2 - 1.0, 0, z0 + h + 0.15), (W / 2 + 1.0, 0, z0 + h + 0.15), 0.22, 0.22, WOOD_GRAY, sides=7)
+		for x in (-W / 2 - 1.0, W / 2 + 1.0):   # tusks crossed at the ridge ends
+			for s in (1, -1):
+				p.seg((x, 0, z0 + h + 0.1), (x + 0.3 * (1 if x > 0 else -1), s * 0.7, z0 + h + 1.2), 0.1, 0.02, BONE, sides=6)
+	elif kind == "dome":    # Duskhold: a low dome with a spire
+		p.box((W + 0.2, D + 0.2, 0.3), (0, 0, z0 + 0.15), st["roof"])
+		p.blob((D * 0.95, D * 0.95, 3.4), (0, 0, z0 + 0.3), st["roof"], segs=(16, 8), grad=(0.1, 0.8))
+		p.seg((0, 0, z0 + 1.9), (0, 0, z0 + 4.2), 0.3, 0.0, st["trim"], sides=8, glow=0.6)
+
+
+def _bank_touch(p, city, st, W, D, H):
+	"""Each city's own touch on its bank."""
+	hd = D / 2
+	if city == "lanternhold":   # paper lanterns hung along the front
+		for x in (-5.0, -2.2, 0.0, 2.2, 5.0):
+			p.seg((x, -hd - 0.6, H + 0.2), (x, -hd - 0.6, H - 0.5), 0.015, 0.015, IRON, sides=4)
+			p.blob((0.42, 0.42, 0.56), (x, -hd - 0.6, H - 0.8), FLAG_YELLOW, segs=(8, 6), glow=1.4)
+	elif city == "forgehold":   # braziers of coals either side of the steps
+		for s in (1, -1):
+			p.seg((s * 6.6, -hd - 1.0, 0), (s * 6.6, -hd - 1.0, 0.9), 0.25, 0.35, IRON, sides=8)
+			p.blob((0.7, 0.7, 0.3), (s * 6.6, -hd - 1.0, 0.95), EMBER, segs=(8, 5), glow=2.0)
+	elif city == "galehold":    # pennants on the corners
+		for s in (1, -1):
+			p.seg((s * (W / 2), -hd, H + 0.4), (s * (W / 2), -hd, H + 2.6), 0.05, 0.05, WOOD, sides=5)
+			p.box((0.04, 1.2, 0.5), (s * (W / 2), -hd + 0.6, H + 2.3), RUNE)
+	elif city == "barrowhold":  # violet lancets in the side walls, and crescents over the doors
+		for s in (1, -1):
+			for y in (-1.5, 1.5):
+				_lancet(p, (s * (W / 2 + 0.02), y, 1.4), 0.7, 1.9, yaw=90 * s, pane=VIOLET, glow=1.4, frame=SILVER)
+		_crescent(p, (0, -hd - 0.25, H + 0.9), 0.45, yaw=90, swatch=SILVER)
+	elif city == "murkhold":    # bones staked before it and a skull over the doors
+		for s in (1, -1):
+			p.seg((s * 6.5, -hd - 1.2, 0), (s * 6.4, -hd - 1.3, 2.4), 0.09, 0.05, BONE, sides=6)
+			p.blob((0.45, 0.4, 0.42), (s * 6.4, -hd - 1.3, 2.55), BONE, segs=(8, 6))
+		p.blob((0.7, 0.5, 0.55), (0, -hd - 0.3, H + 0.75), BONE, segs=(8, 6))
+	elif city == "duskhold":    # glow crystals at the corners
+		for sx in (1, -1):
+			for sy in (1, -1):
+				p.seg((sx * (W / 2 + 0.3), sy * (hd + 0.3), 0), (sx * (W / 2 + 0.4), sy * (hd + 0.4), 1.6), 0.28, 0.0, PETAL_PURPLE, sides=6, glow=1.4)
+	elif city == "emberhold":   # a banner either side of the doors
+		for s in (1, -1):
+			p.box((1.0, 0.06, 2.2), (s * 4.9, -hd - 0.05, 3.0), CLOTH_RED, grad=(0.2, 0.9))
+			p.box((0.5, 0.07, 0.5), (s * 4.9, -hd - 0.09, 3.3), GOLD, glow=0.3)
+
+
 PROPS = {
+	"bank_emberhold": lambda: _bank("bank_emberhold", "emberhold"),
+	"bank_lanternhold": lambda: _bank("bank_lanternhold", "lanternhold"),
+	"bank_rainhold": lambda: _bank("bank_rainhold", "rainhold"),
+	"bank_forgehold": lambda: _bank("bank_forgehold", "forgehold"),
+	"bank_galehold": lambda: _bank("bank_galehold", "galehold"),
+	"bank_barrowhold": lambda: _bank("bank_barrowhold", "barrowhold"),
+	"bank_murkhold": lambda: _bank("bank_murkhold", "murkhold"),
+	"bank_duskhold": lambda: _bank("bank_duskhold", "duskhold"),
 	"bridge_stone": bridge_stone,
 	"bamboo_clump": bamboo_clump,
 	"bamboo_clump_b": bamboo_clump_b,

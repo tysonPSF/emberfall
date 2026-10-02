@@ -799,6 +799,19 @@
       "labels": [
         "The Wallow"
       ]
+    },
+    {
+      "type": "prop",
+      "id": "bank_murkhold",
+      "pos": [
+        -32,
+        -6
+      ],
+      "face": [
+        -20.2,
+        -3.8
+      ],
+      "collide": "mesh"
     }
   ],
   "npcs": [
@@ -849,34 +862,56 @@
     {
       "id": "murk_banker",
       "pos": [
-        -30,
-        -6
+        -35.1,
+        -6.6
       ],
       "face": [
-        0,
-        0
+        -26.1,
+        -4.9
+      ]
+    },
+    {
+      "id": "murkhold_guard_ogre",
+      "pos": [
+        -24.9,
+        -10.6
+      ],
+      "face": [
+        -6.9,
+        -7.2
+      ]
+    },
+    {
+      "id": "murkhold_guard_ogre",
+      "pos": [
+        -27.1,
+        0.8
+      ],
+      "face": [
+        -9.0,
+        4.2
       ]
     },
     {
       "id": "murk_registrar",
       "pos": [
-        -30,
-        6
+        -33.1,
+        -1.7
       ],
       "face": [
-        0,
-        0
+        -29.1,
+        -5.4
       ]
     },
     {
       "id": "pc_grumm",
       "pos": [
-        -30,
-        -18
+        -28.0,
+        -9.5
       ],
       "face": [
-        0,
-        0
+        -32.0,
+        -6.0
       ]
     },
     {

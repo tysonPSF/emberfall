@@ -254,6 +254,19 @@
   ],
   "landmarks": [
     {
+      "type": "prop",
+      "id": "bank_lanternhold",
+      "pos": [
+        -14,
+        20
+      ],
+      "face": [
+        -7.1,
+        10.2
+      ],
+      "collide": "mesh"
+    },
+    {
       "type": "wall_ring",
       "pos": [
         0,
@@ -706,23 +719,45 @@
     {
       "id": "banker_tamsyn",
       "pos": [
-        12,
-        24
+        -15.8,
+        22.6
       ],
       "face": [
-        0,
-        0
+        -10.6,
+        15.1
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "pos": [
+        -15.3,
+        11.7
+      ],
+      "face": [
+        -4.7,
+        -3.4
+      ]
+    },
+    {
+      "id": "lanternhold_guard",
+      "pos": [
+        -5.8,
+        18.3
+      ],
+      "face": [
+        4.8,
+        3.3
       ]
     },
     {
       "id": "pc_sela",
       "pos": [
-        8.4,
-        25.8
+        -15.5,
+        14.9
       ],
       "face": [
-        11,
-        13
+        -14.0,
+        20.0
       ]
     },
     {
@@ -853,12 +888,12 @@
     {
       "id": "guild_registrar_lanternhold",
       "pos": [
-        15.6,
-        22.2
+        -10.6,
+        22.8
       ],
       "face": [
-        11.1,
-        13.3
+        -12.3,
+        17.5
       ]
     }
   ],

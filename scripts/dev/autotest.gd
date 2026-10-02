@@ -159,6 +159,7 @@ const SECTIONS := [
 	["repeat_quests", "greenmoor"],
 	["bank_coin_amounts", "emberhold"],
 	["compare_slots", "greenmoor"],
+	["city_banks", "emberhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11146,3 +11147,70 @@ func _t_compare_slots() -> void:
 	print("compare_slots: one ring slot empty -> %s" % [heads.call(one_ring)])
 	print("compare_slots: a warrior dual wielding, a new shortsword -> %s" % [dual.filter(func(l: String) -> bool: return l != "")])
 	print("compare_slots: a wizard (no dual wield) -> %s" % [heads.call(single)])
+
+
+## Every city's bank: the building stands where it was put, the banker,
+## registrar and Pathcaller are inside it, and you can walk up to the counter
+## and bank across it.
+func _t_city_banks() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var bankers := {"emberhold": "banker_odile", "lanternhold": "banker_tamsyn", "rainhold": "banker_oduya", "forgehold": "banker_hollis",
+			"galehold": "banker_corwin", "barrowhold": "banker_severin", "murkhold": "murk_banker", "duskhold": "dusk_banker"}
+	World.time_override = 12.0
+	p.god_mode = true  # the human tester isn't welcome in Murkhold or Duskhold: the guards would cut the visit short
+	var only := OS.get_environment("BANKS_ONLY")
+	for zone_id: String in bankers:
+		if only != "" and not zone_id in only.split(","):
+			continue
+		var faction := str(GameData.npcs[bankers[zone_id]].get("faction", ""))
+		var keep_standing: Variant = p.factions.get(faction)
+		p.factions[faction] = 1000  # and the banker would refuse them
+		while main._changing_zone:
+			await _wait(0.25)
+		if (main.zone as Zone).zone_id != zone_id:
+			World.zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
+			for k in 120:
+				if (main.zone as Zone).zone_id == zone_id and not main._changing_zone:
+					break
+				await _wait(0.25)
+			await _wait(1.0)
+		var z := main.zone as Zone
+		var banker: Npc = _npcs()[bankers[zone_id]]
+		var at := Vector2(banker.global_position.x, banker.global_position.z)
+		var center := Vector2.INF  # the bank's middle: its landmark, or Rainhold's piece of the stilt city
+		for lm: Dictionary in z.data.get("landmarks", []):
+			if str(lm.get("id", "")) == "bank_" + zone_id:
+				center = Vector2(lm["pos"][0], lm["pos"][1])
+			for piece: Array in lm.get("pieces", []):
+				if str(piece[0]) == "bank_" + zone_id:
+					center = Vector2(piece[1], piece[2])
+		var out := (center - at).normalized()  # the banker stands at the back: the doors are this way
+		# out front, looking in
+		var front := at + out * (9.0 if zone_id == "rainhold" else 13.0)  # Rainhold's walkway is narrow: the hall across it is close
+		p.global_position = Vector3(front.x, z.surface_at(front.x, front.y) + 0.1, front.y)
+		p.face_toward(banker.global_position)
+		p.zoom = 5.5
+		p.pitch = -0.25
+		await _wait(1.2)
+		await _shot("9zz_bank_" + zone_id)
+		# walk up to the counter and bank across it
+		var counter := at + out * 2.0
+		p.global_position = Vector3(counter.x, z.surface_at(counter.x, counter.y) + 0.1, counter.y)
+		p.face_toward(banker.global_position)
+		await _wait(0.3)
+		World.request_set_target(p.entity_id, banker.entity_id)
+		World.request_interact(p.entity_id)
+		await _wait(0.3)
+		var opened := p.service == "bank"
+		World.request_service_close(p.entity_id)
+		p.zoom = 1.6
+		await _wait(0.6)
+		await _shot("9zz_bank_inside_" + zone_id)
+		if keep_standing == null:
+			p.factions.erase(faction)
+		else:
+			p.factions[faction] = keep_standing
+		print("city_banks: %s - banker at %s, the bank opened across the counter %s (%.1f m away)" % [zone_id, at, opened,
+				p.global_position.distance_to(banker.global_position)])
+	p.god_mode = false

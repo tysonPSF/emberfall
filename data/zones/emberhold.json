@@ -16,6 +16,19 @@
   "road_lamps": 13,
   "landmarks": [
     {
+      "type": "prop",
+      "id": "bank_emberhold",
+      "pos": [
+        27.2,
+        36.6
+      ],
+      "face": [
+        20.0,
+        27.0
+      ],
+      "collide": "mesh"
+    },
+    {
       "type": "wall_ring",
       "pos": [
         0,
@@ -582,23 +595,45 @@
     {
       "id": "banker_odile",
       "pos": [
-        2.2,
-        25.6
+        29.1,
+        39.2
       ],
       "face": [
-        0,
-        0
+        23.6,
+        31.8
+      ]
+    },
+    {
+      "id": "emberhold_guard",
+      "pos": [
+        18.9,
+        35.2
+      ],
+      "face": [
+        7.9,
+        20.4
+      ]
+    },
+    {
+      "id": "emberhold_guard",
+      "pos": [
+        28.2,
+        28.2
+      ],
+      "face": [
+        17.2,
+        13.5
       ]
     },
     {
       "id": "pc_oren",
       "pos": [
-        10.2,
-        25.3
+        21.9,
+        36.5
       ],
       "face": [
-        10.2,
-        15
+        27.2,
+        36.6
       ]
     },
     {
@@ -681,12 +716,12 @@
     {
       "id": "guild_registrar_emberhold",
       "pos": [
-        6.2,
-        25.3
+        30.9,
+        34.2
       ],
       "face": [
-        5.3,
-        15.3
+        25.4,
+        34.2
       ]
     }
   ],

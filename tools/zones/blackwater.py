@@ -327,6 +327,7 @@ def murkhold():
     for pid, spot in [("forge", [42, 24]), ("oven", [48, 32]), ("loom", [40, 42]), ("brew_barrel", [28, 44])]:
         L.append(prop(pid, spot, face=[34, 34], collide="box"))
     L.append({"type": "signpost", "pos": [84, 6], "face": [100, 6], "labels": ["The Wallow"]})
+    L.append(prop("bank_murkhold", [-32, -6], face=[-20.2, -3.8], collide="mesh"))   # the bank: banker, registrar and Pathcaller inside
     L = [l for l in L if l]
     npcs = []
 
@@ -362,16 +363,18 @@ def murkhold():
         guildmaster={"class": "shaman", "refuse": "The spirits don't talk to you, {name}. I can't change that."}), [-40, 14], [-52, -6])
     put(npc("murk_banker", "Hoardkeeper Mulg", F, "ogre", "barbarian", {
         "hail": "Mulg keeps your things. Mulg does not eat your things. Mostly. Press G.",
-        "unknown": "Mulg only keeps things."}, title="Murkhold Hoard", banker=True, level=20), [-30, -6], [0, 0])
+        "unknown": "Mulg only keeps things."}, title="Murkhold Hoard", banker=True, level=20), [-35.1, -6.6], [-26.1, -4.9])  # behind the bank's counter
     put(npc("murk_registrar", "Registrar Oolg", F, "ogre", "mage", {
         "hail": "Oolg writes the names of the warbands, {name}. Want a [charter]?",
         "charter": "Ten platinum, and level 10 at least. Stand here and say /guildcreate <name>. Oolg will write it big.",
         "guild": "A warband with a name, and the others hear each other with /gu. Ask Oolg for a [charter].",
-        "unknown": "Oolg only writes names."}, title="Guild Registrar", guild_registrar=True, level=30), [-30, 6], [0, 0])
+        "unknown": "Oolg only writes names."}, title="Guild Registrar", guild_registrar=True, level=30), [-33.1, -1.7], [-29.1, -5.4])
     put(npc("pc_grumm", "Pathcaller Grumm", F, "troll", "mage", {
         "hail": "Grumm smells where you've been, {name}. Every bog, every road. Pay, and Grumm opens the mud and you come up there. Far places cost more. Press G.",
         "farewell": "Hold your breath. ...Gone.",
-        "unknown": "Grumm only knows roads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), [-30, -18], [0, 0])
+        "unknown": "Grumm only knows roads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), [-28.0, -9.5], [-32.0, -6.0])
+    for gp, gf in [[[-24.9, -10.6], [-6.9, -7.2]], [[-27.1, 0.8], [-9.0, 4.2]]]:   # the bank's guards, at its doors
+        put("murkhold_guard_ogre", gp, gf)
     put(npc("murk_provisioner", "Provisioner Sleesh", F, "troll", "rogue", {
         "hail": "Flour, salt, thread, bait... all the things that aren't food yet, {name}. Press G.",
         "unknown": "Buying or not?"}, title="Provisioner", level=25, merchant={"sells": SUPPLIES, "buy_rate": 0.5}), [36, 26], [42, 34])
@@ -650,6 +653,7 @@ def duskhold():
         L.append(prop("stalagmite_cluster", at(b + 7, 98), collide="box"))
     for b in range(10, 360, 40):
         L.append(prop("candle_stand", at(b, 48), collide="trunk"))
+    L.append(prop("bank_duskhold", [47.0, -19.1], face=[35.9, -14.6], collide="mesh"))   # the bank: banker, registrar and Pathcaller inside
     for pid, b in [("forge", 232), ("oven", 238), ("loom", 244), ("brew_barrel", 250)]:
         L.append(prop(pid, at(b, 50), face=[0, 0], collide="box"))
     L = [l for l in L if l]
@@ -693,16 +697,18 @@ def duskhold():
                 guildmaster={"class": cls, "refuse": "Not my art, {name}. Look elsewhere."}), at(b, 66), (0, 0))
     put(npc("dusk_banker", "Vaultkeeper Nyx", F, "dark_elf", "rogue_hooded", {
         "hail": "Your treasures are safe beneath the world, {name}. Safer than you are. Press G.", "unknown": "I keep the vault."},
-        title="Duskhold Vault", banker=True, gender="female", level=20), at(20, 50), (0, 0))
+        title="Duskhold Vault", banker=True, gender="female", level=20), [50.0, -20.3], [41.4, -16.8])  # behind the bank's counter
     put(npc("dusk_registrar", "Registrar Tsyl", F, "dark_elf", "mage", {
         "hail": "The houses of Duskhold are written in my book, {name}. Would you found one? Ask for a [charter].",
         "charter": "Ten platinum, and you must have reached level 10. Stand before me and say /guildcreate <name>.",
         "guild": "A house: a name, a roster, and a voice its members hear anywhere with /gu. Ask for a [charter].",
-        "unknown": "I keep the book of houses."}, title="Guild Registrar", guild_registrar=True, level=30), at(34, 50), (0, 0))
+        "unknown": "I keep the book of houses."}, title="Guild Registrar", guild_registrar=True, level=30), [45.6, -23.3], [44.2, -18.0])
     put(npc("pc_vaelith", "Pathcaller Vaelith", F, "dark_elf", "mage", {
         "hail": "Every road you've walked leaves a thread, {name}, and I can pull you along any of them. For a price: the longer the thread, the dearer it is. Press G.",
         "farewell": "Close your eyes. The dark carries you.",
-        "unknown": "I only know the threads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), at(6, 50), (0, 0))
+        "unknown": "I only know the threads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), [45.5, -14.0], [47.0, -19.1])
+    for gp, gf in [[[43.5, -11.4], [26.5, -4.5]], [[39.2, -22.2], [22.1, -15.2]]]:   # the bank's guards, at its doors
+        put("duskhold_guard", gp, gf)
     put(npc("dusk_provisioner", "Provisioner Aelis", F, "dark_elf", "rogue", {
         "hail": "Salt, thread, flour and the rest, {name}, carried down the long stair at great expense. Press G.",
         "unknown": "Buying?"}, title="Provisioner", gender="female", level=25, merchant={"sells": SUPPLIES, "buy_rate": 0.5}), at(240, 58), (0, 0))

@@ -1286,7 +1286,7 @@ const STILT_DECKS := {"stilt_platform": Vector2(4.5, 4.5), "stilt_walkway": Vect
 		# Reedmere's drowned village and Drownfast's causeways (the same way: walkable tops at deck height)
 		"stilt_platform_broken": Vector2(4.5, 4.5), "stilt_walkway_broken": Vector2(1.5, 4.5),
 		"causeway_span": Vector2(1.15, 4.5), "causeway_broken": Vector2(1.15, 4.5), "citadel_platform": Vector2(4.5, 4.5)}
-const STILT_ON_DECK := ["stilt_hall", "stilt_house", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack",
+const STILT_ON_DECK := ["stilt_hall", "stilt_house", "bank_rainhold", "jalendra_shrine", "barrel_small", "crates_stacked", "market_stall", "drying_rack",
 		"oven", "loom", "brew_barrel", "forge"]
 
 
@@ -1305,7 +1305,7 @@ func _build_stilt_city(lm: Dictionary) -> void:
 			_prop(id, at, yaw, 1.0, "mesh")
 			_decks.append([Transform3D(Basis(Vector3.UP, yaw), at), STILT_DECKS[id]])
 		elif id in STILT_ON_DECK:
-			_prop(id, at + Vector3.UP * 0.02, yaw, 1.0, "mesh" if id.begins_with("stilt") or id == "jalendra_shrine" else "box")
+			_prop(id, at + Vector3.UP * 0.02, yaw, 1.0, "mesh" if id.begins_with("stilt") or id.begins_with("bank") or id == "jalendra_shrine" else "box")
 		elif id == "boardwalk_ramp":
 			_prop(id, at, yaw, 1.0, "mesh")
 		elif id in ["canoe", "rowboat"]:
