@@ -161,6 +161,8 @@ const SECTIONS := [
 	["compare_slots", "greenmoor"],
 	["city_banks", "emberhold"],
 	["room_floors", "emberhold"],
+	["cast_bar_move", "greenmoor"],
+	["bind_sitting", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11238,3 +11240,50 @@ func _t_room_floors() -> void:
 	await _wait(0.8)
 	await _shot("9zz_crypt_floor")
 	print("room_floors: the crypt's ground drawn %s; standing at %.2f" % [ground_drawn, p.global_position.y])
+
+
+## The cast bar moves like the other windows: it shows while Settings is open
+## so it can be dragged, and keeps where it was left.
+func _t_cast_bar_move() -> void:
+	var hud = get_parent().hud
+	var hidden_before: bool = not hud._cast_panel.visible
+	hud._settings_panel.visible = true
+	hud._update_cast()
+	var shown: bool = hud._cast_panel.visible
+	var draggable: bool = hud._cast_panel.has_meta("drag_key")
+	await _wait(0.2)
+	await _shot("9zz_cast_bar_settings")
+	hud._settings_panel.visible = false
+	hud._update_cast()
+	print("cast_bar_move: draggable %s; hidden when not casting %s, shown with Settings open %s, hidden again %s" % [draggable, hidden_before, shown,
+			not hud._cast_panel.visible])
+
+
+## Bind Wound while resting: you stay sitting (and resting) while you bandage.
+func _t_bind_sitting() -> void:
+	var p := World.local_player
+	var keep := [p.char_class, p.level, p.spells.duplicate(), p.cooldowns.duplicate()]
+	p.char_class = "warrior"
+	p.level = 10
+	p.recalc_stats()
+	if not "bind_wound" in p.spells:
+		p.spells.append("bind_wound")
+	p.cooldowns.erase("bind_wound")
+	p.hp = maxi(1, p.max_hp / 3)
+	World.request_sit(p.entity_id, true)
+	var hp0 := p.hp
+	World.request_cast(p.entity_id, "bind_wound")
+	var casting := not p.cast.is_empty()
+	var sat_casting := p.sitting
+	await _wait(4.6)
+	var healed := p.hp - hp0
+	var still := p.sitting
+	await _shot("9zz_bind_sitting")
+	World.request_sit(p.entity_id, false)
+	p.char_class = keep[0]
+	p.level = keep[1]
+	p.spells = keep[2]
+	p.cooldowns = keep[3]
+	p.recalc_stats()
+	p.hp = p.max_hp
+	print("bind_sitting: sat down, Bind Wound -> casting %s still sitting %s; done -> healed %d (with resting), still sitting %s" % [casting, sat_casting, healed, still])

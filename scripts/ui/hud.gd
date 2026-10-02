@@ -1843,7 +1843,7 @@ func _build_stats_window() -> void:
 func _make_draggable() -> void:
 	for pair: Array in [[_player_panel, "player"], [_target_panel, "target"], [_pet_panel, "pet"], [_group_panel, "group"], [_buff_panel, "buffs"],
 			[_debuff_panel, "debuffs"], [_quest_panel, "quests"], [_log_panel, "chat"], [_group_log_panel, "tells"], [_track_panel, "track"],
-			[_friends_panel, "friends"], [_guild_panel, "guild"], [_journal_panel, "journal"]]:
+			[_friends_panel, "friends"], [_guild_panel, "guild"], [_journal_panel, "journal"], [_cast_panel, "cast"]]:
 		UIKit.draggable(pair[0], pair[1])
 
 
@@ -3395,6 +3395,9 @@ func _refresh_settings() -> void:
 	reset.tooltip_text = "Puts every window you've dragged back where it started."
 	reset.pressed.connect(func() -> void: UIKit.reset_windows(root))
 	_settings_rows.add_child(reset)
+	var cast_hint := UIKit.label("Drag any window by its background to move it. The cast bar shows while Settings is open, so you can place it too.", 12, UIKit.DIM)
+	cast_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_settings_rows.add_child(cast_hint)
 
 
 ## A volume slider with its label, the music's or the sound effects': in
@@ -3692,8 +3695,12 @@ func _update_target() -> void:
 
 
 func _update_cast() -> void:
-	_cast_panel.visible = not player.cast.is_empty() or player.camp_left > 0.0
-	if not player.cast.is_empty():
+	var placing := _settings_panel.visible and player.cast.is_empty() and player.camp_left <= 0.0  # shown while Settings is open, to be dragged where you want it
+	_cast_panel.visible = not player.cast.is_empty() or player.camp_left > 0.0 or placing
+	if placing:
+		_cast_label.text = "Cast bar: drag to move"
+		_cast_bar.value = 60.0
+	elif not player.cast.is_empty():
 		_cast_label.text = GameData.spells[player.cast["spell"]]["name"]
 		_cast_bar.value = 100.0 * player.cast["time"] / player.cast["total"]
 	elif player.camp_left > 0.0:

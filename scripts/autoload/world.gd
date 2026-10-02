@@ -1960,7 +1960,8 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 		if s.has("ambush"):
 			c.set_meta("ambush", float(s["ambush"]))  # an opener from the shadows hits harder
 		unhide(c)
-	c.sitting = false
+	if not s.get("while_sitting", false):  # Bind Wound can be done resting; everything else gets you up
+		c.sitting = false
 	if c is Player and _fizzles(c as Player, s):
 		return
 	if float(s.get("cast_time", 0)) <= 0.0:

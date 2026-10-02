@@ -746,7 +746,7 @@ func _process(delta: float) -> void:
 		if anim.current_animation != _clip("dead") and anim.current_animation != _clip("death"):
 			anim.play(_clip("death"), BLEND)
 			anim.queue(_clip("dead"))
-	elif not e.cast.is_empty():
+	elif not e.cast.is_empty() and not e.sitting:  # something done sitting (Bind Wound) keeps you seated
 		_loop("cast")
 	elif e.sitting and _clip("sit") != "":
 		var chair := e is Npc and (e as Npc).seated == "chair" and _clip("sit_chair") != ""  # a seated npc: in the chair from the start, no sinking down
