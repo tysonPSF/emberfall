@@ -149,6 +149,7 @@ const SECTIONS := [
 	["lava_bridges", "cinderpass"],
 	["guard_strength", "emberhold"],
 	["talk_phrases", "cinderpass"],
+	["food_tooltips", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10199,6 +10200,18 @@ func _t_alignment() -> void:
 	p.char_class = keep[1]
 	p.factions = keep[2]
 	p.alignment_mods = keep[3]
+
+
+## Food and potions say what they do: a meal its stats and how long, a potion how much it heals or restores.
+func _t_food_tooltips() -> void:
+	var hud = get_parent().hud
+	for id in ["hunters_pie", "roast_meat", "terrace_tea"]:
+		print("food_tooltips: %s" % hud._item_tooltip(id).replace("\n", " | "))
+	for id: String in GameData.items:
+		var it: Dictionary = GameData.items[id]
+		if it is Dictionary and it.has("use") and GameData.spells.get(str(it["use"].get("spell", "")), {}).get("type", "") in ["heal", "restore_mana"]:
+			print("food_tooltips: %s" % hud._item_tooltip(id).replace("\n", " | "))
+			break
 
 
 ## A link or a phrase finds the npc's keyword inside it: Odalys's

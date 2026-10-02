@@ -3983,6 +3983,34 @@ func spell_tooltip(spell_id: String) -> String:
 	return UIKit.wrap("\n".join(lines))
 
 
+## What eating, drinking or using it does, in numbers: "+3 STR  +3 STA  +30 HP for 40 min",
+## "Heals 40-60", "Restores 30-50 mana".
+func _use_effect(sp: Dictionary) -> String:
+	match str(sp.get("type", "")):
+		"buff":
+			var parts: Array = []
+			var st: Dictionary = sp.get("stats", {})
+			for k: String in ["str", "sta", "agi", "wis", "int", "ac", "hp", "mana", "hp_regen", "mana_regen", "haste"]:
+				if st.has(k) and float(st[k]) != 0.0:
+					var label: String = {"hp_regen": "health regen", "mana_regen": "mana regen", "haste": "% haste"}.get(k, k.to_upper())
+					parts.append("%+d %s" % [int(st[k]), label] if k != "haste" else "%+d%s" % [int(st[k]), label])
+			if parts.is_empty():
+				return ""
+			var mins := int(float(sp.get("duration", 0)) / 60.0)
+			return "  ".join(parts) + (" for %d min" % mins if mins > 0 else "")
+		"heal":
+			return "Heals %s" % _span(sp)
+		"restore_mana":
+			return "Restores %s mana" % _span(sp)
+	return ""
+
+
+static func _span(sp: Dictionary) -> String:
+	var lo := int(sp.get("min", 0))
+	var hi := int(sp.get("max", 0))
+	return str(lo) if lo == hi else "%d-%d" % [lo, hi]
+
+
 func _item_tooltip(item_id: String, colored := false) -> String:
 	var it: Dictionary = GameData.item(item_id)
 	var lines: PackedStringArray = [str(it.get("name", item_id))]
@@ -4032,6 +4060,9 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 	var use: Dictionary = it.get("use", {})
 	if not use.is_empty() and GameData.spells.has(str(use["spell"])):
 		lines.append("Use: %s" % str(GameData.spells[use["spell"]].get("desc", "")))
+		var fx := _use_effect(GameData.spells[use["spell"]])
+		if fx != "":
+			lines.append(fx)
 	if it.has("desc"):
 		lines.append(str(it["desc"]))
 	if it.has("combine"):
