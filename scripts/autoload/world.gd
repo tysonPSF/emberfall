@@ -3051,7 +3051,10 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				_crit_msg(c, kind, power)
 			if s.get("ability", false):
 				c.animate(str(s.get("anim", "attack")))  # a kick, a bash, or a swing
-				_combat_msg(c, t, s.get("verb", ["hit", "hits"]), power)
+				var verb: Variant = s.get("verb", ["hit", "hits"])
+				if str(verb) == "weapon":  # a blow with whatever you hold: a sword slashes, a mace crushes
+					verb = weapon_item(c).get("verb", ["hit", "hits"])
+				_combat_msg(c, t, verb, power)
 			else:
 				say(c, "%s was hit by non-melee for %d points of damage." % [cap(t.display_name), power], C_SPELL)
 				say(t, "You were hit by non-melee for %d points of damage." % power, C_HIT_YOU)

@@ -155,6 +155,7 @@ const SECTIONS := [
 	["forge_weapons", "greenmoor"],
 	["map_zoom", "thornwood"],
 	["living_roots", "greenmoor"],
+	["blow_verbs", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10999,3 +11000,28 @@ func _unique_from(m: Mob, p: Player) -> String:
 				if str(e["item"]).contains("~"):
 					return str(e["item"])
 	return ""
+
+
+## Mighty Blow says what the weapon in your hand does: a sword slashes, a mace crushes.
+func _t_blow_verbs() -> void:
+	var p := World.local_player
+	var heard := []
+	var listen := func(text: String, _c: Color) -> void: heard.append(text)
+	World.log_message.connect(listen)
+	var said := {}
+	for weapon: String in ["rusty_short_sword", "mudjaw_tooth_club"]:
+		var mob: Mob = null
+		for m in World.get_mobs():
+			if not m.dead and p.distance_to(m) < 80.0:
+				mob = m
+				break
+		p.equipment["primary"] = weapon
+		p.recalc_stats()
+		heard.clear()
+		World._finish_spell(p, "mighty_blow", mob, true)
+		said[weapon] = heard.filter(func(l: String) -> bool: return " for " in l and "damage" in l)
+		mob.hate.clear()
+	World.log_message.disconnect(listen)
+	p.equipment.erase("primary")
+	p.recalc_stats()
+	print("blow_verbs: Mighty Blow with %s" % [said])
