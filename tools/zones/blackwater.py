@@ -368,6 +368,10 @@ def murkhold():
         "charter": "Ten platinum, and level 10 at least. Stand here and say /guildcreate <name>. Oolg will write it big.",
         "guild": "A warband with a name, and the others hear each other with /gu. Ask Oolg for a [charter].",
         "unknown": "Oolg only writes names."}, title="Guild Registrar", guild_registrar=True, level=30), [-30, 6], [0, 0])
+    put(npc("pc_grumm", "Pathcaller Grumm", F, "troll", "mage", {
+        "hail": "Grumm smells where you've been, {name}. Every bog, every road. Pay, and Grumm opens the mud and you come up there. Far places cost more. Press G.",
+        "farewell": "Hold your breath. ...Gone.",
+        "unknown": "Grumm only knows roads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), [-30, -18], [0, 0])
     put(npc("murk_provisioner", "Provisioner Sleesh", F, "troll", "rogue", {
         "hail": "Flour, salt, thread, bait... all the things that aren't food yet, {name}. Press G.",
         "unknown": "Buying or not?"}, title="Provisioner", level=25, merchant={"sells": SUPPLIES, "buy_rate": 0.5}), [36, 26], [42, 34])
@@ -695,6 +699,10 @@ def duskhold():
         "charter": "Ten platinum, and you must have reached level 10. Stand before me and say /guildcreate <name>.",
         "guild": "A house: a name, a roster, and a voice its members hear anywhere with /gu. Ask for a [charter].",
         "unknown": "I keep the book of houses."}, title="Guild Registrar", guild_registrar=True, level=30), at(34, 50), (0, 0))
+    put(npc("pc_vaelith", "Pathcaller Vaelith", F, "dark_elf", "mage", {
+        "hail": "Every road you've walked leaves a thread, {name}, and I can pull you along any of them. For a price: the longer the thread, the dearer it is. Press G.",
+        "farewell": "Close your eyes. The dark carries you.",
+        "unknown": "I only know the threads. Press G."}, title="Caller of Roads", weapon="staff", pathcaller=True, level=40), at(6, 50), (0, 0))
     put(npc("dusk_provisioner", "Provisioner Aelis", F, "dark_elf", "rogue", {
         "hail": "Salt, thread, flour and the rest, {name}, carried down the long stair at great expense. Press G.",
         "unknown": "Buying?"}, title="Provisioner", gender="female", level=25, merchant={"sells": SUPPLIES, "buy_rate": 0.5}), at(240, 58), (0, 0))

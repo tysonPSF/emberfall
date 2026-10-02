@@ -346,6 +346,7 @@ func _physics_process(delta: float) -> void:
 			_check_burden(obj as Player, delta)
 			_check_lava(obj as Player, delta)
 			_check_swim(obj as Player, delta)
+			_note_visit(obj as Player)
 	tick_timer += delta
 	if tick_timer >= float(cfg("tick_seconds", 6.0)):
 		tick_timer = 0.0
@@ -2064,6 +2065,7 @@ func _online(char_name: String) -> Player:
 func player_entered(p: Player) -> void:
 	if not Net.is_authority() or p == null:
 		return
+	_seed_visits(p)
 	apply_alignment(p)
 	var came_from := _follow_home(p)
 	_keep_off_hostile_ground(p, came_from)
@@ -4410,6 +4412,8 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
 	if key == "hail" and npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] == p.char_class:
 		say(p, "(Press G to train with %s.)" % npc.display_name, C_SYSTEM)
+	if key == "hail" and npc.data.get("pathcaller", false):
+		say(p, "(Press G to see where %s can send you.)" % npc.display_name, C_SYSTEM)
 	if key == "hail" and npc.data.has("outfitter"):
 		_outfit(p, npc)
 	if key == "hail":
@@ -5241,7 +5245,7 @@ func request_interact(player_id: int) -> void:
 	if p == null or p.dead:
 		return
 	var npc := p.valid_target_entity() as Npc
-	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false) or npc.data.has("guildmaster")) \
+	if npc == null or not (npc.data.has("merchant") or npc.data.get("banker", false) or npc.data.has("guildmaster") or npc.data.get("pathcaller", false)) \
 			or _hand_in_waiting(p, npc):
 		request_service_close(player_id)  # a merchant with a quest you're ready for trades instead of opening the shop
 		request_trade_open(player_id)
@@ -5261,7 +5265,7 @@ func request_interact(player_id: int) -> void:
 	request_loot_close(player_id)
 	request_service_close(player_id)
 	p.service_npc_id = npc.entity_id
-	p.service = "shop" if npc.data.has("merchant") else ("guild" if npc.data.has("guildmaster") else "bank")
+	p.service = "teleport" if npc.data.get("pathcaller", false) else ("shop" if npc.data.has("merchant") else ("guild" if npc.data.has("guildmaster") else "bank"))
 	npc.greet(p)
 	_ui(p, &"service_opened", [npc, p.service])
 	if p.service == "bank":
@@ -5454,6 +5458,96 @@ func request_bank_coin(player_id: int, amount: int) -> void:
 	say(p, "You %s %s." % ["deposit" if moved > 0 else "withdraw", format_coin(absi(moved))], C_LOOT)
 	p.inventory_changed.emit()
 	_ui(p, &"service_changed")
+
+
+# --- the Pathcallers --------------------------------------------------------------
+# A Pathcaller in every city calls the road to any zone you've been to, for a
+# fee that grows with the zone's top level squared (teleport_fee_per_level_sq
+# copper; a city teleport_city_fee). Not while a monster is fighting you. The
+# Grove, rooms indoors and dungeons are never on the road.
+
+## The zone you stand in, remembered for the road (each frame's cheap check).
+func _note_visit(p: Player) -> void:
+	var z := zone_of(p)
+	if z == null or z.zone_id == p.get_meta("visit_checked", ""):
+		return
+	p.set_meta("visit_checked", z.zone_id)
+	if not z.zone_id in p.visited and teleportable(z.zone_id):
+		p.visited.append(z.zone_id)
+
+
+## A save from before the Pathcallers: every zone whose levels start at or
+## below theirs (none for a new character), their bind city and where they stand.
+func _seed_visits(p: Player) -> void:
+	if p.visited_seeded:
+		return
+	p.visited_seeded = true
+	for f: String in DirAccess.get_files_at("res://data/zones"):
+		var zid := f.get_basename()
+		var lv: Array = GameData.load_zone(zid).get("levels", [])
+		if p.level > 1 and teleportable(zid) and not lv.is_empty() and int(lv[0]) <= p.level and not zid in p.visited:  # a new character walks it themselves
+			p.visited.append(zid)
+	for zid: String in [bind_zone_of(p), zone_of(p).zone_id if zone_of(p) != null else ""]:
+		if zid != "" and teleportable(zid) and not zid in p.visited:
+			p.visited.append(zid)
+
+
+## Whether a Pathcaller can send you there: an outdoor zone or a city, never
+## the Grove, a room indoors or a dungeon.
+static func teleportable(zone_id: String) -> bool:
+	if zone_id == "the_grove" or not FileAccess.file_exists("res://data/zones/%s.json" % zone_id):
+		return false
+	var zd := GameData.load_zone(zone_id)
+	return not zd.get("interior", false) and not zd.get("no_respawn", false) and not zd.get("dungeon", false)
+
+
+## What the road to a zone costs, in copper: its top level squared, times the
+## fee; a city (no levels) a flat fee.
+func teleport_fee(zone_id: String) -> int:
+	var lv: Array = GameData.load_zone(zone_id).get("levels", [])
+	if lv.is_empty():
+		return int(cfg("teleport_city_fee", 1000))
+	return int(cfg("teleport_fee_per_level_sq", 4)) * int(lv[1]) * int(lv[1])
+
+
+## Where p may go from here: [{zone, name, levels, fee}], the cheapest first.
+func teleport_destinations(p: Player) -> Array:
+	var here := zone_of(p)
+	var out: Array = []
+	for zid: String in p.visited:
+		if teleportable(zid) and (here == null or zid != here.zone_id):
+			var zd := GameData.load_zone(zid)
+			out.append({"zone": zid, "name": str(zd.get("name", zid)), "levels": zd.get("levels", []), "fee": teleport_fee(zid)})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["fee"]) < int(b["fee"]) or (int(a["fee"]) == int(b["fee"]) and str(a["name"]) < str(b["name"])))
+	return out
+
+
+## A Pathcaller sends you down the road: you must stand at one, have been there,
+## not be fighting, and pay.
+func request_teleport(player_id: int, zone_id: String) -> void:
+	if _remote(&"request_teleport", [player_id, zone_id]):
+		return
+	var p := get_object(player_id) as Player
+	if p == null or p.dead:
+		return
+	var npc := _service_npc(p, "teleport")
+	if npc == null:
+		return
+	if not zone_id in p.visited or not teleportable(zone_id):
+		_npc_say(p, npc, "I can only call a road you've walked yourself, {name}.")
+		return
+	if p.threatened:
+		_npc_say(p, npc, "Not with that on your heels, {name}. Lose it first.")
+		return
+	var fee := teleport_fee(zone_id)
+	if p.coin < fee:
+		_npc_say(p, npc, "The road to %s costs %s, {name}. Come back when you have it." % [GameData.load_zone(zone_id).get("name", zone_id), format_coin(fee)])
+		return
+	p.coin -= fee
+	_npc_say(p, npc, str(npc.data.get("dialogue", {}).get("farewell", "Mind your step, {name}.")))
+	say(p, "You pay %s, and the road to %s opens under your feet." % [format_coin(fee), GameData.load_zone(zone_id).get("name", zone_id)], C_SPELL)
+	_leave_for_elsewhere(p)
+	zone_change.emit(p, zone_id, Vector2.INF, Vector2.INF)
 
 
 # --- the guild bank -------------------------------------------------------------

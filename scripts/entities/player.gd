@@ -57,6 +57,8 @@ var grove_deities: Array = []  # the gods who have come to the Grove for this ch
 var grove_return: Dictionary = {}  # {zone, pos [x, z]}: where the Seed of the Grove last found you
 var friends: Array = []  # characters' names (/friend), saved with the character
 var alignment_mods: Dictionary = {}  # faction -> the offset alignment has put on it (World.apply_alignment), saved
+var visited: Array = []  # the zones this character has been to (World._note_visit), for a Pathcaller's road; saved
+var visited_seeded := false  # false for a save from before: World.player_entered fills it from their level once
 var given: Array = []  # one-time gifts this character has had (World._gifts: the bone chips older necromancers got), saved
 var home_seen := ""  # the race's home city this character was last given (World._follow_home moves the bind when it changes), saved
 var guild_name := ""  # shown as <Guild Name> under the nameplate (World._set_guild_tag)
@@ -184,6 +186,8 @@ func from_save(d: Dictionary) -> void:
 	grove_return = d.get("grove_return", {}) if d.get("grove_return") is Dictionary else {}
 	alignment_mods = d.get("alignment_mods", {}) if d.get("alignment_mods") is Dictionary else {}
 	home_seen = str(d.get("home_seen", ""))
+	visited_seeded = d.get("visited") is Array
+	visited = (d.get("visited", []) as Array).map(func(z: Variant) -> String: return str(z)) if visited_seeded else []
 	given = (d.get("given", []) as Array).duplicate()
 	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
@@ -327,7 +331,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity"]:
+			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity", "visited"]:
 		set(key, d[key])
 	if str(d.get("guild_name", "")) != guild_name:
 		guild_name = str(d.get("guild_name", ""))
@@ -404,7 +408,7 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
-		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given,
+		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given, "visited": visited,
 	}
 
 

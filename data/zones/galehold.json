@@ -874,6 +874,17 @@
       ]
     },
     {
+      "id": "pc_ysolt",
+      "pos": [
+        23,
+        32.6
+      ],
+      "face": [
+        22.5,
+        19.8
+      ]
+    },
+    {
       "id": "provisioner_maelle",
       "pos": [
         42,

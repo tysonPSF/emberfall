@@ -11201,5 +11201,129 @@
         "slashes"
       ]
     }
+  },
+  "pc_oren": {
+    "name": "Pathcaller Oren",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "emberhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "I call the road, {name}, to anywhere you've walked. Emberhold's coin buys a quick step; the farther and wilder the land, the dearer the toll. Press G.",
+      "farewell": "Mind your step. The road's open.",
+      "unknown": "I only know roads, {name}. Press G and pick one."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true
+  },
+  "pc_sela": {
+    "name": "Pathcaller Sela",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "race": "high_elf",
+    "dialogue": {
+      "hail": "The lanterns light more roads than you'd think, {name}. Name any place you've stood and I'll set you on it, for a fee that climbs with the danger there. Press G.",
+      "farewell": "Walk in the light.",
+      "unknown": "I keep roads, not stories. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true,
+    "gender": "female"
+  },
+  "pc_ndidi": {
+    "name": "Pathcaller Ndidi",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "rainhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Rain runs everywhere, {name}, and I can follow it to any shore you've seen. The farther it runs, the more it costs. Press G.",
+      "farewell": "Breathe out. The rain takes you.",
+      "unknown": "Only roads, {name}. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true,
+    "gender": "female"
+  },
+  "pc_brask": {
+    "name": "Pathcaller Dunmar",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "forgehold",
+    "race": "dwarf",
+    "dialogue": {
+      "hail": "Every road's a seam in the rock, {name}, and I know every seam you've walked. Coin up front; the deeper the country, the dearer the cut. Press G.",
+      "farewell": "Brace yourself. Here comes the floor.",
+      "unknown": "I cut roads, I don't chat. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true
+  },
+  "pc_ysolt": {
+    "name": "Pathcaller Ysolt",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "galehold",
+    "race": "human",
+    "dialogue": {
+      "hail": "The wind goes everywhere, {name}, and it remembers everywhere you've gone. Pay its toll and it carries you back; the far places cost more. Press G.",
+      "farewell": "Lean into it.",
+      "unknown": "The wind doesn't answer that. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true,
+    "gender": "female"
+  },
+  "pc_mireth": {
+    "name": "Pathcaller Mireth",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "barrowhold",
+    "race": "human",
+    "dialogue": {
+      "hail": "Under the black sun every road is short, {name}, if you know where to step. I know where you've stepped. The darker the land, the dearer. Press G.",
+      "farewell": "Step into the shadow.",
+      "unknown": "I know roads, nothing more. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true,
+    "gender": "female"
+  },
+  "pc_grumm": {
+    "name": "Pathcaller Grumm",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "murkhold",
+    "race": "troll",
+    "dialogue": {
+      "hail": "Grumm smells where you've been, {name}. Every bog, every road. Pay, and Grumm opens the mud and you come up there. Far places cost more. Press G.",
+      "farewell": "Hold your breath. ...Gone.",
+      "unknown": "Grumm only knows roads. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true
+  },
+  "pc_vaelith": {
+    "name": "Pathcaller Vaelith",
+    "level": 40,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "duskhold",
+    "race": "dark_elf",
+    "dialogue": {
+      "hail": "Every road you've walked leaves a thread, {name}, and I can pull you along any of them. For a price: the longer the thread, the dearer it is. Press G.",
+      "farewell": "Close your eyes. The dark carries you.",
+      "unknown": "I only know the threads. Press G."
+    },
+    "title": "Caller of Roads",
+    "pathcaller": true
   }
 }

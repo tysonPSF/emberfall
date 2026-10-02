@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 30  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein), so old clients are turned away
+const PROTOCOL := 31  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein; 31 the Pathcallers), so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -800,6 +800,7 @@ func _send_self(peer: int) -> void:
 		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
 		"swing_timer": p.swing_timer, "deity": p.deity,
 		"grove_deities": p.grove_deities, "friends": p.friends, "guild_name": p.guild_name, "guild_rank": p.guild_rank,
+		"visited": p.visited,
 	}
 	_s_self.rpc_id(peer, d)
 

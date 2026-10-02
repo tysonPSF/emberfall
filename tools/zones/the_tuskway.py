@@ -55,13 +55,13 @@ drop("tw_road_beetle_shell", "Road Beetle Shell", 10)
 drop("tw_king_cobra_fang", "King Cobra Fang", 12)
 drop("tw_striped_pelt", "Striped Tiger Pelt", 14)
 drop("tw_ochre_token", "Ochre Hand Token", 14)
-drop("tw_prayer_bead", "Pilgrim's Prayer Bead", 12)
+drop("tk_prayer_bead", "Pilgrim's Prayer Bead", 12)
 item("tw_saffronclaws_pelt", "Saffronclaw's Pelt", value=60, lore=True)
 item("tw_rhaz_seal", "Captain Rhaz's Ochre Seal", value=60, lore=True)
 item("tw_abbess_wheel", "The Lost Abbess's Prayer Wheel", value=60, lore=True)
 for iid, src in [("tw_stolen_offering", "elephant_charm"), ("tw_red_jackal_hide", "jackal_pelt"), ("tw_road_beetle_shell", "rice_beetle_shell"),
                  ("tw_king_cobra_fang", "cobra_fang"), ("tw_striped_pelt", "tiger_pelt"), ("tw_ochre_token", "highwayman_token"),
-                 ("tw_prayer_bead", "bone_chips"), ("tw_saffronclaws_pelt", "tiger_pelt"), ("tw_rhaz_seal", "corvels_signet"),
+                 ("tk_prayer_bead", "bone_chips"), ("tw_saffronclaws_pelt", "tiger_pelt"), ("tw_rhaz_seal", "corvels_signet"),
                  ("tw_abbess_wheel", "lantern_widows_lamp")]:
     if os.path.exists(f"{ROOT}/assets/icons/{src}.png"):
         bw.ITEMS[iid]["icon"] = src
@@ -241,7 +241,7 @@ def the_tuskway():
     q("tw_rhaz", "Captain Rhaz Ochrehand", "tw_warden_tarun", {"tw_rhaz_seal": 1}, 2000, 400, "tw_rhaz_saber",
       "You have taken on a task: Captain Rhaz Ochrehand. Bring Roadwarden Tarun Captain Rhaz's ochre seal.",
       "His seal!", "The Ochre Hand's broken. The road's ours.", "His saber. It's robbed its last pilgrim.", {F: 30, "ochre_hand": -30}, "rhaz")
-    q("tw_beads", "Restless Pilgrims", "tw_brother_kesav", {"tw_prayer_bead": 3}, 700, 110, "tw_bead_necklace",
+    q("tw_beads", "Restless Pilgrims", "tw_brother_kesav", {"tk_prayer_bead": 3}, 700, 110, "tw_bead_necklace",
       "You have taken on a task: Restless Pilgrims. Bring Brother Kesav three pilgrim's prayer beads.",
       "Their beads. Let me bless them.", "Three pilgrims who can go on now.", "Wear the first of them. It remembers its prayers.", dict(Fh), "restless", rep=True, also=near)
     q("tw_abbess", "The Lost Abbess", "tw_brother_kesav", {"tw_abbess_wheel": 1}, 2200, 420, "tw_abbess_ring",
@@ -274,13 +274,13 @@ def the_tuskway():
     mob("tw_ochre_archer", "an Ochre Hand archer", (12, 14), "brigand", faction="ochre_hand", verb=("shoot", "shoots"), social=True,
         loot=[("tw_ochre_token", 0.5)], coin=(15, 60), extra={"weapon": "bow"})
     mob("tw_pilgrim_shade", "a restless pilgrim", (12, 14), "hungry_ghost", faction="undead", verb=("wail at", "wails at"),
-        loot=[("tw_prayer_bead", 0.55)], coin=(5, 30))
+        loot=[("tk_prayer_bead", 0.55)], coin=(5, 30))
     mob("tw_saffronclaw", "Saffronclaw", (14, 14), "tigress", verb=("maul", "mauls"), named=True, loot=[("tw_saffronclaws_pelt", 1.0)],
         scale=1.35, speed=7.4)
     mob("tw_rhaz_ochrehand", "Captain Rhaz Ochrehand", (15, 15), "brigand_captain", faction="ochre_hand", verb=("slash", "slashes"), social=True,
         named=True, loot=[("tw_rhaz_seal", 1.0)], coin=(150, 400), extra={"weapon": "sword_1handed"})
     mob("tw_lost_abbess", "the Lost Abbess", (15, 15), "lantern_widow", faction="undead", verb=("wail at", "wails at"), named=True,
-        loot=[("tw_abbess_wheel", 1.0), ("tw_prayer_bead", 1.0)], coin=(80, 250), scale=1.15)
+        loot=[("tw_abbess_wheel", 1.0), ("tk_prayer_bead", 1.0)], coin=(80, 250), scale=1.15)
     spawns = []
 
     def spawn(pool, spots, respawn=80, wander=14, when=None):

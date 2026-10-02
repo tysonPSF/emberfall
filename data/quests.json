@@ -7411,7 +7411,7 @@
     "name": "Restless Pilgrims",
     "giver": "tw_brother_kesav",
     "wants": {
-      "tw_prayer_bead": 3
+      "tk_prayer_bead": 3
     },
     "reward": {
       "xp": 700,

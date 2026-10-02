@@ -295,6 +295,8 @@ func _build_marks(z: Zone) -> void:
 			kind = "guild"
 		elif d.get("banker", false):
 			kind = "bank"
+		elif d.get("pathcaller", false):
+			kind = "road"
 		elif d.has("merchant"):
 			kind = "shop"
 		elif quest_givers.has(id) or d.has("blesses"):
@@ -304,7 +306,7 @@ func _build_marks(z: Zone) -> void:
 	_marks.sort_custom(func(a: Array, b: Array) -> bool: return str(a[0]) + str(a[2]) < str(b[0]) + str(b[2]))
 	for c in _legend.get_children():
 		c.queue_free()
-	var headings := {"exit": "Ways out", "guild": "Guildmasters", "bank": "Bank", "shop": "Merchants", "quest": "Quests", "craft": "Crafting", "landmark": "Places"}
+	var headings := {"exit": "Ways out", "guild": "Guildmasters", "bank": "Bank", "road": "Pathcaller", "shop": "Merchants", "quest": "Quests", "craft": "Crafting", "landmark": "Places"}
 	var last := ""
 	for i in _marks.size():
 		var m: Array = _marks[i]
@@ -360,11 +362,11 @@ func _build_marks(z: Zone) -> void:
 
 
 static func _glyph(kind: String) -> String:
-	return {"exit": ">", "guild": "G", "bank": "B", "shop": "$", "quest": "!", "craft": "C", "landmark": "*"}.get(kind, "*")
+	return {"exit": ">", "guild": "G", "bank": "B", "road": "P", "shop": "$", "quest": "!", "craft": "C", "landmark": "*"}.get(kind, "*")
 
 
 static func _mark_color(kind: String) -> Color:
-	return {"exit": Color(0.55, 0.3, 0.1), "guild": Color(0.35, 0.25, 0.6), "bank": Color(0.55, 0.42, 0.1), "shop": Color(0.2, 0.42, 0.22),
+	return {"exit": Color(0.55, 0.3, 0.1), "guild": Color(0.35, 0.25, 0.6), "bank": Color(0.55, 0.42, 0.1), "road": Color(0.15, 0.35, 0.55), "shop": Color(0.2, 0.42, 0.22),
 			"quest": Color(0.7, 0.45, 0.05), "craft": Color(0.45, 0.28, 0.18), "landmark": INK}.get(kind, INK)
 
 

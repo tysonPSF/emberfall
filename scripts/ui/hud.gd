@@ -2657,10 +2657,12 @@ func _refresh_guild_bank() -> void:
 func _on_service_opened(npc: Npc, kind: String) -> void:
 	_service_npc = npc
 	var titles := {"shop": npc.display_name, "bank": "%s  -  Hearthbank" % npc.display_name,
-			"guild": "%s  -  %s training" % [npc.display_name, GameData.classes[player.char_class]["name"]]}
+			"guild": "%s  -  %s training" % [npc.display_name, GameData.classes[player.char_class]["name"]],
+			"teleport": "%s  -  the road" % npc.display_name}
 	var hints := {"shop": "Click an item to buy one (Buy 20 for arrows and stones). Click items in your bags to sell them.",
 			"bank": "Click items in your bags to deposit them; click a bank slot to take it back.",
-			"guild": "Click a spell to learn it. New spells go on the next number key."}
+			"guild": "Click a spell to learn it. New spells go on the next number key.",
+			"teleport": "Click a place you've been to go there. The deeper the land, the dearer the road."}
 	_service_title.text = titles[kind]
 	_service_hint.text = hints[kind]
 	_shop_scroll.visible = kind != "bank"
@@ -2708,6 +2710,26 @@ func _refresh_service() -> void:
 			_shop_list.add_child(b)
 		if (known if _train_known_tab else left).is_empty():
 			_shop_list.add_child(UIKit.label("Nothing yet." if _train_known_tab else "You've learned everything this guild teaches.", 12, UIKit.DIM))
+	elif player.service == "teleport":
+		for child in _shop_list.get_children():
+			child.queue_free()
+		var roads: Array = World.teleport_destinations(player)
+		for road: Dictionary in roads:
+			var zone_id: String = road["zone"]
+			var lv: Array = road["levels"]
+			var text := "%s%s   %s" % [road["name"], "  (%d-%d)" % [int(lv[0]), int(lv[1])] if lv.size() >= 2 else "  (city)", World.format_coin(int(road["fee"]))]
+			var b := UIKit.button(text)
+			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			b.add_theme_font_size_override("font_size", 12)
+			b.disabled = player.coin < int(road["fee"])
+			b.tooltip_text = "Go to %s for %s." % [road["name"], World.format_coin(int(road["fee"]))] if not b.disabled else "You can't afford the road to %s." % road["name"]
+			if lv.size() >= 2 and not b.disabled:
+				var past := player.level > int(lv[1])
+				b.add_theme_color_override("font_color", Color(0.7, 0.68, 0.62) if past else (Color(1.0, 0.55, 0.42) if player.level < int(lv[0]) else Color(1.0, 0.84, 0.4)))
+			b.pressed.connect(func() -> void: World.request_teleport(player.entity_id, zone_id))
+			_shop_list.add_child(b)
+		if roads.is_empty():
+			_shop_list.add_child(UIKit.label("You haven't walked anywhere else yet.", 12, UIKit.DIM))
 	elif player.service == "shop":
 		for child in _shop_list.get_children():
 			child.queue_free()

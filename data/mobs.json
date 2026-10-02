@@ -20167,7 +20167,7 @@
     ],
     "loot": [
       {
-        "item": "tw_prayer_bead",
+        "item": "tk_prayer_bead",
         "chance": 0.55
       }
     ],
@@ -20285,7 +20285,7 @@
         "chance": 1.0
       },
       {
-        "item": "tw_prayer_bead",
+        "item": "tk_prayer_bead",
         "chance": 1.0
       }
     ],

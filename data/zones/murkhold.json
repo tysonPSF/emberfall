@@ -869,6 +869,17 @@
       ]
     },
     {
+      "id": "pc_grumm",
+      "pos": [
+        -30,
+        -18
+      ],
+      "face": [
+        0,
+        0
+      ]
+    },
+    {
       "id": "murk_provisioner",
       "pos": [
         36,

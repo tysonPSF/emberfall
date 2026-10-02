@@ -150,6 +150,7 @@ const SECTIONS := [
 	["guard_strength", "emberhold"],
 	["talk_phrases", "cinderpass"],
 	["food_tooltips", "greenmoor"],
+	["pathcallers", "emberhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10703,3 +10704,67 @@ func _t_trainer_tabs() -> void:
 	await _shot("9trainer_known")
 	World.request_service_close(p.entity_id)
 	p.level = 1
+
+
+## The Pathcallers: an older save is seeded with the zones up to its level, the
+## fee grows with the zone's top level squared, the window lists the roads, and
+## a road is refused unvisited, too dear or while fighting; paid, it zones you.
+func _t_pathcallers() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var old_level := p.level
+	p.level = 12
+	p.visited = []
+	p.visited_seeded = false
+	World._seed_visits(p)
+	var seeded := ["greenmoor", "harrowfield", "thornwood", "the_tuskway", "emberhold"].all(func(z: String) -> bool: return z in p.visited)
+	var not_seeded := ["cinderpass", "the_grove", "duskhold", "emberhold_tavern"].all(func(z: String) -> bool: return not z in p.visited)
+	var fees := [World.teleport_fee("greenmoor"), World.teleport_fee("cinderpass"), World.teleport_fee("emberhold")]
+	var oren: Npc = _npcs()["pc_oren"]
+	_stand_by(p, oren)
+	World.request_interact(p.entity_id)
+	await _wait(0.4)
+	var hud = main.hud
+	var opened: bool = p.service == "teleport" and hud._service_panel.visible
+	var rows: int = hud._shop_list.get_child_count()
+	var roads: Array = World.teleport_destinations(p)
+	await _shot("9zx_pathcaller")
+	World.request_teleport(p.entity_id, "cinderpass")
+	var unvisited: bool = World.zone.zone_id == "emberhold" and not main._changing_zone
+	p.coin = 50
+	World.request_teleport(p.entity_id, "greenmoor")
+	var too_poor: bool = p.coin == 50 and not main._changing_zone
+	p.coin = 500
+	p.threatened = true
+	World.request_teleport(p.entity_id, "greenmoor")
+	var fighting: bool = p.coin == 500 and not main._changing_zone
+	p.threatened = false
+	World.request_teleport(p.entity_id, "greenmoor")
+	var paid := p.coin
+	for k in 80:
+		if (main.zone as Zone).zone_id == "greenmoor" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.5)
+	var arrived := (main.zone as Zone).zone_id
+	p.visited.erase("greenmoor")
+	p.remove_meta("visit_checked")  # as a first step into it does
+	await _wait(0.5)
+	var noted := "greenmoor" in p.visited
+	print("pathcallers: seeded to level 12 %s, nothing past it or off the road %s; fees greenmoor/cinderpass/city %s" % [seeded, not_seeded, fees])
+	print("pathcallers: window opened %s, %d rows for %d roads, cheapest %s" % [opened, rows, roads.size(), roads[0] if not roads.is_empty() else {}])
+	print("pathcallers: refused unvisited %s, too poor %s, while fighting %s; paid 500 -> %d, arrived in %s; a new zone noted %s" % [unvisited, too_poor,
+			fighting, paid, arrived, noted])
+	# Rainhold's stands on the deck before the bank hall
+	World.zone_change.emit(p, "rainhold", Vector2.INF, Vector2.INF)
+	for k in 80:
+		if (main.zone as Zone).zone_id == "rainhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(0.5)
+	var ndidi: Npc = _npcs()["pc_ndidi"]
+	_stand_by(p, ndidi)
+	await _wait(1.0)
+	print("pathcallers: Pathcaller Ndidi stands at height %.2f over water at %.2f" % [ndidi.global_position.y, (main.zone as Zone).water_level(ndidi.global_position.x, ndidi.global_position.z)])
+	await _shot("9zx_pathcaller_rainhold")
+	p.level = old_level
