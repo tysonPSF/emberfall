@@ -285,18 +285,18 @@ func show_hidden() -> void:
 ## the plain "attack". The off hand always slashes (a left-hand cut).
 static func swing_for(weapon_model: String, off_hand := false, skill := "") -> String:
 	var w := weapon_model.to_lower()
-	if w == "" or w in ["bow", "wand", "fishing_pole", "torch", "shield_badge", "shield_round", "shield_round_barbarian"]:
+	if w == "" or w in ["bow", "wand", "fishing_pole", "torch", "shield_badge", "shield_round", "shield_round_barbarian", "dragonwing_bow", "dragoneye_wand"]:
 		return "attack"
 	if off_hand:
 		return "slash_off"
-	for k in ["dagger", "rapier", "spear", "trident", "glaive"]:
+	for k in ["dagger", "rapier", "spear", "trident", "glaive", "fists"]:  # fist blades punch
 		if k in w:
 			return "thrust"
 	if skill.begins_with("1h"):
 		return "slash"  # a one-handed weapon swings one-armed, whatever its model looks like
 	# the two-armed chop only for long hafts both hands can hold; a club, a pick or a hammer
 	# head on a short handle sits in one hand, so it swings one-armed even when it's heavy
-	for k in ["2handed", "maul", "greathammer", "greatsword", "staff", "slab", "spade", "titan"]:
+	for k in ["2handed", "maul", "greathammer", "greatsword", "great", "staff", "slab", "spade", "titan"]:  # "great": the Forge's great axe, mace and flail
 		if k in w:
 			return "chop"
 	return "slash"

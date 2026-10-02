@@ -1,0 +1,424 @@
+{
+ "_about": "Raw geometry baked out of the Elephant Grove Forge (elephant-grove/forge/forge.html) by tools/forge_bake.py. These are INPUTS to the Blender step, not shipped assets: each one is in the Forge's own units and orientation, with its origin at the model root rather than the grip, and at the Forge's triangle count. tools/blender/creatures.py should import, rescale, re-origin, decimate and re-export them into assets/creatures/.",
+ "forge_units_to_emberfall": 0.44,
+ "_scale_note": "KayKit sword_1handed is 1.78 long and the Forge's drsword is 4.06, so about 0.44. Match each weapon against the generic model it replaces rather than trusting one number.",
+ "weapons": {
+  "dragonfang_sword": {
+   "forge_id": "drsword",
+   "raw": "assets/forge_raw/drsword.glb",
+   "replaces_generic": "sword_1handed",
+   "materials": [
+    "blade",
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "fuller",
+    "grip",
+    "guard",
+    "horn",
+    "pommel",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 9864,
+   "forge_extent": [
+    1.447,
+    4.063,
+    2.344
+   ]
+  },
+  "dragontooth_dagger": {
+   "forge_id": "drdagger",
+   "raw": "assets/forge_raw/drdagger.glb",
+   "replaces_generic": "dagger",
+   "materials": [
+    "blade",
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "fuller",
+    "grip",
+    "guard",
+    "horn",
+    "pommel",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 9864,
+   "forge_extent": [
+    1.124,
+    2.463,
+    1.708
+   ]
+  },
+  "dragonclaw_axe": {
+   "forge_id": "draxe",
+   "raw": "assets/forge_raw/draxe.glb",
+   "replaces_generic": "axe_1handed",
+   "materials": [
+    "bone",
+    "boneDark",
+    "edge",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 8416,
+   "forge_extent": [
+    1.38,
+    2.504,
+    2.344
+   ]
+  },
+  "dragonmaw_mace": {
+   "forge_id": "drmace",
+   "raw": "assets/forge_raw/drmace.glb",
+   "replaces_generic": "ember_hammer",
+   "materials": [
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "spikes",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 11900,
+   "forge_extent": [
+    1.849,
+    2.71,
+    3.616
+   ]
+  },
+  "dragontail_flail": {
+   "forge_id": "drflail",
+   "raw": "assets/forge_raw/drflail.glb",
+   "replaces_generic": "ember_hammer",
+   "materials": [
+    "bone",
+    "boneDark",
+    "chain",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "spikes",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 9248,
+   "forge_extent": [
+    1.327,
+    4.694,
+    2.609
+   ]
+  },
+  "dragonclaw_fists": {
+   "forge_id": "drclaws",
+   "raw": "assets/forge_raw/drclaws.glb",
+   "replaces_generic": "dagger",
+   "materials": [
+    "blade",
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "frame",
+    "grip",
+    "horn",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 8292,
+   "forge_extent": [
+    1.262,
+    2.582,
+    1.629
+   ]
+  },
+  "dragoneye_wand": {
+   "forge_id": "drwand",
+   "raw": "assets/forge_raw/drwand.glb",
+   "replaces_generic": "wand",
+   "materials": [
+    "bone",
+    "boneDark",
+    "ember",
+    "fitting",
+    "flame",
+    "gem",
+    "horn",
+    "rod",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 6468,
+   "forge_extent": [
+    0.796,
+    3.463,
+    1.655
+   ]
+  },
+  "dragonfang_greatsword": {
+   "forge_id": "drgsword",
+   "raw": "assets/forge_raw/drgsword.glb",
+   "replaces_generic": "marshal_greatsword",
+   "materials": [
+    "blade",
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "fuller",
+    "grip",
+    "guard",
+    "horn",
+    "pommel",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 10664,
+   "forge_extent": [
+    1.811,
+    5.013,
+    2.821
+   ]
+  },
+  "dragonclaw_great_axe": {
+   "forge_id": "drgaxe",
+   "raw": "assets/forge_raw/drgaxe.glb",
+   "replaces_generic": "axe_2handed",
+   "materials": [
+    "bone",
+    "boneDark",
+    "edge",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 10388,
+   "forge_extent": [
+    2.177,
+    3.461,
+    2.689
+   ]
+  },
+  "dragonmaw_great_mace": {
+   "forge_id": "drgmace",
+   "raw": "assets/forge_raw/drgmace.glb",
+   "replaces_generic": "court_maul",
+   "materials": [
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "spikes",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 13500,
+   "forge_extent": [
+    1.92,
+    3.946,
+    3.749
+   ]
+  },
+  "dragontail_great_flail": {
+   "forge_id": "drgflail",
+   "raw": "assets/forge_raw/drgflail.glb",
+   "replaces_generic": "court_maul",
+   "materials": [
+    "bone",
+    "boneDark",
+    "chain",
+    "ember",
+    "flame",
+    "grip",
+    "head",
+    "horn",
+    "pommel",
+    "socket",
+    "spikes",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 11370,
+   "forge_extent": [
+    1.45,
+    7.06,
+    2.874
+   ]
+  },
+  "dragontongue_spear": {
+   "forge_id": "drspear",
+   "raw": "assets/forge_raw/drspear.glb",
+   "replaces_generic": "hauvar_spear",
+   "materials": [
+    "bone",
+    "boneDark",
+    "ember",
+    "fitting",
+    "flame",
+    "head",
+    "horn",
+    "shaft",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 6880,
+   "forge_extent": [
+    1.166,
+    4.875,
+    2.344
+   ]
+  },
+  "dragonheart_staff": {
+   "forge_id": "drstaff",
+   "raw": "assets/forge_raw/drstaff.glb",
+   "replaces_generic": "staff",
+   "materials": [
+    "bone",
+    "boneDark",
+    "ember",
+    "fitting",
+    "flame",
+    "horn",
+    "orb",
+    "rod",
+    "socket",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 8304,
+   "forge_extent": [
+    1.305,
+    7.448,
+    2.503
+   ]
+  },
+  "dragonwing_bow": {
+   "forge_id": "drbow",
+   "raw": "assets/forge_raw/drbow.glb",
+   "replaces_generic": "bow",
+   "materials": [
+    "band",
+    "bone",
+    "boneDark",
+    "ember",
+    "fitting",
+    "flame",
+    "fletch",
+    "grip",
+    "head",
+    "horn",
+    "limb",
+    "shaft",
+    "socket",
+    "string",
+    "teeth",
+    "wrap"
+   ],
+   "tris": 9500,
+   "forge_extent": [
+    2.032,
+    2.847,
+    2.609
+   ]
+  },
+  "dragonbone_arrow": {
+   "forge_id": "drarrow",
+   "raw": "assets/forge_raw/drarrow.glb",
+   "replaces_generic": null,
+   "materials": [
+    "band",
+    "bone",
+    "boneDark",
+    "ember",
+    "flame",
+    "fletch",
+    "head",
+    "horn",
+    "shaft",
+    "socket",
+    "teeth"
+   ],
+   "tris": 5232,
+   "forge_extent": [
+    0.779,
+    3.345,
+    1.549
+   ]
+  },
+  "sword_of_the_endless_nightmare": {
+   "forge_id": "uniq1h",
+   "raw": "assets/forge_raw/uniq1h.glb",
+   "replaces_generic": "barrow_lord_sword",
+   "materials": [
+    "blade",
+    "core",
+    "gem",
+    "grip",
+    "guard",
+    "wrap"
+   ],
+   "tris": 8456,
+   "forge_extent": [
+    1.498,
+    3.437,
+    0.648
+   ]
+  },
+  "greatsword_of_the_endless_nightmare": {
+   "forge_id": "uniq2h",
+   "raw": "assets/forge_raw/uniq2h.glb",
+   "replaces_generic": "marshal_greatsword",
+   "materials": [
+    "blade",
+    "core",
+    "gem",
+    "grip",
+    "guard",
+    "wrap"
+   ],
+   "tris": 9288,
+   "forge_extent": [
+    1.97,
+    4.837,
+    0.762
+   ]
+  }
+ }
+}

@@ -568,7 +568,7 @@ static func _finished(base: Material, f: Dictionary, on_metal := false, wash := 
 		m.rim_enabled = true
 		m.rim = float(f["rim"])
 		m.rim_tint = 0.3
-	if f.has("glow"):
+	if f.has("glow") and not (base is BaseMaterial3D and (base as BaseMaterial3D).emission_enabled):  # what glows already (a Forge weapon's flames, its gems) keeps its own
 		m.emission_enabled = true
 		m.emission = Color.html(str(f["glow"]))
 		m.emission_energy_multiplier = float(f.get("glow_energy", 0.2))

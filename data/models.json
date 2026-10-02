@@ -2957,6 +2957,22 @@
     "sootmask_brand": "res://assets/creatures/sootmask_brand.glb",
     "barrow_blade": "res://assets/creatures/barrow_blade.glb",
     "barrow_lord_sword": "res://assets/creatures/barrow_lord_sword.glb",
+    "dragonfang_sword": "res://assets/creatures/dragonfang_sword.glb",
+    "dragontooth_dagger": "res://assets/creatures/dragontooth_dagger.glb",
+    "dragonclaw_axe": "res://assets/creatures/dragonclaw_axe.glb",
+    "dragonmaw_mace": "res://assets/creatures/dragonmaw_mace.glb",
+    "dragontail_flail": "res://assets/creatures/dragontail_flail.glb",
+    "dragonclaw_fists": "res://assets/creatures/dragonclaw_fists.glb",
+    "dragoneye_wand": "res://assets/creatures/dragoneye_wand.glb",
+    "dragonfang_greatsword": "res://assets/creatures/dragonfang_greatsword.glb",
+    "dragonclaw_great_axe": "res://assets/creatures/dragonclaw_great_axe.glb",
+    "dragonmaw_great_mace": "res://assets/creatures/dragonmaw_great_mace.glb",
+    "dragontail_great_flail": "res://assets/creatures/dragontail_great_flail.glb",
+    "dragontongue_spear": "res://assets/creatures/dragontongue_spear.glb",
+    "dragonheart_staff": "res://assets/creatures/dragonheart_staff.glb",
+    "dragonwing_bow": "res://assets/creatures/dragonwing_bow.glb",
+    "sword_of_the_endless_nightmare": "res://assets/creatures/sword_of_the_endless_nightmare.glb",
+    "greatsword_of_the_endless_nightmare": "res://assets/creatures/greatsword_of_the_endless_nightmare.glb",
     "river_trident": "res://assets/creatures/river_trident.glb",
     "driftwood_staff": "res://assets/creatures/driftwood_staff.glb",
     "smuggler_cutlass": "res://assets/creatures/smuggler_cutlass.glb",
@@ -4294,11 +4310,11 @@
     }
   },
   "projectiles": {
-    "arrow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/arrow_bow.gltf",
+    "arrow": "res://assets/KayKit_Adventurers_2.0_FREE/Assets/gltf/arrow_bow.gltf", "dragonbone_arrow": "res://assets/creatures/dragonbone_arrow.glb",
     "stone": ""
   },
   "grips": {
-    "bow": {"rot": [0, 180, 0]}, "torch": {"rot": [0, 0, -90]}, "fishing_pole": {"rot": [0, 0, 35]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_1handed@l": {"rot": [0, 0, 0]}, "axe_2handed": {"rot": [0, 180, 0]}, "axe_2handed@l": {"rot": [0, 0, 0]},
+    "bow": {"rot": [0, 180, 0]}, "dragonwing_bow": {"rot": [0, 180, 0]}, "dragonclaw_axe": {"rot": [0, 180, 0]}, "dragonclaw_axe@l": {"rot": [0, 0, 0]}, "dragonclaw_great_axe": {"rot": [0, 180, 0]}, "dragonclaw_great_axe@l": {"rot": [0, 0, 0]}, "torch": {"rot": [0, 0, -90]}, "fishing_pole": {"rot": [0, 0, 35]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_1handed@l": {"rot": [0, 0, 0]}, "axe_2handed": {"rot": [0, 180, 0]}, "axe_2handed@l": {"rot": [0, 0, 0]},
     "shield_round": {
       "bone": "lowerarm.l",
       "orient": "chest",

@@ -152,6 +152,7 @@ const SECTIONS := [
 	["food_tooltips", "greenmoor"],
 	["pathcallers", "emberhold"],
 	["look_controls", "greenmoor"],
+	["forge_weapons", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10833,3 +10834,37 @@ func _t_look_controls() -> void:
 	print("look_controls: Page Up raised the view %s (%.2f), Page Down lowered it %s (%.2f), End leveled it %s; a right drag turned and tilted %s" % [up > Player.PITCH_REST,
 			up, down < up, down, leveled, dragged])
 	print("look_controls: the portrait turned %.2f rad when dragged, a double-click faced it front %s" % [turned, is_zero_approx(faced)])
+
+
+## The Forge's unique weapons: every item of the set wears its own model, each
+## loads, each swings as its kind should (the bow and wand shoot and zap, the
+## fist blades punch, the great weapons chop), and the arrow flies as itself.
+func _t_forge_weapons() -> void:
+	var want := {"dragonfang_sword": "slash", "dragontooth_dagger": "thrust", "dragonclaw_axe": "slash", "dragonmaw_mace": "slash",
+			"dragontail_flail": "slash", "dragonclaw_fists": "thrust", "dragoneye_wand": "attack", "dragonfang_greatsword": "chop",
+			"dragonclaw_great_axe": "chop", "dragonmaw_great_mace": "chop", "dragontail_great_flail": "chop", "dragontongue_spear": "thrust",
+			"dragonheart_staff": "chop", "dragonwing_bow": "attack", "sword_of_the_endless_nightmare": "slash",
+			"greatsword_of_the_endless_nightmare": "chop"}
+	var wrong := []
+	var unloaded := []
+	for item_id: String in want:
+		var it: Dictionary = GameData.items[item_id]
+		var model := str(it.get("model", ""))
+		if model != item_id:
+			wrong.append("%s wears %s" % [item_id, model])
+		var path := str(GameData.models["weapons"].get(model, ""))
+		if path == "" or not ResourceLoader.exists(path) or not load(path) is PackedScene:
+			unloaded.append(item_id)
+		var swing := Entity.swing_for(model, false, str(it.get("skill", "")))
+		if swing != want[item_id]:
+			wrong.append("%s swings %s" % [item_id, swing])
+	var arrow := str(GameData.models["projectiles"].get(str(GameData.items["dragonbone_arrow"].get("projectile", "")), ""))
+	var p := World.local_player
+	p.pack.add("dragonheart_staff~30")
+	World.request_equip(p.entity_id, _where(p, "dragonheart_staff~30"))
+	World.time_override = 12.0
+	p.zoom = 2.2
+	await _wait(1.0)
+	await _shot("9zz_forge_staff")
+	print("forge_weapons: %d weapons, all on their own models and swings %s %s, all load %s %s; the arrow flies as %s; worn: %s" % [want.size(),
+			wrong.is_empty(), wrong, unloaded.is_empty(), unloaded, arrow.get_file(), p.look.get("weapon", "")])

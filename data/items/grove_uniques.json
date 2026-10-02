@@ -8,7 +8,7 @@
       "slash",
       "slashes"
     ],
-    "model": "sword_1handed",
+    "model": "dragonfang_sword",
     "classes": [
       "warrior",
       "rogue",
@@ -50,7 +50,7 @@
       "hack",
       "hacks"
     ],
-    "model": "axe_1handed",
+    "model": "dragonclaw_axe",
     "classes": [
       "warrior",
       "ranger",
@@ -92,7 +92,7 @@
       "pierce",
       "pierces"
     ],
-    "model": "dagger",
+    "model": "dragontooth_dagger",
     "classes": [
       "warrior",
       "rogue",
@@ -137,7 +137,7 @@
       "rake",
       "rakes"
     ],
-    "model": "dagger",
+    "model": "dragonclaw_fists",
     "classes": [
       "warrior",
       "rogue",
@@ -179,7 +179,7 @@
       "crush",
       "crushes"
     ],
-    "model": "ember_hammer",
+    "model": "dragontail_flail",
     "classes": [
       "warrior",
       "cleric",
@@ -225,7 +225,7 @@
       "crush",
       "crushes"
     ],
-    "model": "ember_hammer",
+    "model": "dragonmaw_mace",
     "classes": [
       "warrior",
       "cleric",
@@ -271,7 +271,7 @@
       "cleave",
       "cleaves"
     ],
-    "model": "axe_2handed",
+    "model": "dragonclaw_great_axe",
     "classes": [
       "warrior"
     ],
@@ -311,7 +311,7 @@
       "crush",
       "crushes"
     ],
-    "model": "court_maul",
+    "model": "dragontail_great_flail",
     "classes": [
       "warrior"
     ],
@@ -351,7 +351,7 @@
       "crush",
       "crushes"
     ],
-    "model": "court_maul",
+    "model": "dragonmaw_great_mace",
     "classes": [
       "warrior",
       "cleric",
@@ -397,7 +397,7 @@
       "slash",
       "slashes"
     ],
-    "model": "marshal_greatsword",
+    "model": "dragonfang_greatsword",
     "classes": [
       "warrior"
     ],
@@ -441,7 +441,7 @@
       "pierce",
       "pierces"
     ],
-    "model": "hauvar_spear",
+    "model": "dragontongue_spear",
     "classes": [
       "warrior",
       "ranger"
@@ -482,7 +482,7 @@
       "crush",
       "crushes"
     ],
-    "model": "staff",
+    "model": "dragonheart_staff",
     "classes": [
       "cleric",
       "wizard",
@@ -530,7 +530,7 @@
       "strike",
       "strikes"
     ],
-    "model": "wand",
+    "model": "dragoneye_wand",
     "classes": [
       "wizard",
       "magician",
@@ -574,7 +574,7 @@
       "slash",
       "slashes"
     ],
-    "model": "barrow_lord_sword",
+    "model": "sword_of_the_endless_nightmare",
     "classes": [
       "warrior",
       "rogue",
@@ -620,7 +620,7 @@
       "slash",
       "slashes"
     ],
-    "model": "marshal_greatsword",
+    "model": "greatsword_of_the_endless_nightmare",
     "classes": [
       "warrior"
     ],
@@ -664,7 +664,7 @@
       "shoot",
       "shoots"
     ],
-    "model": "bow",
+    "model": "dragonwing_bow",
     "classes": [
       "warrior",
       "ranger"
@@ -704,7 +704,7 @@
     "dmg": 4,
     "stack": 100,
     "value": 12,
-    "projectile": "arrow",
+    "projectile": "dragonbone_arrow",
     "from": "Elephant Grove",
     "desc": "Tipped with shards of dragonbone."
   }

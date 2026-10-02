@@ -3,10 +3,11 @@ extends Node3D
 ##   godot --path . -- --lineup=gnoll,gnoll_brute,rat [--action=idle] --shots=/some/dir
 ## --worn=head:iron_coif,chest:studded_tunic dresses every model in that gear
 ## (models.json "gear" ids), to compare how it sits on different bodies.
-## --at=0.3 freezes the action that far in (seconds), to see a one-shot's peak.
+## --at=0.3 freezes the action that far in (seconds), to see a one-shot's peak;
+## --action=shoot holds each model's --weapon as a bow is held for a shot.
 ## --tiers=crude,,fine,superior,masterwork gives each model in turn that
 ## quality's finish on everything it holds and wears; --weapon=sword_1handed
-## puts a weapon in every right hand.
+## puts a weapon in every right hand (a comma list gives each model in turn its own).
 ## --offhand=shield_round puts a models.json "weapons" entry in the left hand;
 ## --grip=x,y,z[,px,py,pz[,bone[,orient[,ox,oy,oz]]]] tries a rotation
 ## (degrees), offset, bone, orientation bone and outward offset for it before
@@ -93,7 +94,8 @@ func _ready() -> void:
 		var m := CharacterModel.new()
 		add_child(m)
 		var race_id: String = races[i] if i < races.size() else ""
-		m.setup(ids[i], weapon, float(GameData.races.get(race_id, {}).get("scale", 1.0)))
+		var weapons := weapon.split(",")
+		m.setup(ids[i], weapons[i % weapons.size()], float(GameData.races.get(race_id, {}).get("scale", 1.0)))
 		if i < genders.size():
 			m.set_gender(genders[i])
 		if i < hairs.size() and hairs[i] != "":
@@ -112,6 +114,8 @@ func _ready() -> void:
 		if offhand != "":
 			m.set_offhand(offhand)
 		var clip := m._clip(action)
+		if action == "shoot":  # the bow moves to the left hand for the shot, as in play
+			m.show_ranged(weapons[i % weapons.size()], 9999.0)
 		if clip != "":
 			m.anim.play(clip)
 			if at >= 0.0:

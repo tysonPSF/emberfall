@@ -32477,6 +32477,200 @@ CREATURES.update({"cave_spider": build_cave_spider, "blightmother": build_blight
 ATTACHMENTS.update({"miners_pick": build_miners_pick})
 
 
+# ---------------------------------------------------------------- the Forge's unique weapons
+# The Elder Dragon set and the Endless Nightmare swords are shaped in the Elephant Grove
+# Forge, not here: tools/forge_bake.py bakes its geometry to assets/forge_raw/<forge id>.glb
+# (Forge units, origin at the model root, three.js colors, 5-13k triangles). Each one is
+# brought into the KayKit weapons' frame here: scaled to the generic it replaces, the grip
+# moved to the origin (haft up +Z), each part kept in the Forge's color (flame and ember still glow)
+# and decimated to the house budget. Fix a shape in the Forge and re-bake; never here.
+
+FORGE_RAW = "assets/forge_raw/"
+
+# Each part keeps the Forge's own color and roughness (its material, read from the bake); what
+# glowed there glows here, at FORGE_GLOW (embers a little brighter).
+FORGE_GLOW = {"ember": 3.0, "eye": 3.0, "gem": 2.4}
+# how much of each part's triangles to keep: the flames, embers and wraps carry most of
+# the count and read the same with far fewer; blades keep theirs
+FORGE_KEEP = {"blade": 1.0, "fuller": 1.0, "grip": 1.0, "flame": 0.6, "ember": 0.2, "wrap": 0.2,
+			  "guard": 0.3, "pommel": 0.3, "bone": 0.3, "boneDark": 0.3, "socket": 0.35, "teeth": 0.4, "horn": 0.5,
+			  "spikes": 0.2, "frame": 0.3, "chain": 0.35, "core": 0.25, "limb": 0.45, "fitting": 0.4}
+
+
+def _forge_weapon(name, forge_id, scale, hold=None, grip_at=0.55, flame_reach=0.25, drop=(), stand=False, lay=False):
+	"""Imports a Forge bake as one static mesh in the KayKit weapons' frame.
+	scale: Forge units to ours, matched to the length of the generic model it replaces (flames and
+	embers left out of the measure). Where the hand closes becomes the origin: hold, as a share of
+	that length from the butt (the generic's own share), or else grip_at along the "grip" part (0 its
+	pommel end, 1 its guard end). flame_reach: each piece of flame further than this (Forge units)
+	from the weapon's solid parts goes, the plumes that read as loose fire in the hand, keeping the
+	tongues that lick along it (None keeps them all; the embers always stay). drop: parts left out
+	(the bow's nocked arrow). stand: the bake lies along Z where the generic lies along Y, its string
+	on the other side (the bow): it's stood up and turned round its length to match. lay: laid
+	along +Z, head first, the way the KayKit arrow flies (the arrow, drawn in flight)."""
+	from mathutils import kdtree
+	bpy.ops.import_scene.gltf(filepath=os.path.abspath(FORGE_RAW + forge_id + ".glb"))
+	parts = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+	for o in [o for o in bpy.context.scene.objects if o.type != "MESH"]:
+		for c in o.children:
+			mw = c.matrix_world.copy()
+			c.parent = None
+			c.matrix_world = mw
+		bpy.data.objects.remove(o)
+	for o in list(parts):
+		if o.name.split(".")[0] in drop:
+			bpy.data.objects.remove(o)
+			parts.remove(o)
+			continue
+		bpy.context.view_layer.objects.active = o
+		o.select_set(True)
+		bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+		o.select_set(False)
+	part_of = {o: o.name.split(".")[0] for o in parts}
+	solid = [o for o in parts if part_of[o] not in ("flame", "ember")]
+	if flame_reach is not None:
+		pts = [v.co.copy() for o in solid for v in o.data.vertices]
+		tree = kdtree.KDTree(len(pts))
+		for i, c in enumerate(pts):
+			tree.insert(c, i)
+		tree.balance()
+		for o in parts:
+			if part_of[o] == "flame":
+				_trim_flames(o, tree, flame_reach)
+	zs = [v.co.z for o in solid for v in o.data.vertices]
+	if hold is not None:
+		z0 = min(zs) + (max(zs) - min(zs)) * hold
+	else:
+		grip = [o for o in solid if part_of[o] == "grip"] or solid
+		gz = [v.co.z for o in grip for v in o.data.vertices]
+		z0 = min(gz) + (max(gz) - min(gz)) * grip_at
+	mats = {}
+	for o in parts:
+		part = part_of[o]
+		for v in o.data.vertices:
+			x, y, z = v.co.x * scale, v.co.y * scale, (v.co.z - z0) * scale
+			if stand:
+				v.co = Vector((-x, z, y))  # stood up, and turned so its string is where KayKit's is
+			elif lay:
+				v.co = Vector((x, -z, y))  # Blender's -Y is glTF's +Z
+			else:
+				v.co = Vector((x, y, z))
+		if part not in mats:
+			mats[part] = _forge_material(f"{name}_{part}", part, o.data.materials[0] if o.data.materials else None)
+		o.data.materials.clear()
+		o.data.materials.append(mats[part])
+		keep = FORGE_KEEP.get(part, 0.5)
+		if keep == 1.0 and len(o.data.polygons) > 800:
+			keep = 0.5  # a blade modeled in detail (the claws') still gives some up
+		if keep < 1.0 and len(o.data.polygons) > 60:
+			mod = o.modifiers.new("decimate", "DECIMATE")
+			mod.ratio = keep
+			bpy.context.view_layer.objects.active = o
+			bpy.ops.object.modifier_apply(modifier=mod.name)
+	parts = [o for o in parts if len(o.data.polygons) > 0]
+	bpy.ops.object.select_all(action="DESELECT")
+	for o in parts:
+		o.select_set(True)
+	bpy.context.view_layer.objects.active = parts[0]
+	bpy.ops.object.join()
+	obj = bpy.context.view_layer.objects.active
+	obj.name = name
+	for poly in obj.data.polygons:
+		poly.use_smooth = False
+	print(f"{name}: {sum(len(p.vertices) - 2 for p in obj.data.polygons)} triangles")
+	return obj
+
+
+def _forge_material(name, part, src):
+	"""Our material from the Forge's: its base color, roughness and metalness; a part that glowed
+	there (an emissive color) glows in its own color here."""
+	m = bpy.data.materials.new(name)
+	m.use_nodes = True
+	bsdf = m.node_tree.nodes["Principled BSDF"]
+	color, rough, metal, glows = (0.5, 0.5, 0.5, 1.0), 0.6, 0.0, False
+	if src is not None and src.use_nodes:
+		s = src.node_tree.nodes.get("Principled BSDF")
+		if s is not None:
+			color = tuple(s.inputs["Base Color"].default_value)
+			rough = s.inputs["Roughness"].default_value
+			metal = s.inputs["Metallic"].default_value
+			e = s.inputs["Emission Color"].default_value
+			glows = max(e[0], e[1], e[2]) > 0.05 and s.inputs["Emission Strength"].default_value > 0.0
+	bsdf.inputs["Base Color"].default_value = color
+	bsdf.inputs["Roughness"].default_value = rough
+	bsdf.inputs["Metallic"].default_value = metal
+	if glows or part == "flame":
+		bsdf.inputs["Emission Color"].default_value = color
+		bsdf.inputs["Emission Strength"].default_value = FORGE_GLOW.get(part, 2.2)
+	m.diffuse_color = tuple(c ** (1 / 2.2) for c in color[:3]) + (1.0,)  # workbench preview, near sRGB
+	return m
+
+
+def _trim_flames(o, tree, reach):
+	"""Deletes the pieces of a flame mesh whose middle is more than reach from the weapon's solid
+	parts. The bakes split every face's corners, so faces are one piece where their corners meet."""
+	bm = bmesh.new()
+	bm.from_mesh(o.data)
+	bm.faces.ensure_lookup_table()
+	root = list(range(len(bm.faces)))
+
+	def find(i):
+		while root[i] != i:
+			root[i] = root[root[i]]
+			i = root[i]
+		return i
+	at = {}
+	for f in bm.faces:
+		for v in f.verts:
+			key = (round(v.co.x, 4), round(v.co.y, 4), round(v.co.z, 4))
+			if key in at:
+				root[find(f.index)] = find(at[key])
+			else:
+				at[key] = f.index
+	pieces = {}
+	for f in bm.faces:
+		pieces.setdefault(find(f.index), []).append(f)
+	drop = []
+	for faces in pieces.values():
+		vs = [v.co for f in faces for v in f.verts]
+		if tree.find(sum(vs, Vector()) / len(vs))[2] > reach:
+			drop += faces
+	bmesh.ops.delete(bm, geom=drop, context="FACES")
+	bm.to_mesh(o.data)
+	bm.free()
+
+
+# name: (forge id, scale, keywords). Each scale matches the generic it replaces, and hold is the share
+# of the length from the butt where that generic's grip is (the sword's own grip part puts it there).
+FORGE_WEAPONS = {
+	"dragonfang_sword": ("drsword", 0.44, {}),                      # KayKit sword_1handed, 1.78 m
+	"dragontooth_dagger": ("drdagger", 0.49, {"hold": 0.19}),       # KayKit dagger, 1.21
+	"dragonclaw_axe": ("draxe", 0.50, {"hold": 0.22}),              # KayKit axe_1handed, 1.24
+	"dragonmaw_mace": ("drmace", 0.44, {"hold": 0.2}),              # a one-handed mace, as long as the sword
+	"dragontail_flail": ("drflail", 0.44, {"hold": 0.2}),
+	"dragonclaw_fists": ("drclaws", 0.44, {}),                      # a punch-blade: its grip runs across the fist
+	"dragoneye_wand": ("drwand", 0.46, {"hold": 0.28}),             # KayKit wand, 0.97
+	"dragonfang_greatsword": ("drgsword", 0.535, {"hold": 0.25}),   # the marshal's greatsword, 2.68
+	"dragonclaw_great_axe": ("drgaxe", 0.50, {"hold": 0.25}),       # KayKit axe_2handed, 1.73
+	"dragonmaw_great_mace": ("drgmace", 0.45, {"hold": 0.22}),      # two-handed, as long as the great axe
+	"dragontail_great_flail": ("drgflail", 0.42, {"hold": 0.22}),
+	"dragontongue_spear": ("drspear", 0.57, {"hold": 0.23}),        # Hauvar's spear, 2.8
+	"dragonheart_staff": ("drstaff", 0.53, {"hold": 0.42}),         # KayKit staff, 2.15, held in the middle
+	"dragonbone_arrow": ("drarrow", 0.38, {"hold": 0.5, "lay": True}),  # in flight: KayKit's arrow_bow, 1.26
+	"dragonwing_bow": ("drbow", 0.70, {"grip_at": 0.5, "stand": True, "drop": ("shaft", "head", "fletch", "band")}),  # KayKit bow, 1.98 tall
+	"sword_of_the_endless_nightmare": ("uniq1h", 0.44, {}),         # a one-handed sword, as the Dragonfang
+	"greatsword_of_the_endless_nightmare": ("uniq2h", 0.535, {"grip_at": 0.5}),
+}
+
+
+def _forge_builder(name):
+	forge_id, scale, kw = FORGE_WEAPONS[name]
+	return lambda: _forge_weapon(name, forge_id, scale, **kw)
+
+
+ATTACHMENTS.update({_n: _forge_builder(_n) for _n in FORGE_WEAPONS})
+
+
 def main():
 	argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 	opts = {"--out": "assets/creatures", "--preview": "", "--only": "", "--portrait": "", "--props-out": "assets/props"}
