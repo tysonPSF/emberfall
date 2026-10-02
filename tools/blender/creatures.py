@@ -32671,6 +32671,265 @@ def _forge_builder(name):
 ATTACHMENTS.update({_n: _forge_builder(_n) for _n in FORGE_WEAPONS})
 
 
+# ---------------------------------------------------------------- the weapons of Living Roots
+# A unique line (data/items/living_roots.json): weapons grown, not forged. Blades of hardened golden
+# heartwood with a vein of green sap glowing down them, hafts of living roots twisted round each other,
+# leaves sprouting where they bind, a glowing seed for a pommel. KayKit weapons' frame: the grip at the
+# origin, the blade or haft up +Z, an axe's head toward -X (its grip turns it round, as KayKit's).
+
+def roots_materials(p):
+	return _rmats(p, {
+		"heart": ("cc9a52", 0.55), "heart_d": ("8e6a34", 0.6), "bark": ("4a3322", 0.95), "root": ("6a4a2c", 0.9),
+		"root_l": ("8f6a40", 0.85), "leaf": ("5aa83c", 0.7), "leaf_d": ("357a2a", 0.75), "moss": ("4f6e2e", 0.95),
+		"sap": ("8aff5a", 0.3, 2.6), "seed": ("c8ff7a", 0.2, 3.6)})
+
+
+def _roots_twist(b, m, z0, z1, r, strands=3, turns=1.6, thick=0.02, core=True):
+	"""A haft of roots: `strands` of them wound round each other from z0 to z1 about a core."""
+	if core:
+		b.seg((0, 0, z0), (0, 0, z1), r * 0.7, r * 0.62, m["bark"], "x", sides=7)
+	steps = max(6, int((z1 - z0) / 0.06))
+	for s in range(strands):
+		pts = []
+		for k in range(steps + 1):
+			u = k / steps
+			a = 2 * math.pi * (turns * u + s / strands)
+			pts.append((r * math.cos(a), r * math.sin(a), z0 + (z1 - z0) * u))
+		_chain(b, pts, thick, thick * 0.85, m["root"] if s % 2 == 0 else m["root_l"], sides=5)
+
+
+def _roots_leaf(b, m, at, angle, size=0.09, tilt=35, dark=False):
+	"""A small leaf sprouting at `at`, pointing out along `angle` (degrees round Z), tipped up `tilt`."""
+	a = math.radians(angle)
+	c = (at[0] + math.cos(a) * size * 0.45, at[1] + math.sin(a) * size * 0.45, at[2] + size * 0.2)
+	b.blob((size, size * 0.45, 0.012), c, m["leaf_d"] if dark else m["leaf"], "x", rot=(0, -tilt, angle), segs=(8, 4))
+
+
+def _roots_sprig(b, m, at, angle, size=0.09):
+	"""Three leaves fanned out from one point, the way new growth comes."""
+	for k, (da, tl) in enumerate(((-35, 25), (0, 45), (35, 25))):
+		_roots_leaf(b, m, at, angle + da, size=size * (1.0 if k == 1 else 0.8), tilt=tl, dark=k != 1)
+
+
+def _roots_seed(b, m, z, r=0.045):
+	"""The pommel: a glowing seed in a cage of three little roots."""
+	b.blob((r * 2, r * 2, r * 2.3), (0, 0, z), m["seed"], "x", segs=(8, 6))
+	for k in range(3):
+		a = 2 * math.pi * k / 3
+		_chain(b, [(0, 0, z + r * 1.1), (r * 1.15 * math.cos(a), r * 1.15 * math.sin(a), z), (r * 0.4 * math.cos(a), r * 0.4 * math.sin(a), z - r * 1.2)],
+			   0.012, 0.006, m["root"], sides=4)
+
+
+def _roots_guard(b, m, z, half):
+	"""A crossguard of two roots growing out sideways and curling up toward the blade, a leaf at each end."""
+	b.blob((half * 0.6, 0.07, 0.07), (0, 0, z), m["bark"], "x", segs=(8, 5))
+	for s in (1, -1):
+		pts = [(0.02 * s, 0, z), (half * 0.55 * s, 0.01, z + 0.01), (half * 0.9 * s, 0, z + 0.05), (half * s, -0.01, z + 0.11), (half * 0.88 * s, 0, z + 0.15)]
+		_chain(b, pts, 0.026, 0.01, m["root"], sides=5)
+		_roots_leaf(b, m, (half * 0.95 * s, 0, z + 0.06), 0 if s > 0 else 180, size=0.07, dark=s < 0)
+
+
+def _roots_blade(b, m, z0, length, width, thick=0.03):
+	"""A blade of hardened heartwood, a vein of sap glowing down both faces, roots gripping its base."""
+	pts = []
+	for k in range(9):
+		u = k / 8
+		w = width * (0.82 + 0.18 * math.sin(math.pi * u * 0.8)) * (1 - u ** 4)
+		pts.append((z0 + length * u, w))
+	for (za, wa), (zb, wb) in zip(pts, pts[1:]):
+		_slab(b, [(-wa, 0, za), (wa, 0, za), (wb, 0, zb), (-wb, 0, zb)], thick, m["heart"])
+		for s in (1, -1):   # a darker grain at the edges
+			_slab(b, [(s * wa * 0.86, 0, za), (s * wa, 0, za), (s * wb, 0, zb), (s * wb * 0.86, 0, zb)], thick * 1.08, m["heart_d"])
+	_slab(b, [(-width * 0.12, 0, z0 + length), (width * 0.12, 0, z0 + length), (0, 0, z0 + length + width * 1.2)], thick * 0.9, m["heart"])
+	for s in (1, -1):   # the sap vein, proud of each face, wavering as wood grain does, branching once
+		vein = [(width * 0.14 * math.sin(k * 1.7), s * (thick * 0.5 + 0.006), z0 + 0.02 + length * 0.92 * k / 8) for k in range(9)]
+		_chain(b, vein, 0.016, 0.006, m["sap"], sides=5)
+		for u, d in ((0.3, 1), (0.55, -1)):
+			z = z0 + length * u
+			_chain(b, [(width * 0.14 * math.sin(u * 13.6), s * (thick * 0.5 + 0.006), z), (d * width * 0.55, s * (thick * 0.5 + 0.005), z + length * 0.12)],
+				   0.01, 0.004, m["sap"], sides=4)
+	for k in range(2):   # two roots spiralling up the lower blade, round its edges and across its faces
+		pts = []
+		for j in range(10):
+			a = j * 0.75 + k * math.pi
+			pts.append((width * 1.05 * math.cos(a), (thick * 0.5 + 0.012) * math.sin(a) * 1.6, z0 - 0.02 + j * length * 0.045))
+		_chain(b, pts, 0.017, 0.008, m["root"] if k == 0 else m["root_l"], sides=5)
+	_roots_sprig(b, m, (width * 0.9, 0, z0 + length * 0.42), 15, size=0.075)
+
+
+def _roots_sword(name, grip0, grip1, guard_half, blade_len, blade_w, thick=0.03, pommel_r=0.045):
+	m = roots_materials(name)
+	b = Builder(name)
+	_roots_twist(b, m, grip0, grip1, 0.03 if blade_len < 1.4 else 0.034, turns=1.4)
+	_roots_seed(b, m, grip0 - pommel_r * 1.2, pommel_r)
+	_roots_guard(b, m, grip1 + 0.01, guard_half)
+	_roots_blade(b, m, grip1 + 0.03, blade_len, blade_w, thick)
+	return b.build_static()
+
+
+def build_roots_shortsword():
+	return _roots_sword("roots_shortsword", -0.14, 0.12, 0.17, 0.82, 0.07)
+
+
+def build_roots_longsword():
+	return _roots_sword("roots_longsword", -0.2, 0.12, 0.22, 1.12, 0.075)
+
+
+def build_roots_dagger():
+	return _roots_sword("roots_dagger", -0.12, 0.1, 0.11, 0.66, 0.055, thick=0.026, pommel_r=0.038)
+
+
+def build_roots_greatsword():
+	return _roots_sword("roots_greatsword", -0.52, 0.12, 0.32, 1.72, 0.11, thick=0.036, pommel_r=0.06)
+
+
+def _roots_axe_head(b, m, z, s=1.0, side=-1):
+	"""An axe head of heartwood toward `side` (-1: -X) at height z: a wedge thick at the haft and
+	thinning out to a curved, bearded edge that glows with sap, a root grown across each face, roots
+	lashing it on and a curled root spur behind."""
+	edge = []   # the cutting edge: an arc from the beard (low) to the toe (high)
+	for k in range(7):
+		a = math.radians(-58 + 116 * k / 6)
+		edge.append((0.3 + 0.13 * math.cos(a), 0.2 * math.sin(a) - 0.02 * math.sin(a) ** 2))
+	outline = [(0.05, -0.1)] + edge + [(0.05, 0.1)]
+	pts = [(side * x * s, 0, z + zz * s) for x, zz in outline]
+	_slab(b, pts, 0.03 * s, m["heart"])
+	_slab(b, [(side * 0.035 * s, 0, z - 0.12 * s), (side * 0.2 * s, 0, z - 0.09 * s), (side * 0.2 * s, 0, z + 0.09 * s), (side * 0.035 * s, 0, z + 0.12 * s)],
+		  0.07 * s, m["heart_d"])   # the thick of the wedge, by the haft
+	_chain(b, [(side * (x + 0.012) * s, 0, z + zz * s) for x, zz in edge], 0.016 * s, 0.016 * s, m["sap"], sides=5)   # the edge glows
+	for f in (1, -1):
+		_chain(b, [(side * 0.08 * s, f * 0.02 * s, z - 0.06 * s), (side * 0.2 * s, f * 0.02 * s, z + 0.0 * s), (side * 0.33 * s, f * 0.019 * s, z + 0.12 * s)],
+			   0.014 * s, 0.006 * s, m["root"], sides=5)   # a root grown across the face
+		for dz in (-0.08, 0.05):
+			_chain(b, [(side * 0.21 * s, f * 0.017 * s, z + dz * s), (side * 0.36 * s, f * 0.016 * s, z + dz * s * 1.6)], 0.008 * s, 0.004 * s, m["sap"], sides=4)
+	for k in range(3):   # roots lashing it on
+		zz = z - 0.08 * s + 0.08 * s * k
+		_chain(b, [(side * 0.02, -0.045, zz), (side * 0.08 * s, 0, zz + 0.02 * s), (side * 0.02, 0.045, zz + 0.04 * s)], 0.012, 0.01, m["root"], sides=4)
+	_chain(b, [(0, 0, z), (-side * 0.08 * s, 0, z + 0.03 * s), (-side * 0.15 * s, 0, z + 0.1 * s), (-side * 0.13 * s, 0, z + 0.17 * s)], 0.03 * s, 0.006, m["root"], sides=5)
+
+
+def build_roots_hand_axe():
+	m = roots_materials("roots_hand_axe")
+	b = Builder("roots_hand_axe")
+	_roots_twist(b, m, -0.26, 0.9, 0.028, turns=2.0)
+	_roots_seed(b, m, -0.3, 0.036)
+	_roots_axe_head(b, m, 0.74, 1.0)
+	b.blob((0.07, 0.07, 0.09), (0, 0, 0.93), m["bark"], "x", segs=(7, 5))
+	_roots_leaf(b, m, (0.03, 0, 0.92), 30, size=0.06)
+	_roots_leaf(b, m, (0.02, 0, 0.5), 200, size=0.05, dark=True)
+	return b.build_static()
+
+
+def build_roots_great_axe():
+	m = roots_materials("roots_great_axe")
+	b = Builder("roots_great_axe")
+	_roots_twist(b, m, -0.42, 1.22, 0.034, turns=2.6)
+	_roots_seed(b, m, -0.47, 0.045)
+	for side in (-1, 1):
+		_roots_axe_head(b, m, 0.98, 1.4, side)
+	b.blob((0.1, 0.1, 0.13), (0, 0, 1.22), m["bark"], "x", segs=(7, 5))
+	_roots_seed(b, m, 1.3, 0.035)
+	for k, a in enumerate((40, 160, 280)):
+		_roots_leaf(b, m, (0.03, 0, 0.55 + 0.05 * k), a, size=0.06, dark=k == 1)
+	return b.build_static()
+
+
+def _roots_knot(b, m, z, r, thorns=8, across=0.0):
+	"""A club's head: a knot of root grown round itself, thorns, seams of glowing sap."""
+	if across > 0:   # a burl grown along the haft's end, swelling in the middle
+		b.blob((across * 2.2, r * 2.1, r * 2.2), (0, 0, z), m["bark"], "x", segs=(10, 7))
+		for x in (-across * 0.75, across * 0.75):
+			b.blob((r * 1.5, r * 1.7, r * 1.7), (x, 0, z), m["bark"], "x", segs=(8, 6))
+	else:
+		b.blob((r * 2, r * 2, r * 2.2), (0, 0, z), m["bark"], "x", segs=(9, 7))
+	for k in range(4):   # roots wrapped round the knot
+		a = math.pi * k / 4
+		ring = [((across * (k / 1.5 - 1) if across else 0) + r * 1.02 * math.cos(a + j * 0.9) * (0.4 if across else 1), r * 1.02 * math.sin(a + j * 0.9),
+				 z + r * 1.02 * math.cos(j * 0.9 + a)) for j in range(8)] if across else \
+			   [(r * 1.03 * math.cos(a) * math.sin(j * 0.45 + 0.3), r * 1.03 * math.sin(a) * math.sin(j * 0.45 + 0.3), z + r * 1.1 * math.cos(j * 0.45 + 0.3)) for j in range(7)]
+		_chain(b, ring, 0.016, 0.012, m["root"] if k % 2 == 0 else m["root_l"], sides=4)
+	import random
+	rng = random.Random(len(m["sap"].name) * 7 + int(r * 1000))
+	for k in range(thorns):
+		a, el = rng.uniform(0, 2 * math.pi), rng.uniform(-0.8, 0.8)
+		d = Vector((math.cos(a) * math.cos(el), math.sin(a) * math.cos(el), math.sin(el)))
+		base = Vector((rng.uniform(-across, across) if across else 0, 0, z)) + d * r * 0.9
+		b.seg(tuple(base), tuple(base + d * r * 0.55), r * 0.13, 0.0, m["heart_d"], "x", sides=4)
+	for k in range(5):   # the sap glowing through cracks
+		a, el = rng.uniform(0, 2 * math.pi), rng.uniform(-0.6, 0.6)
+		d = Vector((math.cos(a) * math.cos(el), math.sin(a) * math.cos(el), math.sin(el)))
+		b.blob((r * 0.32, r * 0.32, r * 0.18), tuple(Vector((rng.uniform(-across, across) * 0.8 if across else 0, 0, z)) + d * r * 0.93), m["sap"], "x", segs=(6, 4))
+
+
+def build_roots_mace():
+	m = roots_materials("roots_mace")
+	b = Builder("roots_mace")
+	_roots_twist(b, m, -0.17, 0.48, 0.028, turns=1.5)
+	_roots_seed(b, m, -0.21, 0.036)
+	_roots_knot(b, m, 0.6, 0.15, thorns=10)
+	_roots_sprig(b, m, (0.03, 0, 0.44), 30, size=0.08)
+	_roots_leaf(b, m, (0.03, 0, 0.42), 60, size=0.06)
+	_roots_leaf(b, m, (0.03, 0, 0.4), 240, size=0.05, dark=True)
+	return b.build_static()
+
+
+def build_roots_maul():
+	m = roots_materials("roots_maul")
+	b = Builder("roots_maul")
+	_roots_twist(b, m, -0.34, 0.86, 0.034, turns=2.2)
+	_roots_seed(b, m, -0.39, 0.045)
+	_roots_knot(b, m, 0.98, 0.15, thorns=12, across=0.26)
+	for k, a in enumerate((20, 140, 260)):
+		_roots_leaf(b, m, (0.03, 0, 0.7 + 0.04 * k), a, size=0.065, dark=k == 2)
+	return b.build_static()
+
+
+def build_roots_quarterstaff():
+	m = roots_materials("roots_quarterstaff")
+	b = Builder("roots_quarterstaff")
+	_roots_twist(b, m, -0.88, 1.12, 0.032, turns=4.0)
+	for z, d in ((1.16, 1), (-0.92, -1)):   # a knot at each end holding a glowing seed
+		b.blob((0.12, 0.12, 0.13), (0, 0, z), m["bark"], "x", segs=(8, 6))
+		b.blob((0.07, 0.07, 0.08), (0, 0, z + 0.07 * d), m["seed"], "x", segs=(8, 6))
+		for k in range(3):
+			a = 2 * math.pi * k / 3
+			_chain(b, [(0.05 * math.cos(a), 0.05 * math.sin(a), z), (0.07 * math.cos(a + 0.5), 0.07 * math.sin(a + 0.5), z + 0.08 * d),
+					   (0.02 * math.cos(a + 1.0), 0.02 * math.sin(a + 1.0), z + 0.15 * d)], 0.014, 0.006, m["root"], sides=4)
+	for k, (z, a) in enumerate(((0.95, 30), (0.88, 150), (0.25, 270), (-0.6, 80), (-0.7, 210))):
+		_roots_leaf(b, m, (0.03, 0, z), a, size=0.06, dark=k % 2 == 1)
+	for z in (0.1, 0.55):   # bands of moss where the hands go
+		b.seg((0, 0, z - 0.05), (0, 0, z + 0.05), 0.04, 0.04, m["moss"], "x", sides=8)
+	return b.build_static()
+
+
+def build_roots_spear():
+	m = roots_materials("roots_spear")
+	b = Builder("roots_spear")
+	b.seg((0, 0, -0.62), (0, 0, 1.78), 0.024, 0.02, m["root_l"], "x", sides=7)   # one long straight root
+	_roots_twist(b, m, -0.25, 0.35, 0.028, turns=1.6, core=False)              # the grip, wound round it
+	_roots_twist(b, m, 1.62, 1.8, 0.026, strands=2, turns=1.2, core=False)     # bindings at the head
+	_roots_seed(b, m, -0.66, 0.032)
+	pts = []
+	for k in range(7):
+		u = k / 6
+		pts.append((1.78 + 0.42 * u, 0.085 * math.sin(math.pi * min(1.0, u * 1.3) * 0.85) * (1 - u ** 3) + 0.01))
+	for (za, wa), (zb, wb) in zip(pts, pts[1:]):
+		_slab(b, [(-wa, 0, za), (wa, 0, za), (wb, 0, zb), (-wb, 0, zb)], 0.026, m["heart"])
+	_slab(b, [(-0.012, 0, 2.2), (0.012, 0, 2.2), (0, 0, 2.27)], 0.022, m["heart"])
+	for s in (1, -1):
+		_chain(b, [(0, s * 0.016, 1.8 + 0.06 * k) for k in range(7)], 0.008, 0.003, m["sap"], sides=4)
+	_roots_leaf(b, m, (0.02, 0, 1.75), 45, size=0.07)
+	_roots_leaf(b, m, (0.02, 0, 1.73), 225, size=0.06, dark=True)
+	return b.build_static()
+
+
+ROOTS_WEAPONS = {"roots_shortsword": build_roots_shortsword, "roots_longsword": build_roots_longsword, "roots_dagger": build_roots_dagger,
+				 "roots_hand_axe": build_roots_hand_axe, "roots_mace": build_roots_mace, "roots_quarterstaff": build_roots_quarterstaff,
+				 "roots_greatsword": build_roots_greatsword, "roots_great_axe": build_roots_great_axe, "roots_maul": build_roots_maul,
+				 "roots_spear": build_roots_spear}
+ATTACHMENTS.update(ROOTS_WEAPONS)
+
+
 def main():
 	argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 	opts = {"--out": "assets/creatures", "--preview": "", "--only": "", "--portrait": "", "--props-out": "assets/props"}

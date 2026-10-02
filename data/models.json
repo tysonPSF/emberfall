@@ -2958,6 +2958,16 @@
     "barrow_blade": "res://assets/creatures/barrow_blade.glb",
     "barrow_lord_sword": "res://assets/creatures/barrow_lord_sword.glb",
     "dragonfang_sword": "res://assets/creatures/dragonfang_sword.glb",
+    "roots_shortsword": "res://assets/creatures/roots_shortsword.glb",
+    "roots_longsword": "res://assets/creatures/roots_longsword.glb",
+    "roots_dagger": "res://assets/creatures/roots_dagger.glb",
+    "roots_hand_axe": "res://assets/creatures/roots_hand_axe.glb",
+    "roots_mace": "res://assets/creatures/roots_mace.glb",
+    "roots_quarterstaff": "res://assets/creatures/roots_quarterstaff.glb",
+    "roots_greatsword": "res://assets/creatures/roots_greatsword.glb",
+    "roots_great_axe": "res://assets/creatures/roots_great_axe.glb",
+    "roots_maul": "res://assets/creatures/roots_maul.glb",
+    "roots_spear": "res://assets/creatures/roots_spear.glb",
     "dragontooth_dagger": "res://assets/creatures/dragontooth_dagger.glb",
     "dragonclaw_axe": "res://assets/creatures/dragonclaw_axe.glb",
     "dragonmaw_mace": "res://assets/creatures/dragonmaw_mace.glb",
@@ -4314,7 +4324,7 @@
     "stone": ""
   },
   "grips": {
-    "bow": {"rot": [0, 180, 0]}, "dragonwing_bow": {"rot": [0, 180, 0]}, "dragonclaw_axe": {"rot": [0, 180, 0]}, "dragonclaw_axe@l": {"rot": [0, 0, 0]}, "dragonclaw_great_axe": {"rot": [0, 180, 0]}, "dragonclaw_great_axe@l": {"rot": [0, 0, 0]}, "torch": {"rot": [0, 0, -90]}, "fishing_pole": {"rot": [0, 0, 35]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_1handed@l": {"rot": [0, 0, 0]}, "axe_2handed": {"rot": [0, 180, 0]}, "axe_2handed@l": {"rot": [0, 0, 0]},
+    "bow": {"rot": [0, 180, 0]}, "dragonwing_bow": {"rot": [0, 180, 0]}, "roots_hand_axe": {"rot": [0, 180, 0]}, "roots_hand_axe@l": {"rot": [0, 0, 0]}, "roots_great_axe": {"rot": [0, 180, 0]}, "roots_great_axe@l": {"rot": [0, 0, 0]}, "dragonclaw_axe": {"rot": [0, 180, 0]}, "dragonclaw_axe@l": {"rot": [0, 0, 0]}, "dragonclaw_great_axe": {"rot": [0, 180, 0]}, "dragonclaw_great_axe@l": {"rot": [0, 0, 0]}, "torch": {"rot": [0, 0, -90]}, "fishing_pole": {"rot": [0, 0, 35]}, "axe_1handed": {"rot": [0, 180, 0]}, "axe_1handed@l": {"rot": [0, 0, 0]}, "axe_2handed": {"rot": [0, 180, 0]}, "axe_2handed@l": {"rot": [0, 0, 0]},
     "shield_round": {
       "bone": "lowerarm.l",
       "orient": "chest",
@@ -4435,5 +4445,17 @@
     "race_troll_face": {"path": "res://assets/creatures/race_troll_face.glb", "bone": "head", "skin": true},
     "race_tusks_ogre": {"path": "res://assets/creatures/race_tusks_ogre.glb", "bone": "head", "skin": false},
     "race_ogre_face": {"path": "res://assets/creatures/race_ogre_face.glb", "bone": "head", "skin": true}
+  },
+  "weapon_fx": {
+    "roots_shortsword": {"motes": "#8aff5a", "reach": 0.9, "glow": 0.35},
+    "roots_longsword": {"motes": "#8aff5a", "reach": 1.2, "glow": 0.35},
+    "roots_dagger": {"motes": "#8aff5a", "reach": 0.75, "glow": 0.35},
+    "roots_hand_axe": {"motes": "#8aff5a", "reach": 0.85, "glow": 0.35},
+    "roots_mace": {"motes": "#8aff5a", "reach": 0.6, "glow": 0.35},
+    "roots_quarterstaff": {"motes": "#8aff5a", "reach": 1.1, "glow": 0.35},
+    "roots_greatsword": {"motes": "#8aff5a", "reach": 1.8, "glow": 0.35},
+    "roots_great_axe": {"motes": "#8aff5a", "reach": 1.15, "glow": 0.35},
+    "roots_maul": {"motes": "#8aff5a", "reach": 1.0, "glow": 0.35},
+    "roots_spear": {"motes": "#8aff5a", "reach": 2.0, "glow": 0.35}
   }
 }

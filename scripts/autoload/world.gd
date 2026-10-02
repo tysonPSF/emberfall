@@ -1475,8 +1475,10 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	var coin_range: Array = mob.data.get("coin", [0, 0])
 	var coin := randi_range(int(coin_range[0]), int(coin_range[1]))
 	var unique: Dictionary = GameData.loot.get("unique", {})
-	if mob.data.get("named", false) and not unique.is_empty() and randf() < float(unique.get("chance", 0.0)):
-		# now and then a named monster carries one of Elephant Grove's rare weapons, made for its level
+	var unique_odds := float(unique.get("chance", 0.0)) if mob.data.get("named", false) \
+			else (float(unique.get("common_chance", 0.0)) if mob.data.has("gear") else 0.0)  # an ordinary monster that carries weapons: very rarely
+	if not unique.is_empty() and randf() < unique_odds:
+		# now and then a named monster (or, once in a long while, one that carries weapons) has one of the unique weapons, made for its level
 		var pick := str((unique["items"] as Array).pick_random())
 		entries.append({"item": "%s~%d" % [pick, mob.level], "slot": ""})
 		if GameData.item(pick).get("ammo", "") == "arrow":
@@ -3174,7 +3176,8 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			t.add_hate(c, float(per_tick))
 		"root":
 			t.root_left = float(s.get("duration", 10))
-			say(c, "%s's feet adhere to the ground." % cap(t.display_name), C_SPELL)
+			var said := str(s.get("land_text", "%s's feet adhere to the ground."))
+			say(c, said % (cap(t.display_name) if said.begins_with("%s") else t.display_name), C_SPELL)  # a spell's own line names it mid-sentence
 			t.add_hate(c, 5.0)
 		"hide":
 			if c.hidden:

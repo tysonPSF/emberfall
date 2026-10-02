@@ -4102,7 +4102,7 @@ func _item_tooltip(item_id: String, colored := false) -> String:
 		var fx := _use_effect(GameData.spells[use["spell"]])
 		if fx != "":
 			lines.append(fx)
-	if it.has("desc"):
+	if it.has("desc") and not it.get("unique", false):  # a unique's shows at the top, under its weight
 		lines.append(str(it["desc"]))
 	if it.has("combine"):
 		lines.append("A %s: put ingredients inside and press Combine." % World.container_name(str(it["combine"])).to_lower())

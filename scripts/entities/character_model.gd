@@ -622,6 +622,9 @@ func _hold(bone: String, model_id: String) -> void:
 		skeleton.add_child(slot)
 		held.position = Vector3(at[0], at[1], at[2])
 	slot.add_child(held)
+	var fx: Dictionary = GameData.models.get("weapon_fx", {}).get(model_id, {})
+	if not fx.is_empty() and not Net.dedicated:
+		held.add_child(WeaponFx.make(fx))
 	Entity.use_entity_layer(slot)
 	_held[bone] = [model_id, slot]
 	_finish(slot, str(_tiers.get(HAND_SLOTS.get(bone, ""), "")), 1.0, HILT_REACH)

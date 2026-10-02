@@ -3453,5 +3453,22 @@
       "kind": "buff",
       "color": "#d8a860"
     }
+  },
+  "grasping_roots": {
+    "name": "Grasping Roots",
+    "type": "root",
+    "target": "enemy",
+    "mana": 0,
+    "cast_time": 0,
+    "recast": 0,
+    "range": 8,
+    "duration": 4,
+    "classes": {},
+    "desc": "Roots burst from the ground and hold the target where it stands for 4 seconds.",
+    "land_text": "Roots burst from the ground and seize %s!",
+    "fx": {
+      "kind": "root",
+      "color": "#7dff5a"
+    }
   }
 }

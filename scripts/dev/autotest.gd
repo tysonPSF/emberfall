@@ -154,6 +154,7 @@ const SECTIONS := [
 	["look_controls", "greenmoor"],
 	["forge_weapons", "greenmoor"],
 	["map_zoom", "thornwood"],
+	["living_roots", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -10902,3 +10903,99 @@ func _t_map_zoom() -> void:
 	map.visible = false
 	print("map_zoom: from 160 m the - button %.0f, the - key %.0f, a trackpad scroll %.0f, a pinch in %.0f; Whole zone back to %.0f (the zone %.0f) %s" % [button_out,
 			key_out, pan_out, pinch_in, back, whole, is_equal_approx(back, whole)])
+
+
+## The Living Roots line: ten weapons on their own glowing models, a hit that
+## may root the target, among the named kills' uniques, and now and then (any
+## unique) from an ordinary monster that carries weapons, never one that doesn't.
+func _t_living_roots() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var ids := ["roots_shortsword", "roots_longsword", "roots_dagger", "roots_hand_axe", "roots_mace", "roots_quarterstaff",
+			"roots_greatsword", "roots_great_axe", "roots_maul", "roots_spear"]
+	var bad := []
+	for id: String in ids:
+		var it := GameData.item(id + "~20")
+		var path := str(GameData.models["weapons"].get(str(it.get("model", "")), ""))
+		if it.is_empty() or path == "" or not load(path) is PackedScene or not id in GameData.loot["unique"]["items"] \
+				or str(it.get("proc", {}).get("spell", "")) != "grasping_roots" or not GameData.models["weapon_fx"].has(id):
+			bad.append(id)
+	var sample := GameData.item("roots_longsword~30")
+	# the root on a hit
+	var mob: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and p.distance_to(m) < 80.0:
+			mob = m
+			break
+	p.equipment["primary"] = "roots_dagger~20"
+	p.recalc_stats()
+	p.inventory_changed.emit()
+	var proc: Dictionary = GameData.items["roots_dagger"]["proc"]
+	var odds := float(proc["chance"])
+	proc["chance"] = 1.0
+	World._try_proc(p, mob)
+	proc["chance"] = odds
+	var rooted := mob.root_left
+	var mob_name := mob.display_name
+	mob.root_left = 0.0
+	mob.hate.clear()
+	# drops: an ordinary monster that carries weapons, then one that doesn't
+	var u: Dictionary = GameData.loot["unique"]
+	var keep := float(u["common_chance"])
+	u["common_chance"] = 1.0
+	var armed: Mob = null
+	var bare: Mob = null
+	for m in World.get_mobs():
+		if m.dead or m.data.get("named", false):
+			continue
+		if m.data.has("gear") and armed == null:
+			armed = m
+		elif not m.data.has("gear") and bare == null and m != mob:
+			bare = m
+	var gave_gear := false
+	if armed == null:  # none here carries weapons: one stands in
+		armed = mob
+		armed.data["gear"] = ["weapons"]
+		gave_gear = true
+	var from_armed: String = await _unique_from(armed, p)
+	if gave_gear:
+		armed.data.erase("gear")
+	var from_bare := "(none to try)"
+	if bare != null:
+		from_bare = await _unique_from(bare, p)
+	u["common_chance"] = keep
+	# how they look, held
+	World.time_override = 12.0
+	p.zoom = 1.7
+	p.pitch = -0.15
+	p.visual.rotation.y += PI * 0.55  # side-on, the weapon hand toward the camera
+	await _wait(1.5)
+	await _shot("9zz_roots_dagger")
+	var cm := p.visual as CharacterModel
+	for id: String in ["roots_longsword", "roots_great_axe", "roots_quarterstaff"]:
+		cm.set_weapon(id)
+		cm.set_tiers({"primary": "unique"})
+		await _wait(1.5)
+		await _shot("9zz_" + id)
+	p.visual.rotation.y -= PI * 0.55
+	p.equipment.erase("primary")
+	p.recalc_stats()
+	p.inventory_changed.emit()
+	print("living_roots: %d weapons, all on their own glowing models with the root proc and in the unique roll %s %s" % [ids.size(), bad.is_empty(), bad])
+	print("living_roots: Longsword of Living Roots at 30: dmg %d delay %.1f sta %d str %d hp %d hp regen %d" % [sample["dmg"], sample["delay"],
+			sample.get("sta", 0), sample.get("str", 0), sample.get("hp", 0), sample.get("hp_regen", 0)])
+	print("living_roots: a hit's proc rooted %s for %.0f s; with the odds forced, an ordinary monster that carries weapons dropped %s, one that doesn't %s" % [
+			mob_name, rooted, from_armed, from_bare if from_bare != "" else "nothing"])
+
+
+## Kills m and returns the unique (an id with "~") its corpse holds, or "".
+func _unique_from(m: Mob, p: Player) -> String:
+	var who := m.display_name.trim_prefix("a ").trim_prefix("an ")  # the mob is gone once it dies
+	World.damage(m, m.hp + 10, p)
+	await _wait(0.3)
+	for obj: Variant in World.objects.values():
+		if obj is Corpse and (obj as Corpse).display_name.contains(who):
+			for e: Dictionary in (obj as Corpse).entries:
+				if str(e["item"]).contains("~"):
+					return str(e["item"])
+	return ""
