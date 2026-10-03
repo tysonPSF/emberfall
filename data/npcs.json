@@ -1047,6 +1047,13 @@
       "blessing": "Only his followers may receive it.",
       "bindstone": "This shrine is the bindstone of the Dawnstair. Fall anywhere in these lands and you wake at the elephant's feet.",
       "unknown": "The Dawn-Tusk knows, {name}, but he hasn't told me."
+    },
+    "opens_realm": {
+      "zone": "dawnreach",
+      "keyword": "dawn",
+      "after": "dawn_5",
+      "text": "Then go, {name}, and the Dawn-Tusk go with you. Hold on to each other.",
+      "refuse": "The way to the Dawnreach doesn't open yet, {name}. Not for you."
     }
   },
   "gm_idris": {
@@ -11530,6 +11537,66 @@
         "hail": "There you are, {name}, and look who's with you! I knew that barrel was hiding something. Mind she doesn't eat all my windfalls.",
         "barrel": "Empty to the boards, and I've never been happier to see it. It'll fill again for the next patient soul."
       }
+    }
+  },
+  "dawnkeeper_ilaya": {
+    "name": "Dawnkeeper Ilaya",
+    "title": "Keeper of the Dawngate",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "sacred": true,
+    "grove_return": true,
+    "race": "high_elf",
+    "gender": "female",
+    "dialogue": {
+      "hail": "You came through the gate, {name}. Few do now. This is the Dawnreach, where the Dawn-Tusk keeps the first morning, or did, before the [Dimming] came. When you want to go home, say [return] and I'll walk you back to where you stood.",
+      "dimming": "A hunger from outside the world. It came in through the crater at the realm's heart and it eats light: the sentinels, the lamps, the morning itself. It took the [ember] he kept, and now the edges are going dark.",
+      "ember": "The Ember of First Light, the first morning's last coal. Take it back and carry it to the Dawn-Tusk at his [temple], north past the crater. You won't do it alone. Nobody has.",
+      "temple": "The Temple of the First Dawn, at the realm's north end. He stands there still, waiting.",
+      "return": "Close your eyes, {name}. Mind the step.",
+      "unknown": "The light's too thin here for riddles, {name}."
+    }
+  },
+  "sister_ashvara": {
+    "name": "Sister Ashvara",
+    "title": "the First Dawnpriest",
+    "level": 60,
+    "model": "mage",
+    "weapon": "staff",
+    "faction": "lanternhold",
+    "sacred": true,
+    "race": "human",
+    "gender": "female",
+    "hair": [
+      "long",
+      "white"
+    ],
+    "dialogue": {
+      "hail": "I was the first to keep his shrine in Lanternhold, {name}, longer ago than the city remembers. He let me stay when it was done. I watch the [sentinels] now.",
+      "sentinels": "They kept the paths for him: stone that loved the light. The Dimming got into them. Some of them still turn east at dawn, as if they remember. Put them down kindly; it's what they'd want.",
+      "unknown": "Ask Ilaya, child. She knows the roads."
+    }
+  },
+  "dawn_avatar": {
+    "name": "Prabhagaj",
+    "title": "The Dawn-Tusk",
+    "level": 99,
+    "model": "deity_light",
+    "faction": "lanternhold",
+    "sacred": true,
+    "fixed": true,
+    "size": [
+      3.0,
+      8.5
+    ],
+    "name_height": 9.5,
+    "dialogue": {
+      "hail": "Little one. You came all this way, and you came with others, which is the right way to come. Something is eating my morning. It took the [ember] I kept.",
+      "ember": "The Ember of First Light. The Dimming holds it in the crater, south of here. Take it back, and bring it to me. Then I'll give you something to open the Grove with.",
+      "grove": "Where the five of us stand when the world doesn't need us standing somewhere else. You'll see it.",
+      "unknown": "I've watched a great many mornings, {name}. Not many words."
     }
   }
 }

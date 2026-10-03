@@ -1362,5 +1362,19 @@
    "b_edge": "east",
    "cross_area": false
   }
- ]
+ ],
+ "realms": {
+  "dawnreach": {
+   "name": "The Dawnreach",
+   "god": "light",
+   "levels": [
+    50,
+    52
+   ],
+   "opened_by": "dawnpriest_amaru",
+   "zones": [
+    "dawnreach"
+   ]
+  }
+ }
 }

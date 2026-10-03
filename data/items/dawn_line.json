@@ -1,0 +1,20 @@
+{
+  "dl_grandmothers_memory": {"name": "The Grandmother's Memory", "no_drop": true, "lore": true, "value": 0, "weight": 0.2, "desc": "A pale light caught in a fold of ghost-hide. It remembers a morning a very long time ago."},
+  "dl_dawn_mote": {"name": "Dawn-Pale Mote", "no_drop": true, "stack": 20, "value": 0, "weight": 0.1, "desc": "A speck of old morning that a herd-spirit carried in its bones."},
+  "dl_ysmoor_sunstone": {"name": "Ysmoor's Sunstone", "no_drop": true, "lore": true, "value": 0, "weight": 1.0, "desc": "A dull amber stone. Held up, it's warm on the side facing east, wherever east is."},
+  "dl_attuned_sunstone": {"name": "Attuned Sunstone", "no_drop": true, "lore": true, "value": 0, "weight": 1.0, "desc": "Ysmoor's Sunstone, woken by Evander's reading. A faint sunrise moves inside it."},
+  "dl_last_dawn_lamp": {"name": "The Last Dawn-Lamp", "no_drop": true, "lore": true, "value": 0, "weight": 1.5, "desc": "A brass lamp, cold and black inside. Its wick was lit from the Dawn-Tusk's own fire."},
+  "dl_lit_dawn_lamp": {"name": "The Dawn-Lamp, Relit", "no_drop": true, "lore": true, "value": 0, "weight": 1.5, "desc": "Solenne relit it from the Lampward's oldest flame. It burns gold, and the dark leans away from it."},
+  "dl_dawnspear_head": {"name": "The Dawnspear's Head", "no_drop": true, "lore": true, "value": 0, "weight": 3.0, "desc": "A spearhead of white stone, broken from the Dawn-Tusk's champion's hand on Lastwalk."},
+  "dl_hallowed_spearhead": {"name": "Hallowed Dawnspear Head", "no_drop": true, "lore": true, "value": 0, "weight": 3.0, "desc": "The Dawnspear's head, hallowed by Wilhelmina. It points north whatever way you hold it."},
+  "dl_ember_of_first_light": {"name": "The Ember of First Light", "no_drop": true, "lore": true, "value": 0, "weight": 0.2, "desc": "The first morning's last coal, taken back from the Dimming. Too bright to look at; warm as a held hand."},
+  "dl_pendant_of_the_last_dawn": {"name": "Pendant of the Last Dawn", "no_drop": true, "lore": true, "slot": "neck", "ac": 15, "str": 8, "sta": 10, "wis": 10, "int": 8, "hp": 120, "mana": 90, "value": 60000, "rec_level": 50, "deities": ["light"], "icon": "godforged_heart_amulet", "desc": "The Dawn-Tusk's thanks: a sliver of the first morning on a gold chain."},
+  "dr_dimmed_ash": {"name": "Dimmed Ash", "stack": 20, "value": 900, "weight": 0.1, "desc": "What light leaves when something eats it."},
+  "dr_sunstone_chip": {"name": "Sunstone Chip", "stack": 20, "value": 1400, "weight": 0.2, "desc": "Chipped from a dawn-sentinel; still faintly warm."},
+  "dr_gilded_feather": {"name": "Gilded Feather", "stack": 20, "value": 1100, "weight": 0.1, "desc": "A dawnwing's flight feather, gold at the tip."},
+  "dr_gilded_fleece": {"name": "Gilded Fleece", "stack": 20, "value": 1200, "weight": 0.5, "desc": "Wool that holds the morning; warm in any weather."},
+  "dr_sunwyrm_scale": {"name": "Sunwyrm Scale", "stack": 20, "value": 1600, "weight": 0.5, "desc": "A sunwyrm's scale, amber and hard as bronze."},
+  "dr_goldmaw_fang": {"name": "Goldmaw's Fang", "slot": "primary", "skill": "piercing", "dmg": 29, "delay": 2.1, "agi": 9, "str": 7, "hp": 60, "value": 52000, "rec_level": 50, "lore": true, "icon": "dragontooth_dagger", "model": "dagger", "desc": "A fang longer than a hand, gold at the root."},
+  "dr_abbots_prayer_beads": {"name": "Hollow Abbot's Prayer Beads", "slot": "neck", "ac": 12, "wis": 11, "int": 9, "mana": 120, "hp": 60, "value": 48000, "rec_level": 50, "lore": true, "icon": "godforged_heart_amulet", "desc": "Sunstone beads gone dull, all but one."},
+  "dr_heart_of_the_dimming": {"name": "Heart of the Dimming", "slot": "ring", "ac": 10, "str": 9, "sta": 9, "agi": 9, "hp": 90, "value": 62000, "rec_level": 51, "lore": true, "no_drop": true, "icon": "ring_of_the_empty_chair", "desc": "A ring of black glass with nothing at all inside it. Your hand looks dimmer wearing it."}
+}

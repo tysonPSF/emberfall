@@ -187,6 +187,17 @@ ROCKSLIDES = {'thornwood': ['north', 'east', 'west']}
 # Off-grid zones walked into through a door in another zone (a cave, a
 # stair), not a pass: they count as reachable on foot through their host.
 DOORS = {'duskhold': 'duskwood'}
+# The gods' realms (2026-10-03, docs/grove-questline.md): off the grid
+# entirely, each a region of its own that grows zone by zone (its first zone
+# is the realm's id, the rest `<realm>_<part>`). Reached only when a god's
+# priest opens the way at the end of their line, never on foot, so they
+# hold no cell, no pass and no border with the world.
+REALMS = {
+    'dawnreach': {'name': 'The Dawnreach', 'god': 'light', 'levels': [50, 52],
+                  'opened_by': 'dawnpriest_amaru', 'zones': ['dawnreach']},
+}
+REALM_ZONES = {z for r in REALMS.values() for z in r['zones']}
+
 # Neighboring cells that do NOT open onto each other: the mountain stays shut.
 # The Wallow's newcomers would face Reedmere at 22-26, and Duskwood's dark
 # elves would walk into Emberhold, whose guards attack them on sight.
@@ -236,7 +247,10 @@ def check(by_id, by_cell, links):
     on_grid = [r for r in by_id.values() if r['cell']]
     ok(len(by_cell) == len(on_grid),
        f'{len(on_grid)} zones on {len(by_cell)} distinct cells - no two share one')
-    stray = sorted(BUILT - set(by_id))
+    stray = sorted(BUILT - set(by_id) - REALM_ZONES)
+    ok(all(z not in by_id for z in REALM_ZONES),
+       f'{len(REALMS)} god realm(s) off the grid: '
+       + ", ".join(f'{r["name"]} ({len(r["zones"])} zone{"s" if len(r["zones"]) != 1 else ""}, {sum(z in BUILT for z in r["zones"])} built)' for r in REALMS.values()))
     ok(not stray or all('_' in x or x in DUNGEONS for x in stray),
        f'{len(BUILT)} zone files on disk'
        + (f'; not on the grid: {", ".join(stray)} (interiors are expected)' if stray else ''))
@@ -345,7 +359,7 @@ if __name__ == '__main__':
            'note': 'Emberfall world layout. Cells are grid squares; gy rises NORTH '
                    '(+z is south in the engine). Links are derived from the grid, '
                    'never typed: one border = a pass and a zone_line on each side.',
-           'areas': AREAS, 'zones': list(by_id.values()), 'links': links}
+           'areas': AREAS, 'zones': list(by_id.values()), 'links': links, 'realms': REALMS}
     json.dump(out, open(os.path.join(OUT, 'world-layout.json'), 'w'), indent=1)
     print(f'\n{len(by_id)} zones, {len(links)} borders -> emberfall_world_layout.json')
     sys.exit(1 if fails else 0)

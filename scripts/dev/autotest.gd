@@ -164,6 +164,7 @@ const SECTIONS := [
 	["cast_bar_move", "greenmoor"],
 	["bind_sitting", "greenmoor"],
 	["player_cc", "greenmoor"],
+	["dawn_line", "lanternhold"],
 	["chat_resize", "greenmoor"],
 	["june", "lanternhold"],
 	["velassa", "greenmoor"],
@@ -11266,6 +11267,136 @@ func _t_cast_bar_move() -> void:
 
 
 ## Bind Wound while resting: you stay sitting (and resting) while you bandage.
+## Prabhagaj's line to the Grove (docs/grove-questline.md): only his followers
+## at 46+ are offered it; a relic falls only for someone on its step; the last
+## relics open the Dawnreach through Amaru; the Dimming's ember, given to the
+## Dawn-Tusk, gives the seed and the pendant and brings him to the Grove; the
+## keeper walks you home.
+func _t_dawn_line() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	var keep := [p.deity, p.level, p.quests.duplicate(true), p.grove_deities.duplicate()]
+	var heard: Array[String] = []
+	var listen := func(text: String, _c: Color) -> void: heard.append(text)
+	World.log_message.connect(listen)
+	var said := func(bit: String) -> bool: return heard.any(func(l: String) -> bool: return l.contains(bit))
+	for q in ["dawn_1", "dawn_2", "dawn_3", "dawn_4", "dawn_5", "dawn_6"]:
+		p.quests.erase(q)
+	p.grove_deities.erase("light")
+	var amaru: Npc = _npcs()["dawnpriest_amaru"]
+	_stand_by(p, amaru)
+	# another god's follower, or too young: nothing offered, the word refused
+	p.deity = "fire"
+	p.level = 50
+	heard.clear()
+	World.request_hail(p.entity_id)
+	World.request_say(p.entity_id, "stirring")
+	var fire_refused: bool = not p.quests.has("dawn_1") and not said.call("[stirring]") and World.open_quests(p, "dawnpriest_amaru").is_empty()
+	p.deity = "light"
+	p.level = 40
+	World.request_say(p.entity_id, "stirring")
+	var young_refused := not p.quests.has("dawn_1")
+	p.level = 50
+	heard.clear()
+	World.request_hail(p.entity_id)
+	var offered: bool = said.call("[stirring]") and World.quest_mark(p, "dawnpriest_amaru") == "!"
+	World.request_say(p.entity_id, "stirring")
+	var took: bool = p.quests.get("dawn_1", {}).get("active", false)
+	# a relic only falls for someone on its step
+	var drops := func(mob_id: String) -> bool:
+		var m := Mob.new()
+		var d: Dictionary = (GameData.mobs[mob_id] as Dictionary).duplicate(true)
+		d.erase("gear")
+		m.setup(mob_id, d, null)
+		m.position = main.zone.ground(30, 30) + Vector3.UP * 0.3
+		main.zone.add_child(m)
+		await _wait(0.1)
+		m.set_meta("damage_by", {p.entity_id: 1})
+		World.kill(m, p)
+		await _wait(0.2)
+		var found := false
+		for c in main.zone.get_children():
+			if c is Corpse and (c as Corpse).entries.any(func(e: Dictionary) -> bool: return str(e["item"]).begins_with("dl_")):
+				found = true
+				c.queue_free()
+		return found
+	var drops_on_step: bool = await drops.call("herd_grandmother")
+	var drops_off_step: bool = await drops.call("queen_ismay")  # dawn_2 isn't taken yet
+	# steps 2-4 elsewhere: done, their relics in hand; step 5 is Amaru's
+	for q in ["dawn_1", "dawn_2", "dawn_3", "dawn_4"]:
+		p.quests[q] = {"active": false, "completions": 1}
+	p.quests["dawn_5"] = {"active": true, "completions": 0}
+	for it in ["dl_attuned_sunstone", "dl_lit_dawn_lamp", "dl_hallowed_spearhead"]:
+		p.pack.add(it)
+	World.request_say(p.entity_id, "dawn")
+	var shut_before := World.zone.zone_id == "lanternhold"
+	await _hand_in(p, amaru, ["dl_attuned_sunstone", "dl_lit_dawn_lamp", "dl_hallowed_spearhead"])
+	await _wait(1.0)
+	var step5: bool = World.quest_done(p, "dawn_5") and p.quests.get("dawn_6", {}).get("active", false)
+	World.request_say(p.entity_id, "dawn")
+	for k in 80:
+		if main.zone.zone_id == "dawnreach" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	await _wait(2.0)
+	var inside: bool = main.zone.zone_id == "dawnreach"
+	# the realm: from the gate, the crater, the temple
+	var z: Zone = main.zone
+	for view: Array in [[Vector3(0, 0, 214), Vector3(0, 0, 150), 6.0, -0.15, "gate"], [Vector3(0, 0, 40), Vector3(0, 0, -40), 14.0, -0.45, "crater"],
+			[Vector3(0, 0, -140), Vector3(0, 0, -205), 10.0, -0.2, "temple"], [Vector3(-120, 0, 60), Vector3(-175, 0, 30), 12.0, -0.35, "roost"],
+			[Vector3(120, 0, 60), Vector3(175, 0, 30), 12.0, -0.35, "cloister"]]:
+		p.global_position = z.ground(view[0].x, view[0].z) + Vector3.UP * 0.3
+		p.face_toward(view[1])
+		p.zoom = view[2]
+		p.pitch = view[3]
+		await _wait(1.5)
+		await _shot("9zz_dawnreach_%s" % view[4])
+	var dimming: Mob = null
+	for c in z.get_children():
+		if c is Mob and (c as Mob).mob_id == "the_dimming":
+			dimming = c
+	var dimming_up := dimming != null and not dimming.dead
+	p.global_position = z.ground(0, -160) + Vector3.UP * 0.3  # the Dawn-Tusk at his temple, from down the road
+	p.face_toward(Vector3(0, 0, -194))
+	p.zoom = 12.0
+	p.pitch = -0.1
+	await _wait(1.0)
+	await _shot("9zz_dawnreach_god")
+	var av: Npc = _npcs()["dawn_avatar"]
+	p.global_position = z.ground(14, -176) + Vector3.UP * 0.3
+	p.face_toward(av.global_position)
+	p.zoom = 6.0
+	await _wait(1.0)
+	await _shot("9zz_dawnreach_god_near")
+	# the ember, to the Dawn-Tusk
+	p.pack.add("dl_ember_of_first_light")
+	var avatar: Npc = _npcs()["dawn_avatar"]
+	_stand_by(p, avatar)
+	await _hand_in(p, avatar, ["dl_ember_of_first_light"])
+	await _wait(1.0)
+	var seed := "grove_seed" in p.owned_item_ids()
+	var pendant := "dl_pendant_of_the_last_dawn" in p.owned_item_ids()
+	var god := "light" in p.grove_deities
+	await _shot("9zz_dawnreach_avatar")
+	# and home
+	var keeper: Npc = _npcs()["dawnkeeper_ilaya"]
+	_stand_by(p, keeper)
+	World.request_say(p.entity_id, "return")
+	for k in 80:
+		if main.zone.zone_id == "lanternhold" and not main._changing_zone:
+			break
+		await _wait(0.25)
+	var home: bool = main.zone.zone_id == "lanternhold"
+	World.log_message.disconnect(listen)
+	print("dawn_line: refused fire=%s young=%s; offered=%s took=%s; relic on step=%s off step=%s; the way shut before=%s, step5=%s, inside the Dawnreach=%s, the Dimming up=%s (min players %d); seed=%s pendant=%s god=%s; home=%s" % [
+		fire_refused, young_refused, offered, took, drops_on_step, drops_off_step, shut_before, step5, inside,
+		dimming_up, int(GameData.mobs["the_dimming"].get("min_players", 0)), seed, pendant, god, home])
+	p.deity = keep[0]
+	p.level = keep[1]
+	p.quests = keep[2]
+	p.grove_deities = keep[3]
+
+
 ## A stun holds a player still, breaks the spell they're casting and stops
 ## spells, shots and items until it passes; a root holds them still but lets
 ## them cast. The debuff window shows both.

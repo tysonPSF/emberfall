@@ -7545,5 +7545,143 @@
     "first_complete_text": "A cap from the biggest of them. Harder than it looks.",
     "start_keyword": "shells",
     "repeatable": true
+  },
+  "dawn_1": {
+    "name": "The Last Dawn (1 of 6): A Stirring at the Shrine",
+    "starter": "dawnpriest_amaru",
+    "giver": "sister_imelda",
+    "start_keyword": "stirring",
+    "deities": [
+      "light"
+    ],
+    "min_level": 46,
+    "offer_text": "Wait, {name}. You follow the Dawn-Tusk; you'll have felt it too, at the edge of sleep. Something [stirring].",
+    "refuse_text": "It isn't yours to carry, {name}. Not yet, or not from your god.",
+    "wants": {
+      "dl_grandmothers_memory": 1,
+      "dl_dawn_mote": 4
+    },
+    "reward": {
+      "xp": 50000,
+      "coin": 6000
+    },
+    "accept_text": "You have taken on a task: The Last Dawn. Somewhere beyond the world the Dawn-Tusk's light is failing. In the Ivory Field, the ghosts of the great herds still remember him: bring Sister Imelda at Tuskwatch the Grandmother of Herds' memory and four dawn-pale motes from the herd-spirits.",
+    "ready_text": "You've brought her memory? Gently, {name}. Give it here.",
+    "complete_text": "Imelda holds the memory to her ear like a shell, and her face goes still. \"A morning. The first one. He stood at its edge, and the herds walked out into it.\"",
+    "first_complete_text": "\"It's being eaten, {name}. The light he made. I could hear it going out.\" She presses the motes back into your hand to warm it. \"Ysmoor's queens kept a stone that held a sunrise. Queen Ismay still walks Fogfall at night, and she never let it go. Take it from her, and take it to Loremaster Evander at the Lanternwatch.\"",
+    "next": "dawn_2",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
+  },
+  "dawn_2": {
+    "name": "The Last Dawn (2 of 6): The Sunstone of Ysmoor",
+    "giver": "loremaster_evander",
+    "wants": {
+      "dl_ysmoor_sunstone": 1
+    },
+    "reward": {
+      "xp": 55000,
+      "coin": 6000
+    },
+    "first_reward_item": "dl_attuned_sunstone",
+    "accept_text": "Queen Ismay walks Fogfall's ruins at night with Ysmoor's Sunstone. Take it from her and bring it to Loremaster Evander at the Lanternwatch.",
+    "ready_text": "Is that... the Sunstone? Here, {name}, quickly, before the fog gets at it.",
+    "complete_text": "Evander turns the stone in his hands, reading lines nobody else can see. Then he breathes on it, and something gold wakes inside.",
+    "first_complete_text": "\"Keep it. It's awake now: it'll know the way home when you need it.\" He frowns at the north. \"The last lamp lit from the Dawn-Tusk's own fire went into the dark, {name}. The Pale Keeper in the Unlit took it. Bring it to Lampwarden Solenne; if anyone can relight it, she can.\"",
+    "next": "dawn_3",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
+  },
+  "dawn_3": {
+    "name": "The Last Dawn (3 of 6): A Lamp in the Unlit",
+    "giver": "lampwarden_solenne",
+    "wants": {
+      "dl_last_dawn_lamp": 1
+    },
+    "reward": {
+      "xp": 60000,
+      "coin": 7000
+    },
+    "first_reward_item": "dl_lit_dawn_lamp",
+    "accept_text": "The Pale Keeper in the Unlit holds the last lamp lit from the Dawn-Tusk's fire. Take it and bring it to Lampwarden Solenne at the Lampward.",
+    "ready_text": "That lamp. Oh, {name}. Give it to me.",
+    "complete_text": "Solenne tips the lamp to the Lampward's oldest flame. For a long moment nothing happens. Then the wick takes, and the light that comes out of it is gold, not white.",
+    "first_complete_text": "\"Carry it carefully.\" She doesn't let go at once. \"His champion stands on Lastwalk, turned to stone with his spear still in his hand. The Unmoving Champion, they call him now. Break the spearhead from him and take it to Relic-Keeper Wilhelmina at the Vigil.\"",
+    "next": "dawn_4",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
+  },
+  "dawn_4": {
+    "name": "The Last Dawn (4 of 6): The Champion's Spear",
+    "giver": "relic_keeper_wilhelmina",
+    "wants": {
+      "dl_dawnspear_head": 1
+    },
+    "reward": {
+      "xp": 65000,
+      "coin": 7000
+    },
+    "first_reward_item": "dl_hallowed_spearhead",
+    "accept_text": "The Dawn-Tusk's champion stands turned to stone on Lastwalk. Take the Dawnspear's head from the Unmoving Champion and bring it to Relic-Keeper Wilhelmina at the Pilgrim's Vigil.",
+    "ready_text": "The Dawnspear. I never thought I'd hold it. Give it here, {name}.",
+    "complete_text": "Wilhelmina washes the spearhead in water from a small flask and says words over it in a language older than Lanternhold. The white stone warms.",
+    "first_complete_text": "\"Lamp, stone and spear. That's all three, {name}.\" She folds your hands round it. \"Take them home to the Dawnpriest. He'll know what they open.\"",
+    "next": "dawn_5",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
+  },
+  "dawn_5": {
+    "name": "The Last Dawn (5 of 6): The Way Opened",
+    "giver": "dawnpriest_amaru",
+    "wants": {
+      "dl_attuned_sunstone": 1,
+      "dl_lit_dawn_lamp": 1,
+      "dl_hallowed_spearhead": 1
+    },
+    "reward": {
+      "xp": 70000,
+      "coin": 8000
+    },
+    "accept_text": "Take the Attuned Sunstone, the relit Dawn-Lamp and the hallowed Dawnspear head home to Dawnpriest Amaru in Lanternhold.",
+    "ready_text": "Lamp, stone and spear. Lay them on the shrine, {name}.",
+    "complete_text": "Amaru sets the lamp before the Dawn-Tusk's statue, the stone at its feet, the spear across them. The plaza goes quiet. The light that rises off them isn't Lanternhold's: it's colder, and older, and it's coming from somewhere else.",
+    "first_complete_text": "\"There. That's his realm, {name}, the Dawnreach, where he keeps the first morning. Something's in it, eating the light. When you're ready, and not alone, say [dawn] and I'll open the way. Bring friends. Bring the best you know.\"",
+    "next": "dawn_6",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
+  },
+  "dawn_6": {
+    "name": "The Last Dawn (6 of 6): The Dawn-Eater",
+    "giver": "dawn_avatar",
+    "wants": {
+      "dl_ember_of_first_light": 1
+    },
+    "reward": {
+      "xp": 150000,
+      "coin": 15000,
+      "grove_deity": "light",
+      "items": [
+        "dl_pendant_of_the_last_dawn"
+      ]
+    },
+    "first_reward_item": "grove_seed",
+    "accept_text": "In the Dawnreach a hunger called the Dimming is eating the Dawn-Tusk's light. Take the Ember of First Light back from it and bring it to the Dawn-Tusk at his temple. Say [dawn] to Dawnpriest Amaru when your group is ready.",
+    "ready_text": "The ember. You brought it back, little one. Hold it up.",
+    "complete_text": "The Dawn-Tusk lowers his trunk and breathes on the ember. It catches, and the whole Dawnreach catches with it: the light runs back to the edges like water filling a bowl.",
+    "first_complete_text": "\"You walked a long road for a morning, {name}. Take this.\" A seed falls from the ember into your hand, warm as a held hand. \"It opens the Grove, where the five of us stand. I'll be there now, on my dais, whenever you come. Bring the ones who walked with you.\"",
+    "faction": {
+      "lanternhold": 20,
+      "dawn_pilgrims": 20
+    }
   }
 }

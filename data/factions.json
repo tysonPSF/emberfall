@@ -706,5 +706,15 @@
       "ochre_hand": -10,
       "dawn_pilgrims": 3
     }
+  },
+  "the_dimmed": {
+    "name": "The Dimmed",
+    "default": -800,
+    "kos_at": -750,
+    "on_kill": {
+      "the_dimmed": -5,
+      "lanternhold": 2,
+      "dawn_pilgrims": 2
+    }
   }
 }

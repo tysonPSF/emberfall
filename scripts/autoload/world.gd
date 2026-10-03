@@ -1623,6 +1623,9 @@ func _kill_mob(mob: Mob, killer: Entity) -> void:
 	for slot: String in mob.gear:  # what it was wearing comes off with it
 		entries.append({"item": mob.gear[slot], "slot": ""})
 	for entry: Dictionary in mob.data.get("loot", []):
+		if entry.has("quest") and (credited == null or not group_members(credited).any(func(m: Player) -> bool:
+				return m.quests.get(str(entry["quest"]), {}).get("active", false))):
+			continue  # a relic only someone on its quest finds (the gods' lines): nobody else's corpse carries it
 		if randf() < float(entry["chance"]):
 			var n: Array = entry.get("count", [1, 1])  # a stack: a quiver's worth of arrows, say
 			entries.append({"item": entry["item"], "slot": "", "count": randi_range(int(n[0]), int(n[1]))})
@@ -2729,8 +2732,21 @@ func open_quests(p: Player, npc_id: String) -> Array:
 			before = _quest_before(quest_id)
 		if before != "" and not quest_done(p, before):
 			continue
+		if quest_unfit(p, q) != "":
+			continue  # another god's, or not yet: no "!"
 		out.append(quest_id)
 	return out
+
+
+## Why p can't take up a quest at all ("" when they can): a quest's "deities"
+## (only those gods' followers: the gods' lines to the Grove) and "min_level".
+func quest_unfit(p: Player, q: Dictionary) -> String:
+	var gods: Array = q.get("deities", [])
+	if not gods.is_empty() and not p.deity in gods:
+		return "follows another god"
+	if p.level < int(q.get("min_level", 0)):
+		return "must be level %d" % int(q["min_level"])
+	return ""
 
 
 ## Whether an npc's "!" is for more of their work: p is on, or has done, one of
@@ -2809,6 +2825,30 @@ func _go_grove(p: Player) -> void:
 		p.grove_return = {"zone": z.zone_id, "pos": [at.x, at.z]}
 	_leave_for_elsewhere(p)
 	zone_change.emit(p, GROVE_ZONE, arrive, Vector2.ZERO)  # facing the pond
+
+
+## A god's priest opens the way into their realm (npcs.json "opens_realm"
+## {zone, keyword, after, text, refuse}) for whoever has done the line's step
+## `after`, and they bring their group along, as the seed does; each of them
+## remembers where they stood, and the realm's keeper ("return") walks them back.
+func _open_realm(p: Player, npc: Npc, opens: Dictionary) -> void:
+	if not quest_done(p, str(opens.get("after", ""))):
+		_npc_say(p, npc, str(opens.get("refuse", "Not yet, {name}. The way isn't yours to walk.")))
+		return
+	var zone_id := str(opens["zone"])
+	var gd := GameData.load_zone(zone_id)
+	var bp: Array = gd.get("bind_point", [0, 0])
+	_npc_say(p, npc, str(opens.get("text", "Go, then, {name}.")))
+	for m: Player in group_along(p):
+		for mob in get_mobs():
+			mob.hate.erase(m.entity_id)
+		if m != p:
+			say(m, "%s opens a way for %s, and you're drawn through beside them." % [npc.display_name, p.display_name], C_SPELL)
+		var z := zone_of(m)
+		if z != null and z.zone_id != zone_id:
+			m.grove_return = {"zone": z.zone_id, "pos": [m.global_position.x, m.global_position.z]}
+		_leave_for_elsewhere(m)
+		zone_change.emit(m, zone_id, Vector2(float(bp[0]), float(bp[1])), Vector2.ZERO)
 
 
 ## The Grove's keeper walks you back to where the seed found you (or home).
@@ -3353,7 +3393,12 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 				m.hate.erase(c.entity_id)
 			if c is Player:
 				say(c, "The seed opens in your hand, and the world folds away like a leaf.", C_SPELL)
-				_go_grove(c as Player)
+				for m: Player in group_along(c as Player):  # whoever holds the seed brings their group
+					if m != c:
+						for mob in get_mobs():
+							mob.hate.erase(m.entity_id)
+						say(m, "%s's seed opens, and the world folds away around you both like a leaf." % c.display_name, C_SPELL)
+					_go_grove(m)
 		"gate":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
@@ -4122,6 +4167,17 @@ func request_say(player_id: int, keyword: String) -> void:
 # --- groups -----------------------------------------------------------------
 
 ## Everyone in p's group (p alone if ungrouped), online and anywhere.
+## p and every living groupmate standing within group_along_radius (config,
+## 30 m) of them in the same zone: who comes along when p walks somewhere
+## only they can open (the Grove's seed, a god's realm).
+func group_along(p: Player) -> Array:
+	var out: Array = [p]
+	for m: Player in group_members(p):
+		if m != p and not m.dead and zone_of(m) == zone_of(p) and m.distance_to(p) <= float(cfg("group_along_radius", 30.0)):
+			out.append(m)
+	return out
+
+
 func group_members(p: Player) -> Array:
 	var g: Dictionary = groups.get(p.group_id, {})
 	if g.is_empty():
@@ -4669,7 +4725,10 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		if quest_done(p, quest_id):
 			lines.merge(later[quest_id], true)
 	key = _heard_as(npc, lines, key)
-	_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
+	var acts := key == str(npc.data.get("opens_realm", {}).get("keyword", "\n")) or GameData.quests.values().any(func(q: Dictionary) -> bool:
+		return (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and str(q.get("start_keyword", "")) == key)
+	if lines.has(key) or not acts:  # a word that starts a quest or opens a way answers for itself: no "I don't know" first
+		_npc_say(p, npc, str(lines.get(key, lines.get("unknown", "..."))))
 	if key == "hail" and (npc.data.has("merchant") or npc.data.get("banker", false)):
 		say(p, "(Press G to %s.)" % ("see %s's wares" % npc.display_name if npc.data.has("merchant") else "open your bank"), C_SYSTEM)
 	if key == "hail" and npc.data.has("guildmaster") and npc.data["guildmaster"]["class"] == p.char_class:
@@ -4689,8 +4748,15 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		if (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and key == str(q.get("start_keyword", "")):  # "starter": someone else hands it out (Merrick sends you to the crystal)
 			if q.has("requires_quest") and not quest_done(p, str(q["requires_quest"])):
 				continue  # a later step's keyword only works once the step before it is done
+			var unfit := quest_unfit(p, q)
+			if unfit != "":
+				_npc_say(p, npc, str(q.get("refuse_text", "That isn't work for you, {name}. Not yet.")))
+				continue
 			_accept_quest(p, quest_id)
 	if key == "hail":
+		for quest_id: String in open_quests(p, npc.npc_id):  # a quest only some may take says so when they can (the gods' lines: "something [stirring]")
+			if GameData.quests[quest_id].has("offer_text"):
+				_npc_say(p, npc, str(GameData.quests[quest_id]["offer_text"]))
 		_offer_dropped_steps(p, npc)
 		# on one of their quests already, with another still to ask for: say which word starts it
 		if quest_mark_more(p, npc.npc_id):
@@ -4705,6 +4771,9 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 		_bind(p, zone_of(npc))  # the priest binds you where you stand talking; /bind needs the stone itself
 	if key == "return" and npc.data.get("grove_return", false):
 		_grove_return(p)
+	var opens: Dictionary = npc.data.get("opens_realm", {})
+	if not opens.is_empty() and key == str(opens.get("keyword", "")):
+		_open_realm(p, npc, opens)
 	var bless: Dictionary = npc.data.get("blesses", {})
 	if not bless.is_empty() and key == str(bless.get("keyword", "blessing")):
 		_shrine_blessing(p, npc, bless)
@@ -4721,6 +4790,8 @@ func _heard_as(npc: Npc, lines: Dictionary, key: String) -> String:
 		if (q["giver"] == npc.npc_id or q.get("starter", "") == npc.npc_id) and q.has("start_keyword"):
 			known.append(str(q["start_keyword"]))
 	known.append_array(["bind", "return", str(npc.data.get("blesses", {}).get("keyword", "blessing"))])
+	if npc.data.has("opens_realm"):
+		known.append(str(npc.data["opens_realm"].get("keyword", "")))
 	if key in known:
 		return key
 	var words := " " + key.replace(",", " ").replace(".", " ").replace("?", " ").replace("!", " ").replace("'", " ") + " "
@@ -4852,6 +4923,9 @@ func quest_share_blocked(m: Player, quest_id: String, you := false) -> String:
 		before = _quest_before(quest_id)
 	if before != "" and not quest_done(m, before):
 		return "must first finish %s" % GameData.quests.get(before, {}).get("name", "an earlier quest")
+	var unfit := quest_unfit(m, q)
+	if unfit != "":
+		return unfit if not you else unfit.replace("follows", "follow")
 	var faction := str(GameData.npcs.get(str(q["giver"]), {}).get("faction", ""))
 	if GameData.factions.has(faction) and standing(m, faction) < REFUSE_BELOW:
 		return "would be turned away by %s" % QuestHints._npc_name(str(q["giver"]))
@@ -5333,6 +5407,11 @@ func _complete_quest(p: Player, npc: Npc, quest_id: String) -> void:
 			else:
 				p.trade_items.append(Pack.entry(item_id))  # held for you until there's room
 		say(p, "--You have received a %s.--" % GameData.item_name(item_id), C_LOOT)
+	for extra: String in (reward.get("items", []) if state["completions"] == 1 else []):  # more than one thing the first time (a god's line: the seed and a pendant)
+		if can_receive(p, extra):
+			if not p.pack.add_entry(Pack.entry(extra)):
+				p.trade_items.append(Pack.entry(extra))  # held for you until there's room
+			say(p, "--You have received a %s.--" % GameData.item_name(extra), C_LOOT)
 	if int(reward.get("xp", 0)) > 0:
 		var xp := int(reward["xp"]) * float(cfg("xp_rate", 1.0))
 		if state["completions"] > 1:  # the full reward is for the first time; repeats pay a flat share
@@ -5760,7 +5839,7 @@ static func teleportable(zone_id: String) -> bool:
 	if zone_id == "the_grove" or not FileAccess.file_exists("res://data/zones/%s.json" % zone_id):
 		return false
 	var zd := GameData.load_zone(zone_id)
-	return not zd.get("interior", false) and not zd.get("no_respawn", false) and not zd.get("dungeon", false)
+	return not zd.get("interior", false) and not zd.get("no_respawn", false) and not zd.get("dungeon", false) and not zd.has("realm")  # a god's realm opens only to its line
 
 
 ## What the road to a zone costs, in copper: its top level squared, times the

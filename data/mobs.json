@@ -12070,6 +12070,11 @@
           2,
           3
         ]
+      },
+      {
+        "item": "dl_ysmoor_sunstone",
+        "chance": 1.0,
+        "quest": "dawn_2"
       }
     ],
     "model": "queen_ismay",
@@ -12700,6 +12705,11 @@
       {
         "item": "ghost_ivory",
         "chance": 0.5
+      },
+      {
+        "item": "dl_dawn_mote",
+        "chance": 0.45,
+        "quest": "dawn_1"
       }
     ],
     "model": "herd_spirit",
@@ -12750,6 +12760,11 @@
           2,
           3
         ]
+      },
+      {
+        "item": "dl_grandmothers_memory",
+        "chance": 1.0,
+        "quest": "dawn_1"
       }
     ],
     "model": "herd_grandmother",
@@ -13359,6 +13374,11 @@
           2,
           3
         ]
+      },
+      {
+        "item": "dl_dawnspear_head",
+        "chance": 1.0,
+        "quest": "dawn_4"
       }
     ],
     "model": "unmoving_champion",
@@ -18419,6 +18439,11 @@
       {
         "item": "un_moonwater",
         "chance": 1.0
+      },
+      {
+        "item": "dl_last_dawn_lamp",
+        "chance": 1.0,
+        "quest": "dawn_3"
       }
     ],
     "model": "wraith",
@@ -20291,5 +20316,433 @@
     ],
     "model": "lantern_widow",
     "named": true
+  },
+  "dr_dimmling": {
+    "name": "a dimmling",
+    "level": [
+      49,
+      51
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "verb": [
+      "claw",
+      "claws"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_dimmed_ash",
+        "chance": 0.5
+      }
+    ],
+    "model": "shade",
+    "faction": "the_dimmed",
+    "proc": {
+      "spell": "dimming_touch",
+      "chance": 0.15,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "dr_hollow_light": {
+    "name": "a hollow light",
+    "level": [
+      49,
+      50
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "verb": [
+      "sear",
+      "sears"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.3,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_dimmed_ash",
+        "chance": 0.4
+      }
+    ],
+    "model": "lantern_wisp",
+    "faction": "the_dimmed"
+  },
+  "dr_dimmed_sentinel": {
+    "name": "a dimmed dawn-sentinel",
+    "level": [
+      50,
+      51
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_sunstone_chip",
+        "chance": 0.5
+      }
+    ],
+    "model": "stone_guardian",
+    "faction": "the_dimmed"
+  },
+  "dimming_shard": {
+    "name": "a shard of the Dimming",
+    "level": [
+      51,
+      52
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": true,
+    "flees": false,
+    "verb": [
+      "rend",
+      "rends"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.3,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_dimmed_ash",
+        "chance": 1.0
+      }
+    ],
+    "model": "shade",
+    "faction": "the_dimmed",
+    "proc": {
+      "spell": "dimming_touch",
+      "chance": 0.15,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "dr_dawnwing": {
+    "name": "a dawnwing",
+    "level": [
+      49,
+      50
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "verb": [
+      "rake",
+      "rakes"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_gilded_feather",
+        "chance": 0.6
+      }
+    ],
+    "model": "sunhawk",
+    "faction": "wildlife"
+  },
+  "dr_gilded_ram": {
+    "name": "a gilded ram",
+    "level": [
+      49,
+      50
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": false,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "verb": [
+      "butt",
+      "butts"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_gilded_fleece",
+        "chance": 0.6
+      }
+    ],
+    "model": "mountain_ram",
+    "faction": "wildlife"
+  },
+  "dr_sunwyrm": {
+    "name": "a sunwyrm",
+    "level": [
+      50,
+      51
+    ],
+    "hp_base": 372,
+    "hp_per_level": 49,
+    "dmg_min": 35,
+    "dmg_max": 67,
+    "attack_delay": 2.7,
+    "ac": 93,
+    "speed": 6.4,
+    "aggressive": true,
+    "aggro_radius": 16,
+    "social": false,
+    "flees": false,
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.2,
+    "coin": [
+      120,
+      400
+    ],
+    "loot": [
+      {
+        "item": "dr_sunwyrm_scale",
+        "chance": 0.6
+      }
+    ],
+    "model": "cinder_drake",
+    "faction": "wildlife"
+  },
+  "dr_goldmaw": {
+    "name": "Goldmaw the Dawnwyrm",
+    "level": [
+      52,
+      52
+    ],
+    "hp_base": 12400,
+    "hp_per_level": 0,
+    "dmg_min": 52,
+    "dmg_max": 100,
+    "attack_delay": 3.0,
+    "ac": 120,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "wildlife",
+    "verb": [
+      "bite",
+      "bites"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.8,
+    "coin": [
+      2000,
+      5000
+    ],
+    "loot": [
+      {
+        "item": "dr_goldmaw_fang",
+        "chance": 1.0
+      },
+      {
+        "item": "dr_sunwyrm_scale",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "cinder_drake",
+    "named": true,
+    "xp_bonus": 2.3
+  },
+  "dr_hollow_abbot": {
+    "name": "the Hollow Abbot",
+    "level": [
+      52,
+      52
+    ],
+    "hp_base": 12400,
+    "hp_per_level": 0,
+    "dmg_min": 52,
+    "dmg_max": 100,
+    "attack_delay": 3.0,
+    "ac": 120,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 18,
+    "social": true,
+    "flees": false,
+    "faction": "the_dimmed",
+    "verb": [
+      "strike",
+      "strikes"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 1.0,
+    "coin": [
+      2000,
+      5000
+    ],
+    "loot": [
+      {
+        "item": "dr_abbots_prayer_beads",
+        "chance": 1.0
+      },
+      {
+        "item": "dr_dimmed_ash",
+        "chance": 1.0,
+        "count": [
+          2,
+          3
+        ]
+      }
+    ],
+    "model": "fallen_abbot",
+    "named": true,
+    "xp_bonus": 2.3,
+    "proc": {
+      "spell": "dimming_touch",
+      "chance": 0.15,
+      "text": "%s's touch carries %s!"
+    }
+  },
+  "the_dimming": {
+    "name": "the Dimming",
+    "level": [
+      52,
+      52
+    ],
+    "hp_base": 12400,
+    "hp_per_level": 0,
+    "dmg_min": 52,
+    "dmg_max": 100,
+    "attack_delay": 3.0,
+    "ac": 120,
+    "speed": 6.6,
+    "aggressive": true,
+    "aggro_radius": 22,
+    "social": true,
+    "flees": false,
+    "faction": "the_dimmed",
+    "verb": [
+      "devour",
+      "devours"
+    ],
+    "shape": "humanoid",
+    "color": "#e8d8a0",
+    "scale": 2.2,
+    "coin": [
+      2000,
+      5000
+    ],
+    "loot": [
+      {
+        "item": "dl_ember_of_first_light",
+        "chance": 1.0,
+        "quest": "dawn_6"
+      },
+      {
+        "item": "dr_dimmed_ash",
+        "chance": 1.0,
+        "count": [
+          3,
+          5
+        ]
+      },
+      {
+        "item": "dr_heart_of_the_dimming",
+        "chance": 0.35
+      }
+    ],
+    "model": "nameless_shade",
+    "named": true,
+    "xp_bonus": 4.0,
+    "proc": {
+      "spell": "dimming_touch",
+      "chance": 0.3,
+      "text": "%s reaches into your light; %s takes hold!"
+    },
+    "min_players": 3,
+    "toughness": 1.5,
+    "always_up": true
   }
 }
