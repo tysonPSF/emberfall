@@ -534,6 +534,9 @@ func _on_remote_left(p: Player) -> void:
 	World.leave_group(p, "%s has left the group." % p.display_name)
 	World.request_trade_cancel(p.entity_id)
 	World.dismiss_pet(p, false)  # saved already; it comes back with them next time
+	var cat := World.get_object(p.velassa_id) as Npc
+	if cat != null:
+		cat.queue_free()  # Velassa goes home with them
 	p.queue_free()
 
 

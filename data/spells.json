@@ -3467,5 +3467,8 @@
       "kind": "root",
       "color": "#7dff5a"
     }
-  }
+  },
+  "meal_crisp_apple": {"name": "Crisp Apple", "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0, "duration": 900, "stats": {"hp_regen": 1}, "meal": true, "classes": {}, "land_text": "You crunch into the crisp apple.", "fade_text": "You're getting hungry again.", "desc": "For fifteen minutes: +1 health regeneration."},
+  "call_velassa": {"name": "Call Velassa", "type": "velassa", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0, "classes": {}, "desc": "Velassa comes to your side, or goes home."},
+  "velassas_company": {"name": "Velassa's Company", "type": "buff", "target": "self", "mana": 0, "cast_time": 0, "recast": 0, "range": 0, "classes": {}, "desc": "Velassa walks at your heel. Your ranged attacks hit 5% harder while she's with you."}
 }

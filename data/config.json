@@ -9,6 +9,7 @@
   "guard_levels_over_cap": 20,
   "teleport_fee_per_level_sq": 4,
   "teleport_city_fee": 1000,
+  "velassa_ranged_pct": 5,
   "guard_damage_mult": 3.0,
   "guard_health_mult": 10.0,
   "stamina_base": 100,

@@ -33,6 +33,15 @@
       "path": "res://assets/creatures/smoke_bear.glb",
       "rig": "own"
     },
+    "unicorn": {
+      "path": "res://assets/creatures/unicorn.glb",
+      "rig": "own",
+      "rainbow": {"speed": 0.12, "bands": 0.9, "strength": 0.85, "glow": 0.35, "skip": "cat"}
+    },
+    "velassa": {
+      "path": "res://assets/creatures/velassa.glb",
+      "rig": "own"
+    },
     "smoke_stag": {
       "path": "res://assets/creatures/smoke_stag.glb",
       "rig": "own"
@@ -3821,6 +3830,28 @@
     "bank_barrowhold": {"path": "res://assets/props/bank_barrowhold.glb", "lights": [{"pos": [0, 3.3, -0.5], "color": "#b890ff", "energy": 0.9, "range": 9, "night": false}]},
     "bank_murkhold": {"path": "res://assets/props/bank_murkhold.glb", "lights": [{"pos": [0, 3.3, -0.5], "color": "#b8ff70", "energy": 0.9, "range": 9, "night": false}]},
     "bank_duskhold": {"path": "res://assets/props/bank_duskhold.glb", "lights": [{"pos": [0, 3.3, -0.5], "color": "#c890ff", "energy": 0.9, "range": 9, "night": false}]},
+    "apple_barrel": {"path": "res://assets/props/apple_barrel.glb"},
+    "apple_barrel_empty": {"path": "res://assets/props/apple_barrel_empty.glb"},
+    "apple_barrel_1": {"path": "res://assets/props/apple_barrel_1.glb"},
+    "apple_barrel_2": {"path": "res://assets/props/apple_barrel_2.glb"},
+    "apple_barrel_3": {"path": "res://assets/props/apple_barrel_3.glb"},
+    "apple_barrel_4": {"path": "res://assets/props/apple_barrel_4.glb"},
+    "apple_barrel_5": {"path": "res://assets/props/apple_barrel_5.glb"},
+    "apple_barrel_6": {"path": "res://assets/props/apple_barrel_6.glb"},
+    "apple_barrel_7": {"path": "res://assets/props/apple_barrel_7.glb"},
+    "apple_barrel_8": {"path": "res://assets/props/apple_barrel_8.glb"},
+    "apple_barrel_9": {"path": "res://assets/props/apple_barrel_9.glb"},
+    "apple_barrel_10": {"path": "res://assets/props/apple_barrel_10.glb"},
+    "apple_barrel_11": {"path": "res://assets/props/apple_barrel_11.glb"},
+    "apple_barrel_12": {"path": "res://assets/props/apple_barrel_12.glb"},
+    "apple_barrel_13": {"path": "res://assets/props/apple_barrel_13.glb"},
+    "apple_barrel_14": {"path": "res://assets/props/apple_barrel_14.glb"},
+    "apple_barrel_15": {"path": "res://assets/props/apple_barrel_15.glb"},
+    "apple_barrel_16": {"path": "res://assets/props/apple_barrel_16.glb"},
+    "apple_barrel_17": {"path": "res://assets/props/apple_barrel_17.glb"},
+    "apple_barrel_18": {"path": "res://assets/props/apple_barrel_18.glb"},
+    "apple_barrel_19": {"path": "res://assets/props/apple_barrel_19.glb"},
+    "apple_tree": {"path": "res://assets/props/apple_tree.glb"},
     "eclipse_house": {"path": "res://assets/props/eclipse_house.glb", "lights": [{"pos": [0, 3.0, 4.2], "color": "#b890ff", "energy": 0.7, "range": 6, "night": false}]},
     "moon_lamp": {"path": "res://assets/props/moon_lamp.glb", "lights": [{"pos": [0, 3.85, 0], "color": "#e8eeff", "energy": 1.2, "range": 9, "night": false}]},
     "eclipse_wall": {"path": "res://assets/props/eclipse_wall.glb"},
@@ -4408,7 +4439,8 @@
     "long": {"name": "Long", "model": "mage", "part": "Mage_Head"},
     "flowing": {"name": "Flowing", "model": "rogue", "part": "Rogue_Head"},
     "rugged": {"name": "Rugged", "model": "ranger", "part": "Ranger_Head"},
-    "bald": {"name": "Bald and bearded", "model": "barbarian", "part": "Barbarian_Head"}
+    "bald": {"name": "Bald and bearded", "model": "barbarian", "part": "Barbarian_Head"},
+    "pigtails": {"name": "Pigtails", "model": "rogue", "part": "Rogue_Head", "parts": ["hair_pigtails"]}
   },
   "hair_colors": {
     "black": {"name": "Black", "light": "3a3438", "dark": "141214"},
@@ -4442,6 +4474,8 @@
   },
   "race_parts": {
     "race_ears_elf": {"path": "res://assets/creatures/race_ears_elf.glb", "bone": "head", "skin": true},
+    "hair_pigtails": {"path": "res://assets/creatures/hair_pigtails.glb", "bone": "head", "hair": true},
+    "june_cat_shoulder": {"path": "res://assets/creatures/june_cat_shoulder.glb", "bone": "chest"},
     "race_ears_gnome": {"path": "res://assets/creatures/race_ears_gnome.glb", "bone": "head", "skin": true},
     "race_beard_dwarf": {"path": "res://assets/creatures/race_beard_dwarf.glb", "bone": "head", "skin": false,
       "male_only": true,

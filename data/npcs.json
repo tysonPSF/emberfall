@@ -11325,5 +11325,183 @@
     },
     "title": "Caller of Roads",
     "pathcaller": true
+  },
+  "june": {
+    "name": "June",
+    "title": "the Rainbow Unicorn",
+    "level": 40,
+    "model": "unicorn",
+    "weapon": "",
+    "faction": "lanternhold",
+    "sacred": true,
+    "dialogue": {
+      "hail": "June tosses her mane, and the colors run down it like light through a paper lantern. The orange [cat] on her back opens one eye at you. Good evening, {name}. I walk the plaza while the lanterns burn. They like the company, and so do I.",
+      "lanterns": "Every lantern here was lit for someone. I like to think they're all a little brighter when somebody stops to look.",
+      "colors": "I've always been every color at once, {name}. I couldn't pick just one.",
+      "unknown": "June swishes her tail and nuzzles your shoulder. She seems to think that's answer enough.",
+      "cat": "Oh, him? He jumped up one evening and never got down. He steers, or thinks he does. I let him."
+    },
+    "night_form": {
+      "name": "Fresnebagcdrs",
+      "title": "June, after dark",
+      "model": "rogue",
+      "race": "wood_elf",
+      "gender": "female",
+      "hair": [
+        "pigtails",
+        "black"
+      ],
+      "attach": [
+        "june_cat_shoulder"
+      ],
+      "name_height": 2.35,
+      "dialogue": {
+        "hail": "Oh! You caught me, {name}. By day I'm June, all hooves and rainbows. After dark I'm Fresnebagcdrs, and I get to walk the plaza on two feet. The [cat] doesn't mind which.",
+        "cat": "He moves from my back to my shoulder without even waking up. I've never once seen him walk anywhere.",
+        "june": "She's me, and I'm her. The sun comes up and I'm galloping again. Come and find me in the morning.",
+        "lanterns": "Every lantern here was lit for someone. At night I can light them myself.",
+        "unknown": "Fresnebagcdrs tugs one of her pigtails and grins. Ask me something else, {name}."
+      }
+    }
+  },
+  "apple_barrel": {
+    "name": "a barrel of apples",
+    "level": 1,
+    "model": "",
+    "weapon": "",
+    "prop": "apple_barrel",
+    "sacred": true,
+    "fixed": true,
+    "narrates": true,
+    "apple_barrel": 20,
+    "dialogue": {
+      "hail": "A barrel heaped with crisp apples. Click it to take one.",
+      "unknown": "It's a barrel of apples."
+    },
+    "apple_lines": [
+      "You take a crisp apple. The heap shifts, and you could swear something at the bottom shifted with it.",
+      "Another apple. These are suspiciously good for a barrel nobody seems to own.",
+      "You take a third. A faint scratching comes from deep inside the barrel. Probably just the apples settling.",
+      "Four apples. You notice a single gray hair caught on the rim. Apples don't shed.",
+      "Five. Somewhere under the apples, something purrs, and then pretends it didn't.",
+      "Six apples. You're fairly sure this barrel is deeper than it looks from the outside.",
+      "Seven. A paw-sized dent appears in the apples, then smooths itself over.",
+      "Eight. The apples near the bottom smell faintly of catnip and moonlight.",
+      "Nine apples. You hear a small, impatient 'mrrp' from below. It sounds like encouragement.",
+      "Ten. Halfway down. The 'mrrp' comes again, louder, as if to say: keep going.",
+      "Eleven. Two violet lights blink at you from between the apples, and vanish.",
+      "Twelve. An apple rolls back up toward you, nudged from underneath. Helpful.",
+      "Thirteen. You're now certain you're being watched by someone who is very bored of being under apples.",
+      "Fourteen. A tail tip, gray and twitching, pokes up between two apples and withdraws.",
+      "Fifteen. The purring is unmistakable now, and rather smug.",
+      "Sixteen. A small paw reaches up, bats an apple toward you, and retreats. Your turn, apparently.",
+      "Seventeen. Three apples left above whoever's down there. The barrel trembles with anticipation.",
+      "Eighteen. Two left. Something at the bottom is sitting up very straight and very politely.",
+      "Nineteen. One apple left, and beneath it a pair of violet eyes, waiting."
+    ],
+    "name_height": 1.8,
+    "prop_after": {
+      "apple_barrel": "apple_barrel_empty"
+    },
+    "prop_stages": [
+      [
+        0,
+        "apple_barrel"
+      ],
+      [
+        1,
+        "apple_barrel_19"
+      ],
+      [
+        2,
+        "apple_barrel_18"
+      ],
+      [
+        3,
+        "apple_barrel_17"
+      ],
+      [
+        4,
+        "apple_barrel_16"
+      ],
+      [
+        5,
+        "apple_barrel_15"
+      ],
+      [
+        6,
+        "apple_barrel_14"
+      ],
+      [
+        7,
+        "apple_barrel_13"
+      ],
+      [
+        8,
+        "apple_barrel_12"
+      ],
+      [
+        9,
+        "apple_barrel_11"
+      ],
+      [
+        10,
+        "apple_barrel_10"
+      ],
+      [
+        11,
+        "apple_barrel_9"
+      ],
+      [
+        12,
+        "apple_barrel_8"
+      ],
+      [
+        13,
+        "apple_barrel_7"
+      ],
+      [
+        14,
+        "apple_barrel_6"
+      ],
+      [
+        15,
+        "apple_barrel_5"
+      ],
+      [
+        16,
+        "apple_barrel_4"
+      ],
+      [
+        17,
+        "apple_barrel_3"
+      ],
+      [
+        18,
+        "apple_barrel_2"
+      ],
+      [
+        19,
+        "apple_barrel_1"
+      ],
+      [
+        20,
+        "apple_barrel_empty"
+      ]
+    ]
+  },
+  "velassa": {
+    "name": "Velassa",
+    "title": "{owner}'s cat",
+    "level": 1,
+    "model": "velassa",
+    "weapon": "",
+    "sacred": true,
+    "companion_join": "Velassa winds round your ankles once and falls in at your heel.",
+    "dialogue": {
+      "hail": "Velassa blinks at you slowly, which in cat means she's decided you'll do.",
+      "unknown": "Velassa flicks an ear. She has heard you, and chosen not to answer."
+    },
+    "name_height": 1.15
   }
 }

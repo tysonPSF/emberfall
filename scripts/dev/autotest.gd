@@ -164,6 +164,8 @@ const SECTIONS := [
 	["cast_bar_move", "greenmoor"],
 	["bind_sitting", "greenmoor"],
 	["chat_resize", "greenmoor"],
+	["june", "lanternhold"],
+	["velassa", "greenmoor"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11330,3 +11332,204 @@ func _t_chat_resize() -> void:
 	Controls._save_setting("window_positions", keep_pos)
 	print("chat_resize: text area %s -> %s (saved %s), bottom-left corner %s -> %s; reset -> %s; grip on the chat window too %s" % [before, after, saved,
 			corner, corner_after, reset, hud._group_log_panel.get_children().any(func(c: Node) -> bool: return c is Control and (c as Control).top_level)])
+
+
+## June, Lanternhold's unicorn: her coat runs through the rainbow (the shader on
+## every surface, and it shifts with time), she strolls round the plaza, and
+## nobody can attack her.
+func _t_june() -> void:
+	var main := get_parent()
+	var p := World.local_player
+	if (main.zone as Zone).zone_id != "lanternhold":
+		World.zone_change.emit(p, "lanternhold", Vector2.INF, Vector2.INF)
+		for k in 120:
+			if (main.zone as Zone).zone_id == "lanternhold" and not main._changing_zone:
+				break
+			await _wait(0.25)
+		await _wait(1.0)
+	World.time_override = 12.0
+	if not _npcs().has("june"):
+		print("june: not placed in Lanternhold (she's hidden for now: put her entry back in lanternhold.json's npcs)")
+		return
+	var june: Npc = _npcs()["june"]
+	june._form_check = 0.0  # by day she's June, whatever hour the test began at
+	await _wait(1.2)
+	var rainbow := 0
+	for mi: MeshInstance3D in june.visual.find_children("*", "MeshInstance3D", true, false):
+		for i in mi.get_surface_override_material_count():
+			if mi.get_surface_override_material(i) is ShaderMaterial:
+				rainbow += 1
+	var start := june.global_position
+	var side := june.global_position + june.global_basis.x * 6.0
+	p.global_position = Vector3(side.x, june.global_position.y + 0.1, side.z)
+	p.face_toward(june.global_position)
+	p.zoom = 3.0
+	p.pitch = -0.15
+	await _wait(1.5)
+	await _shot("9zz_june_a")
+	await _wait(4.0)
+	p.face_toward(june.global_position)
+	await _wait(0.5)
+	await _shot("9zz_june_b")
+	var walked := june.global_position.distance_to(start)
+	print("june: %d rainbow surfaces, walked %.1f m of her round in 6 s, attackable %s, %d stops on her round" % [rainbow, walked,
+			World.can_attack(p, june), june.patrol.size()])
+	# after dark she's Fresnebagcdrs: an elf with black pigtails, the cat on her shoulder, her own lines
+	World.time_override = 21.4
+	june._form_check = 0.0
+	await _wait(1.5)
+	var cm := june.visual as CharacterModel
+	var pigtails := cm != null and cm.find_child("hair_pigtails*", true, false) != null
+	var cat := cm != null and cm.find_child("june_cat_shoulder*", true, false) != null
+	var heard: Array[String] = []
+	var listen := func(text: String, _c: Color) -> void: heard.append(text)
+	World.log_message.connect(listen)
+	_stand_by(p, june)
+	World.request_set_target(p.entity_id, june.entity_id)
+	World.request_say(p.entity_id, "hail")
+	await _wait(0.3)
+	World.log_message.disconnect(listen)
+	var side2 := june.global_position + june.global_basis.x * 3.5
+	p.global_position = Vector3(side2.x, june.global_position.y + 0.1, side2.z)
+	p.face_toward(june.global_position)
+	p.zoom = 2.0
+	await _wait(0.6)
+	await _shot("9zz_june_night")
+	var night_name := june.display_name
+	var night_look: Dictionary = june.look.duplicate()
+	World.time_override = 9.0
+	june._form_check = 0.0
+	await _wait(1.5)
+	print("june: after dark -> '%s' (%s %s %s, hair %s), pigtails %s, cat on her shoulder %s, says %s" % [night_name, night_look.get("race"), night_look.get("gender"),
+			night_look.get("model"), night_look.get("hair"), pigtails, cat, heard.filter(func(l: String) -> bool: return "says" in l).slice(0, 1)])
+	print("june: morning -> '%s' (%s) again" % [june.display_name, june.look.get("model")])
+
+
+## Greenmoor's apple barrel: twenty apples, a line each, Velassa climbs out of
+## the bottom; her collar calls her and sends her home; with her at your heel
+## your ranged attacks hit 5% harder; the barrel is empty for you after.
+func _t_velassa() -> void:
+	var p := World.local_player
+	var barrel: Npc = _npcs()["apple_barrel"]
+	var keep := [p.quests.duplicate(true), p.equipment.duplicate()]
+	p.quests.erase("apple_barrel")
+	for i in p.pack.slots.size():
+		p.pack.slots[i] = {}
+	var heard: Array[String] = []
+	var listen := func(text: String, _c: Color) -> void: heard.append(text)
+	World.log_message.connect(listen)
+	_stand_by(p, barrel)
+	var stages := []
+	for k in 20:
+		World.request_take_apple(p.entity_id, barrel.entity_id)
+		if k % 5 == 4:
+			barrel._update_prop()
+			stages.append(str(barrel.look.get("shape", "")).trim_prefix("prop:"))
+	World.request_take_apple(p.entity_id, barrel.entity_id)  # the 21st: empty
+	World.log_message.disconnect(listen)
+	await _wait(1.0)
+	var apples := p.pack.count("greenmoor_apple")
+	var collar := p.pack.count("velassas_collar")
+	var out := World.velassa_with(p)
+	var cat := World.get_object(p.velassa_id) as Npc
+	var title := ""
+	if cat != null and cat.nameplate.get_child_count() > 0:
+		title = (cat.nameplate.get_child(0) as Label3D).text
+	p.global_position += Vector3(3, 0, 3)
+	await _wait(1.5)
+	var follows := cat != null and cat.distance_to(p) < 4.0
+	if cat != null:  # look at her
+		p.face_toward(cat.global_position)
+		p.rotate_y(PI)
+	p.zoom = 2.6
+	p.pitch = -0.35
+	await _wait(0.4)
+	await _shot("9zz_velassa")
+	# the bonus: the same shot with and without her
+	var rat: Mob = null
+	for m in World.get_mobs():
+		if not m.dead and World.zone_of(m) == World.zone_of(p):
+			rat = m
+			break
+	var rat_was := rat.global_position
+	rat.global_position = p.global_position - p.global_basis.z * 8.0  # brought over for the shot: nothing lives in this corner
+	rat.set_physics_process(false)
+	p.equipment["range"] = "leather_sling"  # thrown: no arrows needed
+	p.pack.add("sling_stone", 99)
+	p.pack.add("sling_stone", 99)
+	p.pack.add("sling_stone", 99)
+	p.pack.add("sling_stone", 99)
+	p.pack.add("sling_stone", 99)
+	var skills0: Dictionary = p.skills.duplicate()
+	var shoot := func() -> int:  # the smallest hit of 150 shots at the same skill (x10, so 5% shows past the rounding)
+		p.skills = skills0.duplicate()
+		seed(7)
+		var total := 0
+		for k in 150:
+			rat.max_hp = 99999
+			rat.hp = rat.max_hp
+			p.cooldowns.erase("ranged")
+			World._ranged_shot(p, rat, 10.0)
+			var hit := rat.max_hp - rat.hp
+			if hit > 0:
+				total = hit if total == 0 else mini(total, hit)  # the smallest landed hit: no misses, no crits
+		return total
+	var with_her: int = shoot.call()
+	World.request_use_item(p.entity_id, _where(p, "velassas_collar"))  # send her home
+	await _wait(0.3)
+	var home := not World.velassa_with(p)
+	var hud = get_parent().hud
+	var buff_gone: bool = not hud._buff_list().any(func(b: Array) -> bool: return b[0] == "velassas_company")
+	var without: int = shoot.call()
+	await _wait(3.2)  # the collar's recast
+	World.request_use_item(p.entity_id, _where(p, "velassas_collar"))  # and call her again
+	await _wait(0.3)
+	var back := World.velassa_with(p)
+	var buff_back: bool = hud._buff_list().any(func(b: Array) -> bool: return b[0] == "velassas_company")
+	hud._update_buffs()
+	await _wait(0.2)
+	await _shot("9zz_velassa_buff")
+	barrel._update_prop()
+	var empty_look := str(barrel.look.get("shape", ""))
+	var back_from_save := Player.new()
+	back_from_save.from_save(p.to_save())
+	var remembered := back_from_save.velassa_out
+	back_from_save.free()
+	# the orchard, from a little way off
+	p.global_position = barrel.global_position + Vector3(-32, 0.5, 30)
+	p.face_toward(barrel.global_position)
+	var zone := World.zone_of(p)
+	p.global_position.y = zone.height_at(p.global_position.x, p.global_position.z) + 0.2
+	p.zoom = 3.0
+	p.pitch = -0.12
+	await _wait(1.0)
+	await _shot("9zz_apple_orchard")
+	# a magician with an elemental out keeps it when Velassa comes, and the other way round
+	var cls0 := p.char_class
+	p.char_class = "magician"
+	World._finish_spell(p, "call_of_earth", p, true)
+	await _wait(0.5)
+	var pet_out := World.get_object(p.pet_id) is Pet
+	if not World.velassa_with(p):
+		World._call_velassa(p)
+	await _wait(0.3)
+	var both := World.get_object(p.pet_id) is Pet and World.velassa_with(p)
+	await _shot("9zz_velassa_and_pet")
+	World.request_pet(p.entity_id, "leave")
+	await _wait(0.3)
+	var still_her := World.velassa_with(p)
+	p.char_class = cls0
+	print("velassa: a magician's earth elemental out %s, then Velassa called: both at once %s; the elemental dismissed, Velassa stays %s" % [pet_out, both, still_her])
+	World._call_velassa(p)
+	rat.hate.clear()
+	rat.global_position = rat_was
+	rat.set_physics_process(true)
+	p.quests = keep[0]
+	p.equipment = keep[1]
+	print("velassa: 20 apples taken -> %d in the bags, the lines %s" % [apples, heard.slice(0, 3)])
+	print("velassa: the 20th -> %s" % [heard.filter(func(l: String) -> bool: return "violet eyes" in l or "climbs out" in l)])
+	print("velassa: the 21st -> '%s'; collar %d; she's out %s, titled '%s', follows %s" % [heard.back(), collar, out, title, follows])
+	print("velassa: smallest hit with her %d, without %d (+%.0f%%); the collar sent her home %s and called her back %s, and is still in the bags %s" % [with_her, without,
+			100.0 * (float(with_her) / maxf(1.0, float(without)) - 1.0), home, back, p.pack.count("velassas_collar") == 1])
+	print("velassa: the barrel empties as you go %s; her buff shows while she's out %s, gone when she's home %s" % [stages, buff_back, buff_gone])
+	print("velassa: the barrel shows you %s once emptied; after a save and load she comes back with you %s" % [empty_look, remembered])

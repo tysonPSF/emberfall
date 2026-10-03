@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 32  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein; 31 the Pathcallers; 32 the city banks), so old clients are turned away
+const PROTOCOL := 33  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein; 31 the Pathcallers; 32 the city banks; 33 Velassa and the apple orchard), so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -694,7 +694,7 @@ func _spawn_info(obj: Node3D) -> Dictionary:
 	elif e is Mob:
 		info.merge({"kind": "mob", "mob_id": (e as Mob).mob_id}, true)
 	elif e is Npc:
-		info.merge({"kind": "npc", "npc_id": (e as Npc).npc_id}, true)
+		info.merge({"kind": "npc", "npc_id": (e as Npc).npc_id, "only_for": (e as Npc).only_for}, true)  # whose it is: Velassa's title names them
 	elif e is Pet:
 		info.merge({"kind": "pet", "owner": (e as Pet).owner_id}, true)
 	return info
@@ -736,6 +736,7 @@ func _s_spawn(list: Array) -> void:
 			"npc":
 				var n := Npc.new()
 				n.setup(str(info["npc_id"]), str(info["name"]))
+				n.only_for = str(info.get("only_for", ""))
 				n.entity_id = int(info["id"])
 				n.hp = int(info["hp"])
 				node = n
@@ -800,7 +801,7 @@ func _send_self(peer: int) -> void:
 		"hair_style": p.hair_style, "hair_color": p.hair_color, "hair_changed": p.hair_changed, "afk": p.afk,
 		"swing_timer": p.swing_timer, "deity": p.deity,
 		"grove_deities": p.grove_deities, "friends": p.friends, "guild_name": p.guild_name, "guild_rank": p.guild_rank,
-		"visited": p.visited,
+		"visited": p.visited, "velassa_out": p.velassa_out,
 	}
 	_s_self.rpc_id(peer, d)
 

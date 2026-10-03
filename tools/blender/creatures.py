@@ -32930,6 +32930,289 @@ ROOTS_WEAPONS = {"roots_shortsword": build_roots_shortsword, "roots_longsword": 
 ATTACHMENTS.update(ROOTS_WEAPONS)
 
 
+# ---------------------------------------------------------------- June, Lanternhold's unicorn
+# A white unicorn: a horse's frame on the stag's bones (longer in the leg and neck), a long flowing
+# mane and tail, a spiral horn. Coat, mane, tail and horn are pearl white so the rainbow shader
+# (models.json "rainbow", scripts/world/rainbow.gdshader) can run its bands through them; hooves, eyes
+# and nostrils stay dark and keep their color.
+
+def build_unicorn(name="unicorn"):
+	import random
+	rng = random.Random(6161)
+	coat = material(f"{name}_coat", "f6f4ff", 0.6)
+	coat_l = material(f"{name}_coat_light", "ffffff", 0.55)
+	mane = material(f"{name}_mane", "fdfcff", 0.5)
+	horn = material(f"{name}_horn", "fff8ec", 0.3)
+	hoof = material(f"{name}_hoof", "4a4250", 0.5)
+	eye = material(f"{name}_eye", "141020", 0.2)
+	nose = material(f"{name}_nose", "8a8090", 0.6)
+	b = Builder(name)
+	legs = {"leg_fl": (0.2, -0.56), "leg_fr": (-0.2, -0.56), "leg_bl": (0.2, 0.56), "leg_br": (-0.2, 0.56)}
+	H = 1.05   # the belly's height
+	b.bone("root", (0, 0, H))
+	b.bone("body", (0, 0, H + 0.2), "root")
+	b.bone("neck", (0, -0.62, H + 0.38), "body")
+	b.bone("head", (0, -0.95, H + 0.95), "neck")
+	b.bone("tail", (0, 0.78, H + 0.36), "body")
+	b.bone("mane", (0, -0.75, H + 0.8), "neck")
+	b.blob((0.62, 1.55, 0.66), (0, 0.0, H + 0.22), coat, "body", segs=(16, 10))
+	b.blob((0.64, 0.62, 0.72), (0, -0.52, H + 0.3), coat, "body", segs=(12, 8))   # the chest
+	b.blob((0.62, 0.6, 0.66), (0, 0.54, H + 0.26), coat, "body", segs=(12, 8))    # the haunches
+	b.blob((0.46, 1.1, 0.24), (0, 0.0, H - 0.06), coat_l, "body", segs=(10, 6))
+	b.seg((0, -0.48, H + 0.34), (0, -0.7, H + 0.7), 0.26, 0.2, coat, "neck", sides=10)    # a thick arched neck
+	b.seg((0, -0.7, H + 0.7), (0, -0.9, H + 0.96), 0.2, 0.16, coat, "neck", sides=10)
+	b.blob((0.34, 0.5, 0.38), (0, -1.0, H + 1.02), coat, "head", rot=(-28, 0, 0), segs=(10, 8))
+	b.seg((0, -1.12, H + 0.98), (0, -1.42, H + 0.76), 0.15, 0.11, coat_l, "head", sides=9)   # a horse's long face
+	b.blob((0.24, 0.16, 0.18), (0, -1.43, H + 0.74), coat_l, "head", segs=(8, 6))            # its soft muzzle
+	for s in (1, -1):
+		b.blob((0.03, 0.035, 0.03), (0.06 * s, -1.47, H + 0.78), nose, "head", segs=(5, 4))   # nostrils
+		b.blob((0.08, 0.07, 0.08), (0.14 * s, -1.08, H + 1.06), eye, "head", segs=(6, 4))     # big dark eyes
+		_oblob(b, (0.08, 0.22, 0.04), (0.12 * s, -0.94, H + 1.26), (0.2 * s, 0.2, 1), (s, -0.2, 0.1), coat, "head", segs=(6, 4))   # ears
+	# the horn: a spiral tapering from the brow
+	base = Vector((0, -1.08, H + 1.2))
+	tip = base + Vector((0, -0.28, 0.5))
+	b.seg(tuple(base), tuple(tip), 0.05, 0.004, horn, "head", sides=8)
+	for k in range(9):   # the spiral ridge round it
+		u0, u1 = k / 9, (k + 0.85) / 9
+		a0, a1 = u0 * math.pi * 6, u1 * math.pi * 6
+		p0 = base + (tip - base) * u0 + Vector((math.cos(a0), 0.4 * math.sin(a0), 0.5 * math.sin(a0))) * 0.045 * (1 - u0)
+		p1 = base + (tip - base) * u1 + Vector((math.cos(a1), 0.4 * math.sin(a1), 0.5 * math.sin(a1))) * 0.045 * (1 - u1)
+		b.seg(tuple(p0), tuple(p1), 0.014 * (1 - u0) + 0.003, 0.012 * (1 - u1) + 0.003, horn, "head", sides=5)
+	# the mane: locks falling from the crest of the neck, and a forelock
+	for k in range(11):   # along the crest of the neck, falling full to her right
+		u = k / 10
+		crest = Vector((0, -0.46 - 0.46 * u, H + 0.62 + 0.42 * u))
+		b.blob((0.16, 0.2, 0.16), tuple(crest + Vector((0, 0, 0.06))), mane, "mane", segs=(6, 4))   # the roll along the top
+		_oblob(b, (0.2, 0.56 - 0.18 * u, 0.12), tuple(crest + Vector((-0.17, 0.06, -0.14))), (-0.45, 0.3, -1), (-1, -0.2, 0.25),
+			   mane if k % 2 else coat_l, "mane", segs=(7, 5))
+	_oblob(b, (0.12, 0.26, 0.06), (0, -1.16, H + 1.14), (0, -0.5, -1), (0, -1, 0.2), mane, "head", segs=(6, 4))
+	# the tail: long, flowing down behind
+	for k in range(9):   # the tail: lifted at the root, then a long full fall
+		u = k / 8
+		at = Vector((0.05 * math.sin(k * 1.7), 0.86 + 0.32 * math.sin(u * 1.7), H + 0.42 - 0.8 * u))
+		_oblob(b, (0.24 - 0.06 * u, 0.42, 0.16), tuple(at), (0, 0.5 - 0.6 * u, -1), (0, 1, 0.2), mane if k % 2 else coat_l, "tail", segs=(7, 5))
+	_june_cat(b, name, H)
+	for bone, (x, y) in legs.items():
+		b.bone(bone, (x, y, H + 0.08), "root")
+		front = y < 0
+		b.blob((0.3, 0.4, 0.56), (x, y, H + 0.02), coat, bone, segs=(8, 6))
+		knee = (x, y + (0.0 if front else 0.1), H * 0.5)
+		b.seg((x, y, H - 0.1), knee, 0.12, 0.08, coat, bone, sides=8)
+		b.blob((0.15, 0.15, 0.15), knee, coat, bone, segs=(6, 4))
+		b.seg(knee, (x, y - 0.01, 0.14), 0.07, 0.06, coat, bone, sides=8)
+		b.blob((0.14, 0.14, 0.12), (x, y - 0.01, 0.18), mane, bone, segs=(6, 4))   # feathered fetlocks
+		b.seg((x, y - 0.01, 0.14), (x, y - 0.03, 0.0), 0.05, 0.062, hoof, bone, sides=7)
+	arm = b.build()
+
+	def tail(t, amp, cycles=2.0):   # her tail and mane, and the cat's tail swishing and its head looking about
+		return {"tail": {"rot": (6 + amp * 0.3 * wave(t, cycles), 0, amp * wave(t, cycles))}, "mane": {"rot": (0, 0, amp * 0.4 * wave(t, cycles, 0.25))},
+				"cat_tail": {"rot": (0, 0, 22 * wave(t, 1, 0.1))}, "cat_head": {"rot": (6 * wave(t, 1, 0.4), 0, 28 * wave(t, 1, 0.6))}}
+
+	def idle(t):   # grazes, then lifts her head and tosses her mane
+		graze = seq(t, [(0, 0), (0.12, 0), (0.26, 1), (0.56, 1), (0.68, 0)])
+		toss = seq(t, [(0.72, 0), (0.8, 1), (0.88, -0.6), (0.96, 0)])
+		return merge_scaled({"body": {"loc": (0, 0, 0.01 * wave(t, 2))},
+							 "neck": {"rot": (-50 * graze + 8 * toss, 0, 0)}, "head": {"rot": (-14 * graze + 3 * graze * wave(t, 8), 0, 14 * toss)}},
+							tail(t, 14, 3))
+
+	def walk(t):
+		return merge_scaled(_quad_legs(wave(t), 22), tail(t, 9),
+							{"root": {"loc": (0, 0, 0.02 * abs(wave(t, 2)))}, "neck": {"rot": (4 * wave(t, 2), 0, 0)}})
+
+	def run(t):   # a high-stepping canter
+		f, k = 40 * wave(t), 40 * wave(t, 1, 0.5)
+		return merge_scaled({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.85, 0, 0)},
+							 "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.85, 0, 0)},
+							 "root": {"loc": (0, 0, 0.1 * max(0.0, wave(t, 1, 0.25))), "rot": (5 * wave(t, 1, 0.1), 0, 0)},
+							 "neck": {"rot": (-8, 0, 0)}}, tail(t, 6))
+
+	def attack(t):   # rears and strikes down with her forehooves, horn first
+		rear = seq(t, [(0, 0), (0.35, 1), (0.55, 1), (0.72, 0), (1, 0)])
+		return merge_scaled({"root": {"rot": (28 * rear, 0, 0), "loc": (0, 0.1 * rear, 0.2 * rear)},
+							 "neck": {"rot": (14 * rear - 20 * seq(t, [(0.55, 0), (0.7, 1), (0.9, 0)]), 0, 0)},
+							 "leg_fl": {"rot": (-50 * rear, 0, 0)}, "leg_fr": {"rot": (-40 * rear, 0, 0)},
+							 "leg_bl": {"rot": (-22 * rear, 0, 0)}, "leg_br": {"rot": (-22 * rear, 0, 0)}}, tail(t, 16, 3))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"root": {"loc": (0, -0.1 * k, 0.03 * k), "rot": (6 * k, 4 * k, 0)}, "neck": {"rot": (14 * k, 0, -10 * k)}}, tail(t, 20 * k, 3))
+
+	def death(t):   # her legs fold and she lies down on her side
+		roll = seq(t, [(0.25, 0), (0.66, 84), (0.76, 78), (0.88, 86)])
+		drop = seq(t, [(0.1, 0), (0.3, -0.2), (0.66, -0.78)])
+		return merge_scaled({"root": {"loc": (0, 0, drop), "rot": (seq(t, [(0, 0), (0.25, -8), (0.5, 0)]), roll, 0)},
+							 "neck": {"rot": (seq(t, [(0, 0), (0.2, 20), (0.7, -24)]), 0, 0)}},
+							{"leg_fl": {"rot": (seq(t, [(0, 0), (0.25, 44), (0.6, 24)]), 0, 0)}, "leg_fr": {"rot": (seq(t, [(0, 0), (0.25, 44), (0.6, 12)]), 0, 0)}})
+
+	clip_scaled(arm, "idle", 4.0, idle, True)
+	clip_scaled(arm, "walk", 1.1, walk, True)
+	clip_scaled(arm, "run", 0.6, run, True)
+	clip_scaled(arm, "attack", 1.0, attack, False)
+	clip_scaled(arm, "hit", 0.4, hit, False)
+	clip_scaled(arm, "death", 1.4, death, False)
+	return arm
+
+
+def _june_cat(b, name, H):
+	"""June's rider: an orange tabby sitting up on her back behind the withers, cream belly, darker
+	stripes, green eyes, its tail curled down her side. Its own bones (cat, cat_head, cat_tail) on her
+	body, so it rides with her and looks about. Its materials are named "cat" so the rainbow leaves it orange."""
+	fur = material(f"{name}_cat_fur", "f08a2c", 0.8)
+	stripe = material(f"{name}_cat_stripe", "b8561a", 0.85)
+	cream = material(f"{name}_cat_cream", "ffe6c4", 0.8)
+	eye = material(f"{name}_cat_eye", "7ad85a", 0.2, emit=0.6)
+	pupil = material(f"{name}_cat_pupil", "141010", 0.3)
+	pink = material(f"{name}_cat_nose", "e88a8a", 0.5)
+	sy, sz = -0.12, H + 0.56   # where it sits: on her back, a little behind the withers
+	b.bone("cat", (0, sy, sz), "body")
+	b.bone("cat_head", (0, sy - 0.12, sz + 0.34), "cat")
+	b.bone("cat_tail", (0, sy + 0.14, sz + 0.02), "cat")
+	b.blob((0.3, 0.34, 0.36), (0, sy, sz + 0.12), fur, "cat", segs=(10, 8))            # sitting up: a pear of a body
+	b.blob((0.2, 0.12, 0.24), (0, sy - 0.13, sz + 0.12), cream, "cat", segs=(8, 6))    # its cream chest
+	for k in range(3):   # tabby stripes round its back
+		b.blob((0.32, 0.05, 0.08), (0, sy + 0.04 + 0.03 * k, sz + 0.06 + 0.1 * k), stripe, "cat", rot=(20, 0, 0), segs=(8, 4))
+	for s in (1, -1):    # front paws, tucked on her back
+		b.blob((0.07, 0.11, 0.06), (0.07 * s, sy - 0.16, sz - 0.02), cream, "cat", segs=(6, 4))
+		b.blob((0.1, 0.18, 0.1), (0.13 * s, sy + 0.04, sz), fur, "cat", segs=(6, 4))   # haunches
+	b.blob((0.24, 0.22, 0.21), (0, sy - 0.14, sz + 0.36), fur, "cat_head", segs=(10, 8))
+	b.blob((0.12, 0.08, 0.08), (0, sy - 0.24, sz + 0.32), cream, "cat_head", segs=(6, 4))   # muzzle
+	b.blob((0.03, 0.02, 0.02), (0, sy - 0.285, sz + 0.34), pink, "cat_head", segs=(4, 3))
+	for s in (1, -1):
+		b.seg((0.07 * s, sy - 0.12, sz + 0.44), (0.1 * s, sy - 0.13, sz + 0.56), 0.045, 0.0, fur, "cat_head", sides=4)   # ears
+		b.blob((0.05, 0.03, 0.05), (0.06 * s, sy - 0.245, sz + 0.39), eye, "cat_head", segs=(6, 4))
+		b.blob((0.015, 0.02, 0.035), (0.06 * s, sy - 0.26, sz + 0.39), pupil, "cat_head", segs=(4, 3))
+		b.blob((0.12, 0.05, 0.03), (0.08 * s, sy - 0.15, sz + 0.47), stripe, "cat_head", segs=(5, 3))   # a stripe on its brow
+	pts = [(0.0, sy + 0.14, sz + 0.02), (0.1, sy + 0.24, sz - 0.04), (0.2, sy + 0.24, sz - 0.18), (0.24, sy + 0.16, sz - 0.34), (0.22, sy + 0.04, sz - 0.42)]
+	_chain(b, pts, 0.04, 0.03, fur, bone="cat_tail", sides=6)   # its tail curls down her flank
+	b.blob((0.07, 0.07, 0.09), pts[-1], stripe, "cat_tail", segs=(6, 4))
+
+
+def build_hair_pigtails():
+	"""Two pigtails tied high at the sides of a KayKit head (its mesh space: the head's middle about
+	1.75 up), each a round knot, a band and a full, tapering bunch swinging out and down past the
+	jaw. Painted in the wearer's hair color (models.json race_parts "hair": true), pinned to the head."""
+	hair = material("pigtails_hair", "3a3438", 0.7)
+	b = Builder("hair_pigtails")
+	for s in (1, -1):
+		tie = Vector((0.5 * s, 0.06, 2.02))
+		b.blob((0.26, 0.26, 0.26), tuple(tie), hair, "x", segs=(12, 9))                    # the knot where it's tied
+		b.seg(tuple(tie + Vector((0.1 * s, 0.0, -0.03))), tuple(tie + Vector((0.16 * s, 0.01, -0.08))), 0.09, 0.09, hair, "x", sides=10)   # the band
+		pts = [tie + Vector((0.16 * s, 0.02, -0.1)), tie + Vector((0.3 * s, 0.05, -0.32)), tie + Vector((0.34 * s, 0.07, -0.58)),
+			   tie + Vector((0.3 * s, 0.08, -0.82)), tie + Vector((0.22 * s, 0.08, -1.0))]
+		_chain(b, pts, 0.15, 0.06, hair, sides=10)
+		for k, pt in enumerate(pts[1:-1]):   # fuller in the middle, as a bunch of hair is
+			b.blob((0.3 - 0.05 * k, 0.28 - 0.05 * k, 0.32), tuple(pt), hair, "x", segs=(10, 8))
+		b.blob((0.09, 0.09, 0.14), tuple(pts[-1] + Vector((0, 0, -0.06))), hair, "x", segs=(8, 6))
+	return _smooth_static(b)
+
+
+def build_june_cat_shoulder():
+	"""June's cat when she walks as Fresnebagcdrs: the same orange tabby, sitting on her left shoulder
+	(KayKit mesh space), pinned to the chest. Its materials are "cat" ones, as on the unicorn."""
+	b = Builder("june_cat_shoulder")
+	_june_cat(b, "unicorn", 0.56)   # sits at z 1.12, y -0.12 in its own frame
+	m = Matrix.Translation(Vector((0.52, 0.14, -0.04)))   # on the point of her shoulder, clear of her ear
+	for part in b.parts:
+		part.data.transform(m)
+	return b.build_static()
+
+
+def build_velassa():
+	"""Velassa, the cat found at the bottom of Greenmoor's apple barrel: a slim smoky silver-gray cat
+	with white paws and chest, pale violet eyes and a violet charm on her collar. A little bigger than
+	a real cat so she reads beside a person (about 0.55 m at the shoulder). Own rig: idle, walk, run,
+	sit (tucked up, tail round her paws), attack (a pounce), hit, death."""
+	fur = material("velassa_fur", "8a8a96", 0.85)
+	fur_d = material("velassa_fur_dark", "5c5c68", 0.9)
+	white = material("velassa_white", "f2f0f4", 0.8)
+	eye = material("velassa_eye", "c8a8ff", 0.2, emit=1.2)
+	pupil = material("velassa_pupil", "141018", 0.3)
+	pink = material("velassa_nose", "e0a0b0", 0.5)
+	collar = material("velassa_collar", "4a2a6a", 0.6)
+	charm = material("velassa_charm", "b88aff", 0.2, emit=1.8)
+	b = Builder("velassa")
+	H = 0.34   # a cat is mostly body: short legs under it
+	legs = {"leg_fl": (0.1, -0.22), "leg_fr": (-0.1, -0.22), "leg_bl": (0.1, 0.22), "leg_br": (-0.1, 0.22)}
+	b.bone("root", (0, 0, H))
+	b.bone("body", (0, 0, H + 0.06), "root")
+	b.bone("head", (0, -0.36, H + 0.24), "body")
+	b.bone("tail", (0, 0.32, H + 0.08), "body")
+	b.bone("tail_tip", (0, 0.5, H + 0.42), "tail")
+	b.blob((0.34, 0.68, 0.34), (0, 0.0, H + 0.06), fur, "body", segs=(14, 9))                 # a long, round body
+	b.blob((0.34, 0.3, 0.34), (0, 0.22, H + 0.08), fur, "body", segs=(10, 8))                  # her haunches
+	b.blob((0.24, 0.34, 0.2), (0, -0.12, H - 0.04), white, "body", segs=(10, 6))                # her pale chest and belly
+	b.seg((0, -0.22, H + 0.08), (0, -0.34, H + 0.22), 0.11, 0.09, fur, "body", sides=8)        # the neck
+	b.seg((0, -0.33, H + 0.18), (0, -0.33, H + 0.2), 0.11, 0.11, collar, "body", sides=10)     # her collar
+	b.blob((0.07, 0.03, 0.07), (0, -0.44, H + 0.12), charm, "body", segs=(6, 4))               # its charm
+	b.blob((0.28, 0.25, 0.24), (0, -0.4, H + 0.3), fur, "head", segs=(12, 9))
+	b.blob((0.12, 0.08, 0.08), (0, -0.5, H + 0.26), white, "head", segs=(6, 4))                # muzzle
+	b.blob((0.03, 0.02, 0.02), (0, -0.545, H + 0.28), pink, "head", segs=(4, 3))
+	for s in (1, -1):
+		b.seg((0.07 * s, -0.38, H + 0.38), (0.09 * s, -0.39, H + 0.5), 0.045, 0.0, fur, "head", sides=4)   # ears
+		b.seg((0.07 * s, -0.395, H + 0.39), (0.085 * s, -0.4, H + 0.47), 0.025, 0.0, pink, "head", sides=4)
+		b.blob((0.055, 0.03, 0.05), (0.06 * s, -0.5, H + 0.33), eye, "head", segs=(6, 4))
+		b.blob((0.012, 0.02, 0.036), (0.06 * s, -0.515, H + 0.33), pupil, "head", segs=(4, 3))
+		for k in range(2):   # whiskers
+			b.seg((0.04 * s, -0.52, H + 0.26 + 0.015 * k), (0.15 * s, -0.53, H + 0.27 + 0.03 * k), 0.003, 0.002, white, "head", sides=3)
+	for k in range(3):   # faint darker stripes on her back
+		b.blob((0.2, 0.05, 0.04), (0, 0.06 + 0.1 * k, H + 0.18), fur_d, "body", segs=(6, 4))
+	_chain(b, [(0, 0.3, H + 0.1), (0, 0.42, H + 0.2), (0, 0.48, H + 0.34)], 0.04, 0.035, fur, bone="tail", sides=6)
+	_chain(b, [(0, 0.48, H + 0.34), (0, 0.5, H + 0.46), (0, 0.46, H + 0.56)], 0.035, 0.025, fur_d, bone="tail_tip", sides=6)
+	for bone, (x, y) in legs.items():
+		b.bone(bone, (x, y, H), "root")
+		b.blob((0.13, 0.16, 0.2), (x, y, H - 0.06), fur, bone, segs=(8, 6))                   # the top of the leg, under the body
+		b.seg((x, y, H - 0.1), (x, y, 0.06), 0.055, 0.045, fur, bone, sides=7)
+		b.blob((0.09, 0.11, 0.07), (x, y - 0.02, 0.035), white, bone, segs=(7, 5))            # white paws
+	arm = b.build()
+
+	def tail(t, amp, cycles=1.0):
+		return {"tail": {"rot": (6 * wave(t, cycles), 0, amp * wave(t, cycles))}, "tail_tip": {"rot": (0, 0, amp * 0.8 * wave(t, cycles, 0.2))}}
+
+	def idle(t):   # stands looking about, ears turning, tail slow
+		return merge_scaled({"body": {"loc": (0, 0, 0.004 * wave(t, 2))}, "head": {"rot": (4 * wave(t, 1, 0.3), 0, 26 * wave(t, 1))}}, tail(t, 14, 2))
+
+	def walk(t):
+		return merge_scaled(_quad_legs(wave(t), 26), tail(t, 8, 2), {"root": {"loc": (0, 0, 0.01 * abs(wave(t, 2)))}})
+
+	def run(t):    # a bounding gallop
+		f, k = 46 * wave(t), 46 * wave(t, 1, 0.5)
+		return merge_scaled({"leg_fl": {"rot": (f, 0, 0)}, "leg_fr": {"rot": (f * 0.85, 0, 0)}, "leg_bl": {"rot": (k, 0, 0)}, "leg_br": {"rot": (k * 0.85, 0, 0)},
+							 "root": {"loc": (0, 0, 0.05 * max(0.0, wave(t, 1, 0.25))), "rot": (8 * wave(t, 1, 0.1), 0, 0)}}, tail(t, 4))
+
+	def sit(t):    # tucked up: haunches down, front legs straight, tail round her paws
+		return merge_scaled({"root": {"loc": (0, 0.06, -0.12), "rot": (24, 0, 0)}, "leg_bl": {"rot": (-70, 0, 0)}, "leg_br": {"rot": (-70, 0, 0)},
+							 "leg_fl": {"rot": (-22, 0, 0)}, "leg_fr": {"rot": (-22, 0, 0)}, "head": {"rot": (-20, 0, 18 * wave(t, 1))},
+							 "tail": {"rot": (-40, 0, 60)}, "tail_tip": {"rot": (0, 0, 40 + 10 * wave(t, 1))}})
+
+	def attack(t):  # a pounce
+		crouch = seq(t, [(0, 0), (0.3, 1), (0.45, 0), (1, 0)])
+		leap = seq(t, [(0.3, 0), (0.5, 1), (0.8, 0)])
+		return merge_scaled({"root": {"loc": (0, -0.3 * leap, -0.08 * crouch + 0.12 * leap), "rot": (-10 * leap, 0, 0)},
+							 "leg_fl": {"rot": (-40 * leap, 0, 0)}, "leg_fr": {"rot": (-40 * leap, 0, 0)}}, tail(t, 20, 2))
+
+	def hit(t):
+		k = seq(t, [(0, 0), (0.25, 1), (1, 0)])
+		return merge_scaled({"root": {"loc": (0, 0.06 * k, 0.02 * k)}, "head": {"rot": (14 * k, 0, 0)}}, tail(t, 30 * k, 3))
+
+	def death(t):
+		roll = seq(t, [(0.2, 0), (0.6, 84)])
+		return merge_scaled({"root": {"loc": (0, 0, seq(t, [(0.1, 0), (0.6, -0.36)])), "rot": (0, roll, 0)}}, tail(t, 6 * (1 - seq(t, [(0.3, 0), (1, 1)]))))
+
+	clip_scaled(arm, "idle", 3.0, idle, True)
+	clip_scaled(arm, "walk", 0.7, walk, True)
+	clip_scaled(arm, "run", 0.42, run, True)
+	clip_scaled(arm, "sit", 2.0, sit, True)
+	clip_scaled(arm, "attack", 0.8, attack, False)
+	clip_scaled(arm, "hit", 0.35, hit, False)
+	clip_scaled(arm, "death", 1.2, death, False)
+	return arm
+
+
+CREATURES.update({"unicorn": build_unicorn})
+CREATURES.update({"velassa": build_velassa})
+ATTACHMENTS.update({"hair_pigtails": build_hair_pigtails, "june_cat_shoulder": build_june_cat_shoulder})
+
+
 def main():
 	argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 	opts = {"--out": "assets/creatures", "--preview": "", "--only": "", "--portrait": "", "--props-out": "assets/props"}

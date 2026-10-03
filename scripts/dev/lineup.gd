@@ -14,6 +14,7 @@ extends Node3D
 ## writing them to "grips".
 ## --race=troll,,dwarf, --gender=female,,male and --hair=long:copper,,:white
 ## (style:color) dress each model in turn.
+## --attach=june_cat_shoulder pins models.json "race_parts" pieces on every model.
 ## Model ids are data/models.json character ids. Quits when done.
 
 const SPACING := 1.8
@@ -29,6 +30,7 @@ func _ready() -> void:
 	var offhand := ""
 	var tiers: PackedStringArray = []
 	var weapon := ""
+	var attach: PackedStringArray = []
 	var races: PackedStringArray = []  # --race=troll,,dwarf: each model dressed as that race
 	var genders: PackedStringArray = []  # --gender=female,,male: each model as a man or a woman
 	var hairs: PackedStringArray = []  # --hair=long:copper,,:white: each model's hairstyle and color
@@ -43,6 +45,8 @@ func _ready() -> void:
 			weapon = a.substr(9)
 		elif a.begins_with("--at="):
 			at = float(a.substr(5))
+		elif a.begins_with("--attach="):  # models.json race_parts pinned on every model (June's shoulder cat)
+			attach = a.substr(9).split(",", false)
 		elif a.begins_with("--offhand="):
 			offhand = a.substr(10)
 		elif a.begins_with("--grip="):
@@ -113,6 +117,8 @@ func _ready() -> void:
 			m.set_worn(worn)
 		if offhand != "":
 			m.set_offhand(offhand)
+		for part_id: String in attach:
+			m.pin_part(part_id)
 		var clip := m._clip(action)
 		if action == "shoot":  # the bow moves to the left hand for the shot, as in play
 			m.show_ranged(weapons[i % weapons.size()], 9999.0)

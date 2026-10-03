@@ -695,6 +695,8 @@ func _buff_list() -> Array:
 	var out: Array = []
 	if player.elders_blessing():
 		out.append(["blessing_of_the_elders", -1.0])
+	if player.velassa_out:
+		out.append(["velassas_company", -2.0])  # while she's with you
 	for spell_id: String in player.buffs:
 		out.append([spell_id, float(player.buffs[spell_id].get("left", 0.0))])
 	return out
@@ -760,7 +762,7 @@ func _fill_effects(panel: PanelContainer, rows_box: VBoxContainer, shape_was: St
 		for c: Control in (rows[i] as Node).find_children("*", "HotSlot", false, false):
 			c.tooltip_text = tip
 		var label := (rows[i] as Node).find_child("left", true, false) as Label
-		label.text = "until level %d" % int(World.cfg("elders_blessing", {}).get("until_level", 10)) if secs < 0.0 \
+		label.text = "while she's with you" if secs <= -2.0 else "until level %d" % int(World.cfg("elders_blessing", {}).get("until_level", 10)) if secs < 0.0 \
 				else ("%dm %02ds" % [int(secs) / 60, int(secs) % 60] if secs >= 60.0 else "%ds" % ceili(secs))
 	return shape
 

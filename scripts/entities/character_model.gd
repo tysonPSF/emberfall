@@ -88,6 +88,8 @@ func setup(model_id: String, weapon_id: String, body_scale: float, gear: Variant
 						n.queue_free()
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	if spec.has("rainbow") and not Net.dedicated:
+		_rainbow(model, spec["rainbow"])
 	if own_rig:
 		anim = model.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 		for clip in anim.get_animation_list():
@@ -101,6 +103,30 @@ func setup(model_id: String, weapon_id: String, body_scale: float, gear: Variant
 		anim.add_animation_library("", library())
 		_clips = KAYKIT_ANIMS
 	set_weapon(weapon_id)
+
+
+const RAINBOW_SHADER := preload("res://scripts/world/rainbow.gdshader")
+
+
+## A coat that shifts through the rainbow (models.json "rainbow": {speed,
+## bands, strength, glow}): every surface's color goes to the shader, which
+## runs drifting bands of color through the pale parts.
+func _rainbow(model: Node3D, opts: Dictionary) -> void:
+	for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+		if mi.mesh == null:
+			continue
+		for i in mi.mesh.get_surface_count():
+			var base := mi.mesh.surface_get_material(i) as BaseMaterial3D
+			if base != null and str(opts.get("skip", "")) != "" and str(opts["skip"]) in base.resource_name:
+				continue  # a rider in its own colors (June's cat)
+			var m := ShaderMaterial.new()
+			m.shader = RAINBOW_SHADER
+			m.set_shader_parameter("albedo", base.albedo_color if base != null else Color.WHITE)
+			m.set_shader_parameter("roughness", base.roughness if base != null else 0.5)
+			for k: String in ["speed", "bands", "strength", "glow"]:
+				if opts.has(k):
+					m.set_shader_parameter(k, float(opts[k]))
+			mi.set_surface_override_material(i, m)
 
 
 ## Reskins a stock body from its models.json entry: "hide" drops mesh parts,
@@ -148,29 +174,11 @@ func set_race(race_id: String) -> void:
 		_skin(mi)
 	if skeleton == null:
 		return
-	var parts: Dictionary = GameData.models.get("race_parts", {})
 	for part_id: String in race.get("attach", []):
-		var spec: Dictionary = parts.get(part_id, {})
-		if spec.get("male_only", false) and _gender == "female":  # beards
+		var part := pin_part(part_id)
+		if part == null:
 			continue
-		var bone := skeleton.find_bone(str(spec.get("bone", "head"))) if not spec.is_empty() else -1
-		if bone < 0:
-			continue
-		var slot := BoneAttachment3D.new()
-		slot.bone_name = str(spec.get("bone", "head"))
-		skeleton.add_child(slot)
-		var part: Node3D = (load(spec["path"]) as PackedScene).instantiate()
-		part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
-		slot.add_child(part)
-		if spec.get("hair", false) and _hair != "":  # a beard in the chosen hair color
-			var hair := Color("#" + str(GameData.models["hair_colors"][_hair]["light"]))
-			for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
-				var base := mi.get_active_material(0) as BaseMaterial3D
-				if base != null:
-					var mat := base.duplicate() as BaseMaterial3D
-					mat.albedo_texture = null
-					mat.albedo_color = hair
-					mi.material_override = mat
+		var spec: Dictionary = GameData.models.get("race_parts", {}).get(part_id, {})
 		if spec.get("skin", false) and race.get("skin") is Array:
 			var tone := Color("#" + str(race["skin"][0]))
 			for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
@@ -181,13 +189,44 @@ func set_race(race_id: String) -> void:
 					mi.material_override = mat
 
 
+## Pins a models.json "race_parts" piece (authored in KayKit mesh space) to
+## its bone: elf ears, a beard, pigtails, June's cat on the shoulder. A piece
+## marked "hair" takes the chosen hair color. Returns it (null if it can't go on).
+func pin_part(part_id: String) -> Node3D:
+	if skeleton == null:
+		return null
+	var spec: Dictionary = GameData.models.get("race_parts", {}).get(part_id, {})
+	if spec.is_empty() or (spec.get("male_only", false) and _gender == "female"):  # beards
+		return null
+	var bone := skeleton.find_bone(str(spec.get("bone", "head")))
+	if bone < 0:
+		return null
+	var slot := BoneAttachment3D.new()
+	slot.bone_name = str(spec.get("bone", "head"))
+	skeleton.add_child(slot)
+	var part: Node3D = (load(spec["path"]) as PackedScene).instantiate()
+	part.transform = skeleton.get_bone_global_rest(bone).affine_inverse()
+	slot.add_child(part)
+	if spec.get("hair", false) and _hair != "":  # a beard, or pigtails, in the chosen hair color
+		var tones: Dictionary = GameData.models["hair_colors"][_hair]
+		var hair := Color("#" + str(tones["light"])).lerp(Color("#" + str(tones["dark"])), 0.35)  # the head's own hair is shaded light to dark: between, so it matches
+		for mi: MeshInstance3D in part.find_children("*", "MeshInstance3D", true, false):
+			var base := mi.get_active_material(0) as BaseMaterial3D
+			if base != null:
+				var mat := base.duplicate() as BaseMaterial3D
+				mat.albedo_texture = null
+				mat.albedo_color = hair
+				mi.material_override = mat
+	return part
+
+
 ## Dresses the body as a man or a woman. Each body is one or the other as
 ## KayKit made it (models.json "genders" "bodies", default male); for the
 ## other, its head (face and hair) is swapped for "heads"[gender]. Call it
 ## right after setup, before set_hair and set_race (beards are "male_only").
 func set_gender(gender: String) -> void:
-	if skeleton == null or not gender in ["male", "female"] or gender == _gender:
-		return
+	if skeleton == null or not gender in ["male", "female"] or gender == _gender or str(_spec.get("rig", "")) == "own":
+		return  # a creature on its own rig (a cat) keeps its own head
 	_gender = gender
 	var genders: Dictionary = GameData.models.get("genders", {})
 	if gender == str(genders.get("bodies", {}).get(_model_id, "male")):
@@ -209,6 +248,9 @@ func set_hair(style: String, color: String) -> void:
 	if styles.has(style):
 		_swap_head(str(styles[style]["model"]), str(styles[style]["part"]))
 	_hair = color if GameData.models.get("hair_colors", {}).has(color) else ""
+	if styles.has(style):
+		for part_id: String in styles[style].get("parts", []):  # pigtails: pieces pinned to the head, in the hair's color
+			pin_part(part_id)
 	var ours := _body_parts()
 	if ours.has("Head"):
 		_skin(ours["Head"])

@@ -1,0 +1,25 @@
+{
+  "greenmoor_apple": {
+    "name": "Crisp Apple",
+    "value": 2,
+    "stack": 20,
+    "weight": 0.1,
+    "use": {
+      "spell": "meal_crisp_apple"
+    },
+    "desc": "From the barrel in Greenmoor's quiet corner. Sweet, and still cold."
+  },
+  "velassas_collar": {
+    "name": "Velassa's Collar",
+    "value": 0,
+    "no_drop": true,
+    "lore": true,
+    "weight": 0.1,
+    "use": {
+      "spell": "call_velassa",
+      "recast": 3,
+      "keep": true
+    },
+    "desc": "A violet charm on a soft band. Right-click to call Velassa to your side, or to send her home. While she walks with you, your ranged attacks hit 5% harder."
+  }
+}

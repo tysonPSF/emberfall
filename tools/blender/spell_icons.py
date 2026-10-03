@@ -1283,6 +1283,20 @@ def action_journal():
 	return p.build()
 
 
+def velassas_company():
+	p = Prop("velassas_company", 2401)
+	p.blob((0.9, 0.7, 0.8), (0, 0, 0.5), STONE_LIGHT, segs=(14, 10))                  # Velassa's gray head
+	for s in (1, -1):
+		p.seg((0.3 * s, 0.05, 0.75), (0.42 * s, 0.05, 1.12), 0.17, 0.0, STONE_LIGHT, sides=4)   # ears
+		p.seg((0.3 * s, -0.02, 0.78), (0.4 * s, -0.02, 1.02), 0.09, 0.0, CLOTH_RED, sides=4)
+		p.blob((0.2, 0.08, 0.22), (0.2 * s, -0.33, 0.56), PETAL_PURPLE, segs=(8, 6), glow=1.2)   # violet eyes
+		p.blob((0.05, 0.04, 0.16), (0.2 * s, -0.37, 0.56), STONE_DARK, segs=(6, 4))
+	p.blob((0.38, 0.2, 0.22), (0, -0.33, 0.3), CLOTH_WHITE, segs=(8, 6))               # her white muzzle
+	p.blob((0.08, 0.05, 0.06), (0, -0.43, 0.36), CLOTH_RED, segs=(6, 4))
+	p.blob((0.22, 0.12, 0.22), (0, -0.28, 0.02), PETAL_PURPLE, segs=(8, 6), glow=1.5)   # her collar charm
+	return p.build()
+
+
 def action_delete():
 	p = Prop("action_delete", 367)
 	p.seg((0, 0, 0.02), (0, 0, 0.82), 0.3, 0.37, STONE_LIGHT, sides=12)            # a tin rubbish bin, wider at the top
@@ -5412,6 +5426,7 @@ SPELLS = {f.__name__: f for f in [kick, taunt, bash, bind_wound, battle_cry, min
 ACTIONS = {f.__name__: f for f in [action_attack, action_ranged, action_sit, action_consider, action_skills, action_hail, action_loot,
 								   action_pet_attack, action_pet_back, action_pet_follow, action_pet_guard, action_pet_sit,
 								   action_friends, action_guild, action_journal, action_delete]}
+SPELLS["velassas_company"] = velassas_company
 
 
 def main():

@@ -42,6 +42,7 @@ var seated := ""  # "chair": sits at its post (npcs.json "seated"), standing onl
 var only_for := ""  # a player's name: shown to them alone (a scene for one player: World.sees)
 var walk_to := Vector3.INF  # walks here, then leaves (Merrick heading out of the tavern)
 var follow_id := -1  # a companion: the player it follows and fights beside (World._check_companion)
+var companion_pet := false  # follows but never fights (Velassa): no taunts, no foes
 var _companion_speed := 5.5
 var _taunt_left := 0.0
 var _sight_check := 0.0
@@ -114,11 +115,15 @@ func _ready() -> void:
 		title.pixel_size = nameplate.pixel_size
 		title.font_size = 24
 		title.outline_size = 6
-		title.text = "<%s>" % data.get("guild", data.get("title"))
+		title.text = "<%s>" % str(data.get("guild", data.get("title"))).replace("{owner}", only_for)  # Velassa: <Tyson's cat>
 		title.modulate = Color(0.6, 1.0, 0.75) if data.has("guild") else Color(0.78, 0.82, 0.9)  # guild green, as Player.show_guild_tag
 		title.offset = Vector2(0, -30)  # screen pixels below the name, at any distance
 		title.visibility_range_end = nameplate.visibility_range_end
+		title.name = "Title"
 		nameplate.add_child(title)
+	if data.has("night_form") and not Net.dedicated:  # June: by night she's someone else
+		_form_night = false
+		_check_form(false)
 	if data.has("size"):  # giants (the Grove's gods): a pick shape and nameplate to match the model
 		_resize(float(data["size"][0]), float(data["size"][1]))
 	elif data.has("name_height"):  # a creature whose wings would hide its name
@@ -240,6 +245,9 @@ func _update_prop() -> void:
 		if World.quest_done(World.local_player, quest_id):
 			want = str(after[quest_id])
 			lit = true
+	for stage: Array in data.get("prop_stages", []):  # the apple barrel: lower each few apples you've taken
+		if World.apples_taken(World.local_player) >= int(stage[0]):
+			want = str(stage[1])
 	if str(look.get("shape", "")) == "prop:" + want:
 		return
 	look["shape"] = "prop:" + want
@@ -272,9 +280,81 @@ func greet(who: Entity) -> void:
 
 ## Guards carry a torch in the left hand from sunset to sunrise (outdoors).
 ## Only a picture, so every machine decides from its own clock.
+## An npc with a "night_form" (June the unicorn by day, Fresnebagcdrs the elf
+## after dark: {name, title, model, race, gender, hair, attach, scale,
+## dialogue}) is that other self while it's night. The hour comes from the
+## shared clock, so the server (her name, her lines) and every client (her
+## body) agree without a message.
+var _form_night := false
+var _form_check := 0.0
+
+
+func is_night_form() -> bool:
+	return data.has("night_form") and World.is_night()
+
+
+## What she's like now: npcs.json's entry, with the night form's over it after dark.
+func form() -> Dictionary:
+	if not is_night_form():
+		return data
+	var d := data.duplicate()
+	d.merge(data["night_form"], true)
+	return d
+
+
+## Her name as it is now (the server's lines say it).
+func shown_name() -> String:
+	return str(form().get("name", display_name)) if data.has("night_form") else display_name
+
+
+## Turns into the other self when the hour has crossed dusk or dawn: a new body, name and
+## title, with a burst of rainbow light (when `fx`).
+func _check_form(fx: bool) -> void:
+	var night := is_night_form()
+	if night == _form_night and fx:
+		return
+	_form_night = night
+	var f := form()
+	var extra := {}
+	var body_scale := float(f.get("scale", 1.0))
+	if f.has("race"):
+		extra["race"] = str(f["race"])
+		body_scale *= float(GameData.races.get(str(f["race"]), {}).get("scale", 1.0))
+	if f.has("gender"):
+		extra["gender"] = str(f["gender"])
+	if f.has("hair"):
+		extra["hair"] = f["hair"]
+	var new_look := {"shape": "humanoid", "color": "#ffffff", "scale": body_scale, "model": str(f.get("model", "")), "weapon": ""}
+	new_look.merge(extra, true)
+	if visual != null:
+		visual.queue_free()
+	look = new_look
+	visual = make_visual(look)
+	add_child(visual)
+	if visual is CharacterModel:
+		for part_id: String in f.get("attach", []):
+			(visual as CharacterModel).pin_part(part_id)
+	display_name = str(f.get("name", data["name"]))
+	show_name()
+	var title := nameplate.get_node_or_null("Title") as Label3D
+	if title != null:
+		title.text = "<%s>" % str(f.get("title", ""))
+	nameplate.position.y = float(f.get("name_height", body_height + 0.45))
+	if fx:
+		for c: String in ["#ff9ae8", "#8ad8ff", "#ffe27a"]:  # a shimmer of rainbow light
+			var burst := SpellFx.new()
+			add_child(burst)
+			burst._build("burst", Color.html(c), self)
+
+
 func _process(delta: float) -> void:
 	if _mark != null:
 		_update_mark(delta)
+	if data.has("night_form"):
+		_form_check -= delta
+		if _form_check <= 0.0:
+			_form_check = 1.0
+			_check_form(true)
 	if data.has("pester") and data.has("name_height"):  # landed, the name comes down with it
 		var h := float(data["name_height"]) * (0.6 if sitting else 1.0)
 		nameplate.position.y = move_toward(nameplate.position.y, h, delta * 2.0)
@@ -390,6 +470,20 @@ func _think_companion(delta: float) -> Vector3:
 	var apart := _flat(global_position, lead.global_position)
 	if apart > 45.0:  # lost (a long fall, a wrong turn): back to their side
 		global_position = lead.global_position + lead.global_transform.basis.z * 2.0  # a step behind them (clients follow npc positions as sent)
+		return Vector3.ZERO
+	if companion_pet:  # Velassa: at your heel, or curled up beside you when you stop
+		auto_attack = false
+		var gap := _flat(global_position, lead.global_position)
+		if gap > 2.6:
+			sitting = false
+			_companion_speed = 8.0 if gap > 9.0 else 5.6
+			return nav_dir(lead.global_position, delta)
+		if gap < 1.1:
+			sitting = false
+			_companion_speed = 2.5
+			var away := Vector3(global_position.x - lead.global_position.x, 0, global_position.z - lead.global_position.z)
+			return away.normalized() if away.length() > 0.1 else lead.global_transform.basis.z
+		sitting = lead.velocity.length() < 0.3
 		return Vector3.ZERO
 	if auto_attack:
 		var t := valid_target_entity()

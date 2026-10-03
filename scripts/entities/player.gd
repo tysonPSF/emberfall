@@ -51,6 +51,8 @@ var station_items: Array = []  # its combine slots ("c:0".."c:9"), yours while i
 var pet_id := -1  # your pet's entity id, -1 with none
 var companion_id := -1  # an NPC fighting beside you (Watchman Corran in the Wellspring: World._check_companion), -1 with none
 var companion_back_at := 0  # msec: a fallen companion gets back up then
+var velassa_id := -1  # Velassa walking with you (World._call_velassa), -1 when she's at home
+var velassa_out := false  # she was with you: she comes back on login and after zoning (saved)
 var race := ""  # data/races.json id; "" for a character from before races (it chooses once; plays as a human until then)
 var race_changed := false  # a character's one change of race has been used
 var grove_deities: Array = []  # the gods who have come to the Grove for this character (World.unlock_grove_deity)
@@ -194,6 +196,7 @@ func from_save(d: Dictionary) -> void:
 	home_seen = str(d.get("home_seen", ""))
 	visited_seeded = d.get("visited") is Array
 	visited = (d.get("visited", []) as Array).map(func(z: Variant) -> String: return str(z)) if visited_seeded else []
+	velassa_out = bool(d.get("velassa_out", false))
 	given = (d.get("given", []) as Array).duplicate()
 	friends = (d.get("friends", []) as Array).map(func(f: Variant) -> String: return str(f)).filter(func(f: String) -> bool: return f != "").slice(0, World.FRIENDS_MAX)
 	stats_chosen = d.get("stats") is Dictionary
@@ -337,7 +340,7 @@ func apply_self(d: Dictionary) -> void:
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
 			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
-			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity", "visited"]:
+			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity", "visited", "velassa_out"]:
 		set(key, d[key])
 	if str(d.get("guild_name", "")) != guild_name:
 		guild_name = str(d.get("guild_name", ""))
@@ -414,7 +417,7 @@ func to_save() -> Dictionary:
 		"gender": gender, "gender_changed": gender_changed,
 		"hair": [hair_style, hair_color], "hair_changed": hair_changed,
 		"grove": grove_deities, "grove_return": grove_return,
-		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given, "visited": visited,
+		"friends": friends, "alignment_mods": alignment_mods, "home_seen": home_seen, "given": given, "visited": visited, "velassa_out": velassa_out,
 	}
 
 
@@ -1117,6 +1120,10 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 		return
 	if col is Node and (col as Node).has_meta("station"):  # an oven, forge, loom...: open its combine window
 		World.request_station_open(entity_id, str((col as Node).get_meta("station")))
+		return
+	if col is Npc and (col as Npc).data.has("apple_barrel"):  # Greenmoor's barrel: a click takes an apple
+		World.request_set_target(entity_id, (col as Entity).entity_id)
+		World.request_take_apple(entity_id, (col as Npc).entity_id)
 		return
 	if col is Entity:
 		World.request_set_target(entity_id, (col as Entity).entity_id)

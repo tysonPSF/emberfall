@@ -15969,7 +15969,79 @@ def _bank_touch(p, city, st, W, D, H):
 			p.box((0.26, 0.26, 0.4), (s * 4.9, -hd - 0.3, 2.45), FLAME, glow=1.6)
 
 
+def apple_tree():
+	"""tree_round's shape, a little smaller and fuller, hung with red apples (Greenmoor's grove)."""
+	p = Prop("apple_tree", 2313)
+	rng = p.rng
+	p.seg((0, 0, -0.2), (0, 0, 2.0), 0.28, 0.18, WOOD, sides=6, grad=(0.3, 0.9))
+	p.seg((0, 0, 1.5), (0.6, 0.1, 2.3), 0.11, 0.05, WOOD, sides=5)
+	p.seg((0, 0, 1.6), (-0.55, -0.2, 2.25), 0.1, 0.05, WOOD, sides=5)
+	crowns = (((0, 0, 3.0), 2.5), ((0.8, 0.3, 2.6), 1.6), ((-0.75, -0.4, 2.65), 1.7), ((0.1, 0.55, 3.7), 1.5))
+	for loc, s in crowns:
+		p.rock((s, s, s * 0.85), loc, LEAF, grad=(0.0, 0.7), jitter=0.05)
+	for k in range(30):   # apples on the outside of the crown
+		loc, s = crowns[k % len(crowns)]
+		a, el = rng.uniform(0, math.tau), rng.uniform(-0.5, 0.7)
+		d = Vector((math.cos(a) * math.cos(el), math.sin(a) * math.cos(el), math.sin(el) * 0.85))
+		at = Vector(loc) + d * s * 0.5
+		p.blob((0.26, 0.26, 0.24), tuple(at), CLOTH_RED, segs=(8, 6))
+	for k in range(4):    # a few windfalls under it
+		a = rng.uniform(0, math.tau)
+		r = rng.uniform(0.9, 1.8)
+		p.blob((0.2, 0.2, 0.18), (r * math.cos(a), r * math.sin(a), 0.09), CLOTH_RED, segs=(8, 6))
+	return p.build()
+
+
+def _barrel_open(pieces, floor):
+	"""The KayKit barrel's lid, sunk to `floor` meters: its rim stays, and the lid's edge stretches
+	down into the barrel's inner wall, so it reads as an open barrel filled that far."""
+	for o in pieces:
+		for v in o.data.vertices:
+			if math.hypot(v.co.x, v.co.y) < 0.318 and v.co.z > 1.0:   # the lid (radius 0.51 m in the 2 m barrel, at 0.6 scale), not the rim
+				v.co.z = floor
+	return pieces
+
+
+def _apple_barrel(name, floor, apples, seed):
+	"""A barrel of apples filled to `floor` (meters, up to the rim at about 1.1), `apples` on top
+	of the fill (Greenmoor's hidden orchard: twenty to take, one a click, Velassa at the bottom).
+	Two windfalls lie in the grass by it. About 1.2 m tall. Collide it as a box."""
+	p = Prop(name, seed)
+	pieces = _barrel_open(kaykit("barrel_large", (0, 0, 0), 0.0, (0.6, 0.6, 0.6)), floor - 0.03)
+	rng = p.rng
+	if apples > 4:
+		p.seg((0, 0, floor - 0.06), (0, 0, floor - 0.02), 0.31, 0.31, CLOTH_RED, sides=14)   # a bed of apples under the top layer
+	for k in range(apples):   # a close layer of apples, a little higher in the middle
+		a = rng.uniform(0, math.pi * 2)
+		r = (0.29 if apples > 6 else 0.12) * math.sqrt(rng.uniform(0, 1))   # the last few gather in the middle, where you can see them
+		z = floor + 0.04 * (1 - (r / 0.31) ** 2) + rng.uniform(-0.01, 0.02)
+		red = rng.random() < 0.72
+		p.blob((0.13, 0.13, 0.12), (r * math.cos(a), r * math.sin(a), z), CLOTH_RED if red else LEAF, segs=(8, 6))
+		if rng.random() < 0.5:
+			p.seg((r * math.cos(a), r * math.sin(a), z + 0.05), (r * math.cos(a) + 0.01, r * math.sin(a), z + 0.09), 0.008, 0.006, WOOD, sides=4)
+	if not apples:   # empty to the boards: a few leaves and an apple core
+		for x, y in ((0.12, -0.05), (-0.1, 0.12), (0.02, 0.18)):
+			p.blob((0.12, 0.07, 0.015), (x, y, floor + 0.01), LEAF, segs=(6, 4))
+		p.seg((-0.05, -0.12, floor), (-0.05, -0.12, floor + 0.1), 0.03, 0.03, BONE, sides=6)
+		p.blob((0.06, 0.06, 0.03), (-0.05, -0.12, floor), CLOTH_RED, segs=(6, 4))
+		p.blob((0.06, 0.06, 0.03), (-0.05, -0.12, floor + 0.1), CLOTH_RED, segs=(6, 4))
+	for x, y in ((0.75, -0.4), (-0.5, -0.7)):   # two that rolled away
+		p.blob((0.13, 0.13, 0.12), (x, y, 0.06), CLOTH_RED, segs=(8, 6))
+	obj = p.build(bevel=0.02)
+	return _merge_materials(join_into(obj, pieces))
+
+
+# the barrel as it empties, one apple at a time (World.apples_taken): with n apples left the fill
+# sinks from the rim (1.08 m, twenty left) to the boards (0.14, none) and n apples lie on top
+def _barrel_stage(left):
+	return (0.14 + 0.94 * left / 20.0, left)
+
+
+APPLE_BARREL_STAGES = {("apple_barrel" if n == 20 else "apple_barrel_empty" if n == 0 else "apple_barrel_%d" % n): _barrel_stage(n) for n in range(21)}
+
+
 PROPS = {
+	"apple_tree": apple_tree,
 	"bank_emberhold": lambda: _bank("bank_emberhold", "emberhold"),
 	"bank_lanternhold": lambda: _bank("bank_lanternhold", "lanternhold"),
 	"bank_rainhold": lambda: _bank("bank_rainhold", "rainhold"),
@@ -16311,6 +16383,7 @@ PROPS = {
 	"dusk_tree": dusk_tree,
 	"dusk_tree_b": dusk_tree_b,
 }
+PROPS.update({n: (lambda n=n: _apple_barrel(n, *APPLE_BARREL_STAGES[n], 2311 + int(APPLE_BARREL_STAGES[n][1]))) for n in APPLE_BARREL_STAGES})
 
 
 # ---------------------------------------------------------------- the Wellspring (Merrick's cave)

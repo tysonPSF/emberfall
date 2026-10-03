@@ -343,6 +343,7 @@ func _physics_process(delta: float) -> void:
 			_check_feign(obj as Player)
 			_check_pet(obj as Player)
 			_check_companion(obj as Player)
+			_check_velassa(obj as Player)
 			_check_burden(obj as Player, delta)
 			_check_lava(obj as Player, delta)
 			_check_swim(obj as Player, delta)
@@ -970,6 +971,125 @@ func _check_companion(p: Player) -> void:
 	say(p, "(Press F2 to target %s, even in a crowd.)" % n.display_name, C_SYSTEM)
 
 
+# --- Velassa and the apple barrel -------------------------------------------------
+# A barrel of apples in a quiet corner of Greenmoor (npcs.json "apple_barrel": 20).
+# Each player takes their own: a click takes one Crisp Apple into the bags, the
+# count kept on the character (Player.quests "apple_barrel" completions, saved
+# with the rest). The last apple out, a cat climbs out of the bottom: Velassa,
+# whose collar (NO DROP) calls her to your side and sends her home. While she
+# walks with you, your ranged attacks hit velassa_ranged_pct (5%) harder.
+
+func request_take_apple(player_id: int, npc_id: int) -> void:
+	if _remote(&"request_take_apple", [player_id, npc_id]):
+		return
+	var p := get_object(player_id) as Player
+	var barrel := get_object(npc_id) as Npc
+	if p == null or p.dead or barrel == null or not barrel.data.has("apple_barrel"):
+		return
+	if p.distance_to(barrel) > TALK_RANGE * 0.6:
+		say(p, "You need to be next to the barrel.", C_WARN)
+		return
+	var full := int(barrel.data["apple_barrel"])
+	var taken := apples_taken(p)
+	if taken >= full:
+		_settle_barrel(p)
+		if not "velassas_collar" in p.owned_item_ids() and p.pack.room_for("velassas_collar") > 0:  # lost, or never had room: it's still at the bottom
+			p.pack.add("velassas_collar")
+			p.inventory_changed.emit()
+			say(p, "At the bottom of the empty barrel lies a soft collar with a violet charm. --You have received Velassa's Collar.--", C_LOOT)
+		elif velassa_with(p):
+			say(p, "The barrel is empty. Velassa peers into it with you, then looks at you as if you might have eaten them all.", C_SYSTEM)
+		else:
+			say(p, "The barrel is empty. Somewhere nearby, a cat is purring. (Right-click Velassa's Collar to call her.)", C_SYSTEM)
+		return
+	if p.pack.room_for("greenmoor_apple") < 1:
+		say(p, "You have no room for an apple.", C_WARN)
+		return
+	p.pack.add("greenmoor_apple")
+	taken += 1
+	var st: Dictionary = p.quests.get("apple_barrel", {"active": false, "completions": 0})
+	st["taken"] = taken
+	if taken >= full:
+		st["completions"] = 1  # done: the barrel shows empty to you (npcs.json "prop_after")
+	p.quests["apple_barrel"] = st
+	p.inventory_changed.emit()
+	if taken < full:
+		var lines: Array = barrel.data.get("apple_lines", [])  # a line for each apple, a little more of the secret each time
+		say(p, str(lines[taken - 1]) if taken - 1 < lines.size() else "You take a crisp apple from the barrel. %d left." % (full - taken), C_LOOT)
+		return
+	# the last one: Velassa
+	say(p, "You reach for the last apple, and a pair of violet eyes looks back up at you from the bottom of the barrel.", C_SPELL)
+	say(p, "A small gray cat climbs out, shakes apple leaves from her fur, and sits on your boot as if she has always lived there.", C_SPELL)
+	if not "velassas_collar" in p.owned_item_ids():
+		if p.pack.room_for("velassas_collar") > 0:
+			p.pack.add("velassas_collar")
+			say(p, "--You have received Velassa's Collar.--", C_LOOT)
+		else:
+			say(p, "She's left her collar in the barrel for you: make room in your bags and take another look.", C_WARN)
+	p.quests_changed.emit()
+	_call_velassa(p, true)
+
+
+## A barrel emptied before it learned to show itself empty: marked done, so it does.
+func _settle_barrel(p: Player) -> void:
+	var st: Dictionary = p.quests.get("apple_barrel", {})
+	if int(st.get("taken", 0)) >= 20 and int(st.get("completions", 0)) == 0:
+		st["completions"] = 1
+		p.quests["apple_barrel"] = st
+		p.quests_changed.emit()
+
+
+## How many apples p has taken from the barrel (the last of 20 brings Velassa).
+func apples_taken(p: Player) -> int:
+	return int(p.quests.get("apple_barrel", {}).get("taken", 0))
+
+
+## Velassa at p's side now.
+func velassa_with(p: Player) -> bool:
+	var v := get_object(p.velassa_id) as Npc
+	return v != null and not v.dead and zone_of(v) == zone_of(p)
+
+
+## Calls Velassa to p's side, or (already there, and not `stay`) sends her home.
+func _call_velassa(p: Player, stay := false) -> void:
+	var v := get_object(p.velassa_id) as Npc
+	if v != null:
+		if stay:
+			return
+		v.queue_free()
+		p.velassa_id = -1
+		p.velassa_out = false
+		say(p, "Velassa flicks her tail and pads off home. She'll come when you call.", C_SPELL)
+		return
+	var z := zone_of(p)
+	if z == null:
+		return
+	var n := Npc.new()
+	n.setup("velassa")
+	n.only_for = p.display_name
+	n.follow_id = p.entity_id
+	n.companion_pet = true
+	n.display_name = "Velassa"
+	n.position = p.global_position + p.global_transform.basis.z * 1.6  # a step behind
+	z.add_child(n)
+	p.velassa_id = n.entity_id
+	p.velassa_out = true
+	say(p, "Velassa winds round your ankles once and falls in at your heel. (Your ranged attacks hit %d%% harder while she's with you.)" % int(cfg("velassa_ranged_pct", 5)), C_SPELL)
+
+
+## Velassa follows you between zones: called again on arrival if she was out.
+func _check_velassa(p: Player) -> void:
+	if not p.velassa_out or p.dead or not "velassas_collar" in p.owned_item_ids():
+		return
+	var v := get_object(p.velassa_id) as Npc
+	if v != null and zone_of(v) == zone_of(p):
+		return
+	if v != null:
+		v.queue_free()
+	p.velassa_id = -1
+	_call_velassa(p, true)
+
+
 ## A pet's taunt: puts it on top of its target's hate list.
 func pet_taunt(pet: Pet, m: Mob) -> void:
 	var top := 0.0
@@ -1304,11 +1424,12 @@ func request_use_item(player_id: int, place: String) -> void:
 		return
 	if use.has("recast"):
 		p.cooldowns[key] = float(use["recast"])
-	e["count"] = int(e["count"]) - 1
-	if int(e["count"]) <= 0:
-		_set_entry_at(p, place, {})
-	if not s.get("meal", false):
-		say(p, "You drink the %s." % str(it["name"]).to_lower(), C_SPELL)
+	if not use.get("keep", false):  # a tool (Velassa's collar) stays; food and drink are gone
+		e["count"] = int(e["count"]) - 1
+		if int(e["count"]) <= 0:
+			_set_entry_at(p, place, {})
+		if not s.get("meal", false):
+			say(p, "You drink the %s." % str(it["name"]).to_lower(), C_SPELL)
 	_finish_spell(p, spell_id, p, true)
 	p.inventory_changed.emit()
 
@@ -1758,6 +1879,8 @@ func _ranged_shot(p: Player, t: Entity, mult: float) -> bool:
 		var archer: Dictionary = GameData.classes[p.char_class].get("archery", {})
 		if skill == "archery":
 			mult *= float(archer.get("dmg", 1.0))  # rangers: the best bows in the land
+		if velassa_with(p):
+			mult *= 1.0 + float(cfg("velassa_ranged_pct", 5)) / 100.0  # Velassa at your heel: a steadier aim
 		dmg = maxi(1, roundi(dmg * mult))
 	if dmg > 0 and randf() < crit_chance(p, "melee"):
 		dmg = roundi(dmg * float(cfg("crit_melee_mult", 2.0)))
@@ -2087,6 +2210,7 @@ func player_entered(p: Player) -> void:
 	_check_deity(p)
 	_gifts(p)
 	_tidy_repeatables(p)
+	_settle_barrel(p)
 	_set_guild_tag(p)
 	var g := guilds().guild_of(p.display_name)
 	if not g.is_empty():
@@ -3173,6 +3297,9 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			for m in get_mobs():
 				if m.hate.has(t.entity_id):
 					m.add_hate(c, power * 0.5)
+		"velassa":
+			if c is Player:
+				_call_velassa(c as Player)
 		"grove":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
@@ -4232,6 +4359,36 @@ func request_chat(player_id: int, text: String) -> void:
 			request_bind(player_id)
 		"/grove":
 			_grove_command(p, rest)
+		"/resetapples":  # testing and admin only: the apple barrel and Velassa as if you'd never found them
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			else:
+				var cat := get_object(p.velassa_id) as Npc
+				if cat != null:
+					cat.queue_free()
+				p.velassa_id = -1
+				p.velassa_out = false
+				p.quests.erase("apple_barrel")
+				while p.pack.count("velassas_collar") > 0:
+					p.pack.remove("velassas_collar", 1)
+				p.quests_changed.emit()
+				p.inventory_changed.emit()
+				say(p, "The apple barrel is full again for you, and Velassa is back at the bottom of it.", C_SYSTEM)
+		"/goto":  # testing and admin only: /goto <x> <z> moves you there in this zone (what /loc shows)
+			var xz := rest.replace(",", " ").split(" ", false)
+			var z := zone_of(p)
+			if not Net.is_admin(p):
+				say(p, "That command is not available.", C_WARN)
+			elif xz.size() < 2 or not xz[0].is_valid_float() or not xz[1].is_valid_float() or z == null:
+				say(p, "Usage: /goto <x> <z>, the numbers /loc shows.", C_WARN)
+			else:
+				var x := float(xz[0])
+				var zz := float(xz[1])
+				var at := Vector3(x, z.surface_at(x, zz) + 0.2, zz)
+				p.global_position = at
+				p.velocity = Vector3.ZERO
+				Net.teleport(p, at)
+				say(p, "You step to %.0f, %.0f." % [x, zz], C_SYSTEM)
 		"/zone":  # testing and admin only: /zone <id or name> goes there, to its bind point (or the middle)
 			if not Net.is_admin(p):
 				say(p, "That command is not available.", C_WARN)
@@ -4452,7 +4609,7 @@ func _talk(p: Player, npc: Npc, keyword: String) -> void:
 	if refuses(p, npc):
 		_npc_say(p, npc, str(npc.data.get("refuse_faction", "I'll have nothing to do with the likes of you, {name}.")))
 		return
-	var lines: Dictionary = npc.data.get("dialogue", {}).duplicate()
+	var lines: Dictionary = npc.form().get("dialogue", {}).duplicate()  # a night form talks as itself
 	var later: Dictionary = npc.data.get("dialogue_after", {})  # {quest: {keyword: line}}: what they say once you've done that quest
 	for quest_id: String in later:
 		if quest_done(p, quest_id):
@@ -4561,7 +4718,7 @@ func _npc_say(p: Player, npc: Npc, text: String) -> void:
 	if npc.data.get("narrates", false):  # a thing that can't talk (the spring crystal): what happens, told
 		say(p, text.format({"name": p.display_name}), C_NPC)
 		return
-	say(p, "%s says, '%s'" % [npc.display_name, text.format({"name": p.display_name})], C_NPC)
+	say(p, "%s says, '%s'" % [npc.shown_name(), text.format({"name": p.display_name})], C_NPC)  # June by day, Fresnebagcdrs by night
 
 
 ## Drops a quest you're on (the journal's Abandon). What you've gathered

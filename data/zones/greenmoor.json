@@ -24,6 +24,193 @@
     "stump": {"density": 0.0005, "patch": 0.4, "range": 110, "shadow": true, "scale": [0.8, 1.3]}
   },
   "landmarks": [
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        152.0,
+        -82.0
+      ],
+      "yaw": 0
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        159.5,
+        -82.0
+      ],
+      "yaw": 47
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        167.0,
+        -82.0
+      ],
+      "yaw": 94
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        174.5,
+        -82.0
+      ],
+      "yaw": 141
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        153.2,
+        -74.5
+      ],
+      "yaw": 188
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        160.7,
+        -74.5
+      ],
+      "yaw": 235
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        168.2,
+        -74.5
+      ],
+      "yaw": 282
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        175.7,
+        -74.5
+      ],
+      "yaw": 329
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        152.0,
+        -67.0
+      ],
+      "yaw": 16
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        159.5,
+        -67.0
+      ],
+      "yaw": 63
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        167.0,
+        -67.0
+      ],
+      "yaw": 110
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        180,
+        -48
+      ],
+      "yaw": 157
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        186,
+        -56
+      ],
+      "yaw": 204
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        183,
+        -66
+      ],
+      "yaw": 251
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        152,
+        -48
+      ],
+      "yaw": 298
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        160,
+        -44
+      ],
+      "yaw": 345
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        163.5,
+        -64.5
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        173,
+        -55
+      ]
+    },
+    {
+      "type": "prop",
+      "id": "apple_tree",
+      "collide": "trunk",
+      "pos": [
+        172.5,
+        -66
+      ]
+    },
     {"type": "obelisk", "pos": [0, 0]},
     {"type": "camp", "pos": [172.5, -150], "style": "huts", "hut": "dustpaw_hut", "totem": "dustpaw_totem", "size": 1.8},
     {"type": "ruins", "pos": [-150, -120]},
@@ -65,6 +252,17 @@
     }
   ],
   "npcs": [
+    {
+      "id": "apple_barrel",
+      "pos": [
+        168,
+        -60
+      ],
+      "face": [
+        160,
+        -60
+      ]
+    },
     {"id": "watchman_corran", "pos": [-217, -40.5], "face": [-195, -45]},
     {"id": "warden_holt", "pos": [58.8, -202.9], "face": [20, -69]},
     {
