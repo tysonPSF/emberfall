@@ -11418,6 +11418,18 @@ func _t_velassa() -> void:
 	var heard: Array[String] = []
 	var listen := func(text: String, _c: Color) -> void: heard.append(text)
 	World.log_message.connect(listen)
+	var bramble: Npc = _npcs()["orchard_bramble"]
+	_stand_by(p, bramble)
+	World.request_set_target(p.entity_id, bramble.entity_id)
+	for word: String in ["hail", "barrel", "bottom"]:
+		World.request_say(p.entity_id, word)
+	var bramble_said := heard.filter(func(l: String) -> bool: return l.begins_with("Orchardkeeper Bramble says"))
+	heard.clear()
+	var unnamed := not barrel.nameplate.visible
+	var in_cycle := false
+	for k in 5:
+		p._cycle_interact()
+		in_cycle = in_cycle or p.target == barrel
 	_stand_by(p, barrel)
 	var stages := []
 	for k in 20:
@@ -11545,6 +11557,8 @@ func _t_velassa() -> void:
 	rat.set_physics_process(true)
 	p.quests = keep[0]
 	p.equipment = keep[1]
+	print("velassa: Bramble the orchard keeper says %s" % [bramble_said.map(func(l: String) -> String: return l.left(90))])
+	print("velassa: the barrel has no name over it %s, and T never picks it %s" % [unnamed, not in_cycle])
 	print("velassa: 20 apples taken -> %d in the bags, the lines %s" % [apples, heard.slice(0, 3)])
 	print("velassa: the 20th -> %s" % [heard.filter(func(l: String) -> bool: return "violet eyes" in l or "climbs out" in l)])
 	print("velassa: the 21st -> '%s'; collar %d; she's out %s, titled '%s', follows %s" % [heard.back(), collar, out, title, follows])

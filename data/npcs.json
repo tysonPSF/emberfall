@@ -11488,7 +11488,8 @@
         20,
         "apple_barrel_empty"
       ]
-    ]
+    ],
+    "unnamed": true
   },
   "velassa": {
     "name": "Velassa",
@@ -11503,5 +11504,32 @@
       "unknown": "Velassa flicks an ear. She has heard you, and chosen not to answer."
     },
     "name_height": 1.15
+  },
+  "orchard_bramble": {
+    "name": "Orchardkeeper Bramble",
+    "title": "Keeper of the Quiet Orchard",
+    "level": 20,
+    "model": "rogue_hooded",
+    "weapon": "",
+    "faction": "emberhold",
+    "race": "halfling",
+    "gender": "female",
+    "sacred": true,
+    "dialogue": {
+      "hail": "Oh! A visitor. Mind the windfalls, {name}, they bruise if you step on them. I keep these [trees] for no one in particular. They were here before the road, and they'll be here after it.",
+      "trees": "Nineteen trees, and every one of them sweet. I prune them, I talk to them, I pick up after them. The [barrel] fills itself, mostly.",
+      "barrel": "That old barrel? Help yourself, dear. Everyone takes an apple or two and wanders off. Nobody ever takes them all. I sometimes wonder what's at the bottom.",
+      "bottom": "I've never looked. Some mornings the apples are arranged... neatly. And there's a gray hair on the rim that isn't mine.",
+      "apples": "Crisp ones, the best in Greenmoor. Take as many as you like. Take all of them, even. I won't tell.",
+      "cat": "A cat? Out here? I've heard purring, now that you mention it. I thought it was the bees.",
+      "velassa": "Velassa... is that her name? Then she finally found someone patient enough. Good. Look after her, {name}.",
+      "unknown": "Bramble tilts her head. I only know about apples, I'm afraid."
+    },
+    "dialogue_after": {
+      "apple_barrel": {
+        "hail": "There you are, {name}, and look who's with you! I knew that barrel was hiding something. Mind she doesn't eat all my windfalls.",
+        "barrel": "Empty to the boards, and I've never been happier to see it. It'll fill again for the next patient soul."
+      }
+    }
   }
 }

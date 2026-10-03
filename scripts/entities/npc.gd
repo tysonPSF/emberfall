@@ -108,6 +108,8 @@ func _ready() -> void:
 		set_process(false)  # _process only lights guards' torches after dark: looks, which a server doesn't draw
 	nameplate.text = display_name
 	nameplate.modulate = NAME_COLOR
+	if data.get("unnamed", false):  # a thing, not a person (the apple barrel): no name floats over it
+		nameplate.visible = false
 	if data.has("title") or data.has("guild"):  # EQ-style second line: <Warrior Guildmaster>, or a guild tag like a player's
 		var title := Label3D.new()
 		title.billboard = BaseMaterial3D.BILLBOARD_ENABLED

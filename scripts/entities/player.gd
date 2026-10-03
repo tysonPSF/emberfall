@@ -1121,8 +1121,7 @@ func _click_select(screen_pos: Vector2, double_click: bool) -> void:
 	if col is Node and (col as Node).has_meta("station"):  # an oven, forge, loom...: open its combine window
 		World.request_station_open(entity_id, str((col as Node).get_meta("station")))
 		return
-	if col is Npc and (col as Npc).data.has("apple_barrel"):  # Greenmoor's barrel: a click takes an apple
-		World.request_set_target(entity_id, (col as Entity).entity_id)
+	if col is Npc and (col as Npc).data.has("apple_barrel"):  # Greenmoor's barrel: a click takes an apple (it's just a barrel: no target, no name)
 		World.request_take_apple(entity_id, (col as Npc).entity_id)
 		return
 	if col is Entity:
@@ -1155,7 +1154,7 @@ func _cycle_interact() -> void:
 	for obj: Variant in World.objects.values():
 		if not is_instance_valid(obj) or obj == self:
 			continue
-		var wanted := obj is Corpse or (obj is Npc and not (obj as Npc).dead and World.sees(self, obj))
+		var wanted: bool = obj is Corpse or (obj is Npc and not (obj as Npc).dead and World.sees(self, obj) and not (obj as Npc).data.get("unnamed", false))
 		if wanted and global_position.distance_to((obj as Node3D).global_position) < 45.0:
 			candidates.append(obj)
 	if candidates.is_empty():
