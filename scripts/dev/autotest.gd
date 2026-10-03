@@ -166,6 +166,8 @@ const SECTIONS := [
 	["chat_resize", "greenmoor"],
 	["june", "lanternhold"],
 	["velassa", "greenmoor"],
+	["velassa_pounce", "greenmoor"],
+	["city_paths", "lanternhold"],
 	["tuskway_borders", "harrowfield"],
 	["tuskway_life", "the_tuskway"],
 	["melee_swings", "greenmoor"],
@@ -11403,6 +11405,69 @@ func _t_june() -> void:
 	print("june: after dark -> '%s' (%s %s %s, hair %s), pigtails %s, cat on her shoulder %s, says %s" % [night_name, night_look.get("race"), night_look.get("gender"),
 			night_look.get("model"), night_look.get("hair"), pigtails, cat, heard.filter(func(l: String) -> bool: return "says" in l).slice(0, 1)])
 	print("june: morning -> '%s' (%s) again" % [june.display_name, june.look.get("model")])
+
+
+## Velassa's rogue side: her player badly hurt, she leaps behind the monster on
+## them and backstabs it; the hate stays theirs; well again, she's back at heel.
+func _t_velassa_pounce() -> void:
+	var p := World.local_player
+	var z := World.zone
+	p.global_position = z.ground(40, 40) + Vector3.UP
+	p.equipment["companion"] = "velassas_collar"
+	await _wait(1.5)
+	var cat := World.get_object(p.velassa_id) as Npc
+	var d: Dictionary = (GameData.mobs["gnoll_scout"] as Dictionary).duplicate(true)
+	d.erase("gear")
+	var mob := Mob.new()
+	mob.setup("gnoll_scout", d, null)
+	mob.position = z.ground(40, 37) + Vector3.UP * 0.2
+	z.add_child(mob)
+	await _wait(0.3)
+	mob.max_hp = 99999
+	mob.hp = mob.max_hp
+	p.max_hp = 99999
+	p.hp = 20000  # badly hurt, and not about to die
+	mob.add_hate(p, 50.0)
+	var lines: Array[String] = []
+	var listen := func(text: String, _c: Color) -> void: lines.append(text)
+	World.log_message.connect(listen)
+	await _wait(6.0)
+	var leapt := lines.any(func(l: String) -> bool: return l.contains("leaps into the fight"))
+	var stabs := lines.filter(func(l: String) -> bool: return l.begins_with("Velassa backstabs")).size()
+	var behind := cat != null and World.behind(cat, mob)
+	var still_you := mob.top_hated() == p
+	p.zoom = 4.0
+	p.face_toward(mob.global_position)
+	await _shot("9zz_velassa_pounce")
+	p.hp = p.max_hp  # well again: she comes back to heel
+	await _wait(2.0)
+	var home := cat != null and cat._pounce == null
+	World.log_message.disconnect(listen)
+	print("velassa_pounce: leapt=%s stabs=%d (6 s) behind=%s hurt=%d hate stays yours=%s back at heel=%s" % [leapt, stabs, behind, mob.max_hp - mob.hp, still_you, home])
+	mob.queue_free()
+	p.equipment.erase("companion")
+
+
+func _t_city_paths() -> void:
+	var p := World.local_player
+	for city in ["lanternhold", "emberhold", "forgehold", "galehold", "barrowhold"]:
+		if World.zone.zone_id != city:
+			World.zone_change.emit(p, city, Vector2(0, 30), Vector2(0, 0))
+			await _wait(4.0)
+		p = World.local_player
+		var z := World.zone
+		var views: Array = [[Vector3(18, 0, 34), Vector3(0, 0, 10), 30.0, -1.2]]
+		if city == "lanternhold":
+			views += [[Vector3(0, 0, 26), Vector3.ZERO, 6.0, -0.25], [Vector3(-9.5, 0, 0), Vector3.ZERO, 3.0, -0.1]]
+		for k in views.size():
+			var view: Array = views[k]
+			p.global_position = z.ground(view[0].x, view[0].z) + Vector3.UP * 0.2
+			p.face_toward(view[1])
+			p.zoom = view[2]
+			p.pitch = view[3]
+			await _wait(1.0)
+			await _shot("9zz_city_paths_%s_%d" % [city, k])
+	print("city_paths: shots taken")
 
 
 ## Greenmoor's apple barrel: twenty apples, a line each, Velassa climbs out of

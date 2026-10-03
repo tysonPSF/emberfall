@@ -15,7 +15,7 @@
     "no_drop": true,
     "lore": true,
     "weight": 0.1,
-    "desc": "A violet charm on a soft band. Worn in your companion slot, it brings Velassa to your heel; take it off and she goes home. While she walks with you, your ranged attacks hit 5% harder and your damage spells and heals are 3% stronger.",
+    "desc": "A violet charm on a soft band. Worn in your companion slot, it brings Velassa to your heel; take it off and she goes home. While she walks with you, your ranged attacks hit 5% harder and your damage spells and heals are 3% stronger. When you are badly hurt, she leaps in behind whatever is on you and backstabs it.",
     "slot": "companion",
     "companion": "velassa"
   }

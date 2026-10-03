@@ -403,6 +403,8 @@
       9
     ]
   ],
+  "paved_roads": true,
+  "grid": 224,
   "roads": [
     {
       "points": [
@@ -455,7 +457,14 @@
         ]
       ],
       "width": 4.5
-    }
+    },
+    {"points": [[-19.6, -5.8], [-19.6, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-30.5, 31.5], [-10.1, 10.4]], "width": 2.6, "lamps": false},
+    {"points": [[-8, -22], [0, -22]], "width": 2.6, "lamps": false},
+    {"points": [[-11, 15], [-8.6, 11.7]], "width": 2.6, "lamps": false},
+    {"points": [[11, 15], [8.6, 11.7]], "width": 2.6, "lamps": false},
+    {"points": [[20, 21], [10, 10.5]], "width": 2.6, "lamps": false},
+    {"points": [[27.2, 32], [20, 21]], "width": 2.6, "lamps": false}
   ],
   "zone_lines": [
     {

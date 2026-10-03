@@ -30,6 +30,7 @@ var _flat_scale: Array[float] = []  # each flat spot's size (a landmark's "size"
 var _passes: Array = []  # [x, z, half-width]: gaps in the mountain ring
 var _outline: Dictionary = {}  # this zone's entry in data/zone_outlines.json: how far in the mountains reach along each side
 static var _outlines: Dictionary = {}  # every zone's, read once
+var _paving := Color(0, 0, 0, 0)  # a city's flagstone color, read once
 var _roads: Array = []  # [{points: [Vector2...], width}]
 var _ponds: Array = []  # [{center: Vector2, radius, depth, level}]: bowls carved into the ground
 var _rivers: Array = []  # [{points: Array[Vector2], levels: Array[float], width, depth, bank}]: channels, level falling downstream
@@ -102,7 +103,8 @@ func load_zone(id: String) -> void:
 		var pts: Array[Vector2] = []
 		for pt: Array in road["points"]:
 			pts.append(Vector2(pt[0], pt[1]))
-		_roads.append({"points": pts, "width": float(road.get("width", 3.0))})
+		var paved := str(road.get("style", "paved" if data.get("paved_roads", false) else "dirt")) == "paved"
+		_roads.append({"points": pts, "width": float(road.get("width", 3.0)), "paved": paved, "lamps": bool(road.get("lamps", true))})
 	_clear_radius = float(data.get("clear_radius", 0.0))
 	bind_point = ground(_bind_xz.x, _bind_xz.y + 4.0)  # just south of the obelisk
 	if tunnel != null:  # a cave has no obelisk, and 4 m south may be solid rock: wake on the passage floor itself
@@ -627,10 +629,13 @@ func lava_level(x: float, z: float) -> float:
 
 
 ## Distance from a point to the nearest road's centerline, minus its half width.
-func road_distance(x: float, z: float) -> float:
+## `paved` true or false counts only roads of that kind.
+func road_distance(x: float, z: float, paved: Variant = null) -> float:
 	var best := INF
 	var p := Vector2(x, z)
 	for road: Dictionary in _roads:
+		if paved != null and bool(road["paved"]) != paved:
+			continue
 		var pts: Array[Vector2] = road["points"]
 		for i in pts.size() - 1:
 			var closest := Geometry2D.get_closest_point_to_segment(p, pts[i], pts[i + 1])
@@ -1010,9 +1015,16 @@ func _ground_color(x: float, z: float, h: float) -> Color:
 	if wet < 3.0:
 		c = c.lerp(Color(0.42, 0.36, 0.24), 1.0 - smoothstep(0.5, 3.0, wet))  # muddy bank
 		c = c.lerp(Color(0.24, 0.23, 0.17), 1.0 - smoothstep(-3.0, 0.0, wet))  # silt on the bed
-	var road := road_distance(x, z)
+	var road := road_distance(x, z, false)
 	if road < 1.5:
 		c = c.lerp(Color(0.46, 0.38, 0.27), clampf(1.0 - road / 1.5, 0.0, 1.0) * 0.85)
+	var paved := road_distance(x, z, true)
+	if paved < 1.2:  # a city's paths: worn flagstone (a zone's "paving" color) inside a dark curb line
+		if _paving.a == 0.0:
+			_paving = Color.html(str(data.get("paving", "8a8c94")))
+		var flag := _paving.lerp(_paving.darkened(0.18), n)
+		c = c.lerp(Color(0.3, 0.28, 0.26), (1.0 - absf(paved + 0.1) / 1.1) * 0.75 if absf(paved + 0.1) < 1.1 else 0.0)
+		c = c.lerp(flag, 1.0 - smoothstep(-0.9, -0.3, paved))
 	var edge := (edge_depth(x, z) - 2.0) * _pass_factor(x, z)
 	var hill := h - terrace_rise(x, z)  # a terrace's height is built, not a mountain
 	if edge > 0.0 or hill > amp * 1.2:
@@ -1478,7 +1490,8 @@ func _build_dawn_plaza(p: Vector3) -> void:
 			var off := Vector3(-15.0 + i * 3.0, 0.04, -15.0 + j * 3.0)
 			if Vector2(off.x, off.z).length() < 17.0:
 				_prop("floor_tile_large", p + off, _rng.randi() % 4 * PI / 2.0, 1.0, "none")
-	for i in 5:  # the raised platform the statue stands on
+	_prop("dawn_dais", p, 0.0, 1.0, "mesh")  # stone steps up to the statue's platform
+	for i in 5:  # the platform's paving, laid on the dais
 		for j in 5:
 			_prop("floor_tile_large", p + Vector3(-6.0 + i * 3.0, 0.55, -6.0 + j * 3.0), 0.0, 1.0, "box")
 	_prop("elephant_statue", p + Vector3(0, 0.6, 0), 0.0, 2.1, "box")
@@ -2445,6 +2458,8 @@ func _build_road_lamps() -> void:
 			plazas.append(Vector2(lm["pos"][0], lm["pos"][1]))
 	var side := 1.0
 	for road: Dictionary in _roads:
+		if not road["lamps"]:  # a city's side paths: lit by the houses they lead to
+			continue
 		var pts: Array[Vector2] = road["points"]
 		for i in pts.size() - 1:
 			var seg := pts[i + 1] - pts[i]

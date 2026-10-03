@@ -51,6 +51,8 @@
       9
     ]
   ],
+  "paved_roads": true,
+  "grid": 224,
   "roads": [
     {
       "points": [
@@ -103,7 +105,23 @@
         ]
       ],
       "width": 4.5
-    }
+    },
+    {"points": [[-30, -20], [-30, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-12, -24], [0, -24]], "width": 2.6, "lamps": false},
+    {"points": [[12, -24], [0, -24]], "width": 2.6, "lamps": false},
+    {"points": [[30, -20], [30, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-30, 20], [-30, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-14, 44], [0, 44]], "width": 2.6, "lamps": false},
+    {"points": [[14, 44], [0, 44]], "width": 2.6, "lamps": false},
+    {"points": [[-40, 12], [-40, 0]], "width": 2.6, "lamps": false},
+    {"points": [[27, 33.5], [0, 33.5]], "width": 2.6, "lamps": false},
+    {"points": [[36, -40], [0, -40]], "width": 2.6, "lamps": false},
+    {"points": [[-36, -40], [0, -40]], "width": 2.6, "lamps": false},
+    {"points": [[-50, -14], [-50, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-50, 18], [-50, 0]], "width": 2.6, "lamps": false},
+    {"points": [[52, -24], [52, 0]], "width": 2.6, "lamps": false},
+    {"points": [[-62, -18], [-62, 0]], "width": 2.6, "lamps": false},
+    {"points": [[34, 18], [34, 0]], "width": 2.6, "lamps": false}
   ],
   "zone_lines": [
     {

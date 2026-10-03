@@ -1094,6 +1094,22 @@ func _check_velassa(p: Player) -> void:
 	p.velassa_out = true
 
 
+## Velassa's backstab (Npc._pounce_move): a rogue's Backstab at her player's
+## level up to velassa_level_cap (10), x velassa_backstab_mult, half from the front. The hate and the kill
+## are her player's: she strikes from the shadows and the monster never turns on her.
+func velassa_backstab(v: Npc, m: Entity, p: Player) -> void:
+	if m == null or m.dead or p == null or zone_of(m) != zone_of(v):
+		return
+	var s: Dictionary = GameData.spells["backstab"]
+	var level := mini(p.level, int(cfg("velassa_level_cap", 10)))  # she fights as a level 10 rogue at most: a friend, not a second character
+	var power := randi_range(int(s["min"]), int(s["max"])) + int(float(s["per_level"]) * (level - 1))
+	power = roundi(power * float(cfg("velassa_backstab_mult", 1.5)) * (1.0 if behind(v, m) else float(s.get("front_pct", 0.5))))
+	v.animate("attack")
+	m.animate("sfx:hit_pierce")
+	say(p, "Velassa backstabs %s for %d points of damage." % [m.display_name, power], C_PET_HIT)
+	damage(m, power, p)
+
+
 ## Puts Velassa's collar on p (the companion slot, if it's free), else in the bags.
 func _give_collar(p: Player) -> void:
 	if not p.equipment.has("companion"):

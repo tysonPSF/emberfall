@@ -3852,6 +3852,7 @@
     "apple_barrel_18": {"path": "res://assets/props/apple_barrel_18.glb"},
     "apple_barrel_19": {"path": "res://assets/props/apple_barrel_19.glb"},
     "apple_tree": {"path": "res://assets/props/apple_tree.glb"},
+    "dawn_dais": {"path": "res://assets/props/dawn_dais.glb"},
     "eclipse_house": {"path": "res://assets/props/eclipse_house.glb", "lights": [{"pos": [0, 3.0, 4.2], "color": "#b890ff", "energy": 0.7, "range": 6, "night": false}]},
     "moon_lamp": {"path": "res://assets/props/moon_lamp.glb", "lights": [{"pos": [0, 3.85, 0], "color": "#e8eeff", "energy": 1.2, "range": 9, "night": false}]},
     "eclipse_wall": {"path": "res://assets/props/eclipse_wall.glb"},

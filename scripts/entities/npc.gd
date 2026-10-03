@@ -45,6 +45,8 @@ var follow_id := -1  # a companion: the player it follows and fights beside (Wor
 var companion_pet := false  # follows but never fights (Velassa): no taunts, no foes
 var _companion_speed := 5.5
 var _taunt_left := 0.0
+var _pounce: Entity = null  # Velassa: the monster she's leapt behind while her player is hurt (World.velassa_backstab)
+var _stab_left := 0.0
 var _sight_check := 0.0
 var _mark: Label3D  # a floating "!" (a quest for you) or "?" (one ready to hand in), over the name
 var _mark_check := 0.0
@@ -475,6 +477,8 @@ func _think_companion(delta: float) -> Vector3:
 		return Vector3.ZERO
 	if companion_pet:  # Velassa: at your heel, or curled up beside you when you stop
 		auto_attack = false
+		if _pounce_on(lead) != null:
+			return _pounce_move(lead, delta)
 		var gap := _flat(global_position, lead.global_position)
 		if gap > 2.6:
 			sitting = false
@@ -543,6 +547,38 @@ func _think_companion(delta: float) -> Vector3:
 		sitting = true
 	elif not lead.sitting and sitting:
 		sitting = false
+	return Vector3.ZERO
+
+
+## Velassa's rogue side: when her player falls under velassa_pounce_below
+## (35%) health with a monster on them, she leaps in behind it and backstabs it
+## every velassa_stab_seconds until it's dead, it lets them be, or they're back
+## over velassa_pounce_until (60%). Returns the monster, or null.
+func _pounce_on(lead: Player) -> Entity:
+	if _pounce != null and (not is_instance_valid(_pounce) or _pounce.dead or lead.hp > lead.max_hp * float(World.cfg("velassa_pounce_until", 0.6)) \
+			or _flat(_pounce.global_position, lead.global_position) > 25.0 or (_pounce is Mob and (_pounce as Mob).top_hated() != lead)):
+		_pounce = null
+	if _pounce == null and lead.hp < lead.max_hp * float(World.cfg("velassa_pounce_below", 0.35)):
+		_pounce = _mob_on(lead)
+		if _pounce != null:
+			_stab_left = 0.0
+			velocity.y = 5.5  # the leap
+			World.say(lead, "Velassa hisses and leaps into the fight!", World.C_PET_HIT)
+	return _pounce
+
+
+## Into the gap behind her monster's back, then a backstab each time her timer comes round.
+func _pounce_move(lead: Player, delta: float) -> Vector3:
+	sitting = false
+	_stab_left -= delta
+	var back := nav_snap(_pounce.global_position + _pounce.global_transform.basis.z * 1.4)  # its face is -Z
+	if _flat(global_position, back) > 0.6:
+		_companion_speed = 11.0
+		return nav_dir(back, delta)
+	face_toward(_pounce.global_position)
+	if _stab_left <= 0.0:
+		_stab_left = float(World.cfg("velassa_stab_seconds", 4.0))
+		World.velassa_backstab(self, _pounce, lead)
 	return Vector3.ZERO
 
 

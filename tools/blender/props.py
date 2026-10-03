@@ -15969,6 +15969,31 @@ def _bank_touch(p, city, st, W, D, H):
 			p.box((0.26, 0.26, 0.4), (s * 4.9, -hd - 0.3, 2.45), FLAME, glow=1.6)
 
 
+def dawn_dais():
+	"""Lanternhold's statue dais: a 15 m square of pale dressed stone standing on the plaza, its top
+	0.55 m up (the KayKit floor tiles laid on it sit flush), a darker plinth course round its foot and
+	a flight of three broad steps up the middle of each side, so it stands on the ground instead of
+	floating over it. Collide it as a mesh (walkable steps)."""
+	p = Prop("dawn_dais", 2421)
+	H, half = 0.55, 7.5
+	p.box((2 * half, 2 * half, H), (0, 0, H / 2), STONE_LIGHT, grad=(0.2, 0.8))              # the dais
+	p.box((2 * half + 0.5, 2 * half + 0.5, 0.18), (0, 0, 0.09), STONE_DARK, grad=(0.3, 0.9))  # its plinth course
+	p.box((2 * half + 0.25, 2 * half + 0.25, 0.1), (0, 0, H - 0.05), STONE_DARK, grad=(0.1, 0.6))   # a coping round the top
+	for k in range(4):   # three steps up the middle of each side
+		yaw = k * 90
+		for s in range(3):
+			h = H * (s + 1) / 3.0
+			rot = Matrix.Rotation(math.radians(yaw), 3, "Z")
+			at = rot @ Vector((0, -(half + 0.25 + (2 - s) * 0.5), h / 2))
+			size = (5.0, 0.5 + (2 - s) * 0.0, h) if yaw % 180 == 0 else (0.5, 5.0, h)
+			p.box(size, tuple(at), STONE_LIGHT if s % 2 == 0 else STONE_DARK, grad=(0.15, 0.8))
+		for side in (-1, 1):   # a low cheek wall either side of the steps
+			at = Matrix.Rotation(math.radians(yaw), 3, "Z") @ Vector((side * 2.75, -(half + 0.75), 0.35))
+			size = (0.5, 1.5, 0.7) if yaw % 180 == 0 else (1.5, 0.5, 0.7)
+			p.box(size, tuple(at), STONE_DARK, grad=(0.2, 0.9))
+	return p.build(bevel=0.04)
+
+
 def apple_tree():
 	"""tree_round's shape, a little smaller and fuller, hung with red apples (Greenmoor's grove)."""
 	p = Prop("apple_tree", 2313)
@@ -16042,6 +16067,7 @@ APPLE_BARREL_STAGES = {("apple_barrel" if n == 20 else "apple_barrel_empty" if n
 
 PROPS = {
 	"apple_tree": apple_tree,
+	"dawn_dais": dawn_dais,
 	"bank_emberhold": lambda: _bank("bank_emberhold", "emberhold"),
 	"bank_lanternhold": lambda: _bank("bank_lanternhold", "lanternhold"),
 	"bank_rainhold": lambda: _bank("bank_rainhold", "rainhold"),
