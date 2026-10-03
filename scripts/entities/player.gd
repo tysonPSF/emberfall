@@ -338,7 +338,7 @@ func apply_self(d: Dictionary) -> void:
 	for key: String in ["level", "xp", "coin", "hp", "max_hp", "mana", "max_mana", "ac", "dmg_min", "dmg_max",
 			"attack_delay", "attack_verb", "attributes", "equipment", "spells", "quests", "factions",
 			"bank", "bank_coin", "cursor", "cast", "cooldowns", "buffs", "sitting", "auto_attack", "trade_npc_id",
-			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "dots", "stamina", "max_stamina", "sprinting",
+			"trade_items", "trade_partner_id", "trade_coin", "trade_accept", "service_npc_id", "service", "camp_left", "root_left", "stun_left", "dots", "stamina", "max_stamina", "sprinting",
 			"group", "skills", "threatened", "sneaking", "snare_left", "station_kind", "station_items", "pet_id", "feigning", "hotbar",
 			"stat_points", "stats_chosen", "pet_gear", "race", "race_changed", "gender", "gender_changed", "hair_style", "hair_color", "hair_changed", "grove_deities", "friends", "swing_timer", "deity", "visited", "velassa_out"]:
 		set(key, d[key])
@@ -1251,11 +1251,14 @@ func _physics_process(delta: float) -> void:
 	if _zone_hold > 0.0:
 		_zone_hold -= delta
 		dir = Vector3.ZERO
+	var held := root_left > 0.0 or stun_left > 0.0  # rooted or stunned: you can turn and look, but not step or jump
+	if held:
+		dir = Vector3.ZERO
 	if dir != Vector3.ZERO and sitting and _may_ask("stand"):
 		World.request_sit(entity_id, false)
 	velocity.x = dir.x * spd
 	velocity.z = dir.z * spd
-	if is_on_floor() and not typing and Input.is_action_just_pressed("jump"):
+	if is_on_floor() and not typing and not held and Input.is_action_just_pressed("jump"):
 		velocity.y = JUMP_VELOCITY
 	move_and_slide()
 	# Swimming into a dock or a steep bank, or jumping in the water: climb out onto it.

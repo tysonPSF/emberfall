@@ -23,7 +23,7 @@ signal zone_moved(zone_id: String, pos: Vector3)  # client: the server moved us 
 signal camp_done  # client: our camp finished; back to character select
 
 const DEFAULT_PORT := 7777
-const PROTOCOL := 34  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein; 31 the Pathcallers; 32 the city banks; 33 Velassa and the apple orchard; 34 paved city paths and finer city ground), so old clients are turned away
+const PROTOCOL := 35  # bump when the messages change (or the ground: 23 zones grown, 24 the long Gorge, 26 solid salt islands; 27 the guild bank; 28 Cinderpass's east bridge; 29 the Tuskway and its three neighbors' new passes; 30 Duskhold's cave and the Gloamvein; 31 the Pathcallers; 32 the city banks; 33 Velassa and the apple orchard; 34 paved city paths and finer city ground; 35 stun_left in the player's own state), so old clients are turned away
 const MAX_PLAYERS := 32
 const SNAPSHOT_HZ := 15.0
 const SELF_HZ := 5.0
@@ -794,7 +794,7 @@ func _send_self(peer: int) -> void:
 		"auto_attack": p.auto_attack, "target": t, "trade_npc_id": p.trade_npc_id, "trade_items": p.trade_items,
 		"trade_partner_id": p.trade_partner_id, "trade_coin": p.trade_coin, "trade_accept": p.trade_accept,
 		"service_npc_id": p.service_npc_id, "service": p.service, "camp_left": p.camp_left, "look": p.look,
-		"root_left": p.root_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
+		"root_left": p.root_left, "stun_left": p.stun_left, "dots": p.dots, "stamina": p.stamina, "max_stamina": p.max_stamina, "sprinting": p.sprinting, "threatened": p.threatened, "hidden": p.hidden, "sneaking": p.sneaking, "snare_left": p.snare_left,
 		"group": p.group, "skills": p.skills, "station_kind": p.station_kind, "station_items": p.station_items, "pet_id": p.pet_id, "pet_gear": p.pet_gear, "feigning": p.feigning, "hotbar": p.hotbar,
 		"stat_points": p.stat_points, "stats_chosen": p.stats_chosen, "race": p.race, "race_changed": p.race_changed,
 		"gender": p.gender, "gender_changed": p.gender_changed,

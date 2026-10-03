@@ -367,6 +367,7 @@ func _client_timers(delta: float) -> void:
 	for dot: Dictionary in p.dots:
 		dot["next"] = maxf(0.0, float(dot.get("next", 0.0)) - delta)
 	p.root_left = maxf(0.0, p.root_left - delta)
+	p.stun_left = maxf(0.0, p.stun_left - delta)
 	p.snare_left = maxf(0.0, p.snare_left - delta)
 	p.swing_timer = maxf(0.0, p.swing_timer - delta)  # the server's, counted down between its updates (the swing ring and bar)
 
@@ -1432,7 +1433,7 @@ func request_use_item(player_id: int, place: String) -> void:
 		return
 	var it := GameData.item(str(e["item"]))
 	var use: Dictionary = it.get("use", {})
-	if use.is_empty() or not GameData.spells.has(str(use["spell"])):
+	if use.is_empty() or not GameData.spells.has(str(use["spell"])) or _stunned(p):
 		return
 	var key := "item:" + str(use.get("group", GameData.base_item(str(e["item"]))))
 	if p.cooldowns.has(key):
@@ -1477,7 +1478,7 @@ func request_item_click(player_id: int, slot: String) -> void:
 	var item_id: String = p.equipment[slot]
 	var it := GameData.item(item_id)
 	var click: Dictionary = it.get("click", {})
-	if click.is_empty() or not GameData.spells.has(str(click["spell"])):
+	if click.is_empty() or not GameData.spells.has(str(click["spell"])) or _stunned(p):
 		say(p, "The %s has no effect you can use." % it["name"], C_WARN)
 		return
 	var key := "item:" + GameData.base_item(item_id)
@@ -1844,6 +1845,8 @@ func request_ranged(player_id: int) -> void:
 	var p := get_object(player_id) as Player
 	if p == null or p.dead:
 		return
+	if _stunned(p):
+		return
 	var weapon := GameData.item(str(p.equipment.get("range", "")))
 	if weapon.is_empty():
 		say(p, "You have no ranged weapon equipped.", C_WARN)
@@ -2056,7 +2059,7 @@ func request_cast(entity_id: int, spell_id: String) -> void:
 	if c == null or c.dead or not (spell_id in c.spells):
 		return
 	var s: Dictionary = GameData.spells[spell_id]
-	if not c.cast.is_empty():
+	if not c.cast.is_empty() or _stunned(c):
 		return
 	if c.cooldowns.has(spell_id):
 		say(c, "You haven't recovered yet. %s is ready in %ds." % [s["name"], ceili(float(c.cooldowns[spell_id]))], C_WARN)
@@ -3162,6 +3165,19 @@ func spell_power(c: Entity, spell_id: String, s: Dictionary) -> float:
 func _stun(t: Entity, seconds: float) -> void:
 	t.stun_left = maxf(t.stun_left, seconds)
 	t.stun_immune_left = t.stun_left + float(cfg("stun_immunity", 10.0))
+	if not t.cast.is_empty():  # a stun breaks a spell, whatever your channeling
+		t.cast = {}
+		say(t, "Your spell is interrupted.", C_WARN)
+	t.stats_changed.emit()
+
+
+## Stunned: says so and returns true. Casting, shots and items wait it out;
+## melee waits in _update_melee, and Player stands still.
+func _stunned(e: Entity) -> bool:
+	if e.stun_left <= 0.0:
+		return false
+	say(e, "You are stunned and can't do that!", C_WARN)
+	return true
 
 
 ## The shared timer a spell answers to, or "": melee strikes (a warrior's
@@ -3367,6 +3383,9 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			t.root_left = float(s.get("duration", 10))
 			var said := str(s.get("land_text", "%s's feet adhere to the ground."))
 			say(c, said % (cap(t.display_name) if said.begins_with("%s") else t.display_name), C_SPELL)  # a spell's own line names it mid-sentence
+			if t is Player:
+				say(t, str(s.get("root_you", "Your feet adhere to the ground!")), C_HIT_YOU)
+				t.stats_changed.emit()
 			t.add_hate(c, 5.0)
 		"hide":
 			if c.hidden:

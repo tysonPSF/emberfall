@@ -163,6 +163,7 @@ const SECTIONS := [
 	["room_floors", "emberhold"],
 	["cast_bar_move", "greenmoor"],
 	["bind_sitting", "greenmoor"],
+	["player_cc", "greenmoor"],
 	["chat_resize", "greenmoor"],
 	["june", "lanternhold"],
 	["velassa", "greenmoor"],
@@ -11265,6 +11266,51 @@ func _t_cast_bar_move() -> void:
 
 
 ## Bind Wound while resting: you stay sitting (and resting) while you bandage.
+## A stun holds a player still, breaks the spell they're casting and stops
+## spells, shots and items until it passes; a root holds them still but lets
+## them cast. The debuff window shows both.
+func _t_player_cc() -> void:
+	var p := World.local_player
+	var z := World.zone
+	var walk := func(seconds: float) -> float:
+		var from := p.global_position
+		Input.action_press("move_forward")
+		await _wait(seconds)
+		Input.action_release("move_forward")
+		await _wait(0.2)
+		return Vector2(p.global_position.x - from.x, p.global_position.z - from.z).length()
+	p.global_position = z.ground(40, 40) + Vector3.UP * 0.3
+	await _wait(0.5)
+	var free: float = await walk.call(0.8)
+	# a stun mid-cast
+	var spell := ""
+	for id: String in p.spells:
+		if float(GameData.spells[id].get("cast_time", 0)) > 0.5 and str(GameData.spells[id].get("target", "")) == "self" or str(GameData.spells[id].get("type", "")) == "buff":
+			spell = id
+			break
+	p.mana = p.max_mana
+	p.cooldowns.clear()
+	World.request_cast(p.entity_id, spell)
+	var casting := not p.cast.is_empty()
+	World._stun(p, 2.5)
+	var broken := p.cast.is_empty()
+	World.request_cast(p.entity_id, spell)
+	var refused := p.cast.is_empty()
+	var hud = get_parent().hud
+	var stun_shown: bool = hud._debuff_list().any(func(d: Array) -> bool: return d[0] == "stunned")
+	var stunned: float = await walk.call(0.8)
+	await _wait(1.8)  # it passes
+	var after: float = await walk.call(0.8)
+	# a root: no walking, but casting is fine
+	p.root_left = 2.0
+	var rooted: float = await walk.call(0.8)
+	p.cooldowns.clear()
+	World.request_cast(p.entity_id, spell)
+	var casts_rooted := not p.cast.is_empty()
+	p.cast = {}
+	print("player_cc: walked %.1f m free, %.2f stunned, %.1f after, %.2f rooted; %s cast %s, broken by the stun %s, refused while stunned %s, casts rooted %s; debuff shown %s" % [free, stunned, after, rooted, spell, casting, broken, refused, casts_rooted, stun_shown])
+
+
 func _t_bind_sitting() -> void:
 	var p := World.local_player
 	var keep := [p.char_class, p.level, p.spells.duplicate(), p.cooldowns.duplicate()]

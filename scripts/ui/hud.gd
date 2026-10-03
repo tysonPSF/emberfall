@@ -680,13 +680,15 @@ func _build_buffs() -> void:
 
 
 ## [spell id, seconds left] for what's hurting or holding you: damage over
-## time (poison, fire, frost) and roots.
+## time (poison, fire, frost), roots and stuns.
 func _debuff_list() -> Array:
 	var out: Array = []
 	for dot: Dictionary in player.dots:
 		out.append([str(dot["spell"]), maxf(0.0, (int(dot.get("ticks", 1)) - 1) * 3.0 + float(dot.get("next", 0.0)))])
 	if player.root_left > 0.0:
 		out.append(["root", player.root_left])
+	if player.stun_left > 0.0:
+		out.append(["stunned", player.stun_left])
 	return out
 
 
