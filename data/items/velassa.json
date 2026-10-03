@@ -15,11 +15,8 @@
     "no_drop": true,
     "lore": true,
     "weight": 0.1,
-    "use": {
-      "spell": "call_velassa",
-      "recast": 3,
-      "keep": true
-    },
-    "desc": "A violet charm on a soft band. Right-click to call Velassa to your side, or to send her home. While she walks with you, your ranged attacks hit 5% harder."
+    "desc": "A violet charm on a soft band. Worn in your companion slot, it brings Velassa to your heel; take it off and she goes home. While she walks with you, your ranged attacks hit 5% harder and your damage spells and heals are 3% stronger.",
+    "slot": "companion",
+    "companion": "velassa"
   }
 }

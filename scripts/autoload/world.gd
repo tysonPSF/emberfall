@@ -993,14 +993,14 @@ func request_take_apple(player_id: int, npc_id: int) -> void:
 	var taken := apples_taken(p)
 	if taken >= full:
 		_settle_barrel(p)
-		if not "velassas_collar" in p.owned_item_ids() and p.pack.room_for("velassas_collar") > 0:  # lost, or never had room: it's still at the bottom
-			p.pack.add("velassas_collar")
-			p.inventory_changed.emit()
-			say(p, "At the bottom of the empty barrel lies a soft collar with a violet charm. --You have received Velassa's Collar.--", C_LOOT)
-		elif velassa_with(p):
+		if not "velassas_collar" in p.owned_item_ids():  # lost, or never had room: it's still at the bottom
+			_give_collar(p)
+			if "velassas_collar" in p.owned_item_ids():
+				say(p, "At the bottom of the empty barrel lies a soft collar with a violet charm. --You have received Velassa's Collar.--", C_LOOT)
+		elif companion_of(p) == "velassa":
 			say(p, "The barrel is empty. Velassa peers into it with you, then looks at you as if you might have eaten them all.", C_SYSTEM)
 		else:
-			say(p, "The barrel is empty. Somewhere nearby, a cat is purring. (Right-click Velassa's Collar to call her.)", C_SYSTEM)
+			say(p, "The barrel is empty. Somewhere nearby, a cat is purring. (Wear Velassa's Collar in your companion slot to call her.)", C_SYSTEM)
 		return
 	if p.pack.room_for("greenmoor_apple") < 1:
 		say(p, "You have no room for an apple.", C_WARN)
@@ -1021,17 +1021,20 @@ func request_take_apple(player_id: int, npc_id: int) -> void:
 	say(p, "You reach for the last apple, and a pair of violet eyes looks back up at you from the bottom of the barrel.", C_SPELL)
 	say(p, "A small gray cat climbs out, shakes apple leaves from her fur, and sits on your boot as if she has always lived there.", C_SPELL)
 	if not "velassas_collar" in p.owned_item_ids():
-		if p.pack.room_for("velassas_collar") > 0:
-			p.pack.add("velassas_collar")
-			say(p, "--You have received Velassa's Collar.--", C_LOOT)
+		_give_collar(p)
+		if "velassas_collar" in p.owned_item_ids():
+			say(p, "--You have received Velassa's Collar.-- (It's in your companion slot: take it off to send her home, put it back to call her.)", C_LOOT)
 		else:
 			say(p, "She's left her collar in the barrel for you: make room in your bags and take another look.", C_WARN)
 	p.quests_changed.emit()
-	_call_velassa(p, true)
 
 
 ## A barrel emptied before it learned to show itself empty: marked done, so it does.
 func _settle_barrel(p: Player) -> void:
+	if p.velassa_out and not p.equipment.has("companion") and p.pack.count("velassas_collar") > 0:  # from before the companion slot
+		p.pack.remove("velassas_collar", 1)
+		p.equipment["companion"] = "velassas_collar"
+		p.velassa_out = false  # she comes, and says so
 	var st: Dictionary = p.quests.get("apple_barrel", {})
 	if int(st.get("taken", 0)) >= 20 and int(st.get("completions", 0)) == 0:
 		st["completions"] = 1
@@ -1050,17 +1053,30 @@ func velassa_with(p: Player) -> bool:
 	return v != null and not v.dead and zone_of(v) == zone_of(p)
 
 
-## Calls Velassa to p's side, or (already there, and not `stay`) sends her home.
-func _call_velassa(p: Player, stay := false) -> void:
+## The companion p wears in the "companion" slot (an item's "companion": an
+## npc id, Velassa's collar "velassa"), or "".
+static func companion_of(p: Player) -> String:
+	return str(GameData.item(str(p.equipment.get("companion", ""))).get("companion", ""))
+
+
+## The companion slot decides it: her collar worn, Velassa walks with you (and
+## comes along between zones and back after a login); taken off, she goes home.
+## Checked every tick, so any way the collar moves works.
+func _check_velassa(p: Player) -> void:
+	var wanted := companion_of(p) == "velassa" and not p.dead
 	var v := get_object(p.velassa_id) as Npc
-	if v != null:
-		if stay:
-			return
-		v.queue_free()
-		p.velassa_id = -1
+	if not wanted:
+		if v != null:
+			v.queue_free()
+			p.velassa_id = -1
+			if not p.dead:
+				say(p, "Velassa flicks her tail and pads off home. Wear her collar again and she'll come.", C_SPELL)
 		p.velassa_out = false
-		say(p, "Velassa flicks her tail and pads off home. She'll come when you call.", C_SPELL)
 		return
+	if v != null and zone_of(v) == zone_of(p):
+		return
+	if v != null:
+		v.queue_free()
 	var z := zone_of(p)
 	if z == null:
 		return
@@ -1073,21 +1089,21 @@ func _call_velassa(p: Player, stay := false) -> void:
 	n.position = p.global_position + p.global_transform.basis.z * 1.6  # a step behind
 	z.add_child(n)
 	p.velassa_id = n.entity_id
+	if not p.velassa_out:  # newly called (not just following you into a zone)
+		say(p, "Velassa winds round your ankles once and falls in at your heel. (While she's with you, your ranged attacks hit %d%% harder, and your damage spells and heals are %d%% stronger.)" % [int(cfg("velassa_ranged_pct", 5)), int(cfg("velassa_spell_pct", 3))], C_SPELL)
 	p.velassa_out = true
-	say(p, "Velassa winds round your ankles once and falls in at your heel. (Your ranged attacks hit %d%% harder while she's with you.)" % int(cfg("velassa_ranged_pct", 5)), C_SPELL)
 
 
-## Velassa follows you between zones: called again on arrival if she was out.
-func _check_velassa(p: Player) -> void:
-	if not p.velassa_out or p.dead or not "velassas_collar" in p.owned_item_ids():
+## Puts Velassa's collar on p (the companion slot, if it's free), else in the bags.
+func _give_collar(p: Player) -> void:
+	if not p.equipment.has("companion"):
+		p.equipment["companion"] = "velassas_collar"
+		p.recalc_stats()
+	elif p.pack.room_for("velassas_collar") > 0:
+		p.pack.add("velassas_collar")
+	else:
 		return
-	var v := get_object(p.velassa_id) as Npc
-	if v != null and zone_of(v) == zone_of(p):
-		return
-	if v != null:
-		v.queue_free()
-	p.velassa_id = -1
-	_call_velassa(p, true)
+	p.inventory_changed.emit()
 
 
 ## A pet's taunt: puts it on top of its target's hate list.
@@ -3119,7 +3135,10 @@ func sitting_mana(level: int) -> float:
 func spell_power(c: Entity, spell_id: String, s: Dictionary) -> float:
 	if not (c is Player) or s.get("ability", false) or not (spell_id in c.spells):
 		return 1.0
-	return 1.0 + (c as Player).caster_over() * float(cfg("caster_power_per_point", 0.001))
+	var power := 1.0 + (c as Player).caster_over() * float(cfg("caster_power_per_point", 0.001))
+	if str(s.get("type", "")) in ["damage", "dot", "lifetap", "heal"] and velassa_with(c as Player):  # Velassa at your heel: harm and healing alike
+		power *= 1.0 + float(cfg("velassa_spell_pct", 3)) / 100.0
+	return power
 
 
 ## Stuns someone, and then they can't be stunned again until config
@@ -3297,9 +3316,6 @@ func _land(c: Entity, spell_id: String, t: Entity, s: Dictionary, power: int) ->
 			for m in get_mobs():
 				if m.hate.has(t.entity_id):
 					m.add_hate(c, power * 0.5)
-		"velassa":
-			if c is Player:
-				_call_velassa(c as Player)
 		"grove":
 			for m in get_mobs():
 				m.hate.erase(c.entity_id)
@@ -4369,6 +4385,9 @@ func request_chat(player_id: int, text: String) -> void:
 				p.velassa_id = -1
 				p.velassa_out = false
 				p.quests.erase("apple_barrel")
+				if companion_of(p) == "velassa":
+					p.equipment.erase("companion")
+					p.recalc_stats()
 				while p.pack.count("velassas_collar") > 0:
 					p.pack.remove("velassas_collar", 1)
 				p.quests_changed.emit()

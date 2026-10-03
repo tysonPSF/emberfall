@@ -187,6 +187,24 @@ def _ring(p, swatch, stone=None):
 		p.blob((0.22, 0.18, 0.2), (0, 0, 0.86), stone, segs=(8, 6), glow=0.6)
 
 
+def velassas_collar():
+	p = Prop("velassas_collar", 2402)
+	for k in range(16):   # a soft violet band in a loop
+		a0, a1 = k * math.tau / 16, (k + 1) * math.tau / 16
+		p.seg((math.cos(a0) * 0.42, 0, 0.5 + math.sin(a0) * 0.32), (math.cos(a1) * 0.42, 0, 0.5 + math.sin(a1) * 0.32), 0.07, 0.07, props.PETAL_PURPLE, sides=6)
+	p.seg((0, -0.04, 0.18), (0, -0.04, 0.08), 0.05, 0.05, GOLD, sides=8)                 # its little ring
+	p.blob((0.2, 0.12, 0.24), (0, -0.06, -0.04), props.PETAL_PURPLE, segs=(8, 6), glow=1.6)   # the violet charm
+	return p.build()
+
+
+def greenmoor_apple():
+	p = Prop("greenmoor_apple", 2403)
+	p.blob((0.7, 0.7, 0.62), (0, 0, 0.35), CLOTH_RED, segs=(14, 10))
+	p.seg((0, 0, 0.62), (0.04, 0, 0.82), 0.03, 0.025, WOOD, sides=6)                      # the stalk
+	p.blob((0.26, 0.05, 0.12), (0.14, 0, 0.78), LEAF, rot=(0, -25, 0), segs=(8, 4))       # a leaf
+	return p.build()
+
+
 def tarnished_ring():
 	p = Prop("tarnished_ring", 215)
 	_ring(p, WOOD_GRAY)
@@ -11559,7 +11577,7 @@ GROVE_UNIQUES = [dragonfang_sword, dragonclaw_axe, dragontooth_dagger, dragoncla
 				 greatsword_of_the_endless_nightmare]
 
 
-SMALL = {f.__name__: f for f in [gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
+SMALL = {f.__name__: f for f in [velassas_collar, greenmoor_apple, gnoll_fang, beetle_eye, bone_chips, rat_whiskers, rat_sinew, blight_heart, blightmothers_venom_sac,
 								 vial_of_spring_water, leatherwing_charm, coilback_scale_band, fishing_bait, bone_charm,
 								 fang_necklace, tarnished_ring, copper_band, bonecarved_talisman, small_sack,
 								 worn_backpack, gnollhide_satchel, leather_backpack, braided_whisker_cord, blackpaw_pelt,

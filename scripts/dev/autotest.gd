@@ -11429,7 +11429,7 @@ func _t_velassa() -> void:
 	World.log_message.disconnect(listen)
 	await _wait(1.0)
 	var apples := p.pack.count("greenmoor_apple")
-	var collar := p.pack.count("velassas_collar")
+	var collar := 1 if p.equipment.get("companion", "") == "velassas_collar" else 0  # put straight on, in the companion slot
 	var out := World.velassa_with(p)
 	var cat := World.get_object(p.velassa_id) as Npc
 	var title := ""
@@ -11438,6 +11438,11 @@ func _t_velassa() -> void:
 	p.global_position += Vector3(3, 0, 3)
 	await _wait(1.5)
 	var follows := cat != null and cat.distance_to(p) < 4.0
+	get_parent().hud._inv_panel.visible = true
+	get_parent().hud._refresh_inventory()
+	await _wait(0.4)
+	await _shot("9zz_velassa_slot")
+	get_parent().hud._inv_panel.visible = false
 	if cat != null:  # look at her
 		p.face_toward(cat.global_position)
 		p.rotate_y(PI)
@@ -11475,16 +11480,16 @@ func _t_velassa() -> void:
 				total = hit if total == 0 else mini(total, hit)  # the smallest landed hit: no misses, no crits
 		return total
 	var with_her: int = shoot.call()
-	World.request_use_item(p.entity_id, _where(p, "velassas_collar"))  # send her home
+	World.request_unequip(p.entity_id, "companion")  # the collar off: home she goes
 	await _wait(0.3)
 	var home := not World.velassa_with(p)
 	var hud = get_parent().hud
 	var buff_gone: bool = not hud._buff_list().any(func(b: Array) -> bool: return b[0] == "velassas_company")
 	var without: int = shoot.call()
-	await _wait(3.2)  # the collar's recast
-	World.request_use_item(p.entity_id, _where(p, "velassas_collar"))  # and call her again
+	World.request_equip(p.entity_id, _where(p, "velassas_collar"))  # and on again: she comes back
 	await _wait(0.3)
 	var back := World.velassa_with(p)
+	var worn_again: bool = p.equipment.get("companion", "") == "velassas_collar"
 	var buff_back: bool = hud._buff_list().any(func(b: Array) -> bool: return b[0] == "velassas_company")
 	hud._update_buffs()
 	await _wait(0.2)
@@ -11510,17 +11515,31 @@ func _t_velassa() -> void:
 	World._finish_spell(p, "call_of_earth", p, true)
 	await _wait(0.5)
 	var pet_out := World.get_object(p.pet_id) is Pet
-	if not World.velassa_with(p):
-		World._call_velassa(p)
 	await _wait(0.3)
 	var both := World.get_object(p.pet_id) is Pet and World.velassa_with(p)
 	await _shot("9zz_velassa_and_pet")
+	var power := func(id: String) -> float:  # with her, from the caster's own book
+		var had: bool = id in p.spells
+		if not had:
+			p.spells.append(id)
+		var f := World.spell_power(p, id, GameData.spells[id])
+		if not had:
+			p.spells.erase(id)
+		return f
+	var with_nuke: float = power.call("cinder_dart")
+	var with_heal: float = power.call("minor_healing")
+	World.request_unequip(p.entity_id, "companion")  # home for a moment
+	await _wait(0.2)
+	var without_nuke: float = power.call("cinder_dart")
+	World.request_equip(p.entity_id, _where(p, "velassas_collar"))
+	await _wait(0.3)
+	print("velassa: a damage spell's power with her x%.3f, without x%.3f; a heal's with her x%.3f" % [with_nuke, without_nuke, with_heal])
 	World.request_pet(p.entity_id, "leave")
 	await _wait(0.3)
 	var still_her := World.velassa_with(p)
 	p.char_class = cls0
 	print("velassa: a magician's earth elemental out %s, then Velassa called: both at once %s; the elemental dismissed, Velassa stays %s" % [pet_out, both, still_her])
-	World._call_velassa(p)
+	World.request_unequip(p.entity_id, "companion")
 	rat.hate.clear()
 	rat.global_position = rat_was
 	rat.set_physics_process(true)
@@ -11529,7 +11548,7 @@ func _t_velassa() -> void:
 	print("velassa: 20 apples taken -> %d in the bags, the lines %s" % [apples, heard.slice(0, 3)])
 	print("velassa: the 20th -> %s" % [heard.filter(func(l: String) -> bool: return "violet eyes" in l or "climbs out" in l)])
 	print("velassa: the 21st -> '%s'; collar %d; she's out %s, titled '%s', follows %s" % [heard.back(), collar, out, title, follows])
-	print("velassa: smallest hit with her %d, without %d (+%.0f%%); the collar sent her home %s and called her back %s, and is still in the bags %s" % [with_her, without,
-			100.0 * (float(with_her) / maxf(1.0, float(without)) - 1.0), home, back, p.pack.count("velassas_collar") == 1])
+	print("velassa: smallest hit with her %d, without %d (+%.0f%%); the collar sent her home %s and called her back %s, and is worn again %s" % [with_her, without,
+			100.0 * (float(with_her) / maxf(1.0, float(without)) - 1.0), home, back, worn_again])
 	print("velassa: the barrel empties as you go %s; her buff shows while she's out %s, gone when she's home %s" % [stages, buff_back, buff_gone])
 	print("velassa: the barrel shows you %s once emptied; after a save and load she comes back with you %s" % [empty_look, remembered])

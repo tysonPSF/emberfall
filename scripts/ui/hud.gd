@@ -2974,7 +2974,7 @@ func _build_inventory() -> void:
 	var hands := HBoxContainer.new()
 	hands.alignment = BoxContainer.ALIGNMENT_CENTER
 	hands.add_theme_constant_override("separation", 4)
-	for slot in ["primary", "secondary", "range"]:
+	for slot in ["primary", "secondary", "range", "companion"]:  # companion: Velassa's collar, and any like it
 		hands.add_child(_make_slot("e:" + slot, _slot_label(slot)))
 	doll.add_child(hands)
 	# stats
@@ -3055,7 +3055,7 @@ func _build_inventory() -> void:
 
 static func _slot_label(slot: String) -> String:
 	return {"head": "Head", "neck": "Neck", "arms": "Arms", "hands": "Hands", "ring1": "Ring", "ring2": "Ring",
-			"chest": "Chest", "waist": "Waist", "legs": "Legs", "feet": "Feet", "primary": "Primary", "secondary": "Second", "range": "Range"}.get(slot, slot)
+			"chest": "Chest", "waist": "Waist", "legs": "Legs", "feet": "Feet", "primary": "Primary", "secondary": "Second", "range": "Range", "companion": "Pet"}.get(slot, slot)
 
 
 ## An item slot: icon, stack count, a frame in the item's quality color.
