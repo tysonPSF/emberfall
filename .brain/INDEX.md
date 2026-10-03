@@ -28,6 +28,7 @@ Everything below is conditional. Don't read it speculatively.
 | About to… | Read |
 |---|---|
 | Add an `@rpc`, change an RPC's arguments, or add a key to `_send_self` / `apply_self` | [net/protocol.md](net/protocol.md) — **bump `PROTOCOL`**; a newer client silently breaks on an older server; at 22 since 2026-09-29 |
+| Commit, push to main, or merge a branch | [workflow/update-notes.md](workflow/update-notes.md) — the commit body and the PR are the server's update notes; a one-liner or a local merge leaves them empty |
 | Tell someone a feature works online, or plan a release | [workflow/team.md](workflow/team.md) — nothing is live until Nick updates the server |
 | Touch zone loading, `_server_zones`, or anything per-group in zones | [workflow/team.md](workflow/team.md) — instancing is Nick's |
 
