@@ -74,6 +74,13 @@ func _run() -> void:
 					if who == "Alpha" else {"rain_pack_needles": {"active": false, "completions": 1}}
 			Net.import_character({"name": who, "class": "warrior", "deity": "fire", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "greenmoor", "position": [8.0 if who == "Alpha" else 4.0, 2, 20], "quests": qs})
+		elif "--dawn" in OS.get_cmdline_user_args():  # beside Amaru: Alpha has walked the Last Dawn to its last step and holds a seed; Bravo follows another god
+			var dawn := {} if who != "Alpha" else {"dawn_1": {"active": false, "completions": 1}, "dawn_2": {"active": false, "completions": 1},
+					"dawn_3": {"active": false, "completions": 1}, "dawn_4": {"active": false, "completions": 1},
+					"dawn_5": {"active": false, "completions": 1}, "dawn_6": {"active": true, "completions": 0}}
+			Net.import_character({"name": who, "class": "warrior", "deity": "light" if who == "Alpha" else "fire", "level": 50, "race": "human",
+					"stats": {"str": 10, "sta": 10, "agi": 5}, "zone": "lanternhold", "position": [7.0 if who == "Alpha" else 9.0, 2, 17],
+					"quests": dawn, "inventory": ["grove_seed"] if who == "Alpha" else []})
 		elif "--grove" in OS.get_cmdline_user_args():
 			Net.import_character({"name": who, "class": "warrior", "deity": "light", "level": 5, "race": "human", "stats": {"str": 10, "sta": 10, "agi": 5},
 					"zone": "the_grove", "position": [4.0 if who == "Alpha" else -4.0, 2, 30]})
@@ -134,6 +141,8 @@ func _run() -> void:
 					if q != p:
 						var attached := (q.visual as CharacterModel)._worn.keys() if q.visual is CharacterModel else []
 						print("[Bravo] t=%.1fs Alpha look.worn=%s on model=%s" % [(k + 1) * 1.5, q.look.get("worn"), attached])
+	elif "--dawn" in OS.get_cmdline_user_args():
+		await _dawn_test(p)
 	elif "--grove" in OS.get_cmdline_user_args():
 		await _grove_test(p)
 	elif "--emotes" in OS.get_cmdline_user_args():
@@ -783,6 +792,67 @@ func _emote_test(p: Player) -> void:
 ## The Grove online (run with <data>/admins.json = ["alpha"]): Alpha earns the
 ## Dawn-Tusk; Bravo sees nothing until grouped with Alpha, and loses him again
 ## on leaving the group.
+## The gods' lines online: Alpha, done with the Last Dawn's fifth step, says
+## "dawn" to Amaru and her groupmate Bravo (another god's follower, standing
+## near) is drawn into the Dawnreach with her; the keeper walks each home;
+## then Alpha opens her seed and Bravo comes to the Grove too.
+func _dawn_test(p: Player) -> void:
+	var zone_id := func() -> String: return World.zone.zone_id if World.zone else "-"
+	var wait_for := func(zid: String) -> void:
+		for k in 80:
+			if zone_id.call() == zid and World.local_player != null:
+				break
+			await _wait(0.25)
+		await _wait(1.0)
+	var npc := func(id: String) -> Npc:
+		for obj: Variant in World.objects.values():
+			if obj is Npc and (obj as Npc).npc_id == id:
+				return obj
+		return null
+	print("[%s] dawn: starting in %s" % [who, zone_id.call()])
+	if who == "Alpha":
+		await _wait(2.0)
+		World.request_chat(p.entity_id, "/invite Bravo")
+		await _wait(5.0)
+		World.request_set_target(p.entity_id, (npc.call("dawnpriest_amaru") as Npc).entity_id)
+		await _wait(0.5)
+		World.request_say(p.entity_id, "dawn")
+	else:
+		await _wait(3.5)
+		World.request_chat(p.entity_id, "/accept")
+	await wait_for.call("dawnreach")
+	p = World.local_player
+	print("[%s] dawn: after Alpha said dawn -> in %s" % [who, zone_id.call()])
+	await _shot("dawn_%s_in_realm" % who.to_lower())
+	await _wait(3.0)
+	p = World.local_player
+	var keeper := npc.call("dawnkeeper_ilaya") as Npc
+	if keeper != null:  # walk up to the keeper (the server snaps a client back from a jump)
+		p.face_toward(keeper.global_position)
+		Input.action_press("move_forward")
+		for k in 40:
+			if p.global_position.distance_to(keeper.global_position) < 4.0:
+				break
+			await _wait(0.1)
+		Input.action_release("move_forward")
+		World.request_set_target(p.entity_id, keeper.entity_id)
+		await _wait(0.5)
+		World.request_say(p.entity_id, "return")
+	await wait_for.call("lanternhold")
+	p = World.local_player
+	print("[%s] dawn: said return to the keeper -> in %s" % [who, zone_id.call()])
+	await _wait(4.0)
+	p = World.local_player
+	if who == "Alpha":
+		var at := ""
+		for place: String in p.pack.places():
+			if p.pack.get_at(place).get("item", "") == "grove_seed":
+				at = place
+		World.request_use_item(p.entity_id, at)
+	await wait_for.call("the_grove")
+	print("[%s] dawn: Alpha opened her seed -> in %s" % [who, zone_id.call()])
+
+
 func _grove_test(p: Player) -> void:
 	var other: Player = null
 	for k in 60:

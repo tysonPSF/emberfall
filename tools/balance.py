@@ -51,6 +51,7 @@ def main():
     ap.add_argument("--fights", type=int, default=4, help="fights per monster (3 monsters a level)")
     ap.add_argument("--scale", type=int, default=120, help="game seconds per real second")
     ap.add_argument("--named", action="store_true", help="fight named monsters alone instead (balance_named.json; the normal results are untouched)")
+    ap.add_argument("--elite", default="", help="health,damage: fight the usual monsters made elite, as a realm's are (e.g. 3.5,2.2; balance_elite.json)")
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 4) - 2), help="Godot processes at once")
     args = ap.parse_args()
 
@@ -69,7 +70,7 @@ def main():
             out = os.path.join(tmp, tag + ".json")
             log = os.path.join(tmp, tag + ".log")
             env = dict(os.environ, BALANCE_ONLY="%s:%s" % v, BALANCE_OUT=out, BALANCE_SCALE=str(args.scale),
-                       BALANCE_FIGHTS=str(args.fights), BALANCE_LEVELS=args.levels, **({"BALANCE_NAMED": "1"} if args.named else {}))
+                       BALANCE_FIGHTS=str(args.fights), BALANCE_LEVELS=args.levels, **({"BALANCE_NAMED": "1"} if args.named else {}), **({"BALANCE_ELITE": args.elite} if args.elite else {}))
             proc = subprocess.Popen([GODOT, "--headless", "--path", ROOT, "--", "--autotest", "--only=balance"],
                                     env=env, stdout=open(log, "w"), stderr=subprocess.STDOUT)
             running[v] = (proc, out, log)
@@ -98,8 +99,8 @@ def main():
     config["fights"] = args.fights
     config["scale"] = args.scale
 
-    if args.named:
-        path = os.path.join(user_dir(), "balance_named.json")
+    if args.named or args.elite:
+        path = os.path.join(user_dir(), "balance_elite.json" if args.elite else "balance_named.json")
         with open(path, "w") as f:
             json.dump({"rows": rows, "config": config}, f, indent=1)
         levels = sorted({r["level"] for r in rows})

@@ -20631,7 +20631,9 @@
     ],
     "model": "cinder_drake",
     "named": true,
-    "xp_bonus": 2.3
+    "xp_bonus": 3.0,
+    "min_players": 3,
+    "toughness": 1.8
   },
   "dr_hollow_abbot": {
     "name": "the Hollow Abbot",
@@ -20678,12 +20680,14 @@
     ],
     "model": "fallen_abbot",
     "named": true,
-    "xp_bonus": 2.3,
+    "xp_bonus": 3.0,
     "proc": {
       "spell": "dimming_touch",
       "chance": 0.15,
       "text": "%s's touch carries %s!"
-    }
+    },
+    "min_players": 3,
+    "toughness": 1.8
   },
   "the_dimming": {
     "name": "the Dimming",
@@ -20742,7 +20746,7 @@
       "text": "%s reaches into your light; %s takes hold!"
     },
     "min_players": 3,
-    "toughness": 1.5,
+    "toughness": 2.2,
     "always_up": true
   }
 }

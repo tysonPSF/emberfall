@@ -11356,6 +11356,13 @@ func _t_dawn_line() -> void:
 		if c is Mob and (c as Mob).mob_id == "the_dimming":
 			dimming = c
 	var dimming_up := dimming != null and not dimming.dead
+	var elite_ok := false
+	for c in z.get_children():
+		if c is Mob and (c as Mob).mob_id == "dr_dimmling":
+			var m := c as Mob
+			elite_ok = m.elite == 4.5 and absf(m.max_hp - GameData.typical_hp(m.level) * 4.5) < 2.0
+			print("dawn_line: a dimmling (level %d): %d health (an ordinary monster's %d), elite %.1f" % [m.level, m.max_hp, GameData.typical_hp(m.level), m.elite])
+			break
 	p.global_position = z.ground(0, -160) + Vector3.UP * 0.3  # the Dawn-Tusk at his temple, from down the road
 	p.face_toward(Vector3(0, 0, -194))
 	p.zoom = 12.0
@@ -11388,9 +11395,9 @@ func _t_dawn_line() -> void:
 		await _wait(0.25)
 	var home: bool = main.zone.zone_id == "lanternhold"
 	World.log_message.disconnect(listen)
-	print("dawn_line: refused fire=%s young=%s; offered=%s took=%s; relic on step=%s off step=%s; the way shut before=%s, step5=%s, inside the Dawnreach=%s, the Dimming up=%s (min players %d); seed=%s pendant=%s god=%s; home=%s" % [
+	print("dawn_line: refused fire=%s young=%s; offered=%s took=%s; relic on step=%s off step=%s; the way shut before=%s, step5=%s, inside the Dawnreach=%s, the Dimming up=%s (min players %d), its monsters elite=%s; seed=%s pendant=%s god=%s; home=%s" % [
 		fire_refused, young_refused, offered, took, drops_on_step, drops_off_step, shut_before, step5, inside,
-		dimming_up, int(GameData.mobs["the_dimming"].get("min_players", 0)), seed, pendant, god, home])
+		dimming_up, int(GameData.mobs["the_dimming"].get("min_players", 0)), elite_ok, seed, pendant, god, home])
 	p.deity = keep[0]
 	p.level = keep[1]
 	p.quests = keep[2]

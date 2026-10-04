@@ -90,6 +90,9 @@ func setup(id: String, d: Dictionary, sp: SpawnPoint) -> void:
 			dmg_max += int(it.get("dmg", 0)) / 2 + int(it.get("str", 0)) / 5
 			attack_verb = it.get("verb", attack_verb)
 	hp = max_hp
+	if not d.get("named", false) and sp != null and sp.zone != null and sp.zone.data.has("elite"):
+		var e: Dictionary = sp.zone.data["elite"]  # group content: every ordinary monster here is past what one player can take
+		make_elite(float(e.get("health", 3.5)), float(e.get("damage", 2.2)))
 	solo_max_hp = max_hp
 	solo_dmg = Vector2i(dmg_min, dmg_max)
 	if d.get("named", false):
@@ -253,6 +256,25 @@ func players_faced() -> Array[Player]:
 			if not q.dead and not q in out and (q == p or q.distance_to(p) <= reach):
 				out.append(q)
 	return out
+
+
+## An elite (a zone's "elite" {health, damage}: the gods' realms): health
+## `health` times an ordinary monster's at its level (GameData.typical_hp) and
+## damage a second `damage` times ordinary, keeping its own swing speed and
+## spread, so it takes a group, as a named does but every one of them. Its
+## experience grows with its health (World._award_group).
+var elite := 1.0
+
+
+func make_elite(health: float, damage: float) -> void:
+	elite = health
+	max_hp = int(GameData.typical_hp(level) * health)
+	hp = max_hp
+	var own := (dmg_min + dmg_max) * 0.5 / attack_delay
+	var k := GameData.typical_dps(level) * damage / maxf(own, 0.01)
+	dmg_min = maxi(1, roundi(dmg_min * k))
+	dmg_max = maxi(dmg_min + 1, roundi(dmg_max * k))
+	ac = maxi(ac, roundi(ac * 1.2))
 
 
 func _check_facing(delta: float) -> void:

@@ -200,16 +200,18 @@ MOBS = {
                            loot=[{"item": "dr_sunwyrm_scale", "chance": 0.6}]),
     # named
     "dr_goldmaw": named("Goldmaw the Dawnwyrm", 52, "cinder_drake", ["bite", "bites"], "", scale=1.8,
-                        loot=[{"item": "dr_goldmaw_fang", "chance": 1.0}, {"item": "dr_sunwyrm_scale", "chance": 1.0, "count": [2, 3]}]),
+                        loot=[{"item": "dr_goldmaw_fang", "chance": 1.0}, {"item": "dr_sunwyrm_scale", "chance": 1.0, "count": [2, 3]}],
+                        min_players=3, toughness=1.8, xp_bonus=3.0),
     "dr_hollow_abbot": named("the Hollow Abbot", 52, "fallen_abbot", ["strike", "strikes"], "the_dimmed", proc=DIM_PROC,
-                             loot=[{"item": "dr_abbots_prayer_beads", "chance": 1.0}, {"item": "dr_dimmed_ash", "chance": 1.0, "count": [2, 3]}]),
+                             loot=[{"item": "dr_abbots_prayer_beads", "chance": 1.0}, {"item": "dr_dimmed_ash", "chance": 1.0, "count": [2, 3]}],
+                             min_players=3, toughness=1.8, xp_bonus=3.0),
     # the Dawn-Eater: a group fight, its court about it
     "the_dimming": named("the Dimming", 52, "nameless_shade", ["devour", "devours"], "the_dimmed", scale=2.2,
                          proc={"spell": "dimming_touch", "chance": 0.3, "text": "%s reaches into your light; %s takes hold!"},
                          loot=[{"item": "dl_ember_of_first_light", "chance": 1.0, "quest": "dawn_6"},
                                {"item": "dr_dimmed_ash", "chance": 1.0, "count": [3, 5]},
                                {"item": "dr_heart_of_the_dimming", "chance": 0.35}],
-                         min_players=3, toughness=1.5, xp_bonus=4.0, aggro_radius=22, always_up=True),
+                         min_players=3, toughness=2.2, xp_bonus=4.0, aggro_radius=22, always_up=True),
 }
 for k in ("dr_dawnwing", "dr_gilded_ram", "dr_sunwyrm", "dr_goldmaw"):
     MOBS[k]["faction"] = "wildlife"  # the realm's own beasts, like any other
@@ -352,7 +354,7 @@ def spawn(pos, pool, respawn=420, wander=6, **extra):
 
 
 spawns = [spawn(CRATER, {"the_dimming": 1}, respawn=2400, wander=0)]
-for x, z in ring(CRATER, 9, 4, math.pi / 4):          # its court, close about it
+for x, z in ring(CRATER, 9, 2, math.pi / 2):          # its court, close about it (two: each is an elite)
     spawns.append(spawn((x, z), {"dimming_shard": 1}, respawn=900, wander=2))
 for x, z in ring(CRATER, 44, 7, 0.3):                 # what it's eaten, round the crater
     spawns.append(spawn((x, z), {"dr_dimmling": 3, "dr_hollow_light": 1}))
@@ -372,6 +374,10 @@ ZONE = {
     "name": "The Dawnreach",
     "realm": "dawnreach",
     "levels": [50, 52],
+    # group content throughout (2026-10-03, Tyson: "the 50+ zones shouldn't be soloable"): every ordinary
+    # monster here is an elite (Mob.make_elite). Measured with tools/balance.py --elite 4.5,2.6 --levels 50:
+    # no class wins alone more than 3 fights in 12, and those spend 80% of their health and all their mana.
+    "elite": {"health": 4.5, "damage": 2.6},
     "music": "grove",
     "seed": 2421,
     "size": SIZE,

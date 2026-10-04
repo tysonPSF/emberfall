@@ -80,6 +80,7 @@ func run(t: Node) -> void:
 ## BALANCE_NAMED: fight named monsters (each at the test level) instead of
 ## ordinary ones, alone, to see what a solo named costs; a longer time limit.
 var _named := OS.get_environment("BALANCE_NAMED") != ""
+var _long := _named or OS.get_environment("BALANCE_ELITE") != ""  # named and elites get three times as long
 
 
 ## Three named monsters from levels lvl to lvl + 3 (none that need a group), the same every run.
@@ -158,6 +159,10 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	d.erase("gear")  # its gear roll would make runs noisy; the base monster
 	var mob := Mob.new()
 	mob.setup(mob_id, d, null)
+	if OS.get_environment("BALANCE_ELITE") != "":  # BALANCE_ELITE=health,damage: the same monster as a realm's elite
+		var e := OS.get_environment("BALANCE_ELITE").split(",")
+		mob.make_elite(float(e[0]), float(e[1]))
+		mob.solo_max_hp = mob.max_hp
 	mob.aggressive = false
 	mob.position = z.ground(ARENA.x, ARENA.y - 10.0) + Vector3.UP * 0.2  # before it enters: that's the home it leashes to
 	z.add_child(mob)
@@ -184,7 +189,7 @@ func _fight(p: Player, z: Zone, cls: String, pet_kind: String, lvl: int, mob_id:
 	var mana0 := p.mana
 	var died := false
 	var real0 := Time.get_ticks_msec()
-	while t < (TIME_LIMIT * 3.0 if _named else TIME_LIMIT) and is_instance_valid(mob) and not mob.dead:
+	while t < (TIME_LIMIT * 3.0 if _long else TIME_LIMIT) and is_instance_valid(mob) and not mob.dead:
 		if t >= next_decision:
 			next_decision += DECIDE_EVERY
 			if p.hp < p.max_hp * 0.05:  # as good as dead: stop before the real thing sends you to your bind point

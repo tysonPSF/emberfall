@@ -1743,6 +1743,7 @@ func _award_group(credited: Player, mob: Mob) -> void:
 	var base := float(cfg("xp_base", 10)) + mob.level * mob.level * float(cfg("xp_per_mob_level_sq", 5))
 	var total := base * float(cfg("xp_rate", 1.0)) * float(mob.data.get("xp_bonus", 1.0)) * (1.0 + GROUP_XP_BONUS * (eligible.size() - 1))
 	total *= named_growth(mob)  # a named that grew to face a group is worth as much more as it grew
+	total *= mob.elite  # an elite (a realm's) is worth its health
 	var level_sum := 0
 	for m: Player in eligible:
 		level_sum += m.level

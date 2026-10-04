@@ -30,6 +30,12 @@ A level 50 can still solo for rare loot, but nobody solos their way in.
 
 ## Realms
 
+**Realms are group content throughout, not only their last fight** (Tyson
+2026-10-03: "the 50+ zones shouldn't be soloable"): the zone's `"elite"` makes
+every ordinary monster an elite (the Dawnreach: 4.5x an ordinary monster's
+health, 2.6x its damage), and every named is a group boss (`min_players` 3).
+Check a new realm with `tools/balance.py --elite <health>,<damage> --levels 50`.
+
 Each god has a realm, off the 45-zone grid (like Duskhold or the Grove), and a
 realm is a **region**: it starts as one zone and grows (more zones linked by
 zone lines inside it, raid zones later). In `tools/world_layout.py` a realm is
